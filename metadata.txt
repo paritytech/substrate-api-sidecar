@@ -1,0 +1,6269 @@
+Metadata:
+ [
+ 1635018093,
+ {
+  "V8": {
+   "modules": [
+    {
+     "name": "System",
+     "storage": {
+      "prefix": "System",
+      "entries": [
+       {
+        "name": "AccountNonce",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "T::Index",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Extrinsics nonce for accounts."
+        ]
+       },
+       {
+        "name": "ExtrinsicCount",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Total extrinsics count for the current block."
+        ]
+       },
+       {
+        "name": "AllExtrinsicsWeight",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "Weight"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Total weight for all extrinsics put together, for the current block."
+        ]
+       },
+       {
+        "name": "AllExtrinsicsLen",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Total length (in bytes) for all extrinsics put together, for the current block."
+        ]
+       },
+       {
+        "name": "BlockHash",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::BlockNumber",
+          "value": "T::Hash",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Map of block numbers to block hashes."
+        ]
+       },
+       {
+        "name": "ExtrinsicData",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "u32",
+          "value": "Vec<u8>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Extrinsics data for the current block (maps an extrinsic's index to its data)."
+        ]
+       },
+       {
+        "name": "Number",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::BlockNumber"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The current block number being processed. Set by `execute_block`."
+        ]
+       },
+       {
+        "name": "ParentHash",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::Hash"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Hash of the previous block."
+        ]
+       },
+       {
+        "name": "ExtrinsicsRoot",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::Hash"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Extrinsics root of the current block, also part of the block header."
+        ]
+       },
+       {
+        "name": "Digest",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "DigestOf<T>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Digest of the current block, also part of the block header."
+        ]
+       },
+       {
+        "name": "Events",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<EventRecord<T::Event, T::Hash>>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Events deposited for the current block."
+        ]
+       },
+       {
+        "name": "EventCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "EventIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The number of events in the `Events<T>` list."
+        ]
+       },
+       {
+        "name": "EventTopics",
+        "modifier": "Default",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Blake2_256",
+          "key1": "()",
+          "key2": "T::Hash",
+          "value": "Vec<(T::BlockNumber, EventIndex)>",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Mapping between a topic (represented by T::Hash) and a vector of indexes",
+         " of events in the `<Events<T>>` list.",
+         "",
+         " The first key serves no purpose. This field is declared as double_map just",
+         " for convenience of using `remove_prefix`.",
+         "",
+         " All topic vectors have deterministic storage locations depending on the topic. This",
+         " allows light-clients to leverage the changes trie storage tracking mechanism and",
+         " in case of changes fetch the list of events of interest.",
+         "",
+         " The value has the type `(T::BlockNumber, EventIndex)` because if we used only just",
+         " the `EventIndex` then in case if the topic has the same contents on the next block",
+         " no notification will be triggered thus the event might be lost."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "fill_block",
+       "arguments": [],
+       "documentation": [
+        " A big dispatch that will disallow any other transaction to be included."
+       ]
+      },
+      {
+       "name": "remark",
+       "arguments": [
+        {
+         "name": "_remark",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Make some on-chain remark."
+       ]
+      },
+      {
+       "name": "set_heap_pages",
+       "arguments": [
+        {
+         "name": "pages",
+         "ty": "u64"
+        }
+       ],
+       "documentation": [
+        " Set the number of pages in the WebAssembly environment's heap."
+       ]
+      },
+      {
+       "name": "set_code",
+       "arguments": [
+        {
+         "name": "new",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Set the new code."
+       ]
+      },
+      {
+       "name": "set_storage",
+       "arguments": [
+        {
+         "name": "items",
+         "ty": "Vec<KeyValue>"
+        }
+       ],
+       "documentation": [
+        " Set some items of storage."
+       ]
+      },
+      {
+       "name": "kill_storage",
+       "arguments": [
+        {
+         "name": "keys",
+         "ty": "Vec<Key>"
+        }
+       ],
+       "documentation": [
+        " Kill some items from storage."
+       ]
+      },
+      {
+       "name": "kill_prefix",
+       "arguments": [
+        {
+         "name": "prefix",
+         "ty": "Key"
+        }
+       ],
+       "documentation": [
+        " Kill all storage items with a key that starts with the given prefix."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "ExtrinsicSuccess",
+       "arguments": [],
+       "documentation": [
+        " An extrinsic completed successfully."
+       ]
+      },
+      {
+       "name": "ExtrinsicFailed",
+       "arguments": [
+        "DispatchError"
+       ],
+       "documentation": [
+        " An extrinsic failed."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": [
+      {
+       "name": "BadSignature",
+       "documentation": []
+      },
+      {
+       "name": "BlockFull",
+       "documentation": []
+      },
+      {
+       "name": "RequireSignedOrigin",
+       "documentation": []
+      },
+      {
+       "name": "RequireRootOrigin",
+       "documentation": []
+      },
+      {
+       "name": "RequireNoOrigin",
+       "documentation": []
+      }
+     ]
+    },
+    {
+     "name": "RandomnessCollectiveFlip",
+     "storage": {
+      "prefix": "RandomnessCollectiveFlip",
+      "entries": [
+       {
+        "name": "RandomMaterial",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::Hash>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Series of block headers from the last 81 blocks that acts as random seed material. This",
+         " is arranged as a ring buffer with `block_number % 81` being the index into the `Vec` of",
+         " the oldest hash."
+        ]
+       }
+      ]
+     },
+     "calls": null,
+     "event": null,
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Babe",
+     "storage": {
+      "prefix": "Babe",
+      "entries": [
+       {
+        "name": "EpochIndex",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u64"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Current epoch index."
+        ]
+       },
+       {
+        "name": "Authorities",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(AuthorityId, BabeAuthorityWeight)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Current epoch authorities."
+        ]
+       },
+       {
+        "name": "GenesisSlot",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u64"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The slot at which the first epoch actually started. This is 0",
+         " until the first block of the chain."
+        ]
+       },
+       {
+        "name": "CurrentSlot",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u64"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Current slot number."
+        ]
+       },
+       {
+        "name": "Randomness",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "[u8; 32]"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The epoch randomness for the *current* epoch.",
+         "",
+         " # Security",
+         "",
+         " This MUST NOT be used for gambling, as it can be influenced by a",
+         " malicious validator in the short term. It MAY be used in many",
+         " cryptographic protocols, however, so long as one remembers that this",
+         " (like everything else on-chain) it is public. For example, it can be",
+         " used where a number is needed that cannot have been chosen by an",
+         " adversary, for purposes such as public-coin zero-knowledge proofs."
+        ]
+       },
+       {
+        "name": "NextRandomness",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "[u8; 32]"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Next epoch randomness."
+        ]
+       },
+       {
+        "name": "SegmentIndex",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Randomness under construction.",
+         "",
+         " We make a tradeoff between storage accesses and list length.",
+         " We store the under-construction randomness in segments of up to",
+         " `UNDER_CONSTRUCTION_SEGMENT_LENGTH`.",
+         "",
+         " Once a segment reaches this length, we begin the next one.",
+         " We reset all segments and return to `0` at the beginning of every",
+         " epoch."
+        ]
+       },
+       {
+        "name": "UnderConstruction",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "u32",
+          "value": "Vec<[u8; 32]>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": []
+       },
+       {
+        "name": "Initialized",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "MaybeVrf"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Temporary value (cleared at block finalization) which is `Some`",
+         " if per-block initialization has already been called for current block."
+        ]
+       }
+      ]
+     },
+     "calls": [],
+     "event": null,
+     "constants": [
+      {
+       "name": "EpochDuration",
+       "ty": "u64",
+       "value": [
+        96,
+        9,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The number of **slots** that an epoch takes. We couple sessions to",
+        " epochs, i.e. we start a new session once the new epoch begins."
+       ]
+      },
+      {
+       "name": "ExpectedBlockTime",
+       "ty": "T::Moment",
+       "value": [
+        112,
+        23,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The expected average block time at which BABE should be creating",
+        " blocks. Since BABE is probabilistic it is not trivial to figure out",
+        " what the expected average block time should be based on the slot",
+        " duration and the security parameter `c` (where `1 - c` represents",
+        " the probability of a slot being empty)."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Timestamp",
+     "storage": {
+      "prefix": "Timestamp",
+      "entries": [
+       {
+        "name": "Now",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::Moment"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Current time for the current block."
+        ]
+       },
+       {
+        "name": "DidUpdate",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Did the timestamp get updated in this block?"
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set",
+       "arguments": [
+        {
+         "name": "now",
+         "ty": "Compact<T::Moment>"
+        }
+       ],
+       "documentation": [
+        " Set the current time.",
+        "",
+        " This call should be invoked exactly once per block. It will panic at the finalization",
+        " phase, if this call hasn't been invoked by that time.",
+        "",
+        " The timestamp should be greater than the previous one by the amount specified by",
+        " `MinimumPeriod`.",
+        "",
+        " The dispatch origin for this call must be `Inherent`."
+       ]
+      }
+     ],
+     "event": null,
+     "constants": [
+      {
+       "name": "MinimumPeriod",
+       "ty": "T::Moment",
+       "value": [
+        184,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The minimum period between blocks. Beware that this is different to the *expected* period",
+        " that the block production apparatus provides. Your chosen consensus system will generally",
+        " work with this to determine a sensible block time. e.g. For Aura, it will be double this",
+        " period on default settings."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Indices",
+     "storage": {
+      "prefix": "Indices",
+      "entries": [
+       {
+        "name": "NextEnumSet",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::AccountIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The next free enumeration set."
+        ]
+       },
+       {
+        "name": "EnumSet",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountIndex",
+          "value": "Vec<T::AccountId>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The enumeration sets."
+        ]
+       }
+      ]
+     },
+     "calls": [],
+     "event": [
+      {
+       "name": "NewAccountIndex",
+       "arguments": [
+        "AccountId",
+        "AccountIndex"
+       ],
+       "documentation": [
+        " A new account index was assigned.",
+        "",
+        " This event is not triggered when an existing index is reassigned",
+        " to another `AccountId`."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Balances",
+     "storage": {
+      "prefix": "Balances",
+      "entries": [
+       {
+        "name": "TotalIssuance",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::Balance"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The total units issued in the system."
+        ]
+       },
+       {
+        "name": "Vesting",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "VestingSchedule<T::Balance, T::BlockNumber>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Information regarding the vesting of a given account."
+        ]
+       },
+       {
+        "name": "FreeBalance",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "T::Balance",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The 'free' balance of a given account.",
+         "",
+         " This is the only balance that matters in terms of most operations on tokens. It",
+         " alone is used to determine the balance when in the contract execution environment. When this",
+         " balance falls below the value of `ExistentialDeposit`, then the 'current account' is",
+         " deleted: specifically `FreeBalance`. Further, the `OnFreeBalanceZero` callback",
+         " is invoked, giving a chance to external modules to clean up data associated with",
+         " the deleted account.",
+         "",
+         " `system::AccountNonce` is also deleted if `ReservedBalance` is also zero (it also gets",
+         " collapsed to zero if it ever becomes less than `ExistentialDeposit`."
+        ]
+       },
+       {
+        "name": "ReservedBalance",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "T::Balance",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The amount of the balance of a given account that is externally reserved; this can still get",
+         " slashed, but gets slashed last of all.",
+         "",
+         " This balance is a 'reserve' balance that other subsystems use in order to set aside tokens",
+         " that are still 'owned' by the account holder, but which are suspendable.",
+         "",
+         " When this balance falls below the value of `ExistentialDeposit`, then this 'reserve account'",
+         " is deleted: specifically, `ReservedBalance`.",
+         "",
+         " `system::AccountNonce` is also deleted if `FreeBalance` is also zero (it also gets",
+         " collapsed to zero if it ever becomes less than `ExistentialDeposit`.)"
+        ]
+       },
+       {
+        "name": "Locks",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "Vec<BalanceLock<T::Balance, T::BlockNumber>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Any liquidity locks on some account balances."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "transfer",
+       "arguments": [
+        {
+         "name": "dest",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<T::Balance>"
+        }
+       ],
+       "documentation": [
+        " Transfer some liquid free balance to another account.",
+        "",
+        " `transfer` will set the `FreeBalance` of the sender and receiver.",
+        " It will decrease the total issuance of the system by the `TransferFee`.",
+        " If the sender's account is below the existential deposit as a result",
+        " of the transfer, the account will be reaped.",
+        "",
+        " The dispatch origin for this call must be `Signed` by the transactor.",
+        "",
+        " # <weight>",
+        " - Dependent on arguments but not critical, given proper implementations for",
+        "   input config types. See related functions below.",
+        " - It contains a limited number of reads and writes internally and no complex computation.",
+        "",
+        " Related functions:",
+        "",
+        "   - `ensure_can_withdraw` is always called internally but has a bounded complexity.",
+        "   - Transferring balances to accounts that did not exist before will cause",
+        "      `T::OnNewAccount::on_new_account` to be called.",
+        "   - Removing enough funds from an account will trigger",
+        "     `T::DustRemoval::on_unbalanced` and `T::OnFreeBalanceZero::on_free_balance_zero`.",
+        "   - `transfer_keep_alive` works the same way as `transfer`, but has an additional",
+        "     check that the transfer will not kill the origin account.",
+        "",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_balance",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "new_free",
+         "ty": "Compact<T::Balance>"
+        },
+        {
+         "name": "new_reserved",
+         "ty": "Compact<T::Balance>"
+        }
+       ],
+       "documentation": [
+        " Set the balances of a given account.",
+        "",
+        " This will alter `FreeBalance` and `ReservedBalance` in storage. it will",
+        " also decrease the total issuance of the system (`TotalIssuance`).",
+        " If the new free or reserved balance is below the existential deposit,",
+        " it will reset the account nonce (`system::AccountNonce`).",
+        "",
+        " The dispatch origin for this call is `root`.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments.",
+        " - Contains a limited number of reads and writes.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "force_transfer",
+       "arguments": [
+        {
+         "name": "source",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "dest",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<T::Balance>"
+        }
+       ],
+       "documentation": [
+        " Exactly as `transfer`, except the origin must be root and the source account may be",
+        " specified."
+       ]
+      },
+      {
+       "name": "transfer_keep_alive",
+       "arguments": [
+        {
+         "name": "dest",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<T::Balance>"
+        }
+       ],
+       "documentation": [
+        " Same as the [`transfer`] call, but with a check that the transfer will not kill the",
+        " origin account.",
+        "",
+        " 99% of the time you want [`transfer`] instead.",
+        "",
+        " [`transfer`]: struct.Module.html#method.transfer"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NewAccount",
+       "arguments": [
+        "AccountId",
+        "Balance"
+       ],
+       "documentation": [
+        " A new account was created."
+       ]
+      },
+      {
+       "name": "ReapedAccount",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " An account was reaped."
+       ]
+      },
+      {
+       "name": "Transfer",
+       "arguments": [
+        "AccountId",
+        "AccountId",
+        "Balance",
+        "Balance"
+       ],
+       "documentation": [
+        " Transfer succeeded (from, to, value, fees)."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "ExistentialDeposit",
+       "ty": "T::Balance",
+       "value": [
+        0,
+        228,
+        11,
+        84,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The minimum amount required to keep an account open."
+       ]
+      },
+      {
+       "name": "TransferFee",
+       "ty": "T::Balance",
+       "value": [
+        0,
+        225,
+        245,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The fee required to make a transfer."
+       ]
+      },
+      {
+       "name": "CreationFee",
+       "ty": "T::Balance",
+       "value": [
+        0,
+        225,
+        245,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The fee required to create an account."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "TransactionPayment",
+     "storage": {
+      "prefix": "Balances",
+      "entries": [
+       {
+        "name": "NextFeeMultiplier",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Multiplier"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": []
+       }
+      ]
+     },
+     "calls": null,
+     "event": null,
+     "constants": [
+      {
+       "name": "TransactionBaseFee",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        225,
+        245,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The fee to be paid for making a transaction; the base."
+       ]
+      },
+      {
+       "name": "TransactionByteFee",
+       "ty": "BalanceOf<T>",
+       "value": [
+        64,
+        66,
+        15,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The fee to be paid for making a transaction; the per-byte portion."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Authorship",
+     "storage": {
+      "prefix": "Authorship",
+      "entries": [
+       {
+        "name": "Uncles",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<UncleEntryItem<T::BlockNumber, T::Hash, T::AccountId>>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Uncles"
+        ]
+       },
+       {
+        "name": "Author",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "T::AccountId"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Author of current block."
+        ]
+       },
+       {
+        "name": "DidSetUncles",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Whether uncles were already set in this block."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_uncles",
+       "arguments": [
+        {
+         "name": "new_uncles",
+         "ty": "Vec<T::Header>"
+        }
+       ],
+       "documentation": [
+        " Provide a set of uncles."
+       ]
+      }
+     ],
+     "event": null,
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Staking",
+     "storage": {
+      "prefix": "Staking",
+      "entries": [
+       {
+        "name": "ValidatorCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The ideal number of staking participants."
+        ]
+       },
+       {
+        "name": "MinimumValidatorCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         4,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Minimum number of staking participants before emergency conditions are imposed."
+        ]
+       },
+       {
+        "name": "Invulnerables",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Any validators that may never be slashed or forcibly kicked. It's a Vec since they're",
+         " easy to initialize and the performance hit is minimal (we expect no more than four",
+         " invulnerables) and restricted to testnets."
+        ]
+       },
+       {
+        "name": "Bonded",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "T::AccountId",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Map from all locked \"stash\" accounts to the controller account."
+        ]
+       },
+       {
+        "name": "Ledger",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "StakingLedger<T::AccountId, BalanceOf<T>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Map from all (unlocked) \"controller\" accounts to the info regarding the staking."
+        ]
+       },
+       {
+        "name": "Payee",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "RewardDestination",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Where the reward payment should be made. Keyed by stash."
+        ]
+       },
+       {
+        "name": "Validators",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "ValidatorPrefs<BalanceOf<T>>",
+          "is_linked": true
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The map from (wannabe) validator stash key to the preferences of that validator."
+        ]
+       },
+       {
+        "name": "Nominators",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "Vec<T::AccountId>",
+          "is_linked": true
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The map from nominator stash key to the set of stash keys of all validators to nominate."
+        ]
+       },
+       {
+        "name": "Stakers",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "Exposure<T::AccountId, BalanceOf<T>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Nominators for a particular account that is in action right now. You can't iterate",
+         " through validators here, but you can find them in the Session module.",
+         "",
+         " This is keyed by the stash account."
+        ]
+       },
+       {
+        "name": "CurrentElected",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The currently elected validator set keyed by stash account ID."
+        ]
+       },
+       {
+        "name": "CurrentEra",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "EraIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The current era index."
+        ]
+       },
+       {
+        "name": "CurrentEraStart",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "MomentOf<T>"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The start of the current era."
+        ]
+       },
+       {
+        "name": "CurrentEraStartSessionIndex",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "SessionIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The session index at which the current era started."
+        ]
+       },
+       {
+        "name": "CurrentEraPointsEarned",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "EraPoints"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Rewards for the current era. Using indices of current elected set."
+        ]
+       },
+       {
+        "name": "SlotStake",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "BalanceOf<T>"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The amount of balance actively at stake for each validator slot, currently.",
+         "",
+         " This is used to derive rewards and punishments."
+        ]
+       },
+       {
+        "name": "ForceEra",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Forcing"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " True if the next session change will be a new era regardless of index."
+        ]
+       },
+       {
+        "name": "SlashRewardFraction",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Perbill"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The percentage of the slash that is distributed to reporters.",
+         "",
+         " The rest of the slashed value is handled by the `Slash`."
+        ]
+       },
+       {
+        "name": "BondedEras",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(EraIndex, SessionIndex)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " A mapping from still-bonded eras to the first session index of that era."
+        ]
+       },
+       {
+        "name": "EraSlashJournal",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "EraIndex",
+          "value": "Vec<SlashJournalEntry<T::AccountId, BalanceOf<T>>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " All slashes that have occurred in a given era."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "bond",
+       "arguments": [
+        {
+         "name": "controller",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<BalanceOf<T>>"
+        },
+        {
+         "name": "payee",
+         "ty": "RewardDestination"
+        }
+       ],
+       "documentation": [
+        " Take the origin account as a stash and lock up `value` of its balance. `controller` will",
+        " be the account that controls it.",
+        "",
+        " `value` must be more than the `minimum_balance` specified by `T::Currency`.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the stash account.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Moderate complexity.",
+        " - O(1).",
+        " - Three extra DB entries.",
+        "",
+        " NOTE: Two of the storage writes (`Self::bonded`, `Self::payee`) are _never_ cleaned unless",
+        " the `origin` falls below _existential deposit_ and gets removed as dust.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "bond_extra",
+       "arguments": [
+        {
+         "name": "max_additional",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Add some extra amount that have appeared in the stash `free_balance` into the balance up",
+        " for staking.",
+        "",
+        " Use this if there are additional funds in your stash account that you wish to bond.",
+        " Unlike [`bond`] or [`unbond`] this function does not impose any limitation on the amount",
+        " that can be added.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the stash, not the controller.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Insignificant complexity.",
+        " - O(1).",
+        " - One DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "unbond",
+       "arguments": [
+        {
+         "name": "value",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Schedule a portion of the stash to be unlocked ready for transfer out after the bond",
+        " period ends. If this leaves an amount actively bonded less than",
+        " T::Currency::minimum_balance(), then it is increased to the full amount.",
+        "",
+        " Once the unlock period is done, you can call `withdraw_unbonded` to actually move",
+        " the funds out of management ready for transfer.",
+        "",
+        " No more than a limited number of unlocking chunks (see `MAX_UNLOCKING_CHUNKS`)",
+        " can co-exists at the same time. In that case, [`Call::withdraw_unbonded`] need",
+        " to be called first to remove some of the chunks (if possible).",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " See also [`Call::withdraw_unbonded`].",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Limited but potentially exploitable complexity.",
+        " - Contains a limited number of reads.",
+        " - Each call (requires the remainder of the bonded balance to be above `minimum_balance`)",
+        "   will cause a new entry to be inserted into a vector (`Ledger.unlocking`) kept in storage.",
+        "   The only way to clean the aforementioned storage item is also user-controlled via `withdraw_unbonded`.",
+        " - One DB entry.",
+        " </weight>"
+       ]
+      },
+      {
+       "name": "withdraw_unbonded",
+       "arguments": [],
+       "documentation": [
+        " Remove any unlocked chunks from the `unlocking` queue from our management.",
+        "",
+        " This essentially frees up that balance to be used by the stash account to do",
+        " whatever it wants.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " See also [`Call::unbond`].",
+        "",
+        " # <weight>",
+        " - Could be dependent on the `origin` argument and how much `unlocking` chunks exist.",
+        "  It implies `consolidate_unlocked` which loops over `Ledger.unlocking`, which is",
+        "  indirectly user-controlled. See [`unbond`] for more detail.",
+        " - Contains a limited number of reads, yet the size of which could be large based on `ledger`.",
+        " - Writes are limited to the `origin` account key.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "validate",
+       "arguments": [
+        {
+         "name": "prefs",
+         "ty": "ValidatorPrefs<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Declare the desire to validate for the origin controller.",
+        "",
+        " Effects will be felt at the beginning of the next era.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Insignificant complexity.",
+        " - Contains a limited number of reads.",
+        " - Writes are limited to the `origin` account key.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "nominate",
+       "arguments": [
+        {
+         "name": "targets",
+         "ty": "Vec<<T::Lookup as StaticLookup>::Source>"
+        }
+       ],
+       "documentation": [
+        " Declare the desire to nominate `targets` for the origin controller.",
+        "",
+        " Effects will be felt at the beginning of the next era.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " # <weight>",
+        " - The transaction's complexity is proportional to the size of `targets`,",
+        " which is capped at `MAX_NOMINATIONS`.",
+        " - Both the reads and writes follow a similar pattern.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "chill",
+       "arguments": [],
+       "documentation": [
+        " Declare no desire to either validate or nominate.",
+        "",
+        " Effects will be felt at the beginning of the next era.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Insignificant complexity.",
+        " - Contains one read.",
+        " - Writes are limited to the `origin` account key.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_payee",
+       "arguments": [
+        {
+         "name": "payee",
+         "ty": "RewardDestination"
+        }
+       ],
+       "documentation": [
+        " (Re-)set the payment target for a controller.",
+        "",
+        " Effects will be felt at the beginning of the next era.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the controller, not the stash.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Insignificant complexity.",
+        " - Contains a limited number of reads.",
+        " - Writes are limited to the `origin` account key.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_controller",
+       "arguments": [
+        {
+         "name": "controller",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " (Re-)set the controller of a stash.",
+        "",
+        " Effects will be felt at the beginning of the next era.",
+        "",
+        " The dispatch origin for this call must be _Signed_ by the stash, not the controller.",
+        "",
+        " # <weight>",
+        " - Independent of the arguments. Insignificant complexity.",
+        " - Contains a limited number of reads.",
+        " - Writes are limited to the `origin` account key.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_validator_count",
+       "arguments": [
+        {
+         "name": "new",
+         "ty": "Compact<u32>"
+        }
+       ],
+       "documentation": [
+        " The ideal number of validators."
+       ]
+      },
+      {
+       "name": "force_no_eras",
+       "arguments": [],
+       "documentation": [
+        " Force there to be no new eras indefinitely.",
+        "",
+        " # <weight>",
+        " - No arguments.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "force_new_era",
+       "arguments": [],
+       "documentation": [
+        " Force there to be a new era at the end of the next session. After this, it will be",
+        " reset to normal (non-forced) behaviour.",
+        "",
+        " # <weight>",
+        " - No arguments.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_invulnerables",
+       "arguments": [
+        {
+         "name": "validators",
+         "ty": "Vec<T::AccountId>"
+        }
+       ],
+       "documentation": [
+        " Set the validators who cannot be slashed (if any)."
+       ]
+      },
+      {
+       "name": "force_unstake",
+       "arguments": [
+        {
+         "name": "stash",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Force a current staker to become completely unstaked, immediately."
+       ]
+      },
+      {
+       "name": "force_new_era_always",
+       "arguments": [],
+       "documentation": [
+        " Force there to be a new era at the end of sessions indefinitely.",
+        "",
+        " # <weight>",
+        " - One storage write",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Reward",
+       "arguments": [
+        "Balance",
+        "Balance"
+       ],
+       "documentation": [
+        " All validators have been rewarded by the first balance; the second is the remainder",
+        " from the maximum amount of reward."
+       ]
+      },
+      {
+       "name": "Slash",
+       "arguments": [
+        "AccountId",
+        "Balance"
+       ],
+       "documentation": [
+        " One validator (and its nominators) has been slashed by the given amount."
+       ]
+      },
+      {
+       "name": "OldSlashingReportDiscarded",
+       "arguments": [
+        "SessionIndex"
+       ],
+       "documentation": [
+        " An old slashing report from a prior era was discarded because it could",
+        " not be processed."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "SessionsPerEra",
+       "ty": "SessionIndex",
+       "value": [
+        6,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " Number of sessions per era."
+       ]
+      },
+      {
+       "name": "BondingDuration",
+       "ty": "EraIndex",
+       "value": [
+        7,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " Number of eras that staked funds must remain bonded for."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Offences",
+     "storage": {
+      "prefix": "Offences",
+      "entries": [
+       {
+        "name": "Reports",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ReportIdOf<T>",
+          "value": "OffenceDetails<T::AccountId, T::IdentificationTuple>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The primary structure that holds all offence records keyed by report identifiers."
+        ]
+       },
+       {
+        "name": "ConcurrentReportsIndex",
+        "modifier": "Default",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Blake2_256",
+          "key1": "Kind",
+          "key2": "OpaqueTimeSlot",
+          "value": "Vec<ReportIdOf<T>>",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " A vector of reports of the same kind that happened at the same time slot."
+        ]
+       },
+       {
+        "name": "ReportsByKindIndex",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "Kind",
+          "value": "Vec<u8>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Enumerates all reports of a kind along with the time they happened.",
+         "",
+         " All reports are sorted by the time of offence.",
+         "",
+         " Note that the actual type of this mapping is `Vec<u8>`, this is because values of",
+         " different types are not supported at the moment so we are doing the manual serialization."
+        ]
+       }
+      ]
+     },
+     "calls": [],
+     "event": [
+      {
+       "name": "Offence",
+       "arguments": [
+        "Kind",
+        "OpaqueTimeSlot"
+       ],
+       "documentation": [
+        " There is an offence reported of the given `kind` happened at the `session_index` and",
+        " (kind-specific) time slot. This event is not deposited for duplicate slashes."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Session",
+     "storage": {
+      "prefix": "Session",
+      "entries": [
+       {
+        "name": "Validators",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::ValidatorId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current set of validators."
+        ]
+       },
+       {
+        "name": "CurrentIndex",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "SessionIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Current index of the session."
+        ]
+       },
+       {
+        "name": "QueuedChanged",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " True if the underlying economic identities or weighting behind the validators",
+         " has changed in the queued validator set."
+        ]
+       },
+       {
+        "name": "QueuedKeys",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(T::ValidatorId, T::Keys)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The queued keys for the next session. When the next session begins, these keys",
+         " will be used to determine the validator's session keys."
+        ]
+       },
+       {
+        "name": "DisabledValidators",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<u32>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Indices of disabled validators.",
+         "",
+         " The set is cleared when `on_session_ending` returns a new set of identities."
+        ]
+       },
+       {
+        "name": "NextKeys",
+        "modifier": "Optional",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Twox64Concat",
+          "key1": "Vec<u8>",
+          "key2": "T::ValidatorId",
+          "value": "T::Keys",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The next session keys for a validator.",
+         "",
+         " The first key is always `DEDUP_KEY_PREFIX` to have all the data in the same branch of",
+         " the trie. Having all data in the same branch should prevent slowing down other queries."
+        ]
+       },
+       {
+        "name": "KeyOwner",
+        "modifier": "Optional",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Twox64Concat",
+          "key1": "Vec<u8>",
+          "key2": "(KeyTypeId, Vec<u8>)",
+          "value": "T::ValidatorId",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The owner of a key. The second key is the `KeyTypeId` + the encoded key.",
+         "",
+         " The first key is always `DEDUP_KEY_PREFIX` to have all the data in the same branch of",
+         " the trie. Having all data in the same branch should prevent slowing down other queries."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_keys",
+       "arguments": [
+        {
+         "name": "keys",
+         "ty": "T::Keys"
+        },
+        {
+         "name": "proof",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Sets the session key(s) of the function caller to `key`.",
+        " Allows an account to set its session key prior to becoming a validator.",
+        " This doesn't take effect until the next session.",
+        "",
+        " The dispatch origin of this function must be signed.",
+        "",
+        " # <weight>",
+        " - O(log n) in number of accounts.",
+        " - One extra DB entry.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NewSession",
+       "arguments": [
+        "SessionIndex"
+       ],
+       "documentation": [
+        " New session has happened. Note that the argument is the session index, not the block",
+        " number as the type might suggest."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "DEDUP_KEY_PREFIX",
+       "ty": "&[u8]",
+       "value": [
+        52,
+        58,
+        115,
+        101,
+        115,
+        115,
+        105,
+        111,
+        110,
+        58,
+        107,
+        101,
+        121,
+        115
+       ],
+       "documentation": [
+        " Used as first key for `NextKeys` and `KeyOwner` to put all the data into the same branch",
+        " of the trie."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "FinalityTracker",
+     "storage": null,
+     "calls": [
+      {
+       "name": "final_hint",
+       "arguments": [
+        {
+         "name": "hint",
+         "ty": "Compact<T::BlockNumber>"
+        }
+       ],
+       "documentation": [
+        " Hint that the author of this block thinks the best finalized",
+        " block is the given number."
+       ]
+      }
+     ],
+     "event": null,
+     "constants": [
+      {
+       "name": "WindowSize",
+       "ty": "T::BlockNumber",
+       "value": [
+        101,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The number of recent samples to keep from this chain. Default is 101."
+       ]
+      },
+      {
+       "name": "ReportLatency",
+       "ty": "T::BlockNumber",
+       "value": [
+        232,
+        3,
+        0,
+        0
+       ],
+       "documentation": [
+        " The delay after which point things become suspicious. Default is 1000."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Grandpa",
+     "storage": {
+      "prefix": "GrandpaFinality",
+      "entries": [
+       {
+        "name": "Authorities",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "AuthorityList"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " DEPRECATED",
+         "",
+         " This used to store the current authority set, which has been migrated to the well-known",
+         " GRANDPA_AUTHORITES_KEY unhashed key."
+        ]
+       },
+       {
+        "name": "State",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "StoredState<T::BlockNumber>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " State of the current authority set."
+        ]
+       },
+       {
+        "name": "PendingChange",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "StoredPendingChange<T::BlockNumber>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Pending change: (signaled at, scheduled change)."
+        ]
+       },
+       {
+        "name": "NextForced",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "T::BlockNumber"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " next block number where we can force a change."
+        ]
+       },
+       {
+        "name": "Stalled",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "(T::BlockNumber, T::BlockNumber)"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " `true` if we are currently stalled."
+        ]
+       },
+       {
+        "name": "CurrentSetId",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "SetId"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The number of changes (both in terms of keys and underlying economic responsibilities)",
+         " in the \"set\" of Grandpa validators from genesis."
+        ]
+       },
+       {
+        "name": "SetIdSession",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "SetId",
+          "value": "SessionIndex",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " A mapping from grandpa set ID to the index of the *most recent* session for which its members were responsible."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "report_misbehavior",
+       "arguments": [
+        {
+         "name": "_report",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Report some misbehavior."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NewAuthorities",
+       "arguments": [
+        "AuthorityList"
+       ],
+       "documentation": [
+        " New authority set has been applied."
+       ]
+      },
+      {
+       "name": "Paused",
+       "arguments": [],
+       "documentation": [
+        " Current authority set has been paused."
+       ]
+      },
+      {
+       "name": "Resumed",
+       "arguments": [],
+       "documentation": [
+        " Current authority set has been resumed."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "ImOnline",
+     "storage": {
+      "prefix": "ImOnline",
+      "entries": [
+       {
+        "name": "GossipAt",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::BlockNumber"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The block number when we should gossip."
+        ]
+       },
+       {
+        "name": "Keys",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AuthorityId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current set of keys that may issue a heartbeat."
+        ]
+       },
+       {
+        "name": "ReceivedHeartbeats",
+        "modifier": "Optional",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Blake2_256",
+          "key1": "SessionIndex",
+          "key2": "AuthIndex",
+          "value": "Vec<u8>",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " For each session index, we keep a mapping of `AuthIndex`",
+         " to `offchain::OpaqueNetworkState`."
+        ]
+       },
+       {
+        "name": "AuthoredBlocks",
+        "modifier": "Default",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Blake2_256",
+          "key1": "SessionIndex",
+          "key2": "T::ValidatorId",
+          "value": "u32",
+          "key2_hasher": "Blake2_256"
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " For each session index, we keep a mapping of `T::ValidatorId` to the",
+         " number of blocks authored by the given authority."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "heartbeat",
+       "arguments": [
+        {
+         "name": "heartbeat",
+         "ty": "Heartbeat<T::BlockNumber>"
+        },
+        {
+         "name": "_signature",
+         "ty": "<T::AuthorityId as RuntimeAppPublic>::Signature"
+        }
+       ],
+       "documentation": []
+      }
+     ],
+     "event": [
+      {
+       "name": "HeartbeatReceived",
+       "arguments": [
+        "AuthorityId"
+       ],
+       "documentation": [
+        " A new heartbeat was received from `AuthorityId`"
+       ]
+      },
+      {
+       "name": "AllGood",
+       "arguments": [],
+       "documentation": [
+        " At the end of the session, no offence was committed."
+       ]
+      },
+      {
+       "name": "SomeOffline",
+       "arguments": [
+        "Vec<IdentificationTuple>"
+       ],
+       "documentation": [
+        " At the end of the session, at least once validator was found to be offline."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Democracy",
+     "storage": {
+      "prefix": "Democracy",
+      "entries": [
+       {
+        "name": "PublicPropCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "PropIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The number of (public) proposals that have been made so far."
+        ]
+       },
+       {
+        "name": "PublicProps",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(PropIndex, T::Proposal, T::AccountId)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The public proposals. Unsorted."
+        ]
+       },
+       {
+        "name": "DepositOf",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "PropIndex",
+          "value": "(BalanceOf<T>, Vec<T::AccountId>)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Those who have locked a deposit."
+        ]
+       },
+       {
+        "name": "ReferendumCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "ReferendumIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The next free referendum index, aka the number of referenda started so far."
+        ]
+       },
+       {
+        "name": "NextTally",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "ReferendumIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The next referendum index that should be tallied."
+        ]
+       },
+       {
+        "name": "ReferendumInfoOf",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ReferendumIndex",
+          "value": "(ReferendumInfo<T::BlockNumber, T::Proposal>)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Information concerning any given referendum."
+        ]
+       },
+       {
+        "name": "DispatchQueue",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::BlockNumber",
+          "value": "Vec<Option<(T::Proposal, ReferendumIndex)>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Queue of successful referenda to be dispatched."
+        ]
+       },
+       {
+        "name": "VotersFor",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ReferendumIndex",
+          "value": "Vec<T::AccountId>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Get the voters for the current proposal."
+        ]
+       },
+       {
+        "name": "VoteOf",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "(ReferendumIndex, T::AccountId)",
+          "value": "Vote",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Get the vote in a given referendum of a particular voter. The result is meaningful only",
+         " if `voters_for` includes the voter when called with the referendum (you'll get the",
+         " default `Vote` value otherwise). If you don't want to check `voters_for`, then you can",
+         " also check for simple existence with `VoteOf::exists` first."
+        ]
+       },
+       {
+        "name": "Proxy",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "T::AccountId",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Who is able to vote for whom. Value is the fund-holding account, key is the",
+         " vote-transaction-sending account."
+        ]
+       },
+       {
+        "name": "Delegations",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "(T::AccountId, Conviction)",
+          "is_linked": true
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Get the account (and lock periods) to which another account is delegating vote."
+        ]
+       },
+       {
+        "name": "LastTabledWasExternal",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " True if the last referendum tabled was submitted externally. False if it was a public",
+         " proposal."
+        ]
+       },
+       {
+        "name": "NextExternal",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "(T::Proposal, VoteThreshold)"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The referendum to be tabled whenever it would be valid to table an external proposal.",
+         " This happens when a referendum needs to be tabled and one of two conditions are met:",
+         " - `LastTabledWasExternal` is `false`; or",
+         " - `PublicProps` is empty."
+        ]
+       },
+       {
+        "name": "Blacklist",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "(T::BlockNumber, Vec<T::AccountId>)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " A record of who vetoed what. Maps proposal hash to a possible existent block number",
+         " (until when it may not be resubmitted) and who vetoed it."
+        ]
+       },
+       {
+        "name": "Cancellations",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "bool",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Record of all proposals that have been subject to emergency cancellation."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "propose",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Propose a sensitive action to be taken.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Two DB changes, one DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "second",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Compact<PropIndex>"
+        }
+       ],
+       "documentation": [
+        " Propose a sensitive action to be taken.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - One DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "vote",
+       "arguments": [
+        {
+         "name": "ref_index",
+         "ty": "Compact<ReferendumIndex>"
+        },
+        {
+         "name": "vote",
+         "ty": "Vote"
+        }
+       ],
+       "documentation": [
+        " Vote in a referendum. If `vote.is_aye()`, the vote is to enact the proposal;",
+        " otherwise it is a vote to keep the status quo.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - One DB change, one DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "proxy_vote",
+       "arguments": [
+        {
+         "name": "ref_index",
+         "ty": "Compact<ReferendumIndex>"
+        },
+        {
+         "name": "vote",
+         "ty": "Vote"
+        }
+       ],
+       "documentation": [
+        " Vote in a referendum on behalf of a stash. If `vote.is_aye()`, the vote is to enact",
+        " the proposal;  otherwise it is a vote to keep the status quo.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - One DB change, one DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "emergency_cancel",
+       "arguments": [
+        {
+         "name": "ref_index",
+         "ty": "ReferendumIndex"
+        }
+       ],
+       "documentation": [
+        " Schedule an emergency cancellation of a referendum. Cannot happen twice to the same",
+        " referendum."
+       ]
+      },
+      {
+       "name": "external_propose",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Schedule a referendum to be tabled once it is legal to schedule an external",
+        " referendum."
+       ]
+      },
+      {
+       "name": "external_propose_majority",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Schedule a majority-carries referendum to be tabled next once it is legal to schedule",
+        " an external referendum.",
+        "",
+        " Unlike `external_propose`, blacklisting has no effect on this and it may replace a",
+        " pre-scheduled `external_propose` call."
+       ]
+      },
+      {
+       "name": "external_propose_default",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Schedule a negative-turnout-bias referendum to be tabled next once it is legal to",
+        " schedule an external referendum.",
+        "",
+        " Unlike `external_propose`, blacklisting has no effect on this and it may replace a",
+        " pre-scheduled `external_propose` call."
+       ]
+      },
+      {
+       "name": "fast_track",
+       "arguments": [
+        {
+         "name": "proposal_hash",
+         "ty": "T::Hash"
+        },
+        {
+         "name": "voting_period",
+         "ty": "T::BlockNumber"
+        },
+        {
+         "name": "delay",
+         "ty": "T::BlockNumber"
+        }
+       ],
+       "documentation": [
+        " Schedule the currently externally-proposed majority-carries referendum to be tabled",
+        " immediately. If there is no externally-proposed referendum currently, or if there is one",
+        " but it is not a majority-carries referendum then it fails.",
+        "",
+        " - `proposal_hash`: The hash of the current external proposal.",
+        " - `voting_period`: The period that is allowed for voting on this proposal. Increased to",
+        "   `EmergencyVotingPeriod` if too low.",
+        " - `delay`: The number of block after voting has ended in approval and this should be",
+        "   enacted. This doesn't have a minimum amount."
+       ]
+      },
+      {
+       "name": "veto_external",
+       "arguments": [
+        {
+         "name": "proposal_hash",
+         "ty": "T::Hash"
+        }
+       ],
+       "documentation": [
+        " Veto and blacklist the external proposal hash."
+       ]
+      },
+      {
+       "name": "cancel_referendum",
+       "arguments": [
+        {
+         "name": "ref_index",
+         "ty": "Compact<ReferendumIndex>"
+        }
+       ],
+       "documentation": [
+        " Remove a referendum."
+       ]
+      },
+      {
+       "name": "cancel_queued",
+       "arguments": [
+        {
+         "name": "when",
+         "ty": "Compact<T::BlockNumber>"
+        },
+        {
+         "name": "which",
+         "ty": "Compact<u32>"
+        },
+        {
+         "name": "what",
+         "ty": "Compact<ReferendumIndex>"
+        }
+       ],
+       "documentation": [
+        " Cancel a proposal queued for enactment."
+       ]
+      },
+      {
+       "name": "set_proxy",
+       "arguments": [
+        {
+         "name": "proxy",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Specify a proxy. Called by the stash.",
+        "",
+        " # <weight>",
+        " - One extra DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "resign_proxy",
+       "arguments": [],
+       "documentation": [
+        " Clear the proxy. Called by the proxy.",
+        "",
+        " # <weight>",
+        " - One DB clear.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "remove_proxy",
+       "arguments": [
+        {
+         "name": "proxy",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Clear the proxy. Called by the stash.",
+        "",
+        " # <weight>",
+        " - One DB clear.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "delegate",
+       "arguments": [
+        {
+         "name": "to",
+         "ty": "T::AccountId"
+        },
+        {
+         "name": "conviction",
+         "ty": "Conviction"
+        }
+       ],
+       "documentation": [
+        " Delegate vote.",
+        "",
+        " # <weight>",
+        " - One extra DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "undelegate",
+       "arguments": [],
+       "documentation": [
+        " Undelegate vote.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Proposed",
+       "arguments": [
+        "PropIndex",
+        "Balance"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Tabled",
+       "arguments": [
+        "PropIndex",
+        "Balance",
+        "Vec<AccountId>"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "ExternalTabled",
+       "arguments": [],
+       "documentation": []
+      },
+      {
+       "name": "Started",
+       "arguments": [
+        "ReferendumIndex",
+        "VoteThreshold"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Passed",
+       "arguments": [
+        "ReferendumIndex"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "NotPassed",
+       "arguments": [
+        "ReferendumIndex"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Cancelled",
+       "arguments": [
+        "ReferendumIndex"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Executed",
+       "arguments": [
+        "ReferendumIndex",
+        "bool"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Delegated",
+       "arguments": [
+        "AccountId",
+        "AccountId"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Undelegated",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": []
+      },
+      {
+       "name": "Vetoed",
+       "arguments": [
+        "AccountId",
+        "Hash",
+        "BlockNumber"
+       ],
+       "documentation": []
+      }
+     ],
+     "constants": [
+      {
+       "name": "EnactmentPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        0,
+        194,
+        1,
+        0
+       ],
+       "documentation": [
+        " The minimum period of locking and the period between a proposal being approved and enacted.",
+        "",
+        " It should generally be a little more than the unstake period to ensure that",
+        " voting stakers have an opportunity to remove themselves from the system in the case where",
+        " they are on the losing side of a vote."
+       ]
+      },
+      {
+       "name": "LaunchPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        192,
+        137,
+        1,
+        0
+       ],
+       "documentation": [
+        " How often (in blocks) new public referenda are launched."
+       ]
+      },
+      {
+       "name": "VotingPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        192,
+        137,
+        1,
+        0
+       ],
+       "documentation": [
+        " How often (in blocks) to check for new votes."
+       ]
+      },
+      {
+       "name": "MinimumDeposit",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        16,
+        165,
+        212,
+        232,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The minimum amount to be used as a deposit for a public referendum proposal."
+       ]
+      },
+      {
+       "name": "EmergencyVotingPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        88,
+        2,
+        0,
+        0
+       ],
+       "documentation": [
+        " Minimum voting period allowed for an emergency referendum."
+       ]
+      },
+      {
+       "name": "CooloffPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        192,
+        137,
+        1,
+        0
+       ],
+       "documentation": [
+        " Period in blocks where an external proposal may not be re-submitted after being vetoed."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Council",
+     "storage": {
+      "prefix": "Instance1Collective",
+      "entries": [
+       {
+        "name": "Proposals",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::Hash>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The hashes of the active proposals."
+        ]
+       },
+       {
+        "name": "ProposalOf",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "<T as Trait<I>>::Proposal",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Actual proposal for a given hash, if it's current."
+        ]
+       },
+       {
+        "name": "Voting",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "Votes<T::AccountId>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Votes on a given proposal, if it is ongoing."
+        ]
+       },
+       {
+        "name": "ProposalCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Proposals so far."
+        ]
+       },
+       {
+        "name": "Members",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current members of the collective. This is stored sorted (just by value)."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_members",
+       "arguments": [
+        {
+         "name": "new_members",
+         "ty": "Vec<T::AccountId>"
+        }
+       ],
+       "documentation": [
+        " Set the collective's membership manually to `new_members`. Be nice to the chain and",
+        " provide it pre-sorted.",
+        "",
+        " Requires root origin."
+       ]
+      },
+      {
+       "name": "execute",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<<T as Trait<I>>::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Dispatch a proposal from a member using the `Member` origin.",
+        "",
+        " Origin must be a member of the collective."
+       ]
+      },
+      {
+       "name": "propose",
+       "arguments": [
+        {
+         "name": "threshold",
+         "ty": "Compact<MemberCount>"
+        },
+        {
+         "name": "proposal",
+         "ty": "Box<<T as Trait<I>>::Proposal>"
+        }
+       ],
+       "documentation": [
+        " # <weight>",
+        " - Bounded storage reads and writes.",
+        " - Argument `threshold` has bearing on weight.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "vote",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "T::Hash"
+        },
+        {
+         "name": "index",
+         "ty": "Compact<ProposalIndex>"
+        },
+        {
+         "name": "approve",
+         "ty": "bool"
+        }
+       ],
+       "documentation": [
+        " # <weight>",
+        " - Bounded storage read and writes.",
+        " - Will be slightly heavier if the proposal is approved / disapproved after the vote.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Proposed",
+       "arguments": [
+        "AccountId",
+        "ProposalIndex",
+        "Hash",
+        "MemberCount"
+       ],
+       "documentation": [
+        " A motion (given hash) has been proposed (by given account) with a threshold (given",
+        " `MemberCount`)."
+       ]
+      },
+      {
+       "name": "Voted",
+       "arguments": [
+        "AccountId",
+        "Hash",
+        "bool",
+        "MemberCount",
+        "MemberCount"
+       ],
+       "documentation": [
+        " A motion (given hash) has been voted on by given account, leaving",
+        " a tally (yes votes and no votes given respectively as `MemberCount`)."
+       ]
+      },
+      {
+       "name": "Approved",
+       "arguments": [
+        "Hash"
+       ],
+       "documentation": [
+        " A motion was approved by the required threshold."
+       ]
+      },
+      {
+       "name": "Disapproved",
+       "arguments": [
+        "Hash"
+       ],
+       "documentation": [
+        " A motion was not approved by the required threshold."
+       ]
+      },
+      {
+       "name": "Executed",
+       "arguments": [
+        "Hash",
+        "bool"
+       ],
+       "documentation": [
+        " A motion was executed; `bool` is true if returned without error."
+       ]
+      },
+      {
+       "name": "MemberExecuted",
+       "arguments": [
+        "Hash",
+        "bool"
+       ],
+       "documentation": [
+        " A single member did some action; `bool` is true if returned without error."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "TechnicalCommittee",
+     "storage": {
+      "prefix": "Instance2Collective",
+      "entries": [
+       {
+        "name": "Proposals",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::Hash>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The hashes of the active proposals."
+        ]
+       },
+       {
+        "name": "ProposalOf",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "<T as Trait<I>>::Proposal",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Actual proposal for a given hash, if it's current."
+        ]
+       },
+       {
+        "name": "Voting",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::Hash",
+          "value": "Votes<T::AccountId>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Votes on a given proposal, if it is ongoing."
+        ]
+       },
+       {
+        "name": "ProposalCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Proposals so far."
+        ]
+       },
+       {
+        "name": "Members",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current members of the collective. This is stored sorted (just by value)."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_members",
+       "arguments": [
+        {
+         "name": "new_members",
+         "ty": "Vec<T::AccountId>"
+        }
+       ],
+       "documentation": [
+        " Set the collective's membership manually to `new_members`. Be nice to the chain and",
+        " provide it pre-sorted.",
+        "",
+        " Requires root origin."
+       ]
+      },
+      {
+       "name": "execute",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<<T as Trait<I>>::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Dispatch a proposal from a member using the `Member` origin.",
+        "",
+        " Origin must be a member of the collective."
+       ]
+      },
+      {
+       "name": "propose",
+       "arguments": [
+        {
+         "name": "threshold",
+         "ty": "Compact<MemberCount>"
+        },
+        {
+         "name": "proposal",
+         "ty": "Box<<T as Trait<I>>::Proposal>"
+        }
+       ],
+       "documentation": [
+        " # <weight>",
+        " - Bounded storage reads and writes.",
+        " - Argument `threshold` has bearing on weight.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "vote",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "T::Hash"
+        },
+        {
+         "name": "index",
+         "ty": "Compact<ProposalIndex>"
+        },
+        {
+         "name": "approve",
+         "ty": "bool"
+        }
+       ],
+       "documentation": [
+        " # <weight>",
+        " - Bounded storage read and writes.",
+        " - Will be slightly heavier if the proposal is approved / disapproved after the vote.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Proposed",
+       "arguments": [
+        "AccountId",
+        "ProposalIndex",
+        "Hash",
+        "MemberCount"
+       ],
+       "documentation": [
+        " A motion (given hash) has been proposed (by given account) with a threshold (given",
+        " `MemberCount`)."
+       ]
+      },
+      {
+       "name": "Voted",
+       "arguments": [
+        "AccountId",
+        "Hash",
+        "bool",
+        "MemberCount",
+        "MemberCount"
+       ],
+       "documentation": [
+        " A motion (given hash) has been voted on by given account, leaving",
+        " a tally (yes votes and no votes given respectively as `MemberCount`)."
+       ]
+      },
+      {
+       "name": "Approved",
+       "arguments": [
+        "Hash"
+       ],
+       "documentation": [
+        " A motion was approved by the required threshold."
+       ]
+      },
+      {
+       "name": "Disapproved",
+       "arguments": [
+        "Hash"
+       ],
+       "documentation": [
+        " A motion was not approved by the required threshold."
+       ]
+      },
+      {
+       "name": "Executed",
+       "arguments": [
+        "Hash",
+        "bool"
+       ],
+       "documentation": [
+        " A motion was executed; `bool` is true if returned without error."
+       ]
+      },
+      {
+       "name": "MemberExecuted",
+       "arguments": [
+        "Hash",
+        "bool"
+       ],
+       "documentation": [
+        " A single member did some action; `bool` is true if returned without error."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "ElectionsPhragmen",
+     "storage": {
+      "prefix": "PhragmenElection",
+      "entries": [
+       {
+        "name": "Members",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(T::AccountId, BalanceOf<T>)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current elected membership. Sorted based on account id."
+        ]
+       },
+       {
+        "name": "RunnersUp",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(T::AccountId, BalanceOf<T>)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current runners_up. Sorted based on low to high merit (worse to best runner)."
+        ]
+       },
+       {
+        "name": "ElectionRounds",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The total number of vote rounds that have happened, excluding the upcoming one."
+        ]
+       },
+       {
+        "name": "VotesOf",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "Vec<T::AccountId>",
+          "is_linked": true
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Votes of a particular voter, with the round index of the votes."
+        ]
+       },
+       {
+        "name": "StakeOf",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "BalanceOf<T>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Locked stake of a voter."
+        ]
+       },
+       {
+        "name": "Candidates",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The present candidate list. Sorted based on account id. A current member can never enter",
+         " this vector and is always implicitly assumed to be a candidate."
+        ]
+       },
+       {
+        "name": "DidMigrate",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Has the storage format been updated?",
+         " NOTE: Only use and set to false if you have used an early version of this module. Should",
+         " be set to true otherwise."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "vote",
+       "arguments": [
+        {
+         "name": "votes",
+         "ty": "Vec<T::AccountId>"
+        },
+        {
+         "name": "value",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Vote for a set of candidates for the upcoming round of election.",
+        "",
+        " The `votes` should:",
+        "   - not be empty.",
+        "   - be less than the number of candidates.",
+        "",
+        " Upon voting, `value` units of `who`'s balance is locked and a bond amount is reserved.",
+        " It is the responsibility of the caller to not place all of their balance into the lock",
+        " and keep some for further transactions.",
+        "",
+        " # <weight>",
+        " #### State",
+        " Reads: O(1)",
+        " Writes: O(V) given `V` votes. V is bounded by 16.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "remove_voter",
+       "arguments": [],
+       "documentation": [
+        " Remove `origin` as a voter. This removes the lock and returns the bond.",
+        "",
+        " # <weight>",
+        " #### State",
+        " Reads: O(1)",
+        " Writes: O(1)",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "report_defunct_voter",
+       "arguments": [
+        {
+         "name": "target",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Report `target` for being an defunct voter. In case of a valid report, the reporter is",
+        " rewarded by the bond amount of `target`. Otherwise, the reporter itself is removed and",
+        " their bond is slashed.",
+        "",
+        " A defunct voter is defined to be:",
+        "   - a voter whose current submitted votes are all invalid. i.e. all of them are no",
+        "     longer a candidate nor an active member.",
+        "",
+        " # <weight>",
+        " #### State",
+        " Reads: O(NLogM) given M current candidates and N votes for `target`.",
+        " Writes: O(1)",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "submit_candidacy",
+       "arguments": [],
+       "documentation": [
+        " Submit oneself for candidacy.",
+        "",
+        " A candidate will either:",
+        "   - Lose at the end of the term and forfeit their deposit.",
+        "   - Win and become a member. Members will eventually get their stash back.",
+        "   - Become a runner-up. Runners-ups are reserved members in case one gets forcefully",
+        "     removed.",
+        "",
+        " # <weight>",
+        " #### State",
+        " Reads: O(LogN) Given N candidates.",
+        " Writes: O(1)",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "remove_member",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Remove a particular member from the set. This is effective immediately.",
+        "",
+        " If a runner-up is available, then the best runner-up will be removed and replaces the",
+        " outgoing member. Otherwise, a new phragmen round is started.",
+        "",
+        " Note that this does not affect the designated block number of the next election.",
+        "",
+        " # <weight>",
+        " #### State",
+        " Reads: O(do_phragmen)",
+        " Writes: O(do_phragmen)",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NewTerm",
+       "arguments": [
+        "Vec<(AccountId, Balance)>"
+       ],
+       "documentation": [
+        " A new term with new members. This indicates that enough candidates existed, not that",
+        " enough have has been elected. The inner value must be examined for this purpose."
+       ]
+      },
+      {
+       "name": "EmptyTerm",
+       "arguments": [],
+       "documentation": [
+        " No (or not enough) candidates existed for this round."
+       ]
+      },
+      {
+       "name": "MemberKicked",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " A member has been removed. This should always be followed by either `NewTerm` ot",
+        " `EmptyTerm`."
+       ]
+      },
+      {
+       "name": "VoterReported",
+       "arguments": [
+        "AccountId",
+        "AccountId",
+        "bool"
+       ],
+       "documentation": [
+        " A voter (first element) was reported (byt the second element) with the the report being",
+        " successful or not (third element)."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "CandidacyBond",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        16,
+        165,
+        212,
+        232,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": []
+      },
+      {
+       "name": "VotingBond",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        116,
+        59,
+        164,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": []
+      },
+      {
+       "name": "DesiredMembers",
+       "ty": "u32",
+       "value": [
+        13,
+        0,
+        0,
+        0
+       ],
+       "documentation": []
+      },
+      {
+       "name": "DesiredRunnersUp",
+       "ty": "u32",
+       "value": [
+        7,
+        0,
+        0,
+        0
+       ],
+       "documentation": []
+      },
+      {
+       "name": "TermDuration",
+       "ty": "T::BlockNumber",
+       "value": [
+        176,
+        4,
+        0,
+        0
+       ],
+       "documentation": []
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "TechnicalMembership",
+     "storage": {
+      "prefix": "Instance1Membership",
+      "entries": [
+       {
+        "name": "Members",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<T::AccountId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current membership, stored as an ordered Vec."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "add_member",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Add a member `who` to the set.",
+        "",
+        " May only be called from `AddOrigin` or root."
+       ]
+      },
+      {
+       "name": "remove_member",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Remove a member `who` from the set.",
+        "",
+        " May only be called from `RemoveOrigin` or root."
+       ]
+      },
+      {
+       "name": "swap_member",
+       "arguments": [
+        {
+         "name": "remove",
+         "ty": "T::AccountId"
+        },
+        {
+         "name": "add",
+         "ty": "T::AccountId"
+        }
+       ],
+       "documentation": [
+        " Swap out one member `remove` for another `add`.",
+        "",
+        " May only be called from `SwapOrigin` or root."
+       ]
+      },
+      {
+       "name": "reset_members",
+       "arguments": [
+        {
+         "name": "members",
+         "ty": "Vec<T::AccountId>"
+        }
+       ],
+       "documentation": [
+        " Change the membership to a new set, disregarding the existing membership. Be nice and",
+        " pass `members` pre-sorted.",
+        "",
+        " May only be called from `ResetOrigin` or root."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "MemberAdded",
+       "arguments": [],
+       "documentation": [
+        " The given member was added; see the transaction for who."
+       ]
+      },
+      {
+       "name": "MemberRemoved",
+       "arguments": [],
+       "documentation": [
+        " The given member was removed; see the transaction for who."
+       ]
+      },
+      {
+       "name": "MembersSwapped",
+       "arguments": [],
+       "documentation": [
+        " Two members were swapped; see the transaction for who."
+       ]
+      },
+      {
+       "name": "MembersReset",
+       "arguments": [],
+       "documentation": [
+        " The membership was reset; see the transaction for who the new set is."
+       ]
+      },
+      {
+       "name": "Dummy",
+       "arguments": [
+        "rstd::marker::PhantomData<(AccountId, Event)>"
+       ],
+       "documentation": [
+        " Phantom member, never used."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Treasury",
+     "storage": {
+      "prefix": "Treasury",
+      "entries": [
+       {
+        "name": "ProposalCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "ProposalIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Number of proposals that have been made."
+        ]
+       },
+       {
+        "name": "Proposals",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ProposalIndex",
+          "value": "Proposal<T::AccountId, BalanceOf<T>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Proposals that have been made."
+        ]
+       },
+       {
+        "name": "Approvals",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<ProposalIndex>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Proposal indices that have been approved but not yet awarded."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "propose_spend",
+       "arguments": [
+        {
+         "name": "value",
+         "ty": "Compact<BalanceOf<T>>"
+        },
+        {
+         "name": "beneficiary",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Put forward a suggestion for spending. A deposit proportional to the value",
+        " is reserved and slashed if the proposal is rejected. It is returned once the",
+        " proposal is awarded.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB change, one extra DB entry.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "reject_proposal",
+       "arguments": [
+        {
+         "name": "proposal_id",
+         "ty": "Compact<ProposalIndex>"
+        }
+       ],
+       "documentation": [
+        " Reject a proposed spend. The original deposit will be slashed.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB clear.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "approve_proposal",
+       "arguments": [
+        {
+         "name": "proposal_id",
+         "ty": "Compact<ProposalIndex>"
+        }
+       ],
+       "documentation": [
+        " Approve a proposal. At a later time, the proposal will be allocated to the beneficiary",
+        " and the original deposit will be returned.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB change.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Proposed",
+       "arguments": [
+        "ProposalIndex"
+       ],
+       "documentation": [
+        " New proposal."
+       ]
+      },
+      {
+       "name": "Spending",
+       "arguments": [
+        "Balance"
+       ],
+       "documentation": [
+        " We have ended a spend period and will now allocate funds."
+       ]
+      },
+      {
+       "name": "Awarded",
+       "arguments": [
+        "ProposalIndex",
+        "Balance",
+        "AccountId"
+       ],
+       "documentation": [
+        " Some funds have been allocated."
+       ]
+      },
+      {
+       "name": "Burnt",
+       "arguments": [
+        "Balance"
+       ],
+       "documentation": [
+        " Some of our funds have been burnt."
+       ]
+      },
+      {
+       "name": "Rollover",
+       "arguments": [
+        "Balance"
+       ],
+       "documentation": [
+        " Spending has finished; this is the amount that rolls over until next spend."
+       ]
+      },
+      {
+       "name": "Deposit",
+       "arguments": [
+        "Balance"
+       ],
+       "documentation": [
+        " Some funds have been deposited."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "ProposalBond",
+       "ty": "Permill",
+       "value": [
+        80,
+        195,
+        0,
+        0
+       ],
+       "documentation": [
+        " Fraction of a proposal's value that should be bonded in order to place the proposal.",
+        " An accepted proposal gets these back. A rejected proposal does not."
+       ]
+      },
+      {
+       "name": "ProposalBondMinimum",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        16,
+        165,
+        212,
+        232,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " Minimum amount of funds that should be placed in a deposit for making a proposal."
+       ]
+      },
+      {
+       "name": "SpendPeriod",
+       "ty": "T::BlockNumber",
+       "value": [
+        128,
+        81,
+        1,
+        0
+       ],
+       "documentation": [
+        " Period between successive spends."
+       ]
+      },
+      {
+       "name": "Burn",
+       "ty": "Permill",
+       "value": [
+        16,
+        39,
+        0,
+        0
+       ],
+       "documentation": [
+        " Percentage of spare funds (if any) that are burnt per spend period."
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Claims",
+     "storage": {
+      "prefix": "Claims",
+      "entries": [
+       {
+        "name": "Claims",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "EthereumAddress",
+          "value": "BalanceOf<T>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": []
+       },
+       {
+        "name": "Total",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "BalanceOf<T>"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": []
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "claim",
+       "arguments": [
+        {
+         "name": "dest",
+         "ty": "T::AccountId"
+        },
+        {
+         "name": "ethereum_signature",
+         "ty": "EcdsaSignature"
+        }
+       ],
+       "documentation": [
+        " Make a claim."
+       ]
+      },
+      {
+       "name": "mint_claim",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "EthereumAddress"
+        },
+        {
+         "name": "value",
+         "ty": "BalanceOf<T>"
+        }
+       ],
+       "documentation": [
+        " Add a new claim, if you are root."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Claimed",
+       "arguments": [
+        "AccountId",
+        "EthereumAddress",
+        "Balance"
+       ],
+       "documentation": [
+        " Someone claimed some DOTs."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "Prefix",
+       "ty": "&[u8]",
+       "value": [
+        124,
+        80,
+        97,
+        121,
+        32,
+        75,
+        83,
+        77,
+        115,
+        32,
+        116,
+        111,
+        32,
+        116,
+        104,
+        101,
+        32,
+        75,
+        117,
+        115,
+        97,
+        109,
+        97,
+        32,
+        97,
+        99,
+        99,
+        111,
+        117,
+        110,
+        116,
+        58
+       ],
+       "documentation": [
+        " The Prefix that is used in signed Ethereum messages for this network"
+       ]
+      }
+     ],
+     "errors": []
+    },
+    {
+     "name": "Parachains",
+     "storage": {
+      "prefix": "Parachains",
+      "entries": [
+       {
+        "name": "Authorities",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<ValidatorId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " All authorities' keys at the moment."
+        ]
+       },
+       {
+        "name": "Code",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "Vec<u8>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The parachains registered at present."
+        ]
+       },
+       {
+        "name": "Heads",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "Vec<u8>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The heads of the parachains registered at present."
+        ]
+       },
+       {
+        "name": "Watermarks",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "T::BlockNumber",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The watermark heights of the parachains registered at present.",
+         " For every parachain, this is the block height from which all messages targeting",
+         " that parachain have been processed. Can be `None` only if the parachain doesn't exist."
+        ]
+       },
+       {
+        "name": "UnroutedIngress",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "(T::BlockNumber, ParaId)",
+          "value": "Vec<(ParaId, Hash)>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Unrouted ingress. Maps (BlockNumber, to_chain) pairs to [(from_chain, egress_root)].",
+         "",
+         " There may be an entry under (i, p) in this map for every i between the parachain's",
+         " watermark and the current block."
+        ]
+       },
+       {
+        "name": "RelayDispatchQueue",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "Vec<UpwardMessage>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Messages ready to be dispatched onto the relay chain. It is subject to",
+         " `MAX_MESSAGE_COUNT` and `WATERMARK_MESSAGE_SIZE`."
+        ]
+       },
+       {
+        "name": "RelayDispatchQueueSize",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "(u32, u32)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Size of the dispatch queues. Separated from actual data in order to avoid costly",
+         " decoding when checking receipt validity. First item in tuple is the count of messages",
+         "\tsecond if the total length (in bytes) of the message payloads."
+        ]
+       },
+       {
+        "name": "NeedsDispatch",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<ParaId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The ordered list of ParaIds that have a `RelayDispatchQueue` entry."
+        ]
+       },
+       {
+        "name": "DidUpdate",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "Vec<ParaId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Some if the parachain heads get updated in this block, along with the parachain IDs that",
+         " did update. Ordered in the same way as `registrar::Active` (i.e. by ParaId).",
+         "",
+         " None if not yet updated."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_heads",
+       "arguments": [
+        {
+         "name": "heads",
+         "ty": "Vec<AttestedCandidate>"
+        }
+       ],
+       "documentation": [
+        " Provide candidate receipts for parachains, in ascending order by id."
+       ]
+      }
+     ],
+     "event": null,
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Attestations",
+     "storage": {
+      "prefix": "Attestations",
+      "entries": [
+       {
+        "name": "RecentParaBlocks",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::BlockNumber",
+          "value": "IncludedBlocks<T>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " A mapping from modular block number (n % AttestationPeriod)",
+         " to session index and the list of candidate hashes."
+        ]
+       },
+       {
+        "name": "ParaBlockAttestations",
+        "modifier": "Optional",
+        "ty": {
+         "DoubleMap": {
+          "hasher": "Blake2_256",
+          "key1": "T::BlockNumber",
+          "key2": "Hash",
+          "value": "BlockAttestations<T>",
+          "key2_hasher": "Blake2_128"
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Attestations on a recent parachain block."
+        ]
+       },
+       {
+        "name": "DidUpdate",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "bool"
+        },
+        "default": [
+         0
+        ],
+        "documentation": []
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "more_attestations",
+       "arguments": [
+        {
+         "name": "_more",
+         "ty": "MoreAttestations"
+        }
+       ],
+       "documentation": [
+        " Provide candidate receipts for parachains, in ascending order by id."
+       ]
+      }
+     ],
+     "event": null,
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Slots",
+     "storage": {
+      "prefix": "Slots",
+      "entries": [
+       {
+        "name": "AuctionCounter",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "AuctionIndex"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The number of auctions that been started so far."
+        ]
+       },
+       {
+        "name": "ManagedIds",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<ParaId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Ordered list of all `ParaId` values that are managed by this module. This includes",
+         " chains that are not yet deployed (but have won an auction in the future)."
+        ]
+       },
+       {
+        "name": "Deposits",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "Vec<BalanceOf<T>>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Various amounts on deposit for each parachain. An entry in `ManagedIds` implies a non-",
+         " default entry here.",
+         "",
+         " The actual amount locked on its behalf at any time is the maximum item in this list. The",
+         " first item in the list is the amount locked for the current Lease Period. Following",
+         " items are for the subsequent lease periods.",
+         "",
+         " The default value (an empty list) implies that the parachain no longer exists (or never",
+         " existed) as far as this module is concerned.",
+         "",
+         " If a parachain doesn't exist *yet* but is scheduled to exist in the future, then it",
+         " will be left-padded with one or more zeroes to denote the fact that nothing is held on",
+         " deposit for the non-existent chain currently, but is held at some point in the future."
+        ]
+       },
+       {
+        "name": "AuctionInfo",
+        "modifier": "Optional",
+        "ty": {
+         "Plain": "(LeasePeriodOf<T>, T::BlockNumber)"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Information relating to the current auction, if there is one.",
+         "",
+         " The first item in the tuple is the lease period index that the first of the four",
+         " contiguous lease periods on auction is for. The second is the block number when the",
+         " auction will \"begin to end\", i.e. the first block of the Ending Period of the auction."
+        ]
+       },
+       {
+        "name": "Winning",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::BlockNumber",
+          "value": "WinningData<T>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The winning bids for each of the 10 ranges at each block in the final Ending Period of",
+         " the current auction. The map's key is the 0-based index into the Ending Period. The",
+         " first block of the ending period is 0; the last is `EndingPeriod - 1`."
+        ]
+       },
+       {
+        "name": "ReservedAmounts",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "Bidder<T::AccountId>",
+          "value": "BalanceOf<T>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Amounts currently reserved in the accounts of the bidders currently winning",
+         " (sub-)ranges."
+        ]
+       },
+       {
+        "name": "OnboardQueue",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "LeasePeriodOf<T>",
+          "value": "Vec<ParaId>",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The set of Para IDs that have won and need to be on-boarded at an upcoming lease-period.",
+         " This is cleared out on the first block of the lease period."
+        ]
+       },
+       {
+        "name": "Onboarding",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "(LeasePeriodOf<T>, IncomingParachain<T::AccountId, T::Hash>)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The actual on-boarding information. Only exists when one of the following is true:",
+         " - It is before the lease period that the parachain should be on-boarded.",
+         " - The full on-boarding information has not yet been provided and the parachain is not",
+         " yet due to be off-boarded."
+        ]
+       },
+       {
+        "name": "Offboarding",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "T::AccountId",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Off-boarding account; currency held on deposit for the parachain gets placed here if the",
+         " parachain gets off-boarded; i.e. its lease period is up and it isn't renewed."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "new_auction",
+       "arguments": [
+        {
+         "name": "duration",
+         "ty": "Compact<T::BlockNumber>"
+        },
+        {
+         "name": "lease_period_index",
+         "ty": "Compact<LeasePeriodOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Create a new auction.",
+        "",
+        " This can only happen when there isn't already an auction in progress and may only be",
+        " called by the root origin. Accepts the `duration` of this auction and the",
+        " `lease_period_index` of the initial lease period of the four that are to be auctioned."
+       ]
+      },
+      {
+       "name": "bid",
+       "arguments": [
+        {
+         "name": "sub",
+         "ty": "Compact<SubId>"
+        },
+        {
+         "name": "auction_index",
+         "ty": "Compact<AuctionIndex>"
+        },
+        {
+         "name": "first_slot",
+         "ty": "Compact<LeasePeriodOf<T>>"
+        },
+        {
+         "name": "last_slot",
+         "ty": "Compact<LeasePeriodOf<T>>"
+        },
+        {
+         "name": "amount",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Make a new bid from an account (including a parachain account) for deploying a new",
+        " parachain.",
+        "",
+        " Multiple simultaneous bids from the same bidder are allowed only as long as all active",
+        " bids overlap each other (i.e. are mutually exclusive). Bids cannot be redacted.",
+        "",
+        " - `sub` is the sub-bidder ID, allowing for multiple competing bids to be made by (and",
+        " funded by) the same account.",
+        " - `auction_index` is the index of the auction to bid on. Should just be the present",
+        " value of `AuctionCounter`.",
+        " - `first_slot` is the first lease period index of the range to bid on. This is the",
+        " absolute lease period index value, not an auction-specific offset.",
+        " - `last_slot` is the last lease period index of the range to bid on. This is the",
+        " absolute lease period index value, not an auction-specific offset.",
+        " - `amount` is the amount to bid to be held as deposit for the parachain should the",
+        " bid win. This amount is held throughout the range."
+       ]
+      },
+      {
+       "name": "bid_renew",
+       "arguments": [
+        {
+         "name": "auction_index",
+         "ty": "Compact<AuctionIndex>"
+        },
+        {
+         "name": "first_slot",
+         "ty": "Compact<LeasePeriodOf<T>>"
+        },
+        {
+         "name": "last_slot",
+         "ty": "Compact<LeasePeriodOf<T>>"
+        },
+        {
+         "name": "amount",
+         "ty": "Compact<BalanceOf<T>>"
+        }
+       ],
+       "documentation": [
+        " Make a new bid from a parachain account for renewing that (pre-existing) parachain.",
+        "",
+        " The origin *must* be a parachain account.",
+        "",
+        " Multiple simultaneous bids from the same bidder are allowed only as long as all active",
+        " bids overlap each other (i.e. are mutually exclusive). Bids cannot be redacted.",
+        "",
+        " - `auction_index` is the index of the auction to bid on. Should just be the present",
+        " value of `AuctionCounter`.",
+        " - `first_slot` is the first lease period index of the range to bid on. This is the",
+        " absolute lease period index value, not an auction-specific offset.",
+        " - `last_slot` is the last lease period index of the range to bid on. This is the",
+        " absolute lease period index value, not an auction-specific offset.",
+        " - `amount` is the amount to bid to be held as deposit for the parachain should the",
+        " bid win. This amount is held throughout the range."
+       ]
+      },
+      {
+       "name": "set_offboarding",
+       "arguments": [
+        {
+         "name": "dest",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Set the off-boarding information for a parachain.",
+        "",
+        " The origin *must* be a parachain account.",
+        "",
+        " - `dest` is the destination account to receive the parachain's deposit."
+       ]
+      },
+      {
+       "name": "fix_deploy_data",
+       "arguments": [
+        {
+         "name": "sub",
+         "ty": "Compact<SubId>"
+        },
+        {
+         "name": "para_id",
+         "ty": "Compact<ParaId>"
+        },
+        {
+         "name": "code_hash",
+         "ty": "T::Hash"
+        },
+        {
+         "name": "initial_head_data",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Set the deploy information for a successful bid to deploy a new parachain.",
+        "",
+        " - `origin` must be the successful bidder account.",
+        " - `sub` is the sub-bidder ID of the bidder.",
+        " - `para_id` is the parachain ID allotted to the winning bidder.",
+        " - `code_hash` is the hash of the parachain's Wasm validation function.",
+        " - `initial_head_data` is the parachain's initial head data."
+       ]
+      },
+      {
+       "name": "elaborate_deploy_data",
+       "arguments": [
+        {
+         "name": "para_id",
+         "ty": "Compact<ParaId>"
+        },
+        {
+         "name": "code",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Note a new parachain's code.",
+        "",
+        " This must be called after `fix_deploy_data` and `code` must be the preimage of the",
+        " `code_hash` passed there for the same `para_id`.",
+        "",
+        " This may be called before or after the beginning of the parachain's first lease period.",
+        " If called before then the parachain will become active at the first block of its",
+        " starting lease period. If after, then it will become active immediately after this call.",
+        "",
+        " - `_origin` is irrelevant.",
+        " - `para_id` is the parachain ID whose code will be elaborated.",
+        " - `code` is the preimage of the registered `code_hash` of `para_id`."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NewLeasePeriod",
+       "arguments": [
+        "LeasePeriod"
+       ],
+       "documentation": [
+        " A new lease period is beginning."
+       ]
+      },
+      {
+       "name": "AuctionStarted",
+       "arguments": [
+        "AuctionIndex",
+        "LeasePeriod",
+        "BlockNumber"
+       ],
+       "documentation": [
+        " An auction started. Provides its index and the block number where it will begin to",
+        " close and the first lease period of the quadruplet that is auctioned."
+       ]
+      },
+      {
+       "name": "AuctionClosed",
+       "arguments": [
+        "AuctionIndex"
+       ],
+       "documentation": [
+        " An auction ended. All funds become unreserved."
+       ]
+      },
+      {
+       "name": "WonDeploy",
+       "arguments": [
+        "NewBidder<AccountId>",
+        "SlotRange",
+        "ParaId",
+        "Balance"
+       ],
+       "documentation": [
+        " Someone won the right to deploy a parachain. Balance amount is deducted for deposit."
+       ]
+      },
+      {
+       "name": "WonRenewal",
+       "arguments": [
+        "ParaId",
+        "SlotRange",
+        "Balance",
+        "Balance"
+       ],
+       "documentation": [
+        " An existing parachain won the right to continue.",
+        " First balance is the extra amount reseved. Second is the total amount reserved."
+       ]
+      },
+      {
+       "name": "Reserved",
+       "arguments": [
+        "AccountId",
+        "Balance",
+        "Balance"
+       ],
+       "documentation": [
+        " Funds were reserved for a winning bid. First balance is the extra amount reserved.",
+        " Second is the total."
+       ]
+      },
+      {
+       "name": "Unreserved",
+       "arguments": [
+        "AccountId",
+        "Balance"
+       ],
+       "documentation": [
+        " Funds were unreserved since bidder is no longer active."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Registrar",
+     "storage": {
+      "prefix": "Registrar",
+      "entries": [
+       {
+        "name": "Parachains",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<ParaId>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": []
+       },
+       {
+        "name": "ThreadCount",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "u32"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The number of threads to schedule per block."
+        ]
+       },
+       {
+        "name": "SelectedThreads",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<Vec<(ParaId, CollatorId)>>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " An array of the queue of set of threads scheduled for the coming blocks; ordered by",
+         " ascending para ID. There can be no duplicates of para ID in each list item."
+        ]
+       },
+       {
+        "name": "Active",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<(ParaId, Option<(CollatorId, Retriable)>)>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Parathreads/chains scheduled for execution this block. If the collator ID is set, then",
+         " a particular collator has already been chosen for the next block, and no other collator",
+         " may provide the block. In this case we allow the possibility of the combination being",
+         " retried in a later block, expressed by `Retriable`.",
+         "",
+         " Ordered by ParaId."
+        ]
+       },
+       {
+        "name": "NextFreeId",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "ParaId"
+        },
+        "default": [
+         232,
+         3,
+         0,
+         0
+        ],
+        "documentation": [
+         " The next unused ParaId value. Start this high in order to keep low numbers for",
+         " system-level chains."
+        ]
+       },
+       {
+        "name": "PendingSwap",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "ParaId",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Pending swap operations."
+        ]
+       },
+       {
+        "name": "Paras",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "ParaInfo",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " Map of all registered parathreads/chains."
+        ]
+       },
+       {
+        "name": "RetryQueue",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "Vec<Vec<(ParaId, CollatorId)>>"
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The current queue for parathreads that should be retried."
+        ]
+       },
+       {
+        "name": "Debtors",
+        "modifier": "Default",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "ParaId",
+          "value": "T::AccountId",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " Users who have paid a parathread's deposit"
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "register_para",
+       "arguments": [
+        {
+         "name": "id",
+         "ty": "Compact<ParaId>"
+        },
+        {
+         "name": "info",
+         "ty": "ParaInfo"
+        },
+        {
+         "name": "code",
+         "ty": "Vec<u8>"
+        },
+        {
+         "name": "initial_head_data",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Register a parachain with given code.",
+        " Fails if given ID is already used."
+       ]
+      },
+      {
+       "name": "deregister_para",
+       "arguments": [
+        {
+         "name": "id",
+         "ty": "Compact<ParaId>"
+        }
+       ],
+       "documentation": [
+        " Deregister a parachain with given id"
+       ]
+      },
+      {
+       "name": "set_thread_count",
+       "arguments": [
+        {
+         "name": "count",
+         "ty": "u32"
+        }
+       ],
+       "documentation": [
+        " Reset the number of parathreads that can pay to be scheduled in a single block.",
+        "",
+        " - `count`: The number of parathreads.",
+        "",
+        " Must be called from Root origin."
+       ]
+      },
+      {
+       "name": "register_parathread",
+       "arguments": [
+        {
+         "name": "code",
+         "ty": "Vec<u8>"
+        },
+        {
+         "name": "initial_head_data",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Register a parathread for immediate use.",
+        "",
+        " Must be sent from a Signed origin that is able to have ParathreadDeposit reserved.",
+        " `code` and `initial_head_data` are used to initialize the parathread's state."
+       ]
+      },
+      {
+       "name": "select_parathread",
+       "arguments": [
+        {
+         "name": "_id",
+         "ty": "Compact<ParaId>"
+        },
+        {
+         "name": "_collator",
+         "ty": "CollatorId"
+        },
+        {
+         "name": "_head_hash",
+         "ty": "T::Hash"
+        }
+       ],
+       "documentation": [
+        " Place a bid for a parathread to be progressed in the next block.",
+        "",
+        " This is a kind of special transaction that should by heavily prioritized in the",
+        " transaction pool according to the `value`; only `ThreadCount` of them may be presented",
+        " in any single block."
+       ]
+      },
+      {
+       "name": "deregister_parathread",
+       "arguments": [],
+       "documentation": [
+        " Deregister a parathread and retrieve the deposit.",
+        "",
+        " Must be sent from a `Parachain` origin which is currently a parathread.",
+        "",
+        " Ensure that before calling this that any funds you want emptied from the parathread's",
+        " account is moved out; after this it will be impossible to retrieve them (without",
+        " governance intervention)."
+       ]
+      },
+      {
+       "name": "swap",
+       "arguments": [
+        {
+         "name": "other",
+         "ty": "Compact<ParaId>"
+        }
+       ],
+       "documentation": [
+        " Swap a parachain with another parachain or parathread. The origin must be a `Parachain`.",
+        " The swap will happen only if there is already an opposite swap pending. If there is not,",
+        " the swap will be stored in the pending swaps map, ready for a later confirmatory swap.",
+        "",
+        " The `ParaId`s remain mapped to the same head data and code so external code can rely on",
+        " `ParaId` to be a long-term identifier of a notional \"parachain\". However, their",
+        " scheduling info (i.e. whether they're a parathread or parachain), auction information",
+        " and the auction deposit are switched."
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "ParathreadRegistered",
+       "arguments": [
+        "ParaId"
+       ],
+       "documentation": [
+        " A parathread was registered; its new ID is supplied."
+       ]
+      },
+      {
+       "name": "ParathreadDeregistered",
+       "arguments": [
+        "ParaId"
+       ],
+       "documentation": [
+        " The parathread of the supplied ID was de-registered."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Sudo",
+     "storage": {
+      "prefix": "Sudo",
+      "entries": [
+       {
+        "name": "Key",
+        "modifier": "Default",
+        "ty": {
+         "Plain": "T::AccountId"
+        },
+        "default": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "documentation": [
+         " The `AccountId` of the sudo key."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "sudo",
+       "arguments": [
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Authenticates the sudo key and dispatches a function call with `Root` origin.",
+        "",
+        " The dispatch origin for this call must be _Signed_.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB write (event).",
+        " - Unknown weight of derivative `proposal` execution.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "set_key",
+       "arguments": [
+        {
+         "name": "new",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Authenticates the current sudo key and sets the given AccountId (`new`) as the new sudo key.",
+        "",
+        " The dispatch origin for this call must be _Signed_.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB change.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "sudo_as",
+       "arguments": [
+        {
+         "name": "who",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "proposal",
+         "ty": "Box<T::Proposal>"
+        }
+       ],
+       "documentation": [
+        " Authenticates the sudo key and dispatches a function call with `Signed` origin from",
+        " a given account.",
+        "",
+        " The dispatch origin for this call must be _Signed_.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - Limited storage reads.",
+        " - One DB write (event).",
+        " - Unknown weight of derivative `proposal` execution.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "Sudid",
+       "arguments": [
+        "bool"
+       ],
+       "documentation": [
+        " A sudo just took place."
+       ]
+      },
+      {
+       "name": "KeyChanged",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " The sudoer just switched identity; the old key is supplied."
+       ]
+      },
+      {
+       "name": "SudoAsDone",
+       "arguments": [
+        "bool"
+       ],
+       "documentation": [
+        " A sudo just took place."
+       ]
+      }
+     ],
+     "constants": [],
+     "errors": []
+    },
+    {
+     "name": "Nicks",
+     "storage": {
+      "prefix": "Sudo",
+      "entries": [
+       {
+        "name": "NameOf",
+        "modifier": "Optional",
+        "ty": {
+         "Map": {
+          "hasher": "Blake2_256",
+          "key": "T::AccountId",
+          "value": "(Vec<u8>, BalanceOf<T>)",
+          "is_linked": false
+         }
+        },
+        "default": [
+         0
+        ],
+        "documentation": [
+         " The lookup table for names."
+        ]
+       }
+      ]
+     },
+     "calls": [
+      {
+       "name": "set_name",
+       "arguments": [
+        {
+         "name": "name",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Set an account's name. The name should be a UTF-8-encoded string by convention, though",
+        " we don't check it.",
+        "",
+        " The name may not be more than `T::MaxLength` bytes, nor less than `T::MinLength` bytes.",
+        "",
+        " If the account doesn't already have a name, then a fee of `ReservationFee` is reserved",
+        " in the account.",
+        "",
+        " The dispatch origin for this call must be _Signed_.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - At most one balance operation.",
+        " - One storage read/write.",
+        " - One event.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "clear_name",
+       "arguments": [],
+       "documentation": [
+        " Clear an account's name and return the deposit. Fails if the account was not named.",
+        "",
+        " The dispatch origin for this call must be _Signed_.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - One balance operation.",
+        " - One storage read/write.",
+        " - One event.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "kill_name",
+       "arguments": [
+        {
+         "name": "target",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        }
+       ],
+       "documentation": [
+        " Remove an account's name and take charge of the deposit.",
+        "",
+        " Fails if `who` has not been named. The deposit is dealt with through `T::Slashed`",
+        " imbalance handler.",
+        "",
+        " The dispatch origin for this call must be _Root_ or match `T::ForceOrigin`.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - One unbalanced handler (probably a balance transfer)",
+        " - One storage read/write.",
+        " - One event.",
+        " # </weight>"
+       ]
+      },
+      {
+       "name": "force_name",
+       "arguments": [
+        {
+         "name": "target",
+         "ty": "<T::Lookup as StaticLookup>::Source"
+        },
+        {
+         "name": "name",
+         "ty": "Vec<u8>"
+        }
+       ],
+       "documentation": [
+        " Set a third-party account's name with no deposit.",
+        "",
+        " No length checking is done on the name.",
+        "",
+        " The dispatch origin for this call must be _Root_ or match `T::ForceOrigin`.",
+        "",
+        " # <weight>",
+        " - O(1).",
+        " - At most one balance operation.",
+        " - One storage read/write.",
+        " - One event.",
+        " # </weight>"
+       ]
+      }
+     ],
+     "event": [
+      {
+       "name": "NameSet",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " A name was set."
+       ]
+      },
+      {
+       "name": "NameForced",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " A name was forcibly set."
+       ]
+      },
+      {
+       "name": "NameChanged",
+       "arguments": [
+        "AccountId"
+       ],
+       "documentation": [
+        " A name was changed."
+       ]
+      },
+      {
+       "name": "NameCleared",
+       "arguments": [
+        "AccountId",
+        "Balance"
+       ],
+       "documentation": [
+        " A name was cleared, and the given balance returned."
+       ]
+      },
+      {
+       "name": "NameKilled",
+       "arguments": [
+        "AccountId",
+        "Balance"
+       ],
+       "documentation": [
+        " A name was removed and the given balance slashed."
+       ]
+      }
+     ],
+     "constants": [
+      {
+       "name": "ReservationFee",
+       "ty": "BalanceOf<T>",
+       "value": [
+        0,
+        228,
+        11,
+        84,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " Reservation fee."
+       ]
+      },
+      {
+       "name": "MinLength",
+       "ty": "u32",
+       "value": [
+        3,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The minimum length a name may be."
+       ]
+      },
+      {
+       "name": "MaxLength",
+       "ty": "u32",
+       "value": [
+        32,
+        0,
+        0,
+        0
+       ],
+       "documentation": [
+        " The maximum length a name may be."
+       ]
+      }
+     ],
+     "errors": []
+    }
+   ]
+  }
+ }
+]
