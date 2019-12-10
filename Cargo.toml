@@ -13,4 +13,4 @@ sp-rpc = { git = "https://github.com/paritytech/substrate/" }
 sp-core = { git = "https://github.com/paritytech/substrate/" }
 tokio = "0.1"
 url = "1.7"
-futures-util = "0.3"
+parking_lot = "0.10.0"

@@ -7,12 +7,15 @@ use substrate_subxt::{
 use url::Url;
 use sp_rpc::number::NumberOrHex;
 use sp_core::H256;
+use parking_lot::Mutex;
 
 type Client = substrate_subxt::Client::<DefaultNodeRuntime>;
 
 struct Server {
     /// subxt client
     client: Client,
+    /// tokio runtime,
+    tokio_rt: Mutex<tokio::runtime::Runtime>,
 }
 
 impl Server {
@@ -33,17 +36,15 @@ impl Server {
 
         Server {
             client,
+            tokio_rt: Mutex::new(rt),
         }
     }
 
     async fn hash(self: Arc<Self>, block: Option<u32>) -> Option<H256> {
-        // use futures_util::compat::Future01CompatExt;
-        // self.client.block_hash(block.map(NumberOrHex::Number)).compat().await.ok()?
-
         web::block(move || {
-            let mut rt = tokio::runtime::Runtime::new().expect("Must be able to bootstrap Tokio Runtime");
+            let future = self.client.block_hash(block.map(NumberOrHex::Number));
 
-            rt.block_on(self.client.block_hash(block.map(NumberOrHex::Number)))
+            self.tokio_rt.lock().block_on(future)
         }).await.ok()?
     }
 }
