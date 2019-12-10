@@ -4,14 +4,13 @@ version = "0.1.0"
 authors = ["Maciej Hirsz <hello@maciej.codes>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-substrate-api-client = { git = "https://github.com/scs/substrate-api-client.git" }
-
-[dependencies.primitives]
-git = "https://github.com/paritytech/substrate"
-rev = "3bf9540e72df5ecb3955845764dfee7dcdbb26b5"
-package = "substrate-primitives"
-default-features = false
-features = ["full_crypto"]
+actix-rt = "1.0.0-alpha.3"
+actix-web = "2.0.0-alpha.4"
+frame-system = { git = "https://github.com/paritytech/substrate/" }
+substrate-subxt = { git = "https://github.com/paritytech/substrate-subxt/" }
+sp-rpc = { git = "https://github.com/paritytech/substrate/" }
+sp-core = { git = "https://github.com/paritytech/substrate/" }
+tokio = "0.1"
+url = "1.7"
+futures-util = "0.3"
