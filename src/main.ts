@@ -4,7 +4,7 @@ import { ApiPromise } from '@polkadot/api';
 import { TypeRegistry } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 
-const HOST = process.env.BIND_HOST || '0.0.0.0';
+const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 
 async function main() {
@@ -47,7 +47,7 @@ async function main() {
 		await getBlock(hash, req, res);
 	})
 
-	app.listen(PORT, () => console.log(`Running on http://${HOST}:${PORT}/`))
+	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
 }
 
 main();
