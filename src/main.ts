@@ -3,12 +3,14 @@ import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
 import { TypeRegistry } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
+import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
+const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 async function main() {
-	const api = await ApiPromise.create();
+	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
 	const app = express();
 
 	async function getBlock(hash: BlockHash, req: Request, res: Response) {
