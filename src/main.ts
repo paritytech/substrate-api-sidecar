@@ -13,17 +13,27 @@ async function main() {
 	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
 	const app = express();
 
-	async function getBlock(hash: BlockHash, req: Request, res: Response) {
+	async function fetchBlock(hash: BlockHash, req: Request, res: Response) {
 		const { block } = await api.rpc.chain.getBlock(hash);
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
-		// console.log(block.toJSON());
+		// console.log(Object.keys(block.header.digest.logs[0]));
 
-		const logs = block.header.digest.logs.map(log => log.type);
-		const extrinsics = block.extrinsics.map(extrinsic => ({
-			method: `${extrinsic.method.sectionName}.${extrinsic.method.methodName}`,
-			args: extrinsic.args.map(arg => arg.toJSON()),
-		}));
+		const logs = block.header.digest.logs.map((log) => {
+			const { type, index, value } = log;
+
+			return { type, index, value };
+		});
+		const extrinsics = block.extrinsics.map((extrinsic) => {
+			const { method, nonce, signature, signer, isSigned, args } = extrinsic;
+
+			return {
+				method: `${method.sectionName}.${method.methodName}`,
+				signature: isSigned ? { signature, signer } : null,
+				nonce,
+				args,
+			};
+		});
 
 		res.send({
 			number,
@@ -41,12 +51,12 @@ async function main() {
 		const number = Number(req.params.number) || 0;
 		const hash = await api.rpc.chain.getBlockHash(number);
 
-		await getBlock(hash, req, res);
+		await fetchBlock(hash, req, res);
 	})
 	app.get('/block/', async (req, res) => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		await getBlock(hash, req, res);
+		await fetchBlock(hash, req, res);
 	})
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))

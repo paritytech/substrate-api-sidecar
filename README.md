@@ -3,14 +3,19 @@
 ### Installation
 
 ```
-npm install
+yarn
 ```
 
 ### Running
 
 ```
-npm start
+yarn start
 ```
+
+### Available paths
+
++ `/block` fetch latest finalized block details.
++ `/block/NUMBER` fetch block details at block height `NUMBER`.
 
 ### Configuration
 
