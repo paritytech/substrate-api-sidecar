@@ -1,3 +1,19 @@
+// Copyright 2017-2020 Parity Technologies (UK) Ltd.
+// This file is part of Substrate RPC Proxy.
+//
+// Substrate RPC Proxy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
@@ -68,31 +84,31 @@ async function main() {
 		res.send({ at, free, reserved, locks });
 	}
 
-	app.get('/', (req, res) => res.send('Proxy is running, go to /block to get latest finalized block'))
+	app.get('/', (req, res) => res.send('Proxy is running, go to /block to get latest finalized block'));
 	app.get('/block/:number', async (req, res) => {
 		const number = Number(req.params.number) || 0;
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		await fetchBlock(hash, req, res).catch(handleError(res));
-	})
+	});
 	app.get('/block/', async (req, res) => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		await fetchBlock(hash, req, res).catch(handleError(res));
-	})
+	});
 	app.get('/balance/:address', async (req, res) => {
 		const { address } = req.params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		await fetchBalance(hash, address, req, res).catch(handleError(res));
-	})
+	});
 	app.get('/balance/:address/:number', async (req, res) => {
 		const { address } = req.params;
 		const number = Number(req.params.number) || 0;
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		await fetchBalance(hash, address, req, res).catch(handleError(res));
-	})
+	});
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
 }
