@@ -1,4 +1,6 @@
-# Substrate RPC Proxy
+# Substrate API Sidecar
+
+Small service intended to run next to Substrate, exposing a limited set of endpoints over HTTP with meaningful responses.
 
 ### Installation
 

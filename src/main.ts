@@ -1,7 +1,7 @@
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
-// This file is part of Substrate RPC Proxy.
+// This file is part of Substrate API Sidecar.
 //
-// Substrate RPC Proxy is free software: you can redistribute it and/or modify
+// Substrate API Sidecar is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -45,7 +45,7 @@ async function main() {
 		});
 	}
 
-	get('/', async (req) => 'Proxy is running, go to /block to get latest finalized block');
+	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
 
 	get('/block/:number', async (params) => {
 		const number = Number(params.number) || 0;
