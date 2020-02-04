@@ -16,6 +16,14 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
+import { Event, EventRecord } from '@polkadot/types/interfaces/system';
+import { blake2AsU8a } from '@polkadot/util-crypto';
+import { u8aToHex } from '@polkadot/util';
+
+interface SantiziedEvent {
+	method: string;
+	data: any;
+}
 
 export default class ApiHandler {
 	private api: ApiPromise;
@@ -26,7 +34,11 @@ export default class ApiHandler {
 
 	async fetchBlock(hash: BlockHash) {
 		const { api } = this;
-		const { block } = await api.rpc.chain.getBlock(hash);
+		const [{ block }, events] = await Promise.all([
+			api.rpc.chain.getBlock(hash),
+			this.fetchEvents(hash),
+		]);
+
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
 		const logs = block.header.digest.logs.map((log) => {
@@ -34,16 +46,49 @@ export default class ApiHandler {
 
 			return { type, index, value };
 		});
+
+		const defaultSuccess = typeof events === 'string' ? events : false;
 		const extrinsics = block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, args } = extrinsic;
+			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
+			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
+				tip,
+				hash,
+				events: [] as SantiziedEvent[],
+				success: defaultSuccess,
 			};
 		});
+
+		if (Array.isArray(events)) {
+			for (const record of events) {
+				const { event, phase } = record;
+
+				if (phase.isApplyExtrinsic) {
+					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
+					const extrinsic = extrinsics[extrinsicIdx];
+
+					if (!extrinsic) {
+						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash}`);
+					}
+
+					const method = `${event.section}.${event.method}`;
+
+					if (method === 'system.ExtrinsicSuccess') {
+						extrinsic.success = true;
+					}
+
+					extrinsic.events.push({
+						method: `${event.section}.${event.method}`,
+						data: event.data,
+					});
+				}
+			}
+		}
 
 		return {
 			number,
@@ -72,5 +117,13 @@ export default class ApiHandler {
 		};
 
 		return { at, free, reserved, locks };
+	}
+
+	async fetchEvents(hash: BlockHash): Promise<EventRecord[] | string> {
+		try {
+			return await await this.api.query.system.events.at(hash);
+		} catch (_) {
+			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
+		}
 	}
 }
