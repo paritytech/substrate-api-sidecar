@@ -17,12 +17,13 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 import { Event, EventRecord } from '@polkadot/types/interfaces/system';
+import { EventData } from '@polkadot/types/primitive/Generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 
 interface SantiziedEvent {
 	method: string;
-	data: any;
+	data: EventData;
 }
 
 export default class ApiHandler {
