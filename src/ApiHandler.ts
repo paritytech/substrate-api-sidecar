@@ -49,9 +49,13 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		const extrinsics = block.extrinsics.map((extrinsic) => {
+		const queryInfo = await Promise.all(block.extrinsics.map((extrinsic) => {
+			return api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
+		}));
+		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
+			const info = queryInfo[idx];
 
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
@@ -60,6 +64,7 @@ export default class ApiHandler {
 				args,
 				tip,
 				hash,
+				info,
 				events: [] as SantiziedEvent[],
 				success: defaultSuccess,
 			};
@@ -105,11 +110,12 @@ export default class ApiHandler {
 	async fetchBalance(hash: BlockHash, address: string) {
 		const { api } = this;
 
-		const [header, free, reserved, locks] = await Promise.all([
+		const [header, free, reserved, locks, nonce] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.balances.freeBalance.at(hash, address),
 			api.query.balances.reservedBalance.at(hash, address),
 			api.query.balances.locks.at(hash, address),
+			api.query.system.accountNonce.at(hash, address),
 		]);
 
 		const at = {
@@ -117,7 +123,7 @@ export default class ApiHandler {
 			height: header.number,
 		};
 
-		return { at, free, reserved, locks };
+		return { at, nonce, free, reserved, locks };
 	}
 
 	async fetchEvents(hash: BlockHash): Promise<EventRecord[] | string> {
