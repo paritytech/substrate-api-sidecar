@@ -50,7 +50,11 @@ export default class ApiHandler {
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const queryInfo = await Promise.all(block.extrinsics.map((extrinsic) => {
-			return api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
+			if (extrinsic.isSigned) {
+				return api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
+			} else {
+				return Promise.resolve({});
+			}
 		}));
 		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
