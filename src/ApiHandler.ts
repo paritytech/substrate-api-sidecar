@@ -49,12 +49,20 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		const queryInfo = await Promise.all(block.extrinsics.map((extrinsic) => {
-			if (extrinsic.isSigned) {
-				return api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
-			} else {
-				return Promise.resolve({});
+		const queryInfo = await Promise.all(block.extrinsics.map(async (extrinsic) => {
+			if (extrinsic.isSigned && extrinsic.method.sectionName !== 'sudo') {
+				try {
+					return await api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
+				} catch (err) {
+					console.error(err);
+
+					return {
+						error: 'Unable to fetch fee info',
+					}
+				}
 			}
+
+			return {};
 		}));
 		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
