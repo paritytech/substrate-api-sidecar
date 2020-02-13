@@ -20,6 +20,8 @@ import { Event, EventRecord } from '@polkadot/types/interfaces/system';
 import { EventData } from '@polkadot/types/primitive/Generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
+import { getChainTypes } from '@polkadot/types/known';
+import { u32 } from '@polkadot/types/primitive';
 
 interface SantiziedEvent {
 	method: string;
@@ -28,12 +30,16 @@ interface SantiziedEvent {
 
 export default class ApiHandler {
 	private api: ApiPromise;
+	private specVersion: u32;
 
 	constructor(api: ApiPromise) {
 		this.api = api;
+		this.specVersion = api.createType('u32', -1);
 	}
 
 	async fetchBlock(hash: BlockHash) {
+		await this.ensureMeta(hash);
+
 		const { api } = this;
 		const [{ block }, events] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
@@ -120,6 +126,8 @@ export default class ApiHandler {
 	}
 
 	async fetchBalance(hash: BlockHash, address: string) {
+		await this.ensureMeta(hash);
+
 		const { api } = this;
 
 		const [header, free, reserved, locks, nonce] = await Promise.all([
@@ -132,7 +140,7 @@ export default class ApiHandler {
 
 		const at = {
 			hash,
-			height: header.number,
+			height: (header as any).number, // TODO: fix this nasty obvious type erasure
 		};
 
 		return { at, nonce, free, reserved, locks };
@@ -143,6 +151,23 @@ export default class ApiHandler {
 			return await await this.api.query.system.events.at(hash);
 		} catch (_) {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
+		}
+	}
+
+	async ensureMeta(hash: BlockHash) {
+		const { api } = this;
+
+		const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
+		const blockSpecVersion = runtimeVersion.specVersion;
+
+	    // swap metadata if spec version is different
+	    if (!this.specVersion.eq(blockSpecVersion)) {
+	    	this.specVersion = blockSpecVersion;
+			const meta = await api.rpc.state.getMetadata(hash);
+			const chain = await api.rpc.system.chain();
+
+			api.registry.register(getChainTypes(chain, runtimeVersion));
+			api.registry.setMetadata(meta);
 		}
 	}
 }
