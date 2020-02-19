@@ -173,6 +173,7 @@ export default class ApiHandler {
 		} catch (err) {
 			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
 			console.error(err);
+			this.specVersion = api.createType('u32', -1);
 		}
 	}
 }
