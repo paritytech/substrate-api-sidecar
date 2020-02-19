@@ -171,6 +171,7 @@ export default class ApiHandler {
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
+			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
 			console.error(err);
 		}
 	}
