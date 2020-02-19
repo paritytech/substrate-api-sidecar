@@ -157,17 +157,22 @@ export default class ApiHandler {
 	async ensureMeta(hash: BlockHash) {
 		const { api } = this;
 
-		const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
-		const blockSpecVersion = runtimeVersion.specVersion;
+		try {
+			const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
+			const blockSpecVersion = runtimeVersion.specVersion;
 
-	    // swap metadata if spec version is different
-	    if (!this.specVersion.eq(blockSpecVersion)) {
-	    	this.specVersion = blockSpecVersion;
-			const meta = await api.rpc.state.getMetadata(hash);
-			const chain = await api.rpc.system.chain();
+		    // swap metadata if spec version is different
+		    if (!this.specVersion.eq(blockSpecVersion)) {
+		    	this.specVersion = blockSpecVersion;
+				const meta = await api.rpc.state.getMetadata(hash);
+				const chain = await api.rpc.system.chain();
 
-			api.registry.register(getChainTypes(chain, runtimeVersion));
-			api.registry.setMetadata(meta);
+				api.registry.register(getChainTypes(chain, runtimeVersion));
+				api.registry.setMetadata(meta);
+			}
+		} catch (err) {
+			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
+			console.error(err);
 		}
 	}
 }
