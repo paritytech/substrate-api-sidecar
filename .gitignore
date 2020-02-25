@@ -1,4 +1,5 @@
 /node_modules
 /build
 /target
+yarn-error.log
 **/*.rs.bk
