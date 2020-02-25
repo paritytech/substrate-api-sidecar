@@ -17,7 +17,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
-import { GenericAccountId } from '@polkadot/types/primitive';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
 import ApiHandler from './ApiHandler';

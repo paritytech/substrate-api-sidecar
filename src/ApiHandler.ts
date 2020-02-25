@@ -17,10 +17,10 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 import { Event, EventRecord } from '@polkadot/types/interfaces/system';
-import { EventData } from '@polkadot/types/primitive/Generic/Event';
+import { EventData } from '@polkadot/types/generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
-import { getChainTypes } from '@polkadot/types/known';
+import { getSpecTypes } from '@polkadot/types/known';
 import { u32 } from '@polkadot/types/primitive';
 
 interface SantiziedEvent {
@@ -167,7 +167,7 @@ export default class ApiHandler {
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
-				api.registry.register(getChainTypes(chain, runtimeVersion));
+				api.registry.register(getSpecTypes(chain, runtimeVersion));
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
