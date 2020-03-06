@@ -27,6 +27,20 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 type Params = { [key: string]: string };
 
+interface Error {
+	error: string;
+}
+
+function parseNumber(n: string): [Error | null, number] {
+	const num = Number(n);
+
+	if (!Number.isInteger(num)) {
+		return [{ error: 'Invalid block number' }, 0];
+	}
+
+	return [null, num];
+}
+
 async function main() {
 	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
 	const handler = new ApiHandler(api);
@@ -47,7 +61,12 @@ async function main() {
 	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
 
 	get('/block/:number', async (params) => {
-		const number = Number(params.number) || 0;
+		const [error, number] = parseNumber(params.number);
+
+		if (error) {
+			return error;
+		}
+
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchBlock(hash);
@@ -68,10 +87,33 @@ async function main() {
 
 	get('/balance/:address/:number', async (params) => {
 		const { address } = params;
-		const number = Number(params.number) || 0;
+		const [error, number] = parseNumber(params.number);
+
+		if (error) {
+			return error;
+		}
+
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchBalance(hash, address);
+	});
+
+	get('/metadata/', async () => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchMetadata(hash);
+	});
+
+	get('/metadata/:number', async (params) => {
+		const [error, number] = parseNumber(params.number);
+
+		if (error) {
+			return error;
+		}
+
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchMetadata(hash);
 	});
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))

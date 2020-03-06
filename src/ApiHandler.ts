@@ -38,12 +38,10 @@ export default class ApiHandler {
 	}
 
 	async fetchBlock(hash: BlockHash) {
-		await this.ensureMeta(hash);
-
-		const { api } = this;
+		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
-			this.fetchEvents(hash),
+			this.fetchEvents(api, hash),
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
@@ -126,9 +124,7 @@ export default class ApiHandler {
 	}
 
 	async fetchBalance(hash: BlockHash, address: string) {
-		await this.ensureMeta(hash);
-
-		const { api } = this;
+		const api = await this.ensureMeta(hash);
 
 		const [header, free, reserved, locks, nonce] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
@@ -146,15 +142,23 @@ export default class ApiHandler {
 		return { at, nonce, free, reserved, locks };
 	}
 
-	async fetchEvents(hash: BlockHash): Promise<EventRecord[] | string> {
+	async fetchMetadata(hash: BlockHash) {
+		const api = await this.ensureMeta(hash);
+
+		const metadata = await api.rpc.state.getMetadata(hash);
+
+		return metadata;
+	}
+
+	async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
 		try {
-			return await await this.api.query.system.events.at(hash);
+			return await await api.query.system.events.at(hash);
 		} catch (_) {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}
 	}
 
-	async ensureMeta(hash: BlockHash) {
+	async ensureMeta(hash: BlockHash): Promise<ApiPromise> {
 		const { api } = this;
 
 		try {
@@ -167,7 +171,7 @@ export default class ApiHandler {
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
-				api.registry.register(getSpecTypes(chain, runtimeVersion));
+				api.registry.register(getSpecTypes(api.registry, chain, runtimeVersion));
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
@@ -175,5 +179,7 @@ export default class ApiHandler {
 			console.error(err);
 			this.specVersion = api.createType('u32', -1);
 		}
+
+		return api;
 	}
 }
