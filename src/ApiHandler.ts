@@ -167,7 +167,7 @@ export default class ApiHandler {
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
-				api.registry.register(getSpecTypes(chain, runtimeVersion));
+				api.registry.register(getSpecTypes(api.registry, chain, runtimeVersion));
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
