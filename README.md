@@ -20,6 +20,8 @@ yarn start
 + `/block/NUMBER` fetch block details at block height `NUMBER`.
 + `/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.
 + `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at block height `NUMBER`.
++ `/metadata` fetch chain metadata at latest finalized block.
++ `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
 
 ### Configuration
 

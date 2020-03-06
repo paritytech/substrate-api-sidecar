@@ -148,8 +148,6 @@ export default class ApiHandler {
 		const metadata = await api.rpc.state.getMetadata(hash);
 
 		return metadata;
-
-		// return { foo: 'bar' };
 	}
 
 	async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
