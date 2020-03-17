@@ -126,12 +126,11 @@ export default class ApiHandler {
 	async fetchBalance(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, free, reserved, locks, nonce] = await Promise.all([
+		const [header, account, locks, sysAccount] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.balances.freeBalance.at(hash, address),
-			api.query.balances.reservedBalance.at(hash, address),
+			api.query.balances.account.at(hash, address),
 			api.query.balances.locks.at(hash, address),
-			api.query.system.accountNonce.at(hash, address),
+			api.query.system.account.at(hash, address),
 		]);
 
 		const at = {
@@ -139,7 +138,25 @@ export default class ApiHandler {
 			height: (header as any).number, // TODO: fix this nasty obvious type erasure
 		};
 
-		return { at, nonce, free, reserved, locks };
+		if (account && locks && sysAccount) {
+			const { free, reserved, miscFrozen, feeFrozen } = account;
+			const { nonce } = sysAccount;
+
+			return {
+				at,
+				nonce,
+				free,
+				reserved,
+				miscFrozen,
+				feeFrozen,
+				locks,
+			};
+		} else {
+			return {
+				at,
+				error: "Account not found",
+			};
+		}
 	}
 
 	async fetchMetadata(hash: BlockHash) {
@@ -165,9 +182,9 @@ export default class ApiHandler {
 			const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
 			const blockSpecVersion = runtimeVersion.specVersion;
 
-		    // swap metadata if spec version is different
-		    if (!this.specVersion.eq(blockSpecVersion)) {
-		    	this.specVersion = blockSpecVersion;
+			// swap metadata if spec version is different
+			if (!this.specVersion.eq(blockSpecVersion)) {
+				this.specVersion = blockSpecVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
