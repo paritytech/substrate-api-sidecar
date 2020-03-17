@@ -17,9 +17,10 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 import { Event, EventRecord } from '@polkadot/types/interfaces/system';
+import { GenericExtrinsicV4 } from '@polkadot/types/extrinsic';
 import { EventData } from '@polkadot/types/generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex } from '@polkadot/util';
+import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types/known';
 import { u32 } from '@polkadot/types/primitive';
 
@@ -29,11 +30,13 @@ interface SantiziedEvent {
 }
 
 export default class ApiHandler {
+	// private wsUrl: string,
 	private api: ApiPromise;
 	private specVersion: u32;
 
 	constructor(api: ApiPromise) {
 		this.api = api;
+		// this.wsUrl = wsUrl;
 		this.specVersion = api.createType('u32', -1);
 	}
 
@@ -150,7 +153,20 @@ export default class ApiHandler {
 		return metadata;
 	}
 
-	async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
+	async submitTx() {
+		const api = await this.resetMeta();
+		const extrinsic = '0x450284ff6a01165ddccdaa83b931d62383937ec5b61dfc4edb8c2e946d8a5894d487ca6401d661ddd428d28fb998bb16bc539396542f5bd302b8db146809ff986c03ced10e1ebd4887b95ff68423092efda41722c90c418c50c91b89f2434baacbb926af8cc50304000400ffd6bf7dea9039378598136f8d3f604c76f3ad900b0444df8e773b5bcece370ce30b00d03a69ca8e';
+
+		const tx = GenericExtrinsicV4.decodeExtrinsic(api.registry, hexToU8a(extrinsic), true);
+
+		let hash = await api.rpc.author.submitExtrinsic(tx);
+
+		return {
+			hash,
+		};
+	}
+
+	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
 		try {
 			return await await api.query.system.events.at(hash);
 		} catch (_) {
@@ -158,7 +174,13 @@ export default class ApiHandler {
 		}
 	}
 
-	async ensureMeta(hash: BlockHash): Promise<ApiPromise> {
+	private async resetMeta(): Promise<ApiPromise> {
+		const { api } = this;
+
+		return await this.ensureMeta(await api.rpc.chain.getFinalizedHead());
+	}
+
+	private async ensureMeta(hash: BlockHash): Promise<ApiPromise> {
 		const { api } = this;
 
 		try {
