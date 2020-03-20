@@ -153,17 +153,33 @@ export default class ApiHandler {
 		return metadata;
 	}
 
-	async submitTx() {
+	async submitTx(extrinsic: string) {
 		const api = await this.resetMeta();
-		const extrinsic = '0x450284ff6a01165ddccdaa83b931d62383937ec5b61dfc4edb8c2e946d8a5894d487ca6401d661ddd428d28fb998bb16bc539396542f5bd302b8db146809ff986c03ced10e1ebd4887b95ff68423092efda41722c90c418c50c91b89f2434baacbb926af8cc50304000400ffd6bf7dea9039378598136f8d3f604c76f3ad900b0444df8e773b5bcece370ce30b00d03a69ca8e';
 
-		const tx = GenericExtrinsicV4.decodeExtrinsic(api.registry, hexToU8a(extrinsic), true);
+		let tx;
 
-		let hash = await api.rpc.author.submitExtrinsic(tx);
+		try {
+			tx = api.tx(extrinsic);
+		} catch (err) {
+			return {
+				error: 'Failed to parse a tx',
+				data: extrinsic,
+				cause: err.toString(),
+			};
+		}
 
-		return {
-			hash,
-		};
+		try {
+			const hash = await api.rpc.author.submitExtrinsic(tx);
+
+			return {
+				hash,
+			};
+		} catch (err) {
+			return {
+				error: 'Failed to submit a tx',
+				cause: err.toString(),
+			}
+		}
 	}
 
 	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
@@ -187,9 +203,9 @@ export default class ApiHandler {
 			const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
 			const blockSpecVersion = runtimeVersion.specVersion;
 
-		    // swap metadata if spec version is different
-		    if (!this.specVersion.eq(blockSpecVersion)) {
-		    	this.specVersion = blockSpecVersion;
+			// swap metadata if spec version is different
+			if (!this.specVersion.eq(blockSpecVersion)) {
+				this.specVersion = blockSpecVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
