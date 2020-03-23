@@ -17,11 +17,27 @@ yarn start
 ### Available paths
 
 + `/block` fetch latest finalized block details.
+
 + `/block/NUMBER` fetch block details at block height `NUMBER`.
+
 + `/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.
+
 + `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at block height `NUMBER`.
+
 + `/metadata` fetch chain metadata at latest finalized block.
+
 + `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
+
++ `/tx/` submit a signed transaction, excepts a string with hex-encoded signed transaction in a json POST body:
+    ```
+    curl localhost:8080/tx/ -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
+    ```
+    Expected result is a json with transaction hash:
+    ```
+    {
+        "hash": "..."
+    }
+    ```
 
 ### Configuration
 

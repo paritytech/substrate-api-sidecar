@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
@@ -46,10 +47,25 @@ async function main() {
 	const handler = new ApiHandler(api);
 	const app = express();
 
+	app.use(bodyParser.json());
+
 	function get(path: string, cb: (params: Params) => Promise<any>) {
 		app.get(path, async (req, res) => {
 			try {
 				res.send(await cb(req.params));
+			} catch(err) {
+				console.error('Internal Error:', err);
+
+				res.status(500).send({ error: 'Interal Error' });
+			}
+		});
+	}
+
+
+	function post(path: string, cb: (params: Params, body: any) => Promise<any>) {
+		app.post(path, async (req, res) => {
+			try {
+				res.send(await cb(req.params, req.body));
 			} catch(err) {
 				console.error('Internal Error:', err);
 
@@ -114,6 +130,16 @@ async function main() {
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchMetadata(hash);
+	});
+
+	post('/tx/', async (_, body) => {
+		if (body && typeof body.tx !== 'string') {
+			return {
+				error: "Missing field `tx` on request body.",
+			};
+		}
+
+		return await handler.submitTx(body.tx);
 	});
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))

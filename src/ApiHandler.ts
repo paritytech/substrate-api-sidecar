@@ -17,9 +17,10 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/rpc';
 import { Event, EventRecord } from '@polkadot/types/interfaces/system';
+import { GenericExtrinsicV4 } from '@polkadot/types/extrinsic';
 import { EventData } from '@polkadot/types/generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex } from '@polkadot/util';
+import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types/known';
 import { u32 } from '@polkadot/types/primitive';
 
@@ -29,11 +30,13 @@ interface SantiziedEvent {
 }
 
 export default class ApiHandler {
+	// private wsUrl: string,
 	private api: ApiPromise;
 	private specVersion: u32;
 
 	constructor(api: ApiPromise) {
 		this.api = api;
+		// this.wsUrl = wsUrl;
 		this.specVersion = api.createType('u32', -1);
 	}
 
@@ -167,7 +170,36 @@ export default class ApiHandler {
 		return metadata;
 	}
 
-	async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
+	async submitTx(extrinsic: string) {
+		const api = await this.resetMeta();
+
+		let tx;
+
+		try {
+			tx = api.tx(extrinsic);
+		} catch (err) {
+			return {
+				error: 'Failed to parse a tx',
+				data: extrinsic,
+				cause: err.toString(),
+			};
+		}
+
+		try {
+			const hash = await api.rpc.author.submitExtrinsic(tx);
+
+			return {
+				hash,
+			};
+		} catch (err) {
+			return {
+				error: 'Failed to submit a tx',
+				cause: err.toString(),
+			}
+		}
+	}
+
+	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
 		try {
 			return await await api.query.system.events.at(hash);
 		} catch (_) {
@@ -175,7 +207,13 @@ export default class ApiHandler {
 		}
 	}
 
-	async ensureMeta(hash: BlockHash): Promise<ApiPromise> {
+	private async resetMeta(): Promise<ApiPromise> {
+		const { api } = this;
+
+		return await this.ensureMeta(await api.rpc.chain.getFinalizedHead());
+	}
+
+	private async ensureMeta(hash: BlockHash): Promise<ApiPromise> {
 		const { api } = this;
 
 		try {
