@@ -18,7 +18,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces/rpc';
+import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
 import ApiHandler from './ApiHandler';
 
