@@ -15,13 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces/rpc';
+import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { Event, EventRecord } from '@polkadot/types/interfaces/system';
 import { GenericExtrinsicV4 } from '@polkadot/types/extrinsic';
 import { EventData } from '@polkadot/types/generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
-import { getSpecTypes } from '@polkadot/types/known';
+import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 
 interface SantiziedEvent {
@@ -217,8 +217,8 @@ export default class ApiHandler {
 		const { api } = this;
 
 		try {
-			const runtimeVersion = await api.rpc.state.getRuntimeVersion(hash);
-			const blockSpecVersion = runtimeVersion.specVersion;
+			const version = await api.rpc.state.getRuntimeVersion(hash);
+			const blockSpecVersion = version.specVersion;
 
 			// swap metadata if spec version is different
 			if (!this.specVersion.eq(blockSpecVersion)) {
@@ -226,7 +226,7 @@ export default class ApiHandler {
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
-				api.registry.register(getSpecTypes(api.registry, chain, runtimeVersion));
+				api.registry.register(getSpecTypes(api.registry, chain, version.specName, blockSpecVersion));
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
