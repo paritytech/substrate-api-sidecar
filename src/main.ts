@@ -54,6 +54,11 @@ async function main() {
 			try {
 				res.send(await cb(req.params));
 			} catch(err) {
+				if (err && typeof err.error === 'string') {
+					res.status(500).send(err);
+					return;
+				}
+
 				console.error('Internal Error:', err);
 
 				res.status(500).send({ error: 'Interal Error' });
@@ -67,6 +72,11 @@ async function main() {
 			try {
 				res.send(await cb(req.params, req.body));
 			} catch(err) {
+				if (err && typeof err.error === 'string') {
+					res.status(500).send(err);
+					return;
+				}
+
 				console.error('Internal Error:', err);
 
 				res.status(500).send({ error: 'Interal Error' });

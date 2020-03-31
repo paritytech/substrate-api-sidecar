@@ -155,7 +155,7 @@ export default class ApiHandler {
 				locks,
 			};
 		} else {
-			return {
+			throw {
 				at,
 				error: "Account not found",
 			};
@@ -178,7 +178,7 @@ export default class ApiHandler {
 		try {
 			tx = api.tx(extrinsic);
 		} catch (err) {
-			return {
+			throw {
 				error: 'Failed to parse a tx',
 				data: extrinsic,
 				cause: err.toString(),
@@ -192,7 +192,7 @@ export default class ApiHandler {
 				hash,
 			};
 		} catch (err) {
-			return {
+			throw {
 				error: 'Failed to submit a tx',
 				cause: err.toString(),
 			}
