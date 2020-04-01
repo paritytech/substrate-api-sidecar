@@ -20,6 +20,7 @@ import { Request, Response } from 'express';
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
+import { sanitizeNumbers } from './utils';
 import ApiHandler from './ApiHandler';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
@@ -52,10 +53,10 @@ async function main() {
 	function get(path: string, cb: (params: Params) => Promise<any>) {
 		app.get(path, async (req, res) => {
 			try {
-				res.send(await cb(req.params));
+				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch(err) {
 				if (err && typeof err.error === 'string') {
-					res.status(500).send(err);
+					res.status(500).send(sanitizeNumbers(err));
 					return;
 				}
 
@@ -70,10 +71,10 @@ async function main() {
 	function post(path: string, cb: (params: Params, body: any) => Promise<any>) {
 		app.post(path, async (req, res) => {
 			try {
-				res.send(await cb(req.params, req.body));
+				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch(err) {
 				if (err && typeof err.error === 'string') {
-					res.status(500).send(err);
+					res.status(500).send(sanitizeNumbers(err));
 					return;
 				}
 
