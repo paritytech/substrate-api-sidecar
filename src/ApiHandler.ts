@@ -131,14 +131,14 @@ export default class ApiHandler {
 
 		const [header, account, locks, sysAccount] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.balances.account.at(hash, address),
+			api.query.balances.account(address),
 			api.query.balances.locks.at(hash, address),
 			api.query.system.account.at(hash, address),
 		]);
 
 		const at = {
 			hash,
-			height: (header as any).number, // TODO: fix this nasty obvious type erasure
+			height: header.number.toNumber().toString(10),
 		};
 
 		if (account && locks && sysAccount) {
