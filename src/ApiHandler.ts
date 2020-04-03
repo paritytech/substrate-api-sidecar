@@ -129,12 +129,15 @@ export default class ApiHandler {
 	async fetchBalance(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, account, locks, sysAccount] = await Promise.all([
+		const [header, locks, sysAccount] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.balances.account(address),
 			api.query.balances.locks.at(hash, address),
 			api.query.system.account.at(hash, address),
 		]);
+
+		const account = sysAccount.data != null
+			? sysAccount.data :
+			await api.query.balances.account.at(hash, address);
 
 		const at = {
 			hash,
