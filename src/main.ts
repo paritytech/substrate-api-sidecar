@@ -125,6 +125,26 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
+	get('/payout/:address', async (params) => {
+		const { address } = params;
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchPayoutInfo(hash, address);
+	});
+
+	get('/payout/:address/:number', async (params) => {
+		const { address } = params;
+		const [error, number] = parseNumber(params.number);
+
+		if (error) {
+			return error;
+		}
+
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchPayoutInfo(hash, address);
+	})
+
 	get('/metadata/', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 

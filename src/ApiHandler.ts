@@ -173,6 +173,27 @@ export default class ApiHandler {
 		return metadata;
 	}
 
+	async fetchPayoutInfo(hash: BlockHash, address: string) {
+		const api = await this.ensureMeta(hash);
+
+		let [header, rewardDestination, bonded] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.staking.payee.at(hash, address),
+			api.query.staking.bonded.at(hash, address),
+		]);
+
+		const at = {
+			hash,
+			height: header.number.toNumber().toString(10),
+		};
+
+		return {
+			at,
+			rewardDestination,
+			bonded,
+		};
+	}
+
 	async submitTx(extrinsic: string) {
 		const api = await this.resetMeta();
 

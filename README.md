@@ -24,6 +24,10 @@ yarn start
 
 + `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at block height `NUMBER`.
 
++ `/payout/ADDRESS` fetch payout info for `ADDRESS` at latest finalized block.
+
++ `/payout/ADDRESS/NUMBER` fetch payout info for `ADDRESS` at block height `NUMBER`.
+
 + `/metadata` fetch chain metadata at latest finalized block.
 
 + `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
