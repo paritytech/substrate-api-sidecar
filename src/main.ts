@@ -33,14 +33,14 @@ interface Error {
 	error: string;
 }
 
-function parseNumber(n: string): [Error | null, number] {
+function parseNumber(n: string): number {
 	const num = Number(n);
 
 	if (!Number.isInteger(num)) {
-		return [{ error: 'Invalid block number' }, 0];
+		throw { error: 'Invalid block number' };
 	}
 
-	return [null, num];
+	return num;
 }
 
 async function main() {
@@ -88,12 +88,7 @@ async function main() {
 	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
 
 	get('/block/:number', async (params) => {
-		const [error, number] = parseNumber(params.number);
-
-		if (error) {
-			return error;
-		}
-
+		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchBlock(hash);
@@ -114,12 +109,7 @@ async function main() {
 
 	get('/balance/:address/:number', async (params) => {
 		const { address } = params;
-		const [error, number] = parseNumber(params.number);
-
-		if (error) {
-			return error;
-		}
-
+		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchBalance(hash, address);
@@ -134,12 +124,7 @@ async function main() {
 
 	get('/payout/:address/:number', async (params) => {
 		const { address } = params;
-		const [error, number] = parseNumber(params.number);
-
-		if (error) {
-			return error;
-		}
-
+		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchPayoutInfo(hash, address);
@@ -152,15 +137,23 @@ async function main() {
 	});
 
 	get('/metadata/:number', async (params) => {
-		const [error, number] = parseNumber(params.number);
-
-		if (error) {
-			return error;
-		}
-
+		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchMetadata(hash);
+	});
+
+	get('/tx/artifacts', async () => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchTxArtifacts(hash);
+	});
+
+	get('/tx/artifacts/:number', async (params) => {
+		const number = parseNumber(params.number);
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchTxArtifacts(hash);
 	});
 
 	post('/tx/', async (_, body) => {
@@ -172,6 +165,7 @@ async function main() {
 
 		return await handler.submitTx(body.tx);
 	});
+
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
 }

@@ -32,6 +32,10 @@ yarn start
 
 + `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
 
++ `/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.
+
++ `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at bloch height `NUMBER`.
+
 + `/tx/` submit a signed transaction, excepts a string with hex-encoded signed transaction in a json POST body:
     ```
     curl localhost:8080/tx/ -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'

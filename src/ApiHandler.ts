@@ -173,6 +173,29 @@ export default class ApiHandler {
 		return metadata;
 	}
 
+	async fetchTxArtifacts(hash: BlockHash) {
+		const api = await this.ensureMeta(hash);
+
+		const [header, metadata, genesisHash, version] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.rpc.state.getMetadata(hash),
+			api.rpc.chain.getBlockHash(0),
+			api.rpc.state.getRuntimeVersion(hash),
+		]);
+
+		const at = {
+			hash,
+			height: header.number.toNumber().toString(10),
+		};
+
+		return {
+			at,
+			genesisHash,
+			specVersion: version.specVersion,
+			metadata: metadata.toHex(),
+		};
+	}
+
 	async fetchPayoutInfo(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
