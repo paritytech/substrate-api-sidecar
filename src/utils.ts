@@ -5,7 +5,7 @@ import AbstractInt from '@polkadot/types/codec/AbstractInt';
 // which is using bn.js as backend, and forcibly serialize it
 // to a decimal string.
 export function sanitizeNumbers(data: any): any {
-    if (data instanceof AbstractInt) {
+    if (typeof data === "number" || data instanceof AbstractInt) {
         return data.toString(10);
     }
 
