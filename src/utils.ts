@@ -25,7 +25,12 @@ export function sanitizeNumbers(data: any): any {
                 const obj = {};
 
                 for (const key of Object.keys(json)) {
-                    obj[key] = sanitizeNumbers(data[key]);
+                    if (key in data) {
+                        // Prefer un-JSON-ified fields
+                        obj[key] = sanitizeNumbers(data[key]);
+                    } else {
+                        obj[key] = sanitizeNumbers(json[key]);
+                    }
                 }
 
                 return obj;
