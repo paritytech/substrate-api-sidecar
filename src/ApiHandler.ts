@@ -170,7 +170,7 @@ export default class ApiHandler {
 
 		const metadata = await api.rpc.state.getMetadata(hash);
 
-		return metadata;
+		return metadata.toJSON();
 	}
 
 	async fetchPayoutInfo(hash: BlockHash, address: string) {
