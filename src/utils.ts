@@ -10,7 +10,11 @@ export function sanitizeNumbers(data: any): any {
     }
 
     if (data instanceof Object) {
-        if (data.raw instanceof AbstractInt) {
+        if (data._raw != null && data._raw instanceof AbstractInt) {
+            return data._raw.toString(10);
+        }
+
+        if (data.raw != null && data.raw instanceof AbstractInt) {
             return data.raw.toString(10);
         }
 
