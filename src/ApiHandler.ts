@@ -165,6 +165,44 @@ export default class ApiHandler {
 		}
 	}
 
+	async fetchStakingLedger(hash: BlockHash, address: string) {
+		const api = await this.ensureMeta(hash);
+
+		const [header, staking] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.staking.ledger.at(hash, address),
+		]);
+
+		const at = {
+			hash,
+			height: header.number.toNumber().toString(10),
+		};
+
+		return {
+			at,
+			staking: staking.isNone ? {} : staking,
+		}
+	}
+
+	async fetchVesting(hash: BlockHash, address: string) {
+		const api = await this.ensureMeta(hash);
+
+		const [header, vesting] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.vesting.vesting.at(hash, address),
+		]);
+
+		const at = {
+			hash,
+			height: header.number.toNumber().toString(10),
+		};
+
+		return {
+			at,
+			vesting: vesting.isNone ? {} : vesting,
+		}
+	}
+
 	async fetchMetadata(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 

@@ -128,7 +128,37 @@ async function main() {
 		const hash = await api.rpc.chain.getBlockHash(number);
 
 		return await handler.fetchPayoutInfo(hash, address);
-	})
+	});
+
+	get('/staking/:address', async (params) => {
+		const { address } = params;
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchStakingLedger(hash, address);
+	});
+
+	get('/staking/:address/:number', async (params) => {
+		const { address } = params;
+		const number = parseNumber(params.number);
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchStakingLedger(hash, address);
+	});
+
+	get('/vesting/:address', async (params) => {
+		const { address } = params;
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchVesting(hash, address);
+	});
+
+	get('/vesting/:address/:number', async (params) => {
+		const { address } = params;
+		const number = parseNumber(params.number);
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchVesting(hash, address);
+	});
 
 	get('/metadata/', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();

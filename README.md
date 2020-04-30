@@ -28,6 +28,14 @@ yarn start
 
 + `/payout/ADDRESS/NUMBER` fetch payout info for `ADDRESS` at block height `NUMBER`.
 
++ `/staking/ADDRESS` fetch the staking ledger info for `ADDRESS` at latest finalized block.
+
++ `/staking/ADDRESS/NUMBER` fetch the staking ledger info for `ADDRESS` at block height `NUMBER`.
+
++ `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
+
++ `/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at block height `NUMBER`.
+
 + `/metadata` fetch chain metadata at latest finalized block.
 
 + `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
