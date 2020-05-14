@@ -16,15 +16,14 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
-import { Event, EventRecord } from '@polkadot/types/interfaces/system';
-import { GenericExtrinsicV4 } from '@polkadot/types/extrinsic';
+import { EventRecord } from '@polkadot/types/interfaces/system';
 import { EventData } from '@polkadot/types/generic/Event';
 import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex, hexToU8a } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 
-interface SantiziedEvent {
+interface SanitizedEvent {
 	method: string;
 	data: EventData;
 }
@@ -57,7 +56,7 @@ export default class ApiHandler {
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const queryInfo = await Promise.all(block.extrinsics.map(async (extrinsic) => {
-			if (extrinsic.isSigned && extrinsic.method.sectionName !== 'sudo') {
+			if (extrinsic.isSigned) {
 				try {
 					return await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
 				} catch (err) {
@@ -84,14 +83,14 @@ export default class ApiHandler {
 				tip,
 				hash,
 				info,
-				events: [] as SantiziedEvent[],
+				events: [] as SanitizedEvent[],
 				success: defaultSuccess,
 				paysFee: null as null | boolean, // override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 			};
 		});
 
-		const onInitialize = { events: [] as SantiziedEvent[] };
-		const onFinalize = { events: [] as SantiziedEvent[] };
+		const onInitialize = { events: [] as SanitizedEvent[] };
+		const onFinalize = { events: [] as SanitizedEvent[] };
 
 		if (Array.isArray(events)) {
 			for (const record of events) {
@@ -311,7 +310,7 @@ export default class ApiHandler {
 
 	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
 		try {
-			return await await api.query.system.events.at(hash);
+			return await api.query.system.events.at(hash);
 		} catch (_) {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}
