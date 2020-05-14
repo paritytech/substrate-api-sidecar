@@ -114,8 +114,8 @@ export default class ApiHandler {
 					if (method === 'system.ExtrinsicSuccess') {
 						extrinsic.success = true;
 					}
-          
-          if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
+
+					if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
