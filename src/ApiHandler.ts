@@ -89,9 +89,16 @@ export default class ApiHandler {
 			};
 		});
 
+		const onInitialize = { events: [] as SantiziedEvent[] };
+		const onFinalize = { events: [] as SantiziedEvent[] };
+
 		if (Array.isArray(events)) {
 			for (const record of events) {
 				const { event, phase } = record;
+				const sanitizedEvent = {
+					method: `${event.section}.${event.method}`,
+					data: event.data,
+				};
 
 				if (phase.isApplyExtrinsic) {
 					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
@@ -107,10 +114,11 @@ export default class ApiHandler {
 						extrinsic.success = true;
 					}
 
-					extrinsic.events.push({
-						method: `${event.section}.${event.method}`,
-						data: event.data,
-					});
+					extrinsic.events.push(sanitizedEvent);
+				} else if (phase.isFinalization) {
+					onFinalize.events.push(sanitizedEvent);
+				} else if (phase.isInitialization) {
+					onInitialize.events.push(sanitizedEvent);
 				}
 			}
 		}
@@ -122,7 +130,9 @@ export default class ApiHandler {
 			stateRoot,
 			extrinsicsRoot,
 			logs,
+			onInitialize,
 			extrinsics,
+			onFinalize,
 		};
 	}
 
