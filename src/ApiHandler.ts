@@ -86,6 +86,7 @@ export default class ApiHandler {
 				info,
 				events: [] as SantiziedEvent[],
 				success: defaultSuccess,
+				paysFee: null as null | boolean, // override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 			};
 		});
 
@@ -105,6 +106,20 @@ export default class ApiHandler {
 
 					if (method === 'system.ExtrinsicSuccess') {
 						extrinsic.success = true;
+					}
+
+					if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
+						const sanitizedData = event.data.toJSON() as any[];
+
+						for (const data of sanitizedData) {
+							if (data && data.paysFee) {
+								extrinsic.paysFee =
+									data.paysFee === true ||
+									data.paysFee === 'Yes';
+
+								break;
+							}
+						}
 					}
 
 					extrinsic.events.push({
