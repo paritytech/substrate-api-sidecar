@@ -59,7 +59,7 @@ export default class ApiHandler {
 		const queryInfo = await Promise.all(block.extrinsics.map(async (extrinsic) => {
 			if (extrinsic.isSigned && extrinsic.method.sectionName !== 'sudo') {
 				try {
-					return await api.rpc.payment.queryInfo(extrinsic.toHex(), hash);
+					return await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
 				} catch (err) {
 					console.error(err);
 
