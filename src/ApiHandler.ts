@@ -336,6 +336,8 @@ export default class ApiHandler {
 			// swap metadata if spec version is different
 			if (!this.specVersion.eq(blockSpecVersion)) {
 				this.specVersion = blockSpecVersion;
+				// if specVersion is wrong, assume this is too. avoids a second `getMetadata`
+				this.txVersion = blockTxVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
