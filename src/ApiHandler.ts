@@ -32,11 +32,13 @@ export default class ApiHandler {
 	// private wsUrl: string,
 	private api: ApiPromise;
 	private specVersion: u32;
+	private txVersion: u32;
 
 	constructor(api: ApiPromise) {
 		this.api = api;
 		// this.wsUrl = wsUrl;
 		this.specVersion = api.createType('u32', -1);
+		this.txVersion = api.createType('u32', -1);
 	}
 
 	async fetchBlock(hash: BlockHash) {
@@ -254,6 +256,7 @@ export default class ApiHandler {
 			at,
 			genesisHash,
 			specVersion: version.specVersion,
+			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
 		};
 	}
@@ -328,6 +331,7 @@ export default class ApiHandler {
 		try {
 			const version = await api.rpc.state.getRuntimeVersion(hash);
 			const blockSpecVersion = version.specVersion;
+			const blockTxVersion = version.transactionVersion;
 
 			// swap metadata if spec version is different
 			if (!this.specVersion.eq(blockSpecVersion)) {
@@ -335,13 +339,30 @@ export default class ApiHandler {
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
 
-				api.registry.register(getSpecTypes(api.registry, chain, version.specName, blockSpecVersion));
+				api.registry.register(
+					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
+				);
+				api.registry.setMetadata(meta);
+			}
+
+			// Swap metadata if tx version is different. This block of code should never execute, as
+			// specVersion always increases when txVersion increases, but specVersion may increase
+			// without an increase in txVersion. Defensive only.
+			if (!this.txVersion.eq(blockTxVersion)) {
+				this.txVersion = blockTxVersion;
+				const meta = await api.rpc.state.getMetadata(hash);
+				const chain = await api.rpc.system.chain();
+
+				api.registry.register(
+					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
+				);
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
 			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
 			console.error(err);
 			this.specVersion = api.createType('u32', -1);
+			this.txVersion = api.createType('u32', -1);
 		}
 
 		return api;
