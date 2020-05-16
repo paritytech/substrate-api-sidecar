@@ -333,24 +333,9 @@ export default class ApiHandler {
 			const blockSpecVersion = version.specVersion;
 			const blockTxVersion = version.transactionVersion;
 
-			// swap metadata if spec version is different
-			if (!this.specVersion.eq(blockSpecVersion)) {
+			// swap metadata if spec version or transaction version is different
+			if (!this.specVersion.eq(blockSpecVersion) || !this.txVersion.eq(blockTxVersion)) {
 				this.specVersion = blockSpecVersion;
-				// if specVersion is wrong, assume this is too. avoids a second `getMetadata`
-				this.txVersion = blockTxVersion;
-				const meta = await api.rpc.state.getMetadata(hash);
-				const chain = await api.rpc.system.chain();
-
-				api.registry.register(
-					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
-				);
-				api.registry.setMetadata(meta);
-			}
-
-			// Swap metadata if tx version is different. This block of code should never execute, as
-			// specVersion always increases when txVersion increases, but specVersion may increase
-			// without an increase in txVersion. Defensive only.
-			if (!this.txVersion.eq(blockTxVersion)) {
 				this.txVersion = blockTxVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
 				const chain = await api.rpc.system.chain();
