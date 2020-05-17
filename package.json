@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run prettier & tsc",
+    "prettier": "./node_modules/.bin/prettier --write .",
     "start": "tsc && node ./build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,5 +21,8 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "typescript": "^3.8.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
   }
 }

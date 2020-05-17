@@ -14,188 +14,178 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import { ApiPromise } from '@polkadot/api';
-import { WsProvider } from '@polkadot/rpc-provider';
-import { sanitizeNumbers } from './utils';
-import ApiHandler from './ApiHandler';
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import { ApiPromise } from "@polkadot/api";
+import { WsProvider } from "@polkadot/rpc-provider";
+import { parseNumber, sanitizeNumbers } from "./utils";
+import ApiHandler from "./ApiHandler";
 
-const HOST = process.env.BIND_HOST || '127.0.0.1';
+const HOST = process.env.BIND_HOST || "127.0.0.1";
 const PORT = Number(process.env.BIND_PORT) || 8080;
-const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
+const WS_URL = process.env.NODE_WS_URL || "ws://127.0.0.1:9944";
 
 type Params = { [key: string]: string };
 
-interface Error {
-	error: string;
-}
-
-function parseNumber(n: string): number {
-	const num = Number(n);
-
-	if (!Number.isInteger(num)) {
-		throw { error: 'Invalid block number' };
-	}
-
-	return num;
-}
-
 async function main() {
-	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
-	const handler = new ApiHandler(api);
-	const app = express();
+  const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
+  const handler = new ApiHandler(api);
+  const app = express();
 
-	app.use(bodyParser.json());
+  app.use(bodyParser.json());
 
-	function get(path: string, cb: (params: Params) => Promise<any>) {
-		app.get(path, async (req, res) => {
-			try {
-				res.send(sanitizeNumbers(await cb(req.params)));
-			} catch(err) {
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
+  function get(path: string, cb: (params: Params) => Promise<any>) {
+    app.get(path, async (req, res) => {
+      try {
+        res.send(sanitizeNumbers(await cb(req.params)));
+      } catch (err) {
+        if (err && typeof err.error === "string") {
+          res.status(500).send(sanitizeNumbers(err));
+          return;
+        }
 
-				console.error('Internal Error:', err);
+        console.error("Internal Error:", err);
 
-				res.status(500).send({ error: 'Interal Error' });
-			}
-		});
-	}
+        res.status(500).send({ error: "Internal Error" });
+      }
+    });
+  }
 
+  function post(path: string, cb: (params: Params, body: any) => Promise<any>) {
+    app.post(path, async (req, res) => {
+      try {
+        res.send(sanitizeNumbers(await cb(req.params, req.body)));
+      } catch (err) {
+        if (err && typeof err.error === "string") {
+          res.status(500).send(sanitizeNumbers(err));
+          return;
+        }
 
-	function post(path: string, cb: (params: Params, body: any) => Promise<any>) {
-		app.post(path, async (req, res) => {
-			try {
-				res.send(sanitizeNumbers(await cb(req.params, req.body)));
-			} catch(err) {
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
+        console.error("Internal Error:", err);
 
-				console.error('Internal Error:', err);
+        res.status(500).send({ error: "Internal Error" });
+      }
+    });
+  }
 
-				res.status(500).send({ error: 'Interal Error' });
-			}
-		});
-	}
+  get(
+    "/",
+    async (req) =>
+      "Sidecar is running, go to /block to get latest finalized block"
+  );
 
-	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
+  get("/block/:number", async (params) => {
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/block/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchBlock(hash);
+  });
 
-		return await handler.fetchBlock(hash);
-	});
+  get("/block/", async () => {
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/block/', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchBlock(hash);
+  });
 
-		return await handler.fetchBlock(hash);
-	});
+  get("/balance/:address", async (params) => {
+    const { address } = params;
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/balance/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchBalance(hash, address);
+  });
 
-		return await handler.fetchBalance(hash, address);
-	});
+  get("/balance/:address/:number", async (params) => {
+    const { address } = params;
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/balance/:address/:number', async (params) => {
-		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchBalance(hash, address);
+  });
 
-		return await handler.fetchBalance(hash, address);
-	});
+  get("/payout/:address", async (params) => {
+    const { address } = params;
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/payout/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchPayoutInfo(hash, address);
+  });
 
-		return await handler.fetchPayoutInfo(hash, address);
-	});
+  get("/payout/:address/:number", async (params) => {
+    const { address } = params;
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/payout/:address/:number', async (params) => {
-		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchPayoutInfo(hash, address);
+  });
 
-		return await handler.fetchPayoutInfo(hash, address);
-	});
+  get("/staking/:address", async (params) => {
+    const { address } = params;
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/staking/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchStakingLedger(hash, address);
+  });
 
-		return await handler.fetchStakingLedger(hash, address);
-	});
+  get("/staking/:address/:number", async (params) => {
+    const { address } = params;
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/staking/:address/:number', async (params) => {
-		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchStakingLedger(hash, address);
+  });
 
-		return await handler.fetchStakingLedger(hash, address);
-	});
+  get("/vesting/:address", async (params) => {
+    const { address } = params;
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/vesting/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchVesting(hash, address);
+  });
 
-		return await handler.fetchVesting(hash, address);
-	});
+  get("/vesting/:address/:number", async (params) => {
+    const { address } = params;
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/vesting/:address/:number', async (params) => {
-		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchVesting(hash, address);
+  });
 
-		return await handler.fetchVesting(hash, address);
-	});
+  get("/metadata/", async () => {
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/metadata/', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchMetadata(hash);
+  });
 
-		return await handler.fetchMetadata(hash);
-	});
+  get("/metadata/:number", async (params) => {
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/metadata/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchMetadata(hash);
+  });
 
-		return await handler.fetchMetadata(hash);
-	});
+  get("/tx/artifacts", async () => {
+    const hash = await api.rpc.chain.getFinalizedHead();
 
-	get('/tx/artifacts', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
+    return await handler.fetchTxArtifacts(hash);
+  });
 
-		return await handler.fetchTxArtifacts(hash);
-	});
+  get("/tx/artifacts/:number", async (params) => {
+    const number = parseNumber(params.number);
+    const hash = await api.rpc.chain.getBlockHash(number);
 
-	get('/tx/artifacts/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+    return await handler.fetchTxArtifacts(hash);
+  });
 
-		return await handler.fetchTxArtifacts(hash);
-	});
+  post("/tx/", async (_, body) => {
+    if (body && typeof body.tx !== "string") {
+      return {
+        error: "Missing field `tx` on request body.",
+      };
+    }
 
-	post('/tx/', async (_, body) => {
-		if (body && typeof body.tx !== 'string') {
-			return {
-				error: "Missing field `tx` on request body.",
-			};
-		}
+    return await handler.submitTx(body.tx);
+  });
 
-		return await handler.submitTx(body.tx);
-	});
-
-
-	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
+  app.listen(PORT, HOST, () =>
+    console.log(`Running on http://${HOST}:${PORT}/`)
+  );
 }
 
 main();
