@@ -22,6 +22,7 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
+import { DispatchInfo } from '@polkadot/types/interfaces';
 
 interface SanitizedEvent {
 	method: string;

@@ -28,7 +28,20 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 type Params = { [key: string]: string };
 
 async function main() {
-	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
+	const api = await ApiPromise.create({
+		provider: new WsProvider(WS_URL),
+		types: {
+			Address: 'AccountId',
+			LookupSource: 'AccountId',
+			WeightToFeeCoefficient: {
+				coeff_integer: 'Balance',
+				coeff_frac: 'Perbill',
+				negative: 'bool',
+				degree: 'u8'
+			}
+		}
+	});
+
 	const handler = new ApiHandler(api);
 	const app = express();
 
