@@ -141,7 +141,7 @@ export default class ApiHandler {
 				);
 			} catch (err) {
 				console.error(err);
-				parsedXt.info = { error: 'Unable to fetch fee info' };
+				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
 			}
 		}
 
