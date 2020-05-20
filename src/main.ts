@@ -31,8 +31,6 @@ async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
 		types: {
-			Address: 'AccountId',
-			LookupSource: 'AccountId',
 			WeightToFeeCoefficient: {
 				coeff_integer: 'Balance',
 				coeff_frac: 'Perbill',
