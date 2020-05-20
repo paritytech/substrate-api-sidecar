@@ -181,7 +181,7 @@ export default class ApiHandler {
 				reserved,
 				miscFrozen,
 				feeFrozen,
-				locks,
+				locks: Array.isArray(locks) ? locks : [ locks ],
 			};
 		} else {
 			throw {
