@@ -18,7 +18,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
-import { sanitizeNumbers } from './utils';
+import { parseNumber, sanitizeNumbers } from './utils';
 import ApiHandler from './ApiHandler';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
@@ -26,20 +26,6 @@ const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 type Params = { [key: string]: string };
-
-interface Error {
-	error: string;
-}
-
-function parseNumber(n: string): number {
-	const num = Number(n);
-
-	if (!Number.isInteger(num)) {
-		throw { error: 'Invalid block number' };
-	}
-
-	return num;
-}
 
 async function main() {
 	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
