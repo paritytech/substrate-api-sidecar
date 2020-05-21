@@ -80,6 +80,9 @@ export default class ApiHandler {
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
 
+		const successEvent = 'system.ExtrinsicSuccess';
+		const failureEvent = 'system.ExtrinsicFailed';
+
 		if (Array.isArray(events)) {
 			for (const record of events) {
 				const { event, phase } = record;
@@ -98,11 +101,11 @@ export default class ApiHandler {
 
 					const method = `${event.section}.${event.method}`;
 
-					if (method === 'system.ExtrinsicSuccess') {
+					if (method === successEvent) {
 						extrinsic.success = true;
 					}
 
-					if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
+					if (method === successEvent || method === failureEvent) {
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
