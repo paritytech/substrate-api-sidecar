@@ -57,25 +57,9 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		const queryInfo = await Promise.all(block.extrinsics.map(async (extrinsic) => {
-			if (extrinsic.isSigned) {
-				try {
-					return await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
-				} catch (err) {
-					console.error(err);
-
-					return {
-						error: 'Unable to fetch fee info',
-					}
-				}
-			}
-
-			return {};
-		}));
 		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const info = queryInfo[idx];
 
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
@@ -84,10 +68,11 @@ export default class ApiHandler {
 				args,
 				tip,
 				hash,
-				info,
+				info: {},
 				events: [] as SanitizedEvent[],
 				success: defaultSuccess,
-				paysFee: null as null | boolean, // override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
+				// override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
+				paysFee: null as null | boolean,
 			};
 		});
 
@@ -136,6 +121,26 @@ export default class ApiHandler {
 				} else if (phase.isInitialization) {
 					onInitialize.events.push(sanitizedEvent);
 				}
+			}
+		}
+
+		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
+			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
+				continue;
+			}
+
+			try {
+				// This is only a temporary solution. This runtime RPC will not work if types or logic
+				// involved in fee calculation changes in a runtime upgrade. For a long-term solution,
+				// we need to calculate fees based on the metadata constants and fee multiplier.
+				// https://github.com/paritytech/substrate-api-sidecar/issues/45
+				extrinsics[idx].info = api.createType(
+					'RuntimeDispatchInfo',
+					await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash)
+				);
+			} catch (err) {
+				console.error(err);
+				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
 			}
 		}
 
