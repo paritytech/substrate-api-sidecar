@@ -57,7 +57,7 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
+		const extrinsics = block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
@@ -71,7 +71,7 @@ export default class ApiHandler {
 				info: {},
 				events: [] as SanitizedEvent[],
 				success: defaultSuccess,
-				// override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
+				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
 			};
 		});

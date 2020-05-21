@@ -1,5 +1,15 @@
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
+export function parseNumber(n: string): number {
+	const num = Number(n);
+
+	if (!Number.isInteger(num)) {
+		throw { error: 'Invalid block number' };
+	}
+
+	return num;
+}
+
 // A sanitizer for arbitrary data that's going to be
 // stringified to JSON. We find all instances of `AbstractInt`,
 // which is using bn.js as backend, and forcibly serialize it
