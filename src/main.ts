@@ -29,7 +29,6 @@ type Params = { [key: string]: string };
 
 async function main() {
 	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
-
 	const handler = new ApiHandler(api);
 	const app = express();
 
