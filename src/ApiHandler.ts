@@ -24,6 +24,8 @@ import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 import { DispatchInfo } from '@polkadot/types/interfaces';
 
+import * as BN from 'bn.js';
+
 interface SanitizedEvent {
 	method: string;
 	data: EventData;
@@ -128,20 +130,78 @@ export default class ApiHandler {
 			}
 		}
 
+		const perBill = new BN(1e9);
+		const perByteFee = api.consts.transactionPayment.transactionByteFee.mul(perBill);
+		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight.mul(perBill);
+		const coefficients = api.consts.transactionPayment.weightToFee[0];
+		const coeffFrac = coefficients.coeffFrac;
+		const coeffInt = coefficients.coeffInteger.mul(perBill);
+
+		// bn.js values must be < 0x20000000000000, cannot divide by 1e18 [Ref: bn.js:128]
+		const multiplier = (await api.query.transactionPayment.nextFeeMultiplier.at(parentHash)).div(perBill).div(perBill);
+		
+		// TODO: We assume that the polynomial has one positive term of degree one.
+		// const degree = coefficients.degree;
+		// const negative = coefficients.negative;
+
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
 
 			try {
-				// This is only a temporary solution. This runtime RPC will not work if types or logic
-				// involved in fee calculation changes in a runtime upgrade. For a long-term solution,
-				// we need to calculate fees based on the metadata constants and fee multiplier.
-				// https://github.com/paritytech/substrate-api-sidecar/issues/45
-				extrinsics[idx].info = api.createType(
-					'RuntimeDispatchInfo',
-					await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash)
-				);
+				if (api.runtimeVersion.specName.toString() === 'kusama') {
+					extrinsics[idx].info = await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash);
+
+					continue;
+				}
+
+				const xtEvents = extrinsics[idx].events;
+				const completedEvent = xtEvents.find((event) => event.method === successEvent || event.method === failureEvent);
+				if (!completedEvent) {
+					extrinsics[idx].info = {
+						error: 'Unable to find success or failure event for extrinsic'
+					};
+
+					continue;
+				}
+
+				const completedData = completedEvent.data;
+				if (!completedData) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not contain expected data'
+					};
+
+					continue;
+				}
+
+				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo types as their
+				// final arg
+				const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+				if (!weightInfo.weight) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not specify weight'
+					};
+
+					continue;
+				}
+
+				const weight = weightInfo.weight;
+				const encodedLength = block.extrinsics[idx].encodedLength;
+
+				const weightedCoeffFrac = weight.mul(coeffFrac);
+				const weightedCoeffInt = weight.mul(coeffInt);
+				const byteFee = perByteFee.muln(encodedLength);
+				const multiplied = multiplier.mul(weightedCoeffFrac.add(weightedCoeffInt).add(byteFee));
+
+				const coeffFracWeight = extrinsicBaseWeight.mul(coeffFrac);
+				const coeffIntWeight = extrinsicBaseWeight.mul(coeffInt);
+
+				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
+					weight: weight.toString(),
+					class: weightInfo.class.toString(),
+					partialFee: multiplied.add(coeffFracWeight).add(coeffIntWeight).div(perBill).toString(),
+				});
 			} catch (err) {
 				console.error(err);
 				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
