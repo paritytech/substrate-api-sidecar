@@ -133,13 +133,15 @@ export default class ApiHandler {
 		const perBill = new BN(1e9);
 		const perByteFee = api.consts.transactionPayment.transactionByteFee.mul(perBill);
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight.mul(perBill);
+		// Here we assume that `weightToFee` Vec only has 1 element, which is of
+		// degree 1. FIXME Implement polynomial.
 		const coefficients = api.consts.transactionPayment.weightToFee[0];
 		const coeffFrac = coefficients.coeffFrac;
 		const coeffInt = coefficients.coeffInteger.mul(perBill);
 
 		// bn.js values must be < 0x20000000000000, cannot divide by 1e18 [Ref: bn.js:128]
-		const multiplier = (await api.query.transactionPayment.nextFeeMultiplier.at(parentHash)).div(perBill).div(perBill);
-		
+		const targetedFeeAdjustment = (await api.query.transactionPayment.nextFeeMultiplier.at(parentHash)).div(perBill); // FIXME This might round the number
+
 		// TODO: We assume that the polynomial has one positive term of degree one.
 		// const degree = coefficients.degree;
 		// const negative = coefficients.negative;
@@ -186,21 +188,32 @@ export default class ApiHandler {
 					continue;
 				}
 
-				const weight = weightInfo.weight;
-				const encodedLength = block.extrinsics[idx].encodedLength;
+				// Note: we use the same variable names as in Rust
+				const len = block.extrinsics[idx].encodedLength;
+				const lenFee = perByteFee.muln(len);
 
+				// weight_to_fee calculation
+				// FIXME Implement polynomial.
+				const weight = weightInfo.weight;
 				const weightedCoeffFrac = weight.mul(coeffFrac);
 				const weightedCoeffInt = weight.mul(coeffInt);
-				const byteFee = perByteFee.muln(encodedLength);
-				const multiplied = multiplier.mul(weightedCoeffFrac.add(weightedCoeffInt).add(byteFee));
+				const unadjustedWeightFee = weightedCoeffInt.add(weightedCoeffFrac); // In Perbill
 
-				const coeffFracWeight = extrinsicBaseWeight.mul(coeffFrac);
-				const coeffIntWeight = extrinsicBaseWeight.mul(coeffInt);
+				const adjustableFee = lenFee.add(unadjustedWeightFee);
+				const adjustedFee = targetedFeeAdjustment.mul(adjustableFee);
+
+				// weight_to_fee calculation
+				// FIXME Implement polynomial.
+				const baseFeeFrac = extrinsicBaseWeight.mul(coeffFrac);
+				const baseFeeInt = extrinsicBaseWeight.mul(coeffInt);
+				const baseFee = baseFeeInt.add(baseFeeFrac); // In Perbill
+
+				let partialFee = baseFee.add(adjustedFee); // In Perbill
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
-					weight: weight.toString(),
-					class: weightInfo.class.toString(),
-					partialFee: multiplied.add(coeffFracWeight).add(coeffIntWeight).div(perBill).toString(),
+					weight,
+					class: weightInfo.class,
+					partialFee: partialFee.div(perBill) // We were in Perbill-land, now back to integer
 				});
 			} catch (err) {
 				console.error(err);
