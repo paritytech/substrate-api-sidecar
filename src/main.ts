@@ -157,6 +157,22 @@ async function main() {
 		return await handler.fetchMetadata(hash);
 	});
 
+	get('/claims/:address/', async (params) => {
+		// Must be Ethereum address
+		const { address } = params;
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchClaimsInfo(hash, address);
+	});
+
+	get('/claims/:address/:number', async (params) => {
+		const { ethAddress } = params;
+		const number = parseNumber(params.number);
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchClaimsInfo(hash, ethAddress);
+	});
+
 	get('/tx/artifacts', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 

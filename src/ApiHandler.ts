@@ -242,6 +242,16 @@ export default class ApiHandler {
 		return metadata;
 	}
 
+	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
+		const api = await this.ensureMeta(hash);
+		const agreementType = await api.query.claims.signing(ethAddress);
+		console.log(agreementType);
+
+		return {
+			type: 'Regular' // todo
+		};
+	}
+
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
