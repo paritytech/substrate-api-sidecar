@@ -244,11 +244,13 @@ export default class ApiHandler {
 
 	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
 		const api = await this.ensureMeta(hash);
-		const agreementType = await api.query.claims.signing(ethAddress);
-		console.log(agreementType);
+		const agreementType = await api.query.claims.signing.at(hash, ethAddress);
+		if (agreementType.isEmpty) {
+			return null;
+		}
 
 		return {
-			type: 'Regular' // todo
+			type: agreementType.toString(),
 		};
 	}
 

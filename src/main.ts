@@ -165,7 +165,7 @@ async function main() {
 		return await handler.fetchClaimsInfo(hash, address);
 	});
 
-	get('/claims/:address/:number', async (params) => {
+	get('/claims/:ethAddress/:number', async (params) => {
 		const { ethAddress } = params;
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
