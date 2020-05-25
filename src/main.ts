@@ -157,12 +157,11 @@ async function main() {
 		return await handler.fetchMetadata(hash);
 	});
 
-	get('/claims/:address/', async (params) => {
-		// Must be Ethereum address
-		const { address } = params;
+	get('/claims/:ethAddress/', async (params) => {
+		const { ethAddress } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchClaimsInfo(hash, address);
+		return await handler.fetchClaimsInfo(hash, ethAddress);
 	});
 
 	get('/claims/:ethAddress/:number', async (params) => {

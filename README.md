@@ -40,6 +40,10 @@ yarn start
 
 + `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
 
++ `/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.
+
++ `/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at block `NUMBER`.
+
 + `/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.
 
 + `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at bloch height `NUMBER`.
