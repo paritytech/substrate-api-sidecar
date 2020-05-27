@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node ./build/main.js",
+    "build": "wasm-pack build --target nodejs --scope polkadot calc-fee && yarn upgrade yarn upgrade @polkadot/calc-fee && tsc",
+    "start": "yarn run build && node ./build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@polkadot/api": "^1.16.1",
+    "@polkadot/calc-fee": "file:./calc-fee/pkg",
     "@polkadot/metadata": "^1.16.1",
     "@polkadot/rpc-provider": "^1.16.1",
     "@polkadot/types": "^1.16.1",

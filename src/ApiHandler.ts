@@ -23,8 +23,7 @@ import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 import { DispatchInfo } from '@polkadot/types/interfaces';
-
-import * as BN from 'bn.js';
+import { calc_fee } from '@polkadot/calc-fee'
 
 interface SanitizedEvent {
 	method: string;
@@ -130,22 +129,10 @@ export default class ApiHandler {
 			}
 		}
 
-		const fixed128 = new BN(10).pow(new BN(18))
-		const perBill = new BN(1e9);
-		const perByteFee = api.consts.transactionPayment.transactionByteFee;
+		const perByte = api.consts.transactionPayment.transactionByteFee;
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		// Here we assume that `weightToFee` Vec only has 1 element, which is of
-		// degree 1. FIXME Implement polynomial.
-		const coefficients = api.consts.transactionPayment.weightToFee[0];
-		const coeffFrac = coefficients.coeffFrac;
-		const coeffInt = coefficients.coeffInteger;
-
-		// bn.js values must be < 0x20000000000000, cannot divide by 1e18 [Ref: bn.js:128]
-		const targetedFeeAdjustment = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
-
-		// TODO: We assume that the polynomial has one positive term of degree one.
-		// const degree = coefficients.degree;
-		// const negative = coefficients.negative;
+		const coefficients = api.consts.transactionPayment.weightToFee;
+		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -189,26 +176,22 @@ export default class ApiHandler {
 					continue;
 				}
 
-				// Note: we use the same variable names as in Rust
-				const lenFee = perByteFee.muln(block.extrinsics[idx].encodedLength);
-
-				// weight_to_fee calculation
-				// FIXME Implement polynomial.
+				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
-				const weightedCoeffFrac = weight.mul(coeffFrac).div(perBill);
-				const weightedCoeffInt = weight.mul(coeffInt);
-				const unadjustedWeightFee = weightedCoeffInt.add(weightedCoeffFrac);
 
-				const adjustableFee = lenFee.add(unadjustedWeightFee);
-				const adjustedFee = adjustableFee.add(targetedFeeAdjustment.mul(adjustableFee).div(fixed128));
-
-				// weight_to_fee calculation
-				// FIXME Implement polynomial.
-				const baseFeeFrac = extrinsicBaseWeight.mul(coeffFrac).div(perBill);
-				const baseFeeInt = extrinsicBaseWeight.mul(coeffInt);
-				const baseFee = baseFeeInt.add(baseFeeFrac); // In Perbill
-
-				let partialFee = baseFee.add(adjustedFee); // In Perbill
+				const partialFee = calc_fee(
+					coefficients.map(function(c) { return {
+						coeffInteger: c.coeffInteger.toString(),
+						coeffFrac: c.coeffFrac,
+						degree: c.degree,
+						negative: c.negative,
+					}}),
+					BigInt(weight.toString()),
+					BigInt(extrinsicBaseWeight.toString()),
+					multiplier.toString(),
+					perByte.toString(),
+					len,
+				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
