@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "wasm-pack build --target nodejs --scope polkadot calc-fee && yarn upgrade yarn upgrade @polkadot/calc-fee && tsc",
+    "preinstall": "wasm-pack build --target nodejs --scope polkadot calc-fee",
+    "postinstall": "yarn upgrade @polkadot/calc-fee",
+    "build": "tsc",
     "start": "yarn run build && node ./build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
