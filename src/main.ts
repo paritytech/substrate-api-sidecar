@@ -185,19 +185,19 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
-	// :number -> blocknumber
-	// :extrinsic -> encoded extrinsic in hex
 	get('/tx/fee/:number/:extrinsic', async (params) => {
+		const { extrinsic } = params;
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
-		// TODO I am not sure what other ways someone might send an extrinsic.
-		// Right now we are just assuming it is an encoded extrinisc in hex.
-		// Maybe we should add some error checking and/or flexibility for other forms.
+		return await handler.fetchFeeInformation(hash, extrinsic);
+	});
+
+	get('/tx/fee/:extrinsic', async (params) => {
 		const { extrinsic } = params;
-		
-		return await handler.fetchFeeInformation(hash, extrinsic)
-		
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchFeeInformation(hash, extrinsic);
 	});
 
 	post('/tx/', async (_, body) => {
