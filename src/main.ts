@@ -185,6 +185,21 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
+	get('/tx/fee/:number/:extrinsic', async (params) => {
+		const { extrinsic } = params;
+		const number = parseNumber(params.number);
+		const hash = await api.rpc.chain.getBlockHash(number);
+
+		return await handler.fetchFeeInformation(hash, extrinsic);
+	});
+
+	get('/tx/fee/:extrinsic', async (params) => {
+		const { extrinsic } = params;
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchFeeInformation(hash, extrinsic);
+	});
+
 	post('/tx/', async (_, body) => {
 		if (body && typeof body.tx !== 'string') {
 			return {
