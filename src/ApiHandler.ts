@@ -129,7 +129,6 @@ export default class ApiHandler {
 				continue;
 			}
 
-			const response = await this.fetchFeeInformation(block.hash, block.extrinsics[idx].toHex())
 			try {
 				// This is only a temporary solution. This runtime RPC will not work if types or logic
 				// involved in fee calculation changes in a runtime upgrade. For a long-term solution,
