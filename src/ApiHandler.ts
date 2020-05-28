@@ -129,6 +129,7 @@ export default class ApiHandler {
 				continue;
 			}
 
+			const response = await this.fetchFeeInformation(block.hash, block.extrinsics[idx].toHex())
 			try {
 				// This is only a temporary solution. This runtime RPC will not work if types or logic
 				// involved in fee calculation changes in a runtime upgrade. For a long-term solution,
@@ -155,6 +156,25 @@ export default class ApiHandler {
 			extrinsics,
 			onFinalize,
 		};
+	}
+
+	async fetchFeeInformation(hash: BlockHash, encodedExtrinsic: string) {
+		const api = await this.ensureMeta(hash)
+
+		try {
+			const feeInformation =
+				await api.rpc.payment.queryInfo(encodedExtrinsic, hash);
+
+			console.log("This is the feeInformation", feeInformation);
+			return feeInformation
+		} catch (err) {
+			throw {
+				error: 'Unable to fetch fee info',
+				data: encodedExtrinsic,
+				cause: err.toString(),
+			};
+		}
+
 	}
 
 	async fetchBalance(hash: BlockHash, address: string) {
