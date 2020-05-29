@@ -49,9 +49,10 @@ yarn start
 
 - `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at block height `NUMBER`.
 
-- `/tx/fee/:extrinsic/:number/` fetch predicted fee info for an encoded `EXTRINSIC` in context of the block at height `NUMBER`.
+- `/tx/fee/EXTRINSIC/NUMBER` fetch predicted fee info for an encoded `EXTRINSIC` in context of the
+  block at height `NUMBER`.
 
--`/tx/fee/:extrinsic/` fetch predicted fee info for an encoded `EXTRINSIC`.
+-`/tx/fee/EXTRINSIC` fetch predicted fee info for an encoded `EXTRINSIC`.
 
 - `/tx/` submit a signed transaction, expects a string with hex-encoded transaction in a JSON POST
   body:

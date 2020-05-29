@@ -185,7 +185,7 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
-	get('/tx/fee/:extrinsic/:number/', async (params) => {
+	get('/tx/fee/:extrinsic/:number', async (params) => {
 		const { extrinsic } = params;
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
