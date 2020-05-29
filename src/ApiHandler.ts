@@ -23,6 +23,8 @@ import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 
+import { sanitizeNumbers } from './utils'
+
 interface SanitizedEvent {
 	method: string;
 	data: EventData;
@@ -125,6 +127,20 @@ export default class ApiHandler {
 		}
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
+
+			extrinsics[idx].args.forEach((arg) => {
+				if (Array.isArray(arg)) {
+					for (const call of arg) {
+						if (!call.callIndex) continue;
+						const idx = call.callIndex;
+						const x = api.createType('u32', idx)
+						debugger
+						
+					}
+				}
+
+			})
+
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
