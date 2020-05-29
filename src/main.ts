@@ -185,19 +185,16 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
-	get('/tx/fee/:extrinsic/:number', async (params) => {
-		const { extrinsic } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+	post('/tx/fee-estimate', async (_, body) => {
+		if(body && typeof body.extrinsic !== 'string'){
+			return {
+				error: "Missing field `extrinsic` on request body.",
+			};
+		}
 
-		return await handler.fetchFeeInformation(hash, extrinsic);
-	});
-
-	get('/tx/fee/:extrinsic', async (params) => {
-		const { extrinsic } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchFeeInformation(hash, extrinsic);
+		return await handler.fetchFeeInformation(hash, body.extrinsic);
 	});
 
 	post('/tx/', async (_, body) => {
