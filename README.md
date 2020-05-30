@@ -54,7 +54,7 @@ yarn start
   ```
   curl localhost:8080/tx/fee-estimate -X POST --data '{"extrinsic": "0x..."}' -H 'Content-Type: application/json'
   ```
-  Expected result is json with fee information:
+  Expected result is a JSON with fee information:
   ```
   {
     "weight": "195000000",
