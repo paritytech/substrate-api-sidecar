@@ -300,14 +300,14 @@ export default class ApiHandler {
 	}
 
 	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
-		const api = await this.ensureMeta(hash)
-		let feeInfo = {};
+		const api = await this.ensureMeta(hash);
 
 		try {
-			feeInfo = api.createType(
+			const feeInfo = api.createType(
 				'RuntimeDispatchInfo',
 				await api.rpc.payment.queryInfo(extrinsic, hash)
 			);
+			return feeInfo;
 		} catch (err) {
 			throw {
 				error: 'Unable to fetch fee info',
