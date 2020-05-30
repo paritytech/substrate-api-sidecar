@@ -300,7 +300,7 @@ export default class ApiHandler {
 	}
 
 	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
-		const api = await this.ensureMeta(hash)
+		const api = await this.ensureMeta(hash);
 
 		try {
 			return await api.rpc.payment.queryInfo(extrinsic, hash);

@@ -157,7 +157,7 @@ async function main() {
 		return await handler.fetchMetadata(hash);
 	});
 
-	get('/claims/:ethAddress/', async (params) => {
+	get('/claims/:ethAddress', async (params) => {
 		const { ethAddress } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -185,16 +185,16 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
-	post('/tx/fee-estimate', async (_, body) => {
-		if(body && typeof body.extrinsic !== 'string'){
+	post('/tx/fee-estimate/', async (_, body) => {
+		if(body && typeof body.tx !== 'string'){
 			return {
-				error: "Missing field `extrinsic` on request body.",
+				error: "Missing field `tx` on request body.",
 			};
 		}
 
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchFeeInformation(hash, body.extrinsic);
+		return await handler.fetchFeeInformation(hash, body.tx);
 	});
 
 	post('/tx/', async (_, body) => {
