@@ -47,8 +47,21 @@ yarn start
 
 - `/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.
 
-- `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at bloch height `NUMBER`.
+- `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at block height `NUMBER`.
 
+- `/tx/fee-estimate` submit an extrinsic in order to get back a fee estimation. Expects a string
+  with a hex-encoded extrinsic in a JSON POST body:
+  ```
+  curl localhost:8080/tx/fee-estimate -X POST --data '{"extrinsic": "0x..."}' -H 'Content-Type: application/json'
+  ```
+  Expected result is a JSON with fee information:
+  ```
+  {
+    "weight": "195000000",
+    "class": "Normal",
+    "partialFee": "165600000"
+  }
+  ```
 - `/tx/` submit a signed transaction, expects a string with hex-encoded transaction in a JSON POST
   body:
   ```
