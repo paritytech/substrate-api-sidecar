@@ -301,13 +301,20 @@ export default class ApiHandler {
 
 	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
 		const api = await this.ensureMeta(hash);
+		let tx;
 
 		try {
-			const feeInfo = api.createType(
-				'RuntimeDispatchInfo',
-				await api.rpc.payment.queryInfo(extrinsic, hash)
-			);
-			return feeInfo;
+			tx = api.tx(extrinsic);
+		} catch (err) {
+			throw {
+				error: 'Failed to parse a tx',
+				data: extrinsic,
+				cause: err.toString(),
+			};
+		}
+
+		try {
+			return await api.rpc.payment.queryInfo(tx.toHex(), hash);
 		} catch (err) {
 			throw {
 				error: 'Unable to fetch fee info',
