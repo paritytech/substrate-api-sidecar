@@ -1,4 +1,5 @@
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
+import { GenericCall } from '@polkadot/types/generic';
 
 export function parseNumber(n: string): number {
 	const num = Number(n);
@@ -8,6 +9,26 @@ export function parseNumber(n: string): number {
 	}
 
 	return num;
+}
+
+// Note: this could be a good place to put any additional call parsing logic or
+// even argument parsing logic.
+// Takes in a call or an array that contains a call and recursively parses all calls.
+export function parseCalls(data: any): any {
+	if (data instanceof GenericCall){
+		const { args, sectionName, methodName } = data;
+		const argsWithParsedCalls = parseCalls(args);
+
+		return {
+			method: `${sectionName}.${methodName}`,
+			args: argsWithParsedCalls,
+		};
+	} else if (Array.isArray(data)){
+
+		return data.map(parseCalls);
+	}
+
+	return data;
 }
 
 // A sanitizer for arbitrary data that's going to be

@@ -23,7 +23,7 @@ import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 
-import { sanitizeNumbers } from './utils'
+import { parseCalls } from './utils'
 
 interface SanitizedEvent {
 	method: string;
@@ -63,11 +63,13 @@ export default class ApiHandler {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
+			const argsWithParsedCalls = parseCalls(args);
+
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
-				args,
+				args: argsWithParsedCalls,
 				tip,
 				hash,
 				info: {},
@@ -127,20 +129,6 @@ export default class ApiHandler {
 		}
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
-
-			extrinsics[idx].args.forEach((arg) => {
-				if (Array.isArray(arg)) {
-					for (const call of arg) {
-						if (!call.callIndex) continue;
-						const idx = call.callIndex;
-						const x = api.createType('u32', idx)
-						debugger
-						
-					}
-				}
-
-			})
-
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
