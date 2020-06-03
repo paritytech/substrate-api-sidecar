@@ -5,7 +5,9 @@ with meaningful responses.
 
 ### Installation
 
-Make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed so rust dependencies can be managed.
+Make sure your machine has an
+[up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
+dependencies.
 
 Install `wasm-pack` if your machine does not already have it:
 
