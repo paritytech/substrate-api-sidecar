@@ -5,6 +5,16 @@ with meaningful responses.
 
 ### Installation
 
+Make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed so rust dependencies can be managed.
+
+Install `wasm-pack` if your machine does not already have it:
+
+```
+cargo install wasm-pack
+```
+
+Use yarn to do the remaining setup:
+
 ```
 yarn
 ```
