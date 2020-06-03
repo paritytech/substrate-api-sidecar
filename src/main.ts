@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
-import { parseNumber, sanitizeNumbers } from './utils';
+import * as bodyParser from 'body-parser';
+import * as express from 'express';
+
 import ApiHandler from './ApiHandler';
+import { parseNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 type Params = { [key: string]: string };
+
+type TxBody = { tx: string };
 
 async function main() {
 	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
@@ -38,7 +41,8 @@ async function main() {
 		app.get(path, async (req, res) => {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params)));
-			} catch(err) {
+			} catch (err) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					res.status(500).send(sanitizeNumbers(err));
 					return;
@@ -46,17 +50,20 @@ async function main() {
 
 				console.error('Internal Error:', err);
 
-				res.status(500).send({ error: 'Interal Error' });
+				res.status(500).send({ error: 'Internal Error' });
 			}
 		});
 	}
 
-
-	function post(path: string, cb: (params: Params, body: any) => Promise<any>) {
+	function post(
+		path: string,
+		cb: (params: Params, body: any) => Promise<any>
+	) {
 		app.post(path, async (req, res) => {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
-			} catch(err) {
+			} catch (err) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					res.status(500).send(sanitizeNumbers(err));
 					return;
@@ -64,12 +71,17 @@ async function main() {
 
 				console.error('Internal Error:', err);
 
-				res.status(500).send({ error: 'Interal Error' });
+				res.status(500).send({ error: 'Internal Error' });
 			}
 		});
 	}
 
-	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
+	get(
+		'/',
+		// eslint-disable-next-line @typescript-eslint/require-await
+		async () =>
+			'Sidecar is running, go to /block to get latest finalized block'
+	);
 
 	get('/block/:number', async (params) => {
 		const number = parseNumber(params.number);
@@ -182,33 +194,39 @@ async function main() {
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		return await handler.fetchTxArtifacts(hash);
 	});
 
 	post('/tx/fee-estimate/', async (_, body) => {
-		if(body && typeof body.tx !== 'string'){
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (body && typeof body.tx !== 'string') {
 			return {
-				error: "Missing field `tx` on request body.",
+				error: 'Missing field `tx` on request body.',
 			};
 		}
 
 		const hash = await api.rpc.chain.getFinalizedHead();
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		return await handler.fetchFeeInformation(hash, body.tx);
 	});
 
 	post('/tx/', async (_, body) => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		if (body && typeof body.tx !== 'string') {
 			return {
-				error: "Missing field `tx` on request body.",
+				error: 'Missing field `tx` on request body.',
 			};
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		return await handler.submitTx(body.tx);
 	});
 
-
-	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
+	app.listen(PORT, HOST, () =>
+		console.log(`Running on http://${HOST}:${PORT}/`)
+	);
 }
 
-main();
+main().catch(console.log);

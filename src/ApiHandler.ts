@@ -15,13 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { getSpecTypes } from '@polkadot/types-known';
+import { EventData } from '@polkadot/types/generic/Event';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
-import { EventData } from '@polkadot/types/generic/Event';
-import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex } from '@polkadot/util';
-import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
+import { u8aToHex } from '@polkadot/util';
+import { blake2AsU8a } from '@polkadot/util-crypto';
 
 interface SanitizedEvent {
 	method: string;
@@ -58,7 +58,15 @@ export default class ApiHandler {
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const extrinsics = block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
+			const {
+				method,
+				nonce,
+				signature,
+				signer,
+				isSigned,
+				tip,
+				args,
+			} = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
 			return {
@@ -92,7 +100,10 @@ export default class ApiHandler {
 					const extrinsic = extrinsics[extrinsicIdx];
 
 					if (!extrinsic) {
-						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash}`);
+						throw new Error(
+							// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+							`Missing extrinsic ${extrinsicIdx} in block ${hash}`
+						);
 					}
 
 					const method = `${event.section}.${event.method}`;
@@ -101,13 +112,19 @@ export default class ApiHandler {
 						extrinsic.success = true;
 					}
 
-					if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
+					if (
+						method === 'system.ExtrinsicSuccess' ||
+						method === 'system.ExtrinsicFailed'
+					) {
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 							if (data && data.paysFee) {
 								extrinsic.paysFee =
+									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === true ||
+									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === 'Yes';
 
 								break;
@@ -136,7 +153,10 @@ export default class ApiHandler {
 				// https://github.com/paritytech/substrate-api-sidecar/issues/45
 				extrinsics[idx].info = api.createType(
 					'RuntimeDispatchInfo',
-					await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash)
+					await api.rpc.payment.queryInfo(
+						block.extrinsics[idx].toHex(),
+						parentHash
+					)
 				);
 			} catch (err) {
 				console.error(err);
@@ -166,9 +186,10 @@ export default class ApiHandler {
 			api.query.system.account.at(hash, address),
 		]);
 
-		const account = sysAccount.data != null
-			? sysAccount.data :
-			await api.query.balances.account.at(hash, address);
+		const account =
+			sysAccount.data != null
+				? sysAccount.data
+				: await api.query.balances.account.at(hash, address);
 
 		const at = {
 			hash,
@@ -191,7 +212,7 @@ export default class ApiHandler {
 		} else {
 			throw {
 				at,
-				error: "Account not found",
+				error: 'Account not found',
 			};
 		}
 	}
@@ -212,7 +233,7 @@ export default class ApiHandler {
 		return {
 			at,
 			staking: staking.isNone ? {} : staking,
-		}
+		};
 	}
 
 	async fetchVesting(hash: BlockHash, address: string) {
@@ -231,7 +252,7 @@ export default class ApiHandler {
 		return {
 			at,
 			vesting: vesting.isNone ? {} : vesting,
-		}
+		};
 	}
 
 	async fetchMetadata(hash: BlockHash) {
@@ -244,7 +265,10 @@ export default class ApiHandler {
 
 	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
 		const api = await this.ensureMeta(hash);
-		const agreementType = await api.query.claims.signing.at(hash, ethAddress);
+		const agreementType = await api.query.claims.signing.at(
+			hash,
+			ethAddress
+		);
 		if (agreementType.isEmpty) {
 			return null;
 		}
@@ -281,7 +305,7 @@ export default class ApiHandler {
 	async fetchPayoutInfo(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		let [header, rewardDestination, bonded] = await Promise.all([
+		const [header, rewardDestination, bonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.staking.payee.at(hash, address),
 			api.query.staking.bonded.at(hash, address),
@@ -309,8 +333,9 @@ export default class ApiHandler {
 				error: 'Unable to fetch fee info',
 				data: {
 					extrinsic,
-					block: hash
+					block: hash,
 				},
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
 			};
 		}
@@ -327,6 +352,7 @@ export default class ApiHandler {
 			throw {
 				error: 'Failed to parse a tx',
 				data: extrinsic,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
 			};
 		}
@@ -340,12 +366,16 @@ export default class ApiHandler {
 		} catch (err) {
 			throw {
 				error: 'Failed to submit a tx',
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
-			}
+			};
 		}
 	}
 
-	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
+	private async fetchEvents(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<EventRecord[] | string> {
 		try {
 			return await api.query.system.events.at(hash);
 		} catch (_) {
@@ -370,7 +400,10 @@ export default class ApiHandler {
 			// Swap metadata if tx version is different. This block of code should never execute, as
 			// specVersion always increases when txVersion increases, but specVersion may increase
 			// without an increase in txVersion. Defensive only.
-			if (!this.txVersion.eq(blockTxVersion) && this.specVersion.eq(blockSpecVersion)) {
+			if (
+				!this.txVersion.eq(blockTxVersion) &&
+				this.specVersion.eq(blockSpecVersion)
+			) {
 				console.warn('txVersion bumped without specVersion bumping');
 				this.txVersion = blockTxVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
@@ -384,12 +417,20 @@ export default class ApiHandler {
 				const chain = await api.rpc.system.chain();
 
 				api.registry.register(
-					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
+					getSpecTypes(
+						api.registry,
+						chain,
+						version.specName,
+						blockSpecVersion
+					)
 				);
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
-			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
+			console.error(
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				`Failed to get Metadata for block ${hash}, using latest.`
+			);
 			console.error(err);
 			this.specVersion = api.createType('u32', -1);
 			this.txVersion = api.createType('u32', -1);
