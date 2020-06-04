@@ -41,6 +41,7 @@ export default class ApiHandler {
 		this.txVersion = api.createType('u32', -1);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchBlock(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
@@ -116,6 +117,7 @@ export default class ApiHandler {
 						method === 'system.ExtrinsicSuccess' ||
 						method === 'system.ExtrinsicFailed'
 					) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
@@ -177,6 +179,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchBalance(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -217,6 +220,7 @@ export default class ApiHandler {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingLedger(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -236,6 +240,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchVesting(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -255,6 +260,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchMetadata(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
@@ -263,6 +269,7 @@ export default class ApiHandler {
 		return metadata;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
 		const api = await this.ensureMeta(hash);
 		const agreementType = await api.query.claims.signing.at(
@@ -278,6 +285,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
@@ -302,6 +310,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchPayoutInfo(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -323,6 +332,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -341,6 +351,7 @@ export default class ApiHandler {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async submitTx(extrinsic: string) {
 		const api = await this.resetMeta();
 

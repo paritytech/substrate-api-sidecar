@@ -37,6 +37,7 @@ async function main() {
 
 	app.use(bodyParser.json());
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function get(path: string, cb: (params: Params) => Promise<any>) {
 		app.get(path, async (req, res) => {
 			try {
@@ -57,6 +58,7 @@ async function main() {
 
 	function post(
 		path: string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		cb: (params: Params, body: any) => Promise<any>
 	) {
 		app.post(path, async (req, res) => {
@@ -194,7 +196,6 @@ async function main() {
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		return await handler.fetchTxArtifacts(hash);
 	});
 

@@ -18,6 +18,7 @@ export function parseNumber(n: string): number {
 // stringified to JSON. We find all instances of `AbstractInt`,
 // which is using bn.js as backend, and forcibly serialize it
 // to a decimal string.
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export function sanitizeNumbers(data: any): any {
 	if (typeof data === 'number' || data instanceof AbstractInt) {
 		return data.toString(10);
