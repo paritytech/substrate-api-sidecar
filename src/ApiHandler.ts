@@ -359,6 +359,23 @@ export default class ApiHandler {
 		};
 	}
 
+	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
+		const api = await this.ensureMeta(hash);
+
+		try {
+			return await api.rpc.payment.queryInfo(extrinsic, hash);
+		} catch (err) {
+			throw {
+				error: 'Unable to fetch fee info',
+				data: {
+					extrinsic,
+					block: hash
+				},
+				cause: err.toString(),
+			};
+		}
+	}
+
 	async submitTx(extrinsic: string) {
 		const api = await this.resetMeta();
 
