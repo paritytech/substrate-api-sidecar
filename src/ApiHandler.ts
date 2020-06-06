@@ -257,34 +257,13 @@ export default class ApiHandler {
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, metadata, genesisHash, version] = await Promise.all([
+		const [header, metadata, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
+			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(hash),
 		]);
-
-		let chainName;
-		const specName = version.specName.toString();
-		switch (specName){
-			case 'polkadot': {
-				chainName = 'Polkadot';
-				break;
-			}
-			case 'kusama': {
-				chainName = 'Kusama';
-				break;
-			}
-			case 'westend': {
-				chainName = 'Westend';
-				break;
-			}
-			default: {
-				chainName = this.capitalizeFirstLetter(specName);
-				console.warn(`\nUnrecognized Chain Spec! Using \'${chainName}\'`);
-				break;
-			}
-		}
 
 		const at = {
 			hash,
@@ -294,8 +273,8 @@ export default class ApiHandler {
 		return {
 			at,
 			genesisHash,
-			chainName,
-			specName,
+			chainName: name.toString(),
+			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
@@ -420,9 +399,5 @@ export default class ApiHandler {
 		}
 
 		return api;
-	}
-
-	private capitalizeFirstLetter(word: string): string {
-		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 }
