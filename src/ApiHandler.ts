@@ -264,6 +264,28 @@ export default class ApiHandler {
 			api.rpc.state.getRuntimeVersion(hash),
 		]);
 
+		let chainName;
+		const specName = version.specName.toString();
+		switch (specName){
+			case 'polkadot': {
+				chainName = 'Polkadot';
+				break;
+			}
+			case 'kusama': {
+				chainName = 'Kusama';
+				break;
+			}
+			case 'westend': {
+				chainName = 'Westend';
+				break;
+			}
+			default: {
+				chainName = this.capitalizeFirstLetter(specName);
+				console.warn(`\nUnrecognized Chain Spec! Using \'${chainName}\'`);
+				break;
+			}
+		}
+
 		const at = {
 			hash,
 			height: header.number.toNumber().toString(10),
@@ -272,6 +294,8 @@ export default class ApiHandler {
 		return {
 			at,
 			genesisHash,
+			chainName,
+			specName,
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
@@ -396,5 +420,9 @@ export default class ApiHandler {
 		}
 
 		return api;
+	}
+
+	private capitalizeFirstLetter(word: string): string {
+		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 }
