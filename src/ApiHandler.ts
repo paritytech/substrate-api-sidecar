@@ -133,6 +133,10 @@ export default class ApiHandler {
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
 		const coefficients = api.consts.transactionPayment.weightToFee;
 		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
+		const version = await api.rpc.state.getRuntimeVersion(parentHash);
+		const specName = version.specName.toString();
+		const specVersion = version.specVersion.toNumber();
+		const fixed128Bug = specName === 'polkadot' && specVersion == 0;
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -140,7 +144,7 @@ export default class ApiHandler {
 			}
 
 			try {
-				if (api.runtimeVersion.specName.toString() === 'kusama') {
+				if (specName === 'kusama') {
 					extrinsics[idx].info = await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash);
 
 					continue;
@@ -191,6 +195,7 @@ export default class ApiHandler {
 					multiplier.toString(),
 					perByte.toString(),
 					len,
+					fixed128Bug,
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {

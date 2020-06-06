@@ -32,6 +32,7 @@ pub fn calc_fee(
 	multiplier: &str,
 	per_byte: &str,
 	len: u32,
+	fixed128_bug: bool,
 ) -> String {
 	panic::set_hook();
 
@@ -54,7 +55,11 @@ pub fn calc_fee(
 	let unadjusted_weight_fee = weight_to_fee(&weight, &polynomial);
 
 	let adjustable_fee = len_fee.saturating_add(unadjusted_weight_fee);
-	let adjusted_fee = multiplier.saturating_mul_acc_int(adjustable_fee);
+	let adjusted_fee = if fixed128_bug && multiplier.is_negative() {
+		adjustable_fee
+	} else {
+		multiplier.saturating_mul_acc_int(adjustable_fee)
+	};
 
 	let base_fee = weight_to_fee(&extrinsic_base_weight, &polynomial);
 	base_fee.saturating_add(adjusted_fee).to_string()
