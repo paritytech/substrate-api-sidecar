@@ -257,10 +257,11 @@ export default class ApiHandler {
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, metadata, genesisHash, version] = await Promise.all([
+		const [header, metadata, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
+			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(hash),
 		]);
 
@@ -272,6 +273,8 @@ export default class ApiHandler {
 		return {
 			at,
 			genesisHash,
+			chainName: name.toString(),
+			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
