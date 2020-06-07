@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "yarn install --ignore-scripts && yarn run wasm-pack build --target nodejs --scope polkadot calc-fee",
+    "preinstall": "wasm-pack build --target nodejs --scope polkadot calc-fee",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
     "start": "yarn run build && node ./build/main.js",
@@ -23,8 +23,5 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "typescript": "^3.8.2"
-  },
-  "devDependencies": {
-    "wasm-pack": "^0.9.1"
   }
 }
