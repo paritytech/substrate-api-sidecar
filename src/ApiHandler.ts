@@ -131,12 +131,28 @@ export default class ApiHandler {
 
 		const perByte = api.consts.transactionPayment.transactionByteFee;
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		const coefficients = api.consts.transactionPayment.weightToFee;
 		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
 		const version = await api.rpc.state.getRuntimeVersion(parentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
-		const fixed128Bug = specName === 'polkadot' && specVersion == 0;
+		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
+		const coefficients = function() {
+			if (specName === 'kusama' && specVersion === 1062) {
+				return [{
+					coeffInteger: "8",
+					coeffFrac: 0,
+					degree: 1,
+					negative: false,
+				}]
+			} else {
+				return api.consts.transactionPayment.weightToFee.map(function(c) { return {
+					coeffInteger: c.coeffInteger.toString(),
+					coeffFrac: c.coeffFrac,
+					degree: c.degree,
+					negative: c.negative,
+				}});
+			}
+		}();
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -144,12 +160,6 @@ export default class ApiHandler {
 			}
 
 			try {
-				if (specName === 'kusama') {
-					extrinsics[idx].info = await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash);
-
-					continue;
-				}
-
 				const xtEvents = extrinsics[idx].events;
 				const completedEvent = xtEvents.find((event) => event.method === successEvent || event.method === failureEvent);
 				if (!completedEvent) {
@@ -184,12 +194,7 @@ export default class ApiHandler {
 				const weight = weightInfo.weight;
 
 				const partialFee = calc_fee(
-					coefficients.map(function(c) { return {
-						coeffInteger: c.coeffInteger.toString(),
-						coeffFrac: c.coeffFrac,
-						degree: c.degree,
-						negative: c.negative,
-					}}),
+					coefficients,
 					BigInt(weight.toString()),
 					BigInt(extrinsicBaseWeight.toString()),
 					multiplier.toString(),
