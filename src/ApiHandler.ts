@@ -144,13 +144,16 @@ export default class ApiHandler {
 					degree: 1,
 					negative: false,
 				}]
-			} else {
+			} else if (specName === 'polkadot' || (specName === 'kusama' && specVersion > 1062)) {
 				return api.consts.transactionPayment.weightToFee.map(function(c) { return {
 					coeffInteger: c.coeffInteger.toString(),
 					coeffFrac: c.coeffFrac,
 					degree: c.degree,
 					negative: c.negative,
 				}});
+			} else {
+				// fee calculation not supported for this runtime
+				return null;
 			}
 		}();
 
