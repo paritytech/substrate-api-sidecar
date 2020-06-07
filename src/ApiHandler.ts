@@ -23,7 +23,7 @@ import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 import { DispatchInfo } from '@polkadot/types/interfaces';
-import { calc_fee } from '@polkadot/calc-fee'
+import { CalcFee } from '@polkadot/calc-fee'
 
 interface SanitizedEvent {
 	method: string;
@@ -156,9 +156,29 @@ export default class ApiHandler {
 				return null;
 			}
 		}();
+		const calcFee = function() {
+			if (coefficients !== null) {
+				return CalcFee.from_params(
+					coefficients,
+					BigInt(extrinsicBaseWeight.toString()),
+					multiplier.toString(),
+					perByte.toString(),
+					fixed128Bug,
+				)
+			} else {
+				return null;
+			}
+		}();
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
+				continue;
+			}
+
+			if (calcFee === null) {
+				extrinsics[idx].info = {
+					error: `Fee calculation not supported for ${specName}#${specVersion}`,
+				};
 				continue;
 			}
 
@@ -196,15 +216,7 @@ export default class ApiHandler {
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
-				const partialFee = calc_fee(
-					coefficients,
-					BigInt(weight.toString()),
-					BigInt(extrinsicBaseWeight.toString()),
-					multiplier.toString(),
-					perByte.toString(),
-					len,
-					fixed128Bug,
-				);
+				const partialFee = calcFee.calc_fee(BigInt(weight.toString()), len);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
