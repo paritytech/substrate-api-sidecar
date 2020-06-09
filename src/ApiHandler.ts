@@ -24,6 +24,8 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
+import { DispatchInfo } from '@polkadot/types/interfaces';
+import { CalcFee } from '@polkadot/calc-fee'
 
 interface SanitizedEvent {
 	method: string;
@@ -91,6 +93,9 @@ export default class ApiHandler {
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
 
+		const successEvent = 'system.ExtrinsicSuccess';
+		const failureEvent = 'system.ExtrinsicFailed';
+
 		if (Array.isArray(events)) {
 			for (const record of events) {
 				const { event, phase } = record;
@@ -109,11 +114,11 @@ export default class ApiHandler {
 
 					const method = `${event.section}.${event.method}`;
 
-					if (method === 'system.ExtrinsicSuccess') {
+					if (method === successEvent) {
 						extrinsic.success = true;
 					}
 
-					if (method === 'system.ExtrinsicSuccess' || method === 'system.ExtrinsicFailed') {
+					if (method === successEvent || method === failureEvent) {
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
@@ -136,20 +141,100 @@ export default class ApiHandler {
 			}
 		}
 
+		const perByte = api.consts.transactionPayment.transactionByteFee;
+		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
+		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
+		const version = await api.rpc.state.getRuntimeVersion(parentHash);
+		const specName = version.specName.toString();
+		const specVersion = version.specVersion.toNumber();
+		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
+		const coefficients = function() {
+			if (specName === 'kusama' && specVersion === 1062) {
+				return [{
+					coeffInteger: "8",
+					coeffFrac: 0,
+					degree: 1,
+					negative: false,
+				}]
+			} else if (specName === 'polkadot' || (specName === 'kusama' && specVersion > 1062)) {
+				return api.consts.transactionPayment.weightToFee.map(function(c) { return {
+					coeffInteger: c.coeffInteger.toString(),
+					coeffFrac: c.coeffFrac,
+					degree: c.degree,
+					negative: c.negative,
+				}});
+			} else {
+				// fee calculation not supported for this runtime
+				return null;
+			}
+		}();
+		const calcFee = function() {
+			if (coefficients !== null) {
+				return CalcFee.from_params(
+					coefficients,
+					BigInt(extrinsicBaseWeight.toString()),
+					multiplier.toString(),
+					perByte.toString(),
+					fixed128Bug,
+				)
+			} else {
+				return null;
+			}
+		}();
+
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
 
+			if (calcFee === null) {
+				extrinsics[idx].info = {
+					error: `Fee calculation not supported for ${specName}#${specVersion}`,
+				};
+				continue;
+			}
+
 			try {
-				// This is only a temporary solution. This runtime RPC will not work if types or logic
-				// involved in fee calculation changes in a runtime upgrade. For a long-term solution,
-				// we need to calculate fees based on the metadata constants and fee multiplier.
-				// https://github.com/paritytech/substrate-api-sidecar/issues/45
-				extrinsics[idx].info = api.createType(
-					'RuntimeDispatchInfo',
-					await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), parentHash)
-				);
+				const xtEvents = extrinsics[idx].events;
+				const completedEvent = xtEvents.find((event) => event.method === successEvent || event.method === failureEvent);
+				if (!completedEvent) {
+					extrinsics[idx].info = {
+						error: 'Unable to find success or failure event for extrinsic'
+					};
+
+					continue;
+				}
+
+				const completedData = completedEvent.data;
+				if (!completedData) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not contain expected data'
+					};
+
+					continue;
+				}
+
+				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo types as their
+				// final arg
+				const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+				if (!weightInfo.weight) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not specify weight'
+					};
+
+					continue;
+				}
+
+				const len = block.extrinsics[idx].encodedLength;
+				const weight = weightInfo.weight;
+
+				const partialFee = calcFee.calc_fee(BigInt(weight.toString()), len);
+
+				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
+					weight,
+					class: weightInfo.class,
+					partialFee: partialFee
+				});
 			} catch (err) {
 				console.error(err);
 				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
@@ -269,10 +354,11 @@ export default class ApiHandler {
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, metadata, genesisHash, version] = await Promise.all([
+		const [header, metadata, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
+			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(hash),
 		]);
 
@@ -284,6 +370,8 @@ export default class ApiHandler {
 		return {
 			at,
 			genesisHash,
+			chainName: name.toString(),
+			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
