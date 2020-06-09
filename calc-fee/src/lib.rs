@@ -1,7 +1,8 @@
 mod panic;
 
 use serde_derive::Deserialize;
-use sp_arithmetic::{Fixed128, FixedPointNumber, Perbill};
+use sp_arithmetic::{FixedI128, FixedPointNumber, Perbill};
+use sp_arithmetic_legacy::Fixed128 as Fixed128Legacy;
 use wasm_bindgen::prelude::*;
 use core::str::FromStr;
 
@@ -24,13 +25,41 @@ struct Coefficient {
 	degree: u8,
 }
 
+enum Multiplier {
+	Current((FixedI128, bool)),
+	Legacy(Fixed128Legacy),
+}
+
+impl Multiplier {
+	fn new(inner: i128, use_legacy: bool, bug: bool) -> Self {
+		if use_legacy {
+			Self::Legacy(Fixed128Legacy::from_parts(inner))
+		} else {
+			Self::Current((FixedI128::from_inner(inner), bug))
+		}
+	}
+
+	fn calc(&self, balance: Balance) -> Balance {
+		match self {
+			Self::Current(mult) => {
+				if mult.1 && mult.0.is_negative() {
+					// replicate the fixed128 bug where negative coefficients are not considered
+					balance
+				} else {
+					mult.0.saturating_mul_acc_int(balance)
+				}
+			},
+			Self::Legacy(mult) => mult.saturated_multiply_accumulate(balance),
+		}
+	}
+}
+
 #[wasm_bindgen]
 pub struct CalcFee {
 	polynomial: Vec<Coefficient>,
-	multiplier: Fixed128,
+	multiplier: Multiplier,
 	per_byte_fee: Balance,
 	base_fee: Balance,
-	fixed128_bug: bool,
 }
 
 #[wasm_bindgen]
@@ -41,6 +70,7 @@ impl CalcFee {
 		multiplier: &str,
 		per_byte_fee: &str,
 		fixed128_bug: bool,
+		fixed128_legacy: bool,
 	) -> Self {
 		panic::set_hook();
 		let polynomial: Vec<Coefficient> = {
@@ -55,7 +85,11 @@ impl CalcFee {
 			)
 			.collect()
 		};
-		let multiplier = Fixed128::from_inner(i128::from_str(multiplier).unwrap());
+		let multiplier = Multiplier::new(
+			i128::from_str(multiplier).unwrap(),
+			fixed128_legacy,
+			fixed128_bug
+		);
 		let per_byte_fee = Balance::from_str(per_byte_fee).unwrap();
 		let base_fee = weight_to_fee(&extrinsic_base_weight, &polynomial);
 		Self {
@@ -63,7 +97,6 @@ impl CalcFee {
 			multiplier,
 			per_byte_fee,
 			base_fee,
-			fixed128_bug,
 		}
 	}
 
@@ -74,11 +107,7 @@ impl CalcFee {
 		let unadjusted_weight_fee = weight_to_fee(&weight, &self.polynomial);
 
 		let adjustable_fee = len_fee.saturating_add(unadjusted_weight_fee);
-		let adjusted_fee = if self.fixed128_bug && self.multiplier.is_negative() {
-			adjustable_fee
-		} else {
-			self.multiplier.saturating_mul_acc_int(adjustable_fee)
-		};
+		let adjusted_fee = self.multiplier.calc(adjustable_fee);
 
 		self.base_fee.saturating_add(adjusted_fee).to_string()
 	}
