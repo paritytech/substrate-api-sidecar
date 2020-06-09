@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { Codec } from '@polkadot/types/types';
+import { Codec, AnyJson } from '@polkadot/types/types';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { EventData } from '@polkadot/types/generic/Event';
@@ -38,7 +38,10 @@ interface ParsedCall {
 	args: Args,
 }
 
-type Args = Array<Codec | ParsedCall | Args>;
+type CallArgs = Record<string, ParsedCall[]>
+
+type Args = Array<Codec | ParsedCall | Args> | CallArgs ;
+
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -72,14 +75,13 @@ export default class ApiHandler {
 		const extrinsics = block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const [parsedCalls, argsWithParsedCalls] = this.pullOutAndParseCalls(args);
 
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
-				calls: parsedCalls,
-				args: argsWithParsedCalls,
+				args,
+				newArgs: this.parseCalls(args),
 				tip,
 				hash,
 				info: {},
@@ -498,35 +500,34 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseCalls(codecArgs: Codec[], calls: ParsedCall[]): Args {
+	private parseCalls(codecArgs: Codec[]): any {
 		return codecArgs.map((codecArg) => {
-			if (Array.isArray(codecArg)){
-				return this.parseCalls(codecArg, calls);
+			// If one arg is a GenericCall, then we can assume they all are.
+			if (Array.isArray(codecArg) && codecArg[0] instanceof GenericCall) {
+				return { calls: [...this.parseCalls(codecArg)] };
 			}
 
 			if (codecArg instanceof GenericCall) {
 				const { args, sectionName, methodName, callIndex } = codecArg;
 
+				// GenericCall.toString() gives labelled arguments.
+				let labelledArgs: Args = JSON.parse(codecArg.toString()).args as Args;
+
+				if ("calls" in labelledArgs) {
+					labelledArgs = this.parseCalls(args)
+				}
+
 				const call = {
 					method: `${sectionName}.${methodName}`,
 					callIndex,
-					args: this.parseCalls(args, calls),
+					args: labelledArgs
 				};
 
-				calls.push(call);
-				
 				return call;
 			}
 
 			return codecArg;
 		})
-	}
-
-	private pullOutAndParseCalls(codecArgs: Codec[]): [ParsedCall[], Args] {
-		const calls: ParsedCall[] = [];
-		const args = this.parseCalls(codecArgs, calls)
-
-		return [calls, args];
 	}
 }
 
