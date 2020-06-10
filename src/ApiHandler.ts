@@ -43,6 +43,17 @@ interface SanitizedCall {
 	method: string;
 	callIndex: Uint8Array | string;
 	args: {
+		call?: SanitizedCall;
+		calls?: SanitizedCall[];
+		[key: string]: any;
+	}
+}
+
+interface JsonCall {
+	[key: string]: any;
+	method: string;
+	callIndex: Uint8Array | string;
+	args: {
 		call?: JsonCall;
 		calls?: JsonCall[];
 		[key: string]: any;
@@ -511,38 +522,19 @@ export default class ApiHandler {
 	private parseCalls(codecArgs: Codec[] ): any {
 		return codecArgs.map((codecArg) => {
 			// If one arg is a GenericCall, then we can assume they all are.
-			if (Array.isArray(codecArg) && codecArg[0] instanceof GenericCall) {
+			if (
+					Array.isArray(codecArg) 
+						&& codecArg.every((a: Codec): boolean => a instanceof GenericCall)
+					) {
 				return { calls: [...this.parseCalls(codecArg)] };
 			}
 
 			if (codecArg instanceof GenericCall) {
-				const { args, sectionName, methodName, callIndex } = codecArg;
-
-				// GenericCall.toString() gives labelled arguments.
-				let labelledArgs = JSON.parse(codecArg.toString()).args;
-				if ("call" in labelledArgs){
-					console.log(labelledArgs);
-					const { call } = labelledArgs
-					labelledArgs.call = this.parseCalls([call])[0];
-					console.log(labelledArgs)
-				}
-
-				if ("calls" in labelledArgs) {
-					const { calls } = this.parseCalls(args)
-					labelledArgs.calls = calls;
-				}
-
-				const call = {
-					method: `${sectionName}.${methodName}`,
-					callIndex,
-					args: labelledArgs
-				};
-
-				return call;
+				return this.parseGenericCall(codecArg);
 			}
 
 			return codecArg;
-		})
+		});
 	}
 
 	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
