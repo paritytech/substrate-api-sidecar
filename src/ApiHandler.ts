@@ -38,10 +38,18 @@ interface ParsedCall {
 	args: Args,
 }
 
-type CallArgs = Record<string, ParsedCall[]>
+interface SanitizedCall {
+	[key: string]: any;
+	method: string;
+	callIndex: Uint8Array | string;
+	args: {
+		call?: JsonCall;
+		calls?: JsonCall[];
+		[key: string]: any;
+	}
+}
 
-type Args = Array<Codec | ParsedCall | Args> | CallArgs ;
-
+type Args = Array<Codec | ParsedCall | SanitizedCall | Args>;
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -500,7 +508,7 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseCalls(codecArgs: Codec[]): any {
+	private parseCalls(codecArgs: Codec[] ): any {
 		return codecArgs.map((codecArg) => {
 			// If one arg is a GenericCall, then we can assume they all are.
 			if (Array.isArray(codecArg) && codecArg[0] instanceof GenericCall) {
@@ -511,10 +519,17 @@ export default class ApiHandler {
 				const { args, sectionName, methodName, callIndex } = codecArg;
 
 				// GenericCall.toString() gives labelled arguments.
-				let labelledArgs: Args = JSON.parse(codecArg.toString()).args as Args;
+				let labelledArgs = JSON.parse(codecArg.toString()).args;
+				if ("call" in labelledArgs){
+					console.log(labelledArgs);
+					const { call } = labelledArgs
+					labelledArgs.call = this.parseCalls([call])[0];
+					console.log(labelledArgs)
+				}
 
 				if ("calls" in labelledArgs) {
-					labelledArgs = this.parseCalls(args)
+					const { calls } = this.parseCalls(args)
+					labelledArgs.calls = calls;
 				}
 
 				const call = {
@@ -528,6 +543,46 @@ export default class ApiHandler {
 
 			return codecArg;
 		})
+	}
+
+	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
+		const { args, sectionName, methodName, callIndex } = genericCall;
+
+		// Pull out the labelled args since we want the labels
+		let labelledArgs = JSON.parse(genericCall.toString()).args;
+
+		// If labelledArgs has a `call` or `calls` field, we then go look for it in
+		// the original args field where it will be an instance of a GenericCall
+		// which can then recursively sanitize
+		if (labelledArgs.call !== undefined) {
+			const genericCallArg = args.find((a: any): boolean => a instanceof GenericCall);
+			if (genericCallArg instanceof GenericCall) {
+				labelledArgs.call = this.parseGenericCall(genericCallArg);
+			} else {
+				console.error("A call arg was expected but could not be found.")
+			}
+		}
+
+		if (labelledArgs.calls !== undefined) {
+			const genericCallsArg = args.find((a) => {
+				Array.isArray(a) && a.every((ele: any): boolean => ele instanceof GenericCall)
+			});
+
+			if(genericCallsArg !== undefined) {
+				labelledArgs.calls = labelledArgs.calls && labelledArgs.calls.map(
+					(c: GenericCall) => this.parseGenericCall(c)
+				);
+			} else {
+				console.error("A call arg was expected but could not be found.")
+			}
+
+		}
+
+		return {
+			method: `${sectionName}.${methodName}`,
+			callIndex,
+			args: labelledArgs
+		};
 	}
 }
 
