@@ -71,6 +71,13 @@ async function main() {
 
 	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
 
+	// TODO
+	get('/block/', async () => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchBlock(hash);
+	});
+
 	get('/block/:number', async (params) => {
 		const number = parseNumber(params.number);
 		const hash = await api.rpc.chain.getBlockHash(number);
@@ -78,12 +85,28 @@ async function main() {
 		return await handler.fetchBlock(hash);
 	});
 
-	get('/block/', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchBlock(hash);
-	});
-
+	// GET balance information for an address.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `nonce`: Account nonce.
+	// - `free`: Free balance of the account. Not equivalent to _spendable_ balance. This is the only
+	//   balance that matters in terms of most operations on tokens.
+	// - `reserved`: Reserved balance of the account.
+	// - `miscFrozen`: The amount that `free` may not drop below when withdrawing for anything except
+	//   transaction fee payment.
+	// - `feeFrozen`: The amount that `free` may not drop below when withdrawing specifically for
+	//   transaction fee payment.
+	// - `locks`: Array of locks on a balance. There can be many of these on an account and they
+	//   "overlap", so the same balance is frozen by multiple locks. Contains:
+	//    - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
+	//    - `amount`: The amount below which the free balance may not drop with this lock in effect.
+	//    - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
+	//
+	// Substrate Reference:
+	// - AccountInfo: https://crates.parity.io/frame_system/struct.AccountInfo.html
+	// - AccountData: https://crates.parity.io/pallet_balances/struct.AccountData.html
+	// - BalanceLock: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
 	get('/balance/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -99,6 +122,20 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
+	// GET payout information for an address.
+	//
+	// Address: The _Stash_ address for staking.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
+	//   account, adding to amount at stake), 'Stash' (Stash address, not adding to the amount at
+	//   stake), or 'Controller' (Controller address).
+	// - `bonded`: Controller address for the given Stash.
+	//
+	// Substrate Reference:
+	// - RewardDestination: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
+	// - Bonded: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	get('/payout/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -114,6 +151,24 @@ async function main() {
 		return await handler.fetchPayoutInfo(hash, address);
 	});
 
+	// GET staking information for an address.
+	//
+	// Address: The _Controller_ address for staking.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `stash`: The stash account whose balance is actually locked and at stake.
+	// - `total`: The total amount of the stash's balance that we are currently accounting for.
+	// - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
+	//   eras.
+	// - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
+	//   the stash (assuming it doesn't get slashed first). Represented as an array with `value` to be
+	//   unlocked and `era` at which it will be unlocked.
+	// - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
+	//   rewards. Only updated for _validators._
+	//
+	// Substrate Reference:
+	// - StakingLedger: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -129,6 +184,7 @@ async function main() {
 		return await handler.fetchStakingLedger(hash, address);
 	});
 
+	// TODO
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -144,6 +200,7 @@ async function main() {
 		return await handler.fetchVesting(hash, address);
 	});
 
+	// TODO
 	get('/metadata/', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -157,6 +214,7 @@ async function main() {
 		return await handler.fetchMetadata(hash);
 	});
 
+	// TODO
 	get('/claims/:ethAddress', async (params) => {
 		const { ethAddress } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -172,6 +230,7 @@ async function main() {
 		return await handler.fetchClaimsInfo(hash, ethAddress);
 	});
 
+	// TODO
 	get('/tx/artifacts', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -185,6 +244,7 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
+	// TODO
 	post('/tx/fee-estimate/', async (_, body) => {
 		if(body && typeof body.tx !== 'string'){
 			return {
@@ -197,6 +257,7 @@ async function main() {
 		return await handler.fetchFeeInformation(hash, body.tx);
 	});
 
+	// TODO
 	post('/tx/', async (_, body) => {
 		if (body && typeof body.tx !== 'string') {
 			return {
