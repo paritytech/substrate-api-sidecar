@@ -71,7 +71,48 @@ async function main() {
 
 	get('/', async (req) => 'Sidecar is running, go to /block to get latest finalized block');
 
-	// TODO
+	// GET a block.
+	//
+	// Paths:
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
+	// Returns:
+	// - `number`: Block number.
+	// - `hash`: The block's hash.
+	// - `parentHash`: The hash of the parent block.
+	// - `stateRoot`: The state root after executing this block.
+	// - `extrinsicsRoot`: The Merkle root of the extrinsics.
+	// - `logs`: Array of `DigestItem`s associated with the block.
+	// - `onInitialize`: Object with an array of `SanitizedEvent`s that occurred during block
+	//   initialization with the `method` and `data` for each.
+	// - `extrinsics`: Array of extrinsics (inherents and transactions) within the block. Each
+	//   contains:
+	//   - `method`: Extrinsic method, `{module}.{function}`.
+	//   - `signature`: Object with `signature` and `signer`, or `null` if unsigned.
+	//   - `nonce`: Account nonce, if applicable.
+	//   - `args`: Array of arguments.
+	//   - `tip`: Any tip added to the transaction.
+	//   - `hash`: The transaction's hash.
+	//   - `info`: `RuntimeDispatchInfo` for the transaction. Includes the `partialFee`.
+	//   - `events`: An array of `SanitizedEvent`s that occurred during extrinsic execution.
+	//   - `success`: Whether or not the extrinsic succeeded.
+	//   - `paysFee`: Whether the extrinsic requires a fee. Careful! This field relates to whether or
+	//     not the extrinsic requires a fee if called as a transaction. Block authors could insert
+	//     the extrinsic as an inherent in the block and not pay a fee. Always check that `paysFee`
+	//     is `true` and that the extrinsic is signed.
+	// - `onFinalize`: Object with an array of `SanitizedEvent`s that occurred during block
+	//   finalization with the `method` and `data` for each.
+	//
+	// Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
+	// canonical chain. It denotes the finalization of block _construction._
+	//
+	// Substrate Reference:
+	// - `DigestItem`: https://crates.parity.io/sp_runtime/enum.DigestItem.html
+	// - `RawEvent`: https://crates.parity.io/frame_system/enum.RawEvent.html
+	// - Extrinsics: https://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics
+	// - `Extrinsic`: https://crates.parity.io/sp_runtime/traits/trait.Extrinsic.html
+	// - `OnInitialize`: https://crates.parity.io/frame_support/traits/trait.OnInitialize.html
+	// - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
 	get('/block/', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -87,6 +128,10 @@ async function main() {
 
 	// GET balance information for an address.
 	//
+	// Paths:
+	// - `address`: The address to query.
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
 	// - `nonce`: Account nonce.
@@ -99,14 +144,14 @@ async function main() {
 	//   transaction fee payment.
 	// - `locks`: Array of locks on a balance. There can be many of these on an account and they
 	//   "overlap", so the same balance is frozen by multiple locks. Contains:
-	//    - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
-	//    - `amount`: The amount below which the free balance may not drop with this lock in effect.
-	//    - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
+	//   - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
+	//   - `amount`: The amount below which the free balance may not drop with this lock in effect.
+	//   - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
 	//
 	// Substrate Reference:
-	// - AccountInfo: https://crates.parity.io/frame_system/struct.AccountInfo.html
-	// - AccountData: https://crates.parity.io/pallet_balances/struct.AccountData.html
-	// - BalanceLock: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
+	// - `AccountInfo`: https://crates.parity.io/frame_system/struct.AccountInfo.html
+	// - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
+	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
 	get('/balance/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -124,7 +169,9 @@ async function main() {
 
 	// GET payout information for an address.
 	//
-	// Address: The _Stash_ address for staking.
+	// Paths:
+	// - `address`: The _Stash_ address for staking.
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -134,8 +181,8 @@ async function main() {
 	// - `bonded`: Controller address for the given Stash.
 	//
 	// Substrate Reference:
-	// - RewardDestination: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
-	// - Bonded: https://crates.parity.io/pallet_staking/struct.Bonded.html
+	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
+	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	get('/payout/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -153,7 +200,9 @@ async function main() {
 
 	// GET staking information for an address.
 	//
-	// Address: The _Controller_ address for staking.
+	// Paths:
+	// - `address`: The _Controller_ address for staking.
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -168,7 +217,7 @@ async function main() {
 	//   rewards. Only updated for _validators._
 	//
 	// Substrate Reference:
-	// - StakingLedger: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
+	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -184,7 +233,21 @@ async function main() {
 		return await handler.fetchStakingLedger(hash, address);
 	});
 
-	// TODO
+	// GET vesting information for an address.
+	//
+	// Paths:
+	// - `address`: Address to query.
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `vesting`: Vesting schedule for an account.
+	//   - `locked`: Number of tokens locked at start.
+	//   - `perBlock`: Number of tokens that gets unlocked every block after `starting_block`.
+	//   - `startingBlock`: Starting block for unlocking(vesting).
+	//
+	// Substrate Reference:
+	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -200,7 +263,17 @@ async function main() {
 		return await handler.fetchVesting(hash, address);
 	});
 
-	// TODO
+	// GET the chain's metadata.
+	//
+	// Paths:
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
+	// Returns:
+	// - Metadata object.
+	//
+	// Substrate Reference:
+	// - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+	// - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
 	get('/metadata/', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -214,7 +287,17 @@ async function main() {
 		return await handler.fetchMetadata(hash);
 	});
 
-	// TODO
+	// GET the claims type for an Ethereum address.
+	//
+	// Paths:
+	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
+	// Returns:
+	// - `type`: The type of claim. 'Regular' or 'Saft'.
+	//
+	// Reference:
+	// - Claims Guide: https://wiki.polkadot.network/docs/en/claims
 	get('/claims/:ethAddress', async (params) => {
 		const { ethAddress } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -230,7 +313,31 @@ async function main() {
 		return await handler.fetchClaimsInfo(hash, ethAddress);
 	});
 
-	// TODO
+	// GET all the information needed to construct a transaction offline.
+	//
+	// Paths
+	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `genesisHash`: The hash of the chain's genesis block.
+	// - `chainName`: The chain's name.
+	// - `specName`: The chain's spec.
+	// - `specVersion`: The spec version. Always increased in a runtime upgrade.
+	// - `txversion`: The transaction version. Common `txVersion` numbers indicate that the
+	//   transaction encoding format and method indices are the same. Needed for decoding in an
+	//   offline environment.
+	// - `metadata`: The chain's metadata in hex format.
+	//
+	// Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
+	// of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining
+	// this registry, but in other Substrate-based chains that re-launch their network without
+	// changing the `specName`, the `chainName` would be needed to create the correct registry.
+	//
+	// Substrate Reference:
+	// - `RuntimeVersion`: https://crates.parity.io/sp_version/struct.RuntimeVersion.html
+	// - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
+	// - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
 	get('/tx/artifacts', async () => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
@@ -244,7 +351,30 @@ async function main() {
 		return await handler.fetchTxArtifacts(hash);
 	});
 
-	// TODO
+	// POST a serialized transaction and receive a fee estimate.
+	//
+	// Post info:
+	// - `data`: Expects a hex-encoded transaction, e.g. '{"tx": "0x..."}'.
+	// - `header`: Expects 'Content-Type: application/json'.
+	//
+	// Returns:
+	// - Success:
+	//   - `weight`: Extrinsic weight.
+	//   - `class`: Extrinsic class, one of 'Normal', 'Operational', 'Mandatory'.
+	//   - `partialFee`: _Expected_ inclusion fee for the transaction. Note that the fee rate changes
+	//     up to 30% in a 24 hour period and this will not be the exact fee.
+	// - Failure:
+	//   - `error`: Error description.
+	//   - `data`: The extrinsic and reference block hash.
+	//   - `cause`: Error message from the client.
+	//
+	// Note: `partialFee` does not include any tips that you may add to increase a transaction's
+	// priority. See the reference on `compute_fee`.
+	//
+	// Substrate Reference:
+	// - `RuntimeDispatchInfo`: https://crates.parity.io/pallet_transaction_payment_rpc_runtime_api/struct.RuntimeDispatchInfo.html
+	// - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
+	// - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
 	post('/tx/fee-estimate/', async (_, body) => {
 		if(body && typeof body.tx !== 'string'){
 			return {
@@ -257,7 +387,21 @@ async function main() {
 		return await handler.fetchFeeInformation(hash, body.tx);
 	});
 
-	// TODO
+	// POST a serialized transaction to submit to the transaction queue.
+	//
+	// Post info:
+	// - `data`: Expects a hex-encoded transaction, e.g. '{"tx": "0x..."}'.
+	// - `header`: Expects 'Content-Type: application/json'.
+	//
+	// Returns:
+	// - Success:
+	//   - `hash`: The hash of the encoded transaction.
+	// - Failure:
+	//   - `error`: 'Failed to parse a tx' or 'Failed to submit a tx'. In the case of the former, the
+	//     Sidecar was unable to parse the transaction and never even submitted it to the client. In
+	//     the case of the latter, the transaction queue rejected the transaction.
+	//   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
+	//   - `cause`: The error message from parsing or from the client.
 	post('/tx/', async (_, body) => {
 		if (body && typeof body.tx !== 'string') {
 			return {
