@@ -49,18 +49,7 @@ interface SanitizedCall {
 	}
 }
 
-interface JsonCall {
-	[key: string]: any;
-	method: string;
-	callIndex: Uint8Array | string;
-	args: {
-		call?: JsonCall;
-		calls?: JsonCall[];
-		[key: string]: any;
-	}
-}
-
-type Args = Array<Codec | ParsedCall | SanitizedCall | Args>;
+type Args = Array<Codec | ParsedCall | SanitizedCall | Args | Record<string, Args>>;
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -100,7 +89,8 @@ export default class ApiHandler {
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
-				newArgs: this.parseCalls(args),
+				// TODO make sure `method` is _always_ a GenericCall, or else this breaks
+				newArgs: this.parseGenericCall(method),
 				tip,
 				hash,
 				info: {},
