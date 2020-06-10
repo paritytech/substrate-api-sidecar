@@ -32,12 +32,6 @@ interface SanitizedEvent {
 	data: EventData;
 }
 
-interface ParsedCall {
-	method: string,
-	callIndex: Uint8Array,
-	args: Args,
-}
-
 interface SanitizedCall {
 	[key: string]: any;
 	method: string;
@@ -48,8 +42,6 @@ interface SanitizedCall {
 		[key: string]: any;
 	}
 }
-
-type Args = Array<Codec | ParsedCall | SanitizedCall | Args | Record<string, Args>>;
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -90,7 +82,7 @@ export default class ApiHandler {
 				nonce,
 				args,
 				// TODO make sure `method` is _always_ a GenericCall, or else this breaks
-				newArgs: this.parseGenericCall(method),
+				newArgs: this.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -509,24 +501,6 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseCalls(codecArgs: Codec[] ): any {
-		return codecArgs.map((codecArg) => {
-			// If one arg is a GenericCall, then we can assume they all are.
-			if (
-					Array.isArray(codecArg) 
-						&& codecArg.every((a: Codec): boolean => a instanceof GenericCall)
-					) {
-				return { calls: [...this.parseCalls(codecArg)] };
-			}
-
-			if (codecArg instanceof GenericCall) {
-				return this.parseGenericCall(codecArg);
-			}
-
-			return codecArg;
-		});
-	}
-
 	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
 		const { args, sectionName, methodName, callIndex } = genericCall;
 
@@ -546,24 +520,28 @@ export default class ApiHandler {
 		}
 
 		if (labelledArgs.calls !== undefined) {
-			const genericCallsArg = args.find((a) => {
-				Array.isArray(a) && a.every((ele: any): boolean => ele instanceof GenericCall)
-			});
+			// Ideally we would use this for cases where an array of calls is
+			// not the first arg, but for some reason it never finds anything
+			// const genericCallsArgPlzWork = args.find((a) => {
+			// 	Array.isArray(a) && a.every((el) => el instanceof GenericCall)
+			// });
 
-			if(genericCallsArg !== undefined) {
-				labelledArgs.calls = labelledArgs.calls && labelledArgs.calls.map(
-					(c: GenericCall) => this.parseGenericCall(c)
+			// TODO: This should be replaced with something like above
+			const genericCallsArg = args[0]
+
+			if (genericCallsArg !== undefined && Array.isArray(genericCallsArg)) {
+				labelledArgs.calls = genericCallsArg.map(
+					(c: GenericCall): SanitizedCall => this.parseGenericCall(c)
 				);
 			} else {
-				console.error("A call arg was expected but could not be found.")
+				console.error("An array of calls arg was expected but could not be found.")
 			}
-
 		}
 
 		return {
 			method: `${sectionName}.${methodName}`,
 			callIndex,
-			args: labelledArgs
+			args: labelledArgs,
 		};
 	}
 }
