@@ -216,6 +216,11 @@ async function main() {
 	// - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//   rewards. Only updated for _validators._
 	//
+	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
+	// `claimedRewards`, or no field. This is related to changes in reward distribution. See:
+	// - Lazy Payouts: https://github.com/paritytech/substrate/pull/4474
+	// - Simple Payouts: https://github.com/paritytech/substrate/pull/5406
+	//
 	// Substrate Reference:
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
 	get('/staking/:address', async (params) => {
