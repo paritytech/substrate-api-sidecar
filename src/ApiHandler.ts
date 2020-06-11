@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { Codec, AnyJson } from '@polkadot/types/types';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { EventData } from '@polkadot/types/generic/Event';
@@ -26,6 +25,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 import { DispatchInfo } from '@polkadot/types/interfaces';
 import { CalcFee } from '@polkadot/calc-fee'
+import { Codec } from '@polkadot/types/types';
 
 interface SanitizedEvent {
 	method: string;
@@ -501,6 +501,12 @@ export default class ApiHandler {
 		return api;
 	}
 
+	private isGenericCallArray(arrayToCheck: any): boolean {
+		return Array.isArray(arrayToCheck) && arrayToCheck.every((element: any) =>
+			element instanceof GenericCall
+		)
+	}
+
 	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
 		const { args, sectionName, methodName, callIndex } = genericCall;
 
@@ -508,33 +514,38 @@ export default class ApiHandler {
 		let labelledArgs = JSON.parse(genericCall.toString()).args;
 
 		// If labelledArgs has a `call` or `calls` field, we then go look for it in
-		// the original args field where it will be an instance of a GenericCall
-		// which can then recursively sanitize
+		// the original args field where it will be an instance of a GenericCall or
+		// an array of GenericCall's. The GenericCall(s) are then recursively
+		// sanitized by this function.
+		// A possible pitfall to look out for here is if a call or array of calls
+		// does not have the parameter name `call` or `calls`.
 		if (labelledArgs.call !== undefined) {
-			const genericCallArg = args.find((a: any): boolean => a instanceof GenericCall);
-			if (genericCallArg instanceof GenericCall) {
+			const genericCallArg = args.find((argument: any): boolean => 
+				argument instanceof GenericCall
+			);
+
+			if (genericCallArg !== undefined) {
 				labelledArgs.call = this.parseGenericCall(genericCallArg);
 			} else {
-				console.error("A call arg was expected but could not be found.")
+				console.error(
+					`A Call was expected as an argument to ${sectionName}.${methodName}, but could not be found.`
+				)
 			}
 		}
 
 		if (labelledArgs.calls !== undefined) {
-			// Ideally we would use this for cases where an array of calls is
-			// not the first arg, but for some reason it never finds anything
-			// const genericCallsArgPlzWork = args.find((a) => {
-			// 	Array.isArray(a) && a.every((el) => el instanceof GenericCall)
-			// });
-
-			// TODO: This should be replaced with something like above
-			const genericCallsArg = args[0]
+			const genericCallsArg = args.find((argument: Codec): boolean =>
+				this.isGenericCallArray(argument)
+			)
 
 			if (genericCallsArg !== undefined && Array.isArray(genericCallsArg)) {
 				labelledArgs.calls = genericCallsArg.map(
 					(c: GenericCall): SanitizedCall => this.parseGenericCall(c)
 				);
 			} else {
-				console.error("An array of calls arg was expected but could not be found.")
+				console.error(
+					`An array of Calls was expected as an argument to ${sectionName}.${methodName}, but could not be found.`
+				)
 			}
 		}
 
