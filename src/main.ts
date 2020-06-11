@@ -149,6 +149,8 @@ async function main() {
 	//   - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
 	//
 	// Substrate Reference:
+	// - FRAME System: https://crates.parity.io/frame_system/index.html
+	// - Balances Pallet: https://crates.parity.io/pallet_balances/index.html
 	// - `AccountInfo`: https://crates.parity.io/frame_system/struct.AccountInfo.html
 	// - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
 	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
@@ -181,6 +183,7 @@ async function main() {
 	// - `bonded`: Controller address for the given Stash.
 	//
 	// Substrate Reference:
+	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
 	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
 	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	get('/payout/:address', async (params) => {
@@ -223,6 +226,7 @@ async function main() {
 	// - Simple Payouts: https://github.com/paritytech/substrate/pull/5406
 	//
 	// Substrate Reference:
+	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
 	get('/staking/:address', async (params) => {
 		const { address } = params;
@@ -253,6 +257,7 @@ async function main() {
 	//   - `startingBlock`: Starting block for unlocking(vesting).
 	//
 	// Substrate Reference:
+	// - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
 	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
