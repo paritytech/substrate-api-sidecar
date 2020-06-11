@@ -99,7 +99,7 @@ async function main() {
 	//   - `paysFee`: Whether the extrinsic requires a fee. Careful! This field relates to whether or
 	//     not the extrinsic requires a fee if called as a transaction. Block authors could insert
 	//     the extrinsic as an inherent in the block and not pay a fee. Always check that `paysFee`
-	//     is `true` and that the extrinsic is signed.
+	//     is `true` and that the extrinsic is signed when reconciling old blocks.
 	// - `onFinalize`: Object with an array of `SanitizedEvent`s that occurred during block
 	//   finalization with the `method` and `data` for each.
 	//
@@ -176,7 +176,7 @@ async function main() {
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
 	// - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
-	//   account, adding to amount at stake), 'Stash' (Stash address, not adding to the amount at
+	//   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
 	//   stake), or 'Controller' (Controller address).
 	// - `bonded`: Controller address for the given Stash.
 	//
@@ -207,17 +207,18 @@ async function main() {
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
 	// - `stash`: The stash account whose balance is actually locked and at stake.
-	// - `total`: The total amount of the stash's balance that we are currently accounting for.
+	// - `total`: The total amount of the stash's balance that we are currently accounting for. Simply
+	//   `active + unlocking`.
 	// - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
 	//   eras.
 	// - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
-	//   the stash (assuming it doesn't get slashed first). Represented as an array with `value` to be
-	//   unlocked and `era` at which it will be unlocked.
+	//   the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
+	//   with an `era` at which `value` will be unlocked.
 	// - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//   rewards. Only updated for _validators._
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
-	// `claimedRewards`, or no field. This is related to changes in reward distribution. See:
+	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
 	// - Lazy Payouts: https://github.com/paritytech/substrate/pull/4474
 	// - Simple Payouts: https://github.com/paritytech/substrate/pull/5406
 	//
@@ -248,7 +249,7 @@ async function main() {
 	// - `at`: Block number and hash at which the call was made.
 	// - `vesting`: Vesting schedule for an account.
 	//   - `locked`: Number of tokens locked at start.
-	//   - `perBlock`: Number of tokens that gets unlocked every block after `starting_block`.
+	//   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
 	//   - `startingBlock`: Starting block for unlocking(vesting).
 	//
 	// Substrate Reference:
@@ -331,7 +332,7 @@ async function main() {
 	// - `specVersion`: The spec version. Always increased in a runtime upgrade.
 	// - `txversion`: The transaction version. Common `txVersion` numbers indicate that the
 	//   transaction encoding format and method indices are the same. Needed for decoding in an
-	//   offline environment.
+	//   offline environment. Adding new transactions does not change `txVersion`.
 	// - `metadata`: The chain's metadata in hex format.
 	//
 	// Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
@@ -360,12 +361,12 @@ async function main() {
 	//
 	// Post info:
 	// - `data`: Expects a hex-encoded transaction, e.g. '{"tx": "0x..."}'.
-	// - `header`: Expects 'Content-Type: application/json'.
+	// - `headers`: Expects 'Content-Type: application/json'.
 	//
 	// Returns:
 	// - Success:
 	//   - `weight`: Extrinsic weight.
-	//   - `class`: Extrinsic class, one of 'Normal', 'Operational', 'Mandatory'.
+	//   - `class`: Extrinsic class, one of 'Normal', 'Operational', or 'Mandatory'.
 	//   - `partialFee`: _Expected_ inclusion fee for the transaction. Note that the fee rate changes
 	//     up to 30% in a 24 hour period and this will not be the exact fee.
 	// - Failure:
@@ -396,7 +397,7 @@ async function main() {
 	//
 	// Post info:
 	// - `data`: Expects a hex-encoded transaction, e.g. '{"tx": "0x..."}'.
-	// - `header`: Expects 'Content-Type: application/json'.
+	// - `headers`: Expects 'Content-Type: application/json'.
 	//
 	// Returns:
 	// - Success:
