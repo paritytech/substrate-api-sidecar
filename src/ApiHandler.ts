@@ -247,6 +247,9 @@ export default class ApiHandler {
 			}
 		}
 
+		const header = await api.derive.chain.getHeader(hash);
+		const authorId = header?.author;
+
 		return {
 			number,
 			hash,
@@ -257,6 +260,7 @@ export default class ApiHandler {
 			onInitialize,
 			extrinsics,
 			onFinalize,
+			authorId,
 		};
 	}
 
