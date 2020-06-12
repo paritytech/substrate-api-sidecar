@@ -18,16 +18,30 @@ import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { EventData } from '@polkadot/types/generic/Event';
+import { GenericCall } from '@polkadot/types/generic';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
 import { DispatchInfo } from '@polkadot/types/interfaces';
 import { CalcFee } from '@polkadot/calc-fee'
+import { Codec } from '@polkadot/types/types';
+import { Struct } from '@polkadot/types';
 
 interface SanitizedEvent {
 	method: string;
 	data: EventData;
+}
+
+interface SanitizedCall {
+	[key: string]: any;
+	method: string;
+	callIndex: Uint8Array | string;
+	args: {
+		call?: SanitizedCall;
+		calls?: SanitizedCall[];
+		[key: string]: any;
+	}
 }
 
 export default class ApiHandler {
@@ -68,6 +82,7 @@ export default class ApiHandler {
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
+				newArgs: this.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -487,5 +502,45 @@ export default class ApiHandler {
 		}
 
 		return api;
+	}
+
+	private parseArrayGenericCalls(argsArray: Codec[]): (Codec | SanitizedCall)[] {
+		return argsArray.map((argument) => {
+			if (argument instanceof GenericCall){
+				return this.parseGenericCall(argument);
+			}
+
+			return argument;
+		})
+	}
+
+	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
+		const {sectionName, methodName, callIndex } = genericCall;
+		const newArgs = {};
+
+		// Pull out the struct of arguments to this call
+		const callArgs = genericCall.get("args") as Struct;
+
+		// Make sure callArgs exists and we can access its keys
+		if (callArgs && callArgs.defKeys){
+			// paramName is a string
+			for (const paramName of callArgs.defKeys) {
+				const argument = callArgs.get(paramName);
+
+				if (Array.isArray(argument)) {
+					newArgs[paramName] = this.parseArrayGenericCalls(argument);
+				} else if (argument instanceof GenericCall) {
+					newArgs[paramName] = this.parseGenericCall(argument);
+				} else {
+					newArgs[paramName] = argument;
+				}
+			}
+		}
+
+		return {
+			method: `${sectionName}.${methodName}`,
+			callIndex,
+			args: newArgs,
+		};
 	}
 }
