@@ -19,7 +19,16 @@ wasm-bindgen = { version = "0.2", default_features = false, features = ["serde-s
 serde_derive = { version = "1", default_features = false }
 serde = { version = "1", default_features = false }
 console_error_panic_hook = { version = "0.1", optional = true }
-sp-arithmetic = { git = "https://github.com/paritytech/substrate", default_features = false }
+
+[dependencies.sp-arithmetic]
+version = "2.0.0-rc3"
+default_features = false
+
+[dependencies.sp-arithmetic-legacy]
+package = "sp-arithmetic"
+git = "https://github.com/paritytech/substrate"
+rev = "ba4eec2d8b10df59a5a26a484ce109d2f73a81fe"
+default_features = false
 
 [profile.release]
 opt-level = "z"

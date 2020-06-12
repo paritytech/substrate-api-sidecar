@@ -151,8 +151,10 @@ export default class ApiHandler {
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
+		let fixed128Legacy = false;
 		const coefficients = function() {
 			if (specName === 'kusama' && specVersion === 1062) {
+				fixed128Legacy = true;
 				return [{
 					coeffInteger: "8",
 					coeffFrac: 0,
@@ -179,6 +181,7 @@ export default class ApiHandler {
 					multiplier.toString(),
 					perByte.toString(),
 					fixed128Bug,
+					fixed128Legacy,
 				)
 			} else {
 				return null;
