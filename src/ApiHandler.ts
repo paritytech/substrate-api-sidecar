@@ -518,6 +518,8 @@ export default class ApiHandler {
 
 		// Pull out the struct of arguments to this call
 		const callArgs = genericCall.get("args") as Struct;
+
+		// Make sure callArgs exists and we can access its keys
 		if (callArgs && callArgs.defKeys){
 			// paramName is a string
 			for (const paramName of callArgs.defKeys) {
