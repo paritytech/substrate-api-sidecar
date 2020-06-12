@@ -31,7 +31,14 @@ type Params = { [key: string]: string };
 type TxBody = { tx: string };
 
 async function main() {
-	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
+	const api = await ApiPromise.create({
+		provider: new WsProvider(WS_URL),
+		types: {
+			Status: {
+				_enum: ['Free', 'Reserved'],
+			},
+		},
+	});
 	const handler = new ApiHandler(api);
 	const app = express();
 
