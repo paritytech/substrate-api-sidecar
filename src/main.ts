@@ -28,7 +28,14 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 type Params = { [key: string]: string };
 
 async function main() {
-	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
+	const api = await ApiPromise.create({
+		provider: new WsProvider(WS_URL),
+		types: {
+			Status: {
+				_enum: ['Free', 'Reserved']
+			}
+		}
+	});
 	const handler = new ApiHandler(api);
 	const app = express();
 
