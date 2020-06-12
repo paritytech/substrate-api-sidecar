@@ -82,7 +82,7 @@ async function main() {
 	// - `parentHash`: The hash of the parent block.
 	// - `stateRoot`: The state root after executing this block.
 	// - `extrinsicsRoot`: The Merkle root of the extrinsics.
-	// - `authorId`: The account ID of the block author (may be undefined for development chains).
+	// - `authorId`: The account ID of the block author (may be undefined for some chains).
 	// - `logs`: Array of `DigestItem`s associated with the block.
 	// - `onInitialize`: Object with an array of `SanitizedEvent`s that occurred during block
 	//   initialization with the `method` and `data` for each.
