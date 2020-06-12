@@ -35,9 +35,9 @@ async function main() {
 		provider: new WsProvider(WS_URL),
 		types: {
 			Status: {
-				_enum: ['Free', 'Reserved']
-			}
-		}
+				_enum: ['Free', 'Reserved'],
+			},
+		},
 	});
 	const handler = new ApiHandler(api);
 	const app = express();
