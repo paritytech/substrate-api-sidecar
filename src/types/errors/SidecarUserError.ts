@@ -1,13 +1,15 @@
 import SidecarError from "./SidecarError";
 
-export default class SidecarUserError implements SidecarError {
+export default class SidecarUserError extends SidecarError {
   name: 'SidecarUserError';
   message: string;
-  stack: undefined;
-  status: number;
+  status: number = 400;
 
   constructor(message: string, status?: number) {
+    super();
     this.message = message;
-    this.status = status || 400;
+    if (status) {
+      this.status = status;
+    }
   }
 }
