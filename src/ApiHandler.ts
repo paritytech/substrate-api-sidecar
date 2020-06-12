@@ -82,7 +82,6 @@ export default class ApiHandler {
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
-				// TODO make sure `method` is _always_ a GenericCall, or else this breaks
 				newArgs: this.parseGenericCall(method).args,
 				tip,
 				hash,
