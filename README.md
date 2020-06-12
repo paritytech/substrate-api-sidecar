@@ -105,3 +105,10 @@ constraints:
 - The chain is being finalized (by running `grandpa`).
 - If the chain is running on custom Node binaries, the JSON-RPC API should be backwards compatible
   with the default Substrate Node.
+
+### Contribute
+
+We welcome contributions. Before submitting your PR, make sure to run the following commands:
+
+- `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to automatically fix some of those errors.
+- Testing coming soon!

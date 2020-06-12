@@ -15,18 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { CalcFee } from '@polkadot/calc-fee';
+import { Struct } from '@polkadot/types';
+import { getSpecTypes } from '@polkadot/types-known';
+import { GenericCall } from '@polkadot/types/generic';
+import { EventData } from '@polkadot/types/generic/Event';
+import { DispatchInfo } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
-import { EventData } from '@polkadot/types/generic/Event';
-import { GenericCall } from '@polkadot/types/generic';
-import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex } from '@polkadot/util';
-import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
-import { DispatchInfo } from '@polkadot/types/interfaces';
-import { CalcFee } from '@polkadot/calc-fee'
 import { Codec } from '@polkadot/types/types';
-import { Struct } from '@polkadot/types';
+import { u8aToHex } from '@polkadot/util';
+import { blake2AsU8a } from '@polkadot/util-crypto';
 
 interface SanitizedEvent {
 	method: string;
@@ -34,14 +34,16 @@ interface SanitizedEvent {
 }
 
 interface SanitizedCall {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 	method: string;
 	callIndex: Uint8Array | string;
 	args: {
 		call?: SanitizedCall;
 		calls?: SanitizedCall[];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		[key: string]: any;
-	}
+	};
 }
 
 export default class ApiHandler {
@@ -57,6 +59,7 @@ export default class ApiHandler {
 		this.txVersion = api.createType('u32', -1);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchBlock(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
@@ -77,7 +80,15 @@ export default class ApiHandler {
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const extrinsics = block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
+			const {
+				method,
+				nonce,
+				signature,
+				signer,
+				isSigned,
+				tip,
+				args,
+			} = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
 			return {
@@ -115,7 +126,10 @@ export default class ApiHandler {
 					const extrinsic = extrinsics[extrinsicIdx];
 
 					if (!extrinsic) {
-						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash}`);
+						throw new Error(
+							// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+							`Missing extrinsic ${extrinsicIdx} in block ${hash}`
+						);
 					}
 
 					const method = `${event.section}.${event.method}`;
@@ -125,12 +139,16 @@ export default class ApiHandler {
 					}
 
 					if (method === successEvent || method === failureEvent) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 							if (data && data.paysFee) {
 								extrinsic.paysFee =
+									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === true ||
+									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === 'Yes';
 
 								break;
@@ -149,34 +167,45 @@ export default class ApiHandler {
 
 		const perByte = api.consts.transactionPayment.transactionByteFee;
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
+		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
+			parentHash
+		);
 		const version = await api.rpc.state.getRuntimeVersion(parentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
 		let fixed128Legacy = false;
-		const coefficients = function() {
+		const coefficients = (function () {
 			if (specName === 'kusama' && specVersion === 1062) {
 				fixed128Legacy = true;
-				return [{
-					coeffInteger: "8",
-					coeffFrac: 0,
-					degree: 1,
-					negative: false,
-				}]
-			} else if (specName === 'polkadot' || (specName === 'kusama' && specVersion > 1062)) {
-				return api.consts.transactionPayment.weightToFee.map(function(c) { return {
-					coeffInteger: c.coeffInteger.toString(),
-					coeffFrac: c.coeffFrac,
-					degree: c.degree,
-					negative: c.negative,
-				}});
+				return [
+					{
+						coeffInteger: '8',
+						coeffFrac: 0,
+						degree: 1,
+						negative: false,
+					},
+				];
+			} else if (
+				specName === 'polkadot' ||
+				(specName === 'kusama' && specVersion > 1062)
+			) {
+				return api.consts.transactionPayment.weightToFee.map(function (
+					c
+				) {
+					return {
+						coeffInteger: c.coeffInteger.toString(),
+						coeffFrac: c.coeffFrac,
+						degree: c.degree,
+						negative: c.negative,
+					};
+				});
 			} else {
 				// fee calculation not supported for this runtime
 				return null;
 			}
-		}();
-		const calcFee = function() {
+		})();
+		const calcFee = (function () {
 			if (coefficients !== null) {
 				return CalcFee.from_params(
 					coefficients,
@@ -184,12 +213,12 @@ export default class ApiHandler {
 					multiplier.toString(),
 					perByte.toString(),
 					fixed128Bug,
-					fixed128Legacy,
-				)
+					fixed128Legacy
+				);
 			} else {
 				return null;
 			}
-		}();
+		})();
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -205,10 +234,15 @@ export default class ApiHandler {
 
 			try {
 				const xtEvents = extrinsics[idx].events;
-				const completedEvent = xtEvents.find((event) => event.method === successEvent || event.method === failureEvent);
+				const completedEvent = xtEvents.find(
+					(event) =>
+						event.method === successEvent ||
+						event.method === failureEvent
+				);
 				if (!completedEvent) {
 					extrinsics[idx].info = {
-						error: 'Unable to find success or failure event for extrinsic'
+						error:
+							'Unable to find success or failure event for extrinsic',
 					};
 
 					continue;
@@ -217,18 +251,22 @@ export default class ApiHandler {
 				const completedData = completedEvent.data;
 				if (!completedData) {
 					extrinsics[idx].info = {
-						error: 'Success or failure event for extrinsic does not contain expected data'
+						error:
+							'Success or failure event for extrinsic does not contain expected data',
 					};
 
 					continue;
 				}
 
-				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo types as their
-				// final arg
-				const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+				// types as their final arg
+				const weightInfo = completedData[
+					completedData.length - 1
+				] as DispatchInfo;
 				if (!weightInfo.weight) {
 					extrinsics[idx].info = {
-						error: 'Success or failure event for extrinsic does not specify weight'
+						error:
+							'Success or failure event for extrinsic does not specify weight',
 					};
 
 					continue;
@@ -237,12 +275,15 @@ export default class ApiHandler {
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
-				const partialFee = calcFee.calc_fee(BigInt(weight.toString()), len);
+				const partialFee = calcFee.calc_fee(
+					BigInt(weight.toString()),
+					len
+				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
 					class: weightInfo.class,
-					partialFee: partialFee
+					partialFee: partialFee,
 				});
 			} catch (err) {
 				console.error(err);
@@ -264,6 +305,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchBalance(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -273,9 +315,10 @@ export default class ApiHandler {
 			api.query.system.account.at(hash, address),
 		]);
 
-		const account = sysAccount.data != null
-			? sysAccount.data :
-			await api.query.balances.account.at(hash, address);
+		const account =
+			sysAccount.data != null
+				? sysAccount.data
+				: await api.query.balances.account.at(hash, address);
 
 		const at = {
 			hash,
@@ -298,11 +341,12 @@ export default class ApiHandler {
 		} else {
 			throw {
 				at,
-				error: "Account not found",
+				error: 'Account not found',
 			};
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingLedger(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -319,9 +363,10 @@ export default class ApiHandler {
 		return {
 			at,
 			staking: staking.isNone ? {} : staking,
-		}
+		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchVesting(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -338,9 +383,10 @@ export default class ApiHandler {
 		return {
 			at,
 			vesting: vesting.isNone ? {} : vesting,
-		}
+		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchMetadata(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
@@ -349,9 +395,13 @@ export default class ApiHandler {
 		return metadata;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
 		const api = await this.ensureMeta(hash);
-		const agreementType = await api.query.claims.signing.at(hash, ethAddress);
+		const agreementType = await api.query.claims.signing.at(
+			hash,
+			ethAddress
+		);
 		if (agreementType.isEmpty) {
 			return null;
 		}
@@ -361,10 +411,17 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, metadata, genesisHash, name, version] = await Promise.all([
+		const [
+			header,
+			metadata,
+			genesisHash,
+			name,
+			version,
+		] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
@@ -388,10 +445,11 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchPayoutInfo(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		let [header, rewardDestination, bonded] = await Promise.all([
+		const [header, rewardDestination, bonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.staking.payee.at(hash, address),
 			api.query.staking.bonded.at(hash, address),
@@ -409,6 +467,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
 		const api = await this.ensureMeta(hash);
 
@@ -419,13 +478,15 @@ export default class ApiHandler {
 				error: 'Unable to fetch fee info',
 				data: {
 					extrinsic,
-					block: hash
+					block: hash,
 				},
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
 			};
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async submitTx(extrinsic: string) {
 		const api = await this.resetMeta();
 
@@ -437,6 +498,7 @@ export default class ApiHandler {
 			throw {
 				error: 'Failed to parse a tx',
 				data: extrinsic,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
 			};
 		}
@@ -450,12 +512,16 @@ export default class ApiHandler {
 		} catch (err) {
 			throw {
 				error: 'Failed to submit a tx',
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				cause: err.toString(),
-			}
+			};
 		}
 	}
 
-	private async fetchEvents(api: ApiPromise, hash: BlockHash): Promise<EventRecord[] | string> {
+	private async fetchEvents(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<EventRecord[] | string> {
 		try {
 			return await api.query.system.events.at(hash);
 		} catch (_) {
@@ -480,7 +546,10 @@ export default class ApiHandler {
 			// Swap metadata if tx version is different. This block of code should never execute, as
 			// specVersion always increases when txVersion increases, but specVersion may increase
 			// without an increase in txVersion. Defensive only.
-			if (!this.txVersion.eq(blockTxVersion) && this.specVersion.eq(blockSpecVersion)) {
+			if (
+				!this.txVersion.eq(blockTxVersion) &&
+				this.specVersion.eq(blockSpecVersion)
+			) {
 				console.warn('txVersion bumped without specVersion bumping');
 				this.txVersion = blockTxVersion;
 				const meta = await api.rpc.state.getMetadata(hash);
@@ -494,12 +563,20 @@ export default class ApiHandler {
 				const chain = await api.rpc.system.chain();
 
 				api.registry.register(
-					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
+					getSpecTypes(
+						api.registry,
+						chain,
+						version.specName,
+						blockSpecVersion
+					)
 				);
 				api.registry.setMetadata(meta);
 			}
 		} catch (err) {
-			console.error(`Failed to get Metadata for block ${hash}, using latest.`);
+			console.error(
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				`Failed to get Metadata for block ${hash}, using latest.`
+			);
 			console.error(err);
 			this.specVersion = api.createType('u32', -1);
 			this.txVersion = api.createType('u32', -1);
@@ -508,25 +585,27 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseArrayGenericCalls(argsArray: Codec[]): (Codec | SanitizedCall)[] {
+	private parseArrayGenericCalls(
+		argsArray: Codec[]
+	): (Codec | SanitizedCall)[] {
 		return argsArray.map((argument) => {
-			if (argument instanceof GenericCall){
+			if (argument instanceof GenericCall) {
 				return this.parseGenericCall(argument);
 			}
 
 			return argument;
-		})
+		});
 	}
 
 	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
-		const {sectionName, methodName, callIndex } = genericCall;
+		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
-		const callArgs = genericCall.get("args") as Struct;
+		const callArgs = genericCall.get('args') as Struct;
 
 		// Make sure callArgs exists and we can access its keys
-		if (callArgs && callArgs.defKeys){
+		if (callArgs && callArgs.defKeys) {
 			// paramName is a string
 			for (const paramName of callArgs.defKeys) {
 				const argument = callArgs.get(paramName);

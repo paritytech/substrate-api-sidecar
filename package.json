@@ -7,12 +7,14 @@
     "preinstall": "wasm-pack build --target nodejs --scope polkadot calc-fee",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
+    "lint": "tsc && eslint . --ext ts",
     "start": "yarn run build && node ./build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@amaurymartiny/config": "^1.3.0",
     "@polkadot/api": "^1.18.1",
     "@polkadot/calc-fee": "file:./calc-fee/pkg",
     "@polkadot/metadata": "^1.18.1",
