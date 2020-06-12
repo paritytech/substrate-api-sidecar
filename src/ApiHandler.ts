@@ -502,7 +502,7 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseArrayGenericCalls(argsArray: any[]): any[] {
+	private parseArrayGenericCalls(argsArray: Codec[]): (Codec | SanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall){
 				return this.parseGenericCall(argument);
@@ -539,61 +539,5 @@ export default class ApiHandler {
 			args: newArgs,
 		};
 	}
-
-	// private isGenericCallArray(arrayToCheck: any): boolean {
-	// 	return Array.isArray(arrayToCheck) && arrayToCheck.every((element: any) =>
-	// 		element instanceof GenericCall
-	// 	)
-	// }
-
-	// private parseGenericCall(genericCall: GenericCall): SanitizedCall {
-	// 	const { args, sectionName, methodName, callIndex } = genericCall;
-
-	// 	// Pull out the labelled args since we want the labels
-	// 	let labelledArgs = JSON.parse(genericCall.toString()).args;
-
-	// 	// If labelledArgs has a `call` or `calls` field, we then go look for it in
-	// 	// the original args field where it will be an instance of a GenericCall or
-	// 	// an array of GenericCall's. The GenericCall(s) are then recursively
-	// 	// sanitized by this function.
-	// 	// A possible pitfall to look out for here is if a call or array of calls
-	// 	// does not have the parameter name `call` or `calls`.
-	// 	if (labelledArgs.call !== undefined) {
-	// 		const genericCallArg = args.find((argument: any): boolean =>
-	// 			argument instanceof GenericCall
-	// 		);
-
-	// 		if (genericCallArg instanceof GenericCall) {
-	// 			debugger
-	// 			labelledArgs.call = this.parseGenericCall(genericCallArg);
-	// 		} else {
-	// 			console.error(
-	// 				`A Call was expected as an argument to ${sectionName}.${methodName}, but could not be found.`
-	// 			)
-	// 		}
-	// 	}
-
-	// 	if (labelledArgs.calls !== undefined) {
-	// 		const genericCallsArg = args.find((argument: Codec): boolean =>
-	// 			this.isGenericCallArray(argument)
-	// 		)
-
-	// 		if (genericCallsArg !== undefined && Array.isArray(genericCallsArg)) {
-	// 			labelledArgs.calls = genericCallsArg.map(
-	// 				(c: GenericCall): SanitizedCall => this.parseGenericCall(c)
-	// 			);
-	// 		} else {
-	// 			console.error(
-	// 				`An array of Calls was expected as an argument to ${sectionName}.${methodName}, but could not be found.`
-	// 			)
-	// 		}
-	// 	}
-
-	// 	return {
-	// 		method: `${sectionName}.${methodName}`,
-	// 		callIndex,
-	// 		args: labelledArgs,
-	// 	};
-	// }
 }
 
