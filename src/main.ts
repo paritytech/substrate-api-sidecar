@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
-import { isHex } from '@polkadot/util';
+import { hexToNumber, isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
@@ -455,7 +455,7 @@ async function getHashForBlock(
 			return api.createType('BlockHash', blockId);
 		} else if (isHexStr) {
 			throw {
-				error: `Cannot get block hash for ${blockId}. Hex string block IDs must be 66-characters (32-bytes) in length.`,
+				error: `Cannot get block hash for ${hexToNumber(blockId)}. Hex string block IDs must be 66-characters (32-bytes) in length.`,
 			};
 		}
 
