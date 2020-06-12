@@ -15,20 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { CalcFee } from '@polkadot/calc-fee';
+import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
+import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
+import { DispatchInfo } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
-import { EventData } from '@polkadot/types/generic/Event';
-import { GenericCall } from '@polkadot/types/generic';
-import { blake2AsU8a } from '@polkadot/util-crypto';
-import { u8aToHex } from '@polkadot/util';
-import { getSpecTypes } from '@polkadot/types-known';
 import { u32 } from '@polkadot/types/primitive';
-import { DispatchInfo } from '@polkadot/types/interfaces';
-import { CalcFee } from '@polkadot/calc-fee'
 import { Codec } from '@polkadot/types/types';
-import { Struct } from '@polkadot/types';
+import { u8aToHex } from '@polkadot/util';
+import { blake2AsU8a } from '@polkadot/util-crypto';
 
 interface SanitizedEvent {
 	method: string;
@@ -36,14 +34,16 @@ interface SanitizedEvent {
 }
 
 interface SanitizedCall {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 	method: string;
 	callIndex: Uint8Array | string;
 	args: {
 		call?: SanitizedCall;
 		calls?: SanitizedCall[];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		[key: string]: any;
-	}
+	};
 }
 
 export default class ApiHandler {
@@ -139,6 +139,7 @@ export default class ApiHandler {
 					}
 
 					if (method === successEvent || method === failureEvent) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						const sanitizedData = event.data.toJSON() as any[];
 
 						for (const data of sanitizedData) {
@@ -166,34 +167,45 @@ export default class ApiHandler {
 
 		const perByte = api.consts.transactionPayment.transactionByteFee;
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(parentHash);
+		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
+			parentHash
+		);
 		const version = await api.rpc.state.getRuntimeVersion(parentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
 		let fixed128Legacy = false;
-		const coefficients = function() {
+		const coefficients = (function () {
 			if (specName === 'kusama' && specVersion === 1062) {
 				fixed128Legacy = true;
-				return [{
-					coeffInteger: "8",
-					coeffFrac: 0,
-					degree: 1,
-					negative: false,
-				}]
-			} else if (specName === 'polkadot' || (specName === 'kusama' && specVersion > 1062)) {
-				return api.consts.transactionPayment.weightToFee.map(function(c) { return {
-					coeffInteger: c.coeffInteger.toString(),
-					coeffFrac: c.coeffFrac,
-					degree: c.degree,
-					negative: c.negative,
-				}});
+				return [
+					{
+						coeffInteger: '8',
+						coeffFrac: 0,
+						degree: 1,
+						negative: false,
+					},
+				];
+			} else if (
+				specName === 'polkadot' ||
+				(specName === 'kusama' && specVersion > 1062)
+			) {
+				return api.consts.transactionPayment.weightToFee.map(function (
+					c
+				) {
+					return {
+						coeffInteger: c.coeffInteger.toString(),
+						coeffFrac: c.coeffFrac,
+						degree: c.degree,
+						negative: c.negative,
+					};
+				});
 			} else {
 				// fee calculation not supported for this runtime
 				return null;
 			}
-		}();
-		const calcFee = function() {
+		})();
+		const calcFee = (function () {
 			if (coefficients !== null) {
 				return CalcFee.from_params(
 					coefficients,
@@ -201,12 +213,12 @@ export default class ApiHandler {
 					multiplier.toString(),
 					perByte.toString(),
 					fixed128Bug,
-					fixed128Legacy,
-				)
+					fixed128Legacy
+				);
 			} else {
 				return null;
 			}
-		}();
+		})();
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -222,10 +234,15 @@ export default class ApiHandler {
 
 			try {
 				const xtEvents = extrinsics[idx].events;
-				const completedEvent = xtEvents.find((event) => event.method === successEvent || event.method === failureEvent);
+				const completedEvent = xtEvents.find(
+					(event) =>
+						event.method === successEvent ||
+						event.method === failureEvent
+				);
 				if (!completedEvent) {
 					extrinsics[idx].info = {
-						error: 'Unable to find success or failure event for extrinsic'
+						error:
+							'Unable to find success or failure event for extrinsic',
 					};
 
 					continue;
@@ -234,18 +251,22 @@ export default class ApiHandler {
 				const completedData = completedEvent.data;
 				if (!completedData) {
 					extrinsics[idx].info = {
-						error: 'Success or failure event for extrinsic does not contain expected data'
+						error:
+							'Success or failure event for extrinsic does not contain expected data',
 					};
 
 					continue;
 				}
 
-				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo types as their
-				// final arg
-				const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+				// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+				// types as their final arg
+				const weightInfo = completedData[
+					completedData.length - 1
+				] as DispatchInfo;
 				if (!weightInfo.weight) {
 					extrinsics[idx].info = {
-						error: 'Success or failure event for extrinsic does not specify weight'
+						error:
+							'Success or failure event for extrinsic does not specify weight',
 					};
 
 					continue;
@@ -254,12 +275,15 @@ export default class ApiHandler {
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
-				const partialFee = calcFee.calc_fee(BigInt(weight.toString()), len);
+				const partialFee = calcFee.calc_fee(
+					BigInt(weight.toString()),
+					len
+				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
 					class: weightInfo.class,
-					partialFee: partialFee
+					partialFee: partialFee,
 				});
 			} catch (err) {
 				console.error(err);
@@ -391,7 +415,13 @@ export default class ApiHandler {
 	async fetchTxArtifacts(hash: BlockHash) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, metadata, genesisHash, name, version] = await Promise.all([
+		const [
+			header,
+			metadata,
+			genesisHash,
+			name,
+			version,
+		] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
@@ -555,25 +585,27 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseArrayGenericCalls(argsArray: Codec[]): (Codec | SanitizedCall)[] {
+	private parseArrayGenericCalls(
+		argsArray: Codec[]
+	): (Codec | SanitizedCall)[] {
 		return argsArray.map((argument) => {
-			if (argument instanceof GenericCall){
+			if (argument instanceof GenericCall) {
 				return this.parseGenericCall(argument);
 			}
 
 			return argument;
-		})
+		});
 	}
 
 	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
-		const {sectionName, methodName, callIndex } = genericCall;
+		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
-		const callArgs = genericCall.get("args") as Struct;
+		const callArgs = genericCall.get('args') as Struct;
 
 		// Make sure callArgs exists and we can access its keys
-		if (callArgs && callArgs.defKeys){
+		if (callArgs && callArgs.defKeys) {
 			// paramName is a string
 			for (const paramName of callArgs.defKeys) {
 				const argument = callArgs.get(paramName);
