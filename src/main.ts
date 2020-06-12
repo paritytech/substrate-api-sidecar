@@ -20,6 +20,7 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { parseNumber, sanitizeNumbers } from './utils';
 import ApiHandler from './ApiHandler';
+import { SidecarError, SidecarUserError } from './types/errors';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
@@ -39,14 +40,7 @@ async function main() {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch(err) {
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Interal Error' });
+				handleSidecarError(err, res);
 			}
 		});
 	}
@@ -57,14 +51,7 @@ async function main() {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch(err) {
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Interal Error' });
+				handleSidecarError(err, res);
 			}
 		});
 	}
@@ -426,6 +413,21 @@ async function main() {
 
 
 	app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}/`))
+}
+
+function handleSidecarError(err: any, res: any) {
+	if (err instanceof SidecarError) {
+		res.status(err.status).send(err.message);
+		return;
+	}
+	
+	if (err && typeof err.error === 'string') {
+		res.status(500).send(sanitizeNumbers(err));
+		return;
+	}
+
+	console.error('Internal Error:', err);
+	res.status(500).send({ error: 'Interal Error' });
 }
 
 main();
