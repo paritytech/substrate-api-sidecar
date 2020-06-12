@@ -66,6 +66,9 @@ export default class ApiHandler {
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
+		const header = await api.derive.chain.getHeader(hash);
+		const authorId = header?.author;
+
 		const logs = block.header.digest.logs.map((log) => {
 			const { type, index, value } = log;
 
@@ -247,20 +250,17 @@ export default class ApiHandler {
 			}
 		}
 
-		const header = await api.derive.chain.getHeader(hash);
-		const authorId = header?.author;
-
 		return {
 			number,
 			hash,
 			parentHash,
 			stateRoot,
 			extrinsicsRoot,
+			authorId,
 			logs,
 			onInitialize,
 			extrinsics,
 			onFinalize,
-			authorId,
 		};
 	}
 
