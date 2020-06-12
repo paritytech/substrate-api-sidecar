@@ -1,0 +1,35 @@
+[package]
+name = "calc-fee"
+version = "0.1.0"
+authors = ["Alexander Theißen <alexander.theissen@parity.io>"]
+edition = "2018"
+license = "Apache-2.0"
+publish = false
+repository = "https://github.com/polkadot-js/wasm/"
+description = "Calculate extrinsic fees off-chain"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+debug = ["console_error_panic_hook"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2", default_features = false, features = ["serde-serialize"] }
+serde_derive = { version = "1", default_features = false }
+serde = { version = "1", default_features = false }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[dependencies.sp-arithmetic]
+version = "2.0.0-rc3"
+default_features = false
+
+[dependencies.sp-arithmetic-legacy]
+package = "sp-arithmetic"
+git = "https://github.com/paritytech/substrate"
+rev = "ba4eec2d8b10df59a5a26a484ce109d2f73a81fe"
+default_features = false
+
+[profile.release]
+opt-level = "z"
+lto = true
