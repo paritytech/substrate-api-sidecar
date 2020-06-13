@@ -69,6 +69,17 @@ export default class ApiHandler {
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
+		// The genesis block is a special case with little information associated with it.
+		if (parentHash.every((byte) => !byte)) {
+			return {
+				number,
+				hash,
+				parentHash,
+				stateRoot,
+				extrinsicsRoot,
+			};
+		}
+
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
 
