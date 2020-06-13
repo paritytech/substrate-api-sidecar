@@ -30,8 +30,6 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 type Params = { [key: string]: string };
 
-type TxBody = { tx: string };
-
 async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
@@ -451,20 +449,33 @@ async function getHashForBlock(
 ): Promise<BlockHash> {
 	try {
 		const isHexStr = isHex(blockId);
+		let blockNumber;
+
+		// This is a block hash
 		if (isHexStr && blockId.length === 66) {
 			return api.createType('BlockHash', blockId);
-		} else if (isHexStr) {
+		} 
+		// This is a hex-formatted number, but should be converted to an integer.
+		else if (isHexStr && blockId.length < 66) {
+			blockNumber = parseBlockNumber(hexToNumber(blockId).toString());
+			return await api.rpc.chain.getBlockHash(blockNumber);
+		} 
+		// Final catch for hex-formatted numbers. If it's longer than 66 char then it's not a hash
+		// and too big to "make sense" as an integer.
+		else if (isHexStr) {
 			throw {
-				error: `Cannot get block hash for ${hexToNumber(blockId)}. Hex string block IDs must be 66-characters (32-bytes) in length.`,
+				error: `Cannot get block hash for ${blockId}. ` +
+					`Hex string block IDs must be 66-characters (32-bytes) in length.`,
 			};
 		}
 
-		let blockNumber;
+		// Deal with integer inputs
 		try {
 			blockNumber = parseBlockNumber(blockId);
 		} catch (err) {
 			throw {
-				error: `Cannot get block hash for ${blockId}. Block IDs must be either hex strings or non-negative integers.`,
+				error: `Cannot get block hash for ${blockId}. `+
+					`Block IDs must be either hex strings or non-negative integers.`,
 			};
 		}
 
