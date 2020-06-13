@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
-import { hexToNumber, isHex } from '@polkadot/util';
+import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
@@ -95,10 +95,10 @@ async function main() {
 	// GET a block.
 	//
 	// Paths:
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
-	// - `number`: Block number.
+	// - `number`: Block height.
 	// - `hash`: The block's hash.
 	// - `parentHash`: The hash of the parent block.
 	// - `stateRoot`: The state root after executing this block.
@@ -150,7 +150,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The address to query.
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -192,7 +192,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -223,7 +223,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -264,7 +264,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: Address to query.
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -293,7 +293,7 @@ async function main() {
 	// GET the chain's metadata.
 	//
 	// Paths:
-	// - (Optional) `number`: Black hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - Metadata object.
@@ -316,7 +316,7 @@ async function main() {
 	//
 	// Paths:
 	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
-	// - (Optional) `number`: Black hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `type`: The type of claim. 'Regular' or 'Saft'.
@@ -340,7 +340,7 @@ async function main() {
 	// GET all the information needed to construct a transaction offline.
 	//
 	// Paths
-	// - (Optional) `number`: Black hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -448,41 +448,40 @@ async function getHashForBlock(
 	blockId: string
 ): Promise<BlockHash> {
 	try {
-		const isHexStr = isHex(blockId);
 		let blockNumber;
 
-		// This is a block hash
+		const isHexStr = isHex(blockId);
 		if (isHexStr && blockId.length === 66) {
+			// This is a block hash
 			return api.createType('BlockHash', blockId);
-		} 
-		// This is a hex-formatted number, but should be converted to an integer.
-		else if (isHexStr && blockId.length < 66) {
-			blockNumber = parseBlockNumber(hexToNumber(blockId).toString());
-			return await api.rpc.chain.getBlockHash(blockNumber);
-		} 
-		// Final catch for hex-formatted numbers. If it's longer than 66 char then it's not a hash
-		// and too big to "make sense" as an integer.
-		else if (isHexStr) {
+		} else if (isHexStr) {
 			throw {
-				error: `Cannot get block hash for ${blockId}. ` +
-					`Hex string block IDs must be 66-characters (32-bytes) in length.`,
+				error:
+					`Cannot get block hash for ${blockId}. ` +
+					`Hex string block IDs must be 32-bytes (66-characters) in length.`,
 			};
 		}
 
-		// Deal with integer inputs
+		// Not a block hash, must be a block height
 		try {
 			blockNumber = parseBlockNumber(blockId);
 		} catch (err) {
 			throw {
-				error: `Cannot get block hash for ${blockId}. `+
-					`Block IDs must be either hex strings or non-negative integers.`,
+				error:
+					`Cannot get block hash for ${blockId}. ` +
+					`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`,
 			};
 		}
 
 		return await api.rpc.chain.getBlockHash(blockNumber);
 	} catch (err) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (err && typeof err.error === 'string') {
+			throw err;
+		}
+
 		throw { error: `Cannot get block hash for ${blockId}.` };
 	}
 }
 
-void main();
+main().catch(console.log);

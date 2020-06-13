@@ -29,37 +29,40 @@ yarn start
 
 ### Available paths
 
+Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
+a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
+
 - `/block` fetch latest finalized block details.
 
-- `/block/NUMBER` fetch block details at block height `NUMBER`.
+- `/block/NUMBER` fetch block details at the block identified by 'NUMBER`.
 
 - `/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.
 
-- `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at block height `NUMBER`.
+- `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/payout/ADDRESS` fetch payout info for `ADDRESS` at latest finalized block.
 
-- `/payout/ADDRESS/NUMBER` fetch payout info for `ADDRESS` at block height `NUMBER`.
+- `/payout/ADDRESS/NUMBER` fetch payout info for `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/staking/ADDRESS` fetch the staking ledger info for `ADDRESS` at latest finalized block.
 
-- `/staking/ADDRESS/NUMBER` fetch the staking ledger info for `ADDRESS` at block height `NUMBER`.
+- `/staking/ADDRESS/NUMBER` fetch the staking ledger info for `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
 
-- `/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at block height `NUMBER`.
+- `/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/metadata` fetch chain metadata at latest finalized block.
 
-- `/metadata/NUMBER` fetch chain metadata at block height `NUMBER`.
+- `/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.
 
 - `/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.
 
-- `/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at block `NUMBER`.
+- `/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.
 
-- `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at block height `NUMBER`.
+- `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at the block identified by 'NUMBER`.
 
 - `/tx/fee-estimate` submit a transaction in order to get back a fee estimation. Expects a string
   with a hex-encoded transaction in a JSON POST body:
