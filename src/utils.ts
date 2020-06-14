@@ -4,10 +4,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
-export function parseNumber(n: string): number {
+export function parseBlockNumber(n: string): number {
 	const num = Number(n);
 
-	if (!Number.isInteger(num)) {
+	if (!Number.isInteger(num) || num < 0) {
 		throw { error: 'Invalid block number' };
 	}
 
