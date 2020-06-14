@@ -80,22 +80,6 @@ export default class ApiHandler {
 			return { type, index, value };
 		});
 
-		// The genesis block is a special case with little information associated with it.
-		if (parentHash.every((byte) => !byte)) {
-			return {
-				number,
-				hash,
-				parentHash,
-				stateRoot,
-				extrinsicsRoot,
-				authorId,
-				logs,
-				onInitialize,
-				extrinsics: [],
-				onFinalize,
-			};
-		}
-
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const extrinsics = block.extrinsics.map((extrinsic) => {
 			const {
@@ -178,6 +162,22 @@ export default class ApiHandler {
 					onInitialize.events.push(sanitizedEvent);
 				}
 			}
+		}
+
+		// The genesis block is a special case with little information associated with it.
+		if (parentHash.every((byte) => !byte)) {
+			return {
+				number,
+				hash,
+				parentHash,
+				stateRoot,
+				extrinsicsRoot,
+				authorId,
+				logs,
+				onInitialize,
+				extrinsics,
+				onFinalize,
+			};
 		}
 
 		const perByte = api.consts.transactionPayment.transactionByteFee;
@@ -387,7 +387,7 @@ export default class ApiHandler {
 		const ledger = staking.unwrap(); // should always work if staking.isSome
 		const slashingSpans = await api.query.staking.slashingSpans.at(
 			hash,
-			ledger.stash,
+			ledger.stash
 		);
 
 		let numSlashingSpans;
