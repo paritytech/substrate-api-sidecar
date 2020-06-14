@@ -88,7 +88,8 @@ async function main() {
 	// GET a block.
 	//
 	// Paths:
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `number`: Block height.
@@ -143,7 +144,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The address to query.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -185,7 +187,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -216,7 +219,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -260,7 +264,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: Address to query.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -289,7 +294,8 @@ async function main() {
 	// GET the chain's metadata.
 	//
 	// Paths:
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - Metadata object.
@@ -312,7 +318,8 @@ async function main() {
 	//
 	// Paths:
 	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `type`: The type of claim. 'Regular' or 'Saft'.
@@ -336,7 +343,8 @@ async function main() {
 	// GET all the information needed to construct a transaction offline.
 	//
 	// Paths
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
