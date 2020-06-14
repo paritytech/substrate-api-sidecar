@@ -28,7 +28,7 @@ import { parseBlockNumber, sanitizeNumbers } from './utils';
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
-const NODE_ENV = process.env.NODE_ENV || 'production';
+const LOG_MODE = process.env.LOG_MODE || 'errors';
 
 type Params = { [key: string]: string };
 
@@ -39,8 +39,8 @@ async function main() {
 
 	app.use(bodyParser.json());
 
-	switch (NODE_ENV) {
-		case 'production':
+	switch (LOG_MODE) {
+		case 'errors':
 			app.use(
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 				morgan('combined', {
@@ -50,7 +50,7 @@ async function main() {
 				}) as express.Handler
 			);
 			break;
-		case 'development':
+		case 'all':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 			app.use(morgan('dev'));
 			break;
