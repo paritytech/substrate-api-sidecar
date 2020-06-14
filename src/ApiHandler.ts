@@ -27,6 +27,7 @@ import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import { unwrapStorageType } from '@polkadot/types/primitive/StorageKey';
 
 interface SanitizedEvent {
 	method: string;
@@ -360,9 +361,30 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
+		if (staking.isNone) {
+			// Address is not a controller, nothing else to do here.
+			return {
+				at,
+				staking: {},
+				numSlashingSpans: null,
+			};
+		}
+
+		const ledger = staking.unwrap(); // should always work if staking.isSome
+		const slashingSpans = await api.query.staking.slashingSpans.at(hash, ledger.stash);
+
+		let numSlashingSpans;
+		if (slashingSpans.isSome) {
+			const span = slashingSpans.unwrap();
+			numSlashingSpans = span.prior.length + 1;
+		} else {
+			numSlashingSpans = 0;
+		}
+
 		return {
 			at,
 			staking: staking.isNone ? {} : staking,
+			numSlashingSpans,
 		};
 	}
 

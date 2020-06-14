@@ -231,16 +231,19 @@ async function main() {
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
-	// - `stash`: The stash account whose balance is actually locked and at stake.
-	// - `total`: The total amount of the stash's balance that we are currently accounting for. Simply
-	//   `active + unlocking`.
-	// - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
-	//   eras.
-	// - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
-	//   the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
-	//   with an `era` at which `value` will be unlocked.
-	// - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
-	//   rewards. Only updated for _validators._
+	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
+	//   - `stash`: The stash account whose balance is actually locked and at stake.
+	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
+	//     Simply `active + unlocking`.
+	//   - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
+	//     eras.
+	//   - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
+	//     the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
+	//     with an `era` at which `value` will be unlocked.
+	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
+	//     rewards. Only updated for _validators._
+	// - `numSlashingSpans`: Number of slashing spans on Stash account. Usually only needed for
+	//   calls to `withdrawUnbonded`. `null` if provided address is not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
