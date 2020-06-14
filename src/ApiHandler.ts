@@ -68,17 +68,8 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
-
-		// The genesis block is a special case with little information associated with it.
-		if (parentHash.every((byte) => !byte)) {
-			return {
-				number,
-				hash,
-				parentHash,
-				stateRoot,
-				extrinsicsRoot,
-			};
-		}
+		const onInitialize = { events: [] as SanitizedEvent[] };
+		const onFinalize = { events: [] as SanitizedEvent[] };
 
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
@@ -88,6 +79,22 @@ export default class ApiHandler {
 
 			return { type, index, value };
 		});
+
+		// The genesis block is a special case with little information associated with it.
+		if (parentHash.every((byte) => !byte)) {
+			return {
+				number,
+				hash,
+				parentHash,
+				stateRoot,
+				extrinsicsRoot,
+				authorId,
+				logs,
+				onInitialize,
+				extrinsics: [],
+				onFinalize,
+			};
+		}
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		const extrinsics = block.extrinsics.map((extrinsic) => {
@@ -117,9 +124,6 @@ export default class ApiHandler {
 				paysFee: null as null | boolean,
 			};
 		});
-
-		const onInitialize = { events: [] as SanitizedEvent[] };
-		const onFinalize = { events: [] as SanitizedEvent[] };
 
 		const successEvent = 'system.ExtrinsicSuccess';
 		const failureEvent = 'system.ExtrinsicFailed';
