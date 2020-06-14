@@ -16,19 +16,19 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
+import type { BlockHash } from '@polkadot/types/interfaces';
+import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
 import ApiHandler from './ApiHandler';
-import { parseNumber, sanitizeNumbers } from './utils';
+import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 
 type Params = { [key: string]: string };
-
-type TxBody = { tx: string };
 
 async function main() {
 	const api = await ApiPromise.create({
@@ -95,10 +95,10 @@ async function main() {
 	// GET a block.
 	//
 	// Paths:
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
-	// - `number`: Block number.
+	// - `number`: Block height.
 	// - `hash`: The block's hash.
 	// - `parentHash`: The hash of the parent block.
 	// - `stateRoot`: The state root after executing this block.
@@ -142,9 +142,7 @@ async function main() {
 	});
 
 	get('/block/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
-
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 		return await handler.fetchBlock(hash);
 	});
 
@@ -152,7 +150,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The address to query.
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -185,8 +183,7 @@ async function main() {
 
 	get('/balance/:address/:number', async (params) => {
 		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchBalance(hash, address);
 	});
@@ -195,7 +192,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -217,8 +214,7 @@ async function main() {
 
 	get('/payout/:address/:number', async (params) => {
 		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchPayoutInfo(hash, address);
 	});
@@ -227,7 +223,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -259,8 +255,7 @@ async function main() {
 
 	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchStakingLedger(hash, address);
 	});
@@ -269,7 +264,7 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: Address to query.
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -290,8 +285,7 @@ async function main() {
 
 	get('/vesting/:address/:number', async (params) => {
 		const { address } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchVesting(hash, address);
 	});
@@ -299,7 +293,7 @@ async function main() {
 	// GET the chain's metadata.
 	//
 	// Paths:
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - Metadata object.
@@ -314,9 +308,7 @@ async function main() {
 	});
 
 	get('/metadata/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
-
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 		return await handler.fetchMetadata(hash);
 	});
 
@@ -324,7 +316,7 @@ async function main() {
 	//
 	// Paths:
 	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `type`: The type of claim. 'Regular' or 'Saft'.
@@ -340,8 +332,7 @@ async function main() {
 
 	get('/claims/:ethAddress/:number', async (params) => {
 		const { ethAddress } = params;
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchClaimsInfo(hash, ethAddress);
 	});
@@ -349,7 +340,7 @@ async function main() {
 	// GET all the information needed to construct a transaction offline.
 	//
 	// Paths
-	// - (Optional) `number`: Block number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -378,9 +369,7 @@ async function main() {
 	});
 
 	get('/tx/artifacts/:number', async (params) => {
-		const number = parseNumber(params.number);
-		const hash = await api.rpc.chain.getBlockHash(number);
-
+		const hash: BlockHash = await getHashForBlock(api, params.number);
 		return await handler.fetchTxArtifacts(hash);
 	});
 
@@ -452,6 +441,47 @@ async function main() {
 	app.listen(PORT, HOST, () =>
 		console.log(`Running on http://${HOST}:${PORT}/`)
 	);
+}
+
+async function getHashForBlock(
+	api: ApiPromise,
+	blockId: string
+): Promise<BlockHash> {
+	try {
+		let blockNumber;
+
+		const isHexStr = isHex(blockId);
+		if (isHexStr && blockId.length === 66) {
+			// This is a block hash
+			return api.createType('BlockHash', blockId);
+		} else if (isHexStr) {
+			throw {
+				error:
+					`Cannot get block hash for ${blockId}. ` +
+					`Hex string block IDs must be 32-bytes (66-characters) in length.`,
+			};
+		}
+
+		// Not a block hash, must be a block height
+		try {
+			blockNumber = parseBlockNumber(blockId);
+		} catch (err) {
+			throw {
+				error:
+					`Cannot get block hash for ${blockId}. ` +
+					`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`,
+			};
+		}
+
+		return await api.rpc.chain.getBlockHash(blockNumber);
+	} catch (err) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (err && typeof err.error === 'string') {
+			throw err;
+		}
+
+		throw { error: `Cannot get block hash for ${blockId}.` };
+	}
 }
 
 main().catch(console.log);
