@@ -31,14 +31,7 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 type Params = { [key: string]: string };
 
 async function main() {
-	const api = await ApiPromise.create({
-		provider: new WsProvider(WS_URL),
-		types: {
-			Status: {
-				_enum: ['Free', 'Reserved'],
-			},
-		},
-	});
+	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
 	const handler = new ApiHandler(api);
 	const app = express();
 
@@ -95,7 +88,8 @@ async function main() {
 	// GET a block.
 	//
 	// Paths:
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `number`: Block height.
@@ -150,7 +144,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The address to query.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -192,7 +187,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -223,20 +219,24 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
-	// - `stash`: The stash account whose balance is actually locked and at stake.
-	// - `total`: The total amount of the stash's balance that we are currently accounting for. Simply
-	//   `active + unlocking`.
-	// - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
-	//   eras.
-	// - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
-	//   the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
-	//   with an `era` at which `value` will be unlocked.
-	// - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
-	//   rewards. Only updated for _validators._
+	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
+	//   - `stash`: The stash account whose balance is actually locked and at stake.
+	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
+	//     Simply `active + unlocking`.
+	//   - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
+	//     eras.
+	//   - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
+	//     the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
+	//     with an `era` at which `value` will be unlocked.
+	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
+	//     rewards. Only updated for _validators._
+	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
+	//   not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -264,7 +264,8 @@ async function main() {
 	//
 	// Paths:
 	// - `address`: Address to query.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
@@ -293,7 +294,8 @@ async function main() {
 	// GET the chain's metadata.
 	//
 	// Paths:
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - Metadata object.
@@ -316,7 +318,8 @@ async function main() {
 	//
 	// Paths:
 	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `type`: The type of claim. 'Regular' or 'Saft'.
@@ -340,7 +343,8 @@ async function main() {
 	// GET all the information needed to construct a transaction offline.
 	//
 	// Paths
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries finalized head.
+	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries
+	//   finalized head.
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.

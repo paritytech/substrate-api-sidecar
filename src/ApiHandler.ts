@@ -360,9 +360,33 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
+		if (staking.isNone) {
+			// Address is not a Controller, no need to look up slashing spans.
+			return {
+				at,
+				staking: {},
+				numSlashingSpans: null,
+			};
+		}
+
+		const ledger = staking.unwrap(); // should always work if staking.isSome
+		const slashingSpans = await api.query.staking.slashingSpans.at(
+			hash,
+			ledger.stash,
+		);
+
+		let numSlashingSpans;
+		if (slashingSpans.isSome) {
+			const span = slashingSpans.unwrap();
+			numSlashingSpans = span.prior.length + 1;
+		} else {
+			numSlashingSpans = 0;
+		}
+
 		return {
 			at,
-			staking: staking.isNone ? {} : staking,
+			staking,
+			numSlashingSpans,
 		};
 	}
 
