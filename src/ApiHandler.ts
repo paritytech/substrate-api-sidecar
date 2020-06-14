@@ -361,7 +361,7 @@ export default class ApiHandler {
 		};
 
 		if (staking.isNone) {
-			// Address is not a controller, nothing else to do here.
+			// Address is not a Controller, no need to look up slashing spans.
 			return {
 				at,
 				staking: {},
@@ -372,7 +372,7 @@ export default class ApiHandler {
 		const ledger = staking.unwrap(); // should always work if staking.isSome
 		const slashingSpans = await api.query.staking.slashingSpans.at(
 			hash,
-			ledger.stash
+			ledger.stash,
 		);
 
 		let numSlashingSpans;
@@ -385,7 +385,7 @@ export default class ApiHandler {
 
 		return {
 			at,
-			staking: staking.isNone ? {} : staking,
+			staking,
 			numSlashingSpans,
 		};
 	}

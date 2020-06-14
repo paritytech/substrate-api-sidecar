@@ -235,8 +235,8 @@ async function main() {
 	//     with an `era` at which `value` will be unlocked.
 	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//     rewards. Only updated for _validators._
-	// - `numSlashingSpans`: Number of slashing spans on Stash account. Usually only needed for
-	//   calls to `withdrawUnbonded`. `null` if provided address is not a Controller.
+	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
+	//   not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
