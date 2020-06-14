@@ -20,6 +20,7 @@ import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
@@ -27,6 +28,7 @@ import { parseBlockNumber, sanitizeNumbers } from './utils';
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 type Params = { [key: string]: string };
 
@@ -36,6 +38,23 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
+
+	switch (NODE_ENV) {
+		case 'production':
+			app.use(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+				morgan('combined', {
+					skip: function (_: express.Request, res: express.Response) {
+						return res.statusCode < 400; // Only log errors
+					},
+				}) as express.Handler
+			);
+			break;
+		default:
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+			app.use(morgan('dev'));
+			break;
+	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function get(path: string, cb: (params: Params) => Promise<any>) {
