@@ -68,6 +68,8 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
+		const onInitialize = { events: [] as SanitizedEvent[] };
+		const onFinalize = { events: [] as SanitizedEvent[] };
 
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
@@ -106,9 +108,6 @@ export default class ApiHandler {
 				paysFee: null as null | boolean,
 			};
 		});
-
-		const onInitialize = { events: [] as SanitizedEvent[] };
-		const onFinalize = { events: [] as SanitizedEvent[] };
 
 		const successEvent = 'system.ExtrinsicSuccess';
 		const failureEvent = 'system.ExtrinsicFailed';
@@ -163,6 +162,22 @@ export default class ApiHandler {
 					onInitialize.events.push(sanitizedEvent);
 				}
 			}
+		}
+
+		// The genesis block is a special case with little information associated with it.
+		if (parentHash.every((byte) => !byte)) {
+			return {
+				number,
+				hash,
+				parentHash,
+				stateRoot,
+				extrinsicsRoot,
+				authorId,
+				logs,
+				onInitialize,
+				extrinsics,
+				onFinalize,
+			};
 		}
 
 		const perByte = api.consts.transactionPayment.transactionByteFee;
@@ -372,7 +387,7 @@ export default class ApiHandler {
 		const ledger = staking.unwrap(); // should always work if staking.isSome
 		const slashingSpans = await api.query.staking.slashingSpans.at(
 			hash,
-			ledger.stash,
+			ledger.stash
 		);
 
 		let numSlashingSpans;
