@@ -380,23 +380,25 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		const noneResponse = {
-			at,
-			controller: null,
-			rewardDestination: null,
-			numSlashingSpans: null,
-			staking: {},
-		};
-
 		if (bonded.isNone) {
 			// If bonded.isNone, address is not a stash.
-			return noneResponse;
+			return {
+				at,
+				controller: null,
+				rewardDestination: null,
+				numSlashingSpans: null,
+				staking: {},
+			};
 		}
 
-		// We can safely infer (optionBonded.isSome === true) and safely unwrap
+		// We can infer (optionBonded.isSome === true) and safely unwrap
 		const controller = bonded.unwrap();
 
-		const [stakingLedger, rewardDestination, slashingSpans] = await Promise.all([
+		const [
+			stakingLedger,
+			rewardDestination,
+			slashingSpans,
+		] = await Promise.all([
 			await api.query.staking.ledger.at(hash, controller),
 			await api.query.staking.payee.at(hash, address),
 			await api.query.staking.slashingSpans.at(hash, address),
