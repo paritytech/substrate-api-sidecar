@@ -218,7 +218,7 @@ async function main() {
 	// GET staking information for an address.
 	//
 	// Paths:
-	// - `address`: The _Controller_ address for staking.
+	// - `address`: The _Stash_ address for staking.
 	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
 	//   finalized head.
 	//

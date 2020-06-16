@@ -363,19 +363,18 @@ export default class ApiHandler {
 
 	/**
 	 *
-	 * @param hash: BlockHash
-	 * @param address: string - _Stash_ address
+	 * @param hash BlockHash to make call at.
+	 * @param address: _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingLedger(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		// optionBonded: Option<AccountId>
 		const [header, rewardDestination, optionBonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.staking.payee.at(hash, address),
 
-			// Use stash address to get info on payee and controller
+			// This returns an Option<AccountId> representing the controller
 			api.query.staking.bonded.at(hash, address),
 		]);
 
