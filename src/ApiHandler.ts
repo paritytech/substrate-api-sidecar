@@ -16,11 +16,11 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { CalcFee } from '@polkadot/calc-fee';
-import { Option, Struct } from '@polkadot/types';
+import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo, StakingLedger } from '@polkadot/types/interfaces';
+import { DispatchInfo } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
