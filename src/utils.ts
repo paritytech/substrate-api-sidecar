@@ -65,7 +65,6 @@ export function sanitizeNumbers(data: any): any {
 		}
 
 		if (Array.isArray(data)) {
-			debugger;
 			return data.map(sanitizeNumbers);
 		}
 
