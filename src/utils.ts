@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import Option from '@polkadot/api/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
 export function parseBlockNumber(n: string): number {
@@ -33,6 +34,12 @@ export function sanitizeNumbers(data: any): any {
 			return data.raw.toString(10);
 		}
 
+		if (data.isSome === true) {
+			data = data.unwrap();
+		} else if (data.isNone == true) {
+			return data;
+		}
+
 		if (typeof data.toJSON === 'function') {
 			const json = data.toJSON();
 
@@ -59,6 +66,7 @@ export function sanitizeNumbers(data: any): any {
 		}
 
 		if (Array.isArray(data)) {
+			debugger;
 			return data.map(sanitizeNumbers);
 		}
 
