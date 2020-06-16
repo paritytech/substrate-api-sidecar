@@ -404,8 +404,8 @@ export default class ApiHandler {
 			await api.query.staking.slashingSpans.at(hash, stash),
 		]);
 
-		// should always work because we know that we have a bonded pair
-		// but just in case we return a default value of null
+		// should always work because we know that we have a bonded pair but just
+		// in case we return a default value of null so we know to handle later
 		const stakingLedger = optionStakingLedger.unwrapOr(null);
 
 		const numSlashingSpans = optionSlashingSpans.isSome
