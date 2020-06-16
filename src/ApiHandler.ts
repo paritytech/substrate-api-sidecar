@@ -16,11 +16,11 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { CalcFee } from '@polkadot/calc-fee';
-import { Struct } from '@polkadot/types';
+import { Option, Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo } from '@polkadot/types/interfaces';
+import { DispatchInfo, StakingLedger } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
@@ -361,14 +361,25 @@ export default class ApiHandler {
 		}
 	}
 
+	/**
+	 *
+	 * @param hash
+	 * @param address controller AccountId
+	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingLedger(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, staking] = await Promise.all([
+		const [header, rewardDestination, bonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.ledger.at(hash, address),
+			api.query.staking.payee.at(hash, address),
+			api.query.staking.bonded.at(hash, address),
 		]);
+
+		const staking: Option<StakingLedger> = await api.query.staking.ledger.at(
+			hash,
+			bonded
+		);
 
 		const at = {
 			hash,
@@ -400,8 +411,11 @@ export default class ApiHandler {
 
 		return {
 			at,
-			staking,
+			// staking,
+			staking: ledger.toJSON(),
 			numSlashingSpans,
+			rewardDestination,
+			bonded,
 		};
 	}
 
