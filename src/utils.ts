@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import Option from '@polkadot/api/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
 export function parseBlockNumber(n: string): number {
