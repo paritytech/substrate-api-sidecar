@@ -367,15 +367,12 @@ export default class ApiHandler {
 	 * @param address: _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingLedger(hash: BlockHash, address: string) {
+	async fetchStakingInfo(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, rewardDestination, optionBonded] = await Promise.all([
+		const [header, bonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.payee.at(hash, address),
-
-			// This returns an Option<AccountId> representing the controller
-			api.query.staking.bonded.at(hash, address),
+			api.query.staking.bonded.at(hash, address), // Option<AccountId> representing the controller
 		]);
 
 		const at = {
@@ -391,27 +388,22 @@ export default class ApiHandler {
 			staking: {},
 		};
 
-		if (optionBonded.isNone === true) {
+		if (bonded.isNone) {
+			// If bonded.isNone, address is not a stash.
 			return noneResponse;
 		}
 
 		// We can safely infer (optionBonded.isSome === true) and safely unwrap
-		const bonded = optionBonded.unwrap();
+		const controller = bonded.unwrap();
 
-		const staking: Option<StakingLedger> = await api.query.staking.ledger.at(
-			hash,
-			bonded
-		);
+		const [stakingLedger, rewardDestination, slashingSpans] = await Promise.all([
+			await api.query.staking.ledger.at(hash, controller),
+			await api.query.staking.payee.at(hash, address),
+			await api.query.staking.slashingSpans.at(hash, address),
+		]);
 
-		if (staking.isNone) {
-			return noneResponse;
-		}
-
-		const ledger = staking.unwrap(); // should always work if staking.isSome
-		const slashingSpans = await api.query.staking.slashingSpans.at(
-			hash,
-			ledger.stash
-		);
+		// should always work because we know that we have a bonded pair
+		const ledger = stakingLedger.unwrap();
 
 		let numSlashingSpans;
 		if (slashingSpans.isSome) {
@@ -423,13 +415,10 @@ export default class ApiHandler {
 
 		return {
 			at,
-			controller: bonded,
+			controller,
 			rewardDestination,
 			numSlashingSpans,
-			staking,
-			// I will take this line out if we don't use it, but it does work
-			// and I think it addresses #92 - zeke
-			// staking: ledger.toJSON(),
+			staking: ledger.toJSON(),
 		};
 	}
 
@@ -509,28 +498,6 @@ export default class ApiHandler {
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
-		};
-	}
-
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchPayoutInfo(hash: BlockHash, address: string) {
-		const api = await this.ensureMeta(hash);
-
-		const [header, rewardDestination, bonded] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			api.query.staking.payee.at(hash, address),
-			api.query.staking.bonded.at(hash, address),
-		]);
-
-		const at = {
-			hash,
-			height: header.number.toNumber().toString(10),
-		};
-
-		return {
-			at,
-			rewardDestination,
-			bonded,
 		};
 	}
 
