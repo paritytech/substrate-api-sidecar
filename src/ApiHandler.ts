@@ -380,7 +380,7 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (optionController.isNone) {
+		if (optionController.isNone === true) {
 			// if bonded.isNone, `stash` address param is not a stash.
 			return {
 				at,
