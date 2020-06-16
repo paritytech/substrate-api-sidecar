@@ -400,7 +400,13 @@ export default class ApiHandler {
 
 		return {
 			at,
-			staking,
+			staking: {
+				stash: ledger.stash.toString(),
+				total: ledger.total.toString(),
+				active: ledger.active.toString(),
+				unlocking: ledger.unlocking.toString(),
+				claimedRewards: ledger.claimedRewards.toString(),
+			},
 			numSlashingSpans,
 		};
 	}
