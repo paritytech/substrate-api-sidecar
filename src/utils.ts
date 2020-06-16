@@ -33,12 +33,6 @@ export function sanitizeNumbers(data: any): any {
 			return data.raw.toString(10);
 		}
 
-		if (data.isSome === true) {
-			data = data.unwrap();
-		} else if (data.isNone == true) {
-			return data;
-		}
-
 		if (typeof data.toJSON === 'function') {
 			const json = data.toJSON();
 
