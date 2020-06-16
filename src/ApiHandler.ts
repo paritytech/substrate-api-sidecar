@@ -381,7 +381,7 @@ export default class ApiHandler {
 		};
 
 		if (optionController.isNone) {
-			// if bonded.isNone, `stash` param is not a stash.
+			// if bonded.isNone, `stash` address param is not a stash.
 			return {
 				at,
 				controller: null,
@@ -405,7 +405,8 @@ export default class ApiHandler {
 		]);
 
 		// should always work because we know that we have a bonded pair
-		const stakingLedger = optionStakingLedger.unwrap();
+		// but just in case we return a default value of null
+		const stakingLedger = optionStakingLedger.unwrapOr(null);
 
 		const numSlashingSpans = optionSlashingSpans.isSome
 			? optionSlashingSpans.unwrap().prior.length + 1
@@ -416,7 +417,7 @@ export default class ApiHandler {
 			controller,
 			rewardDestination,
 			numSlashingSpans,
-			staking: stakingLedger.toJSON(),
+			staking: stakingLedger ? stakingLedger.toJSON() : {},
 		};
 	}
 
