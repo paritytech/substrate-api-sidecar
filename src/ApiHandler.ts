@@ -378,13 +378,21 @@ export default class ApiHandler {
 			api.query.staking.bonded.at(hash, address),
 		]);
 
+		const at = {
+			hash,
+			height: header.number.toNumber().toString(10),
+		};
+
+		const noneResponse = {
+			at,
+			controller: null,
+			rewardDestination: null,
+			numSlashingSpans: null,
+			staking: {},
+		};
+
 		if (optionBonded.isNone === true) {
-			return {
-				controller: null,
-				rewardDestination: null,
-				numSlashingSpans: null,
-				staking: {},
-			};
+			return noneResponse;
 		}
 
 		// We can safely infer (optionBonded.isSome === true) and safely unwrap
@@ -395,18 +403,8 @@ export default class ApiHandler {
 			bonded
 		);
 
-		const at = {
-			hash,
-			height: header.number.toNumber().toString(10),
-		};
-
 		if (staking.isNone) {
-			// Address is not a Controller, no need to look up slashing spans.
-			return {
-				at,
-				staking: {},
-				numSlashingSpans: null,
-			};
+			return noneResponse;
 		}
 
 		const ledger = staking.unwrap(); // should always work if staking.isSome
@@ -425,11 +423,13 @@ export default class ApiHandler {
 
 		return {
 			at,
-			// staking,
-			staking: ledger.toJSON(),
-			numSlashingSpans,
+			controller: bonded,
 			rewardDestination,
-			bonded,
+			numSlashingSpans,
+			staking,
+			// I will take this line out if we don't use it, but it does work
+			// and I think it addresses #92 - zeke
+			// staking: ledger.toJSON(),
 		};
 	}
 
