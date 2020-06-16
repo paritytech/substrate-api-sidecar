@@ -364,15 +364,15 @@ export default class ApiHandler {
 	/**
 	 *
 	 * @param hash BlockHash to make call at.
-	 * @param address: _Stash_ address.
+	 * @param stash: _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingInfo(hash: BlockHash, address: string) {
+	async fetchStakingInfo(hash: BlockHash, stash: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, bonded] = await Promise.all([
+		const [header, optionController] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.bonded.at(hash, address), // Option<AccountId> representing the controller
+			api.query.staking.bonded.at(hash, stash), // Option<AccountId> representing the controller
 		]);
 
 		const at = {
@@ -380,8 +380,8 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (bonded.isNone) {
-			// If bonded.isNone, address is not a stash.
+		if (optionController.isNone) {
+			// if bonded.isNone, `stash` param is not a stash.
 			return {
 				at,
 				controller: null,
@@ -391,36 +391,32 @@ export default class ApiHandler {
 			};
 		}
 
-		// We can infer (optionBonded.isSome === true) and safely unwrap
-		const controller = bonded.unwrap();
+		// we can infer (optionBonded.isSome === true) and safely unwrap
+		const controller = optionController.unwrap();
 
 		const [
-			stakingLedger,
+			optionStakingLedger,
 			rewardDestination,
-			slashingSpans,
+			optionSlashingSpans,
 		] = await Promise.all([
 			await api.query.staking.ledger.at(hash, controller),
-			await api.query.staking.payee.at(hash, address),
-			await api.query.staking.slashingSpans.at(hash, address),
+			await api.query.staking.payee.at(hash, stash),
+			await api.query.staking.slashingSpans.at(hash, stash),
 		]);
 
 		// should always work because we know that we have a bonded pair
-		const ledger = stakingLedger.unwrap();
+		const stakingLedger = optionStakingLedger.unwrap();
 
-		let numSlashingSpans;
-		if (slashingSpans.isSome) {
-			const span = slashingSpans.unwrap();
-			numSlashingSpans = span.prior.length + 1;
-		} else {
-			numSlashingSpans = 0;
-		}
+		const numSlashingSpans = optionSlashingSpans.isSome
+			? optionSlashingSpans.unwrap().prior.length + 1
+			: 0;
 
 		return {
 			at,
 			controller,
 			rewardDestination,
 			numSlashingSpans,
-			staking: ledger.toJSON(),
+			staking: stakingLedger.toJSON(),
 		};
 	}
 
