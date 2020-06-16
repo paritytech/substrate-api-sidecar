@@ -10,7 +10,7 @@
     "lint": "tsc && eslint . --ext ts",
     "start": "yarn run build && node ./build/main.js",
     "dev": "tsc-watch --onSuccess \"node ./build/main.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
@@ -28,6 +28,9 @@
     "typescript": "^3.9.5"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.0",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.1.0",
     "tsc-watch": "^4.2.8"
   }
 }

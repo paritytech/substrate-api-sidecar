@@ -22,7 +22,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
 import ApiHandler from './ApiHandler';
-import { parseBlockNumber, sanitizeNumbers } from './utils';
+import { parseBlockNumber, sanitizeNumbers } from './utils/utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
