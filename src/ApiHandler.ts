@@ -363,18 +363,33 @@ export default class ApiHandler {
 
 	/**
 	 *
-	 * @param hash
-	 * @param address controller AccountId
+	 * @param hash: BlockHash
+	 * @param address: string - _Stash_ address
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingLedger(hash: BlockHash, address: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, rewardDestination, bonded] = await Promise.all([
+		// optionBonded: Option<AccountId>
+		const [header, rewardDestination, optionBonded] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.staking.payee.at(hash, address),
+
+			// Use stash address to get info on payee and controller
 			api.query.staking.bonded.at(hash, address),
 		]);
+
+		if (optionBonded.isNone === true) {
+			return {
+				controller: null,
+				rewardDestination: null,
+				numSlashingSpans: null,
+				staking: {},
+			};
+		}
+
+		// We can safely infer (optionBonded.isSome === true) and safely unwrap
+		const bonded = optionBonded.unwrap();
 
 		const staking: Option<StakingLedger> = await api.query.staking.ledger.at(
 			hash,
