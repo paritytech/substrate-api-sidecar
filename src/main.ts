@@ -224,14 +224,14 @@ async function main() {
 	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
 	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
-	get('/accounts/:address/staking', async (params) => {
+	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		return await handler.fetchStakingInfo(hash, address);
 	});
 
-	get('/accounts/:address/staking/:number', async (params) => {
+	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 

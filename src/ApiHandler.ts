@@ -364,7 +364,7 @@ export default class ApiHandler {
 	/**
 	 *
 	 * @param hash BlockHash to make call at.
-	 * @param stash: _Stash_ address.
+	 * @param stash _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	async fetchStakingInfo(hash: BlockHash, stash: string) {
@@ -380,14 +380,11 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (
-			controllerOption.isNone === true ||
-			controllerOption.isSome !== true
-		) {
+		if (controllerOption.isNone) {
 			// if controllerOption.isNone, `stash` address param is not a stash.
 			throw {
 				error: `The address ${stash} is not a stash address.`,
-				statusCode: 422,
+				statusCode: 400,
 			};
 		}
 
@@ -403,20 +400,19 @@ export default class ApiHandler {
 			await api.query.staking.slashingSpans.at(hash, stash),
 		]);
 
-		// should always work because we know that we have a bonded pair
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
 		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
 			throw {
 				error: `Staking ledger could not be found for address "${controller.toString()}"`,
 				statusCode: 404,
 			};
 		}
 
-		const numSlashingSpans =
-			slashingSpansOption.isSome === true
-				? slashingSpansOption.unwrap().prior.length + 1
-				: 0;
+		const numSlashingSpans = slashingSpansOption.isSome
+			? slashingSpansOption.unwrap().prior.length + 1
+			: 0;
 
 		return {
 			at,
