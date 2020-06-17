@@ -41,11 +41,15 @@ async function main() {
 	function get(path: string, cb: (params: Params) => Promise<any>) {
 		app.get(path, async (req, res) => {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					res.status(err.statusCode || 500).send(
+						sanitizeNumbers(err)
+					);
 					return;
 				}
 
@@ -196,6 +200,8 @@ async function main() {
 	//   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
 	//   stake), or 'Controller' (Controller address).
 	// - `controller`: Controller address for the given Stash.
+	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
+	//    not a Controller.
 	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
 	//   - `stash`: The stash account whose balance is actually locked and at stake.
 	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
@@ -207,8 +213,6 @@ async function main() {
 	//     with an `era` at which `value` will be unlocked.
 	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//     rewards. Only updated for _validators._
-	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
-	//   not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -220,14 +224,14 @@ async function main() {
 	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
 	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
-	get('/staking/:address', async (params) => {
+	get('/accounts/:address/staking', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		return await handler.fetchStakingInfo(hash, address);
 	});
 
-	get('/staking/:address/:number', async (params) => {
+	get('/accounts/:address/staking/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 

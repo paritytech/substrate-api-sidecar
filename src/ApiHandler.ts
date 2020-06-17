@@ -370,7 +370,7 @@ export default class ApiHandler {
 	async fetchStakingInfo(hash: BlockHash, stash: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, optionController] = await Promise.all([
+		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.staking.bonded.at(hash, stash), // Option<AccountId> representing the controller
 		]);
@@ -380,44 +380,50 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (optionController.isNone === true) {
-			// if bonded.isNone, `stash` address param is not a stash.
-			return {
-				at,
-				controller: null,
-				rewardDestination: null,
-				numSlashingSpans: null,
-				staking: {},
+		if (
+			controllerOption.isNone === true ||
+			controllerOption.isSome !== true
+		) {
+			// if controllerOption.isNone, `stash` address param is not a stash.
+			throw {
+				error: `The address ${stash} is not a stash address.`,
+				statusCode: 422,
 			};
 		}
 
-		// we can infer (optionBonded.isSome === true) and safely unwrap
-		const controller = optionController.unwrap();
+		const controller = controllerOption.unwrap();
 
 		const [
-			optionStakingLedger,
+			stakingLedgerOption,
 			rewardDestination,
-			optionSlashingSpans,
+			slashingSpansOption,
 		] = await Promise.all([
 			await api.query.staking.ledger.at(hash, controller),
 			await api.query.staking.payee.at(hash, stash),
 			await api.query.staking.slashingSpans.at(hash, stash),
 		]);
 
-		// should always work because we know that we have a bonded pair but just
-		// in case we return a default value of null so we know to handle later
-		const stakingLedger = optionStakingLedger.unwrapOr(null);
+		// should always work because we know that we have a bonded pair
+		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
-		const numSlashingSpans = optionSlashingSpans.isSome
-			? optionSlashingSpans.unwrap().prior.length + 1
-			: 0;
+		if (stakingLedger === null) {
+			throw {
+				error: `Staking ledger could not be found for address "${controller.toString()}"`,
+				statusCode: 404,
+			};
+		}
+
+		const numSlashingSpans =
+			slashingSpansOption.isSome === true
+				? slashingSpansOption.unwrap().prior.length + 1
+				: 0;
 
 		return {
 			at,
 			controller,
 			rewardDestination,
 			numSlashingSpans,
-			staking: stakingLedger ? stakingLedger.toJSON() : {},
+			staking: stakingLedger,
 		};
 	}
 
