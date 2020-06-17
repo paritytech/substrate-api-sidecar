@@ -404,7 +404,7 @@ export default class ApiHandler {
 		if (stakingLedger === null) {
 			// should never throw because by time we get here we know we have a bonded pair
 			throw {
-				error: `Staking ledger could not be found for address "${controller.toString()}"`,
+				error: `Staking ledger could not be found for controller address "${controller.toString()}"`,
 				statusCode: 404,
 			};
 		}
