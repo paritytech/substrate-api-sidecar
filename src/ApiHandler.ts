@@ -460,12 +460,16 @@ export default class ApiHandler {
 			genesisHash,
 			name,
 			version,
+			currentEraOption,
+			activeEraOption,
 		] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
 			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(hash),
+			api.query.staking.currentEra.at(hash),
+			api.query.staking.activeEra.at(hash),
 		]);
 
 		const at = {
@@ -480,6 +484,15 @@ export default class ApiHandler {
 			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
+			// TODO - when unwrap fails, do we want to throw or give an error just for this field?
+			activeEra: activeEraOption.unwrapOr({
+				error:
+					'Something went wrong while attempting to query for the activeEra',
+			}),
+			currentEra: currentEraOption.unwrapOr({
+				error:
+					'Something went wrong while attempting to query for the currentEra',
+			}),
 			metadata: metadata.toHex(),
 		};
 	}
