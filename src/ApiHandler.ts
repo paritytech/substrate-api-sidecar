@@ -381,7 +381,6 @@ export default class ApiHandler {
 		};
 
 		if (controllerOption.isNone) {
-			// if controllerOption.isNone, `stash` address param is not a stash.
 			throw {
 				error: `The address ${stash} is not a stash address.`,
 				statusCode: 400,
