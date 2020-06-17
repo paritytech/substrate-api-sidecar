@@ -361,13 +361,18 @@ export default class ApiHandler {
 		}
 	}
 
+	/**
+	 *
+	 * @param hash BlockHash to make call at.
+	 * @param stash _Stash_ address.
+	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingLedger(hash: BlockHash, address: string) {
+	async fetchStakingInfo(hash: BlockHash, stash: string) {
 		const api = await this.ensureMeta(hash);
 
-		const [header, staking] = await Promise.all([
+		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.ledger.at(hash, address),
+			api.query.staking.bonded.at(hash, stash), // Option<AccountId> representing the controller
 		]);
 
 		const at = {
@@ -375,33 +380,45 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (staking.isNone) {
-			// Address is not a Controller, no need to look up slashing spans.
-			return {
-				at,
-				staking: {},
-				numSlashingSpans: null,
+		if (controllerOption.isNone) {
+			throw {
+				error: `The address ${stash} is not a stash address.`,
+				statusCode: 400,
 			};
 		}
 
-		const ledger = staking.unwrap(); // should always work if staking.isSome
-		const slashingSpans = await api.query.staking.slashingSpans.at(
-			hash,
-			ledger.stash
-		);
+		const controller = controllerOption.unwrap();
 
-		let numSlashingSpans;
-		if (slashingSpans.isSome) {
-			const span = slashingSpans.unwrap();
-			numSlashingSpans = span.prior.length + 1;
-		} else {
-			numSlashingSpans = 0;
+		const [
+			stakingLedgerOption,
+			rewardDestination,
+			slashingSpansOption,
+		] = await Promise.all([
+			await api.query.staking.ledger.at(hash, controller),
+			await api.query.staking.payee.at(hash, stash),
+			await api.query.staking.slashingSpans.at(hash, stash),
+		]);
+
+		const stakingLedger = stakingLedgerOption.unwrapOr(null);
+
+		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
+			throw {
+				error: `Staking ledger could not be found for controller address "${controller.toString()}"`,
+				statusCode: 404,
+			};
 		}
+
+		const numSlashingSpans = slashingSpansOption.isSome
+			? slashingSpansOption.unwrap().prior.length + 1
+			: 0;
 
 		return {
 			at,
-			staking,
+			controller,
+			rewardDestination,
 			numSlashingSpans,
+			staking: stakingLedger,
 		};
 	}
 
@@ -481,28 +498,6 @@ export default class ApiHandler {
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
 			metadata: metadata.toHex(),
-		};
-	}
-
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchPayoutInfo(hash: BlockHash, address: string) {
-		const api = await this.ensureMeta(hash);
-
-		const [header, rewardDestination, bonded] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			api.query.staking.payee.at(hash, address),
-			api.query.staking.bonded.at(hash, address),
-		]);
-
-		const at = {
-			hash,
-			height: header.number.toNumber().toString(10),
-		};
-
-		return {
-			at,
-			rewardDestination,
-			bonded,
 		};
 	}
 

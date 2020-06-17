@@ -40,13 +40,9 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 - `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.
 
-- `/payout/ADDRESS` fetch payout info for `ADDRESS` at latest finalized block.
+- `/staking/ADDRESS` fetch the staking info for `ADDRESS` at latest finalized block.
 
-- `/payout/ADDRESS/NUMBER` fetch payout info for `ADDRESS` at the block identified by 'NUMBER`.
-
-- `/staking/ADDRESS` fetch the staking ledger info for `ADDRESS` at latest finalized block.
-
-- `/staking/ADDRESS/NUMBER` fetch the staking ledger info for `ADDRESS` at the block identified by 'NUMBER`.
+- `/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.
 
 - `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
 
