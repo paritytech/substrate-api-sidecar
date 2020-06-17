@@ -27,6 +27,16 @@ yarn
 yarn start
 ```
 
+### Fee Calculation Debugging
+
+It is possible to get more information about the fee calculation process logged to
+the console. Because this fee calculation happens in the statically compiled web assembly part
+a re-compile with the proper environment variable set is necessary:
+
+```
+FEE_DEBUG=1 yarn
+```
+
 ### Available paths
 
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**

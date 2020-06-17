@@ -68,6 +68,9 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
+
+		api.registry.setMetadata(await api.rpc.state.getMetadata(parentHash));
+
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
 

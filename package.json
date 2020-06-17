@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "wasm-pack build --target nodejs --scope polkadot calc-fee",
+    "preinstall": "./calc-fee/build.sh",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
     "lint": "tsc && eslint . --ext ts",

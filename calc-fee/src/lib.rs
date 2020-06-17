@@ -1,10 +1,11 @@
-mod panic;
+mod debug;
 
+use core::str::FromStr;
+use log::info;
 use serde_derive::Deserialize;
 use sp_arithmetic::{FixedI128, FixedPointNumber, Perbill};
 use sp_arithmetic_legacy::Fixed128 as Fixed128Legacy;
 use wasm_bindgen::prelude::*;
-use core::str::FromStr;
 
 type Balance = u128;
 type Weight = u64;
@@ -18,6 +19,7 @@ pub struct JSCoefficient {
 	degree: u8,
 }
 
+#[derive(Debug)]
 struct Coefficient {
 	coeff_integer: Balance,
 	coeff_frac: Perbill,
@@ -25,6 +27,7 @@ struct Coefficient {
 	degree: u8,
 }
 
+#[derive(Debug)]
 enum Multiplier {
 	Current((FixedI128, bool)),
 	Legacy(Fixed128Legacy),
@@ -48,13 +51,14 @@ impl Multiplier {
 				} else {
 					mult.0.saturating_mul_acc_int(balance)
 				}
-			},
+			}
 			Self::Legacy(mult) => mult.saturated_multiply_accumulate(balance),
 		}
 	}
 }
 
 #[wasm_bindgen]
+#[derive(Debug)]
 pub struct CalcFee {
 	polynomial: Vec<Coefficient>,
 	multiplier: Multiplier,
@@ -72,44 +76,50 @@ impl CalcFee {
 		fixed128_bug: bool,
 		fixed128_legacy: bool,
 	) -> Self {
-		panic::set_hook();
+		debug::setup();
+
 		let polynomial: Vec<Coefficient> = {
 			let poly: Vec<JSCoefficient> = polynomial.into_serde().unwrap();
-			poly.iter().map(|c|
-				Coefficient {
+			poly.iter()
+				.map(|c| Coefficient {
 					coeff_integer: Balance::from_str(&c.coeffInteger).unwrap(),
 					coeff_frac: Perbill::from_parts(c.coeffFrac),
 					negative: c.negative,
-					degree: c.degree
-				}
-			)
-			.collect()
+					degree: c.degree,
+				})
+				.collect()
 		};
 		let multiplier = Multiplier::new(
 			i128::from_str(multiplier).unwrap(),
 			fixed128_legacy,
-			fixed128_bug
+			fixed128_bug,
 		);
 		let per_byte_fee = Balance::from_str(per_byte_fee).unwrap();
 		let base_fee = weight_to_fee(&extrinsic_base_weight, &polynomial);
-		Self {
+		let calc = Self {
 			polynomial,
 			multiplier,
 			per_byte_fee,
 			base_fee,
-		}
+		};
+		info!("CalcFee::withParams -> {:#?}", calc);
+		calc
 	}
 
 	pub fn calc_fee(&self, weight: Weight, len: u32) -> String {
-		panic::set_hook();
-
 		let len_fee = self.per_byte_fee.saturating_mul(len.into());
-		let unadjusted_weight_fee = weight_to_fee(&weight, &self.polynomial);
+		let weight_fee = weight_to_fee(&weight, &self.polynomial);
 
-		let adjustable_fee = len_fee.saturating_add(unadjusted_weight_fee);
+		let adjustable_fee = len_fee.saturating_add(weight_fee);
 		let adjusted_fee = self.multiplier.calc(adjustable_fee);
 
-		self.base_fee.saturating_add(adjusted_fee).to_string()
+		let result = self.base_fee.saturating_add(adjusted_fee);
+
+		info!("calc_fee: ({}, {}) -> len_fee: {} weight_fee: {} adjustable_fee: {} \
+			adjusted_fee: {} result: {}",
+			weight, len, len_fee, weight_fee, adjustable_fee, adjusted_fee, result);
+
+		result.to_string()
 	}
 }
 
