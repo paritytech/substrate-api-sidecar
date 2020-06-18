@@ -47,7 +47,7 @@ async function main() {
 					skip: function (_: express.Request, res: express.Response) {
 						return res.statusCode < 400; // Only log errors
 					},
-				}) as express.Handler
+				})
 			);
 			break;
 		case 'all':
