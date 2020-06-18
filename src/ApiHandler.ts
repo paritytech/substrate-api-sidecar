@@ -68,6 +68,7 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
+
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
 
@@ -188,59 +189,29 @@ export default class ApiHandler {
 		const version = await api.rpc.state.getRuntimeVersion(parentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
-		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
-		let fixed128Legacy = false;
-		const coefficients = (function () {
-			if (specName === 'kusama' && specVersion === 1062) {
-				fixed128Legacy = true;
-				return [
-					{
-						coeffInteger: '8',
-						coeffFrac: 0,
-						degree: 1,
-						negative: false,
-					},
-				];
-			} else if (
-				specName === 'polkadot' ||
-				(specName === 'kusama' && specVersion > 1062)
-			) {
-				return api.consts.transactionPayment.weightToFee.map(function (
-					c
-				) {
-					return {
-						coeffInteger: c.coeffInteger.toString(),
-						coeffFrac: c.coeffFrac,
-						degree: c.degree,
-						negative: c.negative,
-					};
-				});
-			} else {
-				// fee calculation not supported for this runtime
-				return null;
-			}
-		})();
-		const calcFee = (function () {
-			if (coefficients !== null) {
-				return CalcFee.from_params(
-					coefficients,
-					BigInt(extrinsicBaseWeight.toString()),
-					multiplier.toString(),
-					perByte.toString(),
-					fixed128Bug,
-					fixed128Legacy
-				);
-			} else {
-				return null;
-			}
-		})();
+		const coefficients = api.consts.transactionPayment.weightToFee.map(function(c) {
+			return {
+				coeffInteger: c.coeffInteger.toString(),
+				coeffFrac: c.coeffFrac,
+				degree: c.degree,
+				negative: c.negative,
+			};
+		});
+		const calcFee = CalcFee.from_params(
+			coefficients,
+			BigInt(extrinsicBaseWeight.toString()),
+			multiplier.toString(),
+			perByte.toString(),
+			specName,
+			specVersion,
+		);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
 
-			if (calcFee === null) {
+			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
 					error: `Fee calculation not supported for ${specName}#${specVersion}`,
 				};
