@@ -62,11 +62,15 @@ async function main() {
 	function get(path: string, cb: (params: Params) => Promise<any>) {
 		app.get(path, async (req, res) => {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					res.status(err.statusCode || 500).send(
+						sanitizeNumbers(err)
+					);
 					return;
 				}
 
@@ -204,7 +208,7 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
-	// GET payout information for an address.
+	// GET staking information for an address.
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
@@ -216,35 +220,9 @@ async function main() {
 	// - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
 	//   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
 	//   stake), or 'Controller' (Controller address).
-	// - `bonded`: Controller address for the given Stash.
-	//
-	// Substrate Reference:
-	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
-	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
-	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
-	get('/payout/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchPayoutInfo(hash, address);
-	});
-
-	get('/payout/:address/:number', async (params) => {
-		const { address } = params;
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-
-		return await handler.fetchPayoutInfo(hash, address);
-	});
-
-	// GET staking information for an address.
-	//
-	// Paths:
-	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `at`: Block number and hash at which the call was made.
+	// - `controller`: Controller address for the given Stash.
+	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
+	//    not a Controller.
 	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
 	//   - `stash`: The stash account whose balance is actually locked and at stake.
 	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
@@ -256,8 +234,6 @@ async function main() {
 	//     with an `era` at which `value` will be unlocked.
 	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//     rewards. Only updated for _validators._
-	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
-	//   not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -266,19 +242,21 @@ async function main() {
 	//
 	// Substrate Reference:
 	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
+	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
+	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchStakingLedger(hash, address);
+		return await handler.fetchStakingInfo(hash, address);
 	});
 
 	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
-		return await handler.fetchStakingLedger(hash, address);
+		return await handler.fetchStakingInfo(hash, address);
 	});
 
 	// GET vesting information for an address.
