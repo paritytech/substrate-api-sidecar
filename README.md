@@ -94,6 +94,7 @@ Following ENV variables can be set:
 - `BIND_PORT`: port on which the server will be listening, defaults to `8080`.
 - `NODE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
   `ws://127.0.0.1:9944`.
+- `LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by setting it to anything else. LOG_MODE defaults to only "errors".
 
 ### Chain compatibility
 
