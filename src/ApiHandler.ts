@@ -68,6 +68,13 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
+		const parentParentHash = await async function() {
+			if (block.header.number.toNumber() > 1) {
+				return (await api.rpc.chain.getHeader(parentHash)).parentHash;
+			} else {
+				return parentHash;
+			}
+		}();
 
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
@@ -186,7 +193,11 @@ export default class ApiHandler {
 		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
 			parentHash
 		);
-		const version = await api.rpc.state.getRuntimeVersion(parentHash);
+		// The block where the runtime is deployed falsely proclaims it would
+		// be already using the new runtime. This workaround therefore uses the
+		// parent of the parent in order to determine the correct runtime under which
+		// this block was produced.
+		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 		const coefficients = api.consts.transactionPayment.weightToFee.map(
