@@ -6,5 +6,5 @@ if [ -z ${FEE_DEBUG} ]; then
     wasm-pack build --target nodejs --scope polkadot "$SCRIPT_DIR"
 else
     echo "Fee debugging enabled"
-    wasm-pack build --target nodejs --scope polkadot "$SCRIPT_DIR" -- --features debug
+    wasm-pack build --debug --target nodejs --scope polkadot "$SCRIPT_DIR" -- --features debug
 fi
