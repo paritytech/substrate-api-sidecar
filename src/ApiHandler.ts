@@ -189,21 +189,23 @@ export default class ApiHandler {
 		const version = await api.rpc.state.getRuntimeVersion(parentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
-		const coefficients = api.consts.transactionPayment.weightToFee.map(function(c) {
-			return {
-				coeffInteger: c.coeffInteger.toString(),
-				coeffFrac: c.coeffFrac,
-				degree: c.degree,
-				negative: c.negative,
-			};
-		});
+		const coefficients = api.consts.transactionPayment.weightToFee.map(
+			function (c) {
+				return {
+					coeffInteger: c.coeffInteger.toString(),
+					coeffFrac: c.coeffFrac,
+					degree: c.degree,
+					negative: c.negative,
+				};
+			}
+		);
 		const calcFee = CalcFee.from_params(
 			coefficients,
 			BigInt(extrinsicBaseWeight.toString()),
 			multiplier.toString(),
 			perByte.toString(),
 			specName,
-			specVersion,
+			specVersion
 		);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
