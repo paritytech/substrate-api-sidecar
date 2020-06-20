@@ -7,13 +7,13 @@
  * handle conversion errors on a case by case basis and give rich, meaningful
  * responses to the client.
  *
- * tl;dr there should not be Codec types in any of these responses. Most of the
- * time the value type should either be `string` or `string | null`.
+ * In sum, there should not be Codec types in any of these responses. Most of
+ * the time the value type should either be `string` or `string | null`.
  */
 
 interface At {
 	hash: string;
-	height: string;
+	height: string | number;
 }
 
 interface StakingInfo {
@@ -22,11 +22,11 @@ interface StakingInfo {
 	activeEra: string | null; //ActiveEra.index
 	forceEra: string; // status of era forcing
 	nextEra: string | null;
-	nextSession?: string | null;
+	nextSession: string | null;
 	unappliedSlashes: string | null;
 	queuedElected: string | null; // contains an array of stashes elected
 	electionStatus: {
-		status?: string;
-		toggle?: string;
+		status: string;
+		toggle: string;
 	};
 }
