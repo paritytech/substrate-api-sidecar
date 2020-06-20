@@ -208,6 +208,35 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
+	// Get generalized staking information.
+	//
+	// at: {
+	// 	blockNumber,
+	// 	hash
+	// },
+	// ValidatorCount: number, // of validators in the set
+	// ActiveEra: number, // ActiveEra.index
+	// ForceEra: enum, // status of era forcing
+	// NextEra: number, // block number or unix time of next era
+	// NextSession: number, // block number or unix time of next session
+	// UnappliedSlashes: Vec < UnnappliedSlash >, // array of upcoming slashes, keyed by era
+	// QueuedElected: Option < ElectionResult >, // contains an array of stashes elected
+	// ElectionStatus: {
+	// 	status,
+	// 	toggle
+	// },
+	get('/staking', async (_) => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
+	get('/staking/:number', async (params) => {
+		const hash: BlockHash = await getHashForBlock(api, params.number);
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
 	// GET staking information for an address.
 	//
 	// Paths:
@@ -249,14 +278,14 @@ async function main() {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchStakingInfo(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
-		return await handler.fetchStakingInfo(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	// GET vesting information for an address.

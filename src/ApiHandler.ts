@@ -20,13 +20,19 @@ import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo } from '@polkadot/types/interfaces';
+import {
+	ActiveEraInfo,
+	DispatchInfo,
+	Forcing,
+	Header,
+} from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import BN from 'bn.js';
 
 interface SanitizedEvent {
 	method: string;
@@ -68,13 +74,13 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
-		const parentParentHash = await async function() {
+		const parentParentHash = await (async function () {
 			if (block.header.number.toNumber() > 1) {
 				return (await api.rpc.chain.getHeader(parentHash)).parentHash;
 			} else {
 				return parentHash;
 			}
-		}();
+		})();
 
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
@@ -345,13 +351,162 @@ export default class ApiHandler {
 		}
 	}
 
+	private async nextExpectedEpochChange(
+		api: ApiPromise,
+		header: Header
+	): Promise<BN> {
+		const { number, hash } = header;
+
+		const [currentSlot, epochIndex, genesisSlot] = await Promise.all([
+			await api.query.babe.currentSlot.at(hash),
+			await api.query.babe.epochIndex.at(hash),
+			await api.query.babe.genesisSlot.at(hash),
+		]);
+		// Time (measured in slots) that each epoch should last
+		const epochDuration = api.consts.babe.epochDuration;
+
+		// frame/babe/src/lib 430
+		// current_epoch_start = epoch_index * epoch_duration + genesisSlot
+		const currentEpochStart = epochIndex
+			.mul(epochDuration)
+			.add(genesisSlot);
+
+		// If we want time in terms of unix time I think we could use native JS and do:
+		// (JSNowUnixTime + (EndOfCurrentEpoch - CurrentSlot) * BlockDuration)
+		// imo this seems like a poor solution bc
+		// it would heavily rely on the internal clock of the machine sidecar is on
+
+		// frame/babe/src/lib 361 - pseudo rust/TS below
+		// nextSlot = currentEpochStart + epoch_duration - current_slot
+		// next_expected_epoch_change = (nextSlot - currentSlot).intoBlockNumber() + currentBlock
+		const nextSlot = currentEpochStart.add(epochDuration);
+		const nextExpectedEpochChange = nextSlot
+			.sub(currentSlot)
+			.add(number.toBn());
+
+		return nextExpectedEpochChange;
+	}
+
+	private nextEra(
+		api: ApiPromise,
+		// header: Header,
+		forceEra: Forcing,
+		activeEraInfo: ActiveEraInfo
+	): BN | null {
+		const activeEraStart = activeEraInfo.start.unwrapOr(null);
+		if (activeEraStart === null) {
+			throw {
+				statusCode: 404,
+				error: 'ActiveEra.start could not be found',
+			};
+		}
+
+		// EraDuration = EpochDuraton * api.consts.staking.sessionsPerEra
+
+		const expectedBlockTime = api.consts.babe.expectedBlockTime;
+		const epochDuration = api.consts.babe.epochDuration;
+
+		if (forceEra.isNotForcing) {
+			// Not forcing anything - just let whatever happen.
+		}
+
+		if (forceEra.isForceNew) {
+			// Force a new era, then reset to `NotForcing` as soon as it is done.
+		}
+
+		if (forceEra.isForceNone) {
+			// Force there to be no new eras indefinitely.
+			return null;
+		}
+
+		if (forceEra.isForceAlways) {
+			//TODO get rid of last if statement
+			// Force a new era at the end of all sessions indefinitely.
+			return expectedBlockTime.mul(epochDuration).add(activeEraStart);
+		}
+
+		return new BN('TODO');
+	}
+
+	async fetchStakingInfo(hash: BlockHash): Promise<StakingInfo> {
+		const api = await this.ensureMeta(hash);
+
+		const [
+			header,
+			validatorCount,
+			activeEraOption,
+			forceEra,
+			queuedElectedOption,
+			eraElectionStatus,
+		] = await Promise.all([
+			await api.rpc.chain.getHeader(hash),
+			await api.query.staking.validatorCount.at(hash),
+			await api.query.staking.activeEra.at(hash),
+			await api.query.staking.forceEra.at(hash),
+			await api.query.staking.queuedElected.at(hash),
+			await api.query.staking.eraElectionStatus.at(hash),
+		]);
+
+		// For below checks we need to decide if it makes sense to throw an error
+		// or just return null if they are none
+		const activeEra = activeEraOption.unwrapOr(null);
+		if (activeEra === null) {
+			throw {
+				statusCode: 404,
+				error: `ActiveEra.index at BlockHash: ${hash.toString()} could not be found.`,
+			};
+		}
+
+		const unappliedSlashesAtActiveEraIndex = await api.query.staking.unappliedSlashes.at(
+			hash,
+			activeEra.index
+		);
+
+		// const sessionsPerEra = api.consts.staking.sessionsPerEra;
+		const expectedBlockTime = api.consts.babe.expectedBlockTime;
+		const epochDuration = api.consts.babe.epochDuration;
+
+		let nextEra;
+		// If it is forceAlways, then we know every new epoch is also a new era
+		if (forceEra.isForceAlways) {
+			nextEra = expectedBlockTime
+				.mul(epochDuration)
+				.add(activeEra.start.unwrap()); // TODO Add error catching here - zeke
+		}
+
+		// important to keep in mind that
+		// next_expected_epoch_change ~== estimate_next_session_rotation
+		const nextSession = (await this.nextExpectedEpochChange(api, header)) // verified this against the the app and was correct - zeke
+			.toString(10);
+
+		return {
+			at: {
+				hash: hash.toJSON(),
+				height: header.number.toNumber().toString(10),
+			},
+			validatorCount: validatorCount.toString(10),
+			// TODO should the key here be activeEraIndex? - zeke
+			activeEra: activeEra.index.toString(10),
+			forceEra: forceEra.toString(),
+			nextEra: nextEra?.toString() ?? null, // TODO error handling for null? - zeke
+			nextSession,
+			unappliedSlashes: unappliedSlashesAtActiveEraIndex.toString(),
+			queuedElected:
+				queuedElectedOption.unwrapOr(null)?.toString() ?? null,
+			electionStatus: {
+				status: eraElectionStatus.toString(),
+				toggle: 'place holder value',
+			},
+		};
+	}
+
 	/**
 	 *
 	 * @param hash BlockHash to make call at.
 	 * @param stash _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingInfo(hash: BlockHash, stash: string) {
+	async fetchAddressStakingInfo(hash: BlockHash, stash: string) {
 		const api = await this.ensureMeta(hash);
 
 		const [header, controllerOption] = await Promise.all([
