@@ -112,7 +112,9 @@ Following ENV variables can be set:
 
 These variables can also be set in the `src/config.json` file.
 
-If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `src/config.json`.
+If you are connecting to
+[Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template),
+please add the following custom types in `src/config.json`.
 
 ```json
 {
