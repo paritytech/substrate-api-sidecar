@@ -414,7 +414,9 @@ export default class ApiHandler {
 				hash: hash.toJSON(),
 				height: currentBlockNumber.toString(10),
 			},
-			validatorCount: validatorCount.toString(10),
+			validatorCount: forceEra.isForceNone // when ForceNone we are in PoA
+				? null
+				: validatorCount.toString(10),
 			activeEra: activeEra.toString(10) ?? null,
 			forceEra: forceEra.toJSON(),
 			nextEra: nextEra?.toString(10) ?? null,
@@ -427,7 +429,9 @@ export default class ApiHandler {
 				status: eraElectionStatus.toJSON(),
 				toggle: toggle?.toString(10) ?? null,
 			},
-			validatorSet: validators.map((accountId) => accountId.toString()),
+			validatorSet: forceEra.isForceNone
+				? null
+				: validators.map((accountId) => accountId.toString()),
 		};
 	}
 

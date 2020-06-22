@@ -7,7 +7,7 @@ interface At {
 
 export interface StakingInfo {
 	at: At;
-	validatorCount: string; // of validators in the set
+	validatorCount: string | null; // of validators in the set
 	activeEra: string | null; //ActiveEra.index
 	forceEra: AnyJson; // status of era forcing
 	nextEra: AnyJson;
@@ -18,5 +18,5 @@ export interface StakingInfo {
 		status: AnyJson;
 		toggle: string | null;
 	};
-	validatorSet: string[];
+	validatorSet: string[] | null;
 }
