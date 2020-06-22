@@ -68,13 +68,13 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
-		const parentParentHash = await async function() {
+		const parentParentHash = await (async function () {
 			if (block.header.number.toNumber() > 1) {
 				return (await api.rpc.chain.getHeader(parentHash)).parentHash;
 			} else {
 				return parentHash;
 			}
-		}();
+		})();
 
 		const onInitialize = { events: [] as SanitizedEvent[] };
 		const onFinalize = { events: [] as SanitizedEvent[] };
