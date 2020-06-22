@@ -20,13 +20,20 @@ import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo } from '@polkadot/types/interfaces';
+import {
+	DispatchInfo,
+	ElectionResult,
+	EraIndex,
+} from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import * as BN from 'bn.js';
+
+import { StakingInfo } from './types/response_types';
 
 interface SanitizedEvent {
 	method: string;
@@ -345,72 +352,82 @@ export default class ApiHandler {
 		}
 	}
 
+	/**
+	 * Fetch and derive generalized staking information at a specific block.
+	 *
+	 * @param hash BlockHash to make call at.
+	 */
 	async fetchStakingInfo(hash: BlockHash): Promise<StakingInfo> {
 		const api = await this.ensureMeta(hash);
 
 		const [
-			header,
 			validatorCount,
 			forceEra,
-			queuedElectedOption,
 			eraElectionStatus,
+			validators,
+			{ number },
 		] = await Promise.all([
-			await api.rpc.chain.getHeader(hash),
 			await api.query.staking.validatorCount.at(hash),
 			await api.query.staking.forceEra.at(hash),
-			await api.query.staking.queuedElected.at(hash),
 			await api.query.staking.eraElectionStatus.at(hash),
+			await api.query.session.validators.at(hash),
+			await api.rpc.chain.getHeader(hash),
 		]);
-		const { number } = header;
 
-		const sessionInfo = await api.derive.session?.progress();
-		if (!sessionInfo) {
-			throw {
-				statusCode: 404,
-				error: `sessionInfo at BlockHash: ${hash.toString()} could not be found.`,
-			};
-		}
-		const { sessionProgress, sessionLength, activeEra } = sessionInfo;
+		const queuedElected = await this.tryFetchQueueElected(api, hash);
 
-		const unappliedSlashesAtActiveEra = await api.query.staking.unappliedSlashes.at(
-			hash,
-			activeEra
-		);
+		const {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		} = await this.deriveSessionAndEraProgress(api, hash);
+
+		const unappliedSlashesAtActiveEra = activeEra
+			? await api.query.staking.unappliedSlashes.at(hash, activeEra)
+			: null;
+
+		const currentBlockNumber = number.toBn();
 
 		const nextSession = sessionLength
 			.sub(sessionProgress)
-			.add(number.toBn())
-			.toString(10);
+			.add(currentBlockNumber);
 
-		// Should nextEra code block be moved to its own function?
-		const eraLength = forceEra.isForceAlways
-			? sessionLength
-			: sessionInfo.eraLength;
-		const eraProgress = forceEra.isForceAlways
-			? sessionProgress
-			: sessionInfo.eraProgress;
 		const nextEra = forceEra.isForceNone
-			? null
-			: eraLength.sub(eraProgress).add(number.toBn()).toString(10);
+			? null // If forceEra.isForceNone there is no next era (null)
+			: forceEra.isForceAlways
+			? nextSession // If forceEra.isForceAlways, there is a new era every session
+			: eraLength.sub(eraProgress).add(currentBlockNumber); // Otherwise the nextEra is at the end of this era
+
+		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
+
+		const toggle =
+			forceEra.isForceNone || electionLookAhead.lte(new BN(0))
+				? null // If forceEra.isForceNone there is no next era and thus no upcoming elections
+				: eraElectionStatus.isClose
+				? nextEra?.sub(electionLookAhead) // If the election is closed than it has not happened yet
+				: nextEra; // Otherwise the election is open and it will close at the beginning of the next era
 
 		return {
 			at: {
 				hash: hash.toJSON(),
-				height: number.toNumber(),
+				height: currentBlockNumber.toString(10),
 			},
 			validatorCount: validatorCount.toString(10),
-			// TODO should the key here be activeEraIndex? - zeke
-			activeEra: activeEra.toString(10),
-			forceEra: forceEra.toString(),
-			nextEra,
-			nextSession,
-			unappliedSlashes: unappliedSlashesAtActiveEra.toString(),
-			queuedElected:
-				queuedElectedOption.unwrapOr(null)?.toString() ?? null,
+			activeEra: activeEra.toString(10) ?? null,
+			forceEra: forceEra.toJSON(),
+			nextEra: nextEra?.toString(10) ?? null,
+			nextSession: nextSession.toString(10),
+			unappliedSlashes:
+				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
+				null,
+			queuedElected: queuedElected?.toJSON() ?? null,
 			electionStatus: {
-				status: eraElectionStatus.toString(),
-				toggle: 'place holder value',
+				status: eraElectionStatus.toJSON(),
+				toggle: toggle?.toString(10) ?? null,
 			},
+			validatorSet: validators.map((accountId) => accountId.toString()),
 		};
 	}
 
@@ -712,5 +729,114 @@ export default class ApiHandler {
 			callIndex,
 			args: newArgs,
 		};
+	}
+
+	/**
+	 * Derive information on the progress of the current session and era.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveSessionAndEraProgress(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<{
+		eraLength: BN;
+		eraProgress: BN;
+		sessionLength: BN;
+		sessionProgress: BN;
+		activeEra: EraIndex;
+	}> {
+		const [
+			currentSlot,
+			epochIndex,
+			genesisSlot,
+			currentIndex,
+			activeEraOption,
+		] = await Promise.all([
+			await api.query.babe.currentSlot.at(hash),
+			await api.query.babe.epochIndex.at(hash),
+			await api.query.babe.genesisSlot.at(hash),
+			await api.query.session.currentIndex.at(hash),
+			await api.query.staking.activeEra.at(hash),
+		]);
+
+		const { index: activeEra } = activeEraOption.unwrapOrDefault();
+
+		// TODO make sure this doesn't fail on querys older than history depth
+		// Also check it doesnt fail on older versions of babe
+		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
+			hash,
+			activeEra
+		);
+
+		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrapOrDefault();
+
+		const { epochDuration: sessionLength } = api.consts.babe;
+		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
+		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
+		const sessionProgress = currentSlot.sub(epochStartSlot);
+		const eraProgress = currentIndex
+			.sub(activeEraStartSessionIndex)
+			.mul(sessionLength)
+			.add(sessionProgress);
+
+		return {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		};
+	}
+
+	/**
+	 * Derive `electionLookAhead` based on the `specName` & `epochDuration`.
+	 * N.B. Values are hardcoded for `specName`s polkadot, kusama, and westend.
+	 * There are no guarantees that this will return the expected values fo
+	 * other `specName`s.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveElectionLookAhead(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<BN> {
+		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
+		const { epochDuration } = api.consts.babe;
+
+		const epochDurationDivisor =
+			specName.toString() === 'polkadot'
+				? new BN(16) // polkadot electionLookAhead = epochDuration / 16
+				: new BN(4); // kusama & westend & `substrate/bin/node` electionLookAhead = epochDuration / 4
+
+		return epochDuration.div(epochDurationDivisor);
+	}
+
+	/**
+	 * Try to fetch queueElected and return null if it fails. It has been found
+	 * that queued elected fetches often fail while trying to createType, so this
+	 * function is useful in scenarios where it is necessary to gracefully handle
+	 * throws.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async tryFetchQueueElected(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<ElectionResult | null> {
+		try {
+			return (
+				await api.query.staking.queuedElected.at(hash)
+			).unwrapOrDefault();
+		} catch (e) {
+			console.log(
+				'There was an issue fetching QueuedElected. Below is more info.'
+			);
+			console.log(e);
+			return null;
+		}
 	}
 }

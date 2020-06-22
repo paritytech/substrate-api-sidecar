@@ -7,26 +7,28 @@
  * handle conversion errors on a case by case basis and give rich, meaningful
  * responses to the client.
  *
- * In sum, there should not be Codec types in any of these responses. Most of
- * the time the value type should either be `string` or `string | null`.
+ * In sum, there should not be Codec types in any of these responses.
  */
+
+import { AnyJson } from '@polkadot/types/types';
 
 interface At {
 	hash: string;
-	height: string | number;
+	height: string;
 }
 
-interface StakingInfo {
+export interface StakingInfo {
 	at: At;
 	validatorCount: string; // of validators in the set
 	activeEra: string | null; //ActiveEra.index
-	forceEra: string; // status of era forcing
-	nextEra: string | null;
+	forceEra: AnyJson; // status of era forcing
+	nextEra: AnyJson;
 	nextSession: string | null;
-	unappliedSlashes: string | null;
-	queuedElected: string | null; // contains an array of stashes elected
+	unappliedSlashes: AnyJson[] | null;
+	queuedElected: AnyJson; // contains an array of stashes elected
 	electionStatus: {
-		status: string;
-		toggle: string;
+		status: AnyJson;
+		toggle: string | null;
 	};
+	validatorSet: string[];
 }
