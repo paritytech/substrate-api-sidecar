@@ -23,7 +23,11 @@ yarn
 
 ### Running
 
-```
+```bash
+# For development
+yarn dev
+
+# To build and run
 yarn start
 ```
 
@@ -105,6 +109,22 @@ Following ENV variables can be set:
 - `NODE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
   `ws://127.0.0.1:9944`.
 - `LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by setting it to anything else. LOG_MODE defaults to only "errors".
+
+These variables can also be set in the `src/config.json` file.
+
+If you are connecting to
+[Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template),
+please add the following custom types in `src/config.json`.
+
+```json
+{
+  "CUSTOM_TYPES": {
+    "Address": "AccountId",
+    "LookupSource": "AccountId"
+  },
+}
+
+```
 
 ### Chain compatibility
 
