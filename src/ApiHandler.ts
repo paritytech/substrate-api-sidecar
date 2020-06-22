@@ -394,6 +394,7 @@ export default class ApiHandler {
 			.sub(sessionProgress)
 			.add(currentBlockNumber);
 
+		// when ForceNone we are in PoA
 		const nextEra = forceEra.isForceNone
 			? null // If forceEra.isForceNone there is no next era (null)
 			: forceEra.isForceAlways
@@ -414,7 +415,7 @@ export default class ApiHandler {
 				hash: hash.toJSON(),
 				height: currentBlockNumber.toString(10),
 			},
-			validatorCount: forceEra.isForceNone // when ForceNone we are in PoA
+			validatorCount: forceEra.isForceNone
 				? null
 				: validatorCount.toString(10),
 			activeEra: activeEra.toString(10) ?? null,
@@ -424,7 +425,11 @@ export default class ApiHandler {
 			unappliedSlashes:
 				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
 				null,
-			queuedElected: queuedElected?.toJSON() ?? null,
+			// Should we call this field electedStashes - zeke
+			queuedElected:
+				queuedElected?.electedStashes.map((accountId) =>
+					accountId.toString()
+				) ?? null,
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
 				toggle: toggle?.toString(10) ?? null,
@@ -794,6 +799,7 @@ export default class ApiHandler {
 		};
 	}
 
+	// TODO: a pr came out today making electionLookAhead exported, so look into querying for it directly
 	/**
 	 * Derive `electionLookAhead` based on the `specName` & `epochDuration`.
 	 * N.B. Values are hardcoded for `specName`s polkadot, kusama, and westend.
