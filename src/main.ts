@@ -216,21 +216,49 @@ async function main() {
 
 	// Get generalized staking information.
 	//
-	// at: {
-	// 	blockNumber,
-	// 	hash
-	// },
-	// ValidatorCount: number, // of validators in the set
-	// ActiveEra: number, // ActiveEra.index
-	// ForceEra: enum, // status of era forcing
-	// NextEra: number, // block number or unix time of next era
-	// NextSession: number, // block number or unix time of next session
-	// UnappliedSlashes: Vec < UnnappliedSlash >, // array of upcoming slashes, keyed by era
-	// QueuedElected: Option < ElectionResult >, // contains an array of stashes elected
-	// ElectionStatus: {
-	// 	status,
-	// 	toggle
-	// },
+	// Paths:
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `validatorCount`: Upper bound of validator set size; considered the ideal size.
+	// - `activeEra`: EraIndex of the current era being rewarded.
+	// - `forceEra`: Current status of era forcing.
+	// - `nextEra`: **Upper bound estimate** of the block height at which the next era will start.
+	// - `nextSession`: **Upper bound estimate** of the block height at which the next session will
+	//		start.
+	// - `unappliedSlashes`: Array of upcoming `UnappliedSlash` indexed by era.
+	//  	Each `UnappliedSlash` contains:
+	//		- `validator`: Stash accountId of the offending validator.
+	//		- `own`: The amount the validator will be slashed.
+	//		- `others`: Array of tuples of (accountId, amount) representing all the stashes of other
+	//		slashed stakers an and the amount they will be slashed.
+	//		- `reporters`: Array of accountIds of the reporters of the offence (bounty payout
+	//		recipients.)
+	//		- `payout`: Amount of bounty payout.
+	// - `queuedElected`: Array of accountIds for validators who have been elected. Only available
+	//		when the `ElectionResult` is available.
+	// - `electionStatus`:
+	//		- `status`: Era election status; either `Closed: null` or `Open: <BlockNumber>`. A status of
+	//		Closed indicates that the submission window for solutions from offchain phragmen is not open.
+	//		A status of Open indicates the submission window for solutions from offchain phragmen has
+	//		been open since BlockNumber. N.B. when the submission window is open certain extrinsics are
+	//		not allowed because they would mutate the state that the
+	//		offchain phragmen rely on for calculating results.
+	// 		- toggle: **Upper bound estimate** of the block height at which the `status` will switch.
+	// - `validatorSet`: validators of the current session as an array of accountIds.
+	//
+	// Substrate Reference:
+	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
+	// - Session Pallet: https://crates.parity.io/pallet_session/index.html
+	// - `ValidatorCount`: https://crates.parity.io/pallet_staking/struct.ValidatorCount.html
+	// - `UnappliedSlash`: https://crates.parity.io/pallet_staking/struct.UnappliedSlash.html
+	// - `ActiveEra`: https://crates.parity.io/pallet_staking/struct.ActiveEra.html
+	// - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
+	// - `EraElectionStatus`: https://crates.parity.io/pallet_staking/struct.EraElectionStatus.html
+	// - `Validators`: https://crates.parity.io/src/pallet_session/lib.rs.html#393
+
 	get('/staking', async (_) => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
