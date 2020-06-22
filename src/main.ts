@@ -258,7 +258,6 @@ async function main() {
 	// - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
 	// - `EraElectionStatus`: https://crates.parity.io/pallet_staking/struct.EraElectionStatus.html
 	// - `Validators`: https://crates.parity.io/src/pallet_session/lib.rs.html#393
-
 	get('/staking', async (_) => {
 		const hash = await api.rpc.chain.getFinalizedHead();
 
