@@ -1,5 +1,7 @@
 import { AnyJson } from '@polkadot/types/types';
 
+import { AnyJson } from '@polkadot/types/types';
+
 interface At {
 	hash: string;
 	height: string;
