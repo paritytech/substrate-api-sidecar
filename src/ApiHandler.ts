@@ -25,7 +25,7 @@ import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
-import { u8aToHex } from '@polkadot/util';
+import { isFunction, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import * as BN from 'bn.js';
 
@@ -761,20 +761,36 @@ export default class ApiHandler {
 
 		const { index: activeEra } = activeEraOption.unwrapOrDefault();
 
-		// TODO check it doesn't fail on older versions of babe
-		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
-			hash,
-			activeEra
-		);
+		const NOT_VALID_ACTIVE_ERA = 'NOT_VALID_ACTIVE_ERA';
 
-		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrapOrDefault();
+		const activeEraStartSessionIndex = isFunction(
+			// This check is here to accommodate for older versions of babe with no history
+			api.query.staking.erasStartSessionIndex
+		)
+			? (
+					await api.query.staking.erasStartSessionIndex.at(
+						hash,
+						activeEra
+					)
+			  ).unwrapOr(NOT_VALID_ACTIVE_ERA)
+			: await api.query.staking.currentEraStartSessionIndex.at(hash);
+
+		if (activeEraStartSessionIndex === NOT_VALID_ACTIVE_ERA) {
+			throw {
+				statusCode: 404,
+				error:
+					`The start session index of the active era could not be found, you likely ` +
+					`specified a block that occurred in a past era and and some of the ` +
+					`information for it has been trimmed from state.`,
+			};
+		}
 
 		const { epochDuration: sessionLength } = api.consts.babe;
 		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
 		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
 		const sessionProgress = currentSlot.sub(epochStartSlot);
 		const eraProgress = currentIndex
-			.sub(activeEraStartSessionIndex)
+			.sub(activeEraStartSessionIndex as BN)
 			.mul(sessionLength)
 			.add(sessionProgress);
 
