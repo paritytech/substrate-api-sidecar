@@ -20,11 +20,7 @@ import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import {
-	DispatchInfo,
-	ElectionResult,
-	EraIndex,
-} from '@polkadot/types/interfaces';
+import { DispatchInfo, EraIndex } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
@@ -374,8 +370,6 @@ export default class ApiHandler {
 			await api.rpc.chain.getHeader(hash),
 		]);
 
-		const queuedElected = await this.tryFetchQueueElected(api, hash);
-
 		const {
 			eraLength,
 			eraProgress,
@@ -425,11 +419,6 @@ export default class ApiHandler {
 			unappliedSlashes:
 				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
 				null,
-			// Should we call this field electedStashes - zeke
-			queuedElected:
-				queuedElected?.electedStashes.map((accountId) =>
-					accountId.toString()
-				) ?? null,
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
 				toggle: toggle?.toString(10) ?? null,
@@ -772,8 +761,7 @@ export default class ApiHandler {
 
 		const { index: activeEra } = activeEraOption.unwrapOrDefault();
 
-		// TODO make sure this doesn't fail on querys older than history depth
-		// Also check it doesnt fail on older versions of babe
+		// TODO check it doesn't fail on older versions of babe
 		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
 			hash,
 			activeEra
@@ -822,31 +810,5 @@ export default class ApiHandler {
 				: new BN(4); // kusama & westend & `substrate/bin/node` electionLookAhead = epochDuration / 4
 
 		return epochDuration.div(epochDurationDivisor);
-	}
-
-	/**
-	 * Try to fetch queueElected and return null if it fails. It has been found
-	 * that queued elected fetches often fail while trying to createType, so this
-	 * function is useful in scenarios where it is necessary to gracefully handle
-	 * throws.
-	 *
-	 * @param api ApiPromise with ensured metadata.
-	 * @param hash block hash to get info at.
-	 */
-	private async tryFetchQueueElected(
-		api: ApiPromise,
-		hash: BlockHash
-	): Promise<ElectionResult | null> {
-		try {
-			return (
-				await api.query.staking.queuedElected.at(hash)
-			).unwrapOrDefault();
-		} catch (e) {
-			console.log(
-				'There was an issue fetching QueuedElected. Below is more info.'
-			);
-			console.log(e);
-			return null;
-		}
 	}
 }

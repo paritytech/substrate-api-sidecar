@@ -13,7 +13,6 @@ export interface StakingInfo {
 	nextEra: AnyJson;
 	nextSession: string | null;
 	unappliedSlashes: AnyJson[] | null;
-	queuedElected: AnyJson; // contains an array of stashes elected
 	electionStatus: {
 		status: AnyJson;
 		toggle: string | null;
