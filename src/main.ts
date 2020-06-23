@@ -26,12 +26,16 @@ import ApiHandler from './ApiHandler';
 import * as config from './config.json';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
-const HOST = process.env.BIND_HOST || config['BIND_HOST'] || '127.0.0.1';
+const HOST =
+	process.env.BIND_HOST || (config['BIND_HOST'] as string) || '127.0.0.1';
 const PORT =
 	Number(process.env.BIND_PORT) || Number(config['BIND_PORT']) || 8080;
 const WS_URL =
-	process.env.NODE_WS_URL || config['NODE_WS_URL'] || 'ws://127.0.0.1:9944';
-const LOG_MODE = process.env.LOG_MODE || config['LOG_MODE'] || 'errors';
+	process.env.NODE_WS_URL ||
+	(config['NODE_WS_URL'] as string) ||
+	'ws://127.0.0.1:9944';
+const LOG_MODE =
+	process.env.LOG_MODE || (config['LOG_MODE'] as string) || 'errors';
 
 type Params = { [key: string]: string };
 
