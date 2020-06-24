@@ -817,6 +817,10 @@ export default class ApiHandler {
 		api: ApiPromise,
 		hash: BlockHash
 	): Promise<BN> {
+		if (api.consts.staking.electionLookahead) {
+			return api.consts.staking.electionLookahead;
+		}
+
 		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
 		const { epochDuration } = api.consts.babe;
 
