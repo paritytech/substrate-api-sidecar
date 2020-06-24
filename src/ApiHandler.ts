@@ -407,7 +407,7 @@ export default class ApiHandler {
 			// Most likely we are in a PoA network with no elections. Things
 			// like `ValidatorCount` and `Validators` are hardcoded from genesis
 			// to support a transition into NPoS, but are irrelevant here and would be
-			// confusing to include. Thus we craft a response excluding those values.
+			// confusing to include. Thus, we craft a response excluding those values.
 			return baseResponse;
 		}
 
