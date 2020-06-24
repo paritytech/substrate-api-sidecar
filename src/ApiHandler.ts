@@ -410,19 +410,19 @@ export default class ApiHandler {
 				hash: hash.toJSON(),
 				height: currentBlockNumber.toString(10),
 			},
-			validatorCount: forceEra.isForceNone
+			idealValidatorCount: forceEra.isForceNone
 				? null
 				: validatorCount.toString(10),
 			activeEra: activeEra.toString(10) ?? null,
 			forceEra: forceEra.toJSON(),
-			nextEra: nextEra?.toString(10) ?? null,
-			nextSession: nextSession.toString(10),
+			nextEraEstimate: nextEra?.toString(10) ?? null,
+			nextSessionEstimate: nextSession.toString(10),
 			unappliedSlashes:
 				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
 				null,
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
-				toggle: toggle?.toString(10) ?? null,
+				toggleEstimate: toggle?.toString(10) ?? null,
 			},
 			validatorSet: forceEra.isForceNone
 				? null

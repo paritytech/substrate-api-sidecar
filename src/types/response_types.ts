@@ -7,15 +7,15 @@ interface At {
 
 export interface StakingInfo {
 	at: At;
-	validatorCount: string | null;
+	idealValidatorCount: string | null;
 	activeEra: string | null;
 	forceEra: AnyJson;
-	nextEra: AnyJson;
-	nextSession: string | null;
+	nextEraEstimate: AnyJson;
+	nextSessionEstimate: string | null;
 	unappliedSlashes: AnyJson[] | null;
 	electionStatus: {
 		status: AnyJson;
-		toggle: string | null;
+		toggleEstimate: string | null;
 	};
 	validatorSet: string[] | null;
 }
