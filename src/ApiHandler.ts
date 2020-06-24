@@ -29,6 +29,7 @@ import { isFunction, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import * as BN from 'bn.js';
 
+import * as errors from '../config/errors-en.json';
 import { StakingInfo } from './types/response_types';
 
 interface SanitizedEvent {
@@ -761,7 +762,7 @@ export default class ApiHandler {
 
 		const { index: activeEra } = activeEraOption.unwrapOrDefault();
 
-		const NOT_VALID_ACTIVE_ERA = 'NOT_VALID_ACTIVE_ERA';
+		const ErasStartSessionIndex_IS_NONE = 'ErasStartSessionIndex_IS_NONE';
 
 		const activeEraStartSessionIndex = isFunction(
 			// This check is here to accommodate for older versions of babe with no history
@@ -772,17 +773,11 @@ export default class ApiHandler {
 						hash,
 						activeEra
 					)
-			  ).unwrapOr(NOT_VALID_ACTIVE_ERA)
+			  ).unwrapOr(ErasStartSessionIndex_IS_NONE)
 			: await api.query.staking.currentEraStartSessionIndex.at(hash);
 
-		if (activeEraStartSessionIndex === NOT_VALID_ACTIVE_ERA) {
-			throw {
-				statusCode: 404,
-				error:
-					`The start session index of the active era could not be found, you likely ` +
-					`specified a block that occurred in a past era and and some of the ` +
-					`information for it has been trimmed from state.`,
-			};
+		if (activeEraStartSessionIndex === ErasStartSessionIndex_IS_NONE) {
+			throw errors.ErasStartSessionIndex_IS_NONE;
 		}
 
 		const { epochDuration: sessionLength } = api.consts.babe;

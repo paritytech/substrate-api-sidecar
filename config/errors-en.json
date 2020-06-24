@@ -1,0 +1,6 @@
+{
+  "ErasStartSessionIndex_IS_NONE": {
+    "statusCode": 500,
+    "error": "Their was an error executing api.query.staking.erasStartSessionIndex.at(hash, activeEra). The query returned None in a case where we only expect some"
+  }
+}

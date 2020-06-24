@@ -22,27 +22,21 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as morgan from 'morgan';
 
+import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
-import * as config from './config.json';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
-const HOST =
-	process.env.BIND_HOST || (config['BIND_HOST'] as string) || '127.0.0.1';
-const PORT =
-	Number(process.env.BIND_PORT) || Number(config['BIND_PORT']) || 8080;
-const WS_URL =
-	process.env.NODE_WS_URL ||
-	(config['NODE_WS_URL'] as string) ||
-	'ws://127.0.0.1:9944';
-const LOG_MODE =
-	process.env.LOG_MODE || (config['LOG_MODE'] as string) || 'errors';
+const HOST = process.env.BIND_HOST || '127.0.0.1';
+const PORT = Number(process.env.BIND_PORT) || 8080;
+const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
+const LOG_MODE = process.env.LOG_MODE || 'errors';
 
 type Params = { [key: string]: string };
 
 async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
-		types: config['CUSTOM_TYPES'],
+		types: configTypes['CUSTOM_TYPES'],
 	});
 	const handler = new ApiHandler(api);
 	const app = express();
