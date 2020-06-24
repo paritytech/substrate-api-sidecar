@@ -390,11 +390,24 @@ export default class ApiHandler {
 			.add(currentBlockNumber);
 
 		// when ForceNone we are in PoA
-		const nextEra = forceEra.isForceNone
-			? null // If forceEra.isForceNone there is no next era (null)
-			: forceEra.isForceAlways
-			? nextSession // If forceEra.isForceAlways, there is a new era every session
-			: eraLength.sub(eraProgress).add(currentBlockNumber); // Otherwise the nextEra is at the end of this era
+		// Return early in event of PoA
+
+		let nextEra;
+		if (forceEra.isForceNone) {
+			// there is no next era (null)
+			nextEra = null;
+		} else if (forceEra.isForceAlways) {
+			// there is a new era every session
+			nextEra = nextSession;
+		} else {
+			// Otherwise the nextEra is at the end of this era
+			nextEra = eraLength.sub(eraProgress).add(currentBlockNumber);
+		}
+		// const nextEra = forceEra.isForceNone
+		// 	? null // If forceEra.isForceNone there is no next era (null)
+		// 	: forceEra.isForceAlways
+		// 	? nextSession // If forceEra.isForceAlways, there is a new era every session
+		// 	: eraLength.sub(eraProgress).add(currentBlockNumber); // Otherwise the nextEra is at the end of this era
 
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
 
