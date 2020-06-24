@@ -25,7 +25,7 @@ import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
-import { isFunction, u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import * as BN from 'bn.js';
 
@@ -395,69 +395,52 @@ export default class ApiHandler {
 				hash: hash.toJSON(),
 				height: currentBlockNumber.toString(10),
 			},
-			activeEra: activeEra.toString(10) ?? null,
+			activeEra: activeEra.toString(10),
 			forceEra: forceEra.toJSON(),
 			nextSessionEstimate: nextSession.toString(10),
-			unappliedSlashes:
-				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
-				null,
+			unappliedSlashes: unappliedSlashesAtActiveEra.map((slash) =>
+				slash.toJSON()
+			),
 		};
 
 		if (forceEra.isForceNone) {
 			// Most likely we are in a PoA network with no elections. Things
 			// like `ValidatorCount` and `Validators` are hardcoded from genesis
 			// to support a transition into NPoS, but are irrelevant here and would be
-			// confusing to include. So we craft a response excluding those values.
+			// confusing to include. Thus we craft a response excluding those values.
 			return baseResponse;
 		}
 
-		let nextEra;
-		if (forceEra.isForceAlways) {
-			// there is a new era every session
-			nextEra = nextSession;
-		} else {
-			// Otherwise the nextEra is at the end of this era
-			nextEra = eraLength.sub(eraProgress).add(currentBlockNumber);
-		}
+		const nextEra = forceEra.isForceAlways
+			? nextSession // there is a new era every session
+			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextEra is at the end of this era
 
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
+
+		const toggle = eraElectionStatus.isClose
+			? nextEra.sub(electionLookAhead) // the election window is yet to open for this era
+			: nextEra; // the election window is open and closes at the end of this era
+
+		const fullResponse = {
+			...baseResponse,
+			nextEraEstimate: nextEra.toString(10),
+			electionStatus: {
+				status: eraElectionStatus.toJSON(),
+				toggleEstimate: toggle.toString(10),
+			},
+			idealValidatorCount: validatorCount.toString(10),
+			validatorSet: validators.map((accountId) => accountId.toString()),
+		};
+
 		if (electionLookAhead.eq(new BN(0))) {
-			// there are no offchain phragmen solutions accepted so we
-			// do not need electionStatus info
+			// No offchain phragmen so we do not need electionStatus
 			return {
-				...baseResponse,
-				nextEraEstimate: nextEra?.toString(10),
+				...fullResponse,
+				electionStatus: undefined,
 			};
 		}
 
-		let toggle;
-		if (eraElectionStatus.isClose) {
-			// If the election is closed than it has not happened yet this era
-			toggle = nextEra?.sub(electionLookAhead);
-		} else {
-			// Otherwise the election is open and it will close at the beginning of the next era
-			toggle = nextEra;
-		}
-
-		return {
-			at: {
-				hash: hash.toJSON(),
-				height: currentBlockNumber.toString(10),
-			},
-			idealValidatorCount: validatorCount.toString(10),
-			activeEra: activeEra.toString(10) ?? null,
-			forceEra: forceEra.toJSON(),
-			nextEraEstimate: nextEra.toString(10),
-			nextSessionEstimate: nextSession.toString(10),
-			unappliedSlashes:
-				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
-				[],
-			electionStatus: {
-				status: eraElectionStatus.toJSON(),
-				toggleEstimate: toggle?.toString(10) ?? null,
-			},
-			validatorSet: validators.map((accountId) => accountId.toString()),
-		};
+		return fullResponse;
 	}
 
 	/**
@@ -790,26 +773,19 @@ export default class ApiHandler {
 			await api.query.staking.activeEra.at(hash),
 		]);
 
-		let activeEra;
-		try {
-			activeEra = activeEraOption.unwrap().index;
-		} catch {
+		if (activeEraOption.isNone) {
 			throw errors.ActiveEra_IS_NONE;
 		}
+		const { index: activeEra } = activeEraOption.unwrap();
 
-		// const ErasSactiveEraStartSessionIndextartSessionIndex_IS_NONE =
-		// 	'ErasStartSessionIndex_IS_NONE';
-		let activeEraStartSessionIndex;
-		try {
-			activeEraStartSessionIndex = (
-				await api.query.staking.erasStartSessionIndex.at(
-					hash,
-					activeEra
-				)
-			).unwrap();
-		} catch {
+		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
+			hash,
+			activeEra
+		);
+		if (activeEraStartSessionIndexOption.isNone) {
 			throw errors.ErasStartSessionIndex_IS_NONE;
 		}
+		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
 
 		const { epochDuration: sessionLength } = api.consts.babe;
 		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
@@ -829,11 +805,11 @@ export default class ApiHandler {
 		};
 	}
 
-	// TODO: a pr came out today making electionLookAhead exported, so look into querying for it directly
 	/**
-	 * Derive `electionLookAhead` based on the `specName` & `epochDuration`.
-	 * N.B. Values are hardcoded for `specName`s polkadot, kusama, and westend.
-	 * There are no guarantees that this will return the expected values fo
+	 * Get electionLookAhead as a const if available. Otherwise derive
+	 * `electionLookAhead` based on the `specName` & `epochDuration`.
+	 * N.B. Values are hardcoded base on `specName`s polkadot, kusama, and westend.
+	 * There are no guarantees that this will return the expected values for
 	 * other `specName`s.
 	 *
 	 * @param api ApiPromise with ensured metadata.
@@ -850,6 +826,7 @@ export default class ApiHandler {
 		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
 		const { epochDuration } = api.consts.babe;
 
+		// TODO - create a configurable epochDivisor env for a more generic solution
 		const epochDurationDivisor =
 			specName.toString() === 'polkadot'
 				? new BN(16) // polkadot electionLookAhead = epochDuration / 16

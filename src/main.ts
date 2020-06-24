@@ -220,11 +220,10 @@ async function main() {
 	//
 	// Returns:
 	// - `at`: Block number and hash at which the call was made.
-	// - `idealValidatorCount`: Upper bound of validator set size; considered the ideal size. Read
-	//		about `ValidatorCount` in substrate for more info.
 	// - `activeEra`: EraIndex of the current era being rewarded.
 	// - `forceEra`: Current status of era forcing. Read about `Forcing` in substrate for more info.
 	// - `nextEraEstimate`: **Upper bound estimate** of the block height at which the next era will start.
+	//		Not included in response when `forceEra.isForceNone`.
 	// - `nextSessionEstimate`: **Upper bound estimate** of the block height at which the next session will
 	//		start.
 	// - `unappliedSlashes`: Array of upcoming `UnappliedSlash` indexed by era.
@@ -237,6 +236,7 @@ async function main() {
 	//		recipients.)
 	//		- `payout`: Amount of bounty payout.
 	// - `electionStatus`:
+	//		Not included in response when `forceEra.isForceNone` or there are no offchain phragmen solutions.
 	//		- `status`: Era election status; either `Closed: null` or `Open: <BlockNumber>`. A status of
 	//		Closed indicates that the submission window for solutions from offchain phragmen is not open.
 	//		A status of Open indicates the submission window for solutions from offchain phragmen has
@@ -244,7 +244,9 @@ async function main() {
 	//		not allowed because they would mutate the state that the offchain phragmen rely on for
 	//		calculating results. Read about `EraElectionStatus` in substrate for more info.
 	// 		- toggleEstimate: **Upper bound estimate** of the block height at which the `status` will switch.
-	// - `validatorSet`: validators of the current session.
+	// - `idealValidatorCount`: Upper bound of validator set size; considered the ideal size. Read
+	//		about `ValidatorCount` in substrate for more info. Not included in response when `forceEra.isForceNone`.
+	// - `validatorSet`: validators of the current session. Not included in response when `forceEra.isForceNone`.
 	//
 	// Substrate Reference:
 	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
