@@ -251,7 +251,7 @@ async function main() {
 	// - Session Pallet: https://crates.parity.io/pallet_session/index.html
 	get('/staking-info', async (_) => {
 		const hash = await api.rpc.chain.getFinalizedHead();
-		console.log(await handler.fetchStakingInfo(hash));
+
 		return await handler.fetchStakingInfo(hash);
 	});
 

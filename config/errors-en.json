@@ -1,6 +1,10 @@
 {
   "ErasStartSessionIndex_IS_NONE": {
     "statusCode": 500,
-    "error": "Their was an error executing api.query.staking.erasStartSessionIndex.at(hash, activeEra). The query returned None in a case where we only expect some"
+    "error": "Unwrapping `await api.query.staking.erasStartSessionIndex.at(hash, activeEra)` returned None when Some was expected"
+  },
+  "ActiveEra_IS_NONE": {
+    "statusCode": 500,
+    "error": "Unwrapping the result of `await api.query.staking.activeEra.at(hash)` returned None when Some was expected."
   }
 }

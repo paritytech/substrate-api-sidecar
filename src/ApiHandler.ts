@@ -379,9 +379,10 @@ export default class ApiHandler {
 			activeEra,
 		} = await this.deriveSessionAndEraProgress(api, hash);
 
-		const unappliedSlashesAtActiveEra = activeEra
-			? await api.query.staking.unappliedSlashes.at(hash, activeEra)
-			: null;
+		const unappliedSlashesAtActiveEra = await api.query.staking.unappliedSlashes.at(
+			hash,
+			activeEra
+		);
 
 		const currentBlockNumber = number.toBn();
 
@@ -389,57 +390,73 @@ export default class ApiHandler {
 			.sub(sessionProgress)
 			.add(currentBlockNumber);
 
-		// when ForceNone we are in PoA
-		// Return early in event of PoA
+		const baseResponse = {
+			at: {
+				hash: hash.toJSON(),
+				height: currentBlockNumber.toString(10),
+			},
+			activeEra: activeEra.toString(10) ?? null,
+			forceEra: forceEra.toJSON(),
+			nextSessionEstimate: nextSession.toString(10),
+			unappliedSlashes:
+				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
+				null,
+		};
+
+		if (forceEra.isForceNone) {
+			// Most likely we are in a PoA network with no elections. Things
+			// like `ValidatorCount` and `Validators` are hardcoded from genesis
+			// to support a transition into NPoS, but are irrelevant here and would be
+			// confusing to include. So we craft a response excluding those values.
+			return baseResponse;
+		}
 
 		let nextEra;
-		if (forceEra.isForceNone) {
-			// there is no next era (null)
-			nextEra = null;
-		} else if (forceEra.isForceAlways) {
+		if (forceEra.isForceAlways) {
 			// there is a new era every session
 			nextEra = nextSession;
 		} else {
 			// Otherwise the nextEra is at the end of this era
 			nextEra = eraLength.sub(eraProgress).add(currentBlockNumber);
 		}
-		// const nextEra = forceEra.isForceNone
-		// 	? null // If forceEra.isForceNone there is no next era (null)
-		// 	: forceEra.isForceAlways
-		// 	? nextSession // If forceEra.isForceAlways, there is a new era every session
-		// 	: eraLength.sub(eraProgress).add(currentBlockNumber); // Otherwise the nextEra is at the end of this era
 
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
+		if (electionLookAhead.eq(new BN(0))) {
+			// there are no offchain phragmen solutions accepted so we
+			// do not need electionStatus info
+			return {
+				...baseResponse,
+				nextEraEstimate: nextEra?.toString(10),
+			};
+		}
 
-		const toggle =
-			forceEra.isForceNone || electionLookAhead.lte(new BN(0))
-				? null // If forceEra.isForceNone there is no next era and thus no upcoming elections
-				: eraElectionStatus.isClose
-				? nextEra?.sub(electionLookAhead) // If the election is closed than it has not happened yet
-				: nextEra; // Otherwise the election is open and it will close at the beginning of the next era
+		let toggle;
+		if (eraElectionStatus.isClose) {
+			// If the election is closed than it has not happened yet this era
+			toggle = nextEra?.sub(electionLookAhead);
+		} else {
+			// Otherwise the election is open and it will close at the beginning of the next era
+			toggle = nextEra;
+		}
 
 		return {
 			at: {
 				hash: hash.toJSON(),
 				height: currentBlockNumber.toString(10),
 			},
-			idealValidatorCount: forceEra.isForceNone
-				? null
-				: validatorCount.toString(10),
+			idealValidatorCount: validatorCount.toString(10),
 			activeEra: activeEra.toString(10) ?? null,
 			forceEra: forceEra.toJSON(),
-			nextEraEstimate: nextEra?.toString(10) ?? null,
+			nextEraEstimate: nextEra.toString(10),
 			nextSessionEstimate: nextSession.toString(10),
 			unappliedSlashes:
 				unappliedSlashesAtActiveEra?.map((slash) => slash.toJSON()) ??
-				null,
+				[],
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
 				toggleEstimate: toggle?.toString(10) ?? null,
 			},
-			validatorSet: forceEra.isForceNone
-				? null
-				: validators.map((accountId) => accountId.toString()),
+			validatorSet: validators.map((accountId) => accountId.toString()),
 		};
 	}
 
@@ -773,23 +790,24 @@ export default class ApiHandler {
 			await api.query.staking.activeEra.at(hash),
 		]);
 
-		const { index: activeEra } = activeEraOption.unwrapOrDefault();
+		let activeEra;
+		try {
+			activeEra = activeEraOption.unwrap().index;
+		} catch {
+			throw errors.ActiveEra_IS_NONE;
+		}
 
-		const ErasStartSessionIndex_IS_NONE = 'ErasStartSessionIndex_IS_NONE';
-
-		const activeEraStartSessionIndex = isFunction(
-			// This check is here to accommodate for older versions of babe with no history
-			api.query.staking.erasStartSessionIndex
-		)
-			? (
-					await api.query.staking.erasStartSessionIndex.at(
-						hash,
-						activeEra
-					)
-			  ).unwrapOr(ErasStartSessionIndex_IS_NONE)
-			: await api.query.staking.currentEraStartSessionIndex.at(hash);
-
-		if (activeEraStartSessionIndex === ErasStartSessionIndex_IS_NONE) {
+		// const ErasSactiveEraStartSessionIndextartSessionIndex_IS_NONE =
+		// 	'ErasStartSessionIndex_IS_NONE';
+		let activeEraStartSessionIndex;
+		try {
+			activeEraStartSessionIndex = (
+				await api.query.staking.erasStartSessionIndex.at(
+					hash,
+					activeEra
+				)
+			).unwrap();
+		} catch {
 			throw errors.ErasStartSessionIndex_IS_NONE;
 		}
 
