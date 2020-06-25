@@ -423,8 +423,8 @@ export default class ApiHandler {
 				: nextEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
 
 		const toggle = eraElectionStatus.isClose
-			? nextCurrentEra.sub(sessionLength).sub(electionLookAhead) // election window is yet to open
-			: nextCurrentEra.sub(sessionLength); // election window closes at the end of the current era
+			? nextCurrentEra.sub(electionLookAhead) // election window is yet to open
+			: nextCurrentEra; // election window closes at the end of the current era
 
 		const fullResponse = {
 			...baseResponse,
