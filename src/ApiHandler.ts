@@ -418,12 +418,12 @@ export default class ApiHandler {
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
 
 		const toggle = eraElectionStatus.isClose
-			? nextEra.sub(electionLookAhead) // the election window is yet to open for this era
-			: nextEra; // the election window is open and closes at the end of this era
+			? nextEra.sub(sessionLength).sub(electionLookAhead) // the election window is yet to open
+			: nextEra; // the election window is open and closes at the end of the _current_ era
 
 		const fullResponse = {
 			...baseResponse,
-			nextEraEstimate: nextEra.toString(10),
+			nextActiveEraEstimate: nextEra.toString(10),
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
 				toggleEstimate: toggle.toString(10),
@@ -808,7 +808,7 @@ export default class ApiHandler {
 	/**
 	 * Get electionLookAhead as a const if available. Otherwise derive
 	 * `electionLookAhead` based on the `specName` & `epochDuration`.
-	 * N.B. Values are hardcoded base on `specName`s polkadot, kusama, and westend.
+	 * N.B. Values are hardcoded based on `specName`s polkadot, kusama, and westend.
 	 * There are no guarantees that this will return the expected values for
 	 * other `specName`s.
 	 *
@@ -830,7 +830,7 @@ export default class ApiHandler {
 		const epochDurationDivisor =
 			specName.toString() === 'polkadot'
 				? new BN(16) // polkadot electionLookAhead = epochDuration / 16
-				: new BN(4); // kusama & westend & `substrate/bin/node` electionLookAhead = epochDuration / 4
+				: new BN(4); // kusama, westend, `substrate/bin/node` electionLookAhead = epochDuration / 4
 
 		return epochDuration.div(epochDurationDivisor);
 	}
