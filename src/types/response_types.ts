@@ -10,7 +10,7 @@ export interface StakingInfo {
 	idealValidatorCount?: string | null;
 	activeEra: string | null;
 	forceEra: AnyJson;
-	nextEraEstimate?: AnyJson;
+	nextActiveEraEstimate?: AnyJson;
 	nextSessionEstimate: string | null;
 	unappliedSlashes: AnyJson[] | null;
 	electionStatus?: {

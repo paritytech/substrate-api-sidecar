@@ -411,41 +411,40 @@ export default class ApiHandler {
 			return baseResponse;
 		}
 
-		const nextEra = forceEra.isForceAlways
+		const nextActiveEra = forceEra.isForceAlways
 			? nextSession // there is a new era every session
-			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextEra is at the end of this era
+			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextActiveEra is at the end of this era
 
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
 
-		const nextCurrentEra =
-			nextEra.sub(currentBlockNumber).sub(sessionLength).toNumber() > 0
-				? nextEra.sub(sessionLength) // current era simply one session before active era
-				: nextEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
+		const nextCurrentEra = nextActiveEra
+			.sub(currentBlockNumber)
+			.sub(sessionLength)
+			.gt(new BN(0))
+			? nextActiveEra.sub(sessionLength) // current era simply one session before active era
+			: nextActiveEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
 
-		const toggle = eraElectionStatus.isClose
-			? nextCurrentEra.sub(electionLookAhead) // election window is yet to open
-			: nextCurrentEra; // election window closes at the end of the current era
+		let toggle;
+		if (electionLookAhead.eq(new BN(0))) {
+			toggle = null;
+		} else if (eraElectionStatus.isClose) {
+			// election window is yet to open
+			toggle = nextCurrentEra.sub(electionLookAhead);
+		} else {
+			// election window closes at the end of the current era
+			toggle = nextCurrentEra;
+		}
 
-		const fullResponse = {
+		return {
 			...baseResponse,
-			nextActiveEraEstimate: nextEra.toString(10),
+			nextActiveEraEstimate: nextActiveEra.toString(10),
 			electionStatus: {
 				status: eraElectionStatus.toJSON(),
-				toggleEstimate: toggle.toString(10),
+				toggleEstimate: toggle?.toString(10) ?? null,
 			},
 			idealValidatorCount: validatorCount.toString(10),
 			validatorSet: validators.map((accountId) => accountId.toString()),
 		};
-
-		if (electionLookAhead.eq(new BN(0))) {
-			// No offchain phragmen so we do not need electionStatus
-			return {
-				...fullResponse,
-				electionStatus: undefined,
-			};
-		}
-
-		return fullResponse;
 	}
 
 	/**
