@@ -417,14 +417,14 @@ export default class ApiHandler {
 
 		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
 
-		let toggle = eraElectionStatus.isClose
-			? nextEra.sub(sessionLength).sub(electionLookAhead) // the election window is yet to open
-			: nextEra.sub(sessionLength); // election window closes at the end of the _current_ era
+		const nextCurrentEra =
+			nextEra.sub(currentBlockNumber).sub(sessionLength).toNumber() > 0
+				? nextEra.sub(sessionLength) // current era simply one session before active era
+				: nextEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
 
-		if (nextEra.sub(currentBlockNumber).sub(sessionLength).toNumber() < 0) {
-			// We're in the last session of an active era and need to project to the next current era
-			toggle = toggle.add(eraLength);
-		}
+		const toggle = eraElectionStatus.isClose
+			? nextCurrentEra.sub(sessionLength).sub(electionLookAhead) // election window is yet to open
+			: nextCurrentEra.sub(sessionLength); // election window closes at the end of the current era
 
 		const fullResponse = {
 			...baseResponse,
