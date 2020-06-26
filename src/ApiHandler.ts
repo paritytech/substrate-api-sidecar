@@ -426,6 +426,7 @@ export default class ApiHandler {
 
 		let toggle;
 		if (electionLookAhead.eq(new BN(0))) {
+			// no offchain solutions accepted
 			toggle = null;
 		} else if (eraElectionStatus.isClose) {
 			// election window is yet to open
