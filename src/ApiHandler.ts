@@ -20,13 +20,17 @@ import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
 import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo } from '@polkadot/types/interfaces';
+import { DispatchInfo, EraIndex } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import * as BN from 'bn.js';
+
+import * as errors from '../config/errors-en.json';
+import { StakingInfo } from './types/response_types';
 
 interface SanitizedEvent {
 	method: string;
@@ -346,12 +350,111 @@ export default class ApiHandler {
 	}
 
 	/**
+	 * Fetch and derive generalized staking information at a specific block.
+	 *
+	 * @param hash BlockHash to make call at.
+	 */
+	async fetchStakingInfo(hash: BlockHash): Promise<StakingInfo> {
+		const api = await this.ensureMeta(hash);
+
+		const [
+			validatorCount,
+			forceEra,
+			eraElectionStatus,
+			validators,
+			{ number },
+		] = await Promise.all([
+			await api.query.staking.validatorCount.at(hash),
+			await api.query.staking.forceEra.at(hash),
+			await api.query.staking.eraElectionStatus.at(hash),
+			await api.query.session.validators.at(hash),
+			await api.rpc.chain.getHeader(hash),
+		]);
+
+		const {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		} = await this.deriveSessionAndEraProgress(api, hash);
+
+		const unappliedSlashesAtActiveEra = await api.query.staking.unappliedSlashes.at(
+			hash,
+			activeEra
+		);
+
+		const currentBlockNumber = number.toBn();
+
+		const nextSession = sessionLength
+			.sub(sessionProgress)
+			.add(currentBlockNumber);
+
+		const baseResponse = {
+			at: {
+				hash: hash.toJSON(),
+				height: currentBlockNumber.toString(10),
+			},
+			activeEra: activeEra.toString(10),
+			forceEra: forceEra.toJSON(),
+			nextSessionEstimate: nextSession.toString(10),
+			unappliedSlashes: unappliedSlashesAtActiveEra.map((slash) =>
+				slash.toJSON()
+			),
+		};
+
+		if (forceEra.isForceNone) {
+			// Most likely we are in a PoA network with no elections. Things
+			// like `ValidatorCount` and `Validators` are hardcoded from genesis
+			// to support a transition into NPoS, but are irrelevant here and would be
+			// confusing to include. Thus, we craft a response excluding those values.
+			return baseResponse;
+		}
+
+		const nextActiveEra = forceEra.isForceAlways
+			? nextSession // there is a new era every session
+			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextActiveEra is at the end of this era
+
+		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
+
+		const nextCurrentEra = nextActiveEra
+			.sub(currentBlockNumber)
+			.sub(sessionLength)
+			.gt(new BN(0))
+			? nextActiveEra.sub(sessionLength) // current era simply one session before active era
+			: nextActiveEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
+
+		let toggle;
+		if (electionLookAhead.eq(new BN(0))) {
+			// no offchain solutions accepted
+			toggle = null;
+		} else if (eraElectionStatus.isClose) {
+			// election window is yet to open
+			toggle = nextCurrentEra.sub(electionLookAhead);
+		} else {
+			// election window closes at the end of the current era
+			toggle = nextCurrentEra;
+		}
+
+		return {
+			...baseResponse,
+			nextActiveEraEstimate: nextActiveEra.toString(10),
+			electionStatus: {
+				status: eraElectionStatus.toJSON(),
+				toggleEstimate: toggle?.toString(10) ?? null,
+			},
+			idealValidatorCount: validatorCount.toString(10),
+			validatorSet: validators.map((accountId) => accountId.toString()),
+		};
+	}
+
+	/**
 	 *
 	 * @param hash BlockHash to make call at.
 	 * @param stash _Stash_ address.
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingInfo(hash: BlockHash, stash: string) {
+	async fetchAddressStakingInfo(hash: BlockHash, stash: string) {
 		const api = await this.ensureMeta(hash);
 
 		const [header, controllerOption] = await Promise.all([
@@ -643,5 +746,97 @@ export default class ApiHandler {
 			callIndex,
 			args: newArgs,
 		};
+	}
+
+	/**
+	 * Derive information on the progress of the current session and era.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveSessionAndEraProgress(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<{
+		eraLength: BN;
+		eraProgress: BN;
+		sessionLength: BN;
+		sessionProgress: BN;
+		activeEra: EraIndex;
+	}> {
+		const [
+			currentSlot,
+			epochIndex,
+			genesisSlot,
+			currentIndex,
+			activeEraOption,
+		] = await Promise.all([
+			await api.query.babe.currentSlot.at(hash),
+			await api.query.babe.epochIndex.at(hash),
+			await api.query.babe.genesisSlot.at(hash),
+			await api.query.session.currentIndex.at(hash),
+			await api.query.staking.activeEra.at(hash),
+		]);
+
+		if (activeEraOption.isNone) {
+			throw errors.ActiveEra_IS_NONE;
+		}
+		const { index: activeEra } = activeEraOption.unwrap();
+
+		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
+			hash,
+			activeEra
+		);
+		if (activeEraStartSessionIndexOption.isNone) {
+			throw errors.ErasStartSessionIndex_IS_NONE;
+		}
+		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
+
+		const { epochDuration: sessionLength } = api.consts.babe;
+		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
+		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
+		const sessionProgress = currentSlot.sub(epochStartSlot);
+		const eraProgress = currentIndex
+			.sub(activeEraStartSessionIndex as BN)
+			.mul(sessionLength)
+			.add(sessionProgress);
+
+		return {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		};
+	}
+
+	/**
+	 * Get electionLookAhead as a const if available. Otherwise derive
+	 * `electionLookAhead` based on the `specName` & `epochDuration`.
+	 * N.B. Values are hardcoded based on `specName`s polkadot, kusama, and westend.
+	 * There are no guarantees that this will return the expected values for
+	 * other `specName`s.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveElectionLookAhead(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<BN> {
+		if (api.consts.staking.electionLookahead) {
+			return api.consts.staking.electionLookahead;
+		}
+
+		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
+		const { epochDuration } = api.consts.babe;
+
+		// TODO - create a configurable epochDivisor env for a more generic solution
+		const epochDurationDivisor =
+			specName.toString() === 'polkadot'
+				? new BN(16) // polkadot electionLookAhead = epochDuration / 16
+				: new BN(4); // kusama, westend, `substrate/bin/node` electionLookAhead = epochDuration / 4
+
+		return epochDuration.div(epochDurationDivisor);
 	}
 }

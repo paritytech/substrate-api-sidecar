@@ -7,9 +7,10 @@
     "preinstall": "./calc-fee/build.sh",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
+    "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
-    "start": "yarn run build && node ./build/main.js",
-    "dev": "tsc-watch --onSuccess \"node ./build/main.js\"",
+    "start": "yarn run build && yarn run main",
+    "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

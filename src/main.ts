@@ -22,27 +22,21 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as morgan from 'morgan';
 
+import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
-import * as config from './config.json';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
-const HOST =
-	process.env.BIND_HOST || (config['BIND_HOST'] as string) || '127.0.0.1';
-const PORT =
-	Number(process.env.BIND_PORT) || Number(config['BIND_PORT']) || 8080;
-const WS_URL =
-	process.env.NODE_WS_URL ||
-	(config['NODE_WS_URL'] as string) ||
-	'ws://127.0.0.1:9944';
-const LOG_MODE =
-	process.env.LOG_MODE || (config['LOG_MODE'] as string) || 'errors';
+const HOST = process.env.BIND_HOST || '127.0.0.1';
+const PORT = Number(process.env.BIND_PORT) || 8080;
+const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
+const LOG_MODE = process.env.LOG_MODE || 'errors';
 
 type Params = { [key: string]: string };
 
 async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
-		types: config['CUSTOM_TYPES'],
+		types: configTypes['CUSTOM_TYPES'],
 	});
 	const handler = new ApiHandler(api);
 	const app = express();
@@ -218,6 +212,76 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
+	// GET generalized staking information.
+	//
+	// Paths:
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `activeEra`: `EraIndex` of the era being rewarded.
+	// - `forceEra`: Current status of era forcing.
+	// - `nextActiveEraEstimate`: **Upper bound estimate** of the block height at which the next
+	//   active era will start. Not included in response when `forceEra.isForceNone`.
+	// - `nextSessionEstimate`: **Upper bound estimate** of the block height at which the next
+	//   session will start.
+	// - `unappliedSlashes`: Array of upcoming `UnappliedSlash` indexed by era. Each `UnappliedSlash`
+	//   contains:
+	//   - `validator`: Stash account ID of the offending validator.
+	//   - `own`: The amount the validator will be slashed.
+	//   - `others`: Array of tuples of (accountId, amount) representing all the stashes of other
+	//     slashed stakers and the amount they will be slashed.
+	//   - `reporters`: Array of account IDs of the reporters of the offense.
+	//   - `payout`: Amount of bounty payout to reporters.
+	// - `electionStatus`: Information about the off-chain election. Not included in response when
+	//   `forceEra.isForceNone`. Response includes:
+	//   - `status`: Era election status; either `Close: null` or `Open: <BlockNumber>`. A status of
+	//		 `Close` indicates that the submission window for solutions from off-chain Phragmen is not
+	//     open. A status of `Open` indicates the submission window for off-chain Phragmen solutions
+	//     has been open since BlockNumber. N.B. when the submission window is open, certain
+	//     extrinsics are not allowed because they would mutate the state that the off-chain Phragmen
+	//     calculation relies on for calculating results.
+	//   - `toggleEstimate`: **Upper bound estimate** of the block height at which the `status` will
+	//     switch.
+	// - `idealValidatorCount`: Upper bound of validator set size; considered the ideal size. Not
+	//   included in response when `forceEra.isForceNone`.
+	// - `validatorSet`: Stash account IDs of the validators for the current session. Not included in
+	//   response when `forceEra.isForceNone`.
+	//
+	// Note about 'active' vs. 'current' era: The _active_ era is the era currently being rewarded.
+	// That is, an elected validator set will be in place for an entire active era, as long as none
+	// are kicked out due to slashing. Elections take place at the end of each _current_ era, which
+	// is the latest planned era, and may not equal the active era. Normally, the current era index
+	// increments one session before the active era, in order to perform the election and queue the
+	// validator set for the next active era. For example:
+	//
+	// ```
+	// Time: --------->
+	// CurrentEra:            1              |              2              |
+	// ActiveEra:   |              1              |              2              |
+	// SessionIdx:  |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 |
+	// Elections:                           ^                             ^
+	// Set Changes:                               ^                             ^
+	// ```
+	//
+	// Substrate Reference:
+	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
+	// - Session Pallet: https://crates.parity.io/pallet_session/index.html
+	// - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
+	// - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
+	get('/staking-info/', async (_) => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
+	get('/staking-info/:number', async (params) => {
+		const hash: BlockHash = await getHashForBlock(api, params.number);
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
 	// GET staking information for an address.
 	//
 	// Paths:
@@ -259,14 +323,14 @@ async function main() {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchStakingInfo(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
-		return await handler.fetchStakingInfo(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	// GET vesting information for an address.
