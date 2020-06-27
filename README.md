@@ -110,11 +110,9 @@ Following ENV variables can be set:
   `ws://127.0.0.1:9944`.
 - `LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by setting it to anything else. LOG_MODE defaults to only "errors".
 
-These variables can also be set in the `src/config.json` file.
-
 If you are connecting to
 [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template),
-please add the following custom types in `src/config.json`.
+please add the following custom types in `config/types.json`.
 
 ```json
 {
