@@ -228,22 +228,22 @@ async function main() {
 	//   session will start.
 	// - `unappliedSlashes`: Array of upcoming `UnappliedSlash` indexed by era. Each `UnappliedSlash`
 	//   contains:
-	//   - `validator`: Stash account ID of the offending validator.
-	//   - `own`: The amount the validator will be slashed.
-	//   - `others`: Array of tuples of (accountId, amount) representing all the stashes of other
+	// 		- `validator`: Stash account ID of the offending validator.
+	//		- `own`: The amount the validator will be slashed.
+	//		- `others`: Array of tuples of (accountId, amount) representing all the stashes of other
 	//     slashed stakers and the amount they will be slashed.
-	//   - `reporters`: Array of account IDs of the reporters of the offense.
-	//   - `payout`: Amount of bounty payout to reporters.
+	//		- `reporters`: Array of account IDs of the reporters of the offense.
+	//		- `payout`: Amount of bounty payout to reporters.
 	// - `electionStatus`: Information about the off-chain election. Not included in response when
 	//   `forceEra.isForceNone`. Response includes:
-	//   - `status`: Era election status; either `Close: null` or `Open: <BlockNumber>`. A status of
-	//		 `Close` indicates that the submission window for solutions from off-chain Phragmen is not
-	//     open. A status of `Open` indicates the submission window for off-chain Phragmen solutions
-	//     has been open since BlockNumber. N.B. when the submission window is open, certain
-	//     extrinsics are not allowed because they would mutate the state that the off-chain Phragmen
-	//     calculation relies on for calculating results.
-	//   - `toggleEstimate`: **Upper bound estimate** of the block height at which the `status` will
-	//     switch.
+	//		- `status`: Era election status; either `Close: null` or `Open: <BlockNumber>`. A status of
+	//		`Close` indicates that the submission window for solutions from off-chain Phragmen is not
+	//		open. A status of `Open` indicates the submission window for off-chain Phragmen solutions
+	//		has been open since BlockNumber. N.B. when the submission window is open, certain
+	//		extrinsics are not allowed because they would mutate the state that the off-chain Phragmen
+	// 		calculation relies on for calculating results.
+	//		- `toggleEstimate`: **Upper bound estimate** of the block height at which the `status` will
+	//    switch.
 	// - `idealValidatorCount`: Upper bound of validator set size; considered the ideal size. Not
 	//   included in response when `forceEra.isForceNone`.
 	// - `validatorSet`: Stash account IDs of the validators for the current session. Not included in
