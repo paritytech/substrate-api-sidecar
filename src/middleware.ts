@@ -9,7 +9,7 @@ import * as e from 'express';
  * @param prefix chainSS58 prefix
  * Read more at: https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
  */
-export const validateSS58Address = (prefix: number) => (
+export const validateSS58Address = (
 	req: e.Request,
 	_res: e.Response,
 	next: e.NextFunction
@@ -18,13 +18,21 @@ export const validateSS58Address = (prefix: number) => (
 		next();
 	}
 
-	const [isValid, error] = checkAddress(req.params.address, prefix);
+	console.log(req.params.address){
+		req.params.address
+	}
+
+	const [isValid, error] = checkAddress(req.params.address);
+	console.log(isValid);
+	console.log('HELLO');
+	console.log(error);
 	if (!isValid) {
-		throw {
+		next({
 			statusCode: 400,
 			error,
-		};
+		});
 	}
+	console.log();
 
 	next();
 };

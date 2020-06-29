@@ -18,18 +18,14 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
-import checkAddress from '@polkadot/util-crypto/address/check';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as core from 'express-serve-static-core';
 import * as morgan from 'morgan';
 
 import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
-import {
-	KUSAMA_SS58_FORMAT,
-	POLKADOT_SS58_FORMAT,
-	WESTEND_SS58_FORMAT,
-} from './constants';
+import { validateSS58Address } from './middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
@@ -38,6 +34,13 @@ const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 const LOG_MODE = process.env.LOG_MODE || 'errors';
 
 type Params = { [key: string]: string };
+
+type RequestMiddleware = core.RequestHandler<
+	core.ParamsDictionary,
+	any, // eslint-disable-line @typescript-eslint/no-explicit-any
+	any, // eslint-disable-line @typescript-eslint/no-explicit-any
+	core.Query
+>;
 
 async function main() {
 	const api = await ApiPromise.create({
@@ -48,6 +51,7 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
+	app.use(validateSS58Address);
 
 	switch (LOG_MODE) {
 		case 'errors':
@@ -68,27 +72,34 @@ async function main() {
 			break;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function get(path: string, cb: (params: Params) => Promise<any>) {
-		app.get(path, async (req, res) => {
-			try {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				res.send(sanitizeNumbers(await cb(req.params)));
-			} catch (err) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
+	function get(
+		path: string,
+		cb: (params: Params) => Promise<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+		...middleware: RequestMiddleware[]
+	) {
+		app.get(
+			path,
+			middleware,
+			async (req: express.Request, res: express.Response) => {
+				try {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					res.send(sanitizeNumbers(await cb(req.params)));
+				} catch (err) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					res.status(err.statusCode || 500).send(
-						sanitizeNumbers(err)
-					);
-					return;
+					if (err && typeof err.error === 'string') {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						res.status(err.statusCode || 500).send(
+							sanitizeNumbers(err)
+						);
+						return;
+					}
+
+					console.error('Internal Error:', err);
+
+					res.status(500).send({ error: 'Internal Error' });
 				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
 			}
-		});
+		);
 	}
 
 	function post(
