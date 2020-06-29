@@ -1,4 +1,6 @@
-import checkAddress from '@polkadot/util-crypto/address/check';
+import checkChecksum from '@polkadot/util-crypto/address/checkChecksum';
+import defaults from '@polkadot/util-crypto/address/defaults';
+import base58Decode from '@polkadot/util-crypto/base58/decode';
 import * as e from 'express';
 
 /**
@@ -26,3 +28,28 @@ export const validateSS58Address = (prefix: number) => (
 
 	next();
 };
+
+/**
+ * Verify that an address is a valid ss58 substrate compatible address.
+ * Note this is very similar '@polkadot/util-crypto/address/checkAddress,
+ * expect it does not check the prefix.
+ *
+ * @param address potential ss58 address
+ */
+function checkAddress(address: string): [boolean, string | null] {
+	let decoded;
+
+	try {
+		decoded = base58Decode(address);
+	} catch (error) {
+		return [false, (error as Error).message];
+	}
+
+	if (!defaults.allowedEncodedLengths.includes(decoded.length)) {
+		return [false, 'Invalid decoded address length'];
+	}
+
+	const [isValid] = checkChecksum(decoded);
+
+	return [isValid, isValid ? null : 'Invalid decoded address checksum'];
+}
