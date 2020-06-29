@@ -32,8 +32,6 @@ const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 const LOG_MODE = process.env.LOG_MODE || 'errors';
 
-// type Params = { [key: string]: string };
-
 async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
