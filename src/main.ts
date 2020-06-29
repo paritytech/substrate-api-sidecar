@@ -20,6 +20,7 @@ import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as core from 'express-serve-static-core';
 import * as morgan from 'morgan';
 
 import * as configTypes from '../config/types.json';
@@ -30,8 +31,6 @@ const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 const LOG_MODE = process.env.LOG_MODE || 'errors';
-
-type Params = { [key: string]: string };
 
 async function main() {
 	const api = await ApiPromise.create({
@@ -62,8 +61,11 @@ async function main() {
 			break;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function get(path: string, cb: (params: Params) => Promise<any>) {
+	function get(
+		path: string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		cb: (params: core.ParamsDictionary) => Promise<any>
+	) {
 		app.get(path, async (req, res) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -87,8 +89,12 @@ async function main() {
 
 	function post(
 		path: string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		cb: (params: Params, body: any) => Promise<any>
+		cb: (
+			params: core.ParamsDictionary,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			body: any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) => Promise<any>
 	) {
 		app.post(path, async (req, res) => {
 			try {
