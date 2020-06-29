@@ -18,12 +18,18 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
+import checkAddress from '@polkadot/util-crypto/address/check';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as morgan from 'morgan';
 
 import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
+import {
+	KUSAMA_SS58_FORMAT,
+	POLKADOT_SS58_FORMAT,
+	WESTEND_SS58_FORMAT,
+} from './constants';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
@@ -200,12 +206,14 @@ async function main() {
 	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
 	get('/balance/:address', async (params) => {
 		const { address } = params;
+		console.log(api.runtimeMetadata.registry.chainSS58);
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		return await handler.fetchBalance(hash, address);
 	});
 
 	get('/balance/:address/:number', async (params) => {
+		console.log(api.runtimeMetadata.registry.chainSS58);
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
@@ -519,6 +527,28 @@ async function main() {
 		console.log(`Running on http://${HOST}:${PORT}/`)
 	);
 }
+
+// async function validateSS58Address(
+// 	api: ApiPromise,
+// 	hash: BlockHash,
+// 	ss58Address: string
+// ): Promise<{ isValid: boolean; error: string | null }> {
+// 	const { specName } = await api.rpc.state.getRuntimeVersion(hash);
+
+// 	let prefix;
+// 	switch (specName.toString()) {
+// 		case 'polkadot':
+// 			prefix = POLKADOT_SS58_FORMAT;
+// 			break;
+// 		case 'kusama':
+// 			prefix = KUSAMA_SS58_FORMAT;
+// 			break;
+// 		default:
+// 			prefix = WESTEND_SS58_FORMAT;
+// 	}
+// 	const [isValid, error] = checkAddress(ss58Address, prefix);
+// 	return { isValid, error };
+// }
 
 async function getHashForBlock(
 	api: ApiPromise,
