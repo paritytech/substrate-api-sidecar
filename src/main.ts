@@ -19,47 +19,20 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
-import { ConfigManager } from 'confmgr';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import * as morgan from 'morgan';
 
-import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
+import config from './config_setup';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
-const config = ConfigManager.getInstance('specs.yml').getConfig();
-config.Print({ compact: true });
-
-export enum MODULES {
-	MAIN = 'MAIN',
-	POLKADOT = 'POLKADOT',
-}
-
-export enum CONFIG {
-	WS_URL = 'WS_URL',
-	LOG_MODE = 'LOG_MODE',
-	BIND_HOST = 'BIND_HOST',
-	PORT = 'PORT',
-	NAME = 'NAME',
-	CUSTOM1 = 'CUSTOM1',
-}
-
-const HOST = config.Get(MODULES.MAIN, CONFIG.BIND_HOST) as string;
-const PORT = config.Get(MODULES.MAIN, CONFIG.PORT) as number;
-const LOG_MODE = config.Get(MODULES.MAIN, CONFIG.LOG_MODE) as string;
-const WS_URL = config.Get(MODULES.POLKADOT, CONFIG.WS_URL) as string;
-
 async function main() {
-	console.log(
-		`Connecting to ${
-			config.Get('POLKADOT', CONFIG.NAME) as string
-		} at ${WS_URL}`
-	);
+	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	const api = await ApiPromise.create({
-		provider: new WsProvider(WS_URL),
-		types: configTypes['CUSTOM_TYPES'],
+		provider: new WsProvider(config.WS_URL),
+		types: config.CUSTOM_TYPES,
 	});
 
 	const handler = new ApiHandler(api);
@@ -67,7 +40,7 @@ async function main() {
 
 	app.use(bodyParser.json());
 
-	switch (LOG_MODE) {
+	switch (config.LOG_MODE) {
 		case 'errors':
 			app.use(
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -546,8 +519,8 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
-	app.listen(PORT, HOST, () =>
-		console.log(`Listening on http://${HOST}:${PORT}/`)
+	app.listen(config.PORT, config.HOST, () =>
+		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
 	);
 }
 

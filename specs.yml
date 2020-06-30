@@ -1,12 +1,12 @@
 SAS:
-  MAIN:
+  EXPRESS:
     LOG_MODE:
       description: Log level
       default: errors
-     
+
     BIND_HOST:
-      description: Which network interface we bind to
-      default: 0.0.0.0
+      description: Network interface we bind to
+      default: 127.0.0.1
       type: string
 
     PORT:
@@ -14,15 +14,14 @@ SAS:
       default: 8080
       type: number
       regexp: ^\d{2,6}$
-    
-  POLKADOT:
+
+  SUBSTRATE:
     NAME:
-      description: A name for our endpoint
+      description: Name for our node endpoint
       type: string
-      default: Polkadot
+      default: Default Substrate Dev Node
 
     WS_URL:
       description: Websocket URL
       default: ws://127.0.0.1:9944
       regexp: ^wss?:\/\/.*(:\d{4,5})?$
-  
