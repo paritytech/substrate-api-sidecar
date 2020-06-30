@@ -25,7 +25,10 @@ import { BadRequest, HttpError } from 'http-errors';
 import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
+import App from './App';
 import config from './config_setup';
+import BalanceController from './controllers/BalanceController';
+import BlocksController from './controllers/BlockController';
 import errorMiddleware from './middleware/error.middleware';
 import { validateAddressMiddleware } from './middleware/validations.middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
@@ -74,7 +77,7 @@ async function main() {
 			} catch (err) {
 				if (err instanceof HttpError) {
 					const code = err.status;
-					res.status(code).send({
+					res.status(code).json({
 						code,
 						message: err?.message,
 						stack: err.stack,
@@ -537,4 +540,35 @@ async function getHashForBlock(
 	}
 }
 
-main().catch(console.log);
+// main().catch(console.log);
+
+async function test() {
+	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
+	// Instantiate a web socket connection to the node for basic polkadot-js use
+	const api = await ApiPromise.create({
+		provider: new WsProvider(config.WS_URL),
+		types: config.CUSTOM_TYPES,
+	});
+
+	const preMiddleware = [bodyParser.json()];
+	// if (LOG_MODE === 'errors') {
+	// 	preMiddleware.push(productionLogger);
+	// } else if (LOG_MODE === 'all') {
+	// 	preMiddleware.push(developmentLogger);
+	// }
+
+	const blocksController = new BlocksController(api);
+	const balanceController = new BalanceController(api);
+
+	const app = new App({
+		preMiddleware,
+		controllers: [blocksController, balanceController],
+		postMiddleware: [errorMiddleware],
+		port: config.PORT,
+		host: config.HOST,
+	});
+
+	app.listen();
+}
+
+test().catch(console.log);
