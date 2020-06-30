@@ -25,6 +25,8 @@ import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
 import config from './config_setup';
+import errorMiddleware from './middleware/error.middleware';
+import { validateAddressMiddleware } from './middleware/validations.middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
@@ -202,6 +204,7 @@ async function main() {
 	// - `AccountInfo`: https://crates.parity.io/frame_system/struct.AccountInfo.html
 	// - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
 	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
+	app.use('/balance/:address', validateAddressMiddleware);
 	get('/balance/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -323,6 +326,7 @@ async function main() {
 	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
 	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
+	app.use('/staking/:address', validateAddressMiddleware);
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -354,6 +358,7 @@ async function main() {
 	// Substrate Reference:
 	// - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
 	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
+	app.use('/vesting/:address', validateAddressMiddleware);
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -518,6 +523,8 @@ async function main() {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		return await handler.submitTx(body.tx);
 	});
+
+	app.use(errorMiddleware);
 
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
