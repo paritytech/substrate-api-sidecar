@@ -51,7 +51,11 @@ const LOG_MODE = config.Get(MODULES.MAIN, CONFIG.LOG_MODE) as string;
 const WS_URL = config.Get(MODULES.POLKADOT, CONFIG.WS_URL) as string;
 
 async function main() {
-	console.log(`Connecting to ${config.Get('POLKADOT', CONFIG.NAME) as string} at ${WS_URL}`)
+	console.log(
+		`Connecting to ${
+			config.Get('POLKADOT', CONFIG.NAME) as string
+		} at ${WS_URL}`
+	);
 
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
