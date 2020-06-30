@@ -1,6 +1,14 @@
 import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { HttpError } from 'http-errors';
 
+/**
+ * Handle HttpError and Error type throws in the handler pipeline.
+ *
+ * @param exception Error passed down by middleware or handler.
+ * @param _req Express Request
+ * @param res Express Response
+ * @param _next Express Next Function
+ */
 export default function errorMiddleware(
 	exception: HttpError | Error,
 	_req: Request,

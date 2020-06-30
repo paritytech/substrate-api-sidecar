@@ -38,8 +38,9 @@ async function main() {
 		types: config.CUSTOM_TYPES,
 	});
 
+	const app = new express();
+
 	const handler = new ApiHandler(api);
-	const app = express() as core.Express;
 
 	app.use(bodyParser.json());
 

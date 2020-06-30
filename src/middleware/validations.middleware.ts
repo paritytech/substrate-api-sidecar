@@ -1,7 +1,7 @@
 import checkChecksum from '@polkadot/util-crypto/address/checkChecksum';
 import defaults from '@polkadot/util-crypto/address/defaults';
 import base58Decode from '@polkadot/util-crypto/base58/decode';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { BadRequest } from 'http-errors';
 
 /**
