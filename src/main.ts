@@ -63,7 +63,8 @@ async function main() {
 
 	function get(
 		path: string,
-		cb: (params: core.ParamsDictionary) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		cb: (params: core.ParamsDictionary) => Promise<any>
 	) {
 		app.get(path, async (req, res) => {
 			try {
