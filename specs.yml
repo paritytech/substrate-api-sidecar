@@ -1,0 +1,10 @@
+SAS:
+  MAIN:
+    LOG_MODE:
+      description: Log level
+      default: errors
+     
+  POLKADOT:
+    WS_URL:
+      description: Websocket URL
+      default: ws://127.0.0.1:9944
