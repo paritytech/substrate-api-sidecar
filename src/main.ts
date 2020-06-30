@@ -25,22 +25,14 @@ import * as morgan from 'morgan';
 
 import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
-import { validateSS58Address } from './middleware';
+import errorMiddleware from './middleware/error.middleware';
+import { validateAddressMiddleware } from './middleware/validations.middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
 const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
 const LOG_MODE = process.env.LOG_MODE || 'errors';
-
-type Params = { [key: string]: string };
-
-type RequestMiddleware = core.RequestHandler<
-	core.ParamsDictionary,
-	any, // eslint-disable-line @typescript-eslint/no-explicit-any
-	any, // eslint-disable-line @typescript-eslint/no-explicit-any
-	core.Query
->;
 
 async function main() {
 	const api = await ApiPromise.create({
@@ -51,7 +43,6 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
-	app.use(validateSS58Address);
 
 	switch (LOG_MODE) {
 		case 'errors':
@@ -74,38 +65,37 @@ async function main() {
 
 	function get(
 		path: string,
-		cb: (params: Params) => Promise<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-		...middleware: RequestMiddleware[]
+		cb: (params: core.ParamsDictionary) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
 	) {
-		app.get(
-			path,
-			middleware,
-			async (req: express.Request, res: express.Response) => {
-				try {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					res.send(sanitizeNumbers(await cb(req.params)));
-				} catch (err) {
+		app.get(path, async (req: express.Request, res: express.Response) => {
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				res.send(sanitizeNumbers(await cb(req.params)));
+			} catch (err) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if (err && typeof err.error === 'string') {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					if (err && typeof err.error === 'string') {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-						res.status(err.statusCode || 500).send(
-							sanitizeNumbers(err)
-						);
-						return;
-					}
-
-					console.error('Internal Error:', err);
-
-					res.status(500).send({ error: 'Internal Error' });
+					res.status(err.statusCode || 500).send(
+						sanitizeNumbers(err)
+					);
+					return;
 				}
+
+				console.error('Internal Error:', err);
+
+				res.status(500).send({ error: 'Internal Error' });
 			}
-		);
+		});
 	}
 
 	function post(
 		path: string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		cb: (params: Params, body: any) => Promise<any>
+		cb: (
+			params: core.ParamsDictionary,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			body: any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) => Promise<any>
 	) {
 		app.post(path, async (req, res) => {
 			try {
@@ -215,16 +205,16 @@ async function main() {
 	// - `AccountInfo`: https://crates.parity.io/frame_system/struct.AccountInfo.html
 	// - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
 	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
+	app.use('/balance/:address', validateAddressMiddleware);
 	get('/balance/:address', async (params) => {
 		const { address } = params;
-		console.log(api.runtimeMetadata.registry.chainSS58);
+
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		return await handler.fetchBalance(hash, address);
 	});
 
 	get('/balance/:address/:number', async (params) => {
-		console.log(api.runtimeMetadata.registry.chainSS58);
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
@@ -338,6 +328,7 @@ async function main() {
 	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
 	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
+	app.use('/staking/:address', validateAddressMiddleware);
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -369,6 +360,7 @@ async function main() {
 	// Substrate Reference:
 	// - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
 	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
+	app.use('/vesting/:address', validateAddressMiddleware);
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -534,32 +526,12 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
+	app.use(errorMiddleware);
+
 	app.listen(PORT, HOST, () =>
 		console.log(`Running on http://${HOST}:${PORT}/`)
 	);
 }
-
-// async function validateSS58Address(
-// 	api: ApiPromise,
-// 	hash: BlockHash,
-// 	ss58Address: string
-// ): Promise<{ isValid: boolean; error: string | null }> {
-// 	const { specName } = await api.rpc.state.getRuntimeVersion(hash);
-
-// 	let prefix;
-// 	switch (specName.toString()) {
-// 		case 'polkadot':
-// 			prefix = POLKADOT_SS58_FORMAT;
-// 			break;
-// 		case 'kusama':
-// 			prefix = KUSAMA_SS58_FORMAT;
-// 			break;
-// 		default:
-// 			prefix = WESTEND_SS58_FORMAT;
-// 	}
-// 	const [isValid, error] = checkAddress(ss58Address, prefix);
-// 	return { isValid, error };
-// }
 
 async function getHashForBlock(
 	api: ApiPromise,

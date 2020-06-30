@@ -1,46 +1,36 @@
 import checkChecksum from '@polkadot/util-crypto/address/checkChecksum';
 import defaults from '@polkadot/util-crypto/address/defaults';
 import base58Decode from '@polkadot/util-crypto/base58/decode';
-import * as e from 'express';
+import { NextFunction, Request, Response } from 'express';
+
+import HttpException from '../exceptions/HttpException';
 
 /**
- * Express Middleware to validate that address params are properly formatted.
- *
- * @param prefix chainSS58 prefix
- * Read more at: https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
+ * Express Middleware to validate that address param is properly formatted.
  */
-export const validateSS58Address = (
-	req: e.Request,
-	_res: e.Response,
-	next: e.NextFunction
-): void => {
-	if (!req.params.address) {
+export function validateAddressMiddleware(
+	req: Request,
+	_res: Response,
+	next: NextFunction
+): void {
+	if (!('address' in req.params)) {
 		next();
 	}
 
-	console.log(req.params.address){
-		req.params.address
-	}
-
 	const [isValid, error] = checkAddress(req.params.address);
-	console.log(isValid);
-	console.log('HELLO');
-	console.log(error);
-	if (!isValid) {
-		next({
-			statusCode: 400,
-			error,
-		});
+
+	if (!isValid && error) {
+		next(new HttpException(404, error));
 	}
-	console.log();
 
 	next();
-};
+}
 
 /**
- * Verify that an address is a valid ss58 substrate compatible address.
+ * Verify that an address is a valid substrate ss58 address.
+ *
  * Note this is very similar '@polkadot/util-crypto/address/checkAddress,
- * expect it does not check the prefix.
+ * except it does not check the prefix.
  *
  * @param address potential ss58 address
  */
