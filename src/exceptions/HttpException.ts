@@ -3,7 +3,6 @@
  */
 export default class HttpException extends Error {
 	readonly statusCode: number;
-	readonly statusMessage: string;
 	/**
 	 * Construct a generic Http Exception
 	 *
@@ -11,8 +10,7 @@ export default class HttpException extends Error {
 	 * @param statusMessage error status message
 	 */
 	constructor(statusCode: number, statusMessage: string) {
-		super();
+		super(statusMessage);
 		this.statusCode = statusCode;
-		this.statusMessage = statusMessage;
 	}
 }

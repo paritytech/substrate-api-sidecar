@@ -8,10 +8,12 @@ export default function errorMiddleware(
 	res: Response,
 	_next: NextFunction
 ): void {
-	const code = exception.statusCode || 500;
-	const message = exception.statusMessage || 'Internal Error';
+	const code = exception.statusCode ?? 500;
+	const message = exception.message ?? 'Internal Error';
+	const stack = exception.stack ?? null;
 	res.status(code).send({
 		message,
 		code,
+		stack,
 	});
 }

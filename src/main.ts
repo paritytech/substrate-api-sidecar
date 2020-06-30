@@ -26,7 +26,10 @@ import * as morgan from 'morgan';
 import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
 import errorMiddleware from './middleware/error.middleware';
-import { validateAddressMiddleware } from './middleware/validations.middleware';
+import {
+	createValidateHeightMiddleware,
+	validateAddressMiddleware,
+} from './middleware/validations.middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 const HOST = process.env.BIND_HOST || '127.0.0.1';
@@ -43,7 +46,6 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
-
 	switch (LOG_MODE) {
 		case 'errors':
 			app.use(
@@ -171,6 +173,7 @@ async function main() {
 		return await handler.fetchBlock(hash);
 	});
 
+	app.use('/block/:number', createValidateHeightMiddleware(api));
 	get('/block/:number', async (params) => {
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 		return await handler.fetchBlock(hash);
