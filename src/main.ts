@@ -68,36 +68,43 @@ async function main() {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		cb: (
 			params: core.ParamsDictionary,
-			next: express.NextFunction
+			next?: core.NextFunction
 		) => Promise<any>
 	) {
-		app.get(path, async (req, res, next?) => {
-			try {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				res.send(sanitizeNumbers(await cb(req.params, next)));
-			} catch (err) {
-				if (err instanceof HttpError) {
-					const code = err.status;
-					res.status(code).send({
-						code,
-						message: err?.message,
-						stack: err.stack,
-					});
-				}
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
+		app.get(
+			path,
+			async (
+				req: core.Request,
+				res: core.Response,
+				next: core.NextFunction
+			) => {
+				try {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					res.send(sanitizeNumbers(await cb(req.params, next)));
+				} catch (err) {
+					if (err instanceof HttpError) {
+						const code = err.status;
+						res.status(code).send({
+							code,
+							message: err?.message,
+							stack: err.stack,
+						});
+					}
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					res.status(err.statusCode || 500).send(
-						sanitizeNumbers(err)
-					);
-					return;
+					if (err && typeof err.error === 'string') {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						res.status(err.statusCode || 500).send(
+							sanitizeNumbers(err)
+						);
+						return;
+					}
+
+					console.error('Internal Error:', err);
+
+					res.status(500).send({ error: 'Internal Error' });
 				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
 			}
-		});
+		);
 	}
 
 	function post(
@@ -109,7 +116,7 @@ async function main() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		) => Promise<any>
 	) {
-		app.post(path, async (req, res) => {
+		app.post(path, async (req: core.Request, res: core.Response) => {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
