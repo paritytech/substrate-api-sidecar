@@ -19,6 +19,7 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
+import { ConfigManager } from 'confmgr';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import * as morgan from 'morgan';
@@ -27,10 +28,13 @@ import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
+const config = ConfigManager.getInstance('specs.yml').getConfig();
+config.Print({ compact: true });
+
 const HOST = process.env.BIND_HOST || '127.0.0.1';
 const PORT = Number(process.env.BIND_PORT) || 8080;
-const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
-const LOG_MODE = process.env.LOG_MODE || 'errors';
+const WS_URL = config.Get('POLKADOT', 'WS_URL') as string;
+const LOG_MODE = config.Get('MAIN', 'LOG_MODE') as string;
 
 async function main() {
 	const api = await ApiPromise.create({

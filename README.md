@@ -31,6 +31,12 @@ yarn dev
 yarn start
 ```
 
+To use a specific env profile (here for instance a profile called 'parity'):
+
+```bash
+NODE_ENV=parity yarn start
+```
+
 ### Fee Calculation Debugging
 
 It is possible to get more information about the fee calculation process logged to
