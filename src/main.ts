@@ -21,6 +21,7 @@ import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
+import { BadRequest, HttpError } from 'http-errors';
 import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
@@ -38,7 +39,7 @@ async function main() {
 	});
 
 	const handler = new ApiHandler(api);
-	const app = express();
+	const app = express() as core.Express;
 
 	app.use(bodyParser.json());
 
@@ -64,13 +65,24 @@ async function main() {
 	function get(
 		path: string,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		cb: (params: core.ParamsDictionary) => Promise<any>
+		cb: (
+			params: core.ParamsDictionary,
+			next: express.NextFunction
+		) => Promise<any>
 	) {
-		app.get(path, async (req, res) => {
+		app.get(path, async (req, res, next?) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				res.send(sanitizeNumbers(await cb(req.params)));
+				res.send(sanitizeNumbers(await cb(req.params, next)));
 			} catch (err) {
+				if (err instanceof HttpError) {
+					const code = err.status;
+					res.status(code).send({
+						code,
+						message: err?.message,
+						stack: err.stack,
+					});
+				}
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -100,6 +112,14 @@ async function main() {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
+				if (err instanceof HttpError) {
+					const code = err.status;
+					res.status(code).send({
+						code,
+						message: err?.message,
+						stack: err.stack,
+					});
+				}
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					res.status(500).send(sanitizeNumbers(err));
@@ -171,7 +191,8 @@ async function main() {
 	});
 
 	get('/block/:number', async (params) => {
-		const hash: BlockHash = await getHashForBlock(api, params.number);
+		const hash = await getHashForBlock(api, params.number);
+
 		return await handler.fetchBlock(hash);
 	});
 
@@ -535,9 +556,9 @@ async function getHashForBlock(
 	api: ApiPromise,
 	blockId: string
 ): Promise<BlockHash> {
-	try {
-		let blockNumber;
+	let blockNumber;
 
+	try {
 		const isHexStr = isHex(blockId);
 		if (isHexStr && blockId.length === 66) {
 			// This is a block hash
@@ -553,7 +574,7 @@ async function getHashForBlock(
 		// Not a block hash, must be a block height
 		try {
 			blockNumber = parseBlockNumber(blockId);
-		} catch (err) {
+		} catch {
 			throw {
 				error:
 					`Cannot get block hash for ${blockId}. ` +
@@ -566,6 +587,15 @@ async function getHashForBlock(
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		if (err && typeof err.error === 'string') {
 			throw err;
+		}
+
+		// Check if the block number is too high
+		const { number } = await api.rpc.chain.getHeader();
+		if (blockNumber && number.toNumber() < blockNumber) {
+			throw new BadRequest(
+				`Specified block number is larger than the current largest block. ` +
+					`The largest known block number is ${number.toString()}.`
+			);
 		}
 
 		throw { error: `Cannot get block hash for ${blockId}.` };

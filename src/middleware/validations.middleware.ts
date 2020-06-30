@@ -13,16 +13,16 @@ export function validateAddressMiddleware(
 	next: NextFunction
 ): void {
 	if (!('address' in req.params)) {
-		next();
+		return next();
 	}
 
 	const [isValid, error] = checkAddress(req.params.address);
 
 	if (!isValid && error) {
-		next(new BadRequest(error));
+		return next(new BadRequest(error));
 	}
 
-	next();
+	return next();
 }
 
 /**

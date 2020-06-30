@@ -28,6 +28,7 @@ import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import * as BN from 'bn.js';
+import { InternalServerError } from 'http-errors';
 
 import * as errors from '../config/errors-en.json';
 import { StakingInfo } from './types/response_types';
