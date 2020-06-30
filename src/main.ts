@@ -67,7 +67,7 @@ async function main() {
 		path: string,
 		cb: (params: core.ParamsDictionary) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
 	) {
-		app.get(path, async (req: express.Request, res: express.Response) => {
+		app.get(path, async (req, res) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
@@ -208,7 +208,6 @@ async function main() {
 	app.use('/balance/:address', validateAddressMiddleware);
 	get('/balance/:address', async (params) => {
 		const { address } = params;
-
 		const hash = await api.rpc.chain.getFinalizedHead();
 
 		return await handler.fetchBalance(hash, address);

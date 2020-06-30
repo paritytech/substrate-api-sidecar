@@ -6,7 +6,7 @@ import { NextFunction, Request, Response } from 'express';
 import HttpException from '../exceptions/HttpException';
 
 /**
- * Express Middleware to validate that address param is properly formatted.
+ * Express Middleware to validate that an `:address` param is properly formatted.
  */
 export function validateAddressMiddleware(
 	req: Request,
@@ -29,7 +29,7 @@ export function validateAddressMiddleware(
 /**
  * Verify that an address is a valid substrate ss58 address.
  *
- * Note this is very similar '@polkadot/util-crypto/address/checkAddress,
+ * Note: this is very similar '@polkadot/util-crypto/address/checkAddress,
  * except it does not check the prefix.
  *
  * @param address potential ss58 address

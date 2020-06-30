@@ -9,9 +9,9 @@ export default function errorMiddleware(
 	_next: NextFunction
 ): void {
 	const code = exception.statusCode || 500;
-	const error = exception.message || 'Internal Error';
+	const message = exception.statusMessage || 'Internal Error';
 	res.status(code).send({
-		error,
-		statusCode: code,
+		message,
+		code,
 	});
 }

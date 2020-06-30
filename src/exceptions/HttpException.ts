@@ -1,12 +1,18 @@
 /**
- * Base class for creating exceptions that can be used as a response
+ * Base class for creating exceptions.
  */
 export default class HttpException extends Error {
 	readonly statusCode: number;
-	readonly message: string;
-	constructor(statusCode: number, message: string) {
+	readonly statusMessage: string;
+	/**
+	 * Construct a generic Http Exception
+	 *
+	 * @param statusCode http status code
+	 * @param statusMessage error status message
+	 */
+	constructor(statusCode: number, statusMessage: string) {
 		super();
 		this.statusCode = statusCode;
-		this.message = message;
+		this.statusMessage = statusMessage;
 	}
 }
