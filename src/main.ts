@@ -23,28 +23,26 @@ import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import * as morgan from 'morgan';
 
-import * as configTypes from '../config/types.json';
 import ApiHandler from './ApiHandler';
+import config from './config_setup';
 import errorMiddleware from './middleware/error.middleware';
 import { validateAddressMiddleware } from './middleware/validations.middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
-const HOST = process.env.BIND_HOST || '127.0.0.1';
-const PORT = Number(process.env.BIND_PORT) || 8080;
-const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
-const LOG_MODE = process.env.LOG_MODE || 'errors';
-
 async function main() {
+	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
+
 	const api = await ApiPromise.create({
-		provider: new WsProvider(WS_URL),
-		types: configTypes['CUSTOM_TYPES'],
+		provider: new WsProvider(config.WS_URL),
+		types: config.CUSTOM_TYPES,
 	});
+
 	const handler = new ApiHandler(api);
 	const app = express();
 
 	app.use(bodyParser.json());
 
-	switch (LOG_MODE) {
+	switch (config.LOG_MODE) {
 		case 'errors':
 			app.use(
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -525,10 +523,8 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
-	app.use(errorMiddleware);
-
-	app.listen(PORT, HOST, () =>
-		console.log(`Running on http://${HOST}:${PORT}/`)
+	app.listen(config.PORT, config.HOST, () =>
+		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
 	);
 }
 
