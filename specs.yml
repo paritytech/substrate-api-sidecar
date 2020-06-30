@@ -4,7 +4,24 @@ SAS:
       description: Log level
       default: errors
      
+    BIND_HOST:
+      description: Which network interface we bind to
+      default: 0.0.0.0
+      type: string
+
+    PORT:
+      description: Port of the web service
+      default: 8080
+      type: number
+      regexp: ^\d{2,6}$
+    
   POLKADOT:
+    NAME:
+      description: A name for our endpoint
+      type: string
+      default: Polkadot
+
     WS_URL:
       description: Websocket URL
       default: ws://127.0.0.1:9944
+      regexp: ^wss?:\/\/.*(:\d{4,5})?$
