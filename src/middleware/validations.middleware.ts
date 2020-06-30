@@ -15,7 +15,7 @@ type Middleware = (
 ) => void | Promise<void>;
 
 /**
- * Express Middleware to validate that an `:address` param is properly formatted.
+ * Express middleware to validate that an `:address` param is properly formatted.
  */
 export function validateAddressMiddleware(
 	req: Request,
@@ -36,7 +36,7 @@ export function validateAddressMiddleware(
 }
 
 /**
- * Verify that an address is a valid substrate ss58 address.
+ * Express middleware to verify that an address is a valid substrate ss58 address.
  *
  * Note: this is very similar '@polkadot/util-crypto/address/checkAddress,
  * except it does not check the prefix.
