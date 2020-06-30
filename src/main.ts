@@ -31,16 +31,37 @@ import { parseBlockNumber, sanitizeNumbers } from './utils';
 const config = ConfigManager.getInstance('specs.yml').getConfig();
 config.Print({ compact: true });
 
-const HOST = process.env.BIND_HOST || '127.0.0.1';
-const PORT = Number(process.env.BIND_PORT) || 8080;
-const WS_URL = config.Get('POLKADOT', 'WS_URL') as string;
-const LOG_MODE = config.Get('MAIN', 'LOG_MODE') as string;
+export enum MODULES {
+	MAIN = 'MAIN',
+	POLKADOT = 'POLKADOT',
+}
+
+export enum CONFIG {
+	WS_URL = 'WS_URL',
+	LOG_MODE = 'LOG_MODE',
+	BIND_HOST = 'BIND_HOST',
+	PORT = 'PORT',
+	NAME = 'NAME',
+	CUSTOM1 = 'CUSTOM1',
+}
+
+const HOST = config.Get(MODULES.MAIN, CONFIG.BIND_HOST) as string;
+const PORT = config.Get(MODULES.MAIN, CONFIG.PORT) as number;
+const LOG_MODE = config.Get(MODULES.MAIN, CONFIG.LOG_MODE) as string;
+const WS_URL = config.Get(MODULES.POLKADOT, CONFIG.WS_URL) as string;
 
 async function main() {
+	console.log(
+		`Connecting to ${
+			config.Get('POLKADOT', CONFIG.NAME) as string
+		} at ${WS_URL}`
+	);
+
 	const api = await ApiPromise.create({
 		provider: new WsProvider(WS_URL),
 		types: configTypes['CUSTOM_TYPES'],
 	});
+
 	const handler = new ApiHandler(api);
 	const app = express();
 
@@ -526,7 +547,7 @@ async function main() {
 	});
 
 	app.listen(PORT, HOST, () =>
-		console.log(`Running on http://${HOST}:${PORT}/`)
+		console.log(`Listening on http://${HOST}:${PORT}/`)
 	);
 }
 
