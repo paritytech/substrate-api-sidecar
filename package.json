@@ -28,7 +28,7 @@
     "@types/express-serve-static-core": "^4.17.8",
     "@types/morgan": "^1.9.1",
     "body-parser": "^1.19.0",
-    "express": "^5.0.0",
+    "express": "^5.0.0-alpha.8 ",
     "morgan": "^1.10.0",
     "typescript": "^3.9.5"
   },
