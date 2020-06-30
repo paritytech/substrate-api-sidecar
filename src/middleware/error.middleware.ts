@@ -1,17 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-
-import HttpException from '../exceptions/HttpException';
+import { HttpError } from 'http-errors';
 
 export default function errorMiddleware(
-	exception: HttpException,
+	exception: HttpError | Error,
 	_req: Request,
 	res: Response,
 	_next: NextFunction
 ): void {
-	const code = exception.statusCode || 500;
-	const message = exception.statusMessage || 'Internal Error';
+	const code = exception instanceof HttpError ? exception.status : 500;
 	res.status(code).send({
-		message,
 		code,
+		message: exception?.message ?? 'Internal Error',
+		stack: exception.stack,
 	});
 }

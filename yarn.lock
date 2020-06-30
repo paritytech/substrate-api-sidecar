@@ -199,41 +199,6 @@
   version "2.16.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-2.16.1.tgz#6575ab777ccea0cfc89649e3339e310c93e1b267"
   integrity sha512-QxLTBqb9oIg1cgEKz92B+yWkuqro8a68PifuT6xBaYAIJCE0NFkO3uzWjt7fqrd4mRyRWy4iXR2BHeAr+U7iFg==
-"@polkadot/util-crypto@^2.16.1":
-  version "2.16.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-2.16.1.tgz#b25992d62a3681772f178cf7d7938e702a622525"
-  integrity sha512-qLN861RB+9dbM8InZGveyaCkfjLd7HpIGFGVsxOLTA9XboBgLMaAB+Vs82RtT461q2xcf2UkjclFlokFqf0jtg==
-  dependencies:
-    "@babel/runtime" "^7.10.3"
-    "@polkadot/util" "2.16.1"
-    "@polkadot/wasm-crypto" "^1.2.1"
-    base-x "^3.0.8"
-    bip39 "^3.0.2"
-    blakejs "^1.1.0"
-    bn.js "^5.1.2"
-    bs58 "^4.0.1"
-    elliptic "^6.5.3"
-    js-sha3 "^0.8.0"
-    pbkdf2 "^3.1.1"
-    tweetnacl "^1.0.3"
-    xxhashjs "^0.2.2"
-
-"@polkadot/util@2.15.1", "@polkadot/util@^2.15.1":
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-2.15.1.tgz#77348345a38e19938b937106ebd8e8a6ac8be5a6"
-  integrity sha512-sFN/29rV5KqcJ+61U1WuctDb6vLCiTU9U7SK6KLo+6nwvqufp0NQmqyQZl2CrAuffk1xmzCSwpUUylP0xtv1DA==
-  dependencies:
-    "@babel/runtime" "^7.10.3"
-    "@types/bn.js" "^4.11.6"
-    bn.js "^5.1.2"
-    camelcase "^5.3.1"
-    chalk "^4.1.0"
-    ip-regex "^4.1.0"
-
-"@polkadot/util@2.16.1":
-  version "2.16.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-2.16.1.tgz#6575ab777ccea0cfc89649e3339e310c93e1b267"
-  integrity sha512-QxLTBqb9oIg1cgEKz92B+yWkuqro8a68PifuT6xBaYAIJCE0NFkO3uzWjt7fqrd4mRyRWy4iXR2BHeAr+U7iFg==
   dependencies:
     "@babel/runtime" "^7.10.3"
     "@types/bn.js" "^4.11.6"
@@ -297,6 +262,11 @@
     "@types/express-serve-static-core" "*"
     "@types/qs" "*"
     "@types/serve-static" "*"
+
+"@types/http-errors@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@types/http-errors/-/http-errors-1.6.3.tgz#619a55768eab98299e8f76747339f3373f134e69"
+  integrity sha512-4KCE/agIcoQ9bIfa4sBxbZdnORzRjIw8JNQPLfqoNv7wQl/8f8mRbW68Q8wBsQFoJkPUHGlQYZ9sqi5WpfGSEQ==
 
 "@types/json-schema@^7.0.3":
   version "7.0.5"
@@ -1328,6 +1298,17 @@ http-errors@1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
+http-errors@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.8.0.tgz#75d1bbe497e1044f51e4ee9e704a62f28d336507"
+  integrity sha512-4I8r0C5JDhT5VkvI47QktDW75rNlGVsUf/8hzjCC/wkWI/jdTRmBb9aI7erSG82r1bjKY3F6k28WnsVxB1C73A==
+  dependencies:
+    depd "~1.1.2"
+    inherits "2.0.4"
+    setprototypeof "1.2.0"
+    statuses ">= 1.5.0 < 2"
+    toidentifier "1.0.0"
+
 http-errors@~1.7.2:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.7.3.tgz#6c619e4f9c60308c38519498c14fbb10aacebb06"
@@ -2028,6 +2009,11 @@ setprototypeof@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
   integrity sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
+
+setprototypeof@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
+  integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
 sha.js@^2.4.0, sha.js@^2.4.8:
   version "2.4.11"

@@ -523,6 +523,8 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
+	app.use(errorMiddleware);
+
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
 	);

@@ -2,8 +2,7 @@ import checkChecksum from '@polkadot/util-crypto/address/checkChecksum';
 import defaults from '@polkadot/util-crypto/address/defaults';
 import base58Decode from '@polkadot/util-crypto/base58/decode';
 import { NextFunction, Request, Response } from 'express';
-
-import HttpException from '../exceptions/HttpException';
+import { BadRequest } from 'http-errors';
 
 /**
  * Express Middleware to validate that an `:address` param is properly formatted.
@@ -20,7 +19,7 @@ export function validateAddressMiddleware(
 	const [isValid, error] = checkAddress(req.params.address);
 
 	if (!isValid && error) {
-		next(new HttpException(404, error));
+		next(new BadRequest(error));
 	}
 
 	next();
