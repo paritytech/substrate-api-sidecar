@@ -35,13 +35,13 @@ yarn start
 
 ### Configuration
 
-To use a specific env profile (here for instance a profile called 'env.parity'):
+To use a specific env profile (here for instance a profile called 'env.sample'):
 
 ```bash
-NODE_ENV=parity yarn start
+NODE_ENV=sample yarn start
 ```
 
-For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc).
+For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `specs.yaml` to view the env configuration spec.
 
 Following ENV variables can be set:
 

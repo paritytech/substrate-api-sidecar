@@ -25,5 +25,3 @@ SAS:
       description: Websocket URL
       default: ws://127.0.0.1:9944
       regexp: ^wss?:\/\/.*(:\d{4,5})?$
-
-
