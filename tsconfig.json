@@ -29,6 +29,7 @@
     "./src/**/*.json",
     "./config/**/*.json",
     "./config/**/*.ts",
-    "./declarations/**/*.d.ts", "src/exceptions"
+    "./declarations/**/*.d.ts",
+    "src/exceptions"
   ]
 }
