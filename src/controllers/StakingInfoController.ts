@@ -81,7 +81,7 @@ export default class StakingInfoController extends AbstractController {
 	}
 
 	/**
-	 * Get the latest staking information and progress summary .
+	 * Get the latest staking information and progress summary.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response

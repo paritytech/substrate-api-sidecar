@@ -14,13 +14,17 @@ export default class VestingController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router
-			.use(this.path, validateAddressMiddleware)
-			.get(this.path, this.catchWrap(this.getLatestAccountVestingSummary))
-			.get(
-				`${this.path}/:number`,
-				this.catchWrap(this.getAccountVestingSummaryAtBlock)
-			);
+		this.router.use(this.path, validateAddressMiddleware);
+		// .get(this.path, this.catchWrap(this.getLatestAccountVestingSummary))
+		// .get(
+		// 	`${this.path}/:number`,
+		// 	this.catchWrap(this.getAccountVestingSummaryAtBlock)
+		// );
+
+		this.safeMountAsyncGetHandlers([
+			['', this.getLatestAccountVestingSummary],
+			['/:number', this.getAccountVestingSummaryAtBlock],
+		]);
 	}
 
 	private getLatestAccountVestingSummary = async (
