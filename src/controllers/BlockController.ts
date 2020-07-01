@@ -76,6 +76,6 @@ export default class BlocksController extends BaseController {
 		res: Response
 	): Promise<void> => {
 		const hash: BlockHash = await this.getHashForBlock(req.params.number);
-		res.json(await this.handler.fetchBlock(hash));
+		res.send(await this.handler.fetchBlock(hash));
 	};
 }
