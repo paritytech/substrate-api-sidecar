@@ -1,11 +1,24 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
-import { Router } from 'express';
+import {
+	NextFunction,
+	Request,
+	RequestHandler,
+	Response,
+	Router,
+} from 'express';
 import * as express from 'express';
 import { BadRequest } from 'http-errors';
 
+// TODO add this to class
 import { parseBlockNumber } from '../utils';
+
+type SidecarAsyncRequestHandler = (
+	req: Request,
+	res: Response,
+	next?: NextFunction
+) => Promise<void>;
 
 /**
  * Abstract base class for creating controller classes.
@@ -29,8 +42,32 @@ export default abstract class AbstractController {
 
 	/**
 	 * Mount all controller handler methods on the classes private router.
+	 *
+	 * Keep in mind that asynchronous errors in the RequestHandlers need to be
+	 * dealt with manually. You can wrap the handler with `catchWrap`
+	 * (a method in this class) or handle the errors within the RequestHandler.
 	 */
 	protected abstract initRoutes(): void;
+
+	/**
+	 * Wrapper for any asynchronous RequestHandler function. Pipes errors
+	 * to downstream error handling middleware.
+	 *
+	 * @param cb ExpressHandler
+	 */
+	protected catchWrap = (
+		cb: SidecarAsyncRequestHandler
+	): RequestHandler => async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			await cb(req, res, next);
+		} catch (err) {
+			next(err);
+		}
+	};
 
 	/**
 	 * Create or retrieve the corresponding BlockHash for the given block identifier.

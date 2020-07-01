@@ -15,9 +15,12 @@ export default class BlocksController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.router
-			.use(validateAddressMiddleware)
-			.get(this.path, this.getLatestAccountStakingSummary)
-			.get(`${this.path}/:number`, this.getAccountStakingSummaryAtBlock);
+			.use(this.path, validateAddressMiddleware)
+			.get(this.path, this.catchWrap(this.getLatestAccountStakingSummary))
+			.get(
+				`${this.path}/:number`,
+				this.catchWrap(this.getAccountStakingSummaryAtBlock)
+			);
 	}
 
 	private getLatestAccountStakingSummary = async (
@@ -27,25 +30,16 @@ export default class BlocksController extends AbstractController {
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		try {
-			res.send(await this.handler.fetchAddressStakingInfo(hash, address));
-		} catch (e) {
-			console.log(e);
-		}
+		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
 	};
 
 	private getAccountStakingSummaryAtBlock = async (
 		req: Request,
-		res: Response,
-		next: NextFunction
+		res: Response
 	): Promise<void> => {
 		const { address, number } = req.params;
 
-		try {
-			const hash = await this.getHashForBlock(number);
-			res.send(await this.handler.fetchAddressStakingInfo(hash, address));
-		} catch (e) {
-			return next(e);
-		}
+		const hash = await this.getHashForBlock(number);
+		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
 	};
 }

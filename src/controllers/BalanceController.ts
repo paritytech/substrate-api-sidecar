@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
@@ -37,10 +37,10 @@ import AbstractController from './AbstractController';
  * - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
-export default class BlocksController extends AbstractController {
+export default class BalanceController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
-		super(api, '/balance/:address');
+		super(api, 'balance/:address');
 		this.handler = new ApiHandler(api);
 		this.initRoutes();
 	}
@@ -48,8 +48,12 @@ export default class BlocksController extends AbstractController {
 	protected initRoutes(): void {
 		this.router
 			.use(validateAddressMiddleware)
+			// .get(this.path, this.catchWrap(this.getLatestAccountBalance))
 			.get(this.path, this.getLatestAccountBalance)
-			.get(`${this.path}/:number`, this.getAccountBalanceAtBlock);
+			.get(
+				`${this.path}/:number`,
+				this.catchWrap(this.getAccountBalanceAtBlock)
+			);
 	}
 
 	/**
@@ -60,10 +64,11 @@ export default class BlocksController extends AbstractController {
 	 */
 	private getLatestAccountBalance = async (
 		req: Request,
-		res: Response
+		res: Response,
+		_next: NextFunction
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
 		const { address } = req.params;
+		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		res.send(await this.handler.fetchBalance(hash, address));
 	};

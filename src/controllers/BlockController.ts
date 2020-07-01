@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
+import { NextFunction } from 'express-serve-static-core';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -61,8 +62,8 @@ export default class BlocksController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.router
-			.get(this.path, this.getLatestBlock)
-			.get(`${this.path}/:number`, this.getBlockById);
+			.get(this.path, this.catchWrap(this.getLatestBlock))
+			.get(`${this.path}/:number`, this.catchWrap(this.getBlockById));
 	}
 
 	/**

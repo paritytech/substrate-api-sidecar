@@ -75,8 +75,11 @@ export default class BlocksController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.router
-			.get(this.path, this.getLatestStakingInfo)
-			.get(`${this.path}/:number`, this.getStakingInfoAtBlock);
+			.get(this.path, this.catchWrap(this.getLatestStakingInfo))
+			.get(
+				`${this.path}/:number`,
+				this.catchWrap(this.getStakingInfoAtBlock)
+			);
 	}
 
 	/**

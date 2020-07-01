@@ -12,16 +12,14 @@ export function validateAddressMiddleware(
 	_res: Response,
 	next: NextFunction
 ): void {
-	console.log(req.params);
 	if (!('address' in req.params)) {
-		return next();
+		next();
 	}
 
 	const [isValid, error] = checkAddress(req.params.address);
-
-	if (!isValid) {
-		console.log('HUOHUOFHO');
-		return next(new BadRequest(error));
+	console.log(isValid);
+	if (!isValid && error) {
+		next(new BadRequest(error));
 	}
 
 	next();

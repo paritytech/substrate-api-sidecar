@@ -12,14 +12,30 @@ export default function sanitizeResMiddleware<T>(
 	const _send = res.send;
 
 	function newSend<T>(body: T): Response<T> | void {
+		let sanitizedBody;
 		try {
-			const sanitizedBody = sanitizeNumbers(body) as T;
-
-			return _send.call(res, sanitizedBody) as Response<T>;
-		} catch {
+			sanitizedBody = sanitizeNumbers(body) as T;
+			console.log(sanitizedBody);
+		} catch (e) {
+			if (e) {
+				return next(new InternalServerError(String(e)));
+			}
 			return next(
 				new InternalServerError(
-					'Unknown failure while trying to sanitize and `send` the response body.'
+					'Failure while trying to sanitize the response body.'
+				)
+			);
+		}
+
+		try {
+			return _send.call(res, sanitizedBody) as Response<T>;
+		} catch (e) {
+			if (e) {
+				return next(new InternalServerError(String(e)));
+			}
+			return next(
+				new InternalServerError(
+					'Failure while trying to send the response body'
 				)
 			);
 		}

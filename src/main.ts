@@ -370,7 +370,7 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
-	app.use(httpErrorMiddleware);
+	app.use(errorMiddleware);
 
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
@@ -431,14 +431,19 @@ async function getHashForBlock(
 
 test().catch(console.log);
 
+// import errorMiddleware from './middleware/errorMiddleware';
+// import internalErrorHandler from './middleware/internalErrorHandler';
+// import legacyErrorMiddleware from './middleware/legacyErrorMiddleware';
 import App from './App';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
-import httpErrorMiddleware from './middleware/httpErrorMiddleware';
-import internalErrorHandler from './middleware/internalErrorHandler';
-import legacyErrorMiddleware from './middleware/legacyErrorMiddleware';
+import {
+	errorMiddleware,
+	internalErrorMiddleware,
+	legacyErrorMiddleware,
+} from './middleware/error_middleware';
 import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
@@ -455,7 +460,8 @@ async function test() {
 	});
 
 	// Create our array of middleware that is to be mounted before the routes
-	const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
+	// const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
+	const preMiddleware = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
 		preMiddleware.push(productionLoggerMiddleware);
 	} else if (config.LOG_MODE === 'all') {
@@ -465,8 +471,8 @@ async function test() {
 	// Instantiate controller class instances
 	const blocksController = new BlocksController(api);
 	const balanceController = new BalanceController(api);
-	const stakingInfoController = new StakingInfoController(api);
-	const stakingController = new StakingController(api);
+	// const stakingInfoController = new StakingInfoController(api);
+	// const stakingController = new StakingController(api);
 
 	// Create our App
 	const app = new App({
@@ -474,13 +480,13 @@ async function test() {
 		controllers: [
 			blocksController,
 			balanceController,
-			stakingInfoController,
-			stakingController,
+			// stakingInfoController,
+			// stakingController,
 		],
 		postMiddleware: [
-			httpErrorMiddleware,
+			errorMiddleware,
 			legacyErrorMiddleware,
-			internalErrorHandler,
+			internalErrorMiddleware,
 		],
 		port: config.PORT,
 		host: config.HOST,
