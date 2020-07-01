@@ -22,7 +22,7 @@ export default function sanitizeResMiddleware<T>(
 			}
 			return next(
 				new InternalServerError(
-					'Failure while trying to sanitize the response body.'
+					'Failure while trying to sanitized the response body.'
 				)
 			);
 		}

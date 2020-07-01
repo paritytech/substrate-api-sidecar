@@ -471,8 +471,8 @@ async function test() {
 	// Instantiate controller class instances
 	const blocksController = new BlocksController(api);
 	const balanceController = new BalanceController(api);
-	// const stakingInfoController = new StakingInfoController(api);
-	// const stakingController = new StakingController(api);
+	const stakingInfoController = new StakingInfoController(api);
+	const stakingController = new StakingController(api);
 
 	// Create our App
 	const app = new App({
@@ -480,8 +480,8 @@ async function test() {
 		controllers: [
 			blocksController,
 			balanceController,
-			// stakingInfoController,
-			// stakingController,
+			stakingInfoController,
+			stakingController,
 		],
 		postMiddleware: [
 			errorMiddleware,
