@@ -19,7 +19,7 @@ ENV SAS_EXPRESS_BIND_HOST=${SAS_EXPRESS_BIND_HOST}
 
 RUN cargo install wasm-pack
 RUN yarn
-RUN NODE_ENV=docker yarn run build
+RUN yarn run build
 #TODO: add builder patter (multi-stage build) to reduce image size
 # second stage
 #FROM node:latest
