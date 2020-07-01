@@ -7,6 +7,9 @@ import { BadRequest } from 'http-errors';
 
 import { parseBlockNumber } from '../utils';
 
+/**
+ * Abstract base class for creating controller classes.
+ */
 export default abstract class AbstractController {
 	private _path: string;
 	private _router: Router = express.Router();
@@ -24,6 +27,17 @@ export default abstract class AbstractController {
 		return this._router;
 	}
 
+	/**
+	 * Mount all controller handler methods on the classes private router.
+	 */
+	protected abstract initRoutes(): void;
+
+	/**
+	 * Create or retrieve the corresponding BlockHash for the given block identifier.
+	 * This also acts as a validation for string based block identifiers.
+	 *
+	 * @param blockId string representing a hash or number block identifier.
+	 */
 	async getHashForBlock(blockId: string): Promise<BlockHash> {
 		let blockNumber;
 

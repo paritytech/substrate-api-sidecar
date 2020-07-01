@@ -59,12 +59,18 @@ export default class BlocksController extends AbstractController {
 		this.initRoutes();
 	}
 
-	private initRoutes(): void {
+	protected initRoutes(): void {
 		this.router
 			.get(this.path, this.getLatestBlock)
 			.get(`${this.path}/:number`, this.getBlockById);
 	}
 
+	/**
+	 * Get the latest block.
+	 *
+	 * @param _req Express Request
+	 * @param res Express Response
+	 */
 	private getLatestBlock = async (
 		_req: Request,
 		res: Response
@@ -73,6 +79,12 @@ export default class BlocksController extends AbstractController {
 		res.send(await this.handler.fetchBlock(hash));
 	};
 
+	/**
+	 * Get a block by a hash or number identifier.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getBlockById = async (
 		req: Request,
 		res: Response

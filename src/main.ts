@@ -505,9 +505,15 @@ async function getHashForBlock(
 
 test().catch(console.log);
 
+import {
+	developmentLoggerMiddleware,
+	productionLoggerMiddleware,
+} from './middleware/logger_middleware';
 import sanitizedSendMiddleware from './middleware/sanitizeResMiddleware';
+
 async function test() {
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
+
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
@@ -515,11 +521,11 @@ async function test() {
 	});
 
 	const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
-	// if (LOG_MODE === 'errors') {
-	// 	preMiddleware.push(productionLogger);
-	// } else if (LOG_MODE === 'all') {
-	// 	preMiddleware.push(developmentLogger);
-	// }
+	if (config.LOG_MODE === 'errors') {
+		preMiddleware.push(productionLoggerMiddleware);
+	} else if (config.LOG_MODE === 'all') {
+		preMiddleware.push(developmentLoggerMiddleware);
+	}
 
 	const blocksController = new BlocksController(api);
 	const balanceController = new BalanceController(api);

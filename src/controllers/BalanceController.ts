@@ -44,7 +44,7 @@ export default class BlocksController extends AbstractController {
 		this.initRoutes();
 	}
 
-	private initRoutes(): void {
+	protected initRoutes(): void {
 		this.router
 			.get(this.path, this.getLatestAccountBalance)
 			.get(`${this.path}/:number`, this.getAccountBalanceAtBlock);
