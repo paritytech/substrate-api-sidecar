@@ -25,7 +25,6 @@ import { BadRequest, HttpError } from 'http-errors';
 import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
-import App from './App';
 import config from './config_setup';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
@@ -432,12 +431,13 @@ async function getHashForBlock(
 
 test().catch(console.log);
 
+import App from './App';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
 import httpErrorMiddleware from './middleware/httpErrorMiddleware';
-import internalErrorMiddleware from './middleware/internalErrorMiddleware';
+import internalErrorHandler from './middleware/internalErrorHandler';
 import legacyErrorMiddleware from './middleware/legacyErrorMiddleware';
 import {
 	developmentLoggerMiddleware,
@@ -480,7 +480,7 @@ async function test() {
 		postMiddleware: [
 			httpErrorMiddleware,
 			legacyErrorMiddleware,
-			internalErrorMiddleware,
+			internalErrorHandler,
 		],
 		port: config.PORT,
 		host: config.HOST,

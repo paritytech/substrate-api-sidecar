@@ -10,8 +10,8 @@ export default function httpErrorMiddleware(
 	res: Response,
 	next: NextFunction
 ): void {
-	if (!('error' in exception)) {
-		next(exception);
+	if (res.headersSent || !('error' in exception)) {
+		return next(exception);
 	}
 
 	if ('statusCode' in exception) {
