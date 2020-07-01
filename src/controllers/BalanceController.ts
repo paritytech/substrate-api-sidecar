@@ -50,6 +50,12 @@ export default class BlocksController extends AbstractController {
 			.get(`${this.path}/:number`, this.getAccountBalanceAtBlock);
 	}
 
+	/**
+	 * Get the latest account balance.
+	 *
+	 * @param req
+	 * @param res
+	 */
 	private getLatestAccountBalance = async (
 		req: Request,
 		res: Response
@@ -60,6 +66,12 @@ export default class BlocksController extends AbstractController {
 		res.send(await this.handler.fetchBalance(hash, address));
 	};
 
+	/**
+	 * Get the account balance at the block identified by a hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getAccountBalanceAtBlock = async (
 		req: Request,
 		res: Response
