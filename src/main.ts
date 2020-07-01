@@ -371,7 +371,7 @@ async function main() {
 		return await handler.submitTx(body.tx);
 	});
 
-	app.use(errorMiddleware);
+	app.use(httpErrorMiddleware);
 
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
@@ -437,6 +437,8 @@ import BlocksController from './controllers/BlockController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
 import httpErrorMiddleware from './middleware/httpErrorMiddleware';
+import internalErrorMiddleware from './middleware/internalErrorMiddleware';
+import legacyErrorMiddleware from './middleware/legacyErrorMiddleware';
 import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
@@ -475,7 +477,11 @@ async function test() {
 			stakingInfoController,
 			stakingController,
 		],
-		postMiddleware: [httpErrorMiddleware],
+		postMiddleware: [
+			httpErrorMiddleware,
+			legacyErrorMiddleware,
+			internalErrorMiddleware,
+		],
 		port: config.PORT,
 		host: config.HOST,
 	});

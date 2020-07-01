@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
@@ -36,11 +36,16 @@ export default class BlocksController extends AbstractController {
 
 	private getAccountStakingSummaryAtBlock = async (
 		req: Request,
-		res: Response
+		res: Response,
+		next: NextFunction
 	): Promise<void> => {
 		const { address, number } = req.params;
-		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
+		try {
+			const hash = await this.getHashForBlock(number);
+			res.send(await this.handler.fetchAddressStakingInfo(hash, address));
+		} catch (e) {
+			return next(e);
+		}
 	};
 }

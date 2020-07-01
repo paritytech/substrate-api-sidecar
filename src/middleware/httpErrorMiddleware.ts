@@ -7,6 +7,7 @@ export default function httpErrorMiddleware(
 	res: Response,
 	next: NextFunction
 ): void {
+	console.log('agegnqwn');
 	if (!(exception instanceof HttpError) || !(exception instanceof Error)) {
 		next();
 	}
