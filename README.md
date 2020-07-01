@@ -154,6 +154,21 @@ We welcome contributions. Before submitting your PR, make sure to run the follow
 
 ## Docker
 
-```bash
+### Build
 
+```bash
+yarn build:docker
 ```
+
+### Run
+
+```bash
+export VERSION=`cat package.json | jq -r .version`
+docker run --rm -it -p 8080:8080 substrate-api-sidecar:$VERSION
+```
+
+then you can test with:
+```bash
+curl -s http://127.0.0.1:8080/block | jq
+```
+
