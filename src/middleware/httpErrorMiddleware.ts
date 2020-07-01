@@ -1,12 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpError } from 'http-errors';
 
-export default function errorMiddleware(
+export default function httpErrorMiddleware(
 	exception: HttpError | Error,
 	_req: Request,
 	res: Response,
-	_next: NextFunction
+	next: NextFunction
 ): void {
+	if (!(exception instanceof HttpError) || !(exception instanceof Error)) {
+		next();
+	}
+
 	const code = exception instanceof HttpError ? exception.status : 500;
 	res.status(code).send({
 		code,

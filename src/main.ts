@@ -27,9 +27,6 @@ import * as morgan from 'morgan';
 import ApiHandler from './ApiHandler';
 import App from './App';
 import config from './config_setup';
-import BalanceController from './controllers/BalanceController';
-import BlocksController from './controllers/BlockController';
-import errorMiddleware from './middleware/errorMiddleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
@@ -435,6 +432,11 @@ async function getHashForBlock(
 
 test().catch(console.log);
 
+import BalanceController from './controllers/BalanceController';
+import BlocksController from './controllers/BlockController';
+import StakingController from './controllers/StakingController';
+import StakingInfoController from './controllers/StakingInfoController';
+import httpErrorMiddleware from './middleware/httpErrorMiddleware';
 import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
@@ -461,12 +463,19 @@ async function test() {
 	// Instantiate controller class instances
 	const blocksController = new BlocksController(api);
 	const balanceController = new BalanceController(api);
+	const stakingInfoController = new StakingInfoController(api);
+	const stakingController = new StakingController(api);
 
-	// Create our server App
+	// Create our App
 	const app = new App({
 		preMiddleware,
-		controllers: [blocksController, balanceController],
-		postMiddleware: [errorMiddleware],
+		controllers: [
+			blocksController,
+			balanceController,
+			stakingInfoController,
+			stakingController,
+		],
+		postMiddleware: [httpErrorMiddleware],
 		port: config.PORT,
 		host: config.HOST,
 	});

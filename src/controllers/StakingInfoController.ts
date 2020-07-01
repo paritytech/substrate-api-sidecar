@@ -94,6 +94,12 @@ export default class BlocksController extends AbstractController {
 		res.send(await this.handler.fetchStakingInfo(hash));
 	};
 
+	/**
+	 * Get staking information at the block identified by a hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getStakingInfoAtBlock = async (
 		req: Request,
 		res: Response

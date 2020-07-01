@@ -3,6 +3,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
+import { validateAddressMiddleware } from '../middleware/validations_middleware';
 import AbstractController from './AbstractController';
 
 /**
@@ -46,6 +47,7 @@ export default class BlocksController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.router
+			.use(validateAddressMiddleware)
 			.get(this.path, this.getLatestAccountBalance)
 			.get(`${this.path}/:number`, this.getAccountBalanceAtBlock);
 	}
