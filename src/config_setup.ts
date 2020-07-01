@@ -41,4 +41,5 @@ export default {
 	WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 	CUSTOM_TYPES: configTypes['CUSTOM_TYPES'],
 	NAME: config.Get('SUBSTRATE', CONFIG.NAME) as string,
+	valid: config.Validate()
 };
