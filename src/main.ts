@@ -460,8 +460,8 @@ async function test() {
 	});
 
 	// Create our array of middleware that is to be mounted before the routes
-	// const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
-	const preMiddleware = [bodyParser.json()];
+	const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
+	// const preMiddleware = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
 		preMiddleware.push(productionLoggerMiddleware);
 	} else if (config.LOG_MODE === 'all') {

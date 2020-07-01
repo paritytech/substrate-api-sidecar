@@ -15,7 +15,6 @@ export default function sanitizeResMiddleware<T>(
 		let sanitizedBody;
 		try {
 			sanitizedBody = sanitizeNumbers(body) as T;
-			console.log(sanitizedBody);
 		} catch (e) {
 			if (e) {
 				return next(new InternalServerError(String(e)));
