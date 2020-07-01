@@ -65,7 +65,7 @@ import AbstractController from './AbstractController';
  * - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
  * - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
  */
-export default class BlocksController extends AbstractController {
+export default class StakingInfoController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
 		super(api, '/staking-info');

@@ -439,6 +439,7 @@ import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
+import VestingController from './controllers/VestingController';
 import {
 	errorMiddleware,
 	internalErrorMiddleware,
@@ -473,6 +474,7 @@ async function test() {
 	const balanceController = new BalanceController(api);
 	const stakingInfoController = new StakingInfoController(api);
 	const stakingController = new StakingController(api);
+	const vestingController = new VestingController(api);
 
 	// Create our App
 	const app = new App({
@@ -482,6 +484,7 @@ async function test() {
 			balanceController,
 			stakingInfoController,
 			stakingController,
+			vestingController,
 		],
 		postMiddleware: [
 			errorMiddleware,

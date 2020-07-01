@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
-import { NextFunction } from 'express-serve-static-core';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
