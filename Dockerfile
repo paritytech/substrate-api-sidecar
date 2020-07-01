@@ -3,12 +3,11 @@ LABEL author="chevdor@gmail.com"
 
 WORKDIR /opt/builder
 
-RUN echo 1 && \
-    echo 2 && \
-    echo 3
-
 COPY . .
-RUN yarn install && \
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y && \
+    . $HOME/.cargo/env && \
+    cargo install wasm-pack && \
+    yarn install && \
     yarn build
 
 # ---------------------------------
