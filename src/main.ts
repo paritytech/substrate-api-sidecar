@@ -578,7 +578,7 @@ async function getHashForBlock(
 		const { number } = await api.rpc.chain.getHeader();
 		if (blockNumber && number.toNumber() < blockNumber) {
 			throw new BadRequest(
-				`Specified block number is larger than the current largest block. ` +
+				`Specified block number is higher than the current finalized block height. ` +
 					`The largest known block number is ${number.toString()}.`
 			);
 		}
