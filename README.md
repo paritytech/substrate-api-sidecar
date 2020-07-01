@@ -46,7 +46,7 @@ For more information on our configuration manager visit its readme [here](https:
 Following ENV variables can be set:
 
 - `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
-- `SAS_EXPRESS_BIND_PORT`: port on which the server will be listening, defaults to `8080`.
+- `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
 - `SAS_EXPRESS_LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by
   setting it to anything else. LOG_MODE defaults to only "errors".
 - `SAS_SUBSTRATE_NODE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
