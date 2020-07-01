@@ -4,21 +4,20 @@ import { InternalServerError } from 'http-errors';
 
 import sanitizeNumbers from './sanitizeNumbers';
 
-export default function sanitizeResMiddleware(
+export default function sanitizeResMiddleware<T>(
 	_req: Request,
-	res: Response,
+	res: Response<T>,
 	next: NextFunction
 ): void {
 	const _send = res.send;
 
 	function newSend<T>(body: T): Response<T> | void {
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const sanitizedBody = sanitizeNumbers(body);
+			const sanitizedBody = sanitizeNumbers(body) as T;
 
 			return _send.call(res, sanitizedBody) as Response<T>;
 		} catch {
-			next(
+			return next(
 				new InternalServerError(
 					'Unknown failure while trying to sanitize the response body.'
 				)
@@ -26,7 +25,7 @@ export default function sanitizeResMiddleware(
 		}
 	}
 
-	res.send = (newSend as unknown) as Send;
+	res.send = newSend as Send<T, Response<T>>;
 
 	return next();
 }
