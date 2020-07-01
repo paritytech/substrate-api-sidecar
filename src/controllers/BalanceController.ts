@@ -50,10 +50,10 @@ export default class BalanceController extends AbstractController {
 			.use(this.path, validateAddressMiddleware)
 			.get(this.path, this.catchWrap(this.getLatestAccountBalance))
 			// .get(this.path, this.getLatestAccountBalance);
-		// .get(
-		// 	`${this.path}/:number`,
-		// 	this.catchWrap(this.getAccountBalanceAtBlock)
-		// );
+			.get(
+				`${this.path}/:number`,
+				this.catchWrap(this.getAccountBalanceAtBlock)
+			);
 	}
 
 	/**
