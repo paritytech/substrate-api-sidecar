@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';

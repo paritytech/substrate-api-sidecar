@@ -60,9 +60,13 @@ export default class BlocksController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router
-			.get(this.path, this.catchWrap(this.getLatestBlock))
-			.get(`${this.path}/:number`, this.catchWrap(this.getBlockById));
+		this.safeMountAsyncGetHandlers([
+			['', this.getLatestBlock],
+			['/:number', this.getBlockById],
+		]);
+		// this.router
+		// 	.get(this.path, this.catchWrap(this.getLatestBlock))
+		// 	.get(`${this.path}/:number`, this.catchWrap(this.getBlockById));
 	}
 
 	/**
