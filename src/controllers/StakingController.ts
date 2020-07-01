@@ -14,13 +14,12 @@ export default class BlocksController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router
-			.use(this.path, validateAddressMiddleware)
-			.get(this.path, this.catchWrap(this.getLatestAccountStakingSummary))
-			.get(
-				`${this.path}/:number`,
-				this.catchWrap(this.getAccountStakingSummaryAtBlock)
-			);
+		this.router.use(this.path, validateAddressMiddleware);
+
+		this.safeMountAsyncGetHandlers([
+			['', this.getLatestAccountStakingSummary],
+			['/:number', this.getAccountStakingSummaryAtBlock],
+		]);
 	}
 
 	private getLatestAccountStakingSummary = async (

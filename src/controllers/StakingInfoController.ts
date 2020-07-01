@@ -74,12 +74,10 @@ export default class StakingInfoController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router
-			.get(this.path, this.catchWrap(this.getLatestStakingInfo))
-			.get(
-				`${this.path}/:number`,
-				this.catchWrap(this.getStakingInfoAtBlock)
-			);
+		this.safeMountAsyncGetHandlers([
+			['', this.getLatestStakingInfo],
+			['/:number', this.getStakingInfoAtBlock],
+		]);
 	}
 
 	/**
