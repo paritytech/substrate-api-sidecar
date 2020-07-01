@@ -33,6 +33,18 @@ yarn start
 
 [Jump to the configuration section](#configuration) for more details on connecting to a node.
 
+### Running with Docker
+
+```
+# Build image
+cd /substrate-api-sidecar/
+docker build -t substrate-api-sidecar .
+docker run -d -p 0.0.0.0:8080:8080 substrate-api-sidecar
+
+#Fetch remote image and run
+docker run -d -p 0.0.0.0:8080:8080 benjamwhite/substrate-api-sidecar:<tagname>
+```
+
 ### Configuration
 
 To use a specific env profile (here for instance a profile called 'env.sample'):
