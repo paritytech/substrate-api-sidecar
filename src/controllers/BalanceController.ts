@@ -40,20 +40,20 @@ import AbstractController from './AbstractController';
 export default class BalanceController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
-		super(api, 'balance/:address');
+		super(api, '/balance/:address');
 		this.handler = new ApiHandler(api);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.router
-			.use(validateAddressMiddleware)
-			// .get(this.path, this.catchWrap(this.getLatestAccountBalance))
-			.get(this.path, this.getLatestAccountBalance)
-			.get(
-				`${this.path}/:number`,
-				this.catchWrap(this.getAccountBalanceAtBlock)
-			);
+			.use(this.path, validateAddressMiddleware)
+			.get(this.path, this.catchWrap(this.getLatestAccountBalance))
+			// .get(this.path, this.getLatestAccountBalance);
+		// .get(
+		// 	`${this.path}/:number`,
+		// 	this.catchWrap(this.getAccountBalanceAtBlock)
+		// );
 	}
 
 	/**
@@ -67,6 +67,8 @@ export default class BalanceController extends AbstractController {
 		res: Response,
 		_next: NextFunction
 	): Promise<void> => {
+		console.log('In get latest account balance');
+		// res.send('test');
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
