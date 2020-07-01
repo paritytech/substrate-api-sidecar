@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import BaseController from './controllers/BaseController';
+import BaseController from './controllers/AbstractController';
 import { Middleware } from './types/middleware_types';
 
 interface AppConfiguration {

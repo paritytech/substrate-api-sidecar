@@ -7,7 +7,7 @@ import { BadRequest } from 'http-errors';
 
 import { parseBlockNumber } from '../utils';
 
-export default abstract class BaseController {
+export default abstract class AbstractController {
 	private _path: string;
 	private _router: Router = express.Router();
 	protected api: ApiPromise;

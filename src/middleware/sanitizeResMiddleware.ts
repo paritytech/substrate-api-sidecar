@@ -19,7 +19,7 @@ export default function sanitizeResMiddleware<T>(
 		} catch {
 			return next(
 				new InternalServerError(
-					'Unknown failure while trying to sanitize the response body.'
+					'Unknown failure while trying to sanitize and `send` the response body.'
 				)
 			);
 		}
