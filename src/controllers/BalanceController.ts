@@ -46,14 +46,12 @@ export default class BalanceController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router
-			.use(this.path, validateAddressMiddleware)
-			.get(this.path, this.catchWrap(this.getLatestAccountBalance))
-			// .get(this.path, this.getLatestAccountBalance);
-			.get(
-				`${this.path}/:number`,
-				this.catchWrap(this.getAccountBalanceAtBlock)
-			);
+		this.router.use(this.path, validateAddressMiddleware);
+
+		this.safeMountAsyncGetHandlers([
+			['', this.getLatestAccountBalance],
+			['/:number', this.getAccountBalanceAtBlock],
+		]);
 	}
 
 	/**
