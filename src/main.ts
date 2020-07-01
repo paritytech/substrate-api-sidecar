@@ -284,7 +284,7 @@ async function main() {
 	});
 
 	get('/staking-info/:number', async (params) => {
-		const hash: BlockHash = await getHashForBlock(api, params.number);
+		const hash = await getHashForBlock(api, params.number);
 
 		return await handler.fetchStakingInfo(hash);
 	});
