@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
-import bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser';
 
 import App from './App';
 import config from './config_setup';
