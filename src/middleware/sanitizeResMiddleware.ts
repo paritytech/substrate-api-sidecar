@@ -4,6 +4,14 @@ import { InternalServerError } from 'http-errors';
 
 import sanitizeNumbers from './sanitizeNumbers';
 
+/**
+ * Reassigns the original `res.send` to a new function that calls `sanitizeNumbers`
+ * on the response body, and then calls the original `res.send`.
+ *
+ * @param _req
+ * @param res
+ * @param next
+ */
 export default function sanitizeResMiddleware<T>(
 	_req: Request,
 	res: Response<T>,
@@ -16,9 +24,6 @@ export default function sanitizeResMiddleware<T>(
 		try {
 			sanitizedBody = sanitizeNumbers(body) as T;
 		} catch (e) {
-			if (e) {
-				return next(new InternalServerError(String(e)));
-			}
 			return next(
 				new InternalServerError(
 					'Failure while trying to sanitized the response body.'
@@ -27,11 +32,9 @@ export default function sanitizeResMiddleware<T>(
 		}
 
 		try {
+			// Call the original send method, with the response bound to it
 			return _send.call(res, sanitizedBody) as Response<T>;
 		} catch (e) {
-			if (e) {
-				return next(new InternalServerError(String(e)));
-			}
 			return next(
 				new InternalServerError(
 					'Failure while trying to send the response body'
