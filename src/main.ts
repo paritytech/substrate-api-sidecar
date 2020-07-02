@@ -30,9 +30,10 @@ import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
 } from './middleware/logger_middleware';
+import sanitizeResMiddleware from './middleware/sanitizeResMiddleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { TxRequest, TxRequestBody } from './types/request_types';
-import { parseBlockNumber, sanitizeNumbers } from './utils';
+import { parseBlockNumber } from './utils';
 
 async function main() {
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
@@ -46,6 +47,7 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
+	app.use(sanitizeResMiddleware);
 
 	switch (config.LOG_MODE) {
 		case 'errors':
@@ -66,7 +68,7 @@ async function main() {
 		app.get(path, async (req, res) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				res.send(sanitizeNumbers(await cb(req.params)));
+				res.send(await cb(req.params));
 			} catch (err) {
 				if (err instanceof HttpError) {
 					const code = err.status;
@@ -81,9 +83,7 @@ async function main() {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					res.status(err.statusCode || 500).send(
-						sanitizeNumbers(err)
-					);
+					res.status(err.statusCode || 500).send(err);
 					return;
 				}
 
@@ -105,11 +105,11 @@ async function main() {
 	) {
 		app.post(path, async (req: TxRequest, res) => {
 			try {
-				res.send(sanitizeNumbers(await cb(req.params, req.body)));
+				res.send(await cb(req.params, req.body));
 			} catch (err) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
+					res.status(500).send(err);
 					return;
 				}
 
