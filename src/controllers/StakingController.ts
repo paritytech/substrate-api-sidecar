@@ -5,7 +5,7 @@ import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
 import AbstractController from './AbstractController';
 
-export default class BlocksController extends AbstractController {
+export default class StakingController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
 		super(api, '/staking/:address');

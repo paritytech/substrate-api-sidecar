@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { Request, Response } from 'express';
 
 import BaseController from './controllers/AbstractController';
 import { Middleware } from './types/middleware_types';
@@ -28,6 +29,17 @@ export default class App {
 		this.host = host;
 
 		this.initPreMiddleware(preMiddleware);
+
+		// Setup an index route
+		this.app.get(
+			'/',
+			// eslint-disable-next-line @typescript-eslint/require-await
+			async (_req: Request, res: Response) =>
+				res.send(
+					'Sidecar is running, go to /block to get latest finalized block'
+				)
+		);
+
 		this.initControllers(controllers);
 		this.initPostMiddleware(postMiddleware);
 	}

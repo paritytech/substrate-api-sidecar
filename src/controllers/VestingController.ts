@@ -5,6 +5,25 @@ import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
 import AbstractController from './AbstractController';
 
+/**
+ * GET vesting information for an address.
+ *
+ * Paths:
+ * - `address`: Address to query.
+ * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+ *   finalized head.
+ *
+ * Returns:
+ * - `at`: Block number and hash at which the call was made.
+ * - `vesting`: Vesting schedule for an account.
+ *   - `locked`: Number of tokens locked at start.
+ *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
+ *   - `startingBlock`: Starting block for unlocking(vesting).
+ *
+ * Substrate Reference:
+ * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
+ * - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
+ */
 export default class VestingController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
@@ -15,11 +34,6 @@ export default class VestingController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddressMiddleware);
-		// .get(this.path, this.catchWrap(this.getLatestAccountVestingSummary))
-		// .get(
-		// 	`${this.path}/:number`,
-		// 	this.catchWrap(this.getAccountVestingSummaryAtBlock)
-		// );
 
 		this.safeMountAsyncGetHandlers([
 			['', this.getLatestAccountVestingSummary],

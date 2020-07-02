@@ -123,123 +123,9 @@ async function main() {
 		});
 	}
 
-	get(
-		'/',
-		// eslint-disable-next-line @typescript-eslint/require-await
-		async () =>
-			'Sidecar is running, go to /block to get latest finalized block'
-	);
-
 	get('/block/:number', async (params) => {
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 		return await handler.fetchBlock(hash);
-	});
-
-	// GET staking information for an address.
-	//
-	// Paths:
-	// - `address`: The _Stash_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `at`: Block number and hash at which the call was made.
-	// - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
-	//   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
-	//   stake), or 'Controller' (Controller address).
-	// - `controller`: Controller address for the given Stash.
-	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
-	//    not a Controller.
-	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
-	//   - `stash`: The stash account whose balance is actually locked and at stake.
-	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
-	//     Simply `active + unlocking`.
-	//   - `active`: The total amount of the stash's balance that will be at stake in any forthcoming
-	//     eras.
-	//   - `unlocking`: Any balance that is becoming free, which may eventually be transferred out of
-	//     the stash (assuming it doesn't get slashed first). Represented as an array of objects, each
-	//     with an `era` at which `value` will be unlocked.
-	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
-	//     rewards. Only updated for _validators._
-	//
-	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
-	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
-	// - Lazy Payouts: https://github.com/paritytech/substrate/pull/4474
-	// - Simple Payouts: https://github.com/paritytech/substrate/pull/5406
-	//
-	// Substrate Reference:
-	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
-	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
-	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
-	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
-	app.use('/staking/:address', validateAddressMiddleware);
-	get('/staking/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchAddressStakingInfo(hash, address);
-	});
-
-	get('/staking/:address/:number', async (params) => {
-		const { address } = params;
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-
-		return await handler.fetchAddressStakingInfo(hash, address);
-	});
-
-	// GET vesting information for an address.
-	//
-	// Paths:
-	// - `address`: Address to query.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `at`: Block number and hash at which the call was made.
-	// - `vesting`: Vesting schedule for an account.
-	//   - `locked`: Number of tokens locked at start.
-	//   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
-	//   - `startingBlock`: Starting block for unlocking(vesting).
-	//
-	// Substrate Reference:
-	// - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
-	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
-	app.use('/vesting/:address', validateAddressMiddleware);
-	get('/vesting/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchVesting(hash, address);
-	});
-
-	get('/vesting/:address/:number', async (params) => {
-		const { address } = params;
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-
-		return await handler.fetchVesting(hash, address);
-	});
-
-	// GET the chain's metadata.
-	//
-	// Paths:
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - Metadata object.
-	//
-	// Substrate Reference:
-	// - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
-	// - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
-	get('/metadata/', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchMetadata(hash);
-	});
-
-	get('/metadata/:number', async (params) => {
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-		return await handler.fetchMetadata(hash);
 	});
 
 	// GET the claims type for an Ethereum address.
@@ -437,6 +323,8 @@ test().catch(console.log);
 import App from './App';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
+import ClaimsController from './controllers/ClaimsController';
+import MetadataController from './controllers/MetadataController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
 import VestingController from './controllers/VestingController';
@@ -475,6 +363,8 @@ async function test() {
 	const stakingInfoController = new StakingInfoController(api);
 	const stakingController = new StakingController(api);
 	const vestingController = new VestingController(api);
+	const metadataController = new MetadataController(api);
+	const claimsController = new ClaimsController(api);
 
 	// Create our App
 	const app = new App({
@@ -485,6 +375,8 @@ async function test() {
 			stakingInfoController,
 			stakingController,
 			vestingController,
+			metadataController,
+			claimsController,
 		],
 		postMiddleware: [
 			errorMiddleware,
