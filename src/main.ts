@@ -22,11 +22,14 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import { BadRequest, HttpError } from 'http-errors';
-import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
 import config from './config_setup';
 import errorMiddleware from './middleware/error_middleware';
+import {
+	developmentLoggerMiddleware,
+	productionLoggerMiddleware,
+} from './middleware/logger_middleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { TxRequest, TxRequestBody } from './types/request_types';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
@@ -46,18 +49,10 @@ async function main() {
 
 	switch (config.LOG_MODE) {
 		case 'errors':
-			app.use(
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-				morgan('combined', {
-					skip: function (_: express.Request, res: express.Response) {
-						return res.statusCode < 400; // Only log errors
-					},
-				})
-			);
+			app.use(productionLoggerMiddleware);
 			break;
 		case 'all':
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-			app.use(morgan('dev'));
+			app.use(developmentLoggerMiddleware);
 			break;
 		default:
 			break;
