@@ -30,14 +30,11 @@ export default class App {
 
 		this.initPreMiddleware(preMiddleware);
 
-		// Setup an index route
-		this.app.get(
-			'/',
-			// eslint-disable-next-line @typescript-eslint/require-await
-			async (_req: Request, res: Response) =>
-				res.send(
-					'Sidecar is running, go to /block to get latest finalized block'
-				)
+		// Setup an root route
+		this.app.get('/', (_req: Request, res: Response) =>
+			res.send(
+				'Sidecar is running, go to /block to get latest finalized block'
+			)
 		);
 
 		this.initControllers(controllers);

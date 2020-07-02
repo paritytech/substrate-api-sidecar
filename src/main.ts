@@ -128,43 +128,6 @@ async function main() {
 		return await handler.fetchBlock(hash);
 	});
 
-	// GET all the information needed to construct a transaction offline.
-	//
-	// Paths
-	// - (Optional) `number`: Block hash or number at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `at`: Block number and hash at which the call was made.
-	// - `genesisHash`: The hash of the chain's genesis block.
-	// - `chainName`: The chain's name.
-	// - `specName`: The chain's spec.
-	// - `specVersion`: The spec version. Always increased in a runtime upgrade.
-	// - `txversion`: The transaction version. Common `txVersion` numbers indicate that the
-	//   transaction encoding format and method indices are the same. Needed for decoding in an
-	//   offline environment. Adding new transactions does not change `txVersion`.
-	// - `metadata`: The chain's metadata in hex format.
-	//
-	// Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
-	// of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining
-	// this registry, but in other Substrate-based chains that re-launch their network without
-	// changing the `specName`, the `chainName` would be needed to create the correct registry.
-	//
-	// Substrate Reference:
-	// - `RuntimeVersion`: https://crates.parity.io/sp_version/struct.RuntimeVersion.html
-	// - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
-	// - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
-	get('/tx/artifacts', async () => {
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchTxArtifacts(hash);
-	});
-
-	get('/tx/artifacts/:number', async (params) => {
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-		return await handler.fetchTxArtifacts(hash);
-	});
-
 	// POST a serialized transaction and receive a fee estimate.
 	//
 	// Post info:
@@ -301,7 +264,8 @@ import ClaimsController from './controllers/ClaimsController';
 import MetadataController from './controllers/MetadataController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
-import TxController from './controllers/TxController';
+import TxArtifactsController from './controllers/TxArtifactsController';
+import TxFeeEstimateController from './controllers/TxFeeEstimateController';
 import VestingController from './controllers/VestingController';
 import {
 	errorMiddleware,
@@ -340,7 +304,8 @@ async function test() {
 	const vestingController = new VestingController(api);
 	const metadataController = new MetadataController(api);
 	const claimsController = new ClaimsController(api);
-	const txController = new TxController(api);
+	const txArtifactsController = new TxArtifactsController(api);
+	const txFeeEstimateController = new TxFeeEstimateController(api);
 
 	// Create our App
 	const app = new App({
@@ -353,7 +318,8 @@ async function test() {
 			vestingController,
 			metadataController,
 			claimsController,
-			txController,
+			txArtifactsController,
+			txFeeEstimateController,
 		],
 		postMiddleware: [
 			errorMiddleware,
