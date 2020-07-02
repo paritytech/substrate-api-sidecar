@@ -12,7 +12,7 @@ import * as express from 'express';
 import { BadRequest } from 'http-errors';
 
 // TODO add this to class
-import { parseBlockNumber } from '../utils';
+// import { parseBlockNumber } from '../utils';
 
 type SidecarAsyncRequestHandler = (
 	req: Request,
@@ -112,7 +112,7 @@ export default abstract class AbstractController {
 
 			// Not a block hash, must be a block height
 			try {
-				blockNumber = parseBlockNumber(blockId);
+				blockNumber = this.parseBlockNumber(blockId);
 			} catch (err) {
 				throw {
 					error:
@@ -139,5 +139,15 @@ export default abstract class AbstractController {
 
 			throw { error: `Cannot get block hash for ${blockId}.` };
 		}
+	}
+
+	private parseBlockNumber(n: string): number {
+		const num = Number(n);
+
+		if (!Number.isInteger(num) || num < 0) {
+			throw { error: 'Invalid block number' };
+		}
+
+		return num;
 	}
 }
