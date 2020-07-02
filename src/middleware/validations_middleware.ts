@@ -13,16 +13,16 @@ export function validateAddressMiddleware(
 	next: NextFunction
 ): void {
 	if (!('address' in req.params)) {
-		next();
+		return next();
 	}
 
 	const [isValid, error] = checkAddress(req.params.address);
 
 	if (!isValid && error) {
-		next(new BadRequest(error));
+		return next(new BadRequest(error));
 	}
 
-	next();
+	return next();
 }
 
 /**
@@ -33,7 +33,7 @@ export function validateAddressMiddleware(
  *
  * @param address potential ss58 address
  */
-function checkAddress(address: string): [boolean, string | null] {
+function checkAddress(address: string): [boolean, string | undefined] {
 	let decoded;
 
 	try {
@@ -48,5 +48,5 @@ function checkAddress(address: string): [boolean, string | null] {
 
 	const [isValid] = checkChecksum(decoded);
 
-	return [isValid, isValid ? null : 'Invalid decoded address checksum'];
+	return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
 }
