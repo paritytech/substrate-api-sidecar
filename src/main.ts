@@ -21,6 +21,7 @@ import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
+import { BadRequest, HttpError } from 'http-errors';
 import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
@@ -71,6 +72,16 @@ async function main() {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
+				if (err instanceof HttpError) {
+					const code = err.status;
+					res.status(code).send({
+						code,
+						message: err?.message,
+						stack: err.stack,
+					});
+					return;
+				}
+
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if (err && typeof err.error === 'string') {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -535,9 +546,9 @@ async function getHashForBlock(
 	api: ApiPromise,
 	blockId: string
 ): Promise<BlockHash> {
-	try {
-		let blockNumber;
+	let blockNumber;
 
+	try {
 		const isHexStr = isHex(blockId);
 		if (isHexStr && blockId.length === 66) {
 			// This is a block hash
@@ -563,6 +574,15 @@ async function getHashForBlock(
 
 		return await api.rpc.chain.getBlockHash(blockNumber);
 	} catch (err) {
+		// Check if the block number is too high
+		const { number } = await api.rpc.chain.getHeader();
+		if (blockNumber && number.toNumber() < blockNumber) {
+			throw new BadRequest(
+				`Specified block number is higher than the current finalized block height. ` +
+					`The largest known block number is ${number.toString()}.`
+			);
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		if (err && typeof err.error === 'string') {
 			throw err;
