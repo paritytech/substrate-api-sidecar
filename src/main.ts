@@ -28,6 +28,7 @@ import ApiHandler from './ApiHandler';
 import config from './config_setup';
 import errorMiddleware from './middleware/error_middleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
+import { TxRequest, TxRequestBody } from './types/request_types';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
@@ -103,11 +104,11 @@ async function main() {
 		cb: (
 			params: core.ParamsDictionary,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			body: any
+			body: TxRequestBody
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		) => Promise<any>
 	) {
-		app.post(path, async (req, res) => {
+		app.post(path, async (req: TxRequest, res) => {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
@@ -494,18 +495,17 @@ async function main() {
 	// - `RuntimeDispatchInfo`: https://crates.parity.io/pallet_transaction_payment_rpc_runtime_api/struct.RuntimeDispatchInfo.html
 	// - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
 	// - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
-	post('/tx/fee-estimate/', async (_, body) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (body && typeof body.tx !== 'string') {
-			return {
+	post('/tx/fee-estimate/', async (_, body: TxRequestBody) => {
+		const { tx } = body;
+		if (!tx) {
+			throw {
 				error: 'Missing field `tx` on request body.',
 			};
 		}
 
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		return await handler.fetchFeeInformation(hash, body.tx);
+		return await handler.fetchFeeInformation(hash, tx);
 	});
 
 	// POST a serialized transaction to submit to the transaction queue.
@@ -523,16 +523,15 @@ async function main() {
 	//     the case of the latter, the transaction queue rejected the transaction.
 	//   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
 	//   - `cause`: The error message from parsing or from the client.
-	post('/tx/', async (_, body) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (body && typeof body.tx !== 'string') {
-			return {
+	post('/tx/', async (_, body: TxRequestBody) => {
+		const { tx } = body;
+		if (!tx) {
+			throw {
 				error: 'Missing field `tx` on request body.',
 			};
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		return await handler.submitTx(body.tx);
+		return await handler.submitTx(tx);
 	});
 
 	app.use(errorMiddleware);
