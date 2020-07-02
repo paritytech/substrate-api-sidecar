@@ -7,10 +7,14 @@ import AbstractInt from '@polkadot/types/codec/AbstractInt';
 // TODO: This pile of `any`s is living on its own for now until it is cleaned up.
 // Once it is cleaned up it can be put beside sanitizeRes.middleware
 
-// A sanitizer for arbitrary data that's going to be
-// stringified to JSON. We find all instances of `AbstractInt`,
-// which is using bn.js as backend, and forcibly serialize it
-// to a decimal string.
+/**
+ * A sanitizer for arbitrary data that's going to be
+ * stringified to JSON. We find all instances of `AbstractInt`,
+ * which is using bn.js as backend, and forcibly serialize it
+ * to a decimal string.
+ *
+ * @param data
+ */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export default function sanitizeNumbers(data: any): any {
 	if (typeof data === 'number' || data instanceof AbstractInt) {
