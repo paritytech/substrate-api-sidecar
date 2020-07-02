@@ -81,7 +81,7 @@ export default class BlocksController extends AbstractController {
 	};
 
 	/**
-	 * Get a block by a hash or number identifier.
+	 * Get a block by its hash or number identifier.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response

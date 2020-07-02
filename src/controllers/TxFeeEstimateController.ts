@@ -1,12 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
-import { NextFunction, Response } from 'express';
+import { Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
 import { TxRequest } from '../types/request_types';
 import AbstractController from './AbstractController';
 
 /**
- * // POST a serialized transaction and receive a fee estimate.
+ * POST a serialized transaction and receive a fee estimate.
  *
  * Post info:
  * - `data`: Expects a hex-encoded transaction, e.g. '{"tx": "0x..."}'.
@@ -43,10 +43,16 @@ export default class TxFeeEstimate extends AbstractController {
 		this.router.post(this.path, this.catchWrap(this.txFeeEstimate));
 	}
 
+	/**
+	 * Submit a serialized transaction in order to receive an estimate for its
+	 * partial fees.
+	 *
+	 * @param req Sidecar TxRequest
+	 * @param res Express Response
+	 */
 	private txFeeEstimate = async (
 		req: TxRequest,
-		res: Response,
-		_next: NextFunction
+		res: Response
 	): Promise<void> => {
 		const { tx } = req.body;
 		if (!tx) {

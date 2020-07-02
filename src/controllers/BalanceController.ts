@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
@@ -49,18 +48,18 @@ export default class BalanceController extends AbstractController {
 		this.router.use(this.path, validateAddressMiddleware);
 
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestAccountBalance],
-			['/:number', this.getAccountBalanceAtBlock],
+			['', this.getAccountBalanceSummary],
+			['/:number', this.getAccountBalanceSummaryAtBlock],
 		]);
 	}
 
 	/**
-	 * Get the latest account balance.
+	 * Get the latest account balance summary of `address`.
 	 *
-	 * @param req
-	 * @param res
+	 * @param req Express Request
+	 * @param res Express Response
 	 */
-	private getLatestAccountBalance = async (
+	private getAccountBalanceSummary = async (
 		req: Request,
 		res: Response,
 		_next: NextFunction
@@ -72,17 +71,19 @@ export default class BalanceController extends AbstractController {
 	};
 
 	/**
-	 * Get the account balance at the block identified by a hash or number.
+	 * Get the account balance summary of `address` at a block identified by its
+	 * hash or number.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceAtBlock = async (
+	private getAccountBalanceSummaryAtBlock = async (
 		req: Request,
 		res: Response
 	): Promise<void> => {
 		const { number, address } = req.params;
-		const hash: BlockHash = await this.getHashForBlock(number);
+		const hash = await this.getHashForBlock(number);
+
 		res.send(await this.handler.fetchBalance(hash, address));
 	};
 }

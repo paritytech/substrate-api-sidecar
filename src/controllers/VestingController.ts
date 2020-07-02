@@ -36,12 +36,18 @@ export default class VestingController extends AbstractController {
 		this.router.use(this.path, validateAddressMiddleware);
 
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestAccountVestingSummary],
+			['', this.getAccountVestingSummary],
 			['/:number', this.getAccountVestingSummaryAtBlock],
 		]);
 	}
 
-	private getLatestAccountVestingSummary = async (
+	/**
+	 * Get the latest account vesting summary of `address`.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
+	private getAccountVestingSummary = async (
 		req: Request,
 		res: Response
 	): Promise<void> => {
@@ -51,6 +57,13 @@ export default class VestingController extends AbstractController {
 		res.send(await this.handler.fetchVesting(hash, address));
 	};
 
+	/**
+	 * Get the account vesting summary of `address` at a block identified by its
+	 * hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getAccountVestingSummaryAtBlock = async (
 		req: Request,
 		res: Response

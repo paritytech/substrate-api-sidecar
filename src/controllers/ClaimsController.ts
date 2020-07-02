@@ -28,28 +28,38 @@ export default class ClaimsController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['', this.getClaimByEtheAddress],
-			['/:number', this.getClaimByEtheAddressAtBlock],
+			['', this.getClaim],
+			['/:number', this.getClaimAtBlock],
 		]);
 	}
 
-	private getClaimByEtheAddress = async (
-		req: Request,
-		res: Response
-	): Promise<void> => {
-		const { ethAddress } = req.params;
+	/**
+	 * Get information on a claim by ethereum `address`.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
+	private getClaim = async (req: Request, res: Response): Promise<void> => {
+		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchClaimsInfo(hash, ethAddress));
+		res.send(await this.handler.fetchClaimsInfo(hash, address));
 	};
 
-	private getClaimByEtheAddressAtBlock = async (
+	/**
+	 * Get information on a claim by ethereum `address` at a block identified by
+	 * its hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
+	private getClaimAtBlock = async (
 		req: Request,
 		res: Response
 	): Promise<void> => {
-		const { number, ethAddress } = req.params;
-
+		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);
-		res.send(await this.handler.fetchClaimsInfo(hash, ethAddress));
+
+		res.send(await this.handler.fetchClaimsInfo(hash, address));
 	};
 }

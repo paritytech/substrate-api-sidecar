@@ -42,12 +42,18 @@ export default class TxArtifactsController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestTxArtifacts],
+			['', this.getTxArtifacts],
 			['/:number', this.getTxArtifactsAtBlock],
 		]);
 	}
 
-	private getLatestTxArtifacts = async (
+	/**
+	 * Get generic offline transaction construction material.
+	 *
+	 * @param _req Express Request
+	 * @param res Express Response
+	 */
+	private getTxArtifacts = async (
 		_req: Request,
 		res: Response
 	): Promise<void> => {
@@ -56,6 +62,13 @@ export default class TxArtifactsController extends AbstractController {
 		res.send(await this.handler.fetchTxArtifacts(hash));
 	};
 
+	/**
+	 * Get generic offline transaction construction material at a block identified
+	 * by its hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getTxArtifactsAtBlock = async (
 		req: Request,
 		res: Response

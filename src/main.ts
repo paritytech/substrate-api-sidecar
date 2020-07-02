@@ -32,8 +32,10 @@ import TxSubmitController from './controllers/TxSubmitController';
 import VestingController from './controllers/VestingController';
 import {
 	errorMiddleware,
+	httpErrorMiddleware,
 	internalErrorMiddleware,
 	legacyErrorMiddleware,
+	txErrorMiddleware,
 } from './middleware/error_middleware';
 import {
 	developmentLoggerMiddleware,
@@ -86,6 +88,8 @@ async function main() {
 			txSubmitController,
 		],
 		postMiddleware: [
+			txErrorMiddleware,
+			httpErrorMiddleware,
 			errorMiddleware,
 			legacyErrorMiddleware,
 			internalErrorMiddleware,

@@ -28,12 +28,18 @@ export default class MetadataController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestMetadata],
+			['', this.getMetadata],
 			['/:number', this.getMetadataAtBlock],
 		]);
 	}
 
-	private getLatestMetadata = async (
+	/**
+	 * Get the chain's latest metadata in a decoded, JSON format.
+	 *
+	 * @param _req Express Request
+	 * @param res Express Response
+	 */
+	private getMetadata = async (
 		_req: Request,
 		res: Response
 	): Promise<void> => {
@@ -42,6 +48,13 @@ export default class MetadataController extends AbstractController {
 		res.send(await this.handler.fetchMetadata(hash));
 	};
 
+	/**
+	 * Get the chain's metadata in a decoded, JSON format at a block identified
+	 * by its hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getMetadataAtBlock = async (
 		req: Request,
 		res: Response

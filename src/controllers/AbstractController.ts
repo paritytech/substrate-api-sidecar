@@ -11,9 +11,6 @@ import {
 import * as express from 'express';
 import { BadRequest } from 'http-errors';
 
-// TODO add this to class
-// import { parseBlockNumber } from '../utils';
-
 type SidecarAsyncRequestHandler = (
 	req: Request,
 	res: Response,
@@ -51,7 +48,8 @@ export default abstract class AbstractController {
 
 	/**
 	 * Safely mount async GET routes by wrapping them with an express
-	 * handler friendly try / catch block and then mounting the controllers router.
+	 * handler friendly try / catch block and then mounting on the controllers
+	 * router.
 	 *
 	 * @param pathsAndHandlers tuple array of the suffix to the controller base
 	 * path (use empty string if no suffix) and the get request handler function.

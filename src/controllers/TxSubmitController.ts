@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { NextFunction, Response } from 'express';
+import { Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
 import { TxRequest } from '../types/request_types';
@@ -34,11 +34,13 @@ export default class TxSubmitController extends AbstractController {
 		this.router.post(this.path, this.catchWrap(this.txSubmit));
 	}
 
-	private txSubmit = async (
-		req: TxRequest,
-		res: Response,
-		_next: NextFunction
-	): Promise<void> => {
+	/**
+	 * Submit a serialized transaction to the transaction queue.
+	 *
+	 * @param req Sidecar TxRequest
+	 * @param res Express Response
+	 */
+	private txSubmit = async (req: TxRequest, res: Response): Promise<void> => {
 		const { tx } = req.body;
 		if (!tx) {
 			throw {

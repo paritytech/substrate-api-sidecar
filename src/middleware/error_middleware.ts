@@ -2,10 +2,39 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpError, InternalServerError } from 'http-errors';
 import * as HttpErrorConstructor from 'http-errors';
 
-import { BasicError, LegacyError } from '../types/error_types';
+import { BasicError, LegacyError, TxError } from '../types/error_types';
 
 /**
- * Handle HttpError and Error instances.
+ * Handle HttpError instances.
+ *
+ * Should be put before any middleware that handles Error, since HttpError
+ * inherits from Error.
+ *
+ * @param exception
+ * @param _req
+ * @param res
+ * @param next
+ */
+export function httpErrorMiddleware(
+	exception: HttpError,
+	_req: Request,
+	res: Response,
+	next: NextFunction
+): void {
+	if (res.headersSent || !(exception instanceof HttpError)) {
+		return next(exception);
+	}
+
+	const code = exception.status;
+	res.status(code).send({
+		code,
+		message: exception.message,
+		stack: exception.stack,
+	});
+}
+
+/**
+ * Handle Error instances.
  *
  * @param exception
  * @param _req
@@ -13,24 +42,43 @@ import { BasicError, LegacyError } from '../types/error_types';
  * @param next
  */
 export function errorMiddleware(
-	exception: HttpError | Error,
+	exception: Error,
 	_req: Request,
 	res: Response,
 	next: NextFunction
 ): void {
-	if (
-		res.headersSent ||
-		!(exception instanceof HttpError) ||
-		!(exception instanceof Error)
-	) {
+	if (res.headersSent || !(exception instanceof Error)) {
 		return next(exception);
 	}
 
-	const code = exception instanceof HttpError ? exception.status : 500;
-	res.status(code).send({
-		code,
-		message: exception?.message ?? 'Internal Error',
+	res.status(500).send({
+		code: 500,
+		message: exception.message ?? 'Internal Error',
 		stack: exception.stack,
+	});
+}
+
+function isTxError(exception: TxError) {
+	return exception?.error && exception.cause;
+}
+
+export function txErrorMiddleware(
+	exception: TxError,
+	_req: Request,
+	res: Response,
+	next: NextFunction
+): void {
+	if (res.headersSent || !isTxError(exception)) {
+		return next(exception);
+	}
+
+	const { error, data, cause } = exception;
+
+	res.status(500).send({
+		code: 500,
+		error,
+		data,
+		cause,
 	});
 }
 
@@ -56,7 +104,6 @@ export function legacyErrorMiddleware(
 		res.status(exception.statusCode).send(
 			HttpErrorConstructor(exception.statusCode, exception.error)
 		);
-
 		return;
 	}
 

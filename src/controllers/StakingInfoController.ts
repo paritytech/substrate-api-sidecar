@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
@@ -75,18 +74,18 @@ export default class StakingInfoController extends AbstractController {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestStakingInfo],
+			['', this.getStakingInfo],
 			['/:number', this.getStakingInfoAtBlock],
 		]);
 	}
 
 	/**
-	 * Get the latest staking information and progress summary.
+	 * Get staking information and progress summary.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestStakingInfo = async (
+	private getStakingInfo = async (
 		_req: Request,
 		res: Response
 	): Promise<void> => {
@@ -96,7 +95,8 @@ export default class StakingInfoController extends AbstractController {
 	};
 
 	/**
-	 * Get staking information at the block identified by a hash or number.
+	 * Get staking information and progress summary at a block identified by its
+	 * hash or number.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
@@ -106,7 +106,7 @@ export default class StakingInfoController extends AbstractController {
 		res: Response
 	): Promise<void> => {
 		const { number } = req.params;
-		const hash: BlockHash = await this.getHashForBlock(number);
+		const hash = await this.getHashForBlock(number);
 
 		res.send(await this.handler.fetchStakingInfo(hash));
 	};

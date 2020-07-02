@@ -17,12 +17,18 @@ export default class StakingController extends AbstractController {
 		this.router.use(this.path, validateAddressMiddleware);
 
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestAccountStakingSummary],
+			['', this.getAccountStakingSummary],
 			['/:number', this.getAccountStakingSummaryAtBlock],
 		]);
 	}
 
-	private getLatestAccountStakingSummary = async (
+	/**
+	 * Get the latest account staking summary of `address`.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
+	private getAccountStakingSummary = async (
 		req: Request,
 		res: Response
 	): Promise<void> => {
@@ -32,6 +38,13 @@ export default class StakingController extends AbstractController {
 		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
 	};
 
+	/**
+	 * Get the account staking summary of `address` at a block identified by its
+	 * hash or number.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
 	private getAccountStakingSummaryAtBlock = async (
 		req: Request,
 		res: Response
