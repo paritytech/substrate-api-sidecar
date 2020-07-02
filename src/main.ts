@@ -52,7 +52,6 @@ async function main() {
 
 	// Create our array of middleware that is to be mounted before the routes
 	const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
-	// const preMiddleware = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
 		preMiddleware.push(productionLoggerMiddleware);
 	} else if (config.LOG_MODE === 'all') {
@@ -70,6 +69,7 @@ async function main() {
 	const txArtifactsController = new TxArtifactsController(api);
 	const txFeeEstimateController = new TxFeeEstimateController(api);
 	const txSubmitController = new TxSubmitController(api);
+
 	// Create our App
 	const app = new App({
 		preMiddleware,
