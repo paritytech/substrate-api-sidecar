@@ -17,6 +17,9 @@ export default class App {
 	private readonly port: number;
 	private readonly host: string;
 
+	/**
+	 * @param appConfig configuration for app.
+	 */
 	constructor({
 		controllers,
 		preMiddleware,
@@ -41,18 +44,33 @@ export default class App {
 		this.initPostMiddleware(postMiddleware);
 	}
 
+	/**
+	 * Mount middleware prior to mounting routes.
+	 *
+	 * @param preMiddleware Array of Middleware to mount prior to all controllers.
+	 */
 	private initPreMiddleware(preMiddleware: Middleware[]): void {
 		for (const middleware of preMiddleware) {
 			this.app.use(middleware);
 		}
 	}
 
+	/**
+	 * Mount the router from each each controller.
+	 *
+	 * @param controllers Array of AbstractController instances
+	 */
 	private initControllers(controllers: BaseController[]): void {
 		for (const c of controllers) {
 			this.app.use('/', c.router);
 		}
 	}
 
+	/**
+	 * Mount middleware after after mounting the routes.
+	 *
+	 * @param postMiddleware Array of middleware to mount last.
+	 */
 	private initPostMiddleware(postMiddleware: Middleware[]): void {
 		for (const middleware of postMiddleware) {
 			this.app.use(middleware);
