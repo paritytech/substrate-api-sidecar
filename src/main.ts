@@ -21,11 +21,17 @@ import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
-import { BadRequest, HttpError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 import ApiHandler from './ApiHandler';
 import config from './config_setup';
-import errorMiddleware from './middleware/error_middleware';
+import {
+	errorMiddleware,
+	httpErrorMiddleware,
+	internalErrorMiddleware,
+	legacyErrorMiddleware,
+	txErrorMiddleware,
+} from './middleware/error_middleware';
 import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
@@ -65,31 +71,13 @@ async function main() {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		cb: (params: core.ParamsDictionary) => Promise<any>
 	) {
-		app.get(path, async (req, res) => {
+		app.get(path, async (req, res, next) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(await cb(req.params));
 			} catch (err) {
-				if (err instanceof HttpError) {
-					const code = err.status;
-					res.status(code).send({
-						code,
-						message: err?.message,
-						stack: err.stack,
-					});
-					return;
-				}
-
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					res.status(err.statusCode || 500).send(err);
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				// Express way of passing an error to the error handling middleware
+				return next(err);
 			}
 		});
 	}
@@ -103,19 +91,12 @@ async function main() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		) => Promise<any>
 	) {
-		app.post(path, async (req: TxRequest, res) => {
+		app.post(path, async (req: TxRequest, res, next) => {
 			try {
 				res.send(await cb(req.params, req.body));
 			} catch (err) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(err);
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				// Express way of passing an error to the error handling middleware
+				return next(err);
 			}
 		});
 	}
@@ -529,7 +510,11 @@ async function main() {
 		return await handler.submitTx(tx);
 	});
 
+	app.use(txErrorMiddleware);
+	app.use(httpErrorMiddleware);
 	app.use(errorMiddleware);
+	app.use(legacyErrorMiddleware);
+	app.use(internalErrorMiddleware);
 
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
