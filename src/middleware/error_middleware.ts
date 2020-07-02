@@ -7,7 +7,7 @@ import { BasicError, LegacyError, TxError } from '../types/error_types';
 /**
  * Handle HttpError instances.
  *
- * Should be put before any middleware that handles Error, since HttpError
+ * Should be put before middleware that handles Error, since HttpError
  * inherits from Error.
  *
  * @param exception
@@ -62,6 +62,14 @@ function isTxError(exception: TxError) {
 	return exception?.error && exception.cause;
 }
 
+/**
+ * Handle errors from tx POST methods
+ *
+ * @param exception
+ * @param _req
+ * @param res
+ * @param next
+ */
 export function txErrorMiddleware(
 	exception: TxError,
 	_req: Request,
@@ -83,7 +91,7 @@ export function txErrorMiddleware(
 }
 
 /**
- * Handle error formats from pre Sidecar v1.
+ * Handle errors of an older format and prior to the introduction of http-error.
  *
  * @param exception
  * @param _req
