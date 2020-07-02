@@ -1,6 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
 import { NextFunction, Response } from 'express';
-import { BadRequest } from 'http-errors';
 
 import ApiHandler from '../ApiHandler';
 import { TxRequest } from '../types/request_types';
