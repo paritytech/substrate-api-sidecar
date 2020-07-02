@@ -26,8 +26,8 @@ import * as morgan from 'morgan';
 
 import ApiHandler from './ApiHandler';
 import config from './config_setup';
-import errorMiddleware from './middleware/error.middleware';
-import { validateAddressMiddleware } from './middleware/validations.middleware';
+import errorMiddleware from './middleware/error_middleware';
+import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
