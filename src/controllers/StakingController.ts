@@ -37,8 +37,8 @@ export default class StakingController extends AbstractController {
 		res: Response
 	): Promise<void> => {
 		const { address, number } = req.params;
-
 		const hash = await this.getHashForBlock(number);
+
 		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
 	};
 }

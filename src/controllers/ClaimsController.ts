@@ -4,6 +4,20 @@ import { Request, Response } from 'express';
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
 
+/**
+ * GET the claims type for an Ethereum address.
+ *
+ * Paths:
+ * - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
+ * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+ *   finalized head.
+ *
+ * Returns:
+ * - `type`: The type of claim. 'Regular' or 'Saft'.
+ *
+ * Reference:
+ * - Claims Guide: https://wiki.polkadot.network/docs/en/claims
+ */
 export default class ClaimsController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {

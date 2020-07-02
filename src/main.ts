@@ -128,32 +128,6 @@ async function main() {
 		return await handler.fetchBlock(hash);
 	});
 
-	// GET the claims type for an Ethereum address.
-	//
-	// Paths:
-	// - `ethAddress`: The _Ethereum_ address that holds a DOT claim.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `type`: The type of claim. 'Regular' or 'Saft'.
-	//
-	// Reference:
-	// - Claims Guide: https://wiki.polkadot.network/docs/en/claims
-	get('/claims/:ethAddress', async (params) => {
-		const { ethAddress } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchClaimsInfo(hash, ethAddress);
-	});
-
-	get('/claims/:ethAddress/:number', async (params) => {
-		const { ethAddress } = params;
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-
-		return await handler.fetchClaimsInfo(hash, ethAddress);
-	});
-
 	// GET all the information needed to construct a transaction offline.
 	//
 	// Paths
@@ -327,6 +301,7 @@ import ClaimsController from './controllers/ClaimsController';
 import MetadataController from './controllers/MetadataController';
 import StakingController from './controllers/StakingController';
 import StakingInfoController from './controllers/StakingInfoController';
+import TxController from './controllers/TxController';
 import VestingController from './controllers/VestingController';
 import {
 	errorMiddleware,
@@ -365,6 +340,7 @@ async function test() {
 	const vestingController = new VestingController(api);
 	const metadataController = new MetadataController(api);
 	const claimsController = new ClaimsController(api);
+	const txController = new TxController(api);
 
 	// Create our App
 	const app = new App({
@@ -377,6 +353,7 @@ async function test() {
 			vestingController,
 			metadataController,
 			claimsController,
+			txController,
 		],
 		postMiddleware: [
 			errorMiddleware,
