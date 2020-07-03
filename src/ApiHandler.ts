@@ -19,7 +19,6 @@ import { CalcFee } from '@polkadot/calc-fee';
 import { Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
-import { EventData } from '@polkadot/types/generic/Event';
 import { DispatchInfo, EraIndex } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
@@ -30,25 +29,12 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import * as BN from 'bn.js';
 
 import * as errors from '../config/errors-en.json';
-import { StakingInfo } from './types/response_types';
-
-interface SanitizedEvent {
-	method: string;
-	data: EventData;
-}
-
-interface SanitizedCall {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	[key: string]: any;
-	method: string;
-	callIndex: Uint8Array | string;
-	args: {
-		call?: SanitizedCall;
-		calls?: SanitizedCall[];
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		[key: string]: any;
-	};
-}
+import {
+	IBlockResponse,
+	ISanitizedCall,
+	ISanitizedEvent,
+	IStakingInfo,
+} from './types/response_types';
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -64,7 +50,7 @@ export default class ApiHandler {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchBlock(hash: BlockHash) {
+	async fetchBlock(hash: BlockHash): Promise<IBlockResponse> {
 		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
@@ -80,8 +66,8 @@ export default class ApiHandler {
 			}
 		})();
 
-		const onInitialize = { events: [] as SanitizedEvent[] };
-		const onFinalize = { events: [] as SanitizedEvent[] };
+		const onInitialize = { events: [] as ISanitizedEvent[] };
+		const onFinalize = { events: [] as ISanitizedEvent[] };
 
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
@@ -114,7 +100,7 @@ export default class ApiHandler {
 				tip,
 				hash,
 				info: {},
-				events: [] as SanitizedEvent[],
+				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
@@ -354,7 +340,7 @@ export default class ApiHandler {
 	 *
 	 * @param hash BlockHash to make call at.
 	 */
-	async fetchStakingInfo(hash: BlockHash): Promise<StakingInfo> {
+	async fetchStakingInfo(hash: BlockHash): Promise<IStakingInfo> {
 		const api = await this.ensureMeta(hash);
 
 		const [
@@ -708,7 +694,7 @@ export default class ApiHandler {
 
 	private parseArrayGenericCalls(
 		argsArray: Codec[]
-	): (Codec | SanitizedCall)[] {
+	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
 				return this.parseGenericCall(argument);
@@ -718,7 +704,7 @@ export default class ApiHandler {
 		});
 	}
 
-	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
+	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
