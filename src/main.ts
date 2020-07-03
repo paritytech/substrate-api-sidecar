@@ -36,10 +36,9 @@ import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
 } from './middleware/logger_middleware';
-import sanitizeResMiddleware from './middleware/sanitizeResMiddleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { TxRequest, TxRequestBody } from './types/request_types';
-import { parseBlockNumber } from './utils';
+import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
@@ -53,7 +52,6 @@ async function main() {
 	const app = express();
 
 	app.use(bodyParser.json());
-	app.use(sanitizeResMiddleware);
 
 	switch (config.LOG_MODE) {
 		case 'errors':
@@ -74,7 +72,7 @@ async function main() {
 		app.get(path, async (req, res, next) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				res.send(await cb(req.params));
+				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
 				// Express way of passing an error to the error handling middleware
 				return next(err);
@@ -93,7 +91,7 @@ async function main() {
 	) {
 		app.post(path, async (req: TxRequest, res, next) => {
 			try {
-				res.send(await cb(req.params, req.body));
+				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
 				// Express way of passing an error to the error handling middleware
 				return next(err);
