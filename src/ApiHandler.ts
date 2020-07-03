@@ -16,10 +16,15 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { CalcFee } from '@polkadot/calc-fee';
-import { Struct } from '@polkadot/types';
+import { Metadata, Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
-import { DispatchInfo, EraIndex } from '@polkadot/types/interfaces';
+import {
+	DispatchInfo,
+	EraIndex,
+	Hash,
+	RuntimeDispatchInfo,
+} from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
@@ -30,10 +35,14 @@ import * as BN from 'bn.js';
 
 import * as errors from '../config/errors-en.json';
 import {
-	IBlockResponse,
+	IAccountBalance,
+	IAccountStakingSummary,
+	IAccountVestingSummary,
+	IBlock,
 	ISanitizedCall,
 	ISanitizedEvent,
 	IStakingInfo,
+	ITxConstructionMaterial,
 } from './types/response_types';
 
 export default class ApiHandler {
@@ -49,8 +58,7 @@ export default class ApiHandler {
 		this.txVersion = api.createType('u32', -1);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchBlock(hash: BlockHash): Promise<IBlockResponse> {
+	async fetchBlock(hash: BlockHash): Promise<IBlock> {
 		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
@@ -294,8 +302,10 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchBalance(hash: BlockHash, address: string) {
+	async fetchBalance(
+		hash: BlockHash,
+		address: string
+	): Promise<IAccountBalance> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, locks, sysAccount] = await Promise.all([
@@ -439,8 +449,10 @@ export default class ApiHandler {
 	 * @param hash BlockHash to make call at.
 	 * @param stash _Stash_ address.
 	 */
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchAddressStakingInfo(hash: BlockHash, stash: string) {
+	async fetchAddressStakingInfo(
+		hash: BlockHash,
+		stash: string
+	): Promise<IAccountStakingSummary> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, controllerOption] = await Promise.all([
@@ -495,8 +507,10 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchVesting(hash: BlockHash, address: string) {
+	async fetchVesting(
+		hash: BlockHash,
+		address: string
+	): Promise<IAccountVestingSummary> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, vesting] = await Promise.all([
@@ -511,12 +525,12 @@ export default class ApiHandler {
 
 		return {
 			at,
+			// TODO unwrap this option and error check
 			vesting: vesting.isNone ? {} : vesting,
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchMetadata(hash: BlockHash) {
+	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
 		const api = await this.ensureMeta(hash);
 
 		const metadata = await api.rpc.state.getMetadata(hash);
@@ -524,8 +538,10 @@ export default class ApiHandler {
 		return metadata;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
+	async fetchClaimsInfo(
+		hash: BlockHash,
+		ethAddress: string
+	): Promise<null | { type: string }> {
 		const api = await this.ensureMeta(hash);
 		const agreementType = await api.query.claims.signing.at(
 			hash,
@@ -540,8 +556,7 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchTxArtifacts(hash: BlockHash) {
+	async fetchTxArtifacts(hash: BlockHash): Promise<ITxConstructionMaterial> {
 		const api = await this.ensureMeta(hash);
 
 		const [
@@ -574,8 +589,10 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
+	async fetchFeeInformation(
+		hash: BlockHash,
+		extrinsic: string
+	): Promise<RuntimeDispatchInfo> {
 		const api = await this.ensureMeta(hash);
 
 		try {
@@ -593,8 +610,7 @@ export default class ApiHandler {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async submitTx(extrinsic: string) {
+	async submitTx(extrinsic: string): Promise<{ hash: Hash }> {
 		const api = await this.resetMeta();
 
 		let tx;

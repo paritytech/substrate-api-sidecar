@@ -1,20 +1,27 @@
-import { Compact } from '@polkadot/types';
+import { Compact, Vec } from '@polkadot/types';
+import { Option } from '@polkadot/types/codec';
 import Address from '@polkadot/types/generic/Address';
 import { EventData } from '@polkadot/types/generic/Event';
 import {
 	AccountId,
+	Balance,
+	BalanceLock,
 	BlockHash,
 	BlockNumber,
 	EcdsaSignature,
 	Ed25519Signature,
 	Hash,
 	Index,
+	RewardDestination,
 	Sr25519Signature,
+	StakingLedger,
+	VestingInfo,
 } from '@polkadot/types/interfaces';
+import U32 from '@polkadot/types/primitive/U32';
 import { AnyJson, Codec } from '@polkadot/types/types';
 
 interface IAt {
-	hash: string;
+	hash: string | BlockHash;
 	height: string;
 }
 
@@ -45,7 +52,7 @@ export interface ISanitizedCall {
 	args: ISanitizedArgs;
 }
 
-export interface IBlockResponse {
+export interface IBlock {
 	number: Compact<BlockNumber>;
 	hash: BlockHash;
 	parentHash: Hash;
@@ -56,6 +63,40 @@ export interface IBlockResponse {
 	onInitialize: IOnInitializeOrFinalize;
 	extrinsics: IExtrinsic[];
 	onFinalize: IOnInitializeOrFinalize;
+}
+
+export interface IAccountBalance {
+	at: IAt;
+	nonce: Index;
+	free: Balance;
+	reserved: Balance;
+	miscFrozen: Balance;
+	feeFrozen: Balance;
+	locks: Vec<BalanceLock>;
+}
+
+export interface IAccountStakingSummary {
+	at: IAt;
+	controller: AccountId;
+	rewardDestination: RewardDestination;
+	numSlashingSpans: number;
+	staking: StakingLedger;
+}
+
+export interface IAccountVestingSummary {
+	at: IAt;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	vesting: Option<VestingInfo> | {};
+}
+
+export interface ITxConstructionMaterial {
+	at: IAt;
+	genesisHash: BlockHash;
+	chainName: string;
+	specName: string;
+	specVersion: U32;
+	txVersion: U32;
+	metadata: string;
 }
 
 interface ILog {
