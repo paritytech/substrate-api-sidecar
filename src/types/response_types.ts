@@ -13,6 +13,7 @@ import {
 	Hash,
 	Index,
 	RewardDestination,
+	RuntimeDispatchInfo,
 	Sr25519Signature,
 	StakingLedger,
 	VestingInfo,
@@ -20,9 +21,26 @@ import {
 import U32 from '@polkadot/types/primitive/U32';
 import { AnyJson, Codec } from '@polkadot/types/types';
 
+export type TSidecarResponse =
+	| ITxConstructionMaterial
+	| IStakingInfo
+	| IBlock
+	| IAccountBalanceSummary
+	| IAccountStakingSummary
+	| RuntimeDispatchInfo
+	| IAccountVestingSummary;
+
 interface IAt {
 	hash: string | BlockHash;
 	height: string;
+}
+
+export interface ITx {
+	hash: Hash;
+}
+
+export interface IClaimsInfo {
+	type: string;
 }
 
 export interface IStakingInfo {
