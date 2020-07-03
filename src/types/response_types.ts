@@ -65,7 +65,7 @@ export interface IBlock {
 	onFinalize: IOnInitializeOrFinalize;
 }
 
-export interface IAccountBalance {
+export interface IAccountBalanceSummary {
 	at: IAt;
 	nonce: Index;
 	free: Balance;
@@ -126,4 +126,8 @@ interface IExtrinsic {
 	nonce: Compact<Index>;
 	args: Codec[];
 	newArgs: ISanitizedArgs;
+	tip: Compact<Balance>;
+	hash: string;
+	events: ISanitizedEvent[];
+	paysFee: boolean | null;
 }

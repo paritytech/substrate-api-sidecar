@@ -35,7 +35,7 @@ import * as BN from 'bn.js';
 
 import * as errors from '../config/errors-en.json';
 import {
-	IAccountBalance,
+	IAccountBalanceSummary,
 	IAccountStakingSummary,
 	IAccountVestingSummary,
 	IBlock,
@@ -305,7 +305,7 @@ export default class ApiHandler {
 	async fetchBalance(
 		hash: BlockHash,
 		address: string
-	): Promise<IAccountBalance> {
+	): Promise<IAccountBalanceSummary> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, locks, sysAccount] = await Promise.all([
