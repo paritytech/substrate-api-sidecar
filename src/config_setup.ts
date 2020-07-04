@@ -1,6 +1,5 @@
 // File for creating an exportable object that stores all config information
 import { ConfigManager } from 'confmgr';
-
 import * as configTypes from '../config/types.json';
 
 /**
