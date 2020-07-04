@@ -13,6 +13,7 @@ import {
 	Hash,
 	Index,
 	RewardDestination,
+	RuntimeDispatchInfo,
 	Sr25519Signature,
 	StakingLedger,
 	VestingInfo,
@@ -128,6 +129,9 @@ interface IExtrinsic {
 	newArgs: ISanitizedArgs;
 	tip: Compact<Balance>;
 	hash: string;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	info: RuntimeDispatchInfo | { error: string } | {};
 	events: ISanitizedEvent[];
+	success: string | false;
 	paysFee: boolean | null;
 }
