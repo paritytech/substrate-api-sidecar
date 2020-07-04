@@ -1,5 +1,5 @@
-// File for creating an exportable object that stores all config information
 import { ConfigManager } from 'confmgr';
+
 import * as configTypes from '../config/types.json';
 
 /**
@@ -35,6 +35,9 @@ export enum CONFIG {
 }
 
 export default class Config {
+	/**
+	 * Gather env vars for config and make sure they are valid.
+	 */
 	public static GetConfig(): SidecarConfig | null {
 		// Instantiate ConfigManager which is used to read in the specs.yml
 		const config = ConfigManager.getInstance('specs.yml').getConfig();
