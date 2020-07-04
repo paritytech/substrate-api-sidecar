@@ -24,7 +24,7 @@ import * as core from 'express-serve-static-core';
 import { BadRequest, HttpError } from 'http-errors';
 
 import ApiHandler from './ApiHandler';
-import config from './config_setup';
+import Config, { SidecarConfig } from './config_setup';
 import errorMiddleware from './middleware/error_middleware';
 import {
 	developmentLoggerMiddleware,
@@ -35,6 +35,15 @@ import { TxRequest, TxRequestBody } from './types/request_types';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
+	const configOrNull = Config.GetConfig();
+
+	if (!configOrNull) {
+		console.log('Your config is NOT valid, exiting');
+		process.exit(1);
+	}
+
+	const config: SidecarConfig = configOrNull;
+
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	const api = await ApiPromise.create({
