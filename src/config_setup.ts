@@ -1,5 +1,5 @@
 // File for creating an exportable object that stores all config information
-import { ConfigManager, ConfigObject } from 'confmgr';
+import { ConfigManager } from 'confmgr';
 
 import * as configTypes from '../config/types.json';
 
@@ -13,7 +13,6 @@ export interface SidecarConfig {
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
 	NAME: string;
-	config: ConfigObject;
 }
 
 /**
@@ -36,15 +35,26 @@ export enum CONFIG {
 	NAME = 'NAME',
 }
 
-// Instantiate ConfigManager which is used to read in the specs.yml
-const config = ConfigManager.getInstance('specs.yml').getConfig();
+export default class Config {
+	public static GetConfig(): SidecarConfig | null {
+		// Instantiate ConfigManager which is used to read in the specs.yml
+		const config = ConfigManager.getInstance('specs.yml').getConfig();
 
-export default {
-	HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
-	PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
-	LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
-	WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
-	CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
-	NAME: config.Get('SUBSTRATE', CONFIG.NAME) as string,
-	config,
-} as SidecarConfig;
+		if (!config.Validate()) {
+			config.Print({ compact: false });
+			return null;
+		} else {
+			// Print some nice info that also gives informative error messages
+			config.Print({ compact: true });
+		}
+
+		return {
+			HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
+			PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
+			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
+			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
+			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
+			NAME: config.Get('SUBSTRATE', CONFIG.NAME) as string,
+		};
+	}
+}
