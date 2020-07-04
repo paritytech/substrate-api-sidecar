@@ -1,16 +1,26 @@
-import { Enum, Option, Result, Struct } from '@polkadot/types';
+import {
+	BTreeSet,
+	Compact,
+	Enum,
+	Option,
+	Result,
+	Struct,
+} from '@polkadot/types';
 import AbstractArray from '@polkadot/types/codec/AbstractArray';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import CodecMap from '@polkadot/types/codec/Map';
-import CodecSet from '@polkadot/types/codec/Set';
+import StructAny from '@polkadot/types/codec/StructAny';
 import { AnyJson, Codec } from '@polkadot/types/types';
 import { InternalServerError } from 'http-errors';
+import { TSidecarResponse } from './types/response_types';
+import Constructor from '@polkadot/types/types/codec'
 
 /**
- *Option, Struct, Result, Abstract Array (Tuple, Vec),  Enum,
- * AbstractInt (Int, UInt)
- * Check
- * 	Set (BTreeSet), Map (BTreeMap | HashMap)
+ * Not sure about:
+ * - Tuple
+ * - Linkage extends Struct
+ * - LinkageTuple extends Tuple
+ *
  *
  */
 
@@ -48,9 +58,16 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		}, {} as Record<string, AnyJson>);
 	}
 
-	// Covers Vecs and Tuples
-	if (value instanceof AbstractArray) {
-		return value.map((element) => sanitizeCodec(element));
+	// TODO enable check if its a codec
+	if (value instanceof StructAny) {
+		// const jsonStructAny: Record<string, AnyJson> = {}
+		// value.forEach((element, prop) => {
+		// 	// if(element insta) {
+		// 	// 	// jsonStructAny[prop] = sanitizeCodec(element)
+		// 	// } else {
+		// 	// 	// jsonStructAny[prop] = sanitizeData(element)
+		// 	// }
+		// })
 	}
 
 	if (value instanceof Enum) {
@@ -61,12 +78,15 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		return { [value.type]: sanitizeCodec(value.value) };
 	}
 
-	if (value instanceof AbstractInt) {
-		return value.toString(10);
-	}
-	// Covers BTreeSet
-	if (value instanceof CodecSet) {
-		return 'stub';
+	// Note CodecSet not needed bc all values are strings
+	if (value instanceof BTreeSet) {
+		const jsonSet: AnyJson = [];
+
+		value.forEach((element: Codec) => {
+			jsonSet.push(sanitizeCodec(element));
+		});
+
+		return jsonSet;
 	}
 
 	// Covers BTreeMap and HashMap
@@ -90,5 +110,27 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		});
 	}
 
+	if (value instanceof Compact) {
+		return sanitizeCodec(value.unwrap());
+	}
+
+	if (value instanceof AbstractArray) {
+		// Covers Vecs and Tuples
+		return value.map((element) => sanitizeCodec(element));
+	}
+
+	// Covers Uint and Int
+	if (value instanceof AbstractInt) {
+		return value.toString(10);
+	}
+
 	return value.toJSON();
+}
+
+export function sanitizeData(data: AnyJson | TSidecarResponse): AnyJson {
+	return 'place holder'
+}
+
+function isCodec(thing: any): thing is Codec {
+	return (thing as Codec).encodedLength && (thing as Codec).hash && (thing as Codec) && (thing as Codec).registry
 }
