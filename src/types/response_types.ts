@@ -132,6 +132,6 @@ interface IExtrinsic {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	info: RuntimeDispatchInfo | { error: string } | {};
 	events: ISanitizedEvent[];
-	success: string | false;
+	success: string | boolean;
 	paysFee: boolean | null;
 }
