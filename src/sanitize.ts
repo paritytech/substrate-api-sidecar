@@ -1,13 +1,16 @@
-import { Enum, Option, Result, Struct, Vec } from '@polkadot/types';
+import { Enum, Option, Result, Struct } from '@polkadot/types';
 import AbstractArray from '@polkadot/types/codec/AbstractArray';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
+import CodecMap from '@polkadot/types/codec/Map';
+import CodecSet from '@polkadot/types/codec/Set';
 import { AnyJson, Codec } from '@polkadot/types/types';
+import { InternalServerError } from 'http-errors';
 
 /**
  *Option, Struct, Result, Abstract Array (Tuple, Vec),  Enum,
  * AbstractInt (Int, UInt)
  * Check
- * 	Set (BTreeSet), Map (BTreeMap)
+ * 	Set (BTreeSet), Map (BTreeMap | HashMap)
  *
  */
 
@@ -61,13 +64,30 @@ export function sanitizeCodec(value: Codec): AnyJson {
 	if (value instanceof AbstractInt) {
 		return value.toString(10);
 	}
-
-	if (value instanceof Set) {
+	// Covers BTreeSet
+	if (value instanceof CodecSet) {
 		return 'stub';
 	}
 
-	if (value instanceof Map) {
-		return 'stub';
+	// Covers BTreeMap and HashMap
+	if (value instanceof CodecMap) {
+		const jsonMap: AnyJson = {};
+
+		value.forEach((value: Codec, key: Codec) => {
+			const sanitizedKey = sanitizeCodec(key);
+			if (
+				!(
+					typeof sanitizedKey === 'string' ||
+					typeof sanitizedKey === 'number'
+				)
+			) {
+				throw new InternalServerError(
+					'Unexpected non-string and non-number key while sanitizing a CodecMap'
+				);
+			}
+
+			jsonMap[sanitizedKey] = sanitizeCodec(value);
+		});
 	}
 
 	return value.toJSON();
