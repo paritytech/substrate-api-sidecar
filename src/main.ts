@@ -35,6 +35,15 @@ import { TxRequest, TxRequestBody } from './types/request_types';
 import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
+	if (!config.config.Validate()) {
+		config.config.Print({ compact: false });
+		console.log('Your config is NOT valid, exiting');
+		process.exit(1);
+	} else {
+		// Print some nice info that also gives informative error messages
+		config.config.Print({ compact: true });
+	}
+
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	const api = await ApiPromise.create({
@@ -573,7 +582,7 @@ async function getHashForBlock(
 		if (blockNumber && number.toNumber() < blockNumber) {
 			throw new BadRequest(
 				`Specified block number is higher than the current finalized block height. ` +
-					`The largest known block number is ${number.toString()}.`
+				`The largest known block number is ${number.toString()}.`
 			);
 		}
 
