@@ -1,8 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import {
-	RequestHandlerAddress,
-	RequestHandlerAddressNumber,
-} from 'src/types/request_types';
+import { RequestHandler } from 'express';
+import { AddressNumberParams, AddressParam } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
@@ -62,7 +60,7 @@ export default class BalanceController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceSummary: RequestHandlerAddress = async (
+	private getAccountBalanceSummary: RequestHandler<AddressParam> = async (
 		req,
 		res
 	): Promise<void> => {
@@ -79,10 +77,9 @@ export default class BalanceController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceSummaryAtBlock: RequestHandlerAddressNumber = async (
-		req,
-		res
-	): Promise<void> => {
+	private getAccountBalanceSummaryAtBlock: RequestHandler<
+		AddressNumberParams
+	> = async (req, res): Promise<void> => {
 		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);
 

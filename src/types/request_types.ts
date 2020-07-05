@@ -18,29 +18,14 @@ export type RequestHandlerTx = RequestHandler<
 	Query
 >;
 
-/**
- * Request Handler with an :address param
- */
-export type RequestHandlerAddress = RequestHandler<Address>;
-
-/**
- * Request Handler with a :number param
- */
-export type RequestHandlerNumber = RequestHandler<Num>;
-
-/**
- * Request Handler with an :address and :number param
- */
-export type RequestHandlerAddressNumber = RequestHandler<AddressNumber>;
-
-interface Num extends ParamsDictionary {
+export interface NumberParam extends ParamsDictionary {
 	number: string;
 }
 
-interface Address extends ParamsDictionary {
+export interface AddressParam extends ParamsDictionary {
 	address: string;
 }
 
-interface AddressNumber extends Address {
+export interface AddressNumberParams extends AddressParam {
 	number: string;
 }

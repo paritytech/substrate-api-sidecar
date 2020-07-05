@@ -1,8 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import {
-	RequestHandlerAddress,
-	RequestHandlerAddressNumber,
-} from 'src/types/request_types';
+import { RequestHandler } from 'express';
+import { AddressNumberParams, AddressParam } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
@@ -50,7 +48,7 @@ export default class VestingController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountVestingSummary: RequestHandlerAddress = async (
+	private getAccountVestingSummary: RequestHandler<AddressParam> = async (
 		req,
 		res
 	): Promise<void> => {
@@ -67,10 +65,9 @@ export default class VestingController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountVestingSummaryAtBlock: RequestHandlerAddressNumber = async (
-		req,
-		res
-	): Promise<void> => {
+	private getAccountVestingSummaryAtBlock: RequestHandler<
+		AddressNumberParams
+	> = async (req, res): Promise<void> => {
 		const { address, number } = req.params;
 		const hash = await this.getHashForBlock(number);
 

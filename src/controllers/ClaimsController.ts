@@ -1,8 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import {
-	RequestHandlerAddress,
-	RequestHandlerAddressNumber,
-} from 'src/types/request_types';
+import { RequestHandler } from 'express';
+import { AddressNumberParams, AddressParam } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -42,7 +40,7 @@ export default class ClaimsController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getClaim: RequestHandlerAddress = async (
+	private getClaim: RequestHandler<AddressParam> = async (
 		req,
 		res
 	): Promise<void> => {
@@ -59,7 +57,7 @@ export default class ClaimsController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getClaimAtBlock: RequestHandlerAddressNumber = async (
+	private getClaimAtBlock: RequestHandler<AddressNumberParams> = async (
 		req,
 		res
 	): Promise<void> => {

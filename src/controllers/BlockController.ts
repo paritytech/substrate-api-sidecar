@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
-import { RequestHandlerNumber } from 'src/types/request_types';
+import { NumberParam } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -85,7 +85,7 @@ export default class BlocksController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockById: RequestHandlerNumber = async (
+	private getBlockById: RequestHandler<NumberParam> = async (
 		req,
 		res
 	): Promise<void> => {

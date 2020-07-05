@@ -1,13 +1,17 @@
 import * as express from 'express';
-import { Request, Response } from 'express';
+import {
+	ErrorRequestHandler,
+	Request,
+	RequestHandler,
+	Response,
+} from 'express';
 
 import BaseController from './controllers/AbstractController';
-import { Middleware } from './types/middleware_types';
 
 interface AppConfiguration {
 	controllers: BaseController[];
-	preMiddleware: Middleware[];
-	postMiddleware: Middleware[];
+	preMiddleware: RequestHandler[];
+	postMiddleware: ErrorRequestHandler[];
 	port: number;
 	host: string;
 }
@@ -49,7 +53,7 @@ export default class App {
 	 *
 	 * @param preMiddleware Array of Middleware to mount prior to all controllers.
 	 */
-	private initPreMiddleware(preMiddleware: Middleware[]): void {
+	private initPreMiddleware(preMiddleware: RequestHandler[]): void {
 		for (const middleware of preMiddleware) {
 			this.app.use(middleware);
 		}
@@ -71,7 +75,7 @@ export default class App {
 	 *
 	 * @param postMiddleware Array of middleware to mount last.
 	 */
-	private initPostMiddleware(postMiddleware: Middleware[]): void {
+	private initPostMiddleware(postMiddleware: ErrorRequestHandler[]): void {
 		for (const middleware of postMiddleware) {
 			this.app.use(middleware);
 		}

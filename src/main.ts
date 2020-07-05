@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import * as bodyParser from 'body-parser';
+import { RequestHandler } from 'express';
 
 import App from './App';
 import Config, { SidecarConfig } from './config_setup';
@@ -41,7 +42,6 @@ import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
 } from './middleware/logger_middleware';
-import sanitizedSendMiddleware from './middleware/sanitizeResMiddleware';
 
 async function main() {
 	const configOrNull = Config.GetConfig();
@@ -62,7 +62,7 @@ async function main() {
 	});
 
 	// Create our array of middleware that is to be mounted before the routes
-	const preMiddleware = [bodyParser.json(), sanitizedSendMiddleware];
+	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
 		preMiddleware.push(productionLoggerMiddleware);
 	} else if (config.LOG_MODE === 'all') {

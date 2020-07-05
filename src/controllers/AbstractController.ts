@@ -3,7 +3,19 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Router } from 'express';
 import * as express from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
 import { BadRequest } from 'http-errors';
+import {
+	AddressNumberParams,
+	AddressParam,
+	NumberParam,
+} from 'src/types/request_types';
+
+type SidecarRequestHandler =
+	| RequestHandler<AddressParam>
+	| RequestHandler<AddressNumberParams>
+	| RequestHandler<NumberParam>
+	| RequestHandler;
 
 /**
  * Abstract base class for creating controller classes.
@@ -43,13 +55,13 @@ export default abstract class AbstractController {
 	 * path (use empty string if no suffix) and the get request handler function.
 	 */
 	protected safeMountAsyncGetHandlers(
-		pathsAndHandlers: [string, RequestHandler][]
+		pathsAndHandlers: [string, SidecarRequestHandler][]
 	): void {
 		for (const pathAndHandler of pathsAndHandlers) {
 			const [pathSuffix, handler] = pathAndHandler;
-			this.router.get(
+			this.router.get<ParamsDictionary | AddressParam>(
 				`${this.path}${pathSuffix}`,
-				this.catchWrap(handler)
+				this.catchWrap(handler as RequestHandler)
 			);
 		}
 	}

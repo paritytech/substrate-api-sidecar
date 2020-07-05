@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "noEmitOnError": false,
     "noErrorTruncation": true,
+    "strict": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -29,7 +30,6 @@
     "./src/**/*.json",
     "./config/**/*.json",
     "./config/**/*.ts",
-    "./declarations/**/*.d.ts",
-    "src/exceptions"
+
   ]
 }
