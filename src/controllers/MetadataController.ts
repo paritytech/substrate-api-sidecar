@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
+import { RequestHandlerNumber } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -39,10 +40,8 @@ export default class MetadataController extends AbstractController {
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getMetadata = async (
-		_req: Request,
-		res: Response
-	): Promise<void> => {
+
+	private getMetadata: RequestHandler = async (_req, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		res.send(await this.handler.fetchMetadata(hash));
@@ -55,9 +54,9 @@ export default class MetadataController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getMetadataAtBlock = async (
-		req: Request,
-		res: Response
+	private getMetadataAtBlock: RequestHandlerNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);

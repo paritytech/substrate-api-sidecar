@@ -1,8 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
-import { Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
-import { TxRequest } from '../types/request_types';
+import { RequestHandlerTx } from '../types/request_types';
 import AbstractController from './AbstractController';
 
 /**
@@ -40,7 +39,7 @@ export default class TxSubmitController extends AbstractController {
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txSubmit = async (req: TxRequest, res: Response): Promise<void> => {
+	private txSubmit: RequestHandlerTx = async (req, res): Promise<void> => {
 		const { tx } = req.body;
 		if (!tx) {
 			throw {

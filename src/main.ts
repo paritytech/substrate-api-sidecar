@@ -18,8 +18,8 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import * as bodyParser from 'body-parser';
 
-import Config, { SidecarConfig } from './config_setup';
 import App from './App';
+import Config, { SidecarConfig } from './config_setup';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
 import ClaimsController from './controllers/ClaimsController';
@@ -107,7 +107,7 @@ async function main() {
 		host: config.HOST,
 	});
 
-	// Start
+	// Start the server
 	app.listen();
 }
 

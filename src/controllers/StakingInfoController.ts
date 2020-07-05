@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
+import { RequestHandlerNumber } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -85,9 +86,9 @@ export default class StakingInfoController extends AbstractController {
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getStakingInfo = async (
-		_req: Request,
-		res: Response
+	private getStakingInfo: RequestHandler = async (
+		_req,
+		res
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
@@ -101,9 +102,9 @@ export default class StakingInfoController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getStakingInfoAtBlock = async (
-		req: Request,
-		res: Response
+	private getStakingInfoAtBlock: RequestHandlerNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);

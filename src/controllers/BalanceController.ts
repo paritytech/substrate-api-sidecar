@@ -1,5 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
-import { NextFunction, Request, Response } from 'express';
+import {
+	RequestHandlerAddress,
+	RequestHandlerAddressNumber,
+} from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import { validateAddressMiddleware } from '../middleware/validations_middleware';
@@ -59,10 +62,9 @@ export default class BalanceController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceSummary = async (
-		req: Request,
-		res: Response,
-		_next: NextFunction
+	private getAccountBalanceSummary: RequestHandlerAddress = async (
+		req,
+		res
 	): Promise<void> => {
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
@@ -77,9 +79,9 @@ export default class BalanceController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceSummaryAtBlock = async (
-		req: Request,
-		res: Response
+	private getAccountBalanceSummaryAtBlock: RequestHandlerAddressNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);

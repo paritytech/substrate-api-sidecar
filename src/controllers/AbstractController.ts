@@ -1,21 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
-import {
-	NextFunction,
-	Request,
-	RequestHandler,
-	Response,
-	Router,
-} from 'express';
+import { RequestHandler, Router } from 'express';
 import * as express from 'express';
 import { BadRequest } from 'http-errors';
-
-type SidecarAsyncRequestHandler = (
-	req: Request,
-	res: Response,
-	next?: NextFunction
-) => Promise<void>;
 
 /**
  * Abstract base class for creating controller classes.
@@ -55,7 +43,7 @@ export default abstract class AbstractController {
 	 * path (use empty string if no suffix) and the get request handler function.
 	 */
 	protected safeMountAsyncGetHandlers(
-		pathsAndHandlers: [string, SidecarAsyncRequestHandler][]
+		pathsAndHandlers: [string, RequestHandler][]
 	): void {
 		for (const pathAndHandler of pathsAndHandlers) {
 			const [pathSuffix, handler] = pathAndHandler;
@@ -72,12 +60,10 @@ export default abstract class AbstractController {
 	 *
 	 * @param cb ExpressHandler
 	 */
-	protected catchWrap = (
-		cb: SidecarAsyncRequestHandler
-	): RequestHandler => async (
-		req: Request,
-		res: Response,
-		next: NextFunction
+	protected catchWrap = (cb: RequestHandler): RequestHandler => async (
+		req,
+		res,
+		next
 	): Promise<void> => {
 		try {
 			await cb(req, res, next);
@@ -135,7 +121,9 @@ export default abstract class AbstractController {
 				throw err;
 			}
 
-			throw { error: `Cannot get block hash for ${blockId}.` };
+			throw {
+				error: `Cannot get block hash for ${blockId}.`,
+			};
 		}
 	}
 

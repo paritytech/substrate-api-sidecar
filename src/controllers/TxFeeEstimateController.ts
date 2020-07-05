@@ -1,8 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
-import { Response } from 'express';
 
 import ApiHandler from '../ApiHandler';
-import { TxRequest } from '../types/request_types';
+import { RequestHandlerTx } from '../types/request_types';
 import AbstractController from './AbstractController';
 
 /**
@@ -50,9 +49,9 @@ export default class TxFeeEstimate extends AbstractController {
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txFeeEstimate = async (
-		req: TxRequest,
-		res: Response
+	private txFeeEstimate: RequestHandlerTx = async (
+		req,
+		res
 	): Promise<void> => {
 		const { tx } = req.body;
 		if (!tx) {

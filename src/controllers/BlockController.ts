@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
+import { RequestHandlerNumber } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -72,11 +73,9 @@ export default class BlocksController extends AbstractController {
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock = async (
-		_req: Request,
-		res: Response
-	): Promise<void> => {
+	private getLatestBlock: RequestHandler = async (_req, res) => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
+
 		res.send(await this.handler.fetchBlock(hash));
 	};
 
@@ -86,11 +85,12 @@ export default class BlocksController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockById = async (
-		req: Request,
-		res: Response
+	private getBlockById: RequestHandlerNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const hash: BlockHash = await this.getHashForBlock(req.params.number);
+
 		res.send(await this.handler.fetchBlock(hash));
 	};
 }

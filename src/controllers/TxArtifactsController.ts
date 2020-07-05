@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
+import { RequestHandlerNumber } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -53,9 +54,9 @@ export default class TxArtifactsController extends AbstractController {
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getTxArtifacts = async (
-		_req: Request,
-		res: Response
+	private getTxArtifacts: RequestHandler = async (
+		_req,
+		res
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
@@ -69,9 +70,9 @@ export default class TxArtifactsController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getTxArtifactsAtBlock = async (
-		req: Request,
-		res: Response
+	private getTxArtifactsAtBlock: RequestHandlerNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);

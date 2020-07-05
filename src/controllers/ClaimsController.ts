@@ -1,5 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
-import { Request, Response } from 'express';
+import {
+	RequestHandlerAddress,
+	RequestHandlerAddressNumber,
+} from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -39,7 +42,10 @@ export default class ClaimsController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getClaim = async (req: Request, res: Response): Promise<void> => {
+	private getClaim: RequestHandlerAddress = async (
+		req,
+		res
+	): Promise<void> => {
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
@@ -53,9 +59,9 @@ export default class ClaimsController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getClaimAtBlock = async (
-		req: Request,
-		res: Response
+	private getClaimAtBlock: RequestHandlerAddressNumber = async (
+		req,
+		res
 	): Promise<void> => {
 		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);
