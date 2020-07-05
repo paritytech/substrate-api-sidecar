@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import * as morgan from 'morgan';
-import { NormalMiddleware } from 'src/types/middleware_types';
 
 /**
  * Only log errors in standard Apache combined log output.
@@ -12,7 +11,7 @@ export const productionLoggerMiddleware = morgan('combined', {
 	skip: function (_: Request, res: Response) {
 		return res.statusCode < 400; // Only log errors
 	},
-}) as NormalMiddleware;
+}) as RequestHandler;
 
 /**
  * Log everything.
@@ -24,4 +23,4 @@ export const productionLoggerMiddleware = morgan('combined', {
  *
  * :method :url :status :response-time ms - :res[content-length]
  */
-export const developmentLoggerMiddleware = morgan('dev') as NormalMiddleware;
+export const developmentLoggerMiddleware = morgan('dev') as RequestHandler;
