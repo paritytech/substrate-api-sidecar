@@ -18,8 +18,8 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import * as bodyParser from 'body-parser';
 
+import Config, { SidecarConfig } from './config_setup';
 import App from './App';
-import config from './config_setup';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlockController';
 import ClaimsController from './controllers/ClaimsController';
@@ -44,6 +44,15 @@ import {
 import sanitizedSendMiddleware from './middleware/sanitizeResMiddleware';
 
 async function main() {
+	const configOrNull = Config.GetConfig();
+
+	if (!configOrNull) {
+		console.log('Your config is NOT valid, exiting');
+		process.exit(1);
+	}
+
+	const config: SidecarConfig = configOrNull;
+
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	// Instantiate a web socket connection to the node for basic polkadot-js use
