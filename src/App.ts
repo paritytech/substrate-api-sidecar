@@ -1,5 +1,6 @@
 import * as express from 'express';
 import {
+	Application,
 	ErrorRequestHandler,
 	Request,
 	RequestHandler,
@@ -17,7 +18,7 @@ interface AppConfiguration {
 }
 
 export default class App {
-	private app: express.Application;
+	private app: Application;
 	private readonly port: number;
 	private readonly host: string;
 
