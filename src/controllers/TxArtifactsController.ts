@@ -60,7 +60,10 @@ export default class TxArtifactsController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchTxArtifacts(hash));
+		TxArtifactsController.sanitizedSend(
+			res,
+			await this.handler.fetchTxArtifacts(hash)
+		);
 	};
 
 	/**
@@ -77,6 +80,9 @@ export default class TxArtifactsController extends AbstractController {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchTxArtifacts(hash));
+		TxArtifactsController.sanitizedSend(
+			res,
+			await this.handler.fetchTxArtifacts(hash)
+		);
 	};
 }

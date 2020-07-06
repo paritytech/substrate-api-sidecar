@@ -76,7 +76,10 @@ export default class BlocksController extends AbstractController {
 	private getLatestBlock: RequestHandler = async (_req, res) => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchBlock(hash));
+		BlocksController.sanitizedSend(
+			res,
+			await this.handler.fetchBlock(hash)
+		);
 	};
 
 	/**
@@ -91,6 +94,9 @@ export default class BlocksController extends AbstractController {
 	): Promise<void> => {
 		const hash: BlockHash = await this.getHashForBlock(req.params.number);
 
-		res.send(await this.handler.fetchBlock(hash));
+		BlocksController.sanitizedSend(
+			res,
+			await this.handler.fetchBlock(hash)
+		);
 	};
 }

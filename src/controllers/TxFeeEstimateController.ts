@@ -3,6 +3,7 @@ import { ApiPromise } from '@polkadot/api';
 import ApiHandler from '../ApiHandler';
 import { RequestHandlerTx } from '../types/request_types';
 import AbstractController from './AbstractController';
+import TxArtifactsController from './TxArtifactsController';
 
 /**
  * POST a serialized transaction and receive a fee estimate.
@@ -62,6 +63,9 @@ export default class TxFeeEstimate extends AbstractController {
 
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchFeeInformation(hash, tx));
+		TxArtifactsController.sanitizedSend(
+			res,
+			await this.handler.fetchFeeInformation(hash, tx)
+		);
 	};
 }

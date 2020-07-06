@@ -37,7 +37,7 @@ import AbstractController from './AbstractController';
  * - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
-export default class BalanceController extends AbstractController {
+export default class BalancesController extends AbstractController {
 	handler: ApiHandler;
 	constructor(api: ApiPromise) {
 		super(api, '/balance/:address');
@@ -67,7 +67,10 @@ export default class BalanceController extends AbstractController {
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchBalance(hash, address));
+		BalancesController.sanitizedSend(
+			res,
+			await this.handler.fetchBalance(hash, address)
+		);
 	};
 
 	/**
@@ -83,6 +86,9 @@ export default class BalanceController extends AbstractController {
 		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchBalance(hash, address));
+		BalancesController.sanitizedSend(
+			res,
+			await this.handler.fetchBalance(hash, address)
+		);
 	};
 }

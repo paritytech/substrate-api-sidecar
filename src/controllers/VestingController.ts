@@ -71,6 +71,9 @@ export default class VestingController extends AbstractController {
 		const { address, number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchVesting(hash, address));
+		VestingController.sanitizedSend(
+			res,
+			await this.handler.fetchVesting(hash, address)
+		);
 	};
 }

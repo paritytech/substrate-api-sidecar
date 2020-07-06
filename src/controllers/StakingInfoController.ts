@@ -92,7 +92,10 @@ export default class StakingInfoController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchStakingInfo(hash));
+		StakingInfoController.sanitizedSend(
+			res,
+			await this.handler.fetchStakingInfo(hash)
+		);
 	};
 
 	/**
@@ -109,6 +112,9 @@ export default class StakingInfoController extends AbstractController {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchStakingInfo(hash));
+		StakingInfoController.sanitizedSend(
+			res,
+			await this.handler.fetchStakingInfo(hash)
+		);
 	};
 }

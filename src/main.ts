@@ -22,7 +22,7 @@ import { RequestHandler } from 'express';
 import App from './App';
 import Config, { SidecarConfig } from './config_setup';
 import BalanceController from './controllers/BalanceController';
-import BlocksController from './controllers/BlockController';
+import BlocksController from './controllers/BlocksController';
 import ClaimsController from './controllers/ClaimsController';
 import MetadataController from './controllers/MetadataController';
 import StakingController from './controllers/StakingController';

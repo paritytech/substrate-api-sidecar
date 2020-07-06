@@ -47,6 +47,6 @@ export default class TxSubmitController extends AbstractController {
 			};
 		}
 
-		res.send(await this.handler.submitTx(tx));
+		TxSubmitController.sanitizedSend(res, await this.handler.submitTx(tx));
 	};
 }

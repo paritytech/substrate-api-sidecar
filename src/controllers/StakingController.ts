@@ -36,7 +36,10 @@ export default class StakingController extends AbstractController {
 		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
+		StakingController.sanitizedSend(
+			res,
+			await this.handler.fetchAddressStakingInfo(hash, address)
+		);
 	};
 
 	/**
@@ -52,6 +55,9 @@ export default class StakingController extends AbstractController {
 		const { address, number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchAddressStakingInfo(hash, address));
+		StakingController.sanitizedSend(
+			res,
+			await this.handler.fetchAddressStakingInfo(hash, address)
+		);
 	};
 }

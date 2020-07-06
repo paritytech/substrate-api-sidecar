@@ -44,7 +44,10 @@ export default class MetadataController extends AbstractController {
 	private getMetadata: RequestHandler = async (_req, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchMetadata(hash));
+		MetadataController.sanitizedSend(
+			res,
+			await this.handler.fetchMetadata(hash)
+		);
 	};
 
 	/**
@@ -61,6 +64,9 @@ export default class MetadataController extends AbstractController {
 		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		res.send(await this.handler.fetchMetadata(hash));
+		MetadataController.sanitizedSend(
+			res,
+			await this.handler.fetchMetadata(hash)
+		);
 	};
 }

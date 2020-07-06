@@ -1,6 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
-import { AnyJson, Codec } from '@polkadot/types/types';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
@@ -19,7 +18,6 @@ type SidecarRequestHandler =
 	| RequestHandler<AddressNumberParams>
 	| RequestHandler<NumberParam>
 	| RequestHandler;
-
 
 /**
  * Abstract base class for creating controller classes.
@@ -94,7 +92,7 @@ export default abstract class AbstractController {
 	 *
 	 * @param blockId string representing a hash or number block identifier.
 	 */
-	async getHashForBlock(blockId: string): Promise<BlockHash> {
+	protected async getHashForBlock(blockId: string): Promise<BlockHash> {
 		let blockNumber;
 
 		try {
@@ -153,10 +151,17 @@ export default abstract class AbstractController {
 		return num;
 	}
 
-	static sanitizeAndSend(res: Response, body: AnyCodecAndJson): void {
+	/**
+	 * Sanitize the numbers within the response body and then send the response
+	 * body using the original Express Response object.
+	 *
+	 * @param res Response
+	 * @param body response body
+	 */
+	static sanitizedSend<T = unknown>(res: Response<T>, body: T): void {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const sanitizedBody = sanitizeNumbers(body) as AnyCodecAndJson;
+		const sanitizedBody = sanitizeNumbers(body);
 
-		(res as Response<AnyCodecAndJson>).send(sanitizedBody);
+		res.send(sanitizedBody);
 	}
 }
