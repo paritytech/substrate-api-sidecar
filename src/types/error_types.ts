@@ -1,12 +1,21 @@
-export interface IBasicError {
+/**
+ * The core of sidecar errors that pre-date the introduction of http-error.
+ */
+export interface IBasicLegacyError {
 	error: string;
 }
 
-export interface ILegacyError extends IBasicError {
+/**
+ * Format of some older error messages.
+ */
+export interface ILegacyError extends IBasicLegacyError {
 	statusCode: number;
 }
 
-export interface ITxError extends IBasicError {
+/**
+ * Error from tx POST methods
+ */
+export interface ITxLegacyError extends IBasicLegacyError {
 	data?: string; // extrinsic
 	cause: string;
 }

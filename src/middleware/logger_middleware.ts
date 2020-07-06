@@ -1,5 +1,4 @@
-import { Request, Response } from 'express';
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import * as morgan from 'morgan';
 
 /**
