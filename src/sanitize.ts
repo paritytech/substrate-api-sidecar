@@ -14,10 +14,8 @@ import { AnyJson, Codec } from '@polkadot/types/types';
 import { isObject } from '@polkadot/util';
 import { InternalServerError } from 'http-errors';
 
-
 /**
  * Not sure about:
- * - Tuple
  * - Linkage extends Struct
  * - LinkageTuple extends Tuple
  *
@@ -29,7 +27,9 @@ export function sanitizeCodec(value: Codec): AnyJson {
 
 	// Check Option and Result before Enum because they extend Enum
 	if (value instanceof Option) {
-		return value.isSome ? sanitizeCodec(value.unwrap()) : null;
+		// Throughout sanitizeCodec we prefer using sanitizeData because the
+		// additional type guards within are more robust than calling sanitizeCodec
+		return value.isSome ? sanitizeData(value.unwrap()) : null;
 	}
 
 	if (value instanceof Result) {
@@ -40,8 +40,8 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		}
 
 		return value.isOk
-			? sanitizeCodec(value.asOk)
-			: sanitizeCodec(value.asError);
+			? sanitizeData(value.asOk)
+			: sanitizeData(value.asError);
 	}
 
 	// Check struct before map because it extends map
@@ -52,20 +52,16 @@ export function sanitizeCodec(value: Codec): AnyJson {
 				return jsonStruct;
 			}
 
-			jsonStruct[key] = sanitizeCodec(property);
+			jsonStruct[key] = sanitizeData(property);
 			return jsonStruct;
 		}, {} as Record<string, AnyJson>);
 	}
 
 	if (value instanceof StructAny) {
-		// The keys are strings and the values are any
+		// This is essentially a Map with [keys: strings]: any
 		const jsonStructAny: Record<string, AnyJson> = {};
 		value.forEach((element, prop) => {
-			if (isCodec(element)) {
-				jsonStructAny[prop] = sanitizeCodec(element);
-			} else {
-				jsonStructAny[prop] = sanitizeData(element);
-			}
+			jsonStructAny[prop] = sanitizeData(element);
 		});
 	}
 
@@ -74,7 +70,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 			return value.toJSON();
 		}
 
-		return { [value.type]: sanitizeCodec(value.value) };
+		return { [value.type]: sanitizeData(value.value) };
 	}
 
 	// Note CodecSet case not needed because all values are strings
@@ -82,7 +78,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		const jsonSet: AnyJson = [];
 
 		value.forEach((element: Codec) => {
-			jsonSet.push(sanitizeCodec(element));
+			jsonSet.push(sanitizeData(element));
 		});
 
 		return jsonSet;
@@ -94,7 +90,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 
 		// key, value implement Codec
 		value.forEach((value: Codec, key: Codec) => {
-			const nonCodecKey = sanitizeCodec(key);
+			const nonCodecKey = sanitizeData(key);
 			if (
 				!(
 					typeof nonCodecKey === 'string' ||
@@ -106,20 +102,19 @@ export function sanitizeCodec(value: Codec): AnyJson {
 				);
 			}
 
-			jsonMap[nonCodecKey] = sanitizeCodec(value);
+			jsonMap[nonCodecKey] = sanitizeData(value);
 		});
 
 		return jsonMap;
 	}
 
 	if (value instanceof Compact) {
-		return sanitizeCodec(value.unwrap());
+		return sanitizeData(value.unwrap());
 	}
 
 	// Should cover Vec, VecAny, VecFixed, Tuple
 	if (value instanceof AbstractArray) {
-		console.log(value);
-		return value.map((element: Codec) => sanitizeCodec(element));
+		return value.map(sanitizeData);
 	}
 
 	// Should cover Uint and Int
@@ -146,30 +141,29 @@ export function sanitizeData(data: unknown): AnyJson {
 		return sanitizeCodec(data);
 	}
 
-	console.log(data);
 	if (Array.isArray(data)) {
 		return data.map(sanitizeData);
 	}
 
 	// Pretty much everything is an object so we need to check this last
-	console.log(data);
 	if (isObject(data)) {
-		return Object.entries(data).reduce((saniObj, [key, value]) => {
-			saniObj[key] = sanitizeData(value);
-			return saniObj;
+		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
+			sanitizedObject[key] = sanitizeData(value);
+			return sanitizedObject;
 		}, {} as { [prop: string]: AnyJson });
 	}
 
-	// If we have gotten to here than it is not a Codec, Array or Object
-	// so likely it is string, number, boolean, null, or undefined
-	// I will likely remove this check and just have in testing since it is expensive
+	// I will likely remove this check and just have it in testing since it is expensive
 	if (!isAnyJson(data)) {
 		console.error('Sanitized data could not be forced to `AnyJson`');
 		console.error(data);
 		throw new InternalServerError(
-			'Sanitized data could not be forced to `AnyJson`'
+			'Sanitized data could not be serialized to `AnyJson`'
 		);
 	}
+
+	// If we have gotten to here than it is not a Codec, Array or Object
+	// so likely it is string, number, boolean, null, or undefined
 	return data;
 }
 
@@ -185,30 +179,32 @@ function isAnyJson(thing: unknown): thing is AnyJson {
 	);
 }
 
-function isArrayAnyJson(thing: unknown): boolean {
-	if (thing && Array.isArray(thing)) {
-		for (const element of thing) {
-			if (!isAnyJson(element)) {
-				return false;
-			}
-		}
-		return true;
+function isArrayAnyJson(thing: unknown): thing is AnyJson[] {
+	if (!(thing && Array.isArray(thing))) {
+		return false;
 	}
-	return false;
+
+	for (const element of thing) {
+		if (!isAnyJson(element)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
-function isObjectAnyJson(thing: unknown): boolean {
-	if (thing && isObject(thing)) {
-		for (const value of Object.values(thing)) {
-			if (!isAnyJson(value)) {
-				return false;
-			}
-		}
-
-		return true;
+function isObjectAnyJson(thing: unknown): thing is { [i: string]: AnyJson } {
+	if (!(thing && isObject(thing))) {
+		return false;
 	}
 
-	return false;
+	for (const value of Object.values(thing)) {
+		if (!isAnyJson(value)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 function isCodec(thing: unknown): thing is Codec {
