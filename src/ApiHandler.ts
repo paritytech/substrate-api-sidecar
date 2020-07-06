@@ -22,6 +22,7 @@ import { GenericCall } from '@polkadot/types/generic';
 import {
 	DispatchInfo,
 	EraIndex,
+	Hash,
 	RuntimeDispatchInfo,
 } from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
@@ -38,11 +39,9 @@ import {
 	IAccountStakingSummary,
 	IAccountVestingSummary,
 	IBlock,
-	IClaimsInfo,
 	ISanitizedCall,
 	ISanitizedEvent,
 	IStakingInfo,
-	ITx,
 	ITxConstructionMaterial,
 } from './types/response_types';
 
@@ -542,7 +541,7 @@ export default class ApiHandler {
 	async fetchClaimsInfo(
 		hash: BlockHash,
 		ethAddress: string
-	): Promise<null | IClaimsInfo> {
+	): Promise<null | { type: string }> {
 		const api = await this.ensureMeta(hash);
 		const agreementType = await api.query.claims.signing.at(
 			hash,
@@ -611,7 +610,7 @@ export default class ApiHandler {
 		}
 	}
 
-	async submitTx(extrinsic: string): Promise<ITx> {
+	async submitTx(extrinsic: string): Promise<{ hash: Hash }> {
 		const api = await this.resetMeta();
 
 		let tx;

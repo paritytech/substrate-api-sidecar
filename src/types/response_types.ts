@@ -21,26 +21,9 @@ import {
 import U32 from '@polkadot/types/primitive/U32';
 import { AnyJson, Codec } from '@polkadot/types/types';
 
-export type TSidecarResponse =
-	| ITxConstructionMaterial
-	| IStakingInfo
-	| IBlock
-	| IAccountBalanceSummary
-	| IAccountStakingSummary
-	| RuntimeDispatchInfo
-	| IAccountVestingSummary;
-
 interface IAt {
 	hash: string | BlockHash;
 	height: string;
-}
-
-export interface ITx {
-	hash: Hash;
-}
-
-export interface IClaimsInfo {
-	type: string;
 }
 
 export interface IStakingInfo {
@@ -146,6 +129,9 @@ interface IExtrinsic {
 	newArgs: ISanitizedArgs;
 	tip: Compact<Balance>;
 	hash: string;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	info: RuntimeDispatchInfo | { error: string } | {};
 	events: ISanitizedEvent[];
+	success: string | boolean;
 	paysFee: boolean | null;
 }

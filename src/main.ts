@@ -21,11 +21,17 @@ import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
-import { BadRequest, HttpError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 import ApiHandler from './ApiHandler';
-import config from './config_setup';
-import errorMiddleware from './middleware/error_middleware';
+import Config, { ISidecarConfig } from './config_setup';
+import {
+	errorMiddleware,
+	httpErrorMiddleware,
+	internalErrorMiddleware,
+	legacyErrorMiddleware,
+	txErrorMiddleware,
+} from './middleware/error_middleware';
 import {
 	developmentLoggerMiddleware,
 	productionLoggerMiddleware,
@@ -33,9 +39,18 @@ import {
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { sanitizeData } from './sanitize';
 import { TxRequest, TxRequestBody } from './types/request_types';
-import { parseBlockNumber, sanitizeNumbers } from './utils';
+import { parseBlockNumber } from './utils';
 
 async function main() {
+	const configOrNull = Config.GetConfig();
+
+	if (!configOrNull) {
+		console.log('Your config is NOT valid, exiting');
+		process.exit(1);
+	}
+
+	const config: ISidecarConfig = configOrNull;
+
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	const api = await ApiPromise.create({
@@ -64,33 +79,12 @@ async function main() {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		cb: (params: core.ParamsDictionary) => Promise<any>
 	) {
-		app.get(path, async (req, res) => {
+		app.get(path, async (req, res, next) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeData(await cb(req.params)));
 			} catch (err) {
-				if (err instanceof HttpError) {
-					const code = err.status;
-					res.status(code).send({
-						code,
-						message: err?.message,
-						stack: err.stack,
-					});
-					return;
-				}
-
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					res.status(err.statusCode || 500).send(
-						sanitizeNumbers(err)
-					);
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				return next(err);
 			}
 		});
 	}
@@ -104,19 +98,11 @@ async function main() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		) => Promise<any>
 	) {
-		app.post(path, async (req: TxRequest, res) => {
+		app.post(path, async (req: TxRequest, res, next) => {
 			try {
 				res.send(sanitizeData(await cb(req.params, req.body)));
 			} catch (err) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				return next(err);
 			}
 		});
 	}
@@ -530,7 +516,11 @@ async function main() {
 		return await handler.submitTx(tx);
 	});
 
+	app.use(txErrorMiddleware);
+	app.use(httpErrorMiddleware);
 	app.use(errorMiddleware);
+	app.use(legacyErrorMiddleware);
+	app.use(internalErrorMiddleware);
 
 	app.listen(config.PORT, config.HOST, () =>
 		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
