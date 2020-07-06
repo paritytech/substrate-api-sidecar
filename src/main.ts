@@ -61,7 +61,7 @@ async function main() {
 		types: config.CUSTOM_TYPES,
 	});
 
-	// Create our array of middleware that is to be mounted before the routes
+	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
 		preMiddleware.push(productionLoggerMiddleware);

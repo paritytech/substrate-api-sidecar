@@ -49,7 +49,7 @@ export default abstract class AbstractController {
 	 *
 	 * @param pathsAndHandlers tuple array of the suffix to the controller base
 	 * path (use empty string if no suffix) and the get request handler function.
-	 * Example argument: `[ ['/:id', getBlockById] ]`
+	 * Example argument: `[ ['/:id', getResourceById] ]`
 	 */
 	protected safeMountAsyncGetHandlers(
 		pathsAndHandlers: [string, SidecarRequestHandler][]

@@ -7,10 +7,10 @@ import {
 	Response,
 } from 'express';
 
-import BaseController from './controllers/AbstractController';
+import AbstractController from './controllers/AbstractController';
 
 interface IAppConfiguration {
-	controllers: BaseController[];
+	controllers: AbstractController[];
 	preMiddleware: RequestHandler[];
 	postMiddleware: ErrorRequestHandler[];
 	port: number;
@@ -36,7 +36,7 @@ export default class App {
 		this.port = port;
 		this.host = host;
 
-		this.initPreMiddleware(preMiddleware);
+		this.initMiddleware(preMiddleware);
 
 		// Setup a root route
 		this.app.get('/', (_req: Request, res: Response) =>
@@ -46,26 +46,26 @@ export default class App {
 		);
 
 		this.initControllers(controllers);
-		this.initPostMiddleware(postMiddleware);
+		this.initErrorMiddleware(postMiddleware);
 	}
 
 	/**
 	 * Mount middleware prior to mounting routes.
 	 *
-	 * @param preMiddleware Array of Middleware to mount prior to all controllers.
+	 * @param middleware Array of Middleware to mount prior to all controllers.
 	 */
-	private initPreMiddleware(preMiddleware: RequestHandler[]): void {
-		for (const middleware of preMiddleware) {
-			this.app.use(middleware);
+	private initMiddleware(middleware: RequestHandler[]): void {
+		for (const ware of middleware) {
+			this.app.use(ware);
 		}
 	}
 
 	/**
 	 * Mount the router from each each controller.
 	 *
-	 * @param controllers Array of AbstractController instances
+	 * @param controllers Array of Controllers
 	 */
-	private initControllers(controllers: BaseController[]): void {
+	private initControllers(controllers: AbstractController[]): void {
 		for (const c of controllers) {
 			this.app.use('/', c.router);
 		}
@@ -74,11 +74,11 @@ export default class App {
 	/**
 	 * Mount middleware after after mounting the routes.
 	 *
-	 * @param postMiddleware Array of middleware to mount last.
+	 * @param errorMiddleware Array of middleware to mount last.
 	 */
-	private initPostMiddleware(postMiddleware: ErrorRequestHandler[]): void {
-		for (const middleware of postMiddleware) {
-			this.app.use(middleware);
+	private initErrorMiddleware(errorMiddleware: ErrorRequestHandler[]): void {
+		for (const ware of errorMiddleware) {
+			this.app.use(ware);
 		}
 	}
 
