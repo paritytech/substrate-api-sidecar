@@ -56,7 +56,7 @@ export default class Config {
 			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
 			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
-			NAME: config.Get('SUBSTRATE', CONFIG.NAME) as string,
+			NAME: config.Get(MODULES.SUBSTRATE, CONFIG.NAME) as string,
 		};
 	}
 }
