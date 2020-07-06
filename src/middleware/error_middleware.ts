@@ -107,6 +107,7 @@ export const legacyErrorMiddleware: ErrorRequestHandler = (
 	if (res.headersSent || !isBasicError(err)) {
 		return next(err);
 	}
+
 	if (isLegacyError(err)) {
 		res.status(err.statusCode).send(
 			HttpErrorConstructor(err.statusCode, err.error)
@@ -137,6 +138,7 @@ export const internalErrorMiddleware: ErrorRequestHandler = (
 	if (res.headersSent) {
 		return next(exception);
 	}
+
 	res.status(500).send(new InternalServerError('Internal Error'));
 };
 

@@ -83,7 +83,6 @@ async function main() {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
-				// Express way of passing an error to the error handling middleware
 				return next(err);
 			}
 		});
