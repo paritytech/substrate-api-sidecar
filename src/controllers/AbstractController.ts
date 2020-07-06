@@ -37,8 +37,7 @@ export default abstract class AbstractController {
 	 * Mount all controller handler methods on the classes private router.
 	 *
 	 * Keep in mind that asynchronous errors in the RequestHandlers need to be
-	 * dealt with manually. You can wrap the handler with `catchWrap`
-	 * (a method in this class) or handle the errors within the RequestHandler.
+	 * dealt with manually.
 	 */
 	protected abstract initRoutes(): void;
 
@@ -47,9 +46,8 @@ export default abstract class AbstractController {
 	 * handler friendly try / catch block and then mounting on the controllers
 	 * router.
 	 *
-	 * @param pathsAndHandlers tuple array of the suffix to the controller base
-	 * path (use empty string if no suffix) and the get request handler function.
-	 * Example argument: `[ ['/:id', getResourceById] ]`
+	 * @param pathsAndHandlers array of tuples containing the suffix to the controller
+	 * base path (use empty string if no suffix) and the get request handler function.
 	 */
 	protected safeMountAsyncGetHandlers(
 		pathsAndHandlers: [string, SidecarRequestHandler][]

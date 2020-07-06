@@ -52,7 +52,7 @@ export default class App {
 	/**
 	 * Mount middleware prior to mounting routes.
 	 *
-	 * @param middleware Array of Middleware to mount prior to all controllers.
+	 * @param middleware array of Middleware to mount prior to all controllers.
 	 */
 	private initMiddleware(middleware: RequestHandler[]): void {
 		for (const ware of middleware) {
@@ -63,7 +63,7 @@ export default class App {
 	/**
 	 * Mount the router from each each controller.
 	 *
-	 * @param controllers Array of Controllers
+	 * @param controllers array of Controllers
 	 */
 	private initControllers(controllers: AbstractController[]): void {
 		for (const c of controllers) {
@@ -74,7 +74,7 @@ export default class App {
 	/**
 	 * Mount middleware after after mounting the routes.
 	 *
-	 * @param errorMiddleware Array of middleware to mount last.
+	 * @param errorMiddleware array of middleware to mount last.
 	 */
 	private initErrorMiddleware(errorMiddleware: ErrorRequestHandler[]): void {
 		for (const ware of errorMiddleware) {
