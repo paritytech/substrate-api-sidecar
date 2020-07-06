@@ -40,6 +40,7 @@ import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { sanitizeData } from './sanitize';
 import { TxRequest, TxRequestBody } from './types/request_types';
 import { parseBlockNumber } from './utils';
+// import { sanitizeNumbers } from './utils';
 
 async function main() {
 	const configOrNull = Config.GetConfig();
@@ -82,6 +83,7 @@ async function main() {
 		app.get(path, async (req, res, next) => {
 			try {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				// res.send(sanitizeNumbers(await cb(req.params)));
 				res.send(sanitizeData(await cb(req.params)));
 			} catch (err) {
 				return next(err);
@@ -100,6 +102,7 @@ async function main() {
 	) {
 		app.post(path, async (req: TxRequest, res, next) => {
 			try {
+				// res.send(sanitizeNumbers(await cb(req.params, req.body)));
 				res.send(sanitizeData(await cb(req.params, req.body)));
 			} catch (err) {
 				return next(err);
