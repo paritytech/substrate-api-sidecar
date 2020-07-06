@@ -5,7 +5,7 @@ import * as configTypes from '../config/types.json';
 /**
  * Object to house the values of all the configurable components for Sidecar.
  */
-export interface SidecarConfig {
+export interface ISidecarConfig {
 	HOST: string;
 	PORT: number;
 	LOG_MODE: string;
@@ -38,7 +38,7 @@ export default class Config {
 	/**
 	 * Gather env vars for config and make sure they are valid.
 	 */
-	public static GetConfig(): SidecarConfig | null {
+	public static GetConfig(): ISidecarConfig | null {
 		// Instantiate ConfigManager which is used to read in the specs.yml
 		const config = ConfigManager.getInstance('specs.yml').getConfig();
 
@@ -56,7 +56,7 @@ export default class Config {
 			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
 			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
-			NAME: config.Get('SUBSTRATE', CONFIG.NAME) as string,
+			NAME: config.Get(MODULES.SUBSTRATE, CONFIG.NAME) as string,
 		};
 	}
 }
