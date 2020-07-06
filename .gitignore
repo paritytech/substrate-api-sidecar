@@ -4,3 +4,5 @@
 /target
 yarn-error.log
 **/*.rs.bk
+.env.*
+!.env-sample

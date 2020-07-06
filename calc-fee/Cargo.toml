@@ -12,13 +12,15 @@ description = "Calculate extrinsic fees off-chain"
 crate-type = ["cdylib"]
 
 [features]
-debug = ["console_error_panic_hook"]
+debug = ["console_error_panic_hook", "console_log"]
 
 [dependencies]
 wasm-bindgen = { version = "0.2", default_features = false, features = ["serde-serialize"] }
 serde_derive = { version = "1", default_features = false }
 serde = { version = "1", default_features = false }
 console_error_panic_hook = { version = "0.1", optional = true }
+console_log = { version = "0.2.0", optional = true }
+log = "0.4.8"
 
 [dependencies.sp-arithmetic]
 version = "2.0.0-rc3"

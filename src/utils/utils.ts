@@ -14,10 +14,14 @@ export function parseBlockNumber(n: string): number {
 	return num;
 }
 
-// A sanitizer for arbitrary data that's going to be
-// stringified to JSON. We find all instances of `AbstractInt`,
-// which is using bn.js as backend, and forcibly serialize it
-// to a decimal string.
+/**
+ * A sanitizer for arbitrary data that's going to be
+ * stringified to JSON. We find all instances of `AbstractInt`,
+ * which is using bn.js as backend, and forcibly serialize it
+ * to a decimal string.
+ *
+ * @param data
+ */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export function sanitizeNumbers(data: any): any {
 	if (typeof data === 'number' || data instanceof AbstractInt) {
@@ -31,6 +35,12 @@ export function sanitizeNumbers(data: any): any {
 
 		if (data.raw != null && data.raw instanceof AbstractInt) {
 			return data.raw.toString(10);
+		}
+
+		if (data.isSome === true) {
+			data = data.unwrap();
+		} else if (data.isNone == true) {
+			return data;
 		}
 
 		if (typeof data.toJSON === 'function') {

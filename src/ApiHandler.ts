@@ -16,35 +16,34 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { CalcFee } from '@polkadot/calc-fee';
-import { Struct } from '@polkadot/types';
+import { Metadata, Struct } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { GenericCall } from '@polkadot/types/generic';
-import { EventData } from '@polkadot/types/generic/Event';
-import { DispatchInfo } from '@polkadot/types/interfaces';
+import {
+	DispatchInfo,
+	EraIndex,
+	Hash,
+	RuntimeDispatchInfo,
+} from '@polkadot/types/interfaces';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
 import { u32 } from '@polkadot/types/primitive';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import * as BN from 'bn.js';
 
-interface SanitizedEvent {
-	method: string;
-	data: EventData;
-}
-
-interface SanitizedCall {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	[key: string]: any;
-	method: string;
-	callIndex: Uint8Array | string;
-	args: {
-		call?: SanitizedCall;
-		calls?: SanitizedCall[];
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		[key: string]: any;
-	};
-}
+import * as errors from '../config/errors-en.json';
+import {
+	IAccountBalanceSummary,
+	IAccountStakingSummary,
+	IAccountVestingSummary,
+	IBlock,
+	ISanitizedCall,
+	ISanitizedEvent,
+	IStakingInfo,
+	ITxConstructionMaterial,
+} from './types/response_types';
 
 export default class ApiHandler {
 	// private wsUrl: string,
@@ -59,8 +58,7 @@ export default class ApiHandler {
 		this.txVersion = api.createType('u32', -1);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchBlock(hash: BlockHash) {
+	async fetchBlock(hash: BlockHash): Promise<IBlock> {
 		const api = await this.ensureMeta(hash);
 		const [{ block }, events] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
@@ -68,8 +66,16 @@ export default class ApiHandler {
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
-		const onInitialize = { events: [] as SanitizedEvent[] };
-		const onFinalize = { events: [] as SanitizedEvent[] };
+		const parentParentHash = await (async function () {
+			if (block.header.number.toNumber() > 1) {
+				return (await api.rpc.chain.getHeader(parentHash)).parentHash;
+			} else {
+				return parentHash;
+			}
+		})();
+
+		const onInitialize = { events: [] as ISanitizedEvent[] };
+		const onFinalize = { events: [] as ISanitizedEvent[] };
 
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
@@ -102,7 +108,7 @@ export default class ApiHandler {
 				tip,
 				hash,
 				info: {},
-				events: [] as SanitizedEvent[],
+				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
@@ -185,62 +191,38 @@ export default class ApiHandler {
 		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
 			parentHash
 		);
-		const version = await api.rpc.state.getRuntimeVersion(parentHash);
+		// The block where the runtime is deployed falsely proclaims it would
+		// be already using the new runtime. This workaround therefore uses the
+		// parent of the parent in order to determine the correct runtime under which
+		// this block was produced.
+		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
-		const fixed128Bug = specName === 'polkadot' && specVersion === 0;
-		let fixed128Legacy = false;
-		const coefficients = (function () {
-			if (specName === 'kusama' && specVersion === 1062) {
-				fixed128Legacy = true;
-				return [
-					{
-						coeffInteger: '8',
-						coeffFrac: 0,
-						degree: 1,
-						negative: false,
-					},
-				];
-			} else if (
-				specName === 'polkadot' ||
-				(specName === 'kusama' && specVersion > 1062)
-			) {
-				return api.consts.transactionPayment.weightToFee.map(function (
-					c
-				) {
-					return {
-						coeffInteger: c.coeffInteger.toString(),
-						coeffFrac: c.coeffFrac,
-						degree: c.degree,
-						negative: c.negative,
-					};
-				});
-			} else {
-				// fee calculation not supported for this runtime
-				return null;
+		const coefficients = api.consts.transactionPayment.weightToFee.map(
+			function (c) {
+				return {
+					coeffInteger: c.coeffInteger.toString(),
+					coeffFrac: c.coeffFrac,
+					degree: c.degree,
+					negative: c.negative,
+				};
 			}
-		})();
-		const calcFee = (function () {
-			if (coefficients !== null) {
-				return CalcFee.from_params(
-					coefficients,
-					BigInt(extrinsicBaseWeight.toString()),
-					multiplier.toString(),
-					perByte.toString(),
-					fixed128Bug,
-					fixed128Legacy
-				);
-			} else {
-				return null;
-			}
-		})();
+		);
+		const calcFee = CalcFee.from_params(
+			coefficients,
+			BigInt(extrinsicBaseWeight.toString()),
+			multiplier.toString(),
+			perByte.toString(),
+			specName,
+			specVersion
+		);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
 
-			if (calcFee === null) {
+			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
 					error: `Fee calculation not supported for ${specName}#${specVersion}`,
 				};
@@ -320,8 +302,10 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchBalance(hash: BlockHash, address: string) {
+	async fetchBalance(
+		hash: BlockHash,
+		address: string
+	): Promise<IAccountBalanceSummary> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, locks, sysAccount] = await Promise.all([
@@ -361,13 +345,119 @@ export default class ApiHandler {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchStakingLedger(hash: BlockHash, address: string) {
+	/**
+	 * Fetch and derive generalized staking information at a specific block.
+	 *
+	 * @param hash BlockHash to make call at.
+	 */
+	async fetchStakingInfo(hash: BlockHash): Promise<IStakingInfo> {
 		const api = await this.ensureMeta(hash);
 
-		const [header, staking] = await Promise.all([
+		const [
+			validatorCount,
+			forceEra,
+			eraElectionStatus,
+			validators,
+			{ number },
+		] = await Promise.all([
+			await api.query.staking.validatorCount.at(hash),
+			await api.query.staking.forceEra.at(hash),
+			await api.query.staking.eraElectionStatus.at(hash),
+			await api.query.session.validators.at(hash),
+			await api.rpc.chain.getHeader(hash),
+		]);
+
+		const {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		} = await this.deriveSessionAndEraProgress(api, hash);
+
+		const unappliedSlashesAtActiveEra = await api.query.staking.unappliedSlashes.at(
+			hash,
+			activeEra
+		);
+
+		const currentBlockNumber = number.toBn();
+
+		const nextSession = sessionLength
+			.sub(sessionProgress)
+			.add(currentBlockNumber);
+
+		const baseResponse = {
+			at: {
+				hash: hash.toJSON(),
+				height: currentBlockNumber.toString(10),
+			},
+			activeEra: activeEra.toString(10),
+			forceEra: forceEra.toJSON(),
+			nextSessionEstimate: nextSession.toString(10),
+			unappliedSlashes: unappliedSlashesAtActiveEra.map((slash) =>
+				slash.toJSON()
+			),
+		};
+
+		if (forceEra.isForceNone) {
+			// Most likely we are in a PoA network with no elections. Things
+			// like `ValidatorCount` and `Validators` are hardcoded from genesis
+			// to support a transition into NPoS, but are irrelevant here and would be
+			// confusing to include. Thus, we craft a response excluding those values.
+			return baseResponse;
+		}
+
+		const nextActiveEra = forceEra.isForceAlways
+			? nextSession // there is a new era every session
+			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextActiveEra is at the end of this era
+
+		const electionLookAhead = await this.deriveElectionLookAhead(api, hash);
+
+		const nextCurrentEra = nextActiveEra
+			.sub(currentBlockNumber)
+			.sub(sessionLength)
+			.gt(new BN(0))
+			? nextActiveEra.sub(sessionLength) // current era simply one session before active era
+			: nextActiveEra.add(eraLength).sub(sessionLength); // we are in the last session of an active era
+
+		let toggle;
+		if (electionLookAhead.eq(new BN(0))) {
+			// no offchain solutions accepted
+			toggle = null;
+		} else if (eraElectionStatus.isClose) {
+			// election window is yet to open
+			toggle = nextCurrentEra.sub(electionLookAhead);
+		} else {
+			// election window closes at the end of the current era
+			toggle = nextCurrentEra;
+		}
+
+		return {
+			...baseResponse,
+			nextActiveEraEstimate: nextActiveEra.toString(10),
+			electionStatus: {
+				status: eraElectionStatus.toJSON(),
+				toggleEstimate: toggle?.toString(10) ?? null,
+			},
+			idealValidatorCount: validatorCount.toString(10),
+			validatorSet: validators.map((accountId) => accountId.toString()),
+		};
+	}
+
+	/**
+	 *
+	 * @param hash BlockHash to make call at.
+	 * @param stash _Stash_ address.
+	 */
+	async fetchAddressStakingInfo(
+		hash: BlockHash,
+		stash: string
+	): Promise<IAccountStakingSummary> {
+		const api = await this.ensureMeta(hash);
+
+		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.ledger.at(hash, address),
+			api.query.staking.bonded.at(hash, stash), // Option<AccountId> representing the controller
 		]);
 
 		const at = {
@@ -375,38 +465,52 @@ export default class ApiHandler {
 			height: header.number.toNumber().toString(10),
 		};
 
-		if (staking.isNone) {
-			// Address is not a Controller, no need to look up slashing spans.
-			return {
-				at,
-				staking: {},
-				numSlashingSpans: null,
+		if (controllerOption.isNone) {
+			throw {
+				error: `The address ${stash} is not a stash address.`,
+				statusCode: 400,
 			};
 		}
 
-		const ledger = staking.unwrap(); // should always work if staking.isSome
-		const slashingSpans = await api.query.staking.slashingSpans.at(
-			hash,
-			ledger.stash
-		);
+		const controller = controllerOption.unwrap();
 
-		let numSlashingSpans;
-		if (slashingSpans.isSome) {
-			const span = slashingSpans.unwrap();
-			numSlashingSpans = span.prior.length + 1;
-		} else {
-			numSlashingSpans = 0;
+		const [
+			stakingLedgerOption,
+			rewardDestination,
+			slashingSpansOption,
+		] = await Promise.all([
+			await api.query.staking.ledger.at(hash, controller),
+			await api.query.staking.payee.at(hash, stash),
+			await api.query.staking.slashingSpans.at(hash, stash),
+		]);
+
+		const stakingLedger = stakingLedgerOption.unwrapOr(null);
+
+		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
+			throw {
+				error: `Staking ledger could not be found for controller address "${controller.toString()}"`,
+				statusCode: 404,
+			};
 		}
+
+		const numSlashingSpans = slashingSpansOption.isSome
+			? slashingSpansOption.unwrap().prior.length + 1
+			: 0;
 
 		return {
 			at,
-			staking,
+			controller,
+			rewardDestination,
 			numSlashingSpans,
+			staking: stakingLedger,
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchVesting(hash: BlockHash, address: string) {
+	async fetchVesting(
+		hash: BlockHash,
+		address: string
+	): Promise<IAccountVestingSummary> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, vesting] = await Promise.all([
@@ -421,12 +525,12 @@ export default class ApiHandler {
 
 		return {
 			at,
+			// TODO unwrap this option and error check
 			vesting: vesting.isNone ? {} : vesting,
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchMetadata(hash: BlockHash) {
+	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
 		const api = await this.ensureMeta(hash);
 
 		const metadata = await api.rpc.state.getMetadata(hash);
@@ -434,8 +538,10 @@ export default class ApiHandler {
 		return metadata;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchClaimsInfo(hash: BlockHash, ethAddress: string) {
+	async fetchClaimsInfo(
+		hash: BlockHash,
+		ethAddress: string
+	): Promise<null | { type: string }> {
 		const api = await this.ensureMeta(hash);
 		const agreementType = await api.query.claims.signing.at(
 			hash,
@@ -450,8 +556,7 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchTxArtifacts(hash: BlockHash) {
+	async fetchTxArtifacts(hash: BlockHash): Promise<ITxConstructionMaterial> {
 		const api = await this.ensureMeta(hash);
 
 		const [
@@ -484,30 +589,10 @@ export default class ApiHandler {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchPayoutInfo(hash: BlockHash, address: string) {
-		const api = await this.ensureMeta(hash);
-
-		const [header, rewardDestination, bonded] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			api.query.staking.payee.at(hash, address),
-			api.query.staking.bonded.at(hash, address),
-		]);
-
-		const at = {
-			hash,
-			height: header.number.toNumber().toString(10),
-		};
-
-		return {
-			at,
-			rewardDestination,
-			bonded,
-		};
-	}
-
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async fetchFeeInformation(hash: BlockHash, extrinsic: string) {
+	async fetchFeeInformation(
+		hash: BlockHash,
+		extrinsic: string
+	): Promise<RuntimeDispatchInfo> {
 		const api = await this.ensureMeta(hash);
 
 		try {
@@ -525,8 +610,7 @@ export default class ApiHandler {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	async submitTx(extrinsic: string) {
+	async submitTx(extrinsic: string): Promise<{ hash: Hash }> {
 		const api = await this.resetMeta();
 
 		let tx;
@@ -626,7 +710,7 @@ export default class ApiHandler {
 
 	private parseArrayGenericCalls(
 		argsArray: Codec[]
-	): (Codec | SanitizedCall)[] {
+	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
 				return this.parseGenericCall(argument);
@@ -636,7 +720,7 @@ export default class ApiHandler {
 		});
 	}
 
-	private parseGenericCall(genericCall: GenericCall): SanitizedCall {
+	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
@@ -664,5 +748,97 @@ export default class ApiHandler {
 			callIndex,
 			args: newArgs,
 		};
+	}
+
+	/**
+	 * Derive information on the progress of the current session and era.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveSessionAndEraProgress(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<{
+		eraLength: BN;
+		eraProgress: BN;
+		sessionLength: BN;
+		sessionProgress: BN;
+		activeEra: EraIndex;
+	}> {
+		const [
+			currentSlot,
+			epochIndex,
+			genesisSlot,
+			currentIndex,
+			activeEraOption,
+		] = await Promise.all([
+			await api.query.babe.currentSlot.at(hash),
+			await api.query.babe.epochIndex.at(hash),
+			await api.query.babe.genesisSlot.at(hash),
+			await api.query.session.currentIndex.at(hash),
+			await api.query.staking.activeEra.at(hash),
+		]);
+
+		if (activeEraOption.isNone) {
+			throw errors.ActiveEra_IS_NONE;
+		}
+		const { index: activeEra } = activeEraOption.unwrap();
+
+		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
+			hash,
+			activeEra
+		);
+		if (activeEraStartSessionIndexOption.isNone) {
+			throw errors.ErasStartSessionIndex_IS_NONE;
+		}
+		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
+
+		const { epochDuration: sessionLength } = api.consts.babe;
+		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
+		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
+		const sessionProgress = currentSlot.sub(epochStartSlot);
+		const eraProgress = currentIndex
+			.sub(activeEraStartSessionIndex as BN)
+			.mul(sessionLength)
+			.add(sessionProgress);
+
+		return {
+			eraLength,
+			eraProgress,
+			sessionLength,
+			sessionProgress,
+			activeEra,
+		};
+	}
+
+	/**
+	 * Get electionLookAhead as a const if available. Otherwise derive
+	 * `electionLookAhead` based on the `specName` & `epochDuration`.
+	 * N.B. Values are hardcoded based on `specName`s polkadot, kusama, and westend.
+	 * There are no guarantees that this will return the expected values for
+	 * other `specName`s.
+	 *
+	 * @param api ApiPromise with ensured metadata.
+	 * @param hash block hash to get info at.
+	 */
+	private async deriveElectionLookAhead(
+		api: ApiPromise,
+		hash: BlockHash
+	): Promise<BN> {
+		if (api.consts.staking.electionLookahead) {
+			return api.consts.staking.electionLookahead;
+		}
+
+		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
+		const { epochDuration } = api.consts.babe;
+
+		// TODO - create a configurable epochDivisor env for a more generic solution
+		const epochDurationDivisor =
+			specName.toString() === 'polkadot'
+				? new BN(16) // polkadot electionLookAhead = epochDuration / 16
+				: new BN(4); // kusama, westend, `substrate/bin/node` electionLookAhead = epochDuration / 4
+
+		return epochDuration.div(epochDurationDivisor);
 	}
 }

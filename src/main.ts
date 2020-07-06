@@ -20,60 +20,88 @@ import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as core from 'express-serve-static-core';
+import { BadRequest } from 'http-errors';
 
 import ApiHandler from './ApiHandler';
-import { parseBlockNumber, sanitizeNumbers } from './utils/utils';
-
-const HOST = process.env.BIND_HOST || '127.0.0.1';
-const PORT = Number(process.env.BIND_PORT) || 8080;
-const WS_URL = process.env.NODE_WS_URL || 'ws://127.0.0.1:9944';
-
-type Params = { [key: string]: string };
+import Config, { ISidecarConfig } from './config_setup';
+import {
+	errorMiddleware,
+	httpErrorMiddleware,
+	internalErrorMiddleware,
+	legacyErrorMiddleware,
+	txErrorMiddleware,
+} from './middleware/error_middleware';
+import {
+	developmentLoggerMiddleware,
+	productionLoggerMiddleware,
+} from './middleware/logger_middleware';
+import { validateAddressMiddleware } from './middleware/validations_middleware';
+import { TxRequest, TxRequestBody } from './types/request_types';
+import { parseBlockNumber, sanitizeNumbers } from './utils';
 
 async function main() {
-	const api = await ApiPromise.create({ provider: new WsProvider(WS_URL) });
+	const configOrNull = Config.GetConfig();
+
+	if (!configOrNull) {
+		console.log('Your config is NOT valid, exiting');
+		process.exit(1);
+	}
+
+	const config: ISidecarConfig = configOrNull;
+
+	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
+
+	const api = await ApiPromise.create({
+		provider: new WsProvider(config.WS_URL),
+		types: config.CUSTOM_TYPES,
+	});
+
 	const handler = new ApiHandler(api);
 	const app = express();
 
 	app.use(bodyParser.json());
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function get(path: string, cb: (params: Params) => Promise<any>) {
-		app.get(path, async (req, res) => {
+	switch (config.LOG_MODE) {
+		case 'errors':
+			app.use(productionLoggerMiddleware);
+			break;
+		case 'all':
+			app.use(developmentLoggerMiddleware);
+			break;
+		default:
+			break;
+	}
+
+	function get(
+		path: string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		cb: (params: core.ParamsDictionary) => Promise<any>
+	) {
+		app.get(path, async (req, res, next) => {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				res.send(sanitizeNumbers(await cb(req.params)));
 			} catch (err) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				return next(err);
 			}
 		});
 	}
 
 	function post(
 		path: string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		cb: (params: Params, body: any) => Promise<any>
+		cb: (
+			params: core.ParamsDictionary,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			body: TxRequestBody
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) => Promise<any>
 	) {
-		app.post(path, async (req, res) => {
+		app.post(path, async (req: TxRequest, res, next) => {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (err && typeof err.error === 'string') {
-					res.status(500).send(sanitizeNumbers(err));
-					return;
-				}
-
-				console.error('Internal Error:', err);
-
-				res.status(500).send({ error: 'Internal Error' });
+				return next(err);
 			}
 		});
 	}
@@ -169,6 +197,7 @@ async function main() {
 	// - `AccountInfo`: https://crates.parity.io/frame_system/struct.AccountInfo.html
 	// - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
 	// - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
+	app.use('/balance/:address', validateAddressMiddleware);
 	get('/balance/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -183,7 +212,77 @@ async function main() {
 		return await handler.fetchBalance(hash, address);
 	});
 
-	// GET payout information for an address.
+	// GET generalized staking information.
+	//
+	// Paths:
+	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+	//   finalized head.
+	//
+	// Returns:
+	// - `at`: Block number and hash at which the call was made.
+	// - `activeEra`: `EraIndex` of the era being rewarded.
+	// - `forceEra`: Current status of era forcing.
+	// - `nextActiveEraEstimate`: **Upper bound estimate** of the block height at which the next
+	//   active era will start. Not included in response when `forceEra.isForceNone`.
+	// - `nextSessionEstimate`: **Upper bound estimate** of the block height at which the next
+	//   session will start.
+	// - `unappliedSlashes`: Array of upcoming `UnappliedSlash` indexed by era. Each `UnappliedSlash`
+	//   contains:
+	// 		- `validator`: Stash account ID of the offending validator.
+	//		- `own`: The amount the validator will be slashed.
+	//		- `others`: Array of tuples of (accountId, amount) representing all the stashes of other
+	//     slashed stakers and the amount they will be slashed.
+	//		- `reporters`: Array of account IDs of the reporters of the offense.
+	//		- `payout`: Amount of bounty payout to reporters.
+	// - `electionStatus`: Information about the off-chain election. Not included in response when
+	//   `forceEra.isForceNone`. Response includes:
+	//		- `status`: Era election status; either `Close: null` or `Open: <BlockNumber>`. A status of
+	//		`Close` indicates that the submission window for solutions from off-chain Phragmen is not
+	//		open. A status of `Open` indicates the submission window for off-chain Phragmen solutions
+	//		has been open since BlockNumber. N.B. when the submission window is open, certain
+	//		extrinsics are not allowed because they would mutate the state that the off-chain Phragmen
+	// 		calculation relies on for calculating results.
+	//		- `toggleEstimate`: **Upper bound estimate** of the block height at which the `status` will
+	//    switch.
+	// - `idealValidatorCount`: Upper bound of validator set size; considered the ideal size. Not
+	//   included in response when `forceEra.isForceNone`.
+	// - `validatorSet`: Stash account IDs of the validators for the current session. Not included in
+	//   response when `forceEra.isForceNone`.
+	//
+	// Note about 'active' vs. 'current' era: The _active_ era is the era currently being rewarded.
+	// That is, an elected validator set will be in place for an entire active era, as long as none
+	// are kicked out due to slashing. Elections take place at the end of each _current_ era, which
+	// is the latest planned era, and may not equal the active era. Normally, the current era index
+	// increments one session before the active era, in order to perform the election and queue the
+	// validator set for the next active era. For example:
+	//
+	// ```
+	// Time: --------->
+	// CurrentEra:            1              |              2              |
+	// ActiveEra:   |              1              |              2              |
+	// SessionIdx:  |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 |
+	// Elections:                           ^                             ^
+	// Set Changes:                               ^                             ^
+	// ```
+	//
+	// Substrate Reference:
+	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
+	// - Session Pallet: https://crates.parity.io/pallet_session/index.html
+	// - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
+	// - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
+	get('/staking-info/', async (_) => {
+		const hash = await api.rpc.chain.getFinalizedHead();
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
+	get('/staking-info/:number', async (params) => {
+		const hash = await getHashForBlock(api, params.number);
+
+		return await handler.fetchStakingInfo(hash);
+	});
+
+	// GET staking information for an address.
 	//
 	// Paths:
 	// - `address`: The _Stash_ address for staking.
@@ -195,35 +294,9 @@ async function main() {
 	// - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
 	//   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
 	//   stake), or 'Controller' (Controller address).
-	// - `bonded`: Controller address for the given Stash.
-	//
-	// Substrate Reference:
-	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
-	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
-	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
-	get('/payout/:address', async (params) => {
-		const { address } = params;
-		const hash = await api.rpc.chain.getFinalizedHead();
-
-		return await handler.fetchPayoutInfo(hash, address);
-	});
-
-	get('/payout/:address/:number', async (params) => {
-		const { address } = params;
-		const hash: BlockHash = await getHashForBlock(api, params.number);
-
-		return await handler.fetchPayoutInfo(hash, address);
-	});
-
-	// GET staking information for an address.
-	//
-	// Paths:
-	// - `address`: The _Controller_ address for staking.
-	// - (Optional) `number`: Block hash or height at which to query. If not provided, queries
-	//   finalized head.
-	//
-	// Returns:
-	// - `at`: Block number and hash at which the call was made.
+	// - `controller`: Controller address for the given Stash.
+	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
+	//    not a Controller.
 	// - `staking`: The staking ledger. Empty object if provided address is not a Controller.
 	//   - `stash`: The stash account whose balance is actually locked and at stake.
 	//   - `total`: The total amount of the stash's balance that we are currently accounting for.
@@ -235,8 +308,6 @@ async function main() {
 	//     with an `era` at which `value` will be unlocked.
 	//   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
 	//     rewards. Only updated for _validators._
-	// - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
-	//   not a Controller.
 	//
 	// Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
 	// `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -245,19 +316,22 @@ async function main() {
 	//
 	// Substrate Reference:
 	// - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
+	// - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
+	// - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
 	// - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
+	app.use('/staking/:address', validateAddressMiddleware);
 	get('/staking/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		return await handler.fetchStakingLedger(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	get('/staking/:address/:number', async (params) => {
 		const { address } = params;
 		const hash: BlockHash = await getHashForBlock(api, params.number);
 
-		return await handler.fetchStakingLedger(hash, address);
+		return await handler.fetchAddressStakingInfo(hash, address);
 	});
 
 	// GET vesting information for an address.
@@ -277,6 +351,7 @@ async function main() {
 	// Substrate Reference:
 	// - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
 	// - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
+	app.use('/vesting/:address', validateAddressMiddleware);
 	get('/vesting/:address', async (params) => {
 		const { address } = params;
 		const hash = await api.rpc.chain.getFinalizedHead();
@@ -401,18 +476,17 @@ async function main() {
 	// - `RuntimeDispatchInfo`: https://crates.parity.io/pallet_transaction_payment_rpc_runtime_api/struct.RuntimeDispatchInfo.html
 	// - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
 	// - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
-	post('/tx/fee-estimate/', async (_, body) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (body && typeof body.tx !== 'string') {
-			return {
+	post('/tx/fee-estimate/', async (_, body: TxRequestBody) => {
+		const { tx } = body;
+		if (!tx) {
+			throw {
 				error: 'Missing field `tx` on request body.',
 			};
 		}
 
 		const hash = await api.rpc.chain.getFinalizedHead();
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		return await handler.fetchFeeInformation(hash, body.tx);
+		return await handler.fetchFeeInformation(hash, tx);
 	});
 
 	// POST a serialized transaction to submit to the transaction queue.
@@ -430,20 +504,25 @@ async function main() {
 	//     the case of the latter, the transaction queue rejected the transaction.
 	//   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
 	//   - `cause`: The error message from parsing or from the client.
-	post('/tx/', async (_, body) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (body && typeof body.tx !== 'string') {
-			return {
+	post('/tx/', async (_, body: TxRequestBody) => {
+		const { tx } = body;
+		if (!tx) {
+			throw {
 				error: 'Missing field `tx` on request body.',
 			};
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		return await handler.submitTx(body.tx);
+		return await handler.submitTx(tx);
 	});
 
-	app.listen(PORT, HOST, () =>
-		console.log(`Running on http://${HOST}:${PORT}/`)
+	app.use(txErrorMiddleware);
+	app.use(httpErrorMiddleware);
+	app.use(errorMiddleware);
+	app.use(legacyErrorMiddleware);
+	app.use(internalErrorMiddleware);
+
+	app.listen(config.PORT, config.HOST, () =>
+		console.log(`Listening on http://${config.HOST}:${config.PORT}/`)
 	);
 }
 
@@ -451,9 +530,9 @@ async function getHashForBlock(
 	api: ApiPromise,
 	blockId: string
 ): Promise<BlockHash> {
-	try {
-		let blockNumber;
+	let blockNumber;
 
+	try {
 		const isHexStr = isHex(blockId);
 		if (isHexStr && blockId.length === 66) {
 			// This is a block hash
@@ -479,6 +558,15 @@ async function getHashForBlock(
 
 		return await api.rpc.chain.getBlockHash(blockNumber);
 	} catch (err) {
+		// Check if the block number is too high
+		const { number } = await api.rpc.chain.getHeader();
+		if (blockNumber && number.toNumber() < blockNumber) {
+			throw new BadRequest(
+				`Specified block number is higher than the current finalized block height. ` +
+					`The largest known block number is ${number.toString()}.`
+			);
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		if (err && typeof err.error === 'string') {
 			throw err;

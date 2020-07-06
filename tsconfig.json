@@ -1,21 +1,26 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "es2017",
-    "module": "commonjs",
-    "outDir": "build",
-    "sourceMap": true,
-    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "noEmitOnError": false,
-    "pretty": true,
+    "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": false,
     "noErrorTruncation": true,
-    "noImplicitReturns": true,
+    "strict": true,
     "noImplicitAny": true,
+    "noImplicitReturns": true,
     "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "build",
+    "pretty": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es2017"
   },
   "typeRoots": [
     "./node_modules/@types"
@@ -25,6 +30,8 @@
   ],
   "include": [
     "./src/**/*.ts",
-    "./declarations/**/*.d.ts"
+    "./src/**/*.json",
+    "./config/**/*.json",
+    "./config/**/*.ts",
   ]
 }
