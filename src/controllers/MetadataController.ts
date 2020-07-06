@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { NumberParam } from 'src/types/request_types';
+import { INumberParam } from 'src/types/request_types';
 
 import ApiHandler from '../ApiHandler';
 import AbstractController from './AbstractController';
@@ -57,7 +57,7 @@ export default class MetadataController extends AbstractController {
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getMetadataAtBlock: RequestHandler<NumberParam> = async (
+	private getMetadataAtBlock: RequestHandler<INumberParam> = async (
 		req,
 		res
 	): Promise<void> => {

@@ -18,14 +18,14 @@ export type RequestHandlerTx = RequestHandler<
 	Query
 >;
 
-export interface NumberParam extends ParamsDictionary {
+export interface INumberParam extends ParamsDictionary {
 	number: string;
 }
 
-export interface AddressParam extends ParamsDictionary {
+export interface IAddressParam extends ParamsDictionary {
 	address: string;
 }
 
-export interface AddressNumberParams extends AddressParam {
+export interface IAddressNumberParams extends IAddressParam {
 	number: string;
 }
