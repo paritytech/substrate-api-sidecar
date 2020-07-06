@@ -122,6 +122,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		return value.toString(10);
 	}
 
+	// All other codecs are not nested
 	return value.toJSON();
 }
 
