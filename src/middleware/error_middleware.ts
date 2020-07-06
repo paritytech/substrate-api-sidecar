@@ -145,7 +145,7 @@ export const internalErrorMiddleware: ErrorRequestHandler = (
 /**
  * Type guard to check if something is a subset of the interface LegacyError.
  *
- * @param thing thing to check type of
+ * @param thing to check type of
  */
 function isLegacyError(thing: unknown): thing is ILegacyError {
 	return (
@@ -157,7 +157,7 @@ function isLegacyError(thing: unknown): thing is ILegacyError {
 /**
  * Type guard to check if something is a subset of the interface BasicError.
  *
- * @param thing thing to check type of
+ * @param thing to check type of
  */
 function isBasicError(thing: unknown): thing is IBasicLegacyError {
 	return (thing as IBasicLegacyError).error !== undefined;
@@ -166,7 +166,7 @@ function isBasicError(thing: unknown): thing is IBasicLegacyError {
 /**
  * Type guard to check if something is a subset of the interface TxError.
  *
- * @param thing thing to check type of
+ * @param thing to check type of
  */
 function isTxError(thing: unknown): thing is ITxLegacyError {
 	return (
