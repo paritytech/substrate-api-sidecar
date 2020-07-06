@@ -22,13 +22,8 @@ type SidecarRequestHandler =
  * Abstract base class for creating controller classes.
  */
 export default abstract class AbstractController {
-	// private _path: string;
 	private _router: Router = express.Router();
-	// protected api: ApiPromise;
-	constructor(protected api: ApiPromise, private _path: string) {
-		// this.api = api;
-		// this._path = path;
-	}
+	constructor(protected api: ApiPromise, private _path: string) {}
 
 	get path(): string {
 		return this._path;
@@ -54,6 +49,7 @@ export default abstract class AbstractController {
 	 *
 	 * @param pathsAndHandlers tuple array of the suffix to the controller base
 	 * path (use empty string if no suffix) and the get request handler function.
+	 * Example argument: `[ ['/:id', getBlockById] ]`
 	 */
 	protected safeMountAsyncGetHandlers(
 		pathsAndHandlers: [string, SidecarRequestHandler][]
