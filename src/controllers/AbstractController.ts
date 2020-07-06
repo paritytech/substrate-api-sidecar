@@ -1,7 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
+import { AnyJson, Codec } from '@polkadot/types/types';
 import { isHex } from '@polkadot/util';
-import { RequestHandler, Router } from 'express';
+import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { BadRequest } from 'http-errors';
@@ -11,11 +12,14 @@ import {
 	NumberParam,
 } from 'src/types/request_types';
 
+import sanitizeNumbers from './utils/sanitizeNumbers';
+
 type SidecarRequestHandler =
 	| RequestHandler<AddressParam>
 	| RequestHandler<AddressNumberParams>
 	| RequestHandler<NumberParam>
 	| RequestHandler;
+
 
 /**
  * Abstract base class for creating controller classes.
@@ -147,5 +151,12 @@ export default abstract class AbstractController {
 		}
 
 		return num;
+	}
+
+	static sanitizeAndSend(res: Response, body: AnyCodecAndJson): void {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const sanitizedBody = sanitizeNumbers(body) as AnyCodecAndJson;
+
+		(res as Response<AnyCodecAndJson>).send(sanitizedBody);
 	}
 }

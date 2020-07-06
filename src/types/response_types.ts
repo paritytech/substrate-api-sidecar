@@ -21,6 +21,12 @@ import {
 import U32 from '@polkadot/types/primitive/U32';
 import { AnyJson, Codec } from '@polkadot/types/types';
 
+export type AnyCodecAndJson =
+	| AnyJson
+	| Codec
+	| Codec[]
+	| { [x: string]: AnyCodecAndJson };
+
 interface IAt {
 	hash: string | BlockHash;
 	height: string;
