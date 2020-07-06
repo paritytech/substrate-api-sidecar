@@ -24,7 +24,7 @@ import * as core from 'express-serve-static-core';
 import { BadRequest } from 'http-errors';
 
 import ApiHandler from './ApiHandler';
-import Config, { SidecarConfig } from './config_setup';
+import Config, { ISidecarConfig } from './config_setup';
 import {
 	errorMiddleware,
 	httpErrorMiddleware,
@@ -48,7 +48,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const config: SidecarConfig = configOrNull;
+	const config: ISidecarConfig = configOrNull;
 
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
