@@ -32,6 +32,6 @@
     "./src/**/*.ts",
     "./src/**/*.json",
     "./config/**/*.json",
-    "./config/**/*.ts"
+    "./config/**/*.ts",
   ]
 }
