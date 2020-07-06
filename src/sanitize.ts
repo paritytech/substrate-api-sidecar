@@ -11,11 +11,9 @@ import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import CodecMap from '@polkadot/types/codec/Map';
 import StructAny from '@polkadot/types/codec/StructAny';
 import { AnyJson, Codec } from '@polkadot/types/types';
-import Constructor from '@polkadot/types/types/codec';
 import { isObject } from '@polkadot/util';
 import { InternalServerError } from 'http-errors';
 
-import { TSidecarResponse } from './types/response_types';
 
 /**
  * Not sure about:
@@ -25,7 +23,6 @@ import { TSidecarResponse } from './types/response_types';
  *
  *
  */
-
 export function sanitizeCodec(value: Codec): AnyJson {
 	// If objects have an overlapping prototype chain
 	// we check lower down the chain first. More specific before less specific.
