@@ -20,7 +20,7 @@ import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
 
 import App from './App';
-import Config, { SidecarConfig } from './config_setup';
+import Config, { ISidecarConfig } from './config_setup';
 import BalanceController from './controllers/BalanceController';
 import BlocksController from './controllers/BlocksController';
 import ClaimsController from './controllers/ClaimsController';
@@ -51,7 +51,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const config: SidecarConfig = configOrNull;
+	const config: ISidecarConfig = configOrNull;
 
 	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
@@ -71,7 +71,7 @@ async function main() {
 
 	// Instantiate controller class instances
 	const blocksController = new BlocksController(api);
-	const balanceController = new BalanceController(api);
+	const balancesController = new BalanceController(api);
 	const stakingInfoController = new StakingInfoController(api);
 	const stakingController = new StakingController(api);
 	const vestingController = new VestingController(api);
@@ -86,7 +86,7 @@ async function main() {
 		preMiddleware,
 		controllers: [
 			blocksController,
-			balanceController,
+			balancesController,
 			stakingInfoController,
 			stakingController,
 			vestingController,

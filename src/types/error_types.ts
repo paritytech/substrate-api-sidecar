@@ -1,12 +1,12 @@
-export interface BasicError {
+export interface IBasicError {
 	error: string;
 }
 
-export interface LegacyError extends BasicError {
+export interface ILegacyError extends IBasicError {
 	statusCode: number;
 }
 
-export interface TxError extends BasicError {
+export interface ITxError extends IBasicError {
 	data?: string; // extrinsic
 	cause: string;
 }

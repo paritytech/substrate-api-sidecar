@@ -9,7 +9,7 @@ import {
 
 import BaseController from './controllers/AbstractController';
 
-interface AppConfiguration {
+interface IAppConfiguration {
 	controllers: BaseController[];
 	preMiddleware: RequestHandler[];
 	postMiddleware: ErrorRequestHandler[];
@@ -31,7 +31,7 @@ export default class App {
 		postMiddleware,
 		host,
 		port,
-	}: AppConfiguration) {
+	}: IAppConfiguration) {
 		this.app = express();
 		this.port = port;
 		this.host = host;
