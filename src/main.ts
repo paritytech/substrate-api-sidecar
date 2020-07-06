@@ -102,7 +102,6 @@ async function main() {
 			try {
 				res.send(sanitizeNumbers(await cb(req.params, req.body)));
 			} catch (err) {
-				// Express way of passing an error to the error handling middleware
 				return next(err);
 			}
 		});

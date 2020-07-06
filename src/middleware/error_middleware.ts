@@ -2,7 +2,11 @@ import { ErrorRequestHandler } from 'express';
 import { HttpError, InternalServerError } from 'http-errors';
 import * as HttpErrorConstructor from 'http-errors';
 
-import { IBasicError, ILegacyError, ITxError } from '../types/error_types';
+import {
+	IBasicLegacyError,
+	ILegacyError,
+	ITxLegacyError,
+} from '../types/error_types';
 
 /**
  * Handle HttpError instances.
@@ -153,8 +157,8 @@ function isLegacyError(thing: unknown): thing is ILegacyError {
  *
  * @param thing thing to check type of
  */
-function isBasicError(thing: unknown): thing is IBasicError {
-	return (thing as IBasicError).error !== undefined;
+function isBasicError(thing: unknown): thing is IBasicLegacyError {
+	return (thing as IBasicLegacyError).error !== undefined;
 }
 
 /**
@@ -162,9 +166,9 @@ function isBasicError(thing: unknown): thing is IBasicError {
  *
  * @param thing thing to check type of
  */
-function isTxError(thing: unknown): thing is ITxError {
+function isTxError(thing: unknown): thing is ITxLegacyError {
 	return (
-		(thing as ITxError).cause !== undefined &&
-		(thing as ITxError).error !== undefined
+		(thing as ITxLegacyError).cause !== undefined &&
+		(thing as ITxLegacyError).error !== undefined
 	);
 }
