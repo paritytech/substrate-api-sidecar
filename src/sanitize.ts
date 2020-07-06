@@ -11,9 +11,11 @@ import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import CodecMap from '@polkadot/types/codec/Map';
 import StructAny from '@polkadot/types/codec/StructAny';
 import { AnyJson, Codec } from '@polkadot/types/types';
+import Constructor from '@polkadot/types/types/codec';
+import { isObject } from '@polkadot/util';
 import { InternalServerError } from 'http-errors';
+
 import { TSidecarResponse } from './types/response_types';
-import Constructor from '@polkadot/types/types/codec'
 
 /**
  * Not sure about:
@@ -28,7 +30,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 	// If objects have an overlapping prototype chain
 	// we check lower down the chain first. More specific before less specific.
 
-	// Check option and result before enum because they extend enum
+	// Check Option and Result before Enum because they extend Enum
 	if (value instanceof Option) {
 		return value.isSome ? sanitizeCodec(value.unwrap()) : null;
 	}
@@ -58,16 +60,16 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		}, {} as Record<string, AnyJson>);
 	}
 
-	// TODO enable check if its a codec
 	if (value instanceof StructAny) {
-		// const jsonStructAny: Record<string, AnyJson> = {}
-		// value.forEach((element, prop) => {
-		// 	// if(element insta) {
-		// 	// 	// jsonStructAny[prop] = sanitizeCodec(element)
-		// 	// } else {
-		// 	// 	// jsonStructAny[prop] = sanitizeData(element)
-		// 	// }
-		// })
+		// The keys are strings and the values are any
+		const jsonStructAny: Record<string, AnyJson> = {};
+		value.forEach((element, prop) => {
+			if (isCodec(element)) {
+				jsonStructAny[prop] = sanitizeCodec(element);
+			} else {
+				jsonStructAny[prop] = sanitizeData(element);
+			}
+		});
 	}
 
 	if (value instanceof Enum) {
@@ -78,7 +80,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		return { [value.type]: sanitizeCodec(value.value) };
 	}
 
-	// Note CodecSet not needed bc all values are strings
+	// Note CodecSet case not needed because all values are strings
 	if (value instanceof BTreeSet) {
 		const jsonSet: AnyJson = [];
 
@@ -89,16 +91,17 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		return jsonSet;
 	}
 
-	// Covers BTreeMap and HashMap
+	// Should cover BTreeMap and HashMap
 	if (value instanceof CodecMap) {
 		const jsonMap: AnyJson = {};
 
+		// key, value implement Codec
 		value.forEach((value: Codec, key: Codec) => {
-			const sanitizedKey = sanitizeCodec(key);
+			const nonCodecKey = sanitizeCodec(key);
 			if (
 				!(
-					typeof sanitizedKey === 'string' ||
-					typeof sanitizedKey === 'number'
+					typeof nonCodecKey === 'string' ||
+					typeof nonCodecKey === 'number'
 				)
 			) {
 				throw new InternalServerError(
@@ -106,20 +109,23 @@ export function sanitizeCodec(value: Codec): AnyJson {
 				);
 			}
 
-			jsonMap[sanitizedKey] = sanitizeCodec(value);
+			jsonMap[nonCodecKey] = sanitizeCodec(value);
 		});
+
+		return jsonMap;
 	}
 
 	if (value instanceof Compact) {
 		return sanitizeCodec(value.unwrap());
 	}
 
+	// Should cover Vec, VecAny, VecFixed, Tuple
 	if (value instanceof AbstractArray) {
-		// Covers Vecs and Tuples
-		return value.map((element) => sanitizeCodec(element));
+		console.log(value);
+		return value.map((element: Codec) => sanitizeCodec(element));
 	}
 
-	// Covers Uint and Int
+	// Should cover Uint and Int
 	if (value instanceof AbstractInt) {
 		return value.toString(10);
 	}
@@ -127,10 +133,100 @@ export function sanitizeCodec(value: Codec): AnyJson {
 	return value.toJSON();
 }
 
-export function sanitizeData(data: AnyJson | TSidecarResponse): AnyJson {
-	return 'place holder'
+/**
+ *
+ *
+ * TODO change this comment
+ * @param data
+ */
+export function sanitizeData(data: unknown): AnyJson {
+	if (!data) {
+		// All falsy values are valid AnyJson
+		return data as AnyJson;
+	}
+
+	if (isCodec(data)) {
+		return sanitizeCodec(data);
+	}
+
+	console.log(data);
+	if (Array.isArray(data)) {
+		return data.map(sanitizeData);
+	}
+
+	// Pretty much everything is an object so we need to check this last
+	console.log(data);
+	if (isObject(data)) {
+		return Object.entries(data).reduce((saniObj, [key, value]) => {
+			saniObj[key] = sanitizeData(value);
+			return saniObj;
+		}, {} as { [prop: string]: AnyJson });
+	}
+
+	// If we have gotten to here than it is not a Codec, Array or Object
+	// so likely it is string, number, boolean, null, or undefined
+	// I will likely remove this check and just have in testing since it is expensive
+	if (!isAnyJson(data)) {
+		console.error('Sanitized data could not be forced to `AnyJson`');
+		console.error(data);
+		throw new InternalServerError(
+			'Sanitized data could not be forced to `AnyJson`'
+		);
+	}
+	return data;
 }
 
-function isCodec(thing: any): thing is Codec {
-	return (thing as Codec).encodedLength && (thing as Codec).hash && (thing as Codec) && (thing as Codec).registry
+function isAnyJson(thing: unknown): thing is AnyJson {
+	return (
+		thing === null ||
+		thing === undefined ||
+		typeof thing === 'string' ||
+		typeof thing === 'boolean' ||
+		typeof thing === 'number' ||
+		isArrayAnyJson(thing) ||
+		isObjectAnyJson(thing)
+	);
+}
+
+function isArrayAnyJson(thing: unknown): boolean {
+	if (thing && Array.isArray(thing)) {
+		for (const element of thing) {
+			if (!isAnyJson(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+function isObjectAnyJson(thing: unknown): boolean {
+	if (thing && isObject(thing)) {
+		for (const value of Object.values(thing)) {
+			if (!isAnyJson(value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+function isCodec(thing: unknown): thing is Codec {
+	return (
+		thing &&
+		(thing as Codec).encodedLength !== undefined &&
+		(thing as Codec).hash !== undefined &&
+		(thing as Codec).registry !== undefined &&
+		(thing as Codec).isEmpty !== undefined &&
+		typeof (thing as Codec).eq === 'function' &&
+		typeof (thing as Codec).toHex === 'function' &&
+		typeof (thing as Codec).toHuman === 'function' &&
+		typeof (thing as Codec).toJSON === 'function' &&
+		typeof (thing as Codec).toRawType === 'function' &&
+		typeof (thing as Codec).toString === 'function' &&
+		typeof (thing as Codec).toU8a === 'function'
+	);
 }
