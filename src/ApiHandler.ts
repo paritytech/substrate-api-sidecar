@@ -54,8 +54,8 @@ export default class ApiHandler {
 	constructor(api: ApiPromise) {
 		this.api = api;
 		// this.wsUrl = wsUrl;
-		this.specVersion = api.createType('u32', -1);
-		this.txVersion = api.createType('u32', -1);
+		this.specVersion = api.createType('u32', 0);
+		this.txVersion = api.createType('u32', 0);
 	}
 
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
@@ -701,8 +701,8 @@ export default class ApiHandler {
 				`Failed to get Metadata for block ${hash}, using latest.`
 			);
 			console.error(err);
-			this.specVersion = api.createType('u32', -1);
-			this.txVersion = api.createType('u32', -1);
+			this.specVersion = api.createType('u32', 0);
+			this.txVersion = api.createType('u32', 0);
 		}
 
 		return api;
