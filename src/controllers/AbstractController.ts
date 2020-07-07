@@ -34,7 +34,7 @@ export default abstract class AbstractController {
 	}
 
 	/**
-	 * Mount all controller handler methods on the classes private router.
+	 * Mount all controller handler methods on the class's private router.
 	 *
 	 * Keep in mind that asynchronous errors in the RequestHandlers need to be
 	 * dealt with manually.

@@ -38,7 +38,7 @@ export default class App {
 
 		this.initMiddleware(preMiddleware);
 
-		// Setup a root route
+		// Set up a root route
 		this.app.get('/', (_req: Request, res: Response) =>
 			res.send(
 				'Sidecar is running, go to /block to get latest finalized block'
