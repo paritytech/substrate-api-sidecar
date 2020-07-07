@@ -4,7 +4,6 @@ import UInt from '@polkadot/types/codec/UInt';
 import { kusamaRegistry, PRE_SANITIZED_STAKING_RESPONSE } from './test_util';
 import { sanitizeNumbers } from './utils';
 
-// TODO just change all registry to kusamaRegistry
 const registry = kusamaRegistry;
 
 describe('sanitizeNumbers', () => {
@@ -16,10 +15,6 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers('40C0A7')).toBe('40C0A7');
 		expect(sanitizeNumbers('0x40C0A7')).toBe('0x40C0A7');
 	});
-
-	test.todo('converts AbstractInt to decimal');
-	// We can't actually directly create and test AbstractInt
-	// because it has a protected constructor.
 
 	it('converts Int and Uint to decimal', () => {
 		const intTen = new Int(registry, 10);
@@ -60,9 +55,6 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers(compactBalancePaddedHex)).toBe(
 			'22493750000000000'
 		);
-		// expect(sanitizeNumbers(compactBalancePaddedHex)).toBe(
-		// 	'0x000000000000000004fe9f24a6a9c00'
-		// );
 
 		const compactBalancePaddedHex2 = registry.createType(
 			'Compact<Balance>',
@@ -71,9 +63,6 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers(compactBalancePaddedHex2)).toBe(
 			'71857424040631296'
 		);
-		// expect(sanitizeNumbers(compactBalancePaddedHex2)).toBe(
-		// 	'0x0000000000000000ff49f24a6a9c00'
-		// );
 	});
 
 	it('converts Compact<Balance> that are values in an object', () => {
@@ -100,10 +89,6 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers(arbitraryObject)).toStrictEqual(
 			sanitizedArbitraryObject
 		);
-		// expect(sanitizeNumbers(arbitraryObject)).toStrictEqual({
-		// 	active: '0x000000000000000000ff49f24a6a9100',
-		// 	total: '0x000000000000000000ff49f24a6a9c00',
-		// });
 	});
 
 	it('correctly serializes a staking response', () => {
