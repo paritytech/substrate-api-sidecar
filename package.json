@@ -9,9 +9,9 @@
     "build": "tsc",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
-    "dev": "tsc-watch --onSuccess \"node ./build/main.js\"",
-    "test": "yarn run build && jest",
-    "start": "yarn run build && yarn run main"
+    "start": "yarn run build && yarn run main",
+    "dev": "tsc-watch --onSuccess \"yarn run main\"",
+    "test": "yarn run build && jest"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
