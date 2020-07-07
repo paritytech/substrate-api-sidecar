@@ -10,7 +10,7 @@
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "dev": "tsc-watch --onSuccess \"node ./build/main.js\"",
-    "test": "jest",
+    "test": "yarn run build && jest",
     "start": "yarn run build && yarn run main"
   },
   "author": "",

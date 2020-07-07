@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Compact } from '@polkadot/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
 export function parseBlockNumber(n: string): number {
@@ -35,6 +36,10 @@ export function sanitizeNumbers(data: any): any {
 
 		if (data.raw != null && data.raw instanceof AbstractInt) {
 			return data.raw.toString(10);
+		}
+
+		if (data instanceof Compact) {
+			return sanitizeNumbers(data.unwrap());
 		}
 
 		if (data.isSome === true) {

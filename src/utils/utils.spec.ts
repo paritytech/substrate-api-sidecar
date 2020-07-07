@@ -21,7 +21,7 @@ describe('sanitizeNumbers', () => {
 	// We can't actually directly create and test AbstractInt
 	// because it has a protected constructor.
 
-	it('converts types extended from AbstractInt to decimal', () => {
+	it('converts Int and Uint to decimal', () => {
 		const intTen = new Int(registry, 10);
 		expect(sanitizeNumbers(intTen)).toBe('10');
 
@@ -39,7 +39,9 @@ describe('sanitizeNumbers', () => {
 			'0x000000000000000004fe9f24a6a9c00'
 		);
 		expect(sanitizeNumbers(uIntPaddedHex)).toBe('22493750000000000');
+	});
 
+	it('converts Balance to decimal', () => {
 		const balanceTen = registry.createType('Balance', 10);
 		expect(sanitizeNumbers(balanceTen)).toBe('10');
 
@@ -50,7 +52,31 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers(balancePaddedHex)).toBe('22493750000000000');
 	});
 
-	it('converts types extended from AbstractInt that are values in an object', () => {
+	it('it converts Compact<Balance>', () => {
+		const compactBalancePaddedHex = registry.createType(
+			'Compact<Balance>',
+			'0x000000000000000004fe9f24a6a9c00'
+		);
+		expect(sanitizeNumbers(compactBalancePaddedHex)).toBe(
+			'22493750000000000'
+		);
+		// expect(sanitizeNumbers(compactBalancePaddedHex)).toBe(
+		// 	'0x000000000000000004fe9f24a6a9c00'
+		// );
+
+		const compactBalancePaddedHex2 = registry.createType(
+			'Compact<Balance>',
+			'0x0000000000000000ff49f24a6a9c00'
+		);
+		expect(sanitizeNumbers(compactBalancePaddedHex2)).toBe(
+			'71857424040631296'
+		);
+		// expect(sanitizeNumbers(compactBalancePaddedHex2)).toBe(
+		// 	'0x0000000000000000ff49f24a6a9c00'
+		// );
+	});
+
+	it('converts Compact<Balance> that are values in an object', () => {
 		const totalBalance = registry.createType(
 			'Compact<Balance>',
 			'0x0000000000000000ff49f24a6a9c00'
@@ -74,9 +100,13 @@ describe('sanitizeNumbers', () => {
 		expect(sanitizeNumbers(arbitraryObject)).toStrictEqual(
 			sanitizedArbitraryObject
 		);
+		// expect(sanitizeNumbers(arbitraryObject)).toStrictEqual({
+		// 	active: '0x000000000000000000ff49f24a6a9100',
+		// 	total: '0x000000000000000000ff49f24a6a9c00',
+		// });
 	});
 
-	it('sanitizes a staking response', () => {
+	it('correctly serializes a staking response', () => {
 		expect(sanitizeNumbers(PRE_SANITIZED_STAKING_RESPONSE)).toStrictEqual({
 			at: {
 				hash:
