@@ -1,7 +1,11 @@
 import Int from '@polkadot/types/codec/Int';
 import UInt from '@polkadot/types/codec/UInt';
 
-import { kusamaRegistry, PRE_SANITIZED_STAKING_RESPONSE } from './test_util';
+import {
+	kusamaRegistry,
+	PRE_SANITIZED_BALANCE_LOCK,
+	PRE_SANITIZED_STAKING_RESPONSE,
+} from './test_util';
 import { sanitizeNumbers } from './utils';
 
 const registry = kusamaRegistry;
@@ -65,6 +69,14 @@ describe('sanitizeNumbers', () => {
 		);
 	});
 
+	it('converts Index', () => {
+		const IndexPadded = registry.createType('Index', '0x00000384');
+		expect(sanitizeNumbers(IndexPadded)).toBe('900');
+
+		const IndexMax = registry.createType('Index', '0x7FFFFFFF');
+		expect(sanitizeNumbers(IndexMax)).toBe('2147483647');
+	});
+
 	it('converts Compact<Balance> that are values in an object', () => {
 		const totalBalance = registry.createType(
 			'Compact<Balance>',
@@ -106,6 +118,16 @@ describe('sanitizeNumbers', () => {
 				unlocking: [],
 			},
 		});
+	});
+
+	it('correctly serializes a Vec<BalanceLock>', () => {
+		expect(sanitizeNumbers(PRE_SANITIZED_BALANCE_LOCK)).toStrictEqual([
+			{
+				id: '0x4c6f636b49640000',
+				amount: '71857424040631296',
+				reasons: 'Misc',
+			},
+		]);
 	});
 
 	test.todo('sanitizes arrays of elements');

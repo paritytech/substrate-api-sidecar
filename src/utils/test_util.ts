@@ -48,3 +48,18 @@ export const PRE_SANITIZED_STAKING_RESPONSE = {
 		claimedRewards: [],
 	}),
 };
+
+export const PRE_SANITIZED_BALANCE_LOCK = kusamaRegistry.createType(
+	'Vec<BalanceLock>',
+	[
+		{
+			id: 'LockId',
+			amount: kusamaRegistry.createType(
+				'Balance',
+				'0x0000000000000000ff49f24a6a9c00'
+			),
+			reasons: 'misc',
+		},
+	]
+);
+

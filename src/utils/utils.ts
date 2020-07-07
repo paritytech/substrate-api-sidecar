@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Compact } from '@polkadot/types';
+import { Compact, Enum } from '@polkadot/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 
 export function parseBlockNumber(n: string): number {
@@ -40,6 +40,14 @@ export function sanitizeNumbers(data: any): any {
 
 		if (data instanceof Compact) {
 			return sanitizeNumbers(data.unwrap());
+		}
+
+		if (data instanceof Enum) {
+			if (data.isBasic) {
+				return data.toJSON();
+			}
+
+			return { [data.type]: sanitizeNumbers(data.value) };
 		}
 
 		if (data.isSome === true) {
