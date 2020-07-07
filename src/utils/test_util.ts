@@ -63,3 +63,20 @@ export const PRE_SANITIZED_BALANCE_LOCK = kusamaRegistry.createType(
 	]
 );
 
+export const PRE_SANITIZED_OPTION_VESTING_INFO = kusamaRegistry.createType(
+	'Option<VestingInfo>',
+	{
+		locked: '0x0000000000000000ff49f24a6a9c00',
+		perBlock: '0x0000000000000000ff49f24a6a9100',
+		startingBlock: '299694200',
+	}
+);
+
+export const PRE_SANITIZED_RUNTIME_DISPATCH_INFO = kusamaRegistry.createType(
+	'RuntimeDispatchInfo',
+	{
+		weight: '0x7FFFFFFFFFFFFFFF',
+		class: 'operational',
+		partialFee: '0x7FFFFFFFFFFFFFFF',
+	}
+);
