@@ -10,7 +10,7 @@ import {
 	INumberParam,
 } from 'src/types/request_types';
 
-import sanitizeNumbers from './utils/sanitizeNumbers';
+import { sanitizeNumbers } from '../utils/utils';
 
 type SidecarRequestHandler =
 	| RequestHandler<IAddressParam>

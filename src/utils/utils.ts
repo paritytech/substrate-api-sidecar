@@ -13,16 +13,6 @@ import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import Option from '@polkadot/types/codec/Option';
 import { AnyJson, Codec } from '@polkadot/types/types';
 
-export function parseBlockNumber(n: string): number {
-	const num = Number(n);
-
-	if (!Number.isInteger(num) || num < 0) {
-		throw { error: 'Invalid block number' };
-	}
-
-	return num;
-}
-
 /**
  * A sanitizer for arbitrary data that's going to be
  * stringified to JSON. We find all instances of `AbstractInt`,
