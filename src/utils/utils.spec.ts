@@ -1,11 +1,15 @@
 import {
 	BTreeMap,
 	BTreeSet,
+	Bytes,
 	Compact,
+	Data,
 	Enum,
+	Null,
 	Raw,
 	Result,
 	Set as CodecSet,
+	StorageKey,
 	Struct,
 	Tuple,
 	U8aFixed,
@@ -16,6 +20,7 @@ import Option from '@polkadot/types/codec/Option';
 import UInt from '@polkadot/types/codec/UInt';
 import VecFixed from '@polkadot/types/codec/VecFixed';
 import AccountId from '@polkadot/types/generic/AccountId';
+import Bool from '@polkadot/types/primitive/Bool';
 import Text from '@polkadot/types/primitive/Text';
 import U32 from '@polkadot/types/primitive/U32';
 import U64 from '@polkadot/types/primitive/U64';
@@ -41,6 +46,48 @@ describe('sanitizeNumbers', () => {
 	});
 
 	describe('primitives and Codec base types', () => {
+		it('handles Codec Bool', () => {
+			const t = new Bool(kusamaRegistry, true);
+			expect(sanitizeNumbers(t)).toBe(true);
+
+			const f = new Bool(kusamaRegistry, false);
+			expect(sanitizeNumbers(f)).toBe(false);
+		});
+
+		it('handles Codec Bytes', () => {
+			const code = new Bytes(kusamaRegistry, ':code');
+			expect(sanitizeNumbers(code)).toBe('0x3a636f6465');
+		});
+
+		it('handles Codec Data', () => {
+			const data = new Data(kusamaRegistry, {
+				Keccak256:
+					'0x0102030405060708091011121314151617181920212223242526272829303132',
+			});
+			expect(sanitizeNumbers(data)).toStrictEqual({
+				Keccak256:
+					'0x0102030405060708091011121314151617181920212223242526272829303132',
+			});
+		});
+
+		it('handles Codec Null', () => {
+			expect(sanitizeNumbers(new Null(kusamaRegistry))).toBe(null);
+		});
+
+		it('handles StorageKey', () => {
+			const key = new StorageKey(
+				kusamaRegistry,
+				'0x426e15054d267946093858132eb537f191ca57b0c4b20b29ae7e99d6201d680cc906f7710aa165d62c709012f807af8fc3f0d2abb0c51ca9a88d4ef24d1a092bf89dacf5ce63ea1d'
+			);
+			expect(sanitizeNumbers(key)).toStrictEqual(
+				'0x426e15054d267946093858132eb537f191ca57b0c4b20b29ae7e99d6201d680cc906f7710aa165d62c709012f807af8fc3f0d2abb0c51ca9a88d4ef24d1a092bf89dacf5ce63ea1d'
+			);
+		});
+
+		it('handles Text', () => {
+			const notEnglish = new Text(kusamaRegistry, '中文');
+			expect(sanitizeNumbers(notEnglish)).toBe('中文');
+		});
 		it('converts javascript Set<any>', () => {
 			const negInt = new Int(kusamaRegistry, '0x80000000', 32, true);
 
