@@ -3,10 +3,11 @@ SAS:
     LOG_MODE:
       description: Log level
       default: errors
+      regexp: ^error|all|none$
 
     BIND_HOST:
       description: Network interface we bind to
-      default: 127.0.0.1
+      default: 0.0.0.0
       type: string
 
     PORT:
@@ -19,9 +20,9 @@ SAS:
     NAME:
       description: Name for our node endpoint
       type: string
-      default: Default Substrate Dev Node
+      default: Parity Polkadot node
 
     WS_URL:
       description: Websocket URL
-      default: ws://127.0.0.1:9944
+      default: wss://rpc.polkadot.io
       regexp: ^wss?:\/\/.*(:\d{4,5})?$

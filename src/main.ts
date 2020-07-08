@@ -111,4 +111,8 @@ async function main() {
 	app.listen();
 }
 
+process.on('SIGINT', function () {
+	console.log('Caught interrupt signal, exiting...');
+	process.exit(0);
+});
 main().catch(console.log);

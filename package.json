@@ -7,11 +7,12 @@
     "preinstall": "./calc-fee/build.sh",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
+    "build:docker": "VERSION=`cat package.json | jq -r .version`; docker build -t substrate-api-sidecar:$VERSION .",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "start": "yarn run build && yarn run main",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "yarn run build && jest"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
@@ -36,6 +37,9 @@
     "typescript": "^3.9.5"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.1.0",
     "tsc-watch": "^4.2.8"
   }
 }
