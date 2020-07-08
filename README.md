@@ -3,7 +3,7 @@
 REST API service intended to run next to Substrate, exposing a limited set of endpoints over HTTP
 with meaningful responses.
 
-### Installation
+## Installation
 
 Make sure your machine has an
 [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
@@ -21,10 +21,10 @@ Use yarn to do the remaining setup:
 yarn
 ```
 
-### Running
+## Running
 
 ```bash
-# For development
+# For live reload in development
 yarn dev
 
 # To build and run
@@ -33,7 +33,7 @@ yarn start
 
 [Jump to the configuration section](#configuration) for more details on connecting to a node.
 
-### Configuration
+## Configuration
 
 To use a specific env profile (here for instance a profile called 'env.sample'):
 
@@ -64,7 +64,7 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 }
 ```
 
-### Fee Calculation Debugging
+## Fee Calculation Debugging
 
 It is possible to get more information about the fee calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
@@ -74,7 +74,7 @@ a re-compile with the proper environment variable set is necessary:
 FEE_DEBUG=1 yarn
 ```
 
-### Available paths
+## Available paths
 
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
@@ -135,7 +135,7 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 
 
-### Chain compatibility
+## Chain compatibility
 
 Sidecar should be compatible with any [Substrate](https://substrate.dev/) based chain, given
 constraints:
@@ -144,13 +144,6 @@ constraints:
 - The chain is being finalized (by running `grandpa`).
 - If the chain is running on custom Node binaries, the JSON-RPC API should be backwards compatible
   with the default Substrate Node.
-
-### Contribute
-
-We welcome contributions. Before submitting your PR, make sure to run the following commands:
-
-- `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to automatically fix some of those errors.
-- Testing coming soon!
 
 ## Docker
 
@@ -172,3 +165,9 @@ then you can test with:
 curl -s http://127.0.0.1:8080/block | jq
 ```
 
+## Contribute
+
+We welcome contributions. Before submitting your PR, make sure to run the following commands:
+
+- `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to automatically fix some of those errors.
+- `yarn test`: Make sure all tests pass.
