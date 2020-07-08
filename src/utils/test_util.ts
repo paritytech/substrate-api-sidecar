@@ -75,8 +75,8 @@ export const PRE_SANITIZED_OPTION_VESTING_INFO = kusamaRegistry.createType(
 export const PRE_SANITIZED_RUNTIME_DISPATCH_INFO = kusamaRegistry.createType(
 	'RuntimeDispatchInfo',
 	{
-		weight: '0x7FFFFFFFFFFFFFFF',
+		weight: '0xFFFFFFFFFFFFFFFF',
 		class: 'operational',
-		partialFee: '0x7FFFFFFFFFFFFFFF',
+		partialFee: '0xffffffffffffffffffffffffffffffff',
 	}
 );

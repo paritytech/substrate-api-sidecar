@@ -2,8 +2,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Compact, Enum } from '@polkadot/types';
+import {
+	BTreeSet,
+	Compact,
+	Enum,
+	Set as CodecSet,
+	Struct,
+} from '@polkadot/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
+import Option from '@polkadot/types/codec/Option';
+import { AnyJson, Codec } from '@polkadot/types/types';
 
 export function parseBlockNumber(n: string): number {
 	const num = Number(n);
@@ -25,6 +33,58 @@ export function parseBlockNumber(n: string): number {
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export function sanitizeNumbers(data: any): any {
+	if (data instanceof Option) {
+		return data.isSome ? sanitizeNumbers(data.unwrap()) : null;
+	}
+
+	if (data instanceof Compact) {
+		return sanitizeNumbers(data.unwrap());
+	}
+
+	if (data instanceof Enum) {
+		if (data.isBasic) {
+			return data.toJSON();
+		}
+
+		return { [data.type]: sanitizeNumbers(data.value) };
+	}
+
+	if (data instanceof BTreeSet) {
+		const jsonSet: unknown[] = [];
+
+		data.forEach((element: Codec) => {
+			jsonSet.push(sanitizeNumbers(element));
+		});
+
+		return jsonSet;
+	}
+
+	if (data instanceof Struct) {
+		return data.defKeys.reduce((jsonStruct, key) => {
+			const property = data.get(key);
+			if (!property) {
+				return jsonStruct;
+			}
+
+			jsonStruct[key] = sanitizeNumbers(property);
+			return jsonStruct;
+		}, {} as Record<string, AnyJson>);
+	}
+
+	if (data instanceof CodecSet) {
+		// CodecSet is essentially just a JS Set<string>
+		return data.strings;
+	}
+	if (data instanceof Set) {
+		const jsonSet = [];
+
+		for (const element of data) {
+			jsonSet.push(sanitizeNumbers(element));
+		}
+
+		return jsonSet;
+	}
+
 	if (typeof data === 'number' || data instanceof AbstractInt) {
 		return data.toString(10);
 	}
@@ -36,24 +96,6 @@ export function sanitizeNumbers(data: any): any {
 
 		if (data.raw != null && data.raw instanceof AbstractInt) {
 			return data.raw.toString(10);
-		}
-
-		if (data instanceof Compact) {
-			return sanitizeNumbers(data.unwrap());
-		}
-
-		if (data instanceof Enum) {
-			if (data.isBasic) {
-				return data.toJSON();
-			}
-
-			return { [data.type]: sanitizeNumbers(data.value) };
-		}
-
-		if (data.isSome === true) {
-			data = data.unwrap();
-		} else if (data.isNone == true) {
-			return data;
 		}
 
 		if (typeof data.toJSON === 'function') {

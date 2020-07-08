@@ -46,16 +46,13 @@ import {
 } from './types/response_types';
 
 export default class ApiHandler {
-	// private wsUrl: string,
-	private api: ApiPromise;
+	private readonly versionReset = 99999999;
 	private specVersion: u32;
 	private txVersion: u32;
 
-	constructor(api: ApiPromise) {
-		this.api = api;
-		// this.wsUrl = wsUrl;
-		this.specVersion = api.createType('u32', 0);
-		this.txVersion = api.createType('u32', 0);
+	constructor(private api: ApiPromise) {
+		this.specVersion = api.createType('u32', this.versionReset);
+		this.txVersion = api.createType('u32', this.versionReset);
 	}
 
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
@@ -701,8 +698,8 @@ export default class ApiHandler {
 				`Failed to get Metadata for block ${hash}, using latest.`
 			);
 			console.error(err);
-			this.specVersion = api.createType('u32', 0);
-			this.txVersion = api.createType('u32', 0);
+			this.specVersion = api.createType('u32', this.versionReset);
+			this.txVersion = api.createType('u32', this.versionReset);
 		}
 
 		return api;
