@@ -34,15 +34,19 @@ async function main() {
 
 	const config: ISidecarConfig = configOrNull;
 
-	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
-
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
 		types: config.CUSTOM_TYPES,
 	});
 
-	// const { specName } = await api.await;
+	const chainName = await api.rpc.system.chain();
+
+	console.log(
+		`Connecting to ${chainName.toString()} via ${config.NAME} at ${
+			config.WS_URL
+		}`
+	);
 
 	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
