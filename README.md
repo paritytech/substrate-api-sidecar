@@ -151,3 +151,24 @@ We welcome contributions. Before submitting your PR, make sure to run the follow
 
 - `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to automatically fix some of those errors.
 - Testing coming soon!
+
+## Docker
+
+### Build
+
+```bash
+yarn build:docker
+```
+
+### Run
+
+```bash
+export VERSION=`cat package.json | jq -r .version`
+docker run --rm -it -p 8080:8080 substrate-api-sidecar:$VERSION
+```
+
+then you can test with:
+```bash
+curl -s http://127.0.0.1:8080/block | jq
+```
+
