@@ -143,7 +143,11 @@ function sanitizeCodec(value: Codec): AnyJson {
 
 /**
  *Forcibly serialize all instances of AbstractInt to base 10 and otherwise
- * normalize data presentation to AnyJson
+ * normalize data presentation to AnyJson. Under the hood AbstractInto is
+ * a BN.js, which has a .toString(radix) that lets us convert to base 10.
+ * The likely reason for the inconsistency in polkadot-js natives .toJSON
+ * is that over a certain value many Int like types have a flag that tells
+ * them to serialize to Hex.
  *
  * @param data - pretty much anything that Sidecar might send
  */
@@ -179,7 +183,8 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		}, {} as { [prop: string]: AnyJson });
 	}
 
-	// N.B. I will likely remove this check and just have it in testing since it is expensive
+	// N.B. After some sustained testing, it makes sense to remove this
+	// since it is expensive
 	if (!isAnyJson(data)) {
 		console.error('Sanitized data could not be forced to `AnyJson`');
 		console.error(data);
