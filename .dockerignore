@@ -1,0 +1,6 @@
+.env*
+!.env-sample
+.github
+.git
+**/target
+node_modules

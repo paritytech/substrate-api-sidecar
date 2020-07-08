@@ -3,6 +3,7 @@ SAS:
     LOG_MODE:
       description: Log level
       default: errors
+      regexp: ^error|all|none$
 
     BIND_HOST:
       description: Network interface we bind to

@@ -7,6 +7,7 @@
     "preinstall": "./calc-fee/build.sh",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
     "build": "tsc",
+    "build:docker": "VERSION=`cat package.json | jq -r .version`; docker build -t substrate-api-sidecar:$VERSION .",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "start": "yarn run build && yarn run main",
