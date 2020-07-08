@@ -55,9 +55,13 @@ async function main() {
 		types: config.CUSTOM_TYPES,
 	});
 
-	const chainName = await api.rpc.system.chain();
+	const [chainName, { implName }] = await Promise.all([
+		await api.rpc.system.chain(),
+		await api.rpc.state.getRuntimeVersion(),
+	]);
+
 	console.log(
-		`Connecting to ${chainName.toString()} via ${config.NAME} at ${
+		`Connected to chain ${chainName.toString()} with node implementation ${implName.toString()} at ${
 			config.WS_URL
 		}`
 	);
