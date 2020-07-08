@@ -3,7 +3,7 @@ import {
 	Compact,
 	Enum,
 	Option,
-	Result,
+	// Result,
 	Struct,
 } from '@polkadot/types';
 import AbstractArray from '@polkadot/types/codec/AbstractArray';
@@ -15,34 +15,33 @@ import { isObject } from '@polkadot/util';
 import { InternalServerError } from 'http-errors';
 
 /**
- * Not sure about:
- * - Linkage extends Struct
- * - LinkageTuple extends Tuple
+ * Forcibly serialize all instances of AbstractInt to base 10.
  *
- *
+ * @param value a type that implements polkadot-js Codec
  */
-export function sanitizeCodec(value: Codec): AnyJson {
+function sanitizeCodec(value: Codec): AnyJson {
 	// If objects have an overlapping prototype chain
 	// we check lower down the chain first. More specific before less specific.
 
 	// Check Option and Result before Enum because they extend Enum
 	if (value instanceof Option) {
-		// Throughout sanitizeCodec we prefer using sanitizeData because the
+		// Throughout sanitizeCodec we prefer using sanitizeNumbers because the
 		// additional type guards within are more robust than calling sanitizeCodec
-		return value.isSome ? sanitizeData(value.unwrap()) : null;
+		return value.isSome ? sanitizeNumbers(value.unwrap()) : null;
 	}
 
-	if (value instanceof Result) {
-		// TODO - I am assuming for an empty OK() we just want null - is this correct?
-		// We could also do `ok: null`
-		if (value.isEmpty || value.isBasic) {
-			return null;
-		}
+	// For the sake of API consistency this is staying out for now
+	// if (value instanceof Result) {
+	// 	// TODO - I am assuming for an empty OK() we just want null - is this correct?
+	// 	// We could also do `ok: null`
+	// 	if (value.isEmpty || value.isBasic) {
+	// 		return null;
+	// 	}
 
-		return value.isOk
-			? sanitizeData(value.asOk)
-			: sanitizeData(value.asError);
-	}
+	// 	return value.isOk
+	// 		? sanitizeNumbers(value.asOk)
+	// 		: sanitizeNumbers(value.asError);
+	// }
 
 	// Check struct before map because it extends map
 	if (value instanceof Struct) {
@@ -52,7 +51,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 				return jsonStruct;
 			}
 
-			jsonStruct[key] = sanitizeData(property);
+			jsonStruct[key] = sanitizeNumbers(property);
 			return jsonStruct;
 		}, {} as Record<string, AnyJson>);
 	}
@@ -61,7 +60,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		// This is essentially a Map with [keys: strings]: any
 		const jsonStructAny: Record<string, AnyJson> = {};
 		value.forEach((element, prop) => {
-			jsonStructAny[prop] = sanitizeData(element);
+			jsonStructAny[prop] = sanitizeNumbers(element);
 		});
 	}
 
@@ -70,7 +69,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 			return value.toJSON();
 		}
 
-		return { [value.type]: sanitizeData(value.value) };
+		return { [value.type]: sanitizeNumbers(value.value) };
 	}
 
 	// Note CodecSet case not needed because all values are strings
@@ -78,7 +77,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		const jsonSet: AnyJson = [];
 
 		value.forEach((element: Codec) => {
-			jsonSet.push(sanitizeData(element));
+			jsonSet.push(sanitizeNumbers(element));
 		});
 
 		return jsonSet;
@@ -90,7 +89,7 @@ export function sanitizeCodec(value: Codec): AnyJson {
 
 		// key, value implement Codec
 		value.forEach((value: Codec, key: Codec) => {
-			const nonCodecKey = sanitizeData(key);
+			const nonCodecKey = sanitizeNumbers(key);
 			if (
 				!(
 					typeof nonCodecKey === 'string' ||
@@ -102,19 +101,19 @@ export function sanitizeCodec(value: Codec): AnyJson {
 				);
 			}
 
-			jsonMap[nonCodecKey] = sanitizeData(value);
+			jsonMap[nonCodecKey] = sanitizeNumbers(value);
 		});
 
 		return jsonMap;
 	}
 
 	if (value instanceof Compact) {
-		return sanitizeData(value.unwrap());
+		return sanitizeNumbers(value.unwrap());
 	}
 
 	// Should cover Vec, VecAny, VecFixed, Tuple
 	if (value instanceof AbstractArray) {
-		return value.map(sanitizeData);
+		return value.map(sanitizeNumbers);
 	}
 
 	// Should cover Uint and Int
@@ -122,17 +121,17 @@ export function sanitizeCodec(value: Codec): AnyJson {
 		return value.toString(10);
 	}
 
-	// All other codecs are not nested
+	// All other codecs are probably not nested
 	return value.toJSON();
 }
 
 /**
+ *Forcibly serialize all instances of AbstractInt to base 10 and otherwise
+ * normalize data presentation to AnyJson
  *
- *
- * TODO change this comment
- * @param data
+ * @param data - pretty much anything that Sidecar might send
  */
-export function sanitizeData(data: unknown): AnyJson {
+export function sanitizeNumbers(data: unknown): AnyJson {
 	if (!data) {
 		// All falsy values are valid AnyJson
 		return data as AnyJson;
@@ -143,18 +142,18 @@ export function sanitizeData(data: unknown): AnyJson {
 	}
 
 	if (Array.isArray(data)) {
-		return data.map(sanitizeData);
+		return data.map(sanitizeNumbers);
 	}
 
 	// Pretty much everything is an object so we need to check this last
 	if (isObject(data)) {
 		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
-			sanitizedObject[key] = sanitizeData(value);
+			sanitizedObject[key] = sanitizeNumbers(value);
 			return sanitizedObject;
 		}, {} as { [prop: string]: AnyJson });
 	}
 
-	// I will likely remove this check and just have it in testing since it is expensive
+	// N.B. I will likely remove this check and just have it in testing since it is expensive
 	if (!isAnyJson(data)) {
 		console.error('Sanitized data could not be forced to `AnyJson`');
 		console.error(data);
