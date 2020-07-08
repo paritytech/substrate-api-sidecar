@@ -7,7 +7,7 @@ SAS:
 
     BIND_HOST:
       description: Network interface we bind to
-      default: 0.0.0.0
+      default: 127.0.0.1
       type: string
 
     PORT:
@@ -20,9 +20,9 @@ SAS:
     NAME:
       description: Name for our node endpoint
       type: string
-      default: Parity Polkadot node
+      default: Default Substrate Dev Node
 
     WS_URL:
       description: Websocket URL
-      default: wss://rpc.polkadot.io
+      default: ws://127.0.0.1:9944
       regexp: ^wss?:\/\/.*(:\d{4,5})?$
