@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { ParamsDictionary, Query } from 'express-serve-static-core';
 
 /**
- * Body for RequestHandlerTx. In other words, the body of a POST route that send a Tx.
+ * Body for RequestHandlerTx. In other words, the body of a POST route that sends an encoded transaction.
  */
 export type TxRequestBody = {
 	tx: string;
