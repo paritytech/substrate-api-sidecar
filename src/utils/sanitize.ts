@@ -2,7 +2,9 @@ import {
 	BTreeSet,
 	Compact,
 	Enum,
+	Null,
 	Option,
+	Set as CodecSet,
 	// Result,
 	Struct,
 } from '@polkadot/types';
@@ -83,6 +85,20 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return jsonSet;
 	}
 
+	if (value instanceof CodecSet) {
+		// CodecSet is essentially just a JS Set<string>
+		return value.strings;
+	}
+	if (value instanceof Set) {
+		const jsonSet = [];
+
+		for (const element of value) {
+			jsonSet.push(sanitizeNumbers(element));
+		}
+
+		return jsonSet;
+	}
+
 	// Should cover BTreeMap and HashMap
 	if (value instanceof CodecMap) {
 		const jsonMap: AnyJson = {};
@@ -139,6 +155,16 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 
 	if (isCodec(data)) {
 		return sanitizeCodec(data);
+	}
+
+	if (data instanceof Set) {
+		const jsonSet = [];
+
+		for (const element of data) {
+			jsonSet.push(sanitizeNumbers(element));
+		}
+
+		return jsonSet;
 	}
 
 	if (Array.isArray(data)) {
@@ -208,6 +234,11 @@ function isObjectAnyJson(thing: unknown): thing is { [i: string]: AnyJson } {
 }
 
 function isCodec(thing: unknown): thing is Codec {
+	if (thing instanceof Null) {
+		// Null does not implement hash so this is a workaround for now
+		return true;
+	}
+
 	return (
 		thing &&
 		(thing as Codec).encodedLength !== undefined &&
