@@ -21,27 +21,8 @@ import { RequestHandler } from 'express';
 
 import App from './App';
 import Config, { ISidecarConfig } from './config_setup';
-import BalanceController from './controllers/BalanceController';
-import BlocksController from './controllers/BlocksController';
-import ClaimsController from './controllers/ClaimsController';
-import MetadataController from './controllers/MetadataController';
-import StakingController from './controllers/StakingController';
-import StakingInfoController from './controllers/StakingInfoController';
-import TxArtifactsController from './controllers/TxArtifactsController';
-import TxFeeEstimateController from './controllers/TxFeeEstimateController';
-import TxSubmitController from './controllers/TxSubmitController';
-import VestingController from './controllers/VestingController';
-import {
-	errorMiddleware,
-	httpErrorMiddleware,
-	internalErrorMiddleware,
-	legacyErrorMiddleware,
-	txErrorMiddleware,
-} from './middleware/error_middleware';
-import {
-	developmentLoggerMiddleware,
-	productionLoggerMiddleware,
-} from './middleware/logger_middleware';
+import * as controllers from './controllers';
+import * as middleware from './middleware';
 
 async function main() {
 	const configOrNull = Config.GetConfig();
@@ -61,25 +42,27 @@ async function main() {
 		types: config.CUSTOM_TYPES,
 	});
 
+	// const { specName } = await api.await;
+
 	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
-		preMiddleware.push(productionLoggerMiddleware);
+		preMiddleware.push(middleware.productionLogger);
 	} else if (config.LOG_MODE === 'all') {
-		preMiddleware.push(developmentLoggerMiddleware);
+		preMiddleware.push(middleware.developmentLogger);
 	}
 
 	// Instantiate controller class instances
-	const blocksController = new BlocksController(api);
-	const balancesController = new BalanceController(api);
-	const stakingInfoController = new StakingInfoController(api);
-	const stakingController = new StakingController(api);
-	const vestingController = new VestingController(api);
-	const metadataController = new MetadataController(api);
-	const claimsController = new ClaimsController(api);
-	const txArtifactsController = new TxArtifactsController(api);
-	const txFeeEstimateController = new TxFeeEstimateController(api);
-	const txSubmitController = new TxSubmitController(api);
+	const blocksController = new controllers.Blocks(api);
+	const balancesController = new controllers.Balance(api);
+	const stakingInfoController = new controllers.StakingInfo(api);
+	const stakingController = new controllers.Staking(api);
+	const vestingController = new controllers.Vesting(api);
+	const metadataController = new controllers.Metadata(api);
+	const claimsController = new controllers.Claims(api);
+	const txArtifactsController = new controllers.TxArtifacts(api);
+	const txFeeEstimateController = new controllers.TxFeeEstimate(api);
+	const txSubmitController = new controllers.TxSubmit(api);
 
 	// Create our App
 	const app = new App({
@@ -97,11 +80,11 @@ async function main() {
 			txSubmitController,
 		],
 		postMiddleware: [
-			txErrorMiddleware,
-			httpErrorMiddleware,
-			errorMiddleware,
-			legacyErrorMiddleware,
-			internalErrorMiddleware,
+			middleware.txError,
+			middleware.httpError,
+			middleware.error,
+			middleware.legacyError,
+			middleware.internalError,
 		],
 		port: config.PORT,
 		host: config.HOST,
