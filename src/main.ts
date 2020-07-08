@@ -38,7 +38,7 @@ import {
 } from './middleware/logger_middleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { TxRequest, TxRequestBody } from './types/request_types';
-import { parseBlockNumber, sanitizeNumbers } from './utils';
+import { parseBlockNumber, sanitizeNumbers } from './utils/utils';
 
 async function main() {
 	const configOrNull = Config.GetConfig();
