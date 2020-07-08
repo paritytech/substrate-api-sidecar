@@ -61,7 +61,7 @@ async function main() {
 	]);
 
 	console.log(
-		`Connected to chain ${chainName.toString()} with node implementation ${implName.toString()} at ${
+		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
 			config.WS_URL
 		}`
 	);
