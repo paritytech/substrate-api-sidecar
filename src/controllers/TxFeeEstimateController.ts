@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 
 import ApiHandler from '../ApiHandler';
-import { RequestHandlerTx } from '../types/request_types';
+import { IPostRequestHandler, ITx } from '../types/request_types';
 import AbstractController from './AbstractController';
 import TxArtifactsController from './TxArtifactsController';
 
@@ -50,11 +50,10 @@ export default class TxFeeEstimate extends AbstractController {
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txFeeEstimate: RequestHandlerTx = async (
-		req,
+	private txFeeEstimate: IPostRequestHandler<ITx> = async (
+		{ body: { tx } },
 		res
 	): Promise<void> => {
-		const { tx } = req.body;
 		if (!tx) {
 			throw {
 				error: 'Missing field `tx` on request body.',

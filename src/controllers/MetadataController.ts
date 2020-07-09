@@ -58,10 +58,9 @@ export default class MetadataController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getMetadataAtBlock: RequestHandler<INumberParam> = async (
-		req,
+		{ params: { number } },
 		res
 	): Promise<void> => {
-		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
 		MetadataController.sanitizedSend(

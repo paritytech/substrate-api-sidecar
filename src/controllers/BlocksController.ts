@@ -88,10 +88,9 @@ export default class BlocksController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		req,
+		{ params: { number } },
 		res
 	): Promise<void> => {
-		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
 		BlocksController.sanitizedSend(

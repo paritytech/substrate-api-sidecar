@@ -61,10 +61,9 @@ export default class BalancesController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getAccountBalanceSummary: RequestHandler<IAddressParam> = async (
-		req,
+		{ params: { address } },
 		res
 	): Promise<void> => {
-		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		BalancesController.sanitizedSend(
@@ -82,8 +81,7 @@ export default class BalancesController extends AbstractController {
 	 */
 	private getAccountBalanceSummaryAtBlock: RequestHandler<
 		IAddressNumberParams
-	> = async (req, res): Promise<void> => {
-		const { number, address } = req.params;
+	> = async ({ params: { number, address } }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
 		BalancesController.sanitizedSend(

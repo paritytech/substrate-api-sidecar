@@ -74,10 +74,9 @@ export default class TxArtifactsController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getTxArtifactsAtBlock: RequestHandler<INumberParam> = async (
-		req,
+		{ params: { number } },
 		res
 	): Promise<void> => {
-		const { number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
 		TxArtifactsController.sanitizedSend(

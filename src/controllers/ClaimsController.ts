@@ -61,10 +61,9 @@ export default class ClaimsController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getClaimAtBlock: RequestHandler<IAddressNumberParams> = async (
-		req,
+		{ params: { number, address } },
 		res
 	): Promise<void> => {
-		const { number, address } = req.params;
 		const hash = await this.getHashForBlock(number);
 
 		ClaimsController.sanitizedSend(

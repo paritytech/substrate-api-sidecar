@@ -51,9 +51,6 @@ async function main() {
 		}`
 	);
 
-	const handler = new ApiHandler(api);
-	const app = express();
-
 	console.log(
 		`Connecting to ${chainName.toString()} via ${config.NAME} at ${
 			config.WS_URL

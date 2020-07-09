@@ -49,10 +49,9 @@ export default class VestingController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getAccountVestingSummary: RequestHandler<IAddressParam> = async (
-		req,
+		{ params: { address } },
 		res
 	): Promise<void> => {
-		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		res.send(await this.handler.fetchVesting(hash, address));

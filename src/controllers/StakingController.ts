@@ -30,10 +30,9 @@ export default class StakingController extends AbstractController {
 	 * @param res Express Response
 	 */
 	private getAccountStakingSummary: RequestHandler<IAddressParam> = async (
-		req,
+		{ params: { address } },
 		res
 	): Promise<void> => {
-		const { address } = req.params;
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		StakingController.sanitizedSend(

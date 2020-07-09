@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 
 import ApiHandler from '../ApiHandler';
-import { RequestHandlerTx } from '../types/request_types';
+import { IPostRequestHandler, ITx } from '../types/request_types';
 import AbstractController from './AbstractController';
 
 /**
@@ -39,14 +39,16 @@ export default class TxSubmitController extends AbstractController {
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txSubmit: RequestHandlerTx = async (req, res): Promise<void> => {
-		const { tx } = req.body;
+	private txSubmit: IPostRequestHandler<ITx> = async (
+		{ body: { tx } },
+		res
+	): Promise<void> => {
 		if (!tx) {
 			throw {
 				error: 'Missing field `tx` on request body.',
 			};
 		}
 
-		TxSubmitController.sanitizedSend(res, await this.handler.submitTx(tx));
+		res.send(await this.handler.submitTx(tx));
 	};
 }
