@@ -6,12 +6,14 @@ import {
 	BTreeSet,
 	Compact,
 	Enum,
+	HashMap,
 	Set as CodecSet,
 	Struct,
 } from '@polkadot/types';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import Option from '@polkadot/types/codec/Option';
 import { AnyJson, Codec } from '@polkadot/types/types';
+import * as BN from 'bn.js';
 
 export function parseBlockNumber(n: string): number {
 	const num = Number(n);
@@ -71,6 +73,28 @@ export function sanitizeNumbers(data: any): any {
 		}, {} as Record<string, AnyJson>);
 	}
 
+	if (data instanceof HashMap || data instanceof Map) {
+		const jsonMap: AnyJson = {};
+
+		data.forEach((value: unknown, key: unknown) => {
+			const nonCodecKey = sanitizeNumbers(key);
+			if (
+				!(
+					typeof nonCodecKey === 'string' ||
+					typeof nonCodecKey === 'number'
+				)
+			) {
+				console.error(
+					'Unexpected non-string and non-number key while sanitizing a Map-like type'
+				);
+			}
+
+			jsonMap[nonCodecKey] = sanitizeNumbers(value);
+		});
+
+		return jsonMap;
+	}
+
 	if (data instanceof CodecSet) {
 		// CodecSet is essentially just a JS Set<string>
 		return data.strings;
@@ -85,7 +109,11 @@ export function sanitizeNumbers(data: any): any {
 		return jsonSet;
 	}
 
-	if (typeof data === 'number' || data instanceof AbstractInt) {
+	if (
+		typeof data === 'number' ||
+		data instanceof AbstractInt ||
+		data instanceof BN
+	) {
 		return data.toString(10);
 	}
 
