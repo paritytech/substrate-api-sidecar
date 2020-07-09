@@ -2,10 +2,9 @@ import {
 	BTreeSet,
 	Compact,
 	Enum,
-	Null,
 	Option,
-	Set as CodecSet,
 	// Result,
+	Set as CodecSet,
 	Struct,
 } from '@polkadot/types';
 import AbstractArray from '@polkadot/types/codec/AbstractArray';
@@ -14,7 +13,11 @@ import CodecMap from '@polkadot/types/codec/Map';
 import StructAny from '@polkadot/types/codec/StructAny';
 import { AnyJson, Codec } from '@polkadot/types/types';
 import { isObject } from '@polkadot/util';
+import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
+
+// import { isCodec } from './is';
+import { isAnyJson, isCodec } from './is';
 
 /**
  * Forcibly serialize all instances of AbstractInt to base 10.
@@ -25,21 +28,16 @@ function sanitizeCodec(value: Codec): AnyJson {
 	// If objects have an overlapping prototype chain
 	// we check lower down the chain first. More specific before less specific.
 
-	// Check Option and Result before Enum because they extend Enum
 	if (value instanceof Option) {
-		// Throughout sanitizeCodec we prefer using sanitizeNumbers because the
-		// additional type guards within are more robust than calling sanitizeCodec
 		return value.isSome ? sanitizeNumbers(value.unwrap()) : null;
 	}
 
-	// For the sake of API consistency this is staying out for now
-	// if (value instanceof Result) {
-	// 	// TODO - I am assuming for an empty OK() we just want null - is this correct?
-	// 	// We could also do `ok: null`
-	// 	if (value.isEmpty || value.isBasic) {
-	// 		return null;
-	// 	}
+	if (value instanceof Compact) {
+		return sanitizeNumbers(value.unwrap());
+	}
 
+	// // For the sake of API consistency this is staying out for now
+	// if (value instanceof Result) {
 	// 	return value.isOk
 	// 		? sanitizeNumbers(value.asOk)
 	// 		: sanitizeNumbers(value.asError);
@@ -52,7 +50,6 @@ function sanitizeCodec(value: Codec): AnyJson {
 			if (!property) {
 				return jsonStruct;
 			}
-
 			jsonStruct[key] = sanitizeNumbers(property);
 			return jsonStruct;
 		}, {} as Record<string, AnyJson>);
@@ -64,6 +61,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		value.forEach((element, prop) => {
 			jsonStructAny[prop] = sanitizeNumbers(element);
 		});
+		return jsonStructAny;
 	}
 
 	if (value instanceof Enum) {
@@ -74,9 +72,8 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return { [value.type]: sanitizeNumbers(value.value) };
 	}
 
-	// Note CodecSet case not needed because all values are strings
 	if (value instanceof BTreeSet) {
-		const jsonSet: AnyJson = [];
+		const jsonSet: AnyJson[] = [];
 
 		value.forEach((element: Codec) => {
 			jsonSet.push(sanitizeNumbers(element));
@@ -89,42 +86,10 @@ function sanitizeCodec(value: Codec): AnyJson {
 		// CodecSet is essentially just a JS Set<string>
 		return value.strings;
 	}
-	if (value instanceof Set) {
-		const jsonSet = [];
-
-		for (const element of value) {
-			jsonSet.push(sanitizeNumbers(element));
-		}
-
-		return jsonSet;
-	}
 
 	// Should cover BTreeMap and HashMap
 	if (value instanceof CodecMap) {
-		const jsonMap: AnyJson = {};
-
-		// key, value implement Codec
-		value.forEach((value: Codec, key: Codec) => {
-			const nonCodecKey = sanitizeNumbers(key);
-			if (
-				!(
-					typeof nonCodecKey === 'string' ||
-					typeof nonCodecKey === 'number'
-				)
-			) {
-				throw new InternalServerError(
-					'Unexpected non-string and non-number key while sanitizing a CodecMap'
-				);
-			}
-
-			jsonMap[nonCodecKey] = sanitizeNumbers(value);
-		});
-
-		return jsonMap;
-	}
-
-	if (value instanceof Compact) {
-		return sanitizeNumbers(value.unwrap());
+		return mapTypeSanitizeKeyValue(value);
 	}
 
 	// Should cover Vec, VecAny, VecFixed, Tuple
@@ -137,12 +102,12 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return value.toString(10);
 	}
 
-	// All other codecs are probably not nested
+	// All other codecs are not nested
 	return value.toJSON();
 }
 
 /**
- *Forcibly serialize all instances of AbstractInt to base 10 and otherwise
+ * Forcibly serialize all instances of AbstractInt to base 10 and otherwise
  * normalize data presentation to AnyJson. Under the hood AbstractInto is
  * a BN.js, which has a .toString(radix) that lets us convert to base 10.
  * The likely reason for the inconsistency in polkadot-js natives .toJSON
@@ -171,11 +136,20 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		return jsonSet;
 	}
 
+	if (data instanceof Map) {
+		return mapTypeSanitizeKeyValue(data);
+	}
+
+	if (data instanceof BN) {
+		return data.toString(10);
+	}
+
 	if (Array.isArray(data)) {
 		return data.map(sanitizeNumbers);
 	}
 
 	// Pretty much everything is an object so we need to check this last
+
 	if (isObject(data)) {
 		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
 			sanitizedObject[key] = sanitizeNumbers(value);
@@ -183,79 +157,42 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		}, {} as { [prop: string]: AnyJson });
 	}
 
-	// N.B. After some sustained testing, it makes sense to remove this
+	// TODO After some sustained testing, it makes sense to remove this
 	// since it is expensive
 	if (!isAnyJson(data)) {
-		console.error('Sanitized data could not be forced to `AnyJson`');
+		console.error('data could not be forced to `AnyJson` `sanitizeNumber`');
 		console.error(data);
-		throw new InternalServerError(
-			'Sanitized data could not be serialized to `AnyJson`'
-		);
 	}
 
 	// If we have gotten to here than it is not a Codec, Array or Object
 	// so likely it is string, number, boolean, null, or undefined
-	return data;
+	return data as AnyJson;
 }
 
-function isAnyJson(thing: unknown): thing is AnyJson {
-	return (
-		thing === null ||
-		thing === undefined ||
-		typeof thing === 'string' ||
-		typeof thing === 'boolean' ||
-		typeof thing === 'number' ||
-		isArrayAnyJson(thing) ||
-		isObjectAnyJson(thing)
-	);
-}
+/**
+ * Sanitize both the key and values of a map based type, ensuring that the key
+ * is either a number or string.
+ *
+ * @param map Map | CodecMap
+ */
+function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
+	const jsonMap: AnyJson = {};
 
-function isArrayAnyJson(thing: unknown): thing is AnyJson[] {
-	if (!(thing && Array.isArray(thing))) {
-		return false;
-	}
-
-	for (const element of thing) {
-		if (!isAnyJson(element)) {
-			return false;
+	map.forEach((value: unknown, key: unknown) => {
+		const nonCodecKey = sanitizeNumbers(key);
+		if (
+			!(
+				typeof nonCodecKey === 'string' ||
+				typeof nonCodecKey === 'number'
+			)
+		) {
+			throw new InternalServerError(
+				'Unexpected non-string and non-number key while sanitizing a CodecMap'
+			);
 		}
-	}
 
-	return true;
-}
+		jsonMap[nonCodecKey] = sanitizeNumbers(value);
+	});
 
-function isObjectAnyJson(thing: unknown): thing is { [i: string]: AnyJson } {
-	if (!(thing && isObject(thing))) {
-		return false;
-	}
-
-	for (const value of Object.values(thing)) {
-		if (!isAnyJson(value)) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-function isCodec(thing: unknown): thing is Codec {
-	if (thing instanceof Null) {
-		// Null does not implement hash so this is a workaround for now
-		return true;
-	}
-
-	return (
-		thing &&
-		(thing as Codec).encodedLength !== undefined &&
-		(thing as Codec).hash !== undefined &&
-		(thing as Codec).registry !== undefined &&
-		(thing as Codec).isEmpty !== undefined &&
-		typeof (thing as Codec).eq === 'function' &&
-		typeof (thing as Codec).toHex === 'function' &&
-		typeof (thing as Codec).toHuman === 'function' &&
-		typeof (thing as Codec).toJSON === 'function' &&
-		typeof (thing as Codec).toRawType === 'function' &&
-		typeof (thing as Codec).toString === 'function' &&
-		typeof (thing as Codec).toU8a === 'function'
-	);
+	return jsonMap;
 }

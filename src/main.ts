@@ -76,8 +76,7 @@ async function main() {
 
 	function get(
 		path: string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		cb: (params: core.ParamsDictionary) => Promise<any>
+		cb: (params: core.ParamsDictionary) => Promise<unknown>
 	) {
 		app.get(path, async (req, res, next) => {
 			try {
@@ -92,10 +91,8 @@ async function main() {
 		path: string,
 		cb: (
 			params: core.ParamsDictionary,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			body: TxRequestBody
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		) => Promise<any>
+		) => Promise<unknown>
 	) {
 		app.post(path, async (req: TxRequest, res, next) => {
 			try {
