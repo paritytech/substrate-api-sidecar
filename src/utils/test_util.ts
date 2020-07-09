@@ -36,8 +36,9 @@ export const MIN_I64 = '-9223372036854775808';
 
 export const MAX_U32 = '4294967295';
 
-export const MIN_I32 = '-2147483648';
 export const MAX_I32 = '2147483647';
+export const MIN_I32 = '-2147483648';
+
 /**
  * An 'at' object, which has not been sanitized by `sanitizeNumbers`.
  */
@@ -91,6 +92,6 @@ export const PRE_SANITIZED_RUNTIME_DISPATCH_INFO = kusamaRegistry.createType(
 	{
 		weight: MAX_U64,
 		class: 'operational',
-		partialFee: '0xffffffffffffffffffffffffffffffff',
+		partialFee: MAX_U128,
 	}
 );
