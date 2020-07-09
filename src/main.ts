@@ -40,7 +40,19 @@ async function main() {
 		types: config.CUSTOM_TYPES,
 	});
 
-	const chainName = await api.rpc.system.chain();
+	const [chainName, { implName }] = await Promise.all([
+		await api.rpc.system.chain(),
+		await api.rpc.state.getRuntimeVersion(),
+	]);
+
+	console.log(
+		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
+			config.WS_URL
+		}`
+	);
+
+	const handler = new ApiHandler(api);
+	const app = express();
 
 	console.log(
 		`Connecting to ${chainName.toString()} via ${config.NAME} at ${
