@@ -230,13 +230,11 @@ export default class ApiHandler {
 				const xtEvents = extrinsics[idx].events;
 				const completedEvent = xtEvents.find(
 					(event) =>
-						event.method === successEvent ||
-						event.method === failureEvent
+						event.method === successEvent || event.method === failureEvent
 				);
 				if (!completedEvent) {
 					extrinsics[idx].info = {
-						error:
-							'Unable to find success or failure event for extrinsic',
+						error: 'Unable to find success or failure event for extrinsic',
 					};
 
 					continue;
@@ -269,10 +267,7 @@ export default class ApiHandler {
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
-				const partialFee = calcFee.calc_fee(
-					BigInt(weight.toString()),
-					len
-				);
+				const partialFee = calcFee.calc_fee(BigInt(weight.toString()), len);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
@@ -540,10 +535,7 @@ export default class ApiHandler {
 		ethAddress: string
 	): Promise<null | { type: string }> {
 		const api = await this.ensureMeta(hash);
-		const agreementType = await api.query.claims.signing.at(
-			hash,
-			ethAddress
-		);
+		const agreementType = await api.query.claims.signing.at(hash, ethAddress);
 		if (agreementType.isEmpty) {
 			return null;
 		}
@@ -556,13 +548,7 @@ export default class ApiHandler {
 	async fetchTxArtifacts(hash: BlockHash): Promise<ITxConstructionMaterial> {
 		const api = await this.ensureMeta(hash);
 
-		const [
-			header,
-			metadata,
-			genesisHash,
-			name,
-			version,
-		] = await Promise.all([
+		const [header, metadata, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),
@@ -683,12 +669,7 @@ export default class ApiHandler {
 				const chain = await api.rpc.system.chain();
 
 				api.registry.register(
-					getSpecTypes(
-						api.registry,
-						chain,
-						version.specName,
-						blockSpecVersion
-					)
+					getSpecTypes(api.registry, chain, version.specName, blockSpecVersion)
 				);
 				api.registry.setMetadata(meta);
 			}

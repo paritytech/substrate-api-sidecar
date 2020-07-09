@@ -62,10 +62,7 @@ describe('sanitizeNumbers', () => {
 	describe('javscript native', () => {
 		describe('javascript types it cannot handle properly', () => {
 			it('does not handle WeakMap', () => {
-				const compact = new (Compact.with(U128))(
-					kusamaRegistry,
-					MAX_U128
-				);
+				const compact = new (Compact.with(U128))(kusamaRegistry, MAX_U128);
 				const map = new WeakMap()
 					.set({ x: 'x' }, compact)
 					.set({ y: 'y' }, new U128(kusamaRegistry, MAX_U128));
@@ -304,9 +301,7 @@ describe('sanitizeNumbers', () => {
 					kusamaRegistry,
 					'0x000000000000000004fe9f24a6a9c00'
 				);
-				expect(sanitizeNumbers(uIntPaddedHex)).toBe(
-					'22493750000000000'
-				);
+				expect(sanitizeNumbers(uIntPaddedHex)).toBe('22493750000000000');
 			});
 
 			it('converts U32', () => {
@@ -318,13 +313,9 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('converts I32', () => {
-				expect(sanitizeNumbers(new I32(kusamaRegistry, MIN_I32))).toBe(
-					MIN_I32
-				);
+				expect(sanitizeNumbers(new I32(kusamaRegistry, MIN_I32))).toBe(MIN_I32);
 
-				expect(sanitizeNumbers(new I32(kusamaRegistry, MAX_I32))).toBe(
-					MAX_I32
-				);
+				expect(sanitizeNumbers(new I32(kusamaRegistry, MAX_I32))).toBe(MAX_I32);
 			});
 
 			it('converts U64', () => {
@@ -336,13 +327,9 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('converts I64', () => {
-				expect(sanitizeNumbers(new I64(kusamaRegistry, MIN_I64))).toBe(
-					MIN_I64
-				);
+				expect(sanitizeNumbers(new I64(kusamaRegistry, MIN_I64))).toBe(MIN_I64);
 
-				expect(sanitizeNumbers(new I64(kusamaRegistry, MAX_I64))).toBe(
-					MAX_I64
-				);
+				expect(sanitizeNumbers(new I64(kusamaRegistry, MAX_I64))).toBe(MAX_I64);
 			});
 
 			it('converts U128', () => {
@@ -354,13 +341,13 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('converts II28', () => {
-				expect(
-					sanitizeNumbers(new I128(kusamaRegistry, MAX_I128))
-				).toBe(MAX_I128);
+				expect(sanitizeNumbers(new I128(kusamaRegistry, MAX_I128))).toBe(
+					MAX_I128
+				);
 
-				expect(
-					sanitizeNumbers(new I128(kusamaRegistry, MIN_I128))
-				).toBe(MIN_I128);
+				expect(sanitizeNumbers(new I128(kusamaRegistry, MIN_I128))).toBe(
+					MIN_I128
+				);
 			});
 		});
 
@@ -370,10 +357,7 @@ describe('sanitizeNumbers', () => {
 					new Text(kusamaRegistry, 'u32Max'),
 					new U32(kusamaRegistry, '0xffffffff')
 				)
-				.set(
-					new Text(kusamaRegistry, 'zero'),
-					new U32(kusamaRegistry, 0)
-				);
+				.set(new Text(kusamaRegistry, 'zero'), new U32(kusamaRegistry, 0));
 			const bTreeMapConstructor = BTreeMap.with(Text, U32);
 
 			it('converts BTreeMap and nested BTreeMap', () => {
@@ -421,9 +405,7 @@ describe('sanitizeNumbers', () => {
 
 			it('converts BTreeSet', () => {
 				const bTreeSet = new BTreeSet(kusamaRegistry, 'u64', U64Set);
-				expect(sanitizeNumbers(bTreeSet)).toStrictEqual(
-					sanitizedBTreeSet
-				);
+				expect(sanitizeNumbers(bTreeSet)).toStrictEqual(sanitizedBTreeSet);
 			});
 
 			it('converts nested BTreeSet', () => {
@@ -444,21 +426,15 @@ describe('sanitizeNumbers', () => {
 		it('converts an assortment of Compact values', () => {
 			const wednesday = kusamaRegistry.createType('Moment', 1537968546);
 			expect(
-				sanitizeNumbers(
-					new (Compact.with('Moment'))(kusamaRegistry, wednesday)
-				)
+				sanitizeNumbers(new (Compact.with('Moment'))(kusamaRegistry, wednesday))
 			).toBe('1537968546');
 
 			expect(
-				sanitizeNumbers(
-					new (Compact.with(U32))(kusamaRegistry, MAX_U32)
-				)
+				sanitizeNumbers(new (Compact.with(U32))(kusamaRegistry, MAX_U32))
 			).toBe(MAX_U32);
 
 			expect(
-				sanitizeNumbers(
-					new (Compact.with(U128))(kusamaRegistry, MAX_U128)
-				)
+				sanitizeNumbers(new (Compact.with(U128))(kusamaRegistry, MAX_U128))
 			).toBe(MAX_U128);
 		});
 
@@ -537,7 +513,10 @@ describe('sanitizeNumbers', () => {
 		});
 
 		describe('Result', () => {
-			const ResultConstructor = Result.with({ Error: Text, Ok: U128 });
+			const ResultConstructor = Result.with({
+				Error: Text,
+				Ok: U128,
+			});
 			const message = new Text(kusamaRegistry, 'message');
 			const maxU128 = new U128(kusamaRegistry, MAX_U128);
 
@@ -618,10 +597,7 @@ describe('sanitizeNumbers', () => {
 				full: 1,
 				authority: 3,
 			};
-			const set = new CodecSet(kusamaRegistry, setRoles, [
-				'full',
-				'authority',
-			]);
+			const set = new CodecSet(kusamaRegistry, setRoles, ['full', 'authority']);
 			expect(sanitizeNumbers(set)).toStrictEqual(['full', 'authority']);
 		});
 
@@ -713,11 +689,7 @@ describe('sanitizeNumbers', () => {
 
 		describe('Tuple', () => {
 			it('converts a simple Tuple', () => {
-				const tuple = new Tuple(
-					kusamaRegistry,
-					[Text, U128],
-					['xX', MAX_U128]
-				);
+				const tuple = new Tuple(kusamaRegistry, [Text, U128], ['xX', MAX_U128]);
 
 				expect(sanitizeNumbers(tuple)).toStrictEqual(['xX', MAX_U128]);
 			});
@@ -818,10 +790,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts Index and Compact<Index>', () => {
-			const IndexPadded = kusamaRegistry.createType(
-				'Index',
-				'0x00000384'
-			);
+			const IndexPadded = kusamaRegistry.createType('Index', '0x00000384');
 			expect(sanitizeNumbers(IndexPadded)).toBe('900');
 
 			const IndexMax = kusamaRegistry.createType('Index', '0x7FFFFFFF');
@@ -867,9 +836,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts a staking response', () => {
-			expect(
-				sanitizeNumbers(PRE_SANITIZED_STAKING_RESPONSE)
-			).toStrictEqual({
+			expect(sanitizeNumbers(PRE_SANITIZED_STAKING_RESPONSE)).toStrictEqual({
 				at: {
 					hash:
 						'0x5f2a8b33c24368148982c37aefe77d5724f5aca0bcae1a599e2a4634c1f0fab2',
@@ -896,9 +863,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts Option<VestingInfo>', () => {
-			expect(
-				sanitizeNumbers(PRE_SANITIZED_OPTION_VESTING_INFO)
-			).toStrictEqual({
+			expect(sanitizeNumbers(PRE_SANITIZED_OPTION_VESTING_INFO)).toStrictEqual({
 				locked: '71857424040631296',
 				perBlock: '71857424040628480',
 				startingBlock: '299694200',

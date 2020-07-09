@@ -79,10 +79,7 @@ export function sanitizeNumbers(data: any): any {
 		data.forEach((value: unknown, key: unknown) => {
 			const nonCodecKey = sanitizeNumbers(key);
 			if (
-				!(
-					typeof nonCodecKey === 'string' ||
-					typeof nonCodecKey === 'number'
-				)
+				!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')
 			) {
 				console.error(
 					'Unexpected non-string and non-number key while sanitizing a Map-like type'

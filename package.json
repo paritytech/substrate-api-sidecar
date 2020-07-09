@@ -17,11 +17,10 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@amaurymartiny/config": "^1.3.0",
     "@polkadot/api": "^1.23.0-beta.2",
     "@polkadot/calc-fee": "file:./calc-fee/pkg",
-    "@polkadot/metadata": "1.23.0-beta.2",
-    "@polkadot/rpc-provider": "1.23.0-beta.2",
+    "@polkadot/metadata": "1.23.1",
+    "@polkadot/rpc-provider": "1.23.1",
     "@polkadot/types": "^1.23.0-beta.2",
     "@polkadot/util-crypto": "^2.16.1",
     "@types/body-parser": "^1.19.0",
@@ -38,7 +37,14 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/parser": "^3.5.0",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-simple-import-sort": "^5.0.3",
     "jest": "^26.0.1",
+    "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
     "tsc-watch": "^4.2.8"
   }

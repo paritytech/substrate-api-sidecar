@@ -118,8 +118,7 @@ async function main() {
 	get(
 		'/',
 		// eslint-disable-next-line @typescript-eslint/require-await
-		async () =>
-			'Sidecar is running, go to /block to get latest finalized block'
+		async () => 'Sidecar is running, go to /block to get latest finalized block'
 	);
 
 	// GET a block.

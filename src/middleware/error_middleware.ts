@@ -109,9 +109,9 @@ export const legacyErrorMiddleware: ErrorRequestHandler = (
 	}
 
 	if (isLegacyError(err)) {
-		res.status(err.statusCode).send(
-			HttpErrorConstructor(err.statusCode, err.error)
-		);
+		res
+			.status(err.statusCode)
+			.send(HttpErrorConstructor(err.statusCode, err.error));
 		return;
 	}
 
