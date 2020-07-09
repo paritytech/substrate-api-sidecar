@@ -50,12 +50,21 @@ async function main() {
 
 	const config: ISidecarConfig = configOrNull;
 
-	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
-
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
 		types: config.CUSTOM_TYPES,
 	});
+
+	const [chainName, { implName }] = await Promise.all([
+		await api.rpc.system.chain(),
+		await api.rpc.state.getRuntimeVersion(),
+	]);
+
+	console.log(
+		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
+			config.WS_URL
+		}`
+	);
 
 	const handler = new ApiHandler(api);
 	const app = express();
