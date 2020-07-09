@@ -169,5 +169,6 @@ curl -s http://127.0.0.1:8080/block | jq
 
 We welcome contributions. Before submitting your PR, make sure to run the following commands:
 
-- `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to automatically fix some of those errors.
+- `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
+  automatically fix some of those errors.
 - `yarn test`: Make sure all tests pass.
