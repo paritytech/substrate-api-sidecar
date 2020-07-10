@@ -495,7 +495,7 @@
     memoizee "^0.4.14"
     rxjs "^6.6.0"
 
-"@polkadot/api@1.23.1", "@polkadot/api@^1.23.0-beta.2":
+"@polkadot/api@1.23.1", "@polkadot/api@^1.23.1":
   version "1.23.1"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-1.23.1.tgz#8cf8c0bd95c6709e815e16c0b296e7a997db6f4e"
   integrity sha512-ecO6G5RCmrwEm83YTwZNdpOR0xH32KU8M56qs9ltHrbH811ab8P+a62BDw7YywJkGJXC/p5/3eey2KKQRmSudg==
@@ -526,7 +526,7 @@
     "@polkadot/util" "2.17.1"
     "@polkadot/util-crypto" "2.17.1"
 
-"@polkadot/metadata@1.23.1":
+"@polkadot/metadata@1.23.1", "@polkadot/metadata@^1.23.1":
   version "1.23.1"
   resolved "https://registry.yarnpkg.com/@polkadot/metadata/-/metadata-1.23.1.tgz#5ac5896871d5b27301a16bd881b262024aebea98"
   integrity sha512-Ga5ETV5MPA+hWsSV5zRkg+jW7+m8M0hZ3kIZLGurq7Kv7yNLK300RFWBTcjm+5VekjFeO0OlXyV99MZX2BVq4w==
@@ -551,7 +551,7 @@
     memoizee "^0.4.14"
     rxjs "^6.6.0"
 
-"@polkadot/rpc-provider@1.23.1":
+"@polkadot/rpc-provider@1.23.1", "@polkadot/rpc-provider@^1.23.1":
   version "1.23.1"
   resolved "https://registry.yarnpkg.com/@polkadot/rpc-provider/-/rpc-provider-1.23.1.tgz#65931d171af4989d5620218c67dfde6bca20390f"
   integrity sha512-Jn9sYxZvvCd2rFRxgxVFp8zKxAV0qZsk1qk2WD062wyXL5qt9nr4Bo1mY5bBBxzqso3RCYyJKDg7jDr9WpEPsw==
@@ -576,7 +576,7 @@
     "@polkadot/util" "^2.17.1"
     bn.js "^5.1.2"
 
-"@polkadot/types@1.23.1", "@polkadot/types@^1.23.0-beta.2":
+"@polkadot/types@1.23.1", "@polkadot/types@^1.23.1":
   version "1.23.1"
   resolved "https://registry.yarnpkg.com/@polkadot/types/-/types-1.23.1.tgz#153e4564f269b69157ca4a573975937d2846310a"
   integrity sha512-ia0jGEmtdaWkaxMZnb5pHdvEYCwJwIV+YQpsEO/4k/GF85iIjSQ6UtLeTN3G925xvyBF9n8TpGqcRAhD5PCs6w==
@@ -590,7 +590,7 @@
     memoizee "^0.4.14"
     rxjs "^6.6.0"
 
-"@polkadot/util-crypto@2.17.1", "@polkadot/util-crypto@^2.16.1", "@polkadot/util-crypto@^2.17.1":
+"@polkadot/util-crypto@2.17.1", "@polkadot/util-crypto@^2.17.1":
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-2.17.1.tgz#c9c6b3d92ce506519061996850537514e97399f6"
   integrity sha512-sPSZ9Wx+m4FDKzc4u8nHwutE1NvHX438aaPpLtnQ/8DWrZ/Qxew6wBVEyijD4M/BADA2XsjJdUX8UeM1D7QhRw==
@@ -713,7 +713,7 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express@^4.17.2":
+"@types/express@^4.17.7":
   version "4.17.7"
   resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.7.tgz#42045be6475636d9801369cd4418ef65cdb0dd59"
   integrity sha512-dCOT5lcmV/uC2J9k0rPafATeeyz+99xTt54ReX11/LObZgfzJqZNcW27zGhYyX+9iSEGXGt5qLPwRSvBZcLvtQ==
@@ -842,7 +842,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^3.5.0":
+"@typescript-eslint/eslint-plugin@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-3.6.0.tgz#ba2b6cae478b8fca3f2e58ff1313e4198eea2d8a"
   integrity sha512-ubHlHVt1lsPQB/CZdEov9XuOFhNG9YRC//kuiS1cMQI6Bs1SsqKrEmZnpgRwthGR09/kEDtr9MywlqXyyYd8GA==
@@ -865,7 +865,7 @@
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
-"@typescript-eslint/parser@^3.5.0":
+"@typescript-eslint/parser@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-3.6.0.tgz#79b5232e1a2d06f1fc745942b690cd87aca7b60e"
   integrity sha512-taghDxuLhbDAD1U5Fk8vF+MnR0yiFE9Z3v2/bYScFb0N1I9SK8eKHkdJl1DAD48OGFDMFTeOTX0z7g0W6SYUXw==
@@ -3196,7 +3196,7 @@ jest-worker@^26.1.0:
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
 
-jest@^26.0.1:
+jest@^26.1.0:
   version "26.1.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-26.1.0.tgz#2f3aa7bcffb9bfd025473f83bbbf46a3af026263"
   integrity sha512-LIti8jppw5BcQvmNJe4w2g1N/3V68HUfAv9zDVm7v+VAtQulGhH0LnmmiVkbNE4M4I43Bj2fXPiBGKt26k9tHw==
@@ -4787,7 +4787,7 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-ts-jest@^26.1.0:
+ts-jest@^26.1.1:
   version "26.1.1"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-26.1.1.tgz#b98569b8a4d4025d966b3d40c81986dd1c510f8d"
   integrity sha512-Lk/357quLg5jJFyBQLnSbhycnB3FPe+e9i7ahxokyXxAYoB0q1pPmqxxRPYr4smJic1Rjcf7MXDBhZWgxlli0A==
@@ -4803,7 +4803,7 @@ ts-jest@^26.1.0:
     semver "7.x"
     yargs-parser "18.x"
 
-tsc-watch@^4.2.8:
+tsc-watch@^4.2.9:
   version "4.2.9"
   resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-4.2.9.tgz#d93fc74233ca4ef7ee6b12d08c0fe6aca3e19044"
   integrity sha512-DlTaoDs74+KUpyWr7dCGhuscAUKCz6CiFduBN7R9RbLJSSN1moWdwoCLASE7+zLgGvV5AwXfYDiEMAsPGaO+Vw==
@@ -4902,7 +4902,7 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@3.9.6, typescript@^3.9.5:
+typescript@3.9.6, typescript@^3.9.6:
   version "3.9.6"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.6.tgz#8f3e0198a34c3ae17091b35571d3afd31999365a"
   integrity sha512-Pspx3oKAPJtjNwE92YS05HQoY7z2SFyOpHo9MqJor3BXAGNaPUs83CuVp9VISFkSjyRfiTpmKuAYGJB7S7hOxw==
