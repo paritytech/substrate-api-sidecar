@@ -51,12 +51,6 @@ async function main() {
 		}`
 	);
 
-	console.log(
-		`Connecting to ${chainName.toString()} via ${config.NAME} at ${
-			config.WS_URL
-		}`
-	);
-
 	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
