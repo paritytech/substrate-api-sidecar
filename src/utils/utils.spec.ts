@@ -537,7 +537,10 @@ describe('sanitizeNumbers', () => {
 		});
 
 		describe('Result', () => {
-			const ResultConstructor = Result.with({ Error: Text, Ok: U128 });
+			const ResultConstructor = Result.with({
+				Error: Text,
+				Ok: U128,
+			});
 			const message = new Text(kusamaRegistry, 'message');
 			const maxU128 = new U128(kusamaRegistry, MAX_U128);
 
