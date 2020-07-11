@@ -41,7 +41,7 @@ export const MIN_I32 = '-2147483648';
 
 export const MAX_U16 = '65535';
 
-export const MAX_I16 = '65535';
+export const MAX_I16 = '32767';
 export const MIN_I16 = '-32768';
 
 export const MAX_U8 = '255';
