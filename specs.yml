@@ -1,0 +1,23 @@
+SAS:
+  EXPRESS:
+    LOG_MODE:
+      description: Log level
+      default: errors
+      regexp: ^error|all|none$
+
+    BIND_HOST:
+      description: Network interface we bind to
+      default: 127.0.0.1
+      type: string
+
+    PORT:
+      description: Port of the web service
+      default: 8080
+      type: number
+      regexp: ^\d{2,6}$
+
+  SUBSTRATE:
+    WS_URL:
+      description: Websocket URL
+      default: ws://127.0.0.1:9944
+      regexp: ^wss?:\/\/.*(:\d{4,5})?$
