@@ -21,10 +21,10 @@ const promiseBlockHash = (num: number): Promise<BlockHash> =>
 	});
 
 const promiseHeader = (): Promise<{ number: Compact<BlockNumber> }> =>
-	new Promise((resolve, _reject) => {
-		resolve({
+	Promise.resolve().then(() => {
+		return {
 			number: kusamaRegistry.createType('Compact<BlockNumber>', 100),
-		});
+		};
 	});
 
 const api = {
