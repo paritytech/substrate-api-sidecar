@@ -128,7 +128,7 @@ export default abstract class AbstractController {
 				.getHeader()
 				.catch(() => {
 					throw new InternalServerError(
-						'Failed while trying to get the latests header.'
+						'Failed while trying to get the latest header.'
 					);
 				});
 			if (blockNumber && number.toNumber() < blockNumber) {
