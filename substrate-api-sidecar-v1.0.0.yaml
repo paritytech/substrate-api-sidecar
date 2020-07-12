@@ -13,18 +13,13 @@ info:
 tags:
   - name: accounts
   - name: blocks
-  - name: claims
-    description: Ethereum claims
-  - name: client
-    description: client connected to sidecar
-  - name: systems
-    description: systems contributing to building the chain and securing the network
-  - name: tx-construction
-    description: tools for creating and submitting signed extrinsics
+  - name: node
+    description: node connected to sidecar
+  - name: transactions
   - name: pallets
     description: pallets employed in the runtime
 paths:
-  '/accounts/{accountId}/balance-summary':
+  '/accounts/{accountId}/balance-info':
     get:
       tags:
         - accounts
@@ -57,7 +52,7 @@ paths:
           description: invalid blockId supplied for at query param
         '404':
           description: Account not found
-  '/accounts/{accountId}/staking-summary':
+  '/accounts/{accountId}/staking-info':
     get:
       tags:
       - accounts
@@ -92,7 +87,7 @@ paths:
           description: invalid blockId supplied for at query param
         '404':
           description: Account not found
-  '/accounts/{accountId}/vesting-summary':
+  '/accounts/{accountId}/vesting-info':
     get:
       tags:
       - accounts
@@ -131,7 +126,7 @@ paths:
         - blocks
       summary: Find a block by ID
       description: >-
-        Returns a single block. BlockId can be either a block hash or a block
+        Returns a single block. BlockId can either be a block hash or a block
         height.
       operationId: getBlockById
       parameters:
@@ -152,13 +147,23 @@ paths:
           description: Invalid block ID supplied
         '404':
           description: Block not found
-  /blocks/latest:
+  /blocks/head:
     get:
       tags:
         - blocks
-      summary: Get the most recently produced block
-      description: Returns the latest block
-      operationId: getLatestBlock
+      summary: Get the most recently finalized block
+      description: Returns the most recently finalized block
+      operationId: getHeadBlock
+      parameters:
+      - in: query
+        name: finalized
+        description: >-
+          Boolean representing wether or not to get the finalized head. If it
+          is not set the value defaults to true. When set to false it will
+          attempt to get the newest known block, which may not be finalized.
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: successful operation
@@ -166,50 +171,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Block'
-  '/claims/{ethereumAddress}':
+  /node/health:
     get:
       tags:
-      - claims
-      summary: Get the claims type for an Ethereum address.
-      description: >-
-        Returns the claims type for an Ethereum address that was involved
-        in a pre-launch sale.
-      operationId: getClaimsTypeByEtheAddress
-      parameters:
-      - in: path
-        name: ethereumAddress
-        description: Ethereum address that holds a DOT claim.
-        required: true
-        schema:
-          type: string
-      - in: query
-        name: at
-        description: Historic block to make query at.
-        required: false
-        schema:
-          type: string
-          format: unsignedInteger or $hex 
-          description: block identifier
+      - node
+      summary: TODO fill me out
+      description: getNodeHealth
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClaimsType'
-        '400':
-          description: invalid blockId supplied for at query param
-        '404':
-          description: Ethereum address not found
-  /client/mempool:
+                type: object #TODO make a component for me
+  /node/networking:
     get:
       tags:
-        - client
+      - node
+      summary: TODO fill me out
+      description: TODO fill me out
+      operationId: getNodeNetworking
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object #TODO make a component for me
+  /node/tx-pool:
+    get:
+      tags:
+        - node
       summary: Get the mempool of the client.
       description: >-
         Returns the extrinsics that the client knows of that have not been
         included in a block.
-      operationId: getMempool
+      operationId: getNodeTxPool
       responses:
         '200':
           description: successful operation
@@ -219,37 +216,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Extrinsic'
-  /systems/staking/progress:
+  /node/version:
     get:
       tags:
-        - systems
-      summary: Get a progress report on the chains staking system.
-      description: >-
-        Returns information on the progress of key components of the staking
-        system and estimates of future progress points.
-      operationId: getSystemStakingProgress
-      parameters:
-        - name: at
-          in: query
-          description: Historic block to make query at.
-          required: false
-          schema:
-            type: string
-            format: unsignedInteger or $hex
-            description: block identifier, as the block height or block hash.
+      - node
+      summary: TODO fill me out
+      description: TODO fill me out
+      operationId: getNodeVersion
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SystemsStakingProgress'
-        '400':
-          description: invalid blockId supplied for at query param
-  /tx-construction/submit:
+                type: object #TODO make a component for me
+  /transactions:
     post:
       tags:
-        - tx-construction
+        - transactions
       summary: Submit a transaction to be included in the blockchain
       description: Accepts a valid signed extrinsic
       operationId: submitTx
@@ -268,10 +252,10 @@ paths:
                 $ref: '#/components/schemas/TxFailure'
       requestBody:
         $ref: '#/components/requestBodies/Tx'
-  /tx-construction/dryrun:
+  /transactions/dry-run:
     post:
       tags:
-        - tx-construction
+        - transactions
       summary: dry run an extrinsic
       description: >-
         Use the dryrun call to practice submission of a transaction. A fee will
@@ -288,10 +272,10 @@ paths:
                 $ref: '#/components/schemas/TxFailure'
       requestBody:
         $ref: '#/components/requestBodies/Tx'
-  /tx-construction/fee-estimate:
+  /transactions/fee-estimate:
     post:
       tags:
-        - tx-construction
+        - transactions
       summary: Receive a fee estimate for a transaction.
       description: Send a serialized transaction and receive back a naive fee estimate.
       responses:
@@ -307,10 +291,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TxFailure'
-  /tx-construction/material:
+  /transactions/material:
     get:
       tags:
-        - tx-construction
+        - transactions
       summary: Get the baseline material to construct a transaction.
       description: >-
         Returns the material that is universal to constructing any signed
@@ -332,6 +316,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TxMaterial'
+        '400':
+          description: invalid blockId supplied for at query param
+  /pallets/staking/progress:
+    get:
+      tags:
+        - pallets
+        - staking
+      summary: Get a progress report on the chains staking system.
+      description: >-
+        Returns information on the progress of key components of the staking
+        system and estimates of future progress points.
+      operationId: getStakingProgress
+      parameters:
+        - name: at
+          in: query
+          description: Historic block to make query at.
+          required: false
+          schema:
+            type: string
+            format: unsignedInteger or $hex
+            description: block identifier, as the block height or block hash.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StakingProgress'
         '400':
           description: invalid blockId supplied for at query param
   /pallets:
@@ -369,7 +381,7 @@ paths:
       summary: Get a list of the queryable storage items for a pallet.
       description: >-
         Returns a list of storageItemIds for queryable storage
-        items for the specified palletId.
+        items of the specified palletId.
       parameters:
       - name: palletId
         in: path
@@ -395,44 +407,6 @@ paths:
                 items:
                   type: string
                 description: Array of storageItemIds.
-        '400':
-          description: invalid blockId supplied for at query param
-  '/pallets/{palletId}/constants/{constantId}':
-    get:
-      tags:
-      - pallets
-      summary: Get the value of a constant.
-      description: Returns the value stored under the constantId.
-      parameters:
-      - name: palletId
-        in: path
-        description: Id of the pallet to query the constant of.
-        required: true
-        schema:
-          type: string
-      - name: constantId
-        in: path
-        description: Id of the constant to query for.
-        required: true
-        schema:
-          type: string
-      - name: at
-        in: query
-        description: Historic block to make query at.
-        required: false
-        schema:
-          type: string
-          format: unsignedInteger or $hex
-          description: block identifier, as the block height or block hash.
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                description: >-
-                  Successful query response type is dependent on the constants value.
         '400':
           description: invalid blockId supplied for at query param
   '/pallets/{palletId}/storage/{storageItemId}':
@@ -489,6 +463,78 @@ paths:
                 type: object
                 description: >-
                   Successful query response type is dependent on the storage item value.
+        '400':
+          description: invalid blockId supplied for at query param
+  '/pallets/{palletId}/constants':
+    get:
+      tags:
+      - pallets
+      summary: Get a list of the queryable constants for a pallet.
+      description: >-
+        Returns a list of constantIds for queryable storage items of
+        the specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Id of the pallet to query the constant of.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Historic block to make query at.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger or $hex
+          description: block identifier, as the block height or block hash.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Successful query response type is dependent on the constants value.
+        '400':
+          description: invalid blockId supplied for at query param
+  '/pallets/{palletId}/constants/{constantId}':
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a constant.
+      description: Returns the value stored under the constantId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Id of the pallet to query the constant of.
+        required: true
+        schema:
+          type: string
+      - name: constantId
+        in: path
+        description: Id of the constant to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Historic block to make query at.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger or $hex
+          description: block identifier, as the block height or block hash.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Successful query response type is dependent on the constants value.
         '400':
           description: invalid blockId supplied for at query param
 components:
@@ -862,19 +908,7 @@ components:
           description: >-
             Upper bound estimate of the block height at which the `status` will
             switch.
-    ClaimsType:
-      type: object
-      properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
-        type:
-          type: string
-          enum:
-          - Regular
-          - Saft
-          description: >-
-            The type of claim. 'Regular' or 'Saft'.
-    SystemsStakingProgress:
+    StakingProgress:
       type: object
       properties:
         at:
