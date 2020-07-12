@@ -1,12 +1,9 @@
 import { ErrorRequestHandler } from 'express';
 import { HttpError, InternalServerError } from 'http-errors';
 import * as HttpErrorConstructor from 'http-errors';
+import { isTxError } from 'src/is/txError';
 
-import {
-	IBasicLegacyError,
-	ILegacyError,
-	ITxLegacyError,
-} from '../types/error_types';
+import { isBasicError, isLegacyError } from '../is';
 
 /**
  * Handle HttpError instances.
@@ -141,36 +138,3 @@ export const internalErrorMiddleware: ErrorRequestHandler = (
 
 	res.status(500).send(new InternalServerError('Internal Error'));
 };
-
-/**
- * Type guard to check if something is a subset of the interface LegacyError.
- *
- * @param thing to check type of
- */
-function isLegacyError(thing: unknown): thing is ILegacyError {
-	return (
-		(thing as ILegacyError).error !== undefined &&
-		(thing as ILegacyError).statusCode !== undefined
-	);
-}
-
-/**
- * Type guard to check if something is a subset of the interface BasicError.
- *
- * @param thing to check type of
- */
-function isBasicError(thing: unknown): thing is IBasicLegacyError {
-	return (thing as IBasicLegacyError).error !== undefined;
-}
-
-/**
- * Type guard to check if something is a subset of the interface TxError.
- *
- * @param thing to check type of
- */
-function isTxError(thing: unknown): thing is ITxLegacyError {
-	return (
-		(thing as ITxLegacyError).cause !== undefined &&
-		(thing as ITxLegacyError).error !== undefined
-	);
-}
