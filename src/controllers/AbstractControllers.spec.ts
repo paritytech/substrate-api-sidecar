@@ -193,9 +193,10 @@ describe('getHashForBlock', () => {
 			});
 
 		const mock = new MockController(api as ApiPromise, '/mock');
+		// We only try api.rpc.chain.getHeader when the block number is too high
 		await expect(mock['getHashForBlock']('101')).rejects.toEqual(
 			new InternalServerError(
-				'Failed while trying to get the latests header.'
+				'Failed while trying to get the latest header.'
 			)
 		);
 
