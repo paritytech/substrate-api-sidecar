@@ -17,7 +17,7 @@ import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
 // import { isCodec } from './is';
-import { isAnyJson, isCodec } from './is';
+import { isAnyJson, isCodec } from '../is';
 
 /**
  * Forcibly serialize all instances of AbstractInt to base 10.
