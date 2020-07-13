@@ -32,7 +32,7 @@ import U64 from '@polkadot/types/primitive/U64';
 import U128 from '@polkadot/types/primitive/U128';
 import * as BN from 'bn.js';
 
-import { sanitizeNumbers } from './sanitize';
+import { sanitizeNumbers } from './sanitizeNumbers';
 import {
 	kusamaRegistry,
 	MAX_I32,

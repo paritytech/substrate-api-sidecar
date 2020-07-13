@@ -38,7 +38,7 @@ import {
 } from './middleware/logger_middleware';
 import { validateAddressMiddleware } from './middleware/validations_middleware';
 import { TxRequest, TxRequestBody } from './types/request_types';
-import { sanitizeNumbers } from './utils/sanitize';
+import { sanitizeNumbers } from './sanitize';
 import { parseBlockNumber } from './utils/utils';
 
 async function main() {
@@ -51,7 +51,6 @@ async function main() {
 
 	const config: ISidecarConfig = configOrNull;
 
-	console.log(`Connecting to ${config.NAME} at ${config.WS_URL}`);
 
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),

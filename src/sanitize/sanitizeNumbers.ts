@@ -16,7 +16,7 @@ import { isObject } from '@polkadot/util';
 import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
-// import { isCodec } from './is';
+
 import { isAnyJson, isCodec } from '../is';
 
 /**
