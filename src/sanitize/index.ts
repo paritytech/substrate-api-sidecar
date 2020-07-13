@@ -1,1 +1,1 @@
-export * from './sanitizeNumbers'
+export * from './sanitizeNumbers';

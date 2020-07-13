@@ -19,7 +19,8 @@ import {
 	VestingInfo,
 } from '@polkadot/types/interfaces';
 import U32 from '@polkadot/types/primitive/U32';
-import { AnyJson, Codec } from '@polkadot/types/types';
+
+import { AnyJson, Codec } from '../types/polkadot-js';
 
 interface IAt {
 	hash: string | BlockHash;

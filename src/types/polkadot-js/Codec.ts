@@ -1,4 +1,6 @@
-import { Codec } from '@polkadot/types/types';
+import type { Codec } from '@polkadot/types/types';
+
+export type { Codec } from '@polkadot/types/types';
 
 export function isCodec(thing: unknown): thing is Codec {
 	// Null errors on .hash access so we do not check for .hash

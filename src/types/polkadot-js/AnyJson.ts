@@ -1,5 +1,7 @@
-import { AnyJson } from '@polkadot/types/types';
+import type { AnyJson } from '@polkadot/types/types';
 import { isObject } from '@polkadot/util';
+
+export type { AnyJson } from '@polkadot/types/types';
 
 export function isAnyJson(thing: unknown): thing is AnyJson {
 	return (
@@ -32,6 +34,7 @@ function isObjectAnyJson(thing: unknown): thing is { [i: string]: AnyJson } {
 		return false;
 	}
 
+	// TODO switch Array#every ??
 	for (const value of Object.values(thing)) {
 		if (!isAnyJson(value)) {
 			return false;

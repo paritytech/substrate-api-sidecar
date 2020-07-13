@@ -3,7 +3,6 @@ import {
 	Compact,
 	Enum,
 	Option,
-	// Result,
 	Set as CodecSet,
 	Struct,
 } from '@polkadot/types';
@@ -11,16 +10,21 @@ import AbstractArray from '@polkadot/types/codec/AbstractArray';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
 import CodecMap from '@polkadot/types/codec/Map';
 import StructAny from '@polkadot/types/codec/StructAny';
-import { AnyJson, Codec } from '@polkadot/types/types';
 import { isObject } from '@polkadot/util';
 import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
-
-import { isAnyJson, isCodec } from '../is';
+import {
+	AnyJson,
+	Codec,
+	isAnyJson,
+	isCodec,
+	isToJSONable,
+} from '../types/polkadot-js';
 
 /**
- * Forcibly serialize all instances of AbstractInt to base 10.
+ * Forcibly serialize all instances of AbstractInt to base 10. With Codec
+ * based types we can provide a strong guarantee that the output will be of AnyJson
  *
  * @param value a type that implements polkadot-js Codec
  */
@@ -43,14 +47,15 @@ function sanitizeCodec(value: Codec): AnyJson {
 	// 		: sanitizeNumbers(value.asError);
 	// }
 
-	// Check struct before map because it extends map
 	if (value instanceof Struct) {
 		return value.defKeys.reduce((jsonStruct, key) => {
 			const property = value.get(key);
+
 			if (!property) {
 				return jsonStruct;
 			}
 			jsonStruct[key] = sanitizeNumbers(property);
+
 			return jsonStruct;
 		}, {} as Record<string, AnyJson>);
 	}
@@ -61,6 +66,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		value.forEach((element, prop) => {
 			jsonStructAny[prop] = sanitizeNumbers(element);
 		});
+
 		return jsonStructAny;
 	}
 
@@ -97,7 +103,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return value.map(sanitizeNumbers);
 	}
 
-	// Should cover Uint and Int
+	// Should cover Uint, Int etc...
 	if (value instanceof AbstractInt) {
 		return value.toString(10);
 	}
@@ -108,13 +114,16 @@ function sanitizeCodec(value: Codec): AnyJson {
 
 /**
  * Forcibly serialize all instances of AbstractInt to base 10 and otherwise
- * normalize data presentation to AnyJson. Under the hood AbstractInto is
+ * normalize data presentation to AnyJson. We try to guarantee that data is
+ * of type AnyJson, but it is not a strong guarantee.
+ *
+ * Under the hood AbstractInt is
  * a BN.js, which has a .toString(radix) that lets us convert to base 10.
  * The likely reason for the inconsistency in polkadot-js natives .toJSON
- * is that over a certain value many Int like types have a flag that tells
+ * is that over a certain value some Int like types have a flag that tells
  * them to serialize to Hex.
  *
- * @param data - pretty much anything that Sidecar might send
+ * @param data - any arbitrary data that Sidecar might send
  */
 export function sanitizeNumbers(data: unknown): AnyJson {
 	if (!data) {
@@ -148,24 +157,28 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		return data.map(sanitizeNumbers);
 	}
 
-	// Pretty much everything is an object so we need to check this last
+	if (isToJSONable(data)) {
+		// Handle non-codec types that have their own toJSON
+		return sanitizeNumbers(data.toJSON());
+	}
 
+	// Pretty much everything non-primitive is an object, so we need to check this last
 	if (isObject(data)) {
 		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
 			sanitizedObject[key] = sanitizeNumbers(value);
+
 			return sanitizedObject;
 		}, {} as { [prop: string]: AnyJson });
 	}
 
-	// TODO After some sustained testing, it makes sense to remove this
-	// since it is expensive
 	if (!isAnyJson(data)) {
+		// TODO Should we throw an error here?
+		// Alternatively this could not guarantee AnyJson as a return type and
+		// instead have `unknown` for return type
 		console.error('data could not be forced to `AnyJson` `sanitizeNumber`');
 		console.error(data);
 	}
 
-	// If we have gotten to here than it is not a Codec, Array or Object
-	// so likely it is string, number, boolean, null, or undefined
 	return data as AnyJson;
 }
 
