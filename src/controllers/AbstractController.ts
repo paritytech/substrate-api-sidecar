@@ -8,7 +8,7 @@ import {
 	IAddressNumberParams,
 	IAddressParam,
 	INumberParam,
-} from 'src/types/request_types';
+} from 'src/types/requests';
 
 import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
 import { isBasicLegacyError } from '../types/errors';
