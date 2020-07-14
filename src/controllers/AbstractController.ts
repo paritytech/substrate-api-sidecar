@@ -10,7 +10,7 @@ import {
 	INumberParam,
 } from 'src/types/request_types';
 
-import { isBasicError } from '../is';
+import { isBasicLegacyError } from '../types/errors';
 import { sanitizeNumbers } from '../utils/utils';
 
 type SidecarRequestHandler =
@@ -139,7 +139,7 @@ export default abstract class AbstractController {
 			}
 
 			// This should never be used, but here just in case
-			if (isBasicError(err)) {
+			if (isBasicLegacyError(err)) {
 				throw err;
 			}
 

@@ -1,4 +1,12 @@
-import { ITxLegacyError } from '../types/error_types';
+import { IBasicLegacyError } from './BasicLegacyError';
+
+/**
+ * Error from tx POST methods
+ */
+export interface ITxLegacyError extends IBasicLegacyError {
+	data?: string; // extrinsic
+	cause: string;
+}
 
 /**
  * Type guard to check if something is a subset of the interface TxError.
