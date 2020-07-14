@@ -86,7 +86,7 @@ describe('getHashForBlock', () => {
 		);
 	});
 
-	it('throws BadRequest on a hex string that 68 char hex string (too long)', async () => {
+	it('throws BadRequest on a 68 char hex string (too long)', async () => {
 		const hex68char =
 			'0xd6243cce33272e9fc51a9c83c2ee80e795a73ac03cf1d9b03f1d880852c1b72411';
 		expect(hex68char.length).toBe(68);
@@ -100,7 +100,7 @@ describe('getHashForBlock', () => {
 		);
 	});
 
-	it('throws BadRequest on a hex string that 67 char hex string (too long, odd length)', async () => {
+	it('throws BadRequest on a 67 char hex string (too long, odd length)', async () => {
 		const hex67char =
 			'0xd6243cce33272e9fc51a9c83c2ee80e795a73ac03cf1d9b03f1d880852c1b7241';
 		expect(hex67char.length).toBe(67);
@@ -203,7 +203,7 @@ describe('getHashForBlock', () => {
 		api.rpc.chain.getHeader = promiseHeader;
 	});
 
-	it('throws InternalServerError when getBlockHash throws', async () => {
+	it('throws InternalServerError when getBlockHash() throws', async () => {
 		api.rpc.chain.getBlockHash = (_n: number) =>
 			Promise.resolve().then(() => {
 				throw 'dummy getBlockHash error';
@@ -217,7 +217,7 @@ describe('getHashForBlock', () => {
 		api.rpc.chain.getBlockHash = promiseBlockHash;
 	});
 
-	it('throws InternalServerError when createType throws', async () => {
+	it('throws InternalServerError when createType() throws', async () => {
 		api.createType = (_type: string, _value: string) => {
 			throw 'dummy createType error';
 		};
