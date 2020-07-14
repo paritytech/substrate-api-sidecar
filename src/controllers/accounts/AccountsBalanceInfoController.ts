@@ -2,9 +2,9 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/request_types';
 
-import ApiHandler from '../ApiHandler';
-import { validateAddressMiddleware } from '../middleware/validations_middleware';
-import AbstractController from './AbstractController';
+import { validateAddressMiddleware } from '../../middleware/validations_middleware';
+import { AccountsBalanceInfoService } from '../../services';
+import AbstractController from '../AbstractController';
 
 /**
  * GET balance information for an address.
@@ -37,11 +37,11 @@ import AbstractController from './AbstractController';
  * - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
-export default class BalancesController extends AbstractController {
-	handler: ApiHandler;
+export default class AccountsBalanceController extends AbstractController<
+	AccountsBalanceInfoService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/balance/:address');
-		this.handler = new ApiHandler(api);
+		super(api, '/balance/:address', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}
 
@@ -66,9 +66,9 @@ export default class BalancesController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		BalancesController.sanitizedSend(
+		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.handler.fetchBalance(hash, address)
+			await this.service.fetchAccountBalanceInfo(hash, address)
 		);
 	};
 
@@ -84,9 +84,9 @@ export default class BalancesController extends AbstractController {
 	> = async ({ params: { number, address } }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		BalancesController.sanitizedSend(
+		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.handler.fetchBalance(hash, address)
+			await this.service.fetchAccountBalanceInfo(hash, address)
 		);
 	};
 }

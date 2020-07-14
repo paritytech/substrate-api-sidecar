@@ -4,6 +4,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest } from 'http-errors';
+import AbstractService from 'src/services/AbstractService';
 import {
 	IAddressNumberParams,
 	IAddressParam,
@@ -21,9 +22,13 @@ type SidecarRequestHandler =
 /**
  * Abstract base class for creating controller classes.
  */
-export default abstract class AbstractController {
+export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
-	constructor(protected api: ApiPromise, private _path: string) {}
+	constructor(
+		protected api: ApiPromise,
+		private _path: string,
+		protected service: T
+	) {}
 
 	get path(): string {
 		return this._path;

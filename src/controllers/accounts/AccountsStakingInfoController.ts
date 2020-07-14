@@ -2,15 +2,15 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/request_types';
 
-import ApiHandler from '../ApiHandler';
-import { validateAddressMiddleware } from '../middleware/validations_middleware';
-import AbstractController from './AbstractController';
+import { validateAddressMiddleware } from '../../middleware/validations_middleware';
+import { AccountsStakingInfoService } from '../../services';
+import AbstractController from '../AbstractController';
 
-export default class StakingController extends AbstractController {
-	handler: ApiHandler;
+export default class AccountsStakingInfoController extends AbstractController<
+	AccountsStakingInfoService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/staking/:address');
-		this.handler = new ApiHandler(api);
+		super(api, '/staking/:address', new AccountsStakingInfoService(api));
 		this.initRoutes();
 	}
 
@@ -35,9 +35,9 @@ export default class StakingController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		StakingController.sanitizedSend(
+		AccountsStakingInfoController.sanitizedSend(
 			res,
-			await this.handler.fetchAddressStakingInfo(hash, address)
+			await this.service.fetchAccountStakingInfo(hash, address)
 		);
 	};
 
@@ -54,9 +54,9 @@ export default class StakingController extends AbstractController {
 		const { address, number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		StakingController.sanitizedSend(
+		AccountsStakingInfoController.sanitizedSend(
 			res,
-			await this.handler.fetchAddressStakingInfo(hash, address)
+			await this.service.fetchAccountStakingInfo(hash, address)
 		);
 	};
 }

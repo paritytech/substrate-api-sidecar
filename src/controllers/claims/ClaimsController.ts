@@ -2,8 +2,8 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/request_types';
 
-import ApiHandler from '../ApiHandler';
-import AbstractController from './AbstractController';
+import { ClaimsService } from '../../services';
+import AbstractController from '../AbstractController';
 
 /**
  * GET the claims type for an Ethereum address.
@@ -19,11 +19,11 @@ import AbstractController from './AbstractController';
  * Reference:
  * - Claims Guide: https://wiki.polkadot.network/docs/en/claims
  */
-export default class ClaimsController extends AbstractController {
-	handler: ApiHandler;
+export default class ClaimsController extends AbstractController<
+	ClaimsService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/claims/:address');
-		this.handler = new ApiHandler(api);
+		super(api, '/claims/:address', new ClaimsService(api));
 		this.initRoutes();
 	}
 
@@ -49,7 +49,7 @@ export default class ClaimsController extends AbstractController {
 
 		ClaimsController.sanitizedSend(
 			res,
-			await this.handler.fetchClaimsInfo(hash, address)
+			await this.service.fetchClaimsInfo(hash, address)
 		);
 	};
 
@@ -68,7 +68,7 @@ export default class ClaimsController extends AbstractController {
 
 		ClaimsController.sanitizedSend(
 			res,
-			await this.handler.fetchClaimsInfo(hash, address)
+			await this.service.fetchClaimsInfo(hash, address)
 		);
 	};
 }
