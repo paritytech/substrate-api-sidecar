@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import { INumberParam } from 'src/types/requests';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/request_types';

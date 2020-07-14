@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 
-import { TransactionsFeeEstimateService } from '../../services';
-import { IPostRequestHandler, ITx } from '../../types/request_types';
 import AbstractController from '../AbstractController';
+import { TransactionsFeeEstimateService } from '../../services';
+import { IPostRequestHandler, ITx } from '../types/requests';
 
 /**
  * POST a serialized transaction and receive a fee estimate.

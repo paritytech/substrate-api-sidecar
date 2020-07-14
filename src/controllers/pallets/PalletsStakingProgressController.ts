@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { INumberParam } from 'src/types/request_types';
+import { INumberParam } from 'src/types/requests';
 
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';

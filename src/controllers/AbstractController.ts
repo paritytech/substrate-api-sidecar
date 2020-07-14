@@ -3,15 +3,16 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
-import { BadRequest } from 'http-errors';
+import { BadRequest, HttpError, InternalServerError } from 'http-errors';
 import AbstractService from 'src/services/AbstractService';
 import {
 	IAddressNumberParams,
 	IAddressParam,
 	INumberParam,
-} from 'src/types/request_types';
+} from 'src/types/requests';
 
 import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
+import { isBasicLegacyError } from '../types/errors';
 
 type SidecarRequestHandler =
 	| RequestHandler<IAddressParam>
@@ -99,28 +100,42 @@ export default abstract class AbstractController<T extends AbstractService> {
 				// This is a block hash
 				return this.api.createType('BlockHash', blockId);
 			} else if (isHexStr) {
-				throw {
-					error:
-						`Cannot get block hash for ${blockId}. ` +
-						`Hex string block IDs must be 32-bytes (66-characters) in length.`,
-				};
+				throw new BadRequest(
+					`Cannot get block hash for ${blockId}. ` +
+						`Hex string block IDs must be 32-bytes (66-characters) in length.`
+				);
+			} else if (blockId.slice(0, 2) === '0x') {
+				throw new BadRequest(
+					`Cannot get block hash for ${blockId}. ` +
+						`Hex string block IDs must be a valid hex string ` +
+						`and must be 32-bytes (66-characters) in length.`
+				);
 			}
 
 			// Not a block hash, must be a block height
 			try {
 				blockNumber = this.parseBlockNumber(blockId);
 			} catch (err) {
-				throw {
-					error:
-						`Cannot get block hash for ${blockId}. ` +
-						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`,
-				};
+				throw new BadRequest(
+					`Cannot get block hash for ${blockId}. ` +
+						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`
+				);
 			}
 
 			return await this.api.rpc.chain.getBlockHash(blockNumber);
 		} catch (err) {
-			// Check if the block number is too high
-			const { number } = await this.api.rpc.chain.getHeader();
+			if (err instanceof HttpError) {
+				// Throw errors we created in the above try block
+				throw err;
+			}
+
+			const { number } = await this.api.rpc.chain
+				.getHeader()
+				.catch(() => {
+					throw new InternalServerError(
+						'Failed while trying to get the latest header.'
+					);
+				});
 			if (blockNumber && number.toNumber() < blockNumber) {
 				throw new BadRequest(
 					`Specified block number is larger than the current largest block. ` +
@@ -128,14 +143,14 @@ export default abstract class AbstractController<T extends AbstractService> {
 				);
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err && typeof err.error === 'string') {
+			// This should never be used, but here just in case
+			if (isBasicLegacyError(err)) {
 				throw err;
 			}
 
-			throw {
-				error: `Cannot get block hash for ${blockId}.`,
-			};
+			throw new InternalServerError(
+				`Cannot get block hash for ${blockId}.`
+			);
 		}
 	}
 
@@ -143,7 +158,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const num = Number(n);
 
 		if (!Number.isInteger(num) || num < 0) {
-			throw { error: 'Invalid block number' };
+			throw new BadRequest('Invalid block number');
 		}
 
 		return num;
