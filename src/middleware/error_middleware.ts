@@ -1,9 +1,12 @@
 import { ErrorRequestHandler } from 'express';
 import { HttpError, InternalServerError } from 'http-errors';
 import * as HttpErrorConstructor from 'http-errors';
-import { isTxError } from 'src/is/txError';
 
-import { isBasicError, isLegacyError } from '../is';
+import {
+	isBasicLegacyError,
+	isLegacyError,
+	isTxLegacyError,
+} from '../types/errors';
 
 /**
  * Handle HttpError instances.
@@ -73,7 +76,7 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 	res,
 	next
 ): void => {
-	if (res.headersSent || !isTxError(err)) {
+	if (res.headersSent || !isTxLegacyError(err)) {
 		return next(err);
 	}
 
@@ -101,7 +104,7 @@ export const legacyErrorMiddleware: ErrorRequestHandler = (
 	res,
 	next
 ): void => {
-	if (res.headersSent || !isBasicError(err)) {
+	if (res.headersSent || !isBasicLegacyError(err)) {
 		return next(err);
 	}
 

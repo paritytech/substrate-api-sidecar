@@ -10,8 +10,8 @@ import {
 	INumberParam,
 } from 'src/types/request_types';
 
-import { isBasicLegacyError } from '../types/errors';
 import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
+import { isBasicLegacyError } from '../types/errors';
 
 type SidecarRequestHandler =
 	| RequestHandler<IAddressParam>
