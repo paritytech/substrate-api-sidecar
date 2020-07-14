@@ -11,7 +11,7 @@ import {
 } from 'src/types/request_types';
 
 import { isBasicLegacyError } from '../types/errors';
-import { sanitizeNumbers } from '../utils/utils';
+import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
 
 type SidecarRequestHandler =
 	| RequestHandler<IAddressParam>

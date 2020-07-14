@@ -13,19 +13,31 @@ import {
 	StorageKey,
 	Struct,
 	Tuple,
+	u8,
 	U8aFixed,
 	Vec,
 } from '@polkadot/types';
+import CodecDate from '@polkadot/types/codec/Date';
 import Int from '@polkadot/types/codec/Int';
 import Option from '@polkadot/types/codec/Option';
+import StructAny from '@polkadot/types/codec/StructAny';
 import UInt from '@polkadot/types/codec/UInt';
 import VecFixed from '@polkadot/types/codec/VecFixed';
+import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
+import ExtrinsicEra from '@polkadot/types/extrinsic/ExtrinsicEra';
+import ExtrinsicPayload from '@polkadot/types/extrinsic/ExtrinsicPayload';
 import AccountId from '@polkadot/types/generic/AccountId';
+import Call from '@polkadot/types/generic/Call';
+import Event from '@polkadot/types/generic/Event';
+import Vote from '@polkadot/types/generic/Vote';
 import Bool from '@polkadot/types/primitive/Bool';
+import I8 from '@polkadot/types/primitive/I8';
+import I16 from '@polkadot/types/primitive/I16';
 import I32 from '@polkadot/types/primitive/I32';
 import I64 from '@polkadot/types/primitive/I64';
 import I128 from '@polkadot/types/primitive/I128';
 import Text from '@polkadot/types/primitive/Text';
+import U16 from '@polkadot/types/primitive/U16';
 import U32 from '@polkadot/types/primitive/U32';
 import U64 from '@polkadot/types/primitive/U64';
 import U128 from '@polkadot/types/primitive/U128';
@@ -33,12 +45,18 @@ import * as BN from 'bn.js';
 
 import {
 	kusamaRegistry,
+	MAX_I8,
+	MAX_I16,
 	MAX_I32,
 	MAX_I64,
 	MAX_I128,
+	MAX_U8,
+	MAX_U16,
 	MAX_U32,
 	MAX_U64,
 	MAX_U128,
+	MIN_I8,
+	MIN_I16,
 	MIN_I32,
 	MIN_I64,
 	MIN_I128,
@@ -46,8 +64,8 @@ import {
 	PRE_SANITIZED_OPTION_VESTING_INFO,
 	PRE_SANITIZED_RUNTIME_DISPATCH_INFO,
 	PRE_SANITIZED_STAKING_RESPONSE,
-} from './test_util';
-import { sanitizeNumbers } from './utils';
+} from '../utils/test_util';
+import { sanitizeNumbers } from './sanitizeNumbers';
 
 describe('sanitizeNumbers', () => {
 	it('does not affect non-numbers', () => {
@@ -213,27 +231,64 @@ describe('sanitizeNumbers', () => {
 	describe('primitives and Codec base types', () => {
 		// https://github.com/polkadot-js/api/tree/master/packages/types
 
-		test.todo('converts AnyStruct');
-		test.todo('Moment');
-		test.todo('Signature');
-		test.todo('StorageData');
-		test.todo('u8');
-		test.todo('i8');
-		test.todo('u16');
-		test.todo('i16');
-		test.todo('i16');
-		test.todo('Hash256');
-		test.todo('Hash512');
-		test.todo('Hash160');
-		test.todo('handles Date');
-		test.todo('AccountId');
-		test.todo('AccountIndex');
-		test.todo('Call');
-		test.todo('Event');
-		test.todo('EventRecord');
-		test.todo('Extrinsic');
-		test.todo('ExtrinsicEra');
-		test.todo('ExtrinsicPayload');
+		it('converts AnyStruct', () => {
+			const struct = new Struct(
+				kusamaRegistry,
+				{
+					foo: Text,
+					bar: U32,
+				},
+				{ foo: 'hi :)', bar: MAX_U32 }
+			);
+
+			expect(sanitizeNumbers(struct)).toStrictEqual({
+				foo: 'hi :)',
+				bar: MAX_U32,
+			});
+
+			const structAny = new StructAny(kusamaRegistry, {
+				b: new Bool(kusamaRegistry, true),
+				i: new I128(kusamaRegistry, MAX_I128),
+				o: new Option(kusamaRegistry, 'Option<i128>', MAX_I128),
+				s: struct,
+			});
+
+			expect(sanitizeNumbers(structAny)).toStrictEqual({
+				b: true,
+				i: MAX_I128,
+				o: MAX_I128,
+				s: {
+					foo: 'hi :)',
+					bar: MAX_U32,
+				},
+			});
+		});
+
+		it('handles H512', () => {
+			const h = kusamaRegistry.createType('H512', MAX_U64);
+			expect(sanitizeNumbers(h)).toBe(
+				'0x31383434363734343037333730393535313631350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+			);
+		});
+
+		it('handles H256', () => {
+			const h = kusamaRegistry.createType('H256', MAX_U32);
+			expect(sanitizeNumbers(h)).toBe(
+				'0x3432393439363732393500000000000000000000000000000000000000000000'
+			);
+		});
+
+		it('handles H160', () => {
+			const h = kusamaRegistry.createType('H160', MAX_U16);
+			expect(sanitizeNumbers(h)).toBe(
+				'0x3635353335000000000000000000000000000000'
+			);
+		});
+
+		it('handles CodecDate', () => {
+			const d = new CodecDate(kusamaRegistry, new Date(1594441868));
+			expect(sanitizeNumbers(d)).toBe(1594442);
+		});
 
 		it('handles Codec Bool', () => {
 			const t = new Bool(kusamaRegistry, true);
@@ -279,6 +334,43 @@ describe('sanitizeNumbers', () => {
 		});
 
 		describe('number primitives', () => {
+			it('converts u8', () => {
+				const z = new u8(kusamaRegistry, 0);
+				expect(sanitizeNumbers(z)).toBe('0');
+
+				const m = new u8(kusamaRegistry, MAX_U8);
+				expect(sanitizeNumbers(m)).toBe(MAX_U8);
+			});
+
+			it('converts i8', () => {
+				const z = new I8(kusamaRegistry, 0);
+				expect(sanitizeNumbers(z)).toBe('0');
+
+				const min = new I8(kusamaRegistry, MIN_I8);
+				expect(sanitizeNumbers(min)).toBe(MIN_I8);
+
+				const max = new I8(kusamaRegistry, MAX_I8);
+				expect(sanitizeNumbers(max)).toBe(MAX_I8);
+			});
+
+			it('converts u16', () => {
+				const z = new U16(kusamaRegistry, 0);
+				expect(sanitizeNumbers(z)).toBe('0');
+
+				const max = new U16(kusamaRegistry, MAX_U16);
+				expect(sanitizeNumbers(max)).toBe(MAX_U16);
+			});
+
+			it('converts i16', () => {
+				const z = new I16(kusamaRegistry, 0);
+				expect(sanitizeNumbers(z)).toBe('0');
+
+				const min = new I16(kusamaRegistry, MIN_I16);
+				expect(sanitizeNumbers(min)).toBe(MIN_I16);
+
+				const max = new I16(kusamaRegistry, MAX_I16);
+				expect(sanitizeNumbers(max)).toBe(MAX_I16);
+			});
 			it('converts Int', () => {
 				const intTen = new Int(kusamaRegistry, 10);
 				expect(sanitizeNumbers(intTen)).toBe('10');
@@ -513,7 +605,7 @@ describe('sanitizeNumbers', () => {
 				const u128MaxOption = new Option(
 					kusamaRegistry,
 					U128,
-					'0xffffffffffffffffffffffffffffffff'
+					MAX_U128
 				);
 				expect(sanitizeNumbers(u128MaxOption)).toBe(MAX_U128);
 			});
@@ -773,6 +865,160 @@ describe('sanitizeNumbers', () => {
 	});
 
 	describe('substrate specific types', () => {
+		it('handles AccountId', () => {
+			const id = kusamaRegistry.createType(
+				'AccountId',
+				'5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw'
+			);
+			expect(sanitizeNumbers(id)).toBe(
+				'5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw'
+			);
+		});
+
+		it('handles AccountIndex', () => {
+			const i = kusamaRegistry.createType('AccountIndex', 256);
+			expect(sanitizeNumbers(i)).toBe('25GUyv');
+		});
+
+		it('handles Call', () => {
+			const c = new Call(kusamaRegistry, {
+				args: [
+					'5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
+					100000,
+				],
+				callIndex: [6, 0], // balances.transfer
+			});
+			expect(sanitizeNumbers(c)).toStrictEqual({
+				args: {
+					dest: '5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
+					value: '100000',
+				},
+				callIndex: '0x0600',
+			});
+		});
+
+		it('handles Event', () => {
+			const event = new Event(
+				kusamaRegistry,
+				new Uint8Array([6, 1, 1, 1])
+			);
+			expect(sanitizeNumbers(event)).toStrictEqual({
+				data: ['257', '0', []],
+				index: '0x0601',
+			});
+		});
+
+		it('handles EventRecord', () => {
+			const eventRecord = kusamaRegistry.createType(
+				'Vec<EventRecord>',
+				'0x0800000000000000000001000000000000'
+			);
+			expect(sanitizeNumbers(eventRecord)).toStrictEqual([
+				{
+					event: {
+						data: [
+							{
+								class: 'Normal',
+								paysFee: 'Yes',
+								weight: '65536',
+							},
+						],
+						index: '0x0000',
+					},
+					phase: { ApplyExtrinsic: '0' },
+					topics: [],
+				},
+				{
+					event: { data: null, index: '0x0000' },
+					phase: { ApplyExtrinsic: '0' },
+					topics: [],
+				},
+			]);
+		});
+
+		it('handles Extrinsic', () => {
+			const extrinsic = new Extrinsic(
+				kusamaRegistry,
+				'0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a4830'
+			);
+			expect(sanitizeNumbers(extrinsic)).toBe(
+				'0xb10184d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf0415'
+			);
+		});
+
+		it('handles ExtrinsicEra', () => {
+			const extrinsicEra = new ExtrinsicEra(kusamaRegistry, '0x6502');
+			expect(sanitizeNumbers(extrinsicEra)).toStrictEqual({
+				MortalEra: '0x6502',
+			});
+		});
+
+		it('ExtrinsicPayload', () => {
+			const load = {
+				address: '5DTestUPts3kjeXSTMyerHihn1uwMfLj8vU8sqF7qYrFabHE',
+				blockHash:
+					'0xde8f69eeb5e065e18c6950ff708d7e551f68dc9bf59a07c52367c0280f805ec7',
+				era: '0x0703',
+				genesisHash:
+					'0xdcd1346701ca8396496e52aa2785b1748deb6db09551b72159dcb3e08991025b',
+				method:
+					'0x0600ffd7568e5f0a7eda67a82691ff379ac4bba4f9c9b859fe779b5d46363b61ad2db9e56c',
+				nonce: '0x00001234',
+				specVersion: 123,
+				tip: '0x00000000000000000000000000005678',
+			};
+
+			const extrinsicPayload = new ExtrinsicPayload(
+				kusamaRegistry,
+				load,
+				{
+					version: 3,
+				}
+			);
+			expect(sanitizeNumbers(extrinsicPayload)).toBe(
+				'0x940600ffd7568e5f0a7eda67a82691ff379ac4bba4f9c9b859fe779b5d46363b61ad2db9e56c0703d148e25901007b000000dcd1346701ca8396496e52aa2785b1748deb6db09551b72159dcb3e08991025bde8f69eeb5e065e18c6950ff708d7e551f68dc9bf59a07c52367c0280f805ec7'
+			);
+		});
+
+		it('handles Vote', () => {
+			const aye = new Vote(kusamaRegistry, {
+				aye: true,
+				conviction: 'Locked2x',
+			});
+			expect(sanitizeNumbers(aye)).toBe('0x82');
+
+			const nay = new Vote(kusamaRegistry, {
+				aye: false,
+				conviction: 'Locked2x',
+			});
+			expect(sanitizeNumbers(nay)).toBe('0x02');
+		});
+
+		it('converts Moment', () => {
+			const m = kusamaRegistry.createType('Moment', MAX_U64);
+			expect(sanitizeNumbers(m)).toBe(MAX_U64);
+
+			const z = kusamaRegistry.createType('Moment', 0);
+			expect(sanitizeNumbers(z)).toBe('0');
+		});
+
+		it('converts Signature', () => {
+			const s = kusamaRegistry.createType('Signature', MAX_U64);
+			expect(sanitizeNumbers(s)).toBe(
+				'0x31383434363734343037333730393535313631350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+			);
+		});
+
+		it('StorageData', () => {
+			const d = kusamaRegistry.createType(
+				'StorageData',
+				'0x2082c39b31a2b79a90f8e66e7a77fdb85a4ed5517f2ae39f6a80565e8ecae85cf54de37a07567ebcbf8c64568428a835269a566723687058e017b6d69db00a77e758d67e0f9be62dce75adbb005e8097de5c45f32b1ba7264717df2db4ae9f276e8101764f45778d4980dadaceee6e8af2517d3ab91ac9bec9cd1714fa5994081ca070532405ebf20fba389cbabfe1885cc134ee18028d488714eae621b47baf9d227cee94fa4e88d8d25abe706f15aca03b1d753d433f5ef9aa9ad1bcf5e5b81e040c8dc048a6d129803caa851c4c9633610068e4ef9eaa0bfbf40dfbfd43d9222347812ef77d9fd3cca1673e1b2bde54da96fddcf79d92832b1e2a819724f140'
+			);
+			expect(sanitizeNumbers(d)).toBe(
+				'0x2082c39b31a2b79a90f8e66e7a77fdb85a4ed5517f2ae39f6a80565e8ecae85cf54de37a07567ebcbf8c64568428a835269a566723687058e017b6d69db00a77e758d67e0f9be62dce75adbb005e8097de5c45f32b1ba7264717df2db4ae9f276e8101764f45778d4980dadaceee6e8af2517d3ab91ac9bec9cd1714fa5994081ca070532405ebf20fba389cbabfe1885cc134ee18028d488714eae621b47baf9d227cee94fa4e88d8d25abe706f15aca03b1d753d433f5ef9aa9ad1bcf5e5b81e040c8dc048a6d129803caa851c4c9633610068e4ef9eaa0bfbf40dfbfd43d9222347812ef77d9fd3cca1673e1b2bde54da96fddcf79d92832b1e2a819724f140'
+			);
+		});
+
 		it('converts Balance', () => {
 			const balanceZero = kusamaRegistry.createType('Balance', '0x0');
 			expect(sanitizeNumbers(balanceZero)).toBe('0');
