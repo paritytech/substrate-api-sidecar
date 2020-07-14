@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 
-import { IPostRequestHandler, ITx } from '../types/requests';
-import AbstractController from './AbstractController';
 import { TransactionsSubmitService } from '../../services';
+import { IPostRequestHandler, ITx } from '../../types/requests';
+import AbstractController from '../AbstractController';
 
 /**
  * POST a serialized transaction to submit to the transaction queue.
