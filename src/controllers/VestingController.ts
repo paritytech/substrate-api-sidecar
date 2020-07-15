@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
 import ApiHandler from '../ApiHandler';
-import { validateAddressMiddleware } from '../middleware/validations_middleware';
+import { validateAddress } from '../middleware';
 import AbstractController from './AbstractController';
 
 /**
@@ -34,7 +34,7 @@ export default class VestingController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddressMiddleware);
+		this.router.use(this.path, validateAddress);
 
 		this.safeMountAsyncGetHandlers([
 			['', this.getAccountVestingSummary],

@@ -20,7 +20,7 @@ import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
 
 import App from './App';
-import Config, { ISidecarConfig } from './config_setup';
+import Config, { ISidecarConfig } from './Config';
 import * as controllers from './controllers';
 import * as middleware from './middleware';
 
@@ -54,9 +54,9 @@ async function main() {
 	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
-		preMiddleware.push(middleware.productionLogger);
+		preMiddleware.push(middleware.errorLogger);
 	} else if (config.LOG_MODE === 'all') {
-		preMiddleware.push(middleware.developmentLogger);
+		preMiddleware.push(middleware.allLogger);
 	}
 
 	// Instantiate controller class instances
