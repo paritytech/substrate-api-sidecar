@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 
 import ApiHandler from '../ApiHandler';
-import { IPostRequestHandler, ITx } from '../types/request_types';
+import { IPostRequestHandler, ITx } from '../types/requests';
 import AbstractController from './AbstractController';
 
 /**
