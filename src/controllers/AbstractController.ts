@@ -4,13 +4,14 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
+import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
 	IAddressParam,
 	INumberParam,
 } from 'src/types/requests';
 
-import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
+import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 
 type SidecarRequestHandler =
@@ -167,8 +168,6 @@ export default abstract class AbstractController {
 	 * @param body response body
 	 */
 	static sanitizedSend<T>(res: Response<AnyJson>, body: T): void {
-		const sanitizedBody = sanitizeNumbers(body);
-
-		res.send(sanitizedBody);
+		res.send(sanitizeNumbers(body));
 	}
 }
