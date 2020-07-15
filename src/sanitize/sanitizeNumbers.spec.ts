@@ -64,7 +64,7 @@ import {
 	PRE_SANITIZED_OPTION_VESTING_INFO,
 	PRE_SANITIZED_RUNTIME_DISPATCH_INFO,
 	PRE_SANITIZED_STAKING_RESPONSE,
-} from '../utils/test_util';
+} from '../utils/testUtils';
 import { sanitizeNumbers } from './sanitizeNumbers';
 
 describe('sanitizeNumbers', () => {
