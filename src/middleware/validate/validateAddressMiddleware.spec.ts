@@ -4,7 +4,7 @@ import { BadRequest } from 'http-errors';
 import { validateAddressMiddleware } from './validateAddressMiddleware';
 
 /**
- * Assert that validateAddressMiddleware does not error with a the given `req`.
+ * Assert that `validateAddressMiddleware` does not error with a the given `req`.
  *
  * @param name thing it does not error on
  * @param req Express Request containing thing it errors on
@@ -19,7 +19,7 @@ function doesNotErrorWith(name: string, req: Request): void {
 }
 
 /**
- * Assert that validateAddressMiddleware passes `err` to next with the given
+ * Assert that `validateAddressMiddleware` passes `err` to next with the given
  * `req`.
  *
  * @param name thing it errors on
