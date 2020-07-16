@@ -3,7 +3,7 @@ import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { kusamaRegistry } from '../utils/test_util';
+import { kusamaRegistry } from '../utils/testUtils';
 import AbstractController from './AbstractController';
 
 const promiseBlockHash = (num: number): Promise<BlockHash> =>
