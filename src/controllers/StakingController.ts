@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IAddressNumberParams, IAddressParam } from 'src/types/request_types';
+import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
 import ApiHandler from '../ApiHandler';
-import { validateAddressMiddleware } from '../middleware/validations_middleware';
+import { validateAddress } from '../middleware/';
 import AbstractController from './AbstractController';
 
 export default class StakingController extends AbstractController {
@@ -15,7 +15,7 @@ export default class StakingController extends AbstractController {
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddressMiddleware);
+		this.router.use(this.path, validateAddress);
 
 		this.safeMountAsyncGetHandlers([
 			['', this.getAccountStakingSummary],

@@ -35,15 +35,15 @@ import * as BN from 'bn.js';
 
 import * as errors from '../config/errors-en.json';
 import {
-	IAccountBalanceSummary,
-	IAccountStakingSummary,
-	IAccountVestingSummary,
+	IAccountBalanceInfo,
+	IAccountStakingInfo,
+	IAccountVestingInfo,
 	IBlock,
+	IPalletStakingProgress,
 	ISanitizedCall,
 	ISanitizedEvent,
-	IStakingInfo,
-	ITxConstructionMaterial,
-} from './types/response_types';
+	ITransactionMaterial,
+} from './types/responses';
 
 export default class ApiHandler {
 	private readonly versionReset = 99999999;
@@ -302,7 +302,7 @@ export default class ApiHandler {
 	async fetchBalance(
 		hash: BlockHash,
 		address: string
-	): Promise<IAccountBalanceSummary> {
+	): Promise<IAccountBalanceInfo> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, locks, sysAccount] = await Promise.all([
@@ -347,7 +347,7 @@ export default class ApiHandler {
 	 *
 	 * @param hash BlockHash to make call at.
 	 */
-	async fetchStakingInfo(hash: BlockHash): Promise<IStakingInfo> {
+	async fetchStakingInfo(hash: BlockHash): Promise<IPalletStakingProgress> {
 		const api = await this.ensureMeta(hash);
 
 		const [
@@ -449,7 +449,7 @@ export default class ApiHandler {
 	async fetchAddressStakingInfo(
 		hash: BlockHash,
 		stash: string
-	): Promise<IAccountStakingSummary> {
+	): Promise<IAccountStakingInfo> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, controllerOption] = await Promise.all([
@@ -507,7 +507,7 @@ export default class ApiHandler {
 	async fetchVesting(
 		hash: BlockHash,
 		address: string
-	): Promise<IAccountVestingSummary> {
+	): Promise<IAccountVestingInfo> {
 		const api = await this.ensureMeta(hash);
 
 		const [header, vesting] = await Promise.all([
@@ -553,7 +553,7 @@ export default class ApiHandler {
 		};
 	}
 
-	async fetchTxArtifacts(hash: BlockHash): Promise<ITxConstructionMaterial> {
+	async fetchTxArtifacts(hash: BlockHash): Promise<ITransactionMaterial> {
 		const api = await this.ensureMeta(hash);
 
 		const [
