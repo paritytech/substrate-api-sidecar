@@ -26,7 +26,7 @@ paths:
     get:
       tags:
       - accounts
-      summary: Get balance summary for an address.
+      summary: Get balance information for an address.
       description: Returns a curated grouping of values related to an accounts balance.
         Replaces `/balance/{address}` from versions < v1.0.0.
       operationId: getBalanceSummaryByAccountId
@@ -72,7 +72,7 @@ paths:
     get:
       tags:
       - accounts
-      summary: Get a staking summary for a stash address.
+      summary: Get a staking information for a stash address.
       description: Returns a a curated grouping of values related to an staking accounts
         staking activity. Replaces `/staking/{address}` from versions < v1.0.0.
       operationId: getStakingSummaryByAccountId
@@ -164,7 +164,7 @@ paths:
     get:
       tags:
       - blocks
-      summary: Find a block by ID
+      summary: Get a block by its height or hash.
       description: Returns a single block. BlockId can either be a block hash or a
         block height. Replaces `/block/{number}` from versions < v1.0.0.
       operationId: getBlockById
@@ -194,7 +194,7 @@ paths:
     get:
       tags:
       - blocks
-      summary: Get the most recently finalized block
+      summary: Get the most recently finalized block.
       description: Returns the most recently finalized block
       operationId: getHeadBlock
       parameters:
@@ -244,7 +244,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/TransactionPool'
   /node/version:
     get:
       tags:
@@ -263,7 +263,7 @@ paths:
     post:
       tags:
       - transaction
-      summary: Submit a transaction to be included in the blockchain
+      summary: Submit a transaction to be included in the blockchain.
       description: Accepts a valid signed extrinsic. Replaces `/tx` from versions
         < v1.0.0.
       operationId: submitTransaction
@@ -286,7 +286,7 @@ paths:
     post:
       tags:
       - transaction
-      summary: dry run an extrinsic
+      summary: Dry run an extrinsic.
       description: Use the dryrun call to practice submission of a transaction. A
         fee will be charged, but the extrinsic will not produce other state change.
       operationId: dryrunTransaction
@@ -418,7 +418,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/PalletsResponses'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -429,9 +429,9 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get a list of the queryable constants for a pallet.
-      description: Returns a list of constant metadata for queryable constants items
-        of the pallet specified by palletId.
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of metadata for constants items of the pallet specified
+        by palletId.
       parameters:
       - name: palletId
         in: path
@@ -457,7 +457,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
+                $ref: '#/components/schemas/PalletsConstantsResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -509,7 +509,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_3'
+                $ref: '#/components/schemas/PalletsContantValue'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -526,7 +526,7 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get a list of the dispatchables for a pallet.
+      summary: Get a list of dispatchables for a pallet.
       description: Returns a list of metadata for dispatchables of the specified palletId.
       parameters:
       - name: palletId
@@ -553,7 +553,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_4'
+                $ref: '#/components/schemas/PalletsDispatchablesResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -605,7 +605,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/PalletsDispatchableResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -649,7 +649,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_6'
+                $ref: '#/components/schemas/PalletsErrorsResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -701,7 +701,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_7'
+                $ref: '#/components/schemas/PalletsErrorResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -745,7 +745,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_8'
+                $ref: '#/components/schemas/PalletsEventsResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -797,7 +797,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_9'
+                $ref: '#/components/schemas/PalletsEventResponse'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -814,9 +814,9 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get a list of the queryable storage items for a pallet.
-      description: Returns a list of storageItemIds for queryable storage items of
-        the specified palletId.
+      summary: Get a list of storage items for a pallet.
+      description: Returns a list of storage item metadata for storage items of the
+        specified palletId.
       parameters:
       - name: palletId
         in: path
@@ -845,7 +845,7 @@ paths:
                 type: array
                 description: Array of storageItemIds.
                 items:
-                  type: string
+                  $ref: '#/components/schemas/PalletStorageItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -935,7 +935,7 @@ paths:
     get:
       tags:
       - runtime
-      summary: Get runtime in JSON form.
+      summary: Get the runtime metadata in decoded, JSON form.
       description: Returns the runtime metadata as a JSON object.
       parameters:
       - name: at
@@ -979,7 +979,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_10'
+                $ref: '#/components/schemas/RuntimeCode'
   /runtime/spec:
     get:
       tags:
@@ -1386,6 +1386,15 @@ components:
             Block authors could insert  the extrinsic as an inherent in the block
             and not pay a fee. Always check that `paysFee` is `true` and that the
             extrinsic is signed when reconciling old blocks.
+    BlockInitialize:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanitizedEvent'
+      description: Object with an array of `SanitizedEvent`s that occurred during
+        block initialization with the `method` and `data` for each.
     Block:
       type: object
       properties:
@@ -1413,7 +1422,7 @@ components:
           items:
             $ref: '#/components/schemas/DigestItem'
         onInitialize:
-          $ref: '#/components/schemas/Block_onInitialize'
+          $ref: '#/components/schemas/BlockInitialize'
         extrinsics:
           type: array
           description: Array of extrinsics (inherents and transactions) within the
@@ -1421,7 +1430,7 @@ components:
           items:
             $ref: '#/components/schemas/Extrinsic'
         onFinalize:
-          $ref: '#/components/schemas/Block_onInitialize'
+          $ref: '#/components/schemas/BlockInitialize'
       description: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
         _construction._
@@ -1441,7 +1450,7 @@ components:
           description: Chain's name.
       description: Version information of the node.
     NodeRole:
-      type: object
+      type: string
       description: Role the node is running.
       enum:
       - Full
@@ -1513,7 +1522,7 @@ components:
           description: The version of the authorship interface. An authoring node
             will not attempt to author blocks unless this is equal to its native runtime.
         chainType:
-          type: object
+          type: string
           description: Type of the chain.
           enum:
           - Development
@@ -1704,16 +1713,7 @@ components:
             rate changes. up to 30% in a 24 hour period and this will not be the exact
             fee.
           format: unsignedInteger
-    Error:
-      type: object
-      properties:
-        code:
-          type: number
-        message:
-          type: string
-        stack:
-          type: string
-    inline_response_200:
+    TransactionPool:
       type: object
       properties:
         at:
@@ -1722,7 +1722,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Extrinsic'
-    inline_response_200_1:
+    PalletsResponses:
       oneOf:
       - type: object
         properties:
@@ -1741,7 +1741,7 @@ components:
             items:
               type: string
         description: Array of pallet names from the runtime
-    inline_response_200_2:
+    PalletsConstantsResponse:
       type: object
       properties:
         at:
@@ -1750,14 +1750,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PalletConstant'
-    inline_response_200_3:
+    PalletsContantValue:
       type: object
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         value:
           type: string
-    inline_response_200_4:
+    PalletsDispatchablesResponse:
       type: object
       properties:
         at:
@@ -1766,14 +1766,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Dispatchable'
-    inline_response_200_5:
+    PalletsDispatchableResponse:
       type: object
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         dispatchable:
           $ref: '#/components/schemas/Dispatchable'
-    inline_response_200_6:
+    PalletsErrorsResponse:
       type: object
       properties:
         at:
@@ -1782,14 +1782,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PalletError'
-    inline_response_200_7:
+    PalletsErrorResponse:
       type: object
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         error:
           $ref: '#/components/schemas/PalletError'
-    inline_response_200_8:
+    PalletsEventsResponse:
       type: object
       properties:
         at:
@@ -1798,14 +1798,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PalletEvent'
-    inline_response_200_9:
+    PalletsEventResponse:
       type: object
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         event:
           $ref: '#/components/schemas/PalletEvent'
-    inline_response_200_10:
+    RuntimeCode:
       type: object
       properties:
         at:
@@ -1813,15 +1813,15 @@ components:
         code:
           type: string
           format: hex
-    Block_onInitialize:
+    Error:
       type: object
       properties:
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/SanitizedEvent'
-      description: Object with an array of `SanitizedEvent`s that occurred during
-        block initialization with the `method` and `data` for each.
+        code:
+          type: number
+        message:
+          type: string
+        stack:
+          type: string
   requestBodies:
     Transaction:
       content:
