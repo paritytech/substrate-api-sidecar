@@ -1,8 +1,8 @@
 {
-  "name": "polkadot-rpc-proxy",
+  "name": "substrate-api-sidecar",
   "version": "0.11.3",
-  "description": "",
-  "main": "index.js",
+  "description": "REST API service intended to run next to Substrate, exposing a limited set of endpoints over HTTP with meaningful responses.",
+  "main": "main.js",
   "scripts": {
     "preinstall": "./calc-fee/build.sh",
     "postinstall": "yarn upgrade @polkadot/calc-fee",
