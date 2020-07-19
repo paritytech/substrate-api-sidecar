@@ -10,8 +10,6 @@ info:
     name: GNU General Public License v3.0
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
   version: 1.0.0-oas3
-servers:
-- url: /
 tags:
 - name: accounts
 - name: blocks
@@ -200,7 +198,7 @@ paths:
       parameters:
       - name: finalized
         in: query
-        description: Boolean representing wether or not to get the finalized head.
+        description: Boolean representing whether or not to get the finalized head.
           If it is not set the value defaults to true. When set to false it will attempt
           to get the newest known block, which may not be finalized. Replaces `/block`
           from versions < v1.0.0.
@@ -308,6 +306,9 @@ paths:
       summary: Receive a fee estimate for a transaction.
       description: Send a serialized transaction and receive back a naive fee estimate.
         Replaces `/tx/fee-estimate` from versions < v1.0.0.
+      operationId: feeEstimateTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
       responses:
         "200":
           description: successful operation
@@ -357,7 +358,7 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get a progress report on the chains staking system.
+      summary: Get a progress report on the chain's staking system.
       description: Returns information on the progress of key components of the staking
         system and estimates of future points of interest. Replaces `/staking-info`
         from versions < v1.0.0.
@@ -391,8 +392,8 @@ paths:
       tags:
       - pallets
       summary: Get a list of pallets used in the runtime.
-      description: Returns an array of palletIds for pallets that are used in the
-        runtime.
+      description: Returns an array of metadta for pallets that are used in the
+        runtime. Can use `only-names` query param to just return an array of pallet names.
       parameters:
       - name: only-names
         in: query
@@ -430,7 +431,7 @@ paths:
       tags:
       - pallets
       summary: Get a list of constants for a pallet.
-      description: Returns a list of metadata for constants items of the pallet specified
+      description: Returns a list of metadata for constants of the pallet specified
         by palletId.
       parameters:
       - name: palletId
@@ -1030,6 +1031,7 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
+
         nonce:
           type: string
           description: Account nonce.
@@ -1061,11 +1063,6 @@ components:
             locks
           items:
             $ref: '#/components/schemas/BalanceLock'
-      description: 'Substrate Reference: - FRAME System: https://crates.parity.io/frame_system/index.html
-        - Balances Pallet: https://crates.parity.io/pallet_balances/index.html - `AccountInfo`:
-        https://crates.parity.io/frame_system/struct.AccountInfo.html - `AccountData`:
-        https://crates.parity.io/pallet_balances/struct.AccountData.html - `BalanceLock`:
-        https://crates.parity.io/pallet_balances/struct.BalanceLock.html'
     StakingLedger:
       type: object
       properties:
@@ -1124,10 +1121,10 @@ components:
           format: unsignedInteger
         stakingLedger:
           $ref: '#/components/schemas/StakingLedger'
-      description: 'Substrate Reference: - Staking Pallet: https://crates.parity.io/pallet_staking/index.html
-        - `RewardDestination`: https://crates.parity.io/pallet_staking/enum.RewardDestination.html
-        - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html - `StakingLedger`:
-        https://crates.parity.io/pallet_staking/struct.StakingLedger.html'
+      description: >-
+        Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
+        `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
+        
     VestingSchedule:
       type: object
       properties:
@@ -1141,7 +1138,7 @@ components:
           format: unsignedInteger
         startingBlock:
           type: string
-          description: Starting block for unlocking(vesting).
+          description: Starting block for unlocking (vesting).
           format: unsignedInteger
       description: Vesting schedule for an account.
     AccountVestingInfo:
@@ -1151,19 +1148,18 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         vesting:
           $ref: '#/components/schemas/VestingSchedule'
-      description: 'Substrate Reference: - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
-        - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html'
     BlockIdentifiers:
       type: object
       properties:
         hash:
           type: string
           description: The block's hash.
-          format: hexBlockHash
+          format: hex
         height:
           type: string
-          description: Block height.
+          description: The block's height.
           format: unsignedInteger
+      description: Block number and hash at which the call was made.
     DigestItem:
       type: object
       properties:
@@ -1309,7 +1305,7 @@ components:
         name:
           type: string
         storage:
-          $ref: '#/components/schemas/PalletStorageItem'
+          $ref: '#/components/schemas/PalletStorage'
         calls:
           type: array
           items:
@@ -1395,11 +1391,26 @@ components:
             $ref: '#/components/schemas/SanitizedEvent'
       description: Object with an array of `SanitizedEvent`s that occurred during
         block initialization with the `method` and `data` for each.
+    BlockFinalize:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanitizedEvent'
+      description: Object with an array of `SanitizedEvent`s that occurred during
+        block finalization with the `method` and `data` for each.
     Block:
       type: object
       properties:
-        identifiers:
-          $ref: '#/components/schemas/BlockIdentifiers'
+        hash:
+          type: string
+          description: The block's hash.
+          format: hex
+        height:
+          type: string
+          description: The block's height.
+          format: unsignedInteger
         parentHash:
           type: string
           description: The hash of the parent block.
@@ -1421,6 +1432,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DigestItem'
+          description: Array of `DigestItem`s associated with the block.
         onInitialize:
           $ref: '#/components/schemas/BlockInitialize'
         extrinsics:
@@ -1430,8 +1442,8 @@ components:
           items:
             $ref: '#/components/schemas/Extrinsic'
         onFinalize:
-          $ref: '#/components/schemas/BlockInitialize'
-      description: Block finalization does not correspond to consensus, i.e. whether
+          $ref: '#/components/schemas/BlockFinalize'
+      description: Note - Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
         _construction._
     NodeVersion:
@@ -1462,10 +1474,10 @@ components:
       properties:
         peerId:
           type: string
-          description: Peer ID
+          description: Peer ID.
         roles:
           type: string
-          description: roles
+          description: Roles.
         protocolVersion:
           type: string
           description: Protocol version.
@@ -1491,14 +1503,14 @@ components:
           format: unsignedInteger
         isSyncing:
           type: boolean
-          description: Wether or not the node is actively catching up with the chain.
+          description: Whether or not the node is actively catching up with the chain.
         shouldHavePeers:
           type: boolean
-          description: Wether or the node should be connected to peers. Might be false
+          description: Whether or not the node should be connected to peers. Might be false
             for local chains or when running without discovery.
         localPeerId:
           type: string
-          description: Local copy of the `PeerId` of the local node.
+          description: Local copy of the `PeerId`.
         localListenAddresses:
           type: array
           description: Multiaddresses that the local node is listening on. The addresses
@@ -1511,7 +1523,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PeerInfo'
-      description: Network information of the node connected to sidecar.
     RuntimeSpec:
       type: object
       properties:
@@ -1539,12 +1550,12 @@ components:
         specVersion:
           type: string
           description: version of the runtime specification
-        transactionVersion:
+        txVersion:
           type: string
           description: All existing dispatches are fully compatible when this number
             doesn't change. This number must change when an existing dispatchable
             (module ID, dispatch ID) is changed, either through an alteration in its
-            user-level semantics, a parameter added/removed/ changed, a dispatchable
+            user-level semantics, a parameter added/removed/changed, a dispatchable
             being removed, a module being removed, or a dispatchable/module changing
             its index.
         properties:
@@ -1564,11 +1575,11 @@ components:
           format: unsignedInteger
         others:
           type: array
-          description: Array of tuples of (accountId, amount) representing all the
+          description: Array of tuples(`[accountId, amount]`) representing all the
             stashes of other slashed stakers and the amount they will be slashed.
           items:
             type: string
-            format: tuple(ss58, unsignedInteger)
+            format: tuple[ss58, unsignedInteger]
         reporters:
           type: array
           description: Array of account IDs of the reporters of the offense.
@@ -1584,15 +1595,21 @@ components:
       properties:
         status:
           type: object
-          description: Era election status; either `Close; null` or `Open; <BlockNumber>`.
+          description: >-
+            Era election status: either `Close: null` or `Open: <BlockNumber>`.
             A status of `Close` indicates that the submission window for solutions
             from off-chain Phragmen is not open. A status of `Open` indicates the
-            submission window for off-chain Phragmen solutions.
+            submission window for off-chain Phragmen solutions has been open since 
+            BlockNumber. N.B. when the submission window is open, certain
+            extrinsics are not allowed because they would mutate the state that the 
+            off-chain Phragmen calculation relies on for calculating results.
         toggleEstimate:
           type: string
           description: Upper bound estimate of the block height at which the `status`
             will switch.
           format: unsignedInteger
+      description: Information about the off-chain election. Not included in response when
+        `forceEra.isForceNone`.
     StakingProgress:
       type: object
       properties:
@@ -1600,6 +1617,8 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         activeEra:
           type: string
+          description: |
+            `EraIndex` of the era being rewarded.
           format: unsignedInteger
         forceEra:
           type: string
@@ -1623,6 +1642,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UnappliedSlash'
+          description: Array of upcoming `UnappliedSlash` indexed by era.
         electionStatus:
           $ref: '#/components/schemas/ElectionStatus'
         idealValidatorCount:
@@ -1671,10 +1691,15 @@ components:
           type: string
           description: The chain's metadata in hex format.
           format: hexScaleEncoded
+      description: >-
+        Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
+        of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining
+        this registry, but in other Substrate-based chains that re-launch their network without
+        changing the `specName`, the `chainName` would be needed to create the correct registry.
     TransactionSuccess:
       type: object
       properties:
-        txHash:
+        transactionHash:
           type: string
           description: The hash of the encoded transaction.
     TransactionFailure:
@@ -1682,8 +1707,9 @@ components:
       properties:
         error:
           type: string
-          description: Failed to parse a tx or Failed to submit tx. In the case of
-            the former, the Sidecar was unable to parse the transaction and never
+          description: >-
+            `Failed to parse a tx` or `Failed to submit tx`. In the case of
+            the former, Sidecar was unable to parse the transaction and never
             even submitted it to the client. In the case of the latter, the transaction
             queue rejected the transaction. For a dryrun the client error would likely
             be Unable to dry run extrinsic.
@@ -1713,6 +1739,9 @@ components:
             rate changes. up to 30% in a 24 hour period and this will not be the exact
             fee.
           format: unsignedInteger
+      description: >-
+        Note: `partialFee` does not include any tips that you may add to increase a transaction's
+        priority. See [compute_fee](https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee).
     TransactionPool:
       type: object
       properties:
@@ -1722,6 +1751,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Extrinsic'
+      
     PalletsResponses:
       oneOf:
       - type: object
@@ -1732,6 +1762,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Pallet'
+        description: Array of pallet metadata from the runtime.
       - type: object
         properties:
           at:
@@ -1740,7 +1771,7 @@ components:
             type: array
             items:
               type: string
-        description: Array of pallet names from the runtime
+        description: Array of pallet names from the runtime.
     PalletsConstantsResponse:
       type: object
       properties:
