@@ -1442,7 +1442,8 @@ components:
             $ref: '#/components/schemas/Extrinsic'
         onFinalize:
           $ref: '#/components/schemas/BlockFinalize'
-      description: Note - Block finalization does not correspond to consensus, i.e. whether
+      description: >-
+        Note: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
         _construction._
     NodeVersion:
