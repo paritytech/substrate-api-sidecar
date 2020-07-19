@@ -1124,7 +1124,6 @@ components:
       description: >-
         Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
         `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
-        
     VestingSchedule:
       type: object
       properties:
@@ -1751,7 +1750,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Extrinsic'
-      
     PalletsResponses:
       oneOf:
       - type: object
