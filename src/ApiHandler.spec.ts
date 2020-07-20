@@ -4,11 +4,12 @@ import { GenericCall } from '@polkadot/types/generic';
 import ApiHandler from './ApiHandler';
 import { createCall, kusamaRegistry } from './utils/testUtils';
 
-const BOB_ADDR = '14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3';
-
 const transfer = createCall('balances', 'transfer', {
 	value: 12,
-	dest: kusamaRegistry.createType('AccountId', BOB_ADDR), // Bob
+	dest: kusamaRegistry.createType(
+		'AccountId',
+		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
+	), // Bob
 });
 
 const transferOutput = {
