@@ -1,6 +1,10 @@
+import Decorated from '@polkadot/metadata/Decorated';
 import metadataRpc from '@polkadot/metadata/Metadata/v11/static';
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
+import { Call } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types/codec';
+import { stringCamelCase } from '@polkadot/util';
 
 /**
  * Create a type registry for Kusama.
@@ -23,6 +27,31 @@ function createKusamaRegistry(): TypeRegistry {
 }
 
 export const kusamaRegistry = createKusamaRegistry();
+
+const decoratedMetadata = new Decorated(
+	kusamaRegistry,
+	new Metadata(kusamaRegistry, metadataRpc)
+);
+
+type CallArgValues = string | number | Codec | Call | CallArgValues[];
+type CallArgs = { [i: string]: CallArgValues | CallArgs };
+
+export function createCall(
+	pallet: string,
+	method: string,
+	args: CallArgs
+): Call {
+	// Get the call signature
+	const call = decoratedMetadata.tx[pallet][method];
+
+	return call(
+		// Map over arguments to call and key into the users args to get the values
+		// We are making the assumption that meta.args will have correct ordering
+		...call.meta.args.map((arg) => {
+			return args[stringCamelCase(arg.name.toString())];
+		})
+	);
+}
 
 export const MAX_U128 = '340282366920938463463374607431768211455';
 
