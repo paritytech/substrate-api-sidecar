@@ -1,11 +1,10 @@
 openapi: 3.0.0
 info:
   title: Substrate API Sidecar
-  description: REST API service intended to run next to Substrate, exposing a limited  set
-    of endpoints over HTTP with meaningful responses.
+  description: Substrate API Sidecar is a REST service that makes it easier to interact with
+    blockchain nodes built on the Substrate and FRAME frameworks.
   contact:
-    name: Parity Technologies
-    email: admin@parity.io
+    url: https://github.com/paritytech/substrate-api-sidecar/issues/new
   license:
     name: GNU General Public License v3.0
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
@@ -25,13 +24,13 @@ paths:
       tags:
       - accounts
       summary: Get balance information for an address.
-      description: Returns a curated grouping of values related to an accounts balance.
+      description: Returns information about an account's balance.
         Replaces `/balance/{address}` from versions < v1.0.0.
       operationId: getBalanceSummaryByAccountId
       parameters:
       - name: accountId
         in: path
-        description: the account identifier, as the ss58 encoded public address.
+        description: The SS58 address of the account.
         required: true
         style: simple
         explode: false
@@ -39,13 +38,13 @@ paths:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: The block at which to query the balance info for the specified account.
         required: false
         style: form
         explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: The block height (as a non-negative integer) or hash (as a hex string).
           format: unsignedInteger or $hex
       responses:
         "200":
