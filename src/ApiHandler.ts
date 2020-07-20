@@ -101,7 +101,7 @@ export default class ApiHandler {
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
-				newArgs: this.parseGenericCall(method).args,
+				newArgs: ApiHandler.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -705,7 +705,7 @@ export default class ApiHandler {
 		return api;
 	}
 
-	private parseArrayGenericCalls(
+	private static parseArrayGenericCalls(
 		argsArray: Codec[]
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
@@ -717,7 +717,7 @@ export default class ApiHandler {
 		});
 	}
 
-	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
+	private static parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
