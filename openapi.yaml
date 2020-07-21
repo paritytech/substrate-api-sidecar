@@ -34,7 +34,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
       - name: at
         in: query
         description: Block at which to query balance info for the 
@@ -78,7 +78,7 @@ paths:
         description: SS58 address of the account.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
           type: string
       - name: at
         in: query
@@ -122,7 +122,7 @@ paths:
         description: SS58 address of the account.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
           type: string
       - name: at
         in: query
