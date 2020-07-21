@@ -61,15 +61,17 @@ async function main() {
 
 	// Instantiate controller class instances
 	const blocksController = new controllers.Blocks(api);
-	const balancesController = new controllers.Balance(api);
-	const stakingInfoController = new controllers.StakingInfo(api);
-	const stakingController = new controllers.Staking(api);
-	const vestingController = new controllers.Vesting(api);
+	const balancesController = new controllers.AccountsBalanceInfo(api);
+	const stakingInfoController = new controllers.AccountsStakingInfo(api);
+	const stakingController = new controllers.PalletsStakingProgress(api);
+	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
 	const claimsController = new controllers.Claims(api);
-	const txArtifactsController = new controllers.TxArtifacts(api);
-	const txFeeEstimateController = new controllers.TxFeeEstimate(api);
-	const txSubmitController = new controllers.TxSubmit(api);
+	const txArtifactsController = new controllers.TransactionsMaterial(api);
+	const txFeeEstimateController = new controllers.TransactionsFeeEstimate(
+		api
+	);
+	const txSubmitController = new controllers.TransactionsSubmit(api);
 
 	// Create our App
 	const app = new App({

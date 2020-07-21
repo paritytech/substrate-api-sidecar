@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 
-import ApiHandler from '../ApiHandler';
-import { IPostRequestHandler, ITx } from '../types/requests';
-import AbstractController from './AbstractController';
+import { TransactionsSubmitService } from '../../services';
+import { IPostRequestHandler, ITx } from '../../types/requests';
+import AbstractController from '../AbstractController';
 
 /**
  * POST a serialized transaction to submit to the transaction queue.
@@ -21,11 +21,11 @@ import AbstractController from './AbstractController';
  *   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
  *   - `cause`: The error message from parsing or from the client.
  */
-export default class TxSubmitController extends AbstractController {
-	handler: ApiHandler;
+export default class TxSubmitController extends AbstractController<
+	TransactionsSubmitService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/tx');
-		this.handler = new ApiHandler(api);
+		super(api, '/tx', new TransactionsSubmitService(api));
 		this.initRoutes();
 	}
 
@@ -49,6 +49,6 @@ export default class TxSubmitController extends AbstractController {
 			};
 		}
 
-		res.send(await this.handler.submitTx(tx));
+		res.send(await this.service.submitTransaction(tx));
 	};
 }

@@ -2,8 +2,8 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import ApiHandler from '../ApiHandler';
-import AbstractController from './AbstractController';
+import { PalletsStakingProgressService } from '../../services';
+import AbstractController from '../AbstractController';
 
 /**
  * GET generalized staking information.
@@ -65,11 +65,11 @@ import AbstractController from './AbstractController';
  * - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
  * - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
  */
-export default class StakingInfoController extends AbstractController {
-	handler: ApiHandler;
+export default class PalletsStakingProgressController extends AbstractController<
+	PalletsStakingProgressService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/staking-info');
-		this.handler = new ApiHandler(api);
+		super(api, '/staking-info', new PalletsStakingProgressService(api));
 		this.initRoutes();
 	}
 
@@ -92,9 +92,9 @@ export default class StakingInfoController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		StakingInfoController.sanitizedSend(
+		PalletsStakingProgressController.sanitizedSend(
 			res,
-			await this.handler.fetchStakingInfo(hash)
+			await this.service.derivePalletStakingProgress(hash)
 		);
 	};
 
@@ -111,9 +111,9 @@ export default class StakingInfoController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		StakingInfoController.sanitizedSend(
+		PalletsStakingProgressController.sanitizedSend(
 			res,
-			await this.handler.fetchStakingInfo(hash)
+			await this.service.derivePalletStakingProgress(hash)
 		);
 	};
 }

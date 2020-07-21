@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { INumberParam } from 'src/types/requests';
 
-import ApiHandler from '../ApiHandler';
-import AbstractController from './AbstractController';
+import { BlocksService } from '../../services';
+import { INumberParam } from '../../types/requests';
+import AbstractController from '../AbstractController';
 
 /**
  * GET a block.
@@ -51,11 +51,11 @@ import AbstractController from './AbstractController';
  * - `OnInitialize`: https://crates.parity.io/frame_support/traits/trait.OnInitialize.html
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
-export default class BlocksController extends AbstractController {
-	handler: ApiHandler;
+export default class BlocksController extends AbstractController<
+	BlocksService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/block');
-		this.handler = new ApiHandler(api);
+		super(api, '/block', new BlocksService(api));
 		this.initRoutes();
 	}
 
@@ -77,7 +77,7 @@ export default class BlocksController extends AbstractController {
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.handler.fetchBlock(hash)
+			await this.service.fetchBlock(hash)
 		);
 	};
 
@@ -95,7 +95,7 @@ export default class BlocksController extends AbstractController {
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.handler.fetchBlock(hash)
+			await this.service.fetchBlock(hash)
 		);
 	};
 }

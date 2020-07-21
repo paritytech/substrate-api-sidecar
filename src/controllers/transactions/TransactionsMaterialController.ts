@@ -2,8 +2,9 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import ApiHandler from '../ApiHandler';
-import AbstractController from './AbstractController';
+import { TransactionsMaterialService } from '../../services';
+// import ApiHandler from '../ApiHandler';
+import AbstractController from '../AbstractController';
 
 /**
  * GET all the information needed to construct a transaction offline.
@@ -33,11 +34,11 @@ import AbstractController from './AbstractController';
  * - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  */
-export default class TxArtifactsController extends AbstractController {
-	handler: ApiHandler;
+export default class TransactionsMaterialController extends AbstractController<
+	TransactionsMaterialService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/tx/artifacts');
-		this.handler = new ApiHandler(api);
+		super(api, '/tx/artifacts', new TransactionsMaterialService(api));
 		this.initRoutes();
 	}
 
@@ -60,9 +61,9 @@ export default class TxArtifactsController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		TxArtifactsController.sanitizedSend(
+		TransactionsMaterialController.sanitizedSend(
 			res,
-			await this.handler.fetchTxArtifacts(hash)
+			await this.service.getTransactionMaterial(hash)
 		);
 	};
 
@@ -79,9 +80,9 @@ export default class TxArtifactsController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		TxArtifactsController.sanitizedSend(
+		TransactionsMaterialController.sanitizedSend(
 			res,
-			await this.handler.fetchTxArtifacts(hash)
+			await this.service.getTransactionMaterial(hash)
 		);
 	};
 }

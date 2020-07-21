@@ -44,7 +44,6 @@ import U128 from '@polkadot/types/primitive/U128';
 import * as BN from 'bn.js';
 
 import {
-	kusamaRegistry,
 	MAX_I8,
 	MAX_I16,
 	MAX_I32,
@@ -64,7 +63,8 @@ import {
 	PRE_SANITIZED_OPTION_VESTING_INFO,
 	PRE_SANITIZED_RUNTIME_DISPATCH_INFO,
 	PRE_SANITIZED_STAKING_RESPONSE,
-} from '../utils/testUtils';
+} from '../utils/constants';
+import { kusamaRegistry } from '../utils/testTools';
 import { sanitizeNumbers } from './sanitizeNumbers';
 
 describe('sanitizeNumbers', () => {

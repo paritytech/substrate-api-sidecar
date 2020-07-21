@@ -2,8 +2,8 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import ApiHandler from '../ApiHandler';
-import AbstractController from './AbstractController';
+import { RuntimeMetadataService } from '../../services';
+import AbstractController from '../AbstractController';
 
 /**
  * GET the chain's metadata.
@@ -19,11 +19,11 @@ import AbstractController from './AbstractController';
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
-export default class MetadataController extends AbstractController {
-	handler: ApiHandler;
+export default class RuntimeMetadataController extends AbstractController<
+	RuntimeMetadataService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/metadata');
-		this.handler = new ApiHandler(api);
+		super(api, '/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
 
@@ -44,9 +44,9 @@ export default class MetadataController extends AbstractController {
 	private getMetadata: RequestHandler = async (_req, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		MetadataController.sanitizedSend(
+		RuntimeMetadataController.sanitizedSend(
 			res,
-			await this.handler.fetchMetadata(hash)
+			await this.service.fetchMetadata(hash)
 		);
 	};
 
@@ -63,9 +63,9 @@ export default class MetadataController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		MetadataController.sanitizedSend(
+		RuntimeMetadataController.sanitizedSend(
 			res,
-			await this.handler.fetchMetadata(hash)
+			await this.service.fetchMetadata(hash)
 		);
 	};
 }

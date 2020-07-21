@@ -2,9 +2,9 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
-import ApiHandler from '../ApiHandler';
-import { validateAddress } from '../middleware';
-import AbstractController from './AbstractController';
+import { validateAddress } from '../../middleware';
+import { AccountsVestingInfoService } from '../../services';
+import AbstractController from '../AbstractController';
 
 /**
  * GET vesting information for an address.
@@ -25,11 +25,11 @@ import AbstractController from './AbstractController';
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
  * - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
  */
-export default class VestingController extends AbstractController {
-	handler: ApiHandler;
+export default class AccountsVestingInfoController extends AbstractController<
+	AccountsVestingInfoService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/vesting/:address');
-		this.handler = new ApiHandler(api);
+		super(api, '/vesting/:address', new AccountsVestingInfoService(api));
 		this.initRoutes();
 	}
 
@@ -54,7 +54,10 @@ export default class VestingController extends AbstractController {
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		res.send(await this.handler.fetchVesting(hash, address));
+		AccountsVestingInfoController.sanitizedSend(
+			res,
+			await this.service.fetchAccountVestingInfo(hash, address)
+		);
 	};
 
 	/**
@@ -70,9 +73,9 @@ export default class VestingController extends AbstractController {
 		const { address, number } = req.params;
 		const hash = await this.getHashForBlock(number);
 
-		VestingController.sanitizedSend(
+		AccountsVestingInfoController.sanitizedSend(
 			res,
-			await this.handler.fetchVesting(hash, address)
+			await this.service.fetchAccountVestingInfo(hash, address)
 		);
 	};
 }
