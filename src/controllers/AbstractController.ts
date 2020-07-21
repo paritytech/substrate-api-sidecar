@@ -4,7 +4,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
-import AbstractService from 'src/services/AbstractService';
+import { AbstractService } from 'src/services/AbstractService';
 import {
 	IAddressNumberParams,
 	IAddressParam,

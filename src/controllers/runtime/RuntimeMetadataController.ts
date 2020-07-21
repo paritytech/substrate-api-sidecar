@@ -20,7 +20,7 @@ import AbstractController from '../AbstractController';
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
 export default class RuntimeMetadataController extends AbstractController<
-	RunMetadataService
+	RuntimeMetadataService
 > {
 	constructor(api: ApiPromise) {
 		super(api, '/metadata', new RuntimeMetadataService(api));
@@ -44,7 +44,7 @@ export default class RuntimeMetadataController extends AbstractController<
 	private getMetadata: RequestHandler = async (_req, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		MetadataController.sanitizedSend(
+		RuntimeMetadataController.sanitizedSend(
 			res,
 			await this.service.fetchMetadata(hash)
 		);
@@ -63,7 +63,7 @@ export default class RuntimeMetadataController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		MetadataController.sanitizedSend(
+		RuntimeMetadataController.sanitizedSend(
 			res,
 			await this.service.fetchMetadata(hash)
 		);

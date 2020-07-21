@@ -8,7 +8,7 @@ import {
 } from 'express';
 
 import AbstractController from './controllers/AbstractController';
-import AbstractService from './services/AbstractService';
+import { AbstractService } from './services/AbstractService';
 
 interface IAppConfiguration {
 	controllers: AbstractController<AbstractService>[];

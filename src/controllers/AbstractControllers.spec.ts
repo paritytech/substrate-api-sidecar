@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { ApiPromise } from '@polkadot/api';
 import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import AbstractService from '../services/AbstractService';
+import { AbstractService } from '../services/AbstractService';
 import { kusamaRegistry } from '../utils/testTools';
 import AbstractController from './AbstractController';
 

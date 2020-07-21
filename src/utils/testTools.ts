@@ -36,9 +36,8 @@ const decoratedMetadata = new Decorated(
 	new Metadata(kusamaRegistry, metadataRpc)
 );
 
-type CallArgs = {
-	[i: string]: string | number | Codec | Call | CallArgs[] | CallArgs;
-};
+type CallArgValues = string | number | Codec | Call | CallArgValues[];
+type CallArgs = { [i: string]: CallArgValues | CallArgs };
 
 /**
  * Create a polkadot-js Call using decorated metadata. Useful for testing that
