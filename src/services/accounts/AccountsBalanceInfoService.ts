@@ -3,7 +3,7 @@ import { IAccountBalanceInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
-export default class AccountsBalanceInfoService extends AbstractService {
+export class AccountsBalanceInfoService extends AbstractService {
 	/**
 	 * Fetch balance information for an account at a given block.
 	 *

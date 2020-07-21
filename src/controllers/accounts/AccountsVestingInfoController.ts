@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
-import { AccountVestingInfoService } from '../../services';
+import { AccountsVestingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
@@ -26,10 +26,10 @@ import AbstractController from '../AbstractController';
  * - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
  */
 export default class AccountsVestingInfoController extends AbstractController<
-	AccountVestingInfoService
+	AccountsVestingInfoService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/vesting/:address', new AccountVestingInfoService(api));
+		super(api, '/vesting/:address', new AccountsVestingInfoService(api));
 		this.initRoutes();
 	}
 

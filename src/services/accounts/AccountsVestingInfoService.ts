@@ -4,7 +4,7 @@ import { IAccountVestingInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
-export default class AccountsVestingInfoService extends AbstractService {
+export class AccountsVestingInfoService extends AbstractService {
 	/**
 	 * Fetch vesting information for an account at a given block.
 	 *

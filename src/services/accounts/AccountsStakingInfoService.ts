@@ -3,7 +3,7 @@ import { IAccountStakingInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
-export default class AccountsStakingInfoService extends AbstractService {
+export class AccountsStakingInfoService extends AbstractService {
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.
 	 *
