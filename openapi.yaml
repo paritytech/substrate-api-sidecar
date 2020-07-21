@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: Substrate API Sidecar
-  description: Substrate API Sidecar is a REST service that makes it easier to interact with
-    blockchain nodes built on the Substrate and FRAME frameworks.
+  description: Substrate API Sidecar is a REST service that makes it easier to
+    interact with blockchain nodes built on the Substrate and FRAME frameworks.
   contact:
     url: https://github.com/paritytech/substrate-api-sidecar/issues/new
   license:
@@ -30,21 +30,20 @@ paths:
       parameters:
       - name: accountId
         in: path
-        description: The SS58 address of the account.
+        description: SS58 address of the account.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
       - name: at
         in: query
-        description: The block at which to query the balance info for the specified account.
+        description: Block at which to query balance info for the 
+          specified account.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: The block height (as a non-negative integer) or hash (as a hex string).
+          description: Block height (as a non-negative integer) or hash 
+            (as a hex string).
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -70,27 +69,25 @@ paths:
       tags:
       - accounts
       summary: Get a staking information for a stash address.
-      description: Returns a a curated grouping of values related to an staking accounts
-        staking activity. Replaces `/staking/{address}` from versions < v1.0.0.
+      description: Returns information about an account's staking activity.
+        Replaces `/staking/{address}` from versions < v1.0.0.
       operationId: getStakingSummaryByAccountId
       parameters:
       - name: accountId
         in: path
-        description: the account identifier, as the ss58 encoded public address.
+        description: SS58 address of the account.
         required: true
-        style: simple
-        explode: false
         schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description:  Block at which to query the staking info for the 
+          specified account.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -116,27 +113,25 @@ paths:
       tags:
       - accounts
       summary: Get vesting information for an address.
-      description: Returns the vesting schedule for an account. Replaces `/vesting/{address}`
-        from versions < v1.0.0.
+      description: Returns the vesting schedule for an account. 
+        Replaces `/vesting/{address}` from versions < v1.0.0.
       operationId: getVestingSummaryByAccountId
       parameters:
       - name: accountId
         in: path
-        description: the account identifier, as the ss58 encoded public address.
+        description: SS58 address of the account.
         required: true
-        style: simple
-        explode: false
         schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to query the vesting info for the 
+          specified account.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -168,11 +163,10 @@ paths:
       parameters:
       - name: blockId
         in: path
-        description: block identifier, as the block height or block hash.
+        description: Block identifier, as the block height or block hash.
         required: true
-        style: simple
-        explode: false
         schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
           type: string
       responses:
         "200":
@@ -182,7 +176,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Block'
         "400":
-          description: invalid block identifier supplied
+          description: invalid Block identifier supplied
           content:
             application/json:
               schema:
@@ -202,8 +196,6 @@ paths:
           to get the newest known block, which may not be finalized. Replaces `/block`
           from versions < v1.0.0.
         required: false
-        style: form
-        explode: true
         schema:
           type: boolean
       responses:
@@ -232,8 +224,8 @@ paths:
       tags:
       - node
       summary: Get the transaction pool of the node.
-      description: Returns the extrinsics that the node knows of that have not been
-        included in a block.
+      description: Returns the extrinsics that the node knows of which have not 
+        been included in a block.
       operationId: getNodeTransactionPool
       responses:
         "200":
@@ -303,8 +295,8 @@ paths:
       tags:
       - transaction
       summary: Receive a fee estimate for a transaction.
-      description: Send a serialized transaction and receive back a naive fee estimate.
-        Replaces `/tx/fee-estimate` from versions < v1.0.0.
+      description: Send a serialized transaction and receive back a naive fee 
+        estimate. Replaces `/tx/fee-estimate` from versions < v1.0.0.
       operationId: feeEstimateTransaction
       requestBody:
         $ref: '#/components/requestBodies/Transaction'
@@ -326,19 +318,18 @@ paths:
       tags:
       - transaction
       summary: Get the baseline material to construct a transaction.
-      description: Returns the material that is universal to constructing any signed
-        extrinsic offline. Replaces `/tx/artifacts` from versions < v1.0.0.
+      description: Returns the material that is universal to constructing any 
+        signed extrinsic offline. Replaces `/tx/artifacts` from versions < v1.0.0.
       operationId: getTransactionMaterial
       parameters:
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve the transaction construction 
+          material at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -358,20 +349,18 @@ paths:
       tags:
       - pallets
       summary: Get a progress report on the chain's staking system.
-      description: Returns information on the progress of key components of the staking
-        system and estimates of future points of interest. Replaces `/staking-info`
-        from versions < v1.0.0.
+      description: Returns information on the progress of key components of the 
+        staking system and estimates of future points of interest. Replaces 
+        `/staking-info` from versions < v1.0.0.
       operationId: getStakingProgress
       parameters:
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve a staking progress report at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -391,26 +380,24 @@ paths:
       tags:
       - pallets
       summary: Get a list of pallets used in the runtime.
-      description: Returns an array of metadta for pallets that are used in the
-        runtime. Can use `only-names` query param to just return an array of pallet names.
+      description: Returns an array of metadata for pallets that are used in the
+        runtime. Can use `only-names` query param to just return an array of 
+        pallet names.
       parameters:
       - name: only-names
         in: query
         description: Only return the names of pallets.
         required: false
-        style: form
-        explode: true
         schema:
           type: boolean
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve a list of the runtime's pallets 
+          at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -437,19 +424,16 @@ paths:
         in: path
         description: Id of the pallet to query the constant of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve the list of exposed pallet
+          constants at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -481,27 +465,21 @@ paths:
         in: path
         description: Id of the pallet to query the constant of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: constantId
         in: path
         description: Id of the constant to query for.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to query the constant at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -509,7 +487,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsContantValue'
+                $ref: '#/components/schemas/PalletsConstantValue'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -533,19 +511,16 @@ paths:
         in: path
         description: Id of the pallet to get the metadata of its dispatchables.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve a list of the pallet's 
+          dispatchables at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -577,27 +552,21 @@ paths:
         in: path
         description: Id of the pallet to get the dispatchable of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: dispatchableId
         in: path
         description: Index of the dispatchable in the pallet's dispatchable array.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description:  Block at which to retrieve the dispatchable at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -629,19 +598,16 @@ paths:
         in: path
         description: Id of the pallet to get the metadata of its errors.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve a list of the pallet's
+          errors at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -673,27 +639,21 @@ paths:
         in: path
         description: Id of the pallet to the error of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: errorId
         in: path
         description: Index of the error in the pallet's errors array.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description:  Block at which to retrieve the error at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -725,19 +685,15 @@ paths:
         in: path
         description: Id of the pallet to get the metadata of its events.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve a list of the pallet's events at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -769,27 +725,21 @@ paths:
         in: path
         description: Id of the pallet to the event of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: eventId
         in: path
         description: Index of the event in the pallet's events array.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve the event at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -822,19 +772,16 @@ paths:
         in: path
         description: Id of the pallet to query the storage of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve at which to retrieve a list of 
+          the pallet's storage items at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -863,24 +810,20 @@ paths:
       tags:
       - pallets
       summary: Get the value of a storage item.
-      description: Returns value stored under the storageItemId. If it is a map, query
-        param key1 is required. If the storage item is double map query params key1
-        and key2 are required.
+      description: Returns the value stored under the storageItemId. If it is a 
+        map, query param key1 is required. If the storage item is double map 
+        query params key1 and key2 are required.
       parameters:
       - name: palletId
         in: path
         description: Id of the pallet to query the storage of.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: storageItemId
         in: path
         description: Id of the storage item to query for.
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       - name: key1
@@ -888,27 +831,21 @@ paths:
         description: Key for a map, or first key for a double map. Required for querying
           a map.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
       - name: key2
         in: query
         description: Second key for a double map. Required for querying a double map.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to query the storage item at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -940,13 +877,11 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve the metadata at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -965,13 +900,11 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve the runtime wasm blob at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -989,13 +922,11 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Historic block to make query at.
+        description: Block at which to retrieve runtime version information at.
         required: false
-        style: form
-        explode: true
         schema:
           type: string
-          description: block identifier, as the block height or block hash.
+          description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -1779,7 +1710,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PalletConstant'
-    PalletsContantValue:
+    PalletsConstantValue:
       type: object
       properties:
         at:
