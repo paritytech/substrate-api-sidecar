@@ -1,1 +1,1 @@
-export { default as PalletsStakingProgressService } from './PalletsStakingProgressService';
+export * from './PalletsStakingProgressService';

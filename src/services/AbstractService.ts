@@ -3,7 +3,7 @@ import { u32 } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-export default abstract class AbstractService {
+export abstract class AbstractService {
 	private readonly versionReset = 99999999;
 	private specVersion: u32;
 	private txVersion: u32;

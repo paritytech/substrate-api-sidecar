@@ -1,8 +1,8 @@
 import { Hash } from '@polkadot/types/interfaces';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class TransactionsSubmitService extends AbstractService {
+export class TransactionsSubmitService extends AbstractService {
 	/**
 	 * Submit a fully formed scale encoded extrinsic for block inclusion.
 	 *

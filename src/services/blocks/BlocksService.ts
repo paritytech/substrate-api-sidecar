@@ -12,9 +12,9 @@ import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
 import { IBlock, ISanitizedCall, ISanitizedEvent } from '../../types/responses';
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class BlocksService extends AbstractService {
+export class BlocksService extends AbstractService {
 	/**
 	 * Fetch a block enhanced with augmented and derived values.
 	 *
@@ -66,7 +66,7 @@ export default class BlocksService extends AbstractService {
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args,
-				newArgs: this.parseGenericCall(method).args,
+				newArgs: BlocksService.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -286,7 +286,7 @@ export default class BlocksService extends AbstractService {
 	 *
 	 * @param argsArray array of `Codec` values
 	 */
-	private parseArrayGenericCalls(
+	private static parseArrayGenericCalls(
 		argsArray: Codec[]
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
@@ -305,7 +305,7 @@ export default class BlocksService extends AbstractService {
 	 *
 	 * @param genericCall `GenericCall`
 	 */
-	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
+	private static parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 

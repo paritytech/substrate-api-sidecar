@@ -3,4 +3,4 @@ export * from './blocks';
 export * from './pallets';
 export * from './transactions';
 export * from './claims';
-export * from './metadata';
+export * from './runtime';

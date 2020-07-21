@@ -1,1 +1,1 @@
-export { default as ClaimsService } from './ClaimsService';
+export * from './ClaimsService';

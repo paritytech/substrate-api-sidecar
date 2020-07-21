@@ -2,7 +2,7 @@ import { Metadata } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { IAccountVestingInfo } from 'src/types/responses';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
 export default class AccountsVestingInfoService extends AbstractService {
 	/**

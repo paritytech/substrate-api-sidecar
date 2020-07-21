@@ -1,8 +1,8 @@
 import { BlockHash, RuntimeDispatchInfo } from '@polkadot/types/interfaces';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class TransactionsFeeEstimateService extends AbstractService {
+export class TransactionsFeeEstimateService extends AbstractService {
 	/**
 	 * Fetch estimated fee information for a scale encoded extrinsic at a given
 	 * block.

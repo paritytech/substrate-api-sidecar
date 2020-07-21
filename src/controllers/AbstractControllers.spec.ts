@@ -4,7 +4,7 @@ import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import AbstractService from '../services/AbstractService';
-import { kusamaRegistry } from '../utils/test_util';
+import { kusamaRegistry } from '../utils/testTools';
 import AbstractController from './AbstractController';
 
 const promiseBlockHash = (num: number): Promise<BlockHash> =>

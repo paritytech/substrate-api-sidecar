@@ -1,7 +1,7 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { IAccountStakingInfo } from 'src/types/responses';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
 export default class AccountsStakingInfoService extends AbstractService {
 	/**

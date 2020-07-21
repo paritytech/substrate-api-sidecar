@@ -1,28 +1,4 @@
-import metadataRpc from '@polkadot/metadata/Metadata/v11/static';
-import { Metadata, TypeRegistry } from '@polkadot/types';
-import { getSpecTypes } from '@polkadot/types-known';
-
-/**
- * Create a type registry for Kusama.
- * Useful for creating types in order to facilitate testing.
- */
-function createKusamaRegistry(): TypeRegistry {
-	const registry = new TypeRegistry();
-
-	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', 2008));
-
-	registry.createType('ChainProperties', {
-		ss58Format: 2,
-		tokenDecimals: 12,
-		tokenSymbol: 'KSM',
-	});
-
-	registry.setMetadata(new Metadata(registry, metadataRpc));
-
-	return registry;
-}
-
-export const kusamaRegistry = createKusamaRegistry();
+import { kusamaRegistry } from './testTools';
 
 export const MAX_U128 = '340282366920938463463374607431768211455';
 

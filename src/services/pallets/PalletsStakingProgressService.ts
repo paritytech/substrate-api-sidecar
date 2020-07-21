@@ -4,9 +4,9 @@ import * as BN from 'bn.js';
 import { IPalletStakingProgress } from 'src/types/responses';
 
 import * as errors from '../../../config/errors-en.json';
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class PalletsStakingProgressService extends AbstractService {
+export class PalletsStakingProgressService extends AbstractService {
 	/**
 	 * Fetch and derive generalized staking information at a given block.
 	 *

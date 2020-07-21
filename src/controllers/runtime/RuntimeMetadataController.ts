@@ -2,7 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import { MetadataService } from '../../services';
+import { RuntimeMetadataService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
@@ -19,11 +19,11 @@ import AbstractController from '../AbstractController';
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
-export default class MetadataController extends AbstractController<
-	MetadataService
+export default class RuntimeMetadataController extends AbstractController<
+	RunMetadataService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/metadata', new MetadataService(api));
+		super(api, '/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
 

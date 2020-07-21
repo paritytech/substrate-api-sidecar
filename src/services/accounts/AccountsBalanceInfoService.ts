@@ -1,7 +1,7 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { IAccountBalanceInfo } from 'src/types/responses';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
 export default class AccountsBalanceInfoService extends AbstractService {
 	/**

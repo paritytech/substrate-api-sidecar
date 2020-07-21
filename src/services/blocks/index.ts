@@ -1,1 +1,1 @@
-export { default as BlocksService } from './BlocksService';
+export * from './BlocksService';

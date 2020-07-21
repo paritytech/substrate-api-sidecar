@@ -1,9 +1,9 @@
 import { Metadata } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class MetadataService extends AbstractService {
+export class RuntimeMetadataService extends AbstractService {
 	/**
 	 * Fetch `Metadata` in decoded JSON form.
 	 *

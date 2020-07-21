@@ -1,8 +1,8 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class ClaimsService extends AbstractService {
+export class ClaimsService extends AbstractService {
 	/**
 	 * Fetch claims info for an Ethereum address at a given block.
 	 *

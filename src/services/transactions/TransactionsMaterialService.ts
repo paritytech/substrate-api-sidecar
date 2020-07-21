@@ -1,9 +1,9 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { ITransactionMaterial } from 'src/types/responses';
 
-import AbstractService from '../AbstractService';
+import { AbstractService } from '../AbstractService';
 
-export default class TransactionsMaterialService extends AbstractService {
+export class TransactionsMaterialService extends AbstractService {
 	/**
 	 * Fetch the baseline "material" at a given block to construct a transaction
 	 * offline.
