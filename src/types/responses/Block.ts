@@ -33,8 +33,7 @@ interface IExtrinsic {
 	method: string;
 	signature: ISignature | null;
 	nonce: Compact<Index>;
-	args: Codec[];
-	newArgs: ISanitizedArgs;
+	args: ISanitizedArgs;
 	tip: Compact<Balance>;
 	hash: string;
 	// eslint-disable-next-line @typescript-eslint/ban-types

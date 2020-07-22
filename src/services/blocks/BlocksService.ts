@@ -57,7 +57,6 @@ export class BlocksService extends AbstractService {
 				signer,
 				isSigned,
 				tip,
-				args,
 			} = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
@@ -65,8 +64,7 @@ export class BlocksService extends AbstractService {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
-				args,
-				newArgs: BlocksService.parseGenericCall(method).args,
+				args: BlocksService.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
