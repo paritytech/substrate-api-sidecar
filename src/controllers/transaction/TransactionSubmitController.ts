@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 
-import { TransactionsSubmitService } from '../../services';
+import { TransactionSubmitService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -21,11 +21,11 @@ import AbstractController from '../AbstractController';
  *   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
  *   - `cause`: The error message from parsing or from the client.
  */
-export default class TxSubmitController extends AbstractController<
-	TransactionsSubmitService
+export default class TransactionSubmitController extends AbstractController<
+	TransactionSubmitService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/tx', new TransactionsSubmitService(api));
+		super(api, '/tx', new TransactionSubmitService(api));
 		this.initRoutes();
 	}
 

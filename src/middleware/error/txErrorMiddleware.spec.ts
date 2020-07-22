@@ -4,7 +4,7 @@ import {
 	callsNextWithErr,
 	callsNextWithSentHeaders,
 	catchesErrWithResponse,
-} from './testUtils';
+} from './testTools';
 import { txErrorMiddleware } from './txErrorMiddleware';
 
 const txErrorMiddlewareCallsNextWithErr = callsNextWithErr(txErrorMiddleware);

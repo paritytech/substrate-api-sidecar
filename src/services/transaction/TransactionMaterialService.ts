@@ -3,7 +3,7 @@ import { ITransactionMaterial } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
-export class TransactionsMaterialService extends AbstractService {
+export class TransactionMaterialService extends AbstractService {
 	/**
 	 * Fetch the baseline "material" at a given block to construct a transaction
 	 * offline.
