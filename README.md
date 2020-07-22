@@ -90,9 +90,9 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   `/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.
 
-- `/staking-info` fetch information on general staking progress at the latest finalized block.
+-  `/staking-info` fetch information on general staking progress at the latest finalized block.
 
-- `/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.
+-  `/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.
 
 -   `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
 
