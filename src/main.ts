@@ -67,11 +67,9 @@ async function main() {
 	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
 	const claimsController = new controllers.Claims(api);
-	const txArtifactsController = new controllers.TransactionsMaterial(api);
-	const txFeeEstimateController = new controllers.TransactionsFeeEstimate(
-		api
-	);
-	const txSubmitController = new controllers.TransactionsSubmit(api);
+	const txArtifactsController = new controllers.TransactionMaterial(api);
+	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
+	const txSubmitController = new controllers.TransactionSubmit(api);
 
 	// Create our App
 	const app = new App({

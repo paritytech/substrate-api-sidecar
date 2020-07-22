@@ -6,7 +6,7 @@ import {
 	callsNextWithErr,
 	callsNextWithSentHeaders,
 	catchesErrWithStatus,
-} from './testUtils';
+} from './testTools';
 
 const httpErrorMiddlewareCallsNextWithErr = callsNextWithErr(
 	httpErrorMiddleware

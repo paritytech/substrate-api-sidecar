@@ -2,7 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import { TransactionsMaterialService } from '../../services';
+import { TransactionMaterialService } from '../../services';
 // import ApiHandler from '../ApiHandler';
 import AbstractController from '../AbstractController';
 
@@ -34,11 +34,11 @@ import AbstractController from '../AbstractController';
  * - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  */
-export default class TransactionsMaterialController extends AbstractController<
-	TransactionsMaterialService
+export default class TransactionMaterialController extends AbstractController<
+	TransactionMaterialService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/tx/artifacts', new TransactionsMaterialService(api));
+		super(api, '/tx/artifacts', new TransactionMaterialService(api));
 		this.initRoutes();
 	}
 
@@ -61,7 +61,7 @@ export default class TransactionsMaterialController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		TransactionsMaterialController.sanitizedSend(
+		TransactionMaterialController.sanitizedSend(
 			res,
 			await this.service.getTransactionMaterial(hash)
 		);
@@ -80,7 +80,7 @@ export default class TransactionsMaterialController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		TransactionsMaterialController.sanitizedSend(
+		TransactionMaterialController.sanitizedSend(
 			res,
 			await this.service.getTransactionMaterial(hash)
 		);

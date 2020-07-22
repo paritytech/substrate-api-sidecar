@@ -2,7 +2,7 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import * as HttpErrorConstructor from 'http-errors';
 
 import { internalErrorMiddleware } from './internalErrorMiddleware';
-import { callsNextWithSentHeaders, catchesErrWithResponse } from './testUtils';
+import { callsNextWithSentHeaders, catchesErrWithResponse } from './testTools';
 
 const internalErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 	internalErrorMiddleware
