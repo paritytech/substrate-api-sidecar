@@ -1,9 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 
-import ApiHandler from '../ApiHandler';
-import { IPostRequestHandler, ITx } from '../types/requests';
-import AbstractController from './AbstractController';
-import TxArtifactsController from './TxArtifactsController';
+import { TransactionFeeEstimateService } from '../../services';
+import { IPostRequestHandler, ITx } from '../../types/requests';
+import AbstractController from '../AbstractController';
 
 /**
  * POST a serialized transaction and receive a fee estimate.
@@ -31,11 +30,11 @@ import TxArtifactsController from './TxArtifactsController';
  * - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
  * - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
  */
-export default class TxFeeEstimate extends AbstractController {
-	handler: ApiHandler;
+export default class TransactionFeeEstimateController extends AbstractController<
+	TransactionFeeEstimateService
+> {
 	constructor(api: ApiPromise) {
-		super(api, '/tx/fee-estimate');
-		this.handler = new ApiHandler(api);
+		super(api, '/tx/fee-estimate', new TransactionFeeEstimateService(api));
 		this.initRoutes();
 	}
 
@@ -62,9 +61,9 @@ export default class TxFeeEstimate extends AbstractController {
 
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		TxArtifactsController.sanitizedSend(
+		TransactionFeeEstimateController.sanitizedSend(
 			res,
-			await this.handler.fetchFeeInformation(hash, tx)
+			await this.service.fetchTransactionFeeEstimate(hash, tx)
 		);
 	};
 }

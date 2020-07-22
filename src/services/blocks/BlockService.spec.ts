@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { GenericCall } from '@polkadot/types/generic';
 
-import ApiHandler from './ApiHandler';
-import { createCall, kusamaRegistry } from './utils/testUtils';
+import { createCall, kusamaRegistry } from '../../utils/testTools';
+import { BlocksService } from './BlocksService';
 
 const transfer = createCall('balances', 'transfer', {
 	value: 12,
@@ -21,16 +21,16 @@ const transferOutput = {
 	},
 };
 
-describe('ApiHandler.parseGenericCall', () => {
+describe('BlocksService.parseGenericCall', () => {
 	it('does not handle an empty object', () =>
 		expect(() =>
-			ApiHandler['parseGenericCall'](({} as unknown) as GenericCall)
+			BlocksService['parseGenericCall'](({} as unknown) as GenericCall)
 		).toThrow());
 
 	it('parses a simple balances.transfer', () => {
-		expect(JSON.stringify(ApiHandler['parseGenericCall'](transfer))).toBe(
-			JSON.stringify(transferOutput)
-		);
+		expect(
+			JSON.stringify(BlocksService['parseGenericCall'](transfer))
+		).toBe(JSON.stringify(transferOutput));
 	});
 
 	it('parses utility.batch nested 4 deep', () => {
@@ -58,7 +58,7 @@ describe('ApiHandler.parseGenericCall', () => {
 			},
 		};
 
-		expect(JSON.stringify(ApiHandler['parseGenericCall'](batch4))).toBe(
+		expect(JSON.stringify(BlocksService['parseGenericCall'](batch4))).toBe(
 			JSON.stringify({
 				...baseBatch,
 				args: {
@@ -123,7 +123,9 @@ describe('ApiHandler.parseGenericCall', () => {
 			},
 		};
 
-		expect(JSON.stringify(ApiHandler['parseGenericCall'](batch))).toEqual(
+		expect(
+			JSON.stringify(BlocksService['parseGenericCall'](batch))
+		).toEqual(
 			JSON.stringify({
 				method: 'utility.batch',
 				callIndex: new Uint8Array([1, 0]),

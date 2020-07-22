@@ -6,7 +6,7 @@ import {
 	callsNextWithErr,
 	callsNextWithSentHeaders,
 	catchesErrWithResponse,
-} from './testUtils';
+} from './testTools';
 
 const legacyErrorMiddlewareCallsNextWithErr = callsNextWithErr(
 	legacyErrorMiddleware

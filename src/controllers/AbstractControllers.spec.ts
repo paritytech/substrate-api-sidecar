@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { ApiPromise } from '@polkadot/api';
 import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { kusamaRegistry } from '../utils/testUtils';
+import { AbstractService } from '../services/AbstractService';
+import { kusamaRegistry } from '../utils/testTools';
 import AbstractController from './AbstractController';
 
 const promiseBlockHash = (num: number): Promise<BlockHash> =>
@@ -37,12 +39,22 @@ const api = {
 	},
 };
 
-const MockController = class MockController extends AbstractController {
+const MockController = class MockController extends AbstractController<
+	AbstractService
+> {
 	protected initRoutes(): void {
 		throw new Error('Method not implemented.');
 	}
 };
-const controller = new MockController((api as unknown) as ApiPromise, '/mock');
+const MockService = new (class MockService extends AbstractService {})(
+	(api as unknown) as ApiPromise
+);
+
+const controller = new MockController(
+	(api as unknown) as ApiPromise,
+	'/mock',
+	MockService
+);
 
 describe('getHashForBlock', () => {
 	it('throws BadRequest on a 64 char hex string (too short)', async () => {
@@ -192,7 +204,11 @@ describe('getHashForBlock', () => {
 				throw 'dummy getHeader error';
 			});
 
-		const mock = new MockController(api as ApiPromise, '/mock');
+		const mock = new MockController(
+			api as ApiPromise,
+			'/mock',
+			MockService
+		);
 		// We only try api.rpc.chain.getHeader when the block number is too high
 		await expect(mock['getHashForBlock']('101')).rejects.toEqual(
 			new InternalServerError(
@@ -209,7 +225,11 @@ describe('getHashForBlock', () => {
 				throw 'dummy getBlockHash error';
 			});
 
-		const mock = new MockController(api as ApiPromise, '/mock');
+		const mock = new MockController(
+			api as ApiPromise,
+			'/mock',
+			MockService
+		);
 		await expect(mock['getHashForBlock']('99')).rejects.toEqual(
 			new InternalServerError(`Cannot get block hash for ${'99'}.`)
 		);
@@ -226,7 +246,11 @@ describe('getHashForBlock', () => {
 		expect(valid).toMatch(/^0x[a-fA-F0-9]+$/);
 		expect(valid.length).toBe(66);
 		expect(api.createType).toThrow('dummy createType error');
-		const mock = new MockController(api as ApiPromise, '/mock');
+		const mock = new MockController(
+			api as ApiPromise,
+			'/mock',
+			MockService
+		);
 
 		await expect(mock['getHashForBlock'](valid)).rejects.toEqual(
 			new InternalServerError(`Cannot get block hash for ${valid}.`)

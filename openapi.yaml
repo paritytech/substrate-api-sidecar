@@ -6,8 +6,8 @@ info:
   contact:
     url: https://github.com/paritytech/substrate-api-sidecar/issues/new
   license:
-    name: GNU General Public License v3.0
-    url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
+    name: Apache License Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
   version: 1.0.0-oas3
 tags:
 - name: accounts
@@ -23,7 +23,7 @@ paths:
     get:
       tags:
       - accounts
-      summary: Get balance information for an address.
+      summary: Get balance information for an account.
       description: Returns information about an account's balance.
         Replaces `/balance/{address}` from versions < v1.0.0.
       operationId: getBalanceSummaryByAccountId
@@ -37,12 +37,12 @@ paths:
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
       - name: at
         in: query
-        description: Block at which to query balance info for the 
+        description: Block at which to query balance info for the
           specified account.
         required: false
         schema:
           type: string
-          description: Block height (as a non-negative integer) or hash 
+          description: Block height (as a non-negative integer) or hash
             (as a hex string).
           format: unsignedInteger or $hex
       responses:
@@ -68,8 +68,8 @@ paths:
     get:
       tags:
       - accounts
-      summary: Get a staking information for a stash address.
-      description: Returns information about an account's staking activity.
+      summary: Get staking information for a stash account.
+      description: Returns information about a stash account's staking activity.
         Replaces `/staking/{address}` from versions < v1.0.0.
       operationId: getStakingSummaryByAccountId
       parameters:
@@ -82,7 +82,7 @@ paths:
           type: string
       - name: at
         in: query
-        description:  Block at which to query the staking info for the 
+        description:  Block at which to query the staking info for the
           specified account.
         required: false
         schema:
@@ -112,8 +112,8 @@ paths:
     get:
       tags:
       - accounts
-      summary: Get vesting information for an address.
-      description: Returns the vesting schedule for an account. 
+      summary: Get vesting information for an account.
+      description: Returns the vesting schedule for an account.
         Replaces `/vesting/{address}` from versions < v1.0.0.
       operationId: getVestingSummaryByAccountId
       parameters:
@@ -126,7 +126,7 @@ paths:
           type: string
       - name: at
         in: query
-        description: Block at which to query the vesting info for the 
+        description: Block at which to query the vesting info for the
           specified account.
         required: false
         schema:
