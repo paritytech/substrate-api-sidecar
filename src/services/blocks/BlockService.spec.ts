@@ -4,7 +4,7 @@ import { GenericCall } from '@polkadot/types/generic';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { createCall, kusamaRegistry } from '../../utils/testTools';
-import { header789629, mockBlock789629 } from '../constants';
+import { header789629, mockBlock789629 } from '../mock';
 import { BlocksService } from './BlocksService';
 
 const transfer = createCall('balances', 'transfer', {
