@@ -9,7 +9,7 @@ import {
 	EventRecord,
 	Hash,
 } from '@polkadot/types/interfaces';
-import { Codec } from '@polkadot/types/types';
+import { AnyJson, Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
@@ -19,6 +19,7 @@ import {
 	ISanitizedCall,
 	ISanitizedEvent,
 } from '../../types/responses';
+import { isPaysFee } from '../../types/util/PaysFee';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -98,9 +99,8 @@ export class BlocksService extends AbstractService {
 			try {
 				const xtEvents = extrinsics[idx].events;
 				const completedEvent = xtEvents.find(
-					(event) =>
-						event.method === Event.success ||
-						event.method === Event.failure
+					({ method }) =>
+						method === Event.success || method === Event.failure
 				);
 				if (!completedEvent) {
 					extrinsics[idx].info = {
@@ -246,16 +246,12 @@ export class BlocksService extends AbstractService {
 					}
 
 					if (method === Event.success || method === Event.failure) {
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						const sanitizedData = event.data.toJSON() as any[]; // TODO create a type for event.data.toJSON
+						const sanitizedData = event.data.toJSON() as AnyJson[];
 
 						for (const data of sanitizedData) {
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							if (data && data.paysFee) {
+							if (isPaysFee(data)) {
 								extrinsic.paysFee =
-									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === true ||
-									// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 									data.paysFee === 'Yes';
 
 								break;
