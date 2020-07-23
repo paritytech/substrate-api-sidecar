@@ -46,6 +46,7 @@ export class BlocksService extends AbstractService {
 
 		const header = await api.derive.chain.getHeader(hash);
 		const authorId = header?.author;
+		debugger
 
 		const logs = block.header.digest.logs.map((log) => {
 			const { type, index, value } = log;
