@@ -62,7 +62,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			const [pathSuffix, handler] = pathAndHandler;
 			this.router.get(
 				`${this.path}${pathSuffix}`,
-				this.catchWrap(handler as RequestHandler)
+				AbstractController.catchWrap(handler as RequestHandler)
 			);
 		}
 	}
@@ -73,7 +73,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 *
 	 * @param cb ExpressHandler
 	 */
-	protected catchWrap = (cb: RequestHandler): RequestHandler => async (
+	protected static catchWrap = (cb: RequestHandler): RequestHandler => async (
 		req,
 		res,
 		next
