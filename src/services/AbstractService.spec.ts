@@ -26,9 +26,8 @@ const setMetadata = () => (_metadata: Metadata) => 'setMetadata set!';
 const register = (..._args: unknown[]) => 'registered!';
 
 /**
- * Mock polkadot-js ApiPromise. This has its own mock api for now just for
- * simplicity sake. In the future this may be replaced by
- * the mockApi in ./utils/mock
+ * Mock polkadot-js ApiPromise. This is its own thing for now just for
+ * simplicity sake. In the future this may be replaced by `mockApi` in ./utils/mock
  */
 const api = {
 	createType: kusamaRegistry.createType.bind(kusamaRegistry),
