@@ -5,7 +5,7 @@ import { kusamaRegistry } from '../../utils/testTools';
 import { header789629 } from './header78629';
 
 /**
- * Mock polkadot-js api.
+ * Mock polkadot-js ApiPromise.
  */
 export const mockApi = ({
 	createType: kusamaRegistry.createType.bind(kusamaRegistry),
