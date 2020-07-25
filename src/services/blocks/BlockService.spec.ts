@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { ApiPromise } from '@polkadot/api';
 import { GenericCall } from '@polkadot/types/generic';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { createCall, kusamaRegistry } from '../../utils/testTools';
-import { header789629, mockBlock789629 } from '../mock';
+import { mockApi, mockBlock789629 } from '../mock';
 import { BlocksService } from './BlocksService';
 
 const transfer = createCall('balances', 'transfer', {
@@ -24,64 +23,14 @@ const transferOutput = {
 	},
 };
 
-/**
- * Mock polkadot-js api.
- */
-const api = ({
-	createType: kusamaRegistry.createType.bind(kusamaRegistry),
-	query: {
-		transactionPayment: {
-			nextFeeMultiplier: {
-				at: (_parentHash: Hash) =>
-					Promise.resolve().then(() =>
-						kusamaRegistry.createType('Fixed128', 1000000000)
-					),
-			},
-		},
-	},
-	consts: {
-		transactionPayment: {
-			transactionByteFee: kusamaRegistry.createType('Balance', 1000000),
-			weightToFee: [
-				{
-					coeffFrac: 80000000,
-					coeffInteger: 0,
-					degree: 1,
-					negative: false,
-				},
-			],
-		},
-		system: {
-			extrinsicBaseWeight: kusamaRegistry.createType('u64', 125000000),
-		},
-	},
-	rpc: {
-		chain: {
-			getHeader: () =>
-				Promise.resolve().then(() => {
-					return kusamaRegistry.createType('Header', header789629);
-				}),
-		},
-		state: {
-			getRuntimeVersion: () =>
-				Promise.resolve().then(() => {
-					return {
-						specName: 'polkadot',
-						specVersion: kusamaRegistry.createType('u32', 16),
-					};
-				}),
-		},
-	},
-} as unknown) as ApiPromise;
-
-const blocksService = new BlocksService(api);
+const blocksService = new BlocksService(mockApi);
 
 describe('BlocksService', () => {
 	describe('createCalcFee & calc_fee', () => {
 		it('calculates partialFee for proxy.proxy in polkadot block 789629', async () => {
-			//tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
+			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
 			const { calcFee } = await blocksService['createCalcFee'](
-				api,
+				mockApi,
 				('0xParentHash' as unknown) as Hash,
 				mockBlock789629
 			);
@@ -90,8 +39,9 @@ describe('BlocksService', () => {
 		});
 
 		it('calculates partialFee for utility.batch in polkadot block 789629', async () => {
+			// tx hash: 0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045
 			const { calcFee } = await blocksService['createCalcFee'](
-				api,
+				mockApi,
 				('0xParentHash' as unknown) as Hash,
 				mockBlock789629
 			);
