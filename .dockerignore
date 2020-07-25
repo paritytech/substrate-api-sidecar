@@ -1,6 +1,8 @@
 .env*
-!.env-sample
+!.env.docker
 .github
 .git
 **/target
 node_modules
+.vscode
+yarn-error.log
