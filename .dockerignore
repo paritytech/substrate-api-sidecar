@@ -1,5 +1,4 @@
 .env*
-!.env.docker
 .github
 .git
 **/target

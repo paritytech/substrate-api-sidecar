@@ -17,7 +17,7 @@ WORKDIR /usr/src/app
 
 COPY --from=builder /opt/builder /usr/src/app
 
-ENV SAS_EXPRESS_PORT=80
+ENV SAS_EXPRESS_PORT=8080
 ENV SAS_EXPRESS_BIND_HOST=0.0.0.0
 
 EXPOSE ${SAS_EXPRESS_PORT}

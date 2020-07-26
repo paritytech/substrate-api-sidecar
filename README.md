@@ -161,13 +161,11 @@ yarn build:docker
 
 ```bash
 export VERSION=`cat package.json | jq -r .version`
+
+# For default use run:
 docker run --rm -it -p 127.0.0.1:8080:8080 substrate-api-sidecar:$VERSION
-```
 
-alternatively, if you want to set environment variables in `.env.docker`, run:
-
-```bash
-export VERSION=`cat package.json | jq -r .version`
+# Or if you want to use environment variables set in `.env.docker`, run:
 docker run --rm -it --env-file .env.docker -p 127.0.0.1:8080:8080 substrate-api-sidecar:$VERSION
 ```
 
