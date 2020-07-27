@@ -17,9 +17,9 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@polkadot/api": "^1.26.0-beta.0",
+    "@polkadot/api": "^1.26.0-beta.2",
     "@polkadot/calc-fee": "file:./calc-fee/pkg",
-    "@polkadot/util-crypto": "^2.18.1",
+    "@polkadot/util-crypto": "^3.0.0-beta.3",
     "body-parser": "^1.19.0",
     "confmgr": "^1.0.6",
     "express": "^4.17.1",
