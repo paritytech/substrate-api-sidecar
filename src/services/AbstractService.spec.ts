@@ -2,10 +2,23 @@ import { ApiPromise } from '@polkadot/api';
 import * as getSpecTypesModule from '@polkadot/types-known';
 import { BlockHash } from '@polkadot/types/interfaces';
 import U32 from '@polkadot/types/primitive/U32';
-import { Metadata } from 'src/controllers';
+import { RegistryMetadata } from '@polkadot/types/types';
 
-import { kusamaRegistry } from '../utils/testTools';
+import { kusamaRegistry } from '../test-helpers/testTools';
 import { AbstractService } from './AbstractService';
+
+// TODO: switch these tests over to mockApi
+
+/**
+ * Mock `getSpecTypes`.
+ *
+ * Remember to mockClear at the beginning of a test if checking jest stats.
+ *
+ * TODO: Once these tests are switched over to use mockApi this spy will no
+ * longer ge needed because the mockApi works correctly with getSpecTypes.
+ */
+const getSpecTypesSPY = jest.spyOn(getSpecTypesModule, 'getSpecTypes');
+getSpecTypesSPY.mockReturnValue({ mock: 'specTypes!' });
 
 // Mock methods for api
 const getRuntimeVersion = (_hash: string) =>
@@ -21,7 +34,7 @@ const getMetadata = () => Promise.resolve().then(() => 'getMetadata data');
 
 const chain = () => Promise.resolve().then(() => 'chain data');
 
-const setMetadata = () => (_metadata: Metadata) => 'setMetadata set!';
+const setMetadata = () => (_metadata: RegistryMetadata) => 'setMetadata set!';
 
 const register = (..._args: unknown[]) => 'registered!';
 
@@ -59,14 +72,6 @@ class MockService extends AbstractService {
 		return await this.ensureMeta((hash as unknown) as BlockHash);
 	}
 }
-
-/**
- * Mock `getSpecTypes`.
- *
- * Remember to mockClear at the beginning of a test if checking jest stats.
- */
-const getSpecTypesSPY = jest.spyOn(getSpecTypesModule, 'getSpecTypes');
-getSpecTypesSPY.mockReturnValue({ mock: 'specTypes!' });
 
 /**
  * Instantiate an instance of MockService and do initial insertions after
