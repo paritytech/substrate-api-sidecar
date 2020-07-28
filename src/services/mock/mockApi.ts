@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Block, Hash } from '@polkadot/types/interfaces';
 
-// import { Block, Hash } from '@polkadot/types/interfaces';
 import {
 	decoratedPolkadotMetadata,
 	polkadotRegistry,

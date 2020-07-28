@@ -44,14 +44,6 @@ export class BlocksService extends AbstractService {
 			this.fetchEvents(api, hash),
 		]);
 
-		// fs.writeFileSync(
-		// 	'./src/services/mock/data/block789629.json',
-		// 	block.toString(),
-		// 	{
-		// 		flag: 'a+',
-		// 	}
-		// );
-
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
 		const header = await api.derive.chain.getHeader(hash);

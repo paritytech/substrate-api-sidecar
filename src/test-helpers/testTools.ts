@@ -24,6 +24,9 @@ function createKusamaRegistry(): TypeRegistry {
 	return registry;
 }
 
+/**
+ * Kusama v2008 TypeRegistry.
+ */
 export const kusamaRegistry = createKusamaRegistry();
 
 /**
@@ -46,10 +49,14 @@ function createPolkadotRegistry(): TypeRegistry {
 
 	return registry;
 }
+
+/**
+ * Polkadot v16 TypeRegistry.
+ */
 export const polkadotRegistry = createPolkadotRegistry();
 
 /**
- * Decorated metadata of the kusamaRegistry
+ * Decorated metadata of the kusamaRegistry (v2008).
  */
 const decoratedKusamaMetadata = new Decorated(
 	kusamaRegistry,
@@ -57,7 +64,7 @@ const decoratedKusamaMetadata = new Decorated(
 );
 
 /**
- * Decorated metadata of the polkadotRegistry
+ * Decorated metadata of the polkadotRegistry (v16).
  */
 export const decoratedPolkadotMetadata = new Decorated(
 	polkadotRegistry,
