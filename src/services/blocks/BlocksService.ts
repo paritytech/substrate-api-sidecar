@@ -13,7 +13,6 @@ import { AnyJson, Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
-// import * as fs from 'fs';
 import {
 	IBlock,
 	IExtrinsic,

@@ -15,7 +15,7 @@ import { BlocksService } from './BlocksService';
 /**
  * For type casting mock getBlock functions so tsc does not complain
  */
-type TGetBlock = RpcPromiseResult<
+type GetBlock = RpcPromiseResult<
 	(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>
 >;
 
@@ -53,7 +53,7 @@ describe('BlocksService', () => {
 					return {
 						block: mockBlock789629BadExt,
 					};
-				}) as unknown) as TGetBlock;
+				}) as unknown) as GetBlock;
 
 			await expect(
 				blocksService.fetchBlock(blockHash789629)
@@ -63,7 +63,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.rpc.chain.getBlock = (getBlock as unknown) as TGetBlock;
+			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
 		});
 	});
 
