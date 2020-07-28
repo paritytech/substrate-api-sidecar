@@ -234,8 +234,7 @@ export class BlocksService extends AbstractService {
 
 					if (!extrinsic) {
 						throw new Error(
-							// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-							`Missing extrinsic ${extrinsicIdx} in block ${hash}`
+							`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`
 						);
 					}
 
