@@ -7,6 +7,7 @@ import {
 } from '../../test-helpers/testTools';
 import * as block789629 from './data/block789629.json';
 import { events789629 } from './data/events789629Hex';
+import { validators789629Hex } from './data/validators789629Hex';
 
 /**
  * Mock for polkadot block #789629
@@ -56,9 +57,30 @@ const deriveGetHeader = () =>
 		};
 	});
 
-const nextFeeMultiplierAt = (_parentHash: Hash) =>
+const nextFeeMultiplierAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Fixed128', 1000000000)
+	);
+
+const validatorCountAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
+
+const forceEraAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Forcing', 'NotForcing')
+	);
+
+const eraElectionStatusAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
+
+const validatorsAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
+	);
+
+const currentSlotAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('u64', validators789629Hex)
 	);
 
 /**
@@ -68,15 +90,17 @@ export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	query: {
+		staking: {
+			validatorCount: { at: validatorCountAt },
+			forceEra: { at: forceEraAt },
+			eraElectionStatus: { at: eraElectionStatusAt },
+			validators: { at: validatorsAt },
+		},
 		system: {
-			events: {
-				at: eventsAt,
-			},
+			events: { at: eventsAt },
 		},
 		transactionPayment: {
-			nextFeeMultiplier: {
-				at: nextFeeMultiplierAt,
-			},
+			nextFeeMultiplier: { at: nextFeeMultiplierAt },
 		},
 	},
 	consts: {
