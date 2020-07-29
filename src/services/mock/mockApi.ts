@@ -1,5 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
-import { Block, Hash } from '@polkadot/types/interfaces';
+import { Option } from '@polkadot/types/codec';
+import {
+	ActiveEraInfo,
+	Block,
+	EraIndex,
+	Hash,
+	SessionIndex,
+} from '@polkadot/types/interfaces';
 
 import {
 	decoratedPolkadotMetadata,
@@ -7,13 +14,22 @@ import {
 } from '../../test-helpers/testTools';
 import * as block789629 from './data/block789629.json';
 import { events789629 } from './data/events789629Hex';
+import { validators789629Hex } from './data/validators789629Hex';
 
 /**
- * Mock for polkadot block #789629
+ * Mock for polkadot block #789629.
  */
 export const mockBlock789629 = polkadotRegistry.createType(
 	'Block',
 	block789629
+);
+
+/**
+ * BlockHash for polkadot block #789629.
+ */
+export const blockHash789629 = polkadotRegistry.createType(
+	'BlockHash',
+	'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 );
 
 const eventsAt = (_hash: Hash) =>
@@ -56,9 +72,62 @@ const deriveGetHeader = () =>
 		};
 	});
 
-const nextFeeMultiplierAt = (_parentHash: Hash) =>
+const nextFeeMultiplierAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Fixed128', 1000000000)
+	);
+
+const validatorCountAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
+
+const forceEraAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Forcing', 'NotForcing')
+	);
+
+const eraElectionStatusAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ElectionStatus', { Close: null })
+	);
+
+const validatorsAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
+	);
+
+const currentSlotAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265876724));
+
+const epochIndexAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
+
+const genesisSlotAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265084563));
+
+const currentIndexAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('SessionIndex', 330)
+	);
+
+export const activeEraAt = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<ActiveEraInfo>', {
+			index: 49,
+			start: 1595259378000,
+		})
+	);
+
+export const erasStartSessionIndexAt = (
+	_hash: Hash,
+	_activeEra: EraIndex
+): Promise<Option<SessionIndex>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<SessionIndex>', 330)
+	);
+
+const unappliedSlashesAt = (_hash: Hash, _activeEra: EraIndex) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<UnappliedSlash>', [])
 	);
 
 /**
@@ -68,18 +137,34 @@ export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	query: {
+		babe: {
+			currentSlot: { at: currentSlotAt },
+			epochIndex: { at: epochIndexAt },
+			genesisSlot: { at: genesisSlotAt },
+		},
+		session: {
+			currentIndex: { at: currentIndexAt },
+			validators: { at: validatorsAt },
+		},
+		staking: {
+			validatorCount: { at: validatorCountAt },
+			forceEra: { at: forceEraAt },
+			eraElectionStatus: { at: eraElectionStatusAt },
+			activeEra: { at: activeEraAt },
+			erasStartSessionIndex: { at: erasStartSessionIndexAt },
+			unappliedSlashes: { at: unappliedSlashesAt },
+		},
 		system: {
-			events: {
-				at: eventsAt,
-			},
+			events: { at: eventsAt },
 		},
 		transactionPayment: {
-			nextFeeMultiplier: {
-				at: nextFeeMultiplierAt,
-			},
+			nextFeeMultiplier: { at: nextFeeMultiplierAt },
 		},
 	},
 	consts: {
+		babe: {
+			epochDuration: polkadotRegistry.createType('u64', 2400),
+		},
 		transactionPayment: {
 			transactionByteFee: polkadotRegistry.createType('Balance', 1000000),
 			weightToFee: [
@@ -90,6 +175,10 @@ export const mockApi = ({
 					negative: false,
 				},
 			],
+		},
+		staking: {
+			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
+			sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
 		},
 		system: {
 			extrinsicBaseWeight: polkadotRegistry.createType('u64', 125000000),
