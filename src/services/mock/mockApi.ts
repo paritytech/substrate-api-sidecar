@@ -32,6 +32,11 @@ export const blockHash789629 = polkadotRegistry.createType(
 	'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 );
 
+/**
+ * Address to use with Accounts tests.
+ */
+export const zugAddress = `1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE`;
+
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<EventRecord>', events789629)
@@ -130,6 +135,27 @@ const unappliedSlashesAt = (_hash: Hash, _activeEra: EraIndex) =>
 		polkadotRegistry.createType('Vec<UnappliedSlash>', [])
 	);
 
+const locksAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'Vec<BalanceLock>',
+			'0x047374616b696e672000e8764817000000000000000000000002'
+		)
+	);
+
+const accountAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'AccountInfo',
+			'0x0600000003dbb656ab7400000000000000000000000000000000000000000000000000000000e8764817000000000000000000000000e87648170000000000000000000000'
+		)
+	);
+
+const vestingAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<VestingInfo>', null)
+	);
+
 /**
  * Mock polkadot-js ApiPromise.
  */
@@ -141,6 +167,9 @@ export const mockApi = ({
 			currentSlot: { at: currentSlotAt },
 			epochIndex: { at: epochIndexAt },
 			genesisSlot: { at: genesisSlotAt },
+		},
+		balances: {
+			locks: { at: locksAt },
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
@@ -156,9 +185,13 @@ export const mockApi = ({
 		},
 		system: {
 			events: { at: eventsAt },
+			account: { at: accountAt },
 		},
 		transactionPayment: {
 			nextFeeMultiplier: { at: nextFeeMultiplierAt },
+		},
+		vesting: {
+			vesting: { at: vestingAt },
 		},
 	},
 	consts: {
