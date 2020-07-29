@@ -158,6 +158,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
 		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
 		const sessionProgress = currentSlot.sub(epochStartSlot);
+
 		const eraProgress = currentIndex
 			.sub(activeEraStartSessionIndex)
 			.mul(sessionLength)

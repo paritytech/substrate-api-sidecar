@@ -8,7 +8,12 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall, kusamaRegistry } from '../../test-helpers/testTools';
 import { polkadotRegistry } from '../../test-helpers/testTools';
 import * as block789629 from '../mock/data/block789629.json';
-import { getBlock, mockApi, mockBlock789629 } from '../mock/mockApi';
+import {
+	blockHash789629,
+	getBlock,
+	mockApi,
+	mockBlock789629,
+} from '../mock/mockApi';
 import * as responseBlock789629 from './blocks789629Response.json';
 import { BlocksService } from './BlocksService';
 
@@ -26,11 +31,6 @@ const blocksService = new BlocksService(mockApi);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
-		const blockHash789629 = polkadotRegistry.createType(
-			'BlockHash',
-			'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
-		);
-
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(await blocksService.fetchBlock(blockHash789629))
