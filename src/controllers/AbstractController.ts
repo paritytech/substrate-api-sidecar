@@ -4,6 +4,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
+import { AbstractService } from 'src/services/AbstractService';
 import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
@@ -23,9 +24,13 @@ type SidecarRequestHandler =
 /**
  * Abstract base class for creating controller classes.
  */
-export default abstract class AbstractController {
+export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
-	constructor(protected api: ApiPromise, private _path: string) {}
+	constructor(
+		protected api: ApiPromise,
+		private _path: string,
+		protected service: T
+	) {}
 
 	get path(): string {
 		return this._path;
@@ -58,7 +63,7 @@ export default abstract class AbstractController {
 			const [pathSuffix, handler] = pathAndHandler;
 			this.router.get(
 				`${this.path}${pathSuffix}`,
-				this.catchWrap(handler as RequestHandler)
+				AbstractController.catchWrap(handler as RequestHandler)
 			);
 		}
 	}
@@ -69,7 +74,7 @@ export default abstract class AbstractController {
 	 *
 	 * @param cb ExpressHandler
 	 */
-	protected catchWrap = (cb: RequestHandler): RequestHandler => async (
+	protected static catchWrap = (cb: RequestHandler): RequestHandler => async (
 		req,
 		res,
 		next

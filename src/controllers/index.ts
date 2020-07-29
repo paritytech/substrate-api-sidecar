@@ -1,10 +1,6 @@
-export { default as Balance } from './BalancesController';
-export { default as Blocks } from './BlocksController';
-export { default as Claims } from './ClaimsController';
-export { default as Metadata } from './MetadataController';
-export { default as Staking } from './StakingController';
-export { default as StakingInfo } from './StakingInfoController';
-export { default as TxArtifacts } from './TxArtifactsController';
-export { default as TxFeeEstimate } from './TxFeeEstimateController';
-export { default as TxSubmit } from './TxSubmitController';
-export { default as Vesting } from './VestingController';
+export * from './transaction';
+export * from './accounts';
+export * from './blocks';
+export * from './claims';
+export * from './runtime';
+export * from './pallets';

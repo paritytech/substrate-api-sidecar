@@ -8,9 +8,10 @@ import {
 } from 'express';
 
 import AbstractController from './controllers/AbstractController';
+import { AbstractService } from './services/AbstractService';
 
 interface IAppConfiguration {
-	controllers: AbstractController[];
+	controllers: AbstractController<AbstractService>[];
 	preMiddleware: RequestHandler[];
 	postMiddleware: ErrorRequestHandler[];
 	port: number;
@@ -65,7 +66,9 @@ export default class App {
 	 *
 	 * @param controllers array of Controllers
 	 */
-	private initControllers(controllers: AbstractController[]): void {
+	private initControllers(
+		controllers: AbstractController<AbstractService>[]
+	): void {
 		for (const c of controllers) {
 			this.app.use('/', c.router);
 		}

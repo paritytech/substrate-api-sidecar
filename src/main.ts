@@ -20,7 +20,7 @@ import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
 
 import App from './App';
-import Config, { ISidecarConfig } from './config_setup';
+import Config, { ISidecarConfig } from './Config';
 import * as controllers from './controllers';
 import * as middleware from './middleware';
 
@@ -54,22 +54,22 @@ async function main() {
 	// Create array of middleware that is to be mounted before the routes
 	const preMiddleware: RequestHandler[] = [bodyParser.json()];
 	if (config.LOG_MODE === 'errors') {
-		preMiddleware.push(middleware.productionLogger);
+		preMiddleware.push(middleware.errorLogger);
 	} else if (config.LOG_MODE === 'all') {
-		preMiddleware.push(middleware.developmentLogger);
+		preMiddleware.push(middleware.allLogger);
 	}
 
 	// Instantiate controller class instances
 	const blocksController = new controllers.Blocks(api);
-	const balancesController = new controllers.Balance(api);
-	const stakingInfoController = new controllers.StakingInfo(api);
-	const stakingController = new controllers.Staking(api);
-	const vestingController = new controllers.Vesting(api);
+	const balancesController = new controllers.AccountsBalanceInfo(api);
+	const stakingInfoController = new controllers.AccountsStakingInfo(api);
+	const stakingController = new controllers.PalletsStakingProgress(api);
+	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
 	const claimsController = new controllers.Claims(api);
-	const txArtifactsController = new controllers.TxArtifacts(api);
-	const txFeeEstimateController = new controllers.TxFeeEstimate(api);
-	const txSubmitController = new controllers.TxSubmit(api);
+	const txArtifactsController = new controllers.TransactionMaterial(api);
+	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
+	const txSubmitController = new controllers.TransactionSubmit(api);
 
 	// Create our App
 	const app = new App({
