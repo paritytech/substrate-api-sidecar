@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types/codec';
 import {
+	ActiveEraInfo,
 	Block,
 	EraIndex,
 	Hash,
@@ -108,7 +109,7 @@ const currentIndexAt = (_hash: Hash) =>
 		polkadotRegistry.createType('SessionIndex', 330)
 	);
 
-const activeEraAt = (_hash: Hash) =>
+export const activeEraAt = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<ActiveEraInfo>', {
 			index: 49,
