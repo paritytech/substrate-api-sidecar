@@ -1,5 +1,5 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi, zugAddress } from '../mock/mockApi';
+import { blockHash789629, mockApi, testAddress } from '../mock/mockApi';
 import { AccountsVestingInfoService } from './AccountsVestingInfoService';
 
 const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);
@@ -11,7 +11,7 @@ describe('AccountVestingInfoService', () => {
 				sanitizeNumbers(
 					await accountsVestingInfoService.fetchAccountVestingInfo(
 						blockHash789629,
-						zugAddress
+						testAddress
 					)
 				)
 			);

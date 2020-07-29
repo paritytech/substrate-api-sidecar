@@ -35,7 +35,7 @@ export const blockHash789629 = polkadotRegistry.createType(
 /**
  * Address to use with Accounts tests.
  */
-export const zugAddress = `1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE`;
+export const testAddress = `1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE`;
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>

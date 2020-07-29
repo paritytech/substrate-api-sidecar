@@ -1,5 +1,5 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi, zugAddress } from '../mock/mockApi';
+import { blockHash789629, mockApi, testAddress } from '../mock/mockApi';
 import * as accountsBalanceInfo789629 from './accountsBalanceInfo789629.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
@@ -12,7 +12,7 @@ describe('AccountsBalanceInfoService', () => {
 				sanitizeNumbers(
 					await accountsBalanceInfoService.fetchAccountBalanceInfo(
 						blockHash789629,
-						zugAddress
+						testAddress
 					)
 				)
 			).toStrictEqual(accountsBalanceInfo789629);
