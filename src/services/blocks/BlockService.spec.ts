@@ -14,7 +14,7 @@ import {
 	mockApi,
 	mockBlock789629,
 } from '../mock/mockApi';
-import * as responseBlock789629 from './blocks789629Response.json';
+import * as blocks789629Response from './blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**
@@ -34,7 +34,7 @@ describe('BlocksService', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(await blocksService.fetchBlock(blockHash789629))
-			).toStrictEqual(responseBlock789629);
+			).toStrictEqual(blocks789629Response);
 		});
 
 		it('throws when an extrinsic is undefined', async () => {

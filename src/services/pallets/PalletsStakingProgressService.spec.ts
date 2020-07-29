@@ -8,7 +8,7 @@ import {
 	erasStartSessionIndexAt,
 	mockApi,
 } from '../mock/mockApi';
-import * as palletsStakingProgressResponse from './palletsStakingProgressResponse.json';
+import * as palletsStakingProgress789629SResponse from './palletsStakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
 /**
@@ -25,7 +25,7 @@ describe('PalletStakingProgressService', () => {
 						blockHash789629
 					)
 				)
-			).toStrictEqual(palletsStakingProgressResponse);
+			).toStrictEqual(palletsStakingProgress789629SResponse);
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
