@@ -60,7 +60,7 @@ import {
 	MIN_I64,
 	MIN_I128,
 } from '../test-helpers/constants';
-import { kusamaRegistry } from '../test-helpers/testTools';
+import { kusamaRegistry } from '../test-helpers/registries';
 import {
 	PRE_SANITIZED_BALANCE_LOCK,
 	PRE_SANITIZED_OPTION_VESTING_INFO,

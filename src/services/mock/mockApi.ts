@@ -8,10 +8,8 @@ import {
 	SessionIndex,
 } from '@polkadot/types/interfaces';
 
-import {
-	decoratedPolkadotMetadata,
-	polkadotRegistry,
-} from '../../test-helpers/testTools';
+import { decoratedPolkadotMetadata } from '../../test-helpers/metadata/decorated';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import * as block789629 from './data/block789629.json';
 import { events789629 } from './data/events789629Hex';
 import { validators789629Hex } from './data/validators789629Hex';

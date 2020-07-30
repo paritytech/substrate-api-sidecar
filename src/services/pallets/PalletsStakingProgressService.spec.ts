@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/testTools';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	activeEraAt,
 	blockHash789629,
