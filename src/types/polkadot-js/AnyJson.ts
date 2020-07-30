@@ -34,12 +34,5 @@ function isObjectAnyJson(thing: unknown): thing is { [i: string]: AnyJson } {
 		return false;
 	}
 
-	// TODO switch Array#every ??
-	for (const value of Object.values(thing)) {
-		if (!isAnyJson(value)) {
-			return false;
-		}
-	}
-
-	return true;
+	return Object.values(thing).every((value) => isAnyJson(value));
 }

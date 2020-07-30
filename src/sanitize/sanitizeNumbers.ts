@@ -40,13 +40,6 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return sanitizeNumbers(value.unwrap());
 	}
 
-	// // For the sake of API consistency this is staying out for now
-	// if (value instanceof Result) {
-	// 	return value.isOk
-	// 		? sanitizeNumbers(value.asOk)
-	// 		: sanitizeNumbers(value.asError);
-	// }
-
 	if (value instanceof Struct) {
 		return value.defKeys.reduce((jsonStruct, key) => {
 			const property = value.get(key);
@@ -114,7 +107,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 
 /**
  * Forcibly serialize all instances of AbstractInt to base 10 and otherwise
- * normalize data presentation to AnyJson. We try to guarantee that data is
+ * normalize data presentation. We try to guarantee that data is
  * of type AnyJson, but it is not a strong guarantee.
  *
  * Under the hood AbstractInt is
@@ -126,8 +119,8 @@ function sanitizeCodec(value: Codec): AnyJson {
  * @param data - any arbitrary data that Sidecar might send
  */
 export function sanitizeNumbers(data: unknown): AnyJson {
-	if (!data) {
-		// All falsy values are valid AnyJson
+	if (data !== 0 && !data) {
+		// All falsy values are valid AnyJson, but we want to force numbers to strings
 		return data as AnyJson;
 	}
 
@@ -149,7 +142,7 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		return mapTypeSanitizeKeyValue(data);
 	}
 
-	if (data instanceof BN) {
+	if (data instanceof BN || typeof data === 'number') {
 		return data.toString(10);
 	}
 
@@ -200,7 +193,7 @@ function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
 			)
 		) {
 			throw new InternalServerError(
-				'Unexpected non-string and non-number key while sanitizing a CodecMap'
+				'Unexpected non-string and non-number key while sanitizing a Map-like type'
 			);
 		}
 
