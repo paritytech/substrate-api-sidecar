@@ -5,8 +5,11 @@ import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { createCall, kusamaRegistry } from '../../test-helpers/testTools';
-import { polkadotRegistry } from '../../test-helpers/testTools';
+import { createCall } from '../../test-helpers/createCall';
+import {
+	kusamaRegistry,
+	polkadotRegistry,
+} from '../../test-helpers/registries';
 import * as block789629 from '../mock/data/block789629.json';
 import {
 	blockHash789629,
