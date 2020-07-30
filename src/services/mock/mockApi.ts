@@ -21,7 +21,7 @@ const eventsAt = (_hash: Hash) =>
 
 const chain = () =>
 	Promise.resolve().then(() => {
-		return polkadotRegistry.createType('Text', ' Polkadot');
+		return polkadotRegistry.createType('Text', 'Polkadot');
 	});
 
 export const getBlock = (_hash: Hash): Promise<{ block: Block }> =>
@@ -133,8 +133,18 @@ const vestingAt = (_hash: Hash, _address: string) =>
 		polkadotRegistry.createType('Option<VestingInfo>', null)
 	);
 
+// For getting the blockhash of the genesis block
+const getBlockHashGenesis = (_zero: number) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'BlockHash',
+			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+		)
+	);
+
 /**
- * Mock polkadot-js ApiPromise.
+ * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
+ * #789629, which is what most Service unit tests are based on.
  */
 export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
@@ -198,6 +208,7 @@ export const mockApi = ({
 		chain: {
 			getHeader,
 			getBlock,
+			getBlockHash: getBlockHashGenesis,
 		},
 		state: {
 			getRuntimeVersion,
