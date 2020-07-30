@@ -10,30 +10,9 @@ import {
 
 import { decoratedPolkadotMetadata } from '../../test-helpers/metadata/decorated';
 import { polkadotRegistry } from '../../test-helpers/registries';
-import * as block789629 from './data/block789629.json';
 import { events789629 } from './data/events789629Hex';
 import { validators789629Hex } from './data/validators789629Hex';
-
-/**
- * Mock for polkadot block #789629.
- */
-export const mockBlock789629 = polkadotRegistry.createType(
-	'Block',
-	block789629
-);
-
-/**
- * BlockHash for polkadot block #789629.
- */
-export const blockHash789629 = polkadotRegistry.createType(
-	'BlockHash',
-	'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
-);
-
-/**
- * Address to use with Accounts tests.
- */
-export const testAddress = `1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE`;
+import { mockBlock789629 } from './mockBlock789629';
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
