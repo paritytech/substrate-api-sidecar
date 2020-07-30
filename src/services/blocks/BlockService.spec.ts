@@ -10,13 +10,8 @@ import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../test-helpers/registries';
+import { blockHash789629, getBlock, mockApi, mockBlock789629 } from '../mock';
 import * as block789629 from '../mock/data/block789629.json';
-import {
-	blockHash789629,
-	getBlock,
-	mockApi,
-	mockBlock789629,
-} from '../mock/mockApi';
 import * as blocks789629Response from './blocks789629.json';
 import { BlocksService } from './BlocksService';
 

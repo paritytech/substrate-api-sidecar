@@ -1,5 +1,5 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi, testAddress } from '../mock/mockApi';
+import { blockHash789629, mockApi, testAddress } from '../mock';
 import { AccountsVestingInfoService } from './AccountsVestingInfoService';
 
 const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);
