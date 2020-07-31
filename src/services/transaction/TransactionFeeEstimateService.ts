@@ -1,5 +1,6 @@
 import { BlockHash, RuntimeDispatchInfo } from '@polkadot/types/interfaces';
 
+import { isToString } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 export class TransactionFeeEstimateService extends AbstractService {
@@ -25,8 +26,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 					extrinsic,
 					block: hash,
 				},
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				cause: err.toString(),
+				cause: isToString(err) ? err.toString() : (err as string),
 			};
 		}
 	}

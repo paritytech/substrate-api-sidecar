@@ -19,7 +19,7 @@ import {
 	ISanitizedCall,
 	ISanitizedEvent,
 } from '../../types/responses';
-import { isPaysFee } from '../../types/util/PaysFee';
+import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 /**
