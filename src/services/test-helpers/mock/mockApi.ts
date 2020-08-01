@@ -12,8 +12,8 @@ import {
 	StakingLedger,
 } from '@polkadot/types/interfaces';
 
-import { decoratedPolkadotMetadata } from '../../test-helpers/metadata/decorated';
-import { polkadotRegistry } from '../../test-helpers/registries';
+import { decoratedPolkadotMetadata } from '../../../test-helpers/metadata/decorated';
+import { polkadotRegistry } from '../../../test-helpers/registries';
 import {
 	balancesTransferValid,
 	blockHash789629,

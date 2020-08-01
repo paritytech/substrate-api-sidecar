@@ -8,9 +8,9 @@ import {
 	blockHash789629,
 	mockApi,
 	queryInfoBalancesTransfer,
-} from '../mock';
-import * as invalidResponse from './feeEstimateInvalid.json';
-import * as validResponse from './feeEstimateValid.json';
+} from '../test-helpers/mock';
+import * as invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
+import * as validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(

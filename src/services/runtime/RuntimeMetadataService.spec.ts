@@ -1,7 +1,7 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../mock';
+import { blockHash789629, mockApi } from '../test-helpers/mock';
+import * as response789629 from '../test-helpers/responses/runtime/metadata789629.json';
 import { RuntimeMetadataService } from './RuntimeMetadataService';
-import * as response789629 from './RuntimeMetadataService789629.json';
 
 const runtimeMetadataService = new RuntimeMetadataService(mockApi);
 
