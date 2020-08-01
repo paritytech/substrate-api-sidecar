@@ -4,7 +4,9 @@ import {
 	ActiveEraInfo,
 	Block,
 	EraIndex,
+	Extrinsic,
 	Hash,
+	RuntimeDispatchInfo,
 	SessionIndex,
 } from '@polkadot/types/interfaces';
 
@@ -12,7 +14,8 @@ import { decoratedPolkadotMetadata } from '../../test-helpers/metadata/decorated
 import { polkadotRegistry } from '../../test-helpers/registries';
 import { events789629 } from './data/events789629Hex';
 import { validators789629Hex } from './data/validators789629Hex';
-import { mockBlock789629 } from './mockBlock789629';
+import { blockHash789629, mockBlock789629 } from './mockBlock789629';
+import { balancesTransferValid } from './transactions';
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -142,6 +145,26 @@ const getBlockHashGenesis = (_zero: number) =>
 		)
 	);
 
+export const queryInfoBalancesTransfer = (
+	_extrinsic: string,
+	_hash: Hash
+): Promise<RuntimeDispatchInfo> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RuntimeDispatchInfo', {
+			weight: 195000000,
+			class: 'Normal',
+			partialFee: 149000000,
+		})
+	);
+
+export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
+	Promise.resolve().then(() => polkadotRegistry.createType('Hash'));
+
+const getFinalizedHead = () => Promise.resolve().then(() => blockHash789629);
+
+export const tx = (): Extrinsic =>
+	polkadotRegistry.createType('Extrinsic', balancesTransferValid);
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -149,6 +172,7 @@ const getBlockHashGenesis = (_zero: number) =>
 export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
+	tx,
 	query: {
 		babe: {
 			currentSlot: { at: currentSlotAt },
@@ -209,6 +233,7 @@ export const mockApi = ({
 			getHeader,
 			getBlock,
 			getBlockHash: getBlockHashGenesis,
+			getFinalizedHead,
 		},
 		state: {
 			getRuntimeVersion,
@@ -216,6 +241,12 @@ export const mockApi = ({
 		},
 		system: {
 			chain,
+		},
+		payment: {
+			queryInfo: queryInfoBalancesTransfer,
+		},
+		author: {
+			submitExtrinsic,
 		},
 	},
 	derive: {

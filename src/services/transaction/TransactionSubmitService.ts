@@ -1,6 +1,7 @@
 import { Hash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
+import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**
@@ -10,7 +11,7 @@ export class TransactionSubmitService extends AbstractService {
 	 */
 	async submitTransaction(extrinsic: string): Promise<{ hash: Hash }> {
 		const api = await this.ensureMeta(
-			await this.api.rpc.chain.getFinalizedHead()
+			await this.api.rpc.chain.getFinalizedHead() // TODO move this out to controller for consistency with other services
 		);
 
 		let tx;
@@ -18,12 +19,13 @@ export class TransactionSubmitService extends AbstractService {
 		try {
 			tx = api.tx(extrinsic);
 		} catch (err) {
-			// TODO toString type guard
+			const { cause, stack } = extractCauseAndStack(err);
+
 			throw {
 				error: 'Failed to parse a tx',
 				data: extrinsic,
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				cause: err.toString(),
+				cause,
+				stack,
 			};
 		}
 
@@ -34,10 +36,13 @@ export class TransactionSubmitService extends AbstractService {
 				hash,
 			};
 		} catch (err) {
+			const { cause, stack } = extractCauseAndStack(err);
+
 			throw {
 				error: 'Failed to submit a tx',
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				cause: err.toString(),
+				data: extrinsic,
+				cause,
+				stack,
 			};
 		}
 	}
