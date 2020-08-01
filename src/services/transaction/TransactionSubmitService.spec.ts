@@ -7,9 +7,9 @@ import {
 	mockApi,
 	submitExtrinsic,
 	tx,
-} from '../mock';
-import * as failParseResponse from './submitFailParse.json';
-import * as nodeRejectResponse from './submitNodeReject.json';
+} from '../test-helpers/mock';
+import * as failParseResponse from '../test-helpers/responses/transaction/submitFailParse.json';
+import * as nodeRejectResponse from '../test-helpers/responses/transaction/submitNodeReject.json';
 import { TransactionSubmitService } from './TransactionSubmitService';
 
 const transactionSubmitService = new TransactionSubmitService(mockApi);

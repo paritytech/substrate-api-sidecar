@@ -1,6 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi, testAddress } from '../mock';
-import * as accountsBalanceInfo789629 from './accountsBalanceInfo789629.json';
+import { blockHash789629, mockApi, testAddress } from '../test-helpers/mock';
+import * as accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
 const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);

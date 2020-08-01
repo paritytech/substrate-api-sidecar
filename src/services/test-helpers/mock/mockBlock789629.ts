@@ -1,4 +1,4 @@
-import { polkadotRegistry } from '../../test-helpers/registries';
+import { polkadotRegistry } from '../../../test-helpers/registries';
 import * as block789629 from './data/block789629.json';
 
 /**

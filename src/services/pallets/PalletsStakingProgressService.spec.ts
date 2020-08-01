@@ -7,8 +7,8 @@ import {
 	blockHash789629,
 	erasStartSessionIndexAt,
 	mockApi,
-} from '../mock';
-import * as palletsStakingProgress789629SResponse from './palletsStakingProgress789629.json';
+} from '../test-helpers/mock';
+import * as palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
 /**

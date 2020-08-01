@@ -9,8 +9,8 @@ import {
 	mockApi,
 	testAddress,
 	testAddressController,
-} from '../mock';
-import * as response789629 from './accountsStakingInfo789629.json';
+} from '../test-helpers/mock';
+import * as response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
