@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types/codec';
 import {
+	AccountId,
 	ActiveEraInfo,
 	Block,
 	EraIndex,
@@ -8,14 +9,19 @@ import {
 	Hash,
 	RuntimeDispatchInfo,
 	SessionIndex,
+	StakingLedger,
 } from '@polkadot/types/interfaces';
 
 import { decoratedPolkadotMetadata } from '../../test-helpers/metadata/decorated';
 import { polkadotRegistry } from '../../test-helpers/registries';
+import {
+	balancesTransferValid,
+	blockHash789629,
+	mockBlock789629,
+	testAddressController,
+} from '.';
 import { events789629 } from './data/events789629Hex';
 import { validators789629Hex } from './data/validators789629Hex';
-import { blockHash789629, mockBlock789629 } from './mockBlock789629';
-import { balancesTransferValid } from './transactions';
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -131,10 +137,37 @@ const accountAt = (_hash: Hash, _address: string) =>
 		)
 	);
 
+export const bondedAt = (
+	_hash: Hash,
+	_address: string
+): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<AccountId>', testAddressController)
+	);
+
 const vestingAt = (_hash: Hash, _address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<VestingInfo>', null)
 	);
+
+export const ledgerAt = (
+	_hash: Hash,
+	_address: string
+): Promise<Option<StakingLedger>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'Option<StakingLedger>',
+			'0x2c2a55b5e0d28cc772b47bb9b25981cbb69eca73f7c3388fb6464e7d24be470e0700e87648170700e8764817008c000000000100000002000000030000000400000005000000060000000700000008000000090000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d0000002e0000002f000000'
+		)
+	);
+
+const payeeAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RewardDestination', 'Controller')
+	);
+
+const slashingSpansAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('SlashingSpans'));
 
 // For getting the blockhash of the genesis block
 const getBlockHashGenesis = (_zero: number) =>
@@ -193,6 +226,10 @@ export const mockApi = ({
 			activeEra: { at: activeEraAt },
 			erasStartSessionIndex: { at: erasStartSessionIndexAt },
 			unappliedSlashes: { at: unappliedSlashesAt },
+			bonded: { at: bondedAt },
+			ledger: { at: ledgerAt },
+			payee: { at: payeeAt },
+			slashingSpans: { at: slashingSpansAt },
 		},
 		system: {
 			events: { at: eventsAt },
