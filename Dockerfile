@@ -17,7 +17,8 @@ WORKDIR /usr/src/app
 
 COPY --from=builder /opt/builder /usr/src/app
 
-ENV SAS_MAIN_PORT=3000
+ENV SAS_EXPRESS_PORT=8080
+ENV SAS_EXPRESS_BIND_HOST=0.0.0.0
 
-EXPOSE ${SAS_MAIN_PORT}
+EXPOSE ${SAS_EXPRESS_PORT}
 CMD [ "node", "build/src/main.js" ]
