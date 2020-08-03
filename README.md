@@ -175,7 +175,6 @@ curl -s http://0.0.0.0:8080/block | jq
 
 **N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
 
-
 ## Contribute
 
 We welcome contributions. Before submitting your PR, make sure to run the following commands:
