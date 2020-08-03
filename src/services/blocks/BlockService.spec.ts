@@ -1,31 +1,75 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import { RpcPromiseResult } from '@polkadot/api/types/rpc';
+import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
 import { GenericCall } from '@polkadot/types/generic';
-import { Hash } from '@polkadot/types/interfaces';
+import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
-import { createCall, kusamaRegistry } from '../../utils/testTools';
-import { mockApi, mockBlock789629 } from '../utils/mock';
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { createCall } from '../../test-helpers/createCall';
+import {
+	kusamaRegistry,
+	polkadotRegistry,
+} from '../../test-helpers/registries';
+import {
+	blockHash789629,
+	getBlock,
+	mockApi,
+	mockBlock789629,
+} from '../test-helpers/mock';
+import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
-const transfer = createCall('balances', 'transfer', {
-	value: 12,
-	dest: kusamaRegistry.createType(
-		'AccountId',
-		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
-	), // Bob
-});
+/**
+ * For type casting mock getBlock functions so tsc does not complain
+ */
+type GetBlock = RpcPromiseResult<
+	(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>
+>;
 
-const transferOutput = {
-	method: 'balances.transfer',
-	callIndex: new Uint8Array([6, 0]),
-	args: {
-		dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-		value: 12,
-	},
-};
-
+/**
+ * BlockService mock
+ */
 const blocksService = new BlocksService(mockApi);
 
 describe('BlocksService', () => {
+	describe('fetchBlock', () => {
+		it('works when ApiPromise works (block 789629)', async () => {
+			expect(
+				sanitizeNumbers(await blocksService.fetchBlock(blockHash789629))
+			).toStrictEqual(blocks789629Response);
+		});
+
+		it('throws when an extrinsic is undefined', async () => {
+			// Create a block with undefined as the first extrinisic and the last extrinsic removed
+			const mockBlock789629BadExt = polkadotRegistry.createType(
+				'Block',
+				block789629
+			);
+			mockBlock789629BadExt.extrinsics.pop();
+			mockBlock789629BadExt.extrinsics.unshift(
+				(undefined as unknown) as Extrinsic
+			);
+
+			mockApi.rpc.chain.getBlock = (() =>
+				Promise.resolve().then(() => {
+					return {
+						block: mockBlock789629BadExt,
+					};
+				}) as unknown) as GetBlock;
+
+			await expect(
+				blocksService.fetchBlock(blockHash789629)
+			).rejects.toThrow(
+				new Error(
+					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
+				)
+			);
+
+			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
+		});
+	});
+
 	describe('createCalcFee & calc_fee', () => {
 		it('calculates partialFee for proxy.proxy in polkadot block 789629', async () => {
 			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
@@ -53,6 +97,23 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlocksService.parseGenericCall', () => {
+		const transfer = createCall('balances', 'transfer', {
+			value: 12,
+			dest: kusamaRegistry.createType(
+				'AccountId',
+				'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
+			), // Bob
+		});
+
+		const transferOutput = {
+			method: 'balances.transfer',
+			callIndex: new Uint8Array([6, 0]),
+			args: {
+				dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+				value: 12,
+			},
+		};
+
 		it('does not handle an empty object', () =>
 			expect(() =>
 				BlocksService['parseGenericCall'](

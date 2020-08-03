@@ -14,7 +14,7 @@ export interface ISidecarConfig {
 }
 
 /**
- * Modules of Spec.yml
+ * Modules of specs.yml
  */
 export enum MODULES {
 	EXPRESS = 'EXPRESS',

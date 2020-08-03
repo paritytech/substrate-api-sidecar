@@ -1,6 +1,7 @@
 import { BlockHash, RuntimeDispatchInfo } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
+import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionFeeEstimateService extends AbstractService {
 	/**
@@ -19,14 +20,16 @@ export class TransactionFeeEstimateService extends AbstractService {
 		try {
 			return await api.rpc.payment.queryInfo(extrinsic, hash);
 		} catch (err) {
+			const { cause, stack } = extractCauseAndStack(err);
+
 			throw {
 				error: 'Unable to fetch fee info',
 				data: {
 					extrinsic,
-					block: hash,
+					block: hash.toString(),
 				},
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				cause: err.toString(),
+				cause,
+				stack,
 			};
 		}
 	}

@@ -20,12 +20,13 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 		return next(err);
 	}
 
-	const { error, data, cause } = err;
+	const { error, data, cause, stack } = err;
 
 	res.status(500).send({
 		code: 500,
 		error,
 		data,
 		cause,
+		stack,
 	});
 };

@@ -59,12 +59,14 @@ import {
 	MIN_I32,
 	MIN_I64,
 	MIN_I128,
+} from '../test-helpers/constants';
+import { kusamaRegistry } from '../test-helpers/registries';
+import {
 	PRE_SANITIZED_BALANCE_LOCK,
 	PRE_SANITIZED_OPTION_VESTING_INFO,
 	PRE_SANITIZED_RUNTIME_DISPATCH_INFO,
 	PRE_SANITIZED_STAKING_RESPONSE,
-} from '../utils/constants';
-import { kusamaRegistry } from '../utils/testTools';
+} from './mockData';
 import { sanitizeNumbers } from './sanitizeNumbers';
 
 describe('sanitizeNumbers', () => {

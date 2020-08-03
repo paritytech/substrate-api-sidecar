@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { AbstractService } from '../services/AbstractService';
-import { kusamaRegistry } from '../utils/testTools';
+import { kusamaRegistry } from '../test-helpers/registries';
 import AbstractController from './AbstractController';
 
 const promiseBlockHash = (num: number): Promise<BlockHash> =>
