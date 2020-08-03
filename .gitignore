@@ -7,3 +7,4 @@ yarn-error.log
 .env.*
 !.env-sample
 .DS_Store
+/.clinic
