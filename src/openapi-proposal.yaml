@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Substrate API Sidecar
+  title: Substrate API Sidecar [V1 Proposal]
   description: Substrate API Sidecar is a REST service that makes it easier to
     interact with blockchain nodes built using Substrate's FRAME framework.
   contact:
@@ -59,7 +59,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: Account not found
+          description: account not found
           content:
             application/json:
               schema:
@@ -67,7 +67,7 @@ paths:
   /accounts/{accountId}/staking-info:
     get:
       tags:
-      - accounts
+      - staking
       summary: Get staking information for a stash account.
       description: Returns information about a stash account's staking activity.
         Replaces `/staking/{address}` from versions < v1.0.0.
@@ -103,7 +103,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: Account not found
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/staking-payouts:
+    get:
+      tags:
+      - staking
+      summary: Get payout information for a stash account.
+      description: Returns payout information for the last specified eras.
+      operationId: getStakingPayoutsByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          type: string
+      - name: depth
+        in: query
+        description: The number of eras to query for payouts of. Must be less
+          than or equal to `HISTORY_DEPTH`.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to query the payouts for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingPayouts'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
           content:
             application/json:
               schema:
@@ -283,8 +334,8 @@ paths:
       responses:
         "200":
           description: successful operation
-        "400":
-          description: invalid transaction
+        "500":
+          description: failed to dry-run transaction
           content:
             application/json:
               schema:
@@ -306,12 +357,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionFeeEstimate'
-        "400":
-          description: invalid transaction
+        "500":
+          description: fee estimation failure
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionFailure'
+                $ref: '#/components/schemas/TransactionFeeEstimateFailure'
   /transaction/material:
     get:
       tags:
@@ -346,7 +397,7 @@ paths:
   /pallets/staking/progress:
     get:
       tags:
-      - pallets
+      - staking
       summary: Get a progress report on the chain's staking system.
       description: Returns information on the progress of key components of the 
         staking system and estimates of future points of interest. Replaces 
@@ -775,7 +826,7 @@ paths:
           type: string
       - name: at
         in: query
-        description: Block at which to retrieve a list of 
+        description: Block at which to retrieve a list of
           the pallet's storage items.
         required: false
         schema:
@@ -960,7 +1011,6 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
-
         nonce:
           type: string
           description: Account nonce.
@@ -1024,6 +1074,23 @@ components:
             type: string
             format: unsignedInteger
       description: The staking ledger.
+    Nominations:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            type: string
+          description: The targets of the nomination.
+        submittedIn:
+          type: string
+          format: unsignedInteger
+          description: >-
+             The era the nominations were submitted. (Except for initial
+             nominations which are considered submitted at era 0.)
+        suppressed:
+          type: boolean
+          description: Whether the nominations have been suppressed.
     AccountStakingInfo:
       type: object
       properties:
@@ -1048,11 +1115,32 @@ components:
           description: Number of slashing spans on Stash account; `null` if provided address
             is not a Controller.
           format: unsignedInteger
+        nominations:
+          $ref: '#/components/schemas/Nominations'
         stakingLedger:
           $ref: '#/components/schemas/StakingLedger'
       description: >-
         Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
         `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
+    AccountStakingPayouts:
+      type: array
+      items:
+        type: object
+        properties:
+          era:
+            type: string
+            format: unsignedInteger
+            description: Era this payout is associated with
+          reward:
+            type: string
+            format: unsignedInteger
+            description: Reward for the accountId the query was made for.
+          validator:
+            type: string
+            description: AccountId of the validator the payout is coming from.
+          claimed:
+            type: boolean
+            description: Whether or not the reward has been claimed.
     VestingSchedule:
       type: object
       properties:
@@ -1269,12 +1357,19 @@ components:
           description: The _inclusion fee_ of a transaction, i.e. the minimum fee required for a transaction. Includes weight and encoded length fees, but does not have access to any signed extensions, e.g. the `tip`.
           format: unsignedInteger
       description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
+    ExtrinsicMethod:
+      type: object
+      properties:
+        pallet:
+          type: string
+        function:
+          type: string
+      description: Extrinsic method
     Extrinsic:
       type: object
       properties:
         method:
-          type: string
-          description: Extrinsic method, `{module}.{function}`.
+          $ref: '#/components/schemas/ExtrinsicMethod'
         signature:
           $ref: '#/components/schemas/Signature'
         nonce:
@@ -1631,24 +1726,62 @@ components:
         transactionHash:
           type: string
           description: The hash of the encoded transaction.
-    TransactionFailure:
+    TransactionFailedToParse:
       type: object
       properties:
-        error:
+        code:
+          type: number
+        message:
           type: string
           description: >-
-            `Failed to parse a tx` or `Failed to submit tx`. In the case of
-            the former, Sidecar was unable to parse the transaction and never
-            even submitted it to the client. In the case of the latter, the transaction
-            queue rejected the transaction. For a dryrun the client error would likely
-            be Unable to dry run extrinsic.
-        data:
+            `Failed to parse a tx.`
+        transaction:
           type: string
-          description: The hex-encoded extrinsic. Only present if Sidecar fails to
-            parse a transaction.
+          format: hex
         cause:
           type: string
-          description: The error message from parsing or from the client.
+        stack:
+          type: string
+      description: Error message when Sidecar fails to parse the transaction.
+    TransactionFailedToSubmit:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+          description: Failed to submit a tx
+        transaction:
+          type: string
+          format: hex
+        cause:
+          type: string
+        stack:
+          type: string
+      description: >-
+        Error message when the node rejects the submitted transaction.
+    TransactionFailure:
+      oneOf:
+        - $ref: '#/components/schemas/TransactionFailedToSubmit'
+        - $ref: '#/components/schemas/TransactionFailedToParse'
+    TransactionFeeEstimateFailure:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+          description: Unable to fetch fee info
+        transaction:
+          type: string
+          format: hex
+        block:
+          type: string
+          description: Block hash of the block fee estimation was attempted at.
+        cause:
+          type: string
+        stack:
+          type: string
     TransactionFeeEstimate:
       type: object
       properties:
