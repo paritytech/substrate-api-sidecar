@@ -1,4 +1,4 @@
 module.exports = {
   preset: 'ts-jest',
-  testPathIgnorePatterns: ['/build/', '/node_modules/']
+  testPathIgnorePatterns: ['/build/', '/node_modules/', "/openapi/"]
 };

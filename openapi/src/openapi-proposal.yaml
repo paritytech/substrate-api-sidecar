@@ -1,0 +1,1923 @@
+openapi: 3.0.0
+info:
+  title: Substrate API Sidecar [V1 Proposal]
+  description: Substrate API Sidecar is a REST service that makes it easier to
+    interact with blockchain nodes built using Substrate's FRAME framework.
+  contact:
+    url: https://github.com/paritytech/substrate-api-sidecar/issues/new
+  license:
+    name: Apache License Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  version: 1.0.0-oas3
+tags:
+- name: accounts
+- name: blocks
+- name: node
+  description: node connected to sidecar
+- name: pallets
+  description: pallets employed in the runtime
+- name: runtime
+- name: transaction
+paths:
+  /accounts/{accountId}/balance-info:
+    get:
+      tags:
+      - accounts
+      summary: Get balance information for an account.
+      description: Returns information about an account's balance.
+        Replaces `/balance/{address}` from versions < v1.0.0.
+      operationId: getBalanceSummaryByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+      - name: at
+        in: query
+        description: Block at which to query balance info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalanceInfo'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/staking-info:
+    get:
+      tags:
+      - staking
+      summary: Get staking information for a stash account.
+      description: Returns information about a stash account's staking activity.
+        Replaces `/staking/{address}` from versions < v1.0.0.
+      operationId: getStakingSummaryByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account. Must be a _stash_ account.
+        required: true
+        schema:
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the staking info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingInfo'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/staking-payouts:
+    get:
+      tags:
+      - staking
+      summary: Get payout information for a stash account.
+      description: Returns payout information for the last specified eras.
+      operationId: getStakingPayoutsByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          type: string
+      - name: depth
+        in: query
+        description: The number of eras to query for payouts of. Must be less
+          than or equal to `HISTORY_DEPTH`.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to query the payouts for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingPayouts'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/vesting-info:
+    get:
+      tags:
+      - accounts
+      summary: Get vesting information for an account.
+      description: Returns the vesting schedule for an account.
+        Replaces `/vesting/{address}` from versions < v1.0.0.
+      operationId: getVestingSummaryByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the vesting info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountVestingInfo'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /blocks/{blockId}:
+    get:
+      tags:
+      - blocks
+      summary: Get a block by its height or hash.
+      description: Returns a single block. BlockId can either be a block hash or a
+        block height. Replaces `/block/{number}` from versions < v1.0.0.
+      operationId: getBlockById
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        "400":
+          description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /blocks/head:
+    get:
+      tags:
+      - blocks
+      summary: Get the most recently finalized block.
+      description: Returns the most recently finalized block
+      operationId: getHeadBlock
+      parameters:
+      - name: finalized
+        in: query
+        description: Boolean representing whether or not to get the finalized head.
+          If it is not set the value defaults to true. When set to false it will attempt
+          to get the newest known block, which may not be finalized. Replaces `/block`
+          from versions < v1.0.0.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+  /node/network:
+    get:
+      tags:
+      - node
+      summary: Get network information of the node.
+      description: Returns network related information of the node.
+      operationId: getNodeNetworking
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeNetwork'
+  /node/transaction-pool:
+    get:
+      tags:
+      - node
+      summary: Get the transaction pool of the node.
+      description: Returns the extrinsics that the node knows of that have not 
+        been included in a block.
+      operationId: getNodeTransactionPool
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionPool'
+  /node/version:
+    get:
+      tags:
+      - node
+      summary: Get version information of the node.
+      description: Returns versioning information of the node.
+      operationId: getNodeVersion
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeVersion'
+  /transaction:
+    post:
+      tags:
+      - transaction
+      summary: Submit a transaction to the node's transaction pool.
+      description: Accepts a valid signed extrinsic. Replaces `/tx` from versions
+        < v1.0.0.
+      operationId: submitTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionSuccess'
+        "400":
+            description: failed to parse or submit transaction
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TransactionFailure'
+  /transaction/dry-run:
+    post:
+      tags:
+      - transaction
+      summary: Dry run an extrinsic.
+      description: Use the dryrun call to practice submission of a transaction.
+      operationId: dryrunTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
+      responses:
+        "200":
+          description: successful operation
+        "500":
+          description: failed to dry-run transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFailure'
+  /transaction/fee-estimate:
+    post:
+      tags:
+      - transaction
+      summary: Receive a fee estimate for a transaction.
+      description: Send a serialized transaction and receive back a naive fee 
+        estimate. Replaces `/tx/fee-estimate` from versions < v1.0.0.
+      operationId: feeEstimateTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFeeEstimate'
+        "500":
+          description: fee estimation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFeeEstimateFailure'
+  /transaction/material:
+    get:
+      tags:
+      - transaction
+      summary: Get the baseline material to construct a transaction.
+      description: Returns the material that is universal to constructing any 
+        signed transaction offline. Replaces `/tx/artifacts` from versions < v1.0.0.
+      operationId: getTransactionMaterial
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction 
+          material.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/staking/progress:
+    get:
+      tags:
+      - staking
+      summary: Get a progress report on the chain's staking system.
+      description: Returns information on the progress of key components of the 
+        staking system and estimates of future points of interest. Replaces 
+        `/staking-info` from versions < v1.0.0.
+      operationId: getStakingProgress
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve a staking progress report.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StakingProgress'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of pallets used in the runtime.
+      description: Returns an array of metadata for pallets that are used in the
+        runtime. Can use `only-names` query param to just return an array of 
+        pallet names.
+      parameters:
+      - name: only-names
+        in: query
+        description: Only return the names of pallets.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of the runtime's pallets.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsResponses'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/constants:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of metadata for constants of the pallet specified
+        by palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to query the constant of.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of exposed pallet
+          constants.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsConstantsResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/constants/{constantId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a constant.
+      description: Returns the value stored under the constantId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to query the constant of.
+        required: true
+        schema:
+          type: string
+      - name: constantId
+        in: path
+        description: Id of the constant to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the constant at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsConstantValue'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of dispatchables for a pallet.
+      description: Returns a list of the dispatchables of the specified palletId
+         and the associated metadata of each.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to get the metadata of its dispatchables.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of the pallet's 
+          dispatchables at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsDispatchablesResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables/{dispatchableId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the metadata of a dispatchable.
+      description: Returns the metadata of a dispatchable with dispatchableId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to get the dispatchable of.
+        required: true
+        schema:
+          type: string
+      - name: dispatchableId
+        in: path
+        description: Index of the dispatchable in the pallet's dispatchable array.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the dispatchable at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsDispatchableResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of the errors for a pallet.
+      description: Returns a list of metadata for errors of the specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to get the metadata of its errors.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of the pallet's
+          errors at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsErrorsResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors/{errorId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the metadata of an error.
+      description: Returns the metadata of an error with errorId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to the error of.
+        required: true
+        schema:
+          type: string
+      - name: errorId
+        in: path
+        description: Index of the error in the pallet's errors array.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the error at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsErrorResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of events for a pallet.
+      description: Returns a list of metadata for events of the specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to get the metadata of its events.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of the pallet's events at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsEventsResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events/{eventId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the metadata of an event.
+      description: Returns the metadata of an event with eventId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to the event of.
+        required: true
+        schema:
+          type: string
+      - name: eventId
+        in: path
+        description: Index of the event in the pallet's events array.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the event at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsEventResponse'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/storage:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of storage items for a pallet.
+      description: Returns a list of storage item metadata for storage items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to query the storage of.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's storage items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Array of storageItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletStorageItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/storage/{storageItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a storage item.
+      description: Returns the value stored under the storageItemId. If it is a 
+        map, query param key1 is required. If the storage item is double map 
+        query params key1 and key2 are required.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to query the storage of.
+        required: true
+        schema:
+          type: string
+      - name: storageItemId
+        in: path
+        description: Id of the storage item to query for.
+        required: true
+        schema:
+          type: string
+      - name: key1
+        in: query
+        description: Key for a map, or first key for a double map. Required for querying
+          a map.
+        required: false
+        schema:
+          type: string
+      - name: key2
+        in: query
+        description: Second key for a double map. Required for querying a double map.
+        required: false
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the storage item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Successful query response type is dependent on the storage
+                  item value.
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /runtime/metadata:
+    get:
+      tags:
+      - runtime
+      summary: Get the runtime metadata in decoded, JSON form.
+      description: Returns the runtime metadata as a JSON object.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response is dependent on the runtime metadata contents.
+  /runtime/code:
+    get:
+      tags:
+      - runtime
+      summary: Get the runtime wasm blob.
+      description: Returns the runtime Wasm blob in hex format.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the runtime wasm blob at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeCode'
+  /runtime/spec:
+    get:
+      tags:
+      - runtime
+      summary: Get version information of the runtime.
+      description: Returns version information related to the runtime.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime version information at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeSpec'
+components:
+  schemas:
+    BalanceLock:
+      type: object
+      properties:
+        id:
+          type: string
+          description: An identifier for this lock. Only one lock may be in existence
+            for each identifier.
+        amount:
+          type: string
+          description: The amount below which the free balance may not drop with this
+            lock in effect.
+          format: unsignedInteger
+        reasons:
+          type: string
+          description: Reasons for withdrawing balance.
+          enum:
+          - Fee = 0
+          - Misc = 1
+          - All = 2
+    AccountBalanceInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        nonce:
+          type: string
+          description: Account nonce.
+          format: unsignedInteger
+        free:
+          type: string
+          description: Free balance of the account. Not equivalent to _spendable_
+            balance. This is the only balance that matters in terms of most operations
+            on tokens.
+          format: unsignedInteger
+        reserved:
+          type: string
+          description: Reserved balance of the account.
+          format: unsignedInteger
+        miscFrozen:
+          type: string
+          description: The amount that `free` may not drop below when withdrawing
+            for anything except transaction fee payment.
+          format: unsignedInteger
+        feeFrozen:
+          type: string
+          description: The amount that `free` may not drop below when withdrawing
+            specifically for transaction fee payment.
+          format: unsignedInteger
+        locks:
+          type: array
+          description: Array of locks on a balance. There can be many of these on
+            an account and they "overlap", so the same balance is frozen by multiple
+            locks
+          items:
+            $ref: '#/components/schemas/BalanceLock'
+    StakingLedger:
+      type: object
+      properties:
+        stash:
+          type: string
+          description: The stash account whose balance is actually locked and at stake.
+          format: ss58
+        total:
+          type: string
+          description: The total amount of the stash's balance that we are currently accounting
+            for. Simply `active + unlocking`.
+          format: unsignedInteger
+        active:
+          type: string
+          description: The total amount of the stash's balance that will be at stake
+            in any forthcoming eras.
+          format: unsignedInteger
+        unlocking:
+          type: string
+          description: Any balance that is becoming free, which may eventually be
+            transferred out of the stash (assuming it doesn't get slashed first).
+            Represented as an array of objects, each with an `era` at which `value`
+            will be unlocked.
+          format: unsignedInteger
+        claimedRewards:
+          type: array
+          description: Array of eras for which the stakers behind a validator have
+            claimed rewards. Only updated for _validators._
+          items:
+            type: string
+            format: unsignedInteger
+      description: The staking ledger.
+    Nominations:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            type: string
+          description: The targets of the nomination.
+        submittedIn:
+          type: string
+          format: unsignedInteger
+          description: >-
+             The era the nominations were submitted. (Except for initial
+             nominations which are considered submitted at era 0.)
+        suppressed:
+          type: boolean
+          description: Whether the nominations have been suppressed.
+    AccountStakingInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        rewardDestination:
+          type: string
+          description: The account to which rewards will be paid. Can be 'Staked' (Stash
+            account, adding to the amount at stake), 'Stash' (Stash address, not
+            adding to the amount at stake), or 'Controller' (Controller address).
+          format: ss58
+          enum:
+          - Staked
+          - Stash
+          - Controller
+        controller:
+          type: string
+          description: Controller address for the given Stash.
+          format: ss58
+        numSlashingSpans:
+          type: string
+          description: Number of slashing spans on Stash account; `null` if provided address
+            is not a Controller.
+          format: unsignedInteger
+        nominations:
+          $ref: '#/components/schemas/Nominations'
+        stakingLedger:
+          $ref: '#/components/schemas/StakingLedger'
+      description: >-
+        Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
+        `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
+    AccountStakingPayouts:
+      type: array
+      items:
+        type: object
+        properties:
+          era:
+            type: string
+            format: unsignedInteger
+            description: Era this payout is associated with
+          reward:
+            type: string
+            format: unsignedInteger
+            description: Reward for the accountId the query was made for.
+          validator:
+            type: string
+            description: AccountId of the validator the payout is coming from.
+          claimed:
+            type: boolean
+            description: Whether or not the reward has been claimed.
+    VestingSchedule:
+      type: object
+      properties:
+        locked:
+          type: string
+          description: Number of tokens locked at start.
+          format: unsignedInteger
+        perBlock:
+          type: string
+          description: Number of tokens that gets unlocked every block after `startingBlock`.
+          format: unsignedInteger
+        startingBlock:
+          type: string
+          description: Starting block for unlocking (vesting).
+          format: unsignedInteger
+      description: Vesting schedule for an account.
+    AccountVestingInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        vesting:
+          $ref: '#/components/schemas/VestingSchedule'
+    BlockIdentifiers:
+      type: object
+      properties:
+        hash:
+          type: string
+          description: The block's hash.
+          format: hex
+        height:
+          type: string
+          description: The block's height.
+          format: unsignedInteger
+      description: Block number and hash at which the call was made.
+    DigestItem:
+      type: object
+      properties:
+        type:
+          type: string
+        index:
+          type: string
+          format: unsignedInteger
+        value:
+          type: array
+          items:
+            type: string
+    SanitizedEvent:
+      type: object
+      properties:
+        method:
+          type: string
+        data:
+          type: array
+          items:
+            type: string
+    Signature:
+      type: object
+      properties:
+        signature:
+          type: string
+          format: hex
+        signer:
+          type: string
+          format: ss58
+      description: Object with `signature` and `signer`, or `null` if unsigned.
+    PalletItemMetadataIndex:
+      type: array
+      description: Tuple where the first value is the index of the pallet in the filtered
+        metadata and the second value is the index of the item in the pallet's array
+        of the item type.
+      items:
+        type: string
+        format: unsignedInteger
+    PalletEvent:
+      type: object
+      properties:
+        eventIndex:
+          $ref: '#/components/schemas/PalletItemMetadataIndex'
+        name:
+          type: string
+        args:
+          type: array
+          items:
+            type: string
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of an event from a FRAME pallet.
+    PalletError:
+      type: object
+      properties:
+        errorIndex:
+          $ref: '#/components/schemas/PalletItemMetadataIndex'
+        name:
+          type: string
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of an error from a FRAME pallet.
+    PalletStorageType:
+      type: object
+    PalletStorageItem:
+      type: object
+      properties:
+        storageItemIndex:
+          $ref: '#/components/schemas/PalletItemMetadataIndex'
+        name:
+          type: string
+        modifier:
+          type: string
+        type:
+          $ref: '#/components/schemas/PalletStorageType'
+        fallback:
+          type: string
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of a storage item from a FRAME pallet.
+    PalletConstant:
+      type: object
+      properties:
+        constantIndex:
+          $ref: '#/components/schemas/PalletItemMetadataIndex'
+        name:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of a constant from a FRAME pallet.
+    DispatchableArg:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+      description: Metadata of a parameter to a dispatchable call from a FRAME pallet.
+    Dispatchable:
+      type: object
+      properties:
+        callIndex:
+          $ref: '#/components/schemas/PalletItemMetadataIndex'
+        name:
+          type: string
+        args:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispatchableArg'
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of a dispatchable call from a FRAME pallet.
+    PalletStorage:
+      type: object
+      properties:
+        prefix:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletStorageItem'
+    Pallet:
+      type: object
+      properties:
+        index:
+          type: string
+          format: unsignedInteger
+        name:
+          type: string
+        storage:
+          $ref: '#/components/schemas/PalletStorage'
+        calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dispatchable'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletEvent'
+        constants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletConstant'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletError'
+      description: Metadata of a FRAME pallet.
+    RuntimeDispatchInfo:
+      type: object
+      properties:
+        weight:
+          type: string
+          description: Extrinsic weight.
+        class:
+          type: string
+          description: Extrinsic class.
+          enum:
+          - Normal
+          - Operational
+          - Mandatory
+        partialFee:
+          type: string
+          description: The _inclusion fee_ of a transaction, i.e. the minimum fee required for a transaction. Includes weight and encoded length fees, but does not have access to any signed extensions, e.g. the `tip`.
+          format: unsignedInteger
+      description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
+    ExtrinsicMethod:
+      type: object
+      properties:
+        pallet:
+          type: string
+        function:
+          type: string
+      description: Extrinsic method
+    Extrinsic:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/ExtrinsicMethod'
+        signature:
+          $ref: '#/components/schemas/Signature'
+        nonce:
+          type: string
+          description: Account nonce, if applicable.
+          format: unsignedInteger
+        args:
+          type: object
+          description: Object of arguments keyed by parameter name.
+        tip:
+          type: string
+          description: Any tip added to the transaction.
+          format: unsignedInteger
+        hash:
+          type: string
+          description: The transaction's hash.
+          format: hex
+        info:
+          $ref: '#/components/schemas/RuntimeDispatchInfo'
+        events:
+          type: array
+          description: An array of `SanitizedEvent`s that occurred during extrinsic
+            execution.
+          items:
+            $ref: '#/components/schemas/SanitizedEvent'
+        success:
+          type: boolean
+          description: Whether or not the extrinsic succeeded.
+        paysFee:
+          type: boolean
+          description: Whether the extrinsic requires a fee. Careful! This field relates
+            to whether or not the extrinsic requires a fee if called as a transaction.
+            Block authors could insert the extrinsic as an inherent in the block
+            and not pay a fee. Always check that `paysFee` is `true` and that the
+            extrinsic is signed when reconciling old blocks.
+    BlockInitialize:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanitizedEvent'
+      description: Object with an array of `SanitizedEvent`s that occurred during
+        block initialization with the `method` and `data` for each.
+    BlockFinalize:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanitizedEvent'
+      description: Object with an array of `SanitizedEvent`s that occurred during
+        block construction finalization with the `method` and `data` for each.
+    Block:
+      type: object
+      properties:
+        hash:
+          type: string
+          description: The block's hash.
+          format: hex
+        height:
+          type: string
+          description: The block's height.
+          format: unsignedInteger
+        parentHash:
+          type: string
+          description: The hash of the parent block.
+          format: hex
+        stateRoot:
+          type: string
+          description: The state root after executing this block.
+          format: hex
+        extrinsicRoot:
+          type: string
+          description: The Merkle root of the extrinsics.
+          format: hex
+        authorId:
+          type: string
+          description: The account ID of the block author (may be undefined for some
+            chains).
+          format: ss58
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DigestItem'
+          description: Array of `DigestItem`s associated with the block.
+        onInitialize:
+          $ref: '#/components/schemas/BlockInitialize'
+        extrinsics:
+          type: array
+          description: Array of extrinsics (inherents and transactions) within the
+            block.
+          items:
+            $ref: '#/components/schemas/Extrinsic'
+        onFinalize:
+          $ref: '#/components/schemas/BlockFinalize'
+      description: >-
+        Note: Block finalization does not correspond to consensus, i.e. whether
+        the block is in the canonical chain. It denotes the finalization of block
+        _construction._
+    NodeVersion:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        clientImplVersion:
+          type: string
+          description: Node's implementation's version.
+        clientImplName:
+          type: string
+          description: Node's implementation name.
+        chain:
+          type: string
+          description: Chain's spec name.
+      description: Version information of the node.
+    NodeRole:
+      type: string
+      description: Role the node is running.
+      enum:
+      - Full
+      - LightClient
+      - Authority
+      - Sentry
+    PeerInfo:
+      type: object
+      properties:
+        peerId:
+          type: string
+          description: Peer ID.
+        roles:
+          type: string
+          description: Roles.
+        protocolVersion:
+          type: string
+          description: Protocol version.
+          format: unsignedInteger
+        bestHash:
+          type: string
+          description: Peer best block hash.
+          format: hex
+        bestNumber:
+          type: string
+          description: Peer
+          format: unsignedInteger
+    NodeNetwork:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        nodeRoles:
+          $ref: '#/components/schemas/NodeRole'
+        peers:
+          type: string
+          description: Number of peers the node is connected to.
+          format: unsignedInteger
+        isSyncing:
+          type: boolean
+          description: Whether or not the node is syncing. `False` indicates that the node is in sync.
+        shouldHavePeers:
+          type: boolean
+          description: Whether or not the node should be connected to peers. Might be false
+            for local chains or when running without discovery.
+        localPeerId:
+          type: string
+          description: Local copy of the `PeerId`.
+        localListenAddresses:
+          type: array
+          description: Multiaddresses that the local node is listening on. The addresses
+            include a trailing `/p2p/` with the local PeerId, and are thus suitable
+            to be passed to `system_addReservedPeer` or as a bootnode address for
+            example.
+          items:
+            type: string
+        systemPeers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeerInfo'
+    RuntimeSpec:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        authoringVersion:
+          type: string
+          description: The version of the authorship interface. An authoring node
+            will not attempt to author blocks unless this is equal to its native runtime.
+        chainType:
+          type: string
+          description: Type of the chain.
+          enum:
+          - Development
+          - Local
+          - Live
+        implVersion:
+          type: string
+          description: Version of the implementation of the specification. Non-consensus-breaking
+            optimizations are about the only changes that could be made which would
+            result in only the `impl_version` changing.
+        specName:
+          type: string
+          description: Identifies the different Substrate runtimes.
+        specVersion:
+          type: string
+          description: version of the runtime specification
+        txVersion:
+          type: string
+          description: All existing dispatches are fully compatible when this number
+            doesn't change. This number must change when an existing dispatchable
+            (module ID, dispatch ID) is changed, either through an alteration in its
+            user-level semantics, a parameter added/removed/changed, a dispatchable
+            being removed, a module being removed, or a dispatchable/module changing
+            its index.
+        properties:
+          type: object
+          description: Arbitrary properties defined in the chain spec.
+      description: Version information related to the runtime.
+    UnappliedSlash:
+      type: object
+      properties:
+        validator:
+          type: string
+          description: Stash account ID of the offending validator.
+          format: ss58
+        own:
+          type: string
+          description: The amount the validator will be slashed.
+          format: unsignedInteger
+        others:
+          type: array
+          description: Array of tuples(`[accountId, amount]`) representing all the
+            stashes of other slashed stakers and the amount they will be slashed.
+          items:
+            type: string
+            format: tuple[ss58, unsignedInteger]
+        reporters:
+          type: array
+          description: Array of account IDs of the reporters of the offense.
+          items:
+            type: string
+            format: ss58
+        payout:
+          type: string
+          description: Amount of bounty payout to reporters.
+          format: unsignedInteger
+    ElectionStatus:
+      type: object
+      properties:
+        status:
+          type: object
+          description: >-
+            Era election status: either `Close: null` or `Open: <BlockNumber>`.
+            A status of `Close` indicates that the submission window for solutions
+            from off-chain Phragmen is not open. A status of `Open` indicates the
+            submission window for off-chain Phragmen solutions has been open since 
+            BlockNumber. N.B. when the submission window is open, certain
+            extrinsics are not allowed because they would mutate the state that the 
+            off-chain Phragmen calculation relies on for calculating results.
+        toggleEstimate:
+          type: string
+          description: Upper bound estimate of the block height at which the `status`
+            will switch.
+          format: unsignedInteger
+      description: Information about the off-chain election. Not included in response when
+        `forceEra.isForceNone`.
+    StakingProgress:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        activeEra:
+          type: string
+          description: |
+            `EraIndex` of the era being rewarded.
+          format: unsignedInteger
+        forceEra:
+          type: string
+          description: Current status of era forcing.
+          enum:
+          - ForceNone
+          - NotForcing
+          - ForceAlways
+          - ForceNew
+        nextActiveEraEstimate:
+          type: string
+          description: Upper bound estimate of the block height at which the next
+            active era will start. Not included in response when `forceEra.isForceNone`.
+          format: unsignedInteger
+        nextSessionEstimate:
+          type: string
+          description: Upper bound estimate of the block height at which the next
+            session will start.
+          format: unsignedInteger
+        unappliedSlashes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnappliedSlash'
+          description: Array of upcoming `UnappliedSlash` indexed by era.
+        electionStatus:
+          $ref: '#/components/schemas/ElectionStatus'
+        idealValidatorCount:
+          type: string
+          description: Upper bound of validator set size; considered the ideal size.
+            Not included in response when `forceEra.isForceNone`.
+          format: unsignedInteger
+        validatorSet:
+          type: array
+          description: Stash account IDs of the validators for the current session.
+            Not included in response when `forceEra.isForceNone`.
+          items:
+            type: string
+            format: ss58
+    Transaction:
+      type: object
+      properties:
+        transaction:
+          type: string
+          format: hex
+    TransactionMaterial:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        genesisHash:
+          type: string
+          description: The hash of the chain's genesis block.
+          format: blockHash
+        chainName:
+          type: string
+          description: The chain's name.
+        specName:
+          type: string
+          description: The chain's spec.
+        specVersion:
+          type: string
+          description: The spec version. Always increased in a runtime upgrade.
+        txVersion:
+          type: string
+          description: The transaction version. Common `txVersion` numbers indicate
+            that the transaction encoding format and method indices are the same.
+            Needed for decoding in an offline environment. Adding new transactions
+            does not change `txVersion`.
+        metadata:
+          type: string
+          description: The chain's metadata in hex format.
+          format: hexScaleEncoded
+      description: >-
+        Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
+        of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining
+        this registry, but in other Substrate-based chains that re-launch their network without
+        changing the `specName`, the `chainName` would be needed to create the correct registry.
+    TransactionSuccess:
+      type: object
+      properties:
+        transactionHash:
+          type: string
+          description: The hash of the encoded transaction.
+    TransactionFailedToParse:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+          description: >-
+            `Failed to parse a tx.`
+        transaction:
+          type: string
+          format: hex
+        cause:
+          type: string
+        stack:
+          type: string
+      description: Error message when Sidecar fails to parse the transaction.
+    TransactionFailedToSubmit:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+          description: Failed to submit a tx
+        transaction:
+          type: string
+          format: hex
+        cause:
+          type: string
+        stack:
+          type: string
+      description: >-
+        Error message when the node rejects the submitted transaction.
+    TransactionFailure:
+      oneOf:
+        - $ref: '#/components/schemas/TransactionFailedToSubmit'
+        - $ref: '#/components/schemas/TransactionFailedToParse'
+    TransactionFeeEstimateFailure:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+          description: Unable to fetch fee info
+        transaction:
+          type: string
+          format: hex
+        block:
+          type: string
+          description: Block hash of the block fee estimation was attempted at.
+        cause:
+          type: string
+        stack:
+          type: string
+    TransactionFeeEstimate:
+      type: object
+      properties:
+        weight:
+          type: string
+          description: Extrinsic weight.
+        class:
+          type: string
+          description: Extrinsic class.
+          enum:
+          - Normal
+          - Operational
+          - Mandatory
+        partialFee:
+          type: string
+          description: Expected inclusion fee for the transaction. Note that the fee
+            rate changes up to 30% in a 24 hour period and this will not be the exact
+            fee.
+          format: unsignedInteger
+      description: >-
+        Note: `partialFee` does not include any tips that you may add to increase a transaction's
+        priority. See [compute_fee](https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee).
+    TransactionPool:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pool:
+          type: array
+          items:
+            $ref: '#/components/schemas/Extrinsic'
+    PalletsResponses:
+      oneOf:
+      - type: object
+        properties:
+          at:
+            $ref: '#/components/schemas/BlockIdentifiers'
+          pallets:
+            type: array
+            items:
+              $ref: '#/components/schemas/Pallet'
+        description: Array of pallet metadata from the runtime.
+      - type: object
+        properties:
+          at:
+            $ref: '#/components/schemas/BlockIdentifiers'
+          pallets:
+            type: array
+            items:
+              type: string
+        description: Array of pallet names from the runtime.
+    PalletsConstantsResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        constants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletConstant'
+    PalletsConstantValue:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        value:
+          type: string
+    PalletsDispatchablesResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        dispatchables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dispatchable'
+    PalletsDispatchableResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        dispatchable:
+          $ref: '#/components/schemas/Dispatchable'
+    PalletsErrorsResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletError'
+    PalletsErrorResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        error:
+          $ref: '#/components/schemas/PalletError'
+    PalletsEventsResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletEvent'
+    PalletsEventResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        event:
+          $ref: '#/components/schemas/PalletEvent'
+    RuntimeCode:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        code:
+          type: string
+          format: hex
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        stack:
+          type: string
+  requestBodies:
+    Transaction:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Transaction'
+      required: true
