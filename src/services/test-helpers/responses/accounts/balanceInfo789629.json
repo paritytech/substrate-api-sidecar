@@ -1,0 +1,18 @@
+{
+  "at": {
+    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+    "height": "789629"
+  },
+  "nonce": "6",
+  "free": "501090793179",
+  "reserved": "0",
+  "miscFrozen": "100000000000",
+  "feeFrozen": "100000000000",
+  "locks": [
+    {
+      "id": "0x7374616b696e6720",
+      "amount": "100000000000",
+      "reasons": "All"
+    }
+  ]
+}

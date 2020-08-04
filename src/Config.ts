@@ -14,7 +14,7 @@ export interface ISidecarConfig {
 }
 
 /**
- * Modules of Spec.yml
+ * Modules of specs.yml
  */
 export enum MODULES {
 	EXPRESS = 'EXPRESS',
@@ -32,6 +32,10 @@ export enum CONFIG {
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
 }
 
+function hr(): string {
+	return Array(80).fill('━').join('');
+}
+
 export default class Config {
 	/**
 	 * Gather env vars for config and make sure they are valid.
@@ -42,9 +46,17 @@ export default class Config {
 
 		if (!config.Validate()) {
 			config.Print({ compact: false });
-			return null;
+			console.log('Invalid config, we expect something like:');
+			console.log(hr());
+			console.log(config.GenEnv().join('\n'));
+			console.log(hr());
+			console.log(
+				'You may copy the snippet above in a .env.foobar file, then use it with:'
+			);
+			console.log('    NODE_ENV=foobar yarn start\n');
+			console.log('Invalid config, exiting...');
+			process.exit(1);
 		} else {
-			// Print some nice info that also gives informative error messages
 			config.Print({ compact: true });
 		}
 

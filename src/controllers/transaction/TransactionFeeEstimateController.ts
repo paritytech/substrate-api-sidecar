@@ -39,7 +39,10 @@ export default class TransactionFeeEstimateController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.post(this.path, this.catchWrap(this.txFeeEstimate));
+		this.router.post(
+			this.path,
+			TransactionFeeEstimateController.catchWrap(this.txFeeEstimate)
+		);
 	}
 
 	/**

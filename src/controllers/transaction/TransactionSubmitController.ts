@@ -30,7 +30,10 @@ export default class TransactionSubmitController extends AbstractController<
 	}
 
 	protected initRoutes(): void {
-		this.router.post(this.path, this.catchWrap(this.txSubmit));
+		this.router.post(
+			this.path,
+			TransactionSubmitController.catchWrap(this.txSubmit)
+		);
 	}
 
 	/**

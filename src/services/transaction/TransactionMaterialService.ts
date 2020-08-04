@@ -10,7 +10,7 @@ export class TransactionMaterialService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
-	async getTransactionMaterial(
+	async fetchTransactionMaterial(
 		hash: BlockHash
 	): Promise<ITransactionMaterial> {
 		const api = await this.ensureMeta(hash);

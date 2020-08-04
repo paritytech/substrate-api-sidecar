@@ -6,7 +6,7 @@ SAS:
       regexp: ^error|all|none$
 
     BIND_HOST:
-      description: Network interface we bind to
+      description: Network interface we bind to. You *MUST* use 0.0.0.0 if you are using Docker.
       default: 127.0.0.1
       type: string
 
@@ -20,4 +20,5 @@ SAS:
     WS_URL:
       description: Websocket URL
       default: ws://127.0.0.1:9944
+      mandatory: true
       regexp: ^wss?:\/\/.*(:\d{4,5})?$

@@ -90,6 +90,10 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   `/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.
 
+-  `/staking-info` fetch information on general staking progress at the latest finalized block.
+
+-  `/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.
+
 -   `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
 
 -   `/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at the block identified by 'NUMBER`.
@@ -156,15 +160,20 @@ yarn build:docker
 ### Run
 
 ```bash
-export VERSION=`cat package.json | jq -r .version`
-docker run --rm -it -p 8080:8080 substrate-api-sidecar:$VERSION
+# For default use run:
+docker run --rm -it -p 8080:8080 substrate-api-sidecar
+
+# Or if you want to use environment variables set in `.env.docker`, run:
+docker run --rm -it --env-file .env.docker -p 8080:8080 substrate-api-sidecar
 ```
 
 then you can test with:
 
 ```bash
-curl -s http://127.0.0.1:8080/block | jq
+curl -s http://0.0.0.0:8080/block | jq
 ```
+
+**N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
 
 ## Contribute
 
