@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Substrate API Sidecar
   description: Substrate API Sidecar is a REST service that makes it easier to
-    interact with blockchain nodes built on the Substrate and FRAME frameworks.
+    interact with blockchain nodes built using Substrate's FRAME framework.
   contact:
     url: https://github.com/paritytech/substrate-api-sidecar/issues/new
   license:
@@ -75,14 +75,14 @@ paths:
       parameters:
       - name: accountId
         in: path
-        description: SS58 address of the account.
+        description: SS58 address of the account. Must be a _stash_ account.
         required: true
         schema:
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
           type: string
       - name: at
         in: query
-        description:  Block at which to query the staking info for the
+        description: Block at which to query the staking info for the
           specified account.
         required: false
         schema:
@@ -224,7 +224,7 @@ paths:
       tags:
       - node
       summary: Get the transaction pool of the node.
-      description: Returns the extrinsics that the node knows of which have not 
+      description: Returns the extrinsics that the node knows of that have not 
         been included in a block.
       operationId: getNodeTransactionPool
       responses:
@@ -252,7 +252,7 @@ paths:
     post:
       tags:
       - transaction
-      summary: Submit a transaction to be included in the blockchain.
+      summary: Submit a transaction to the node's transaction pool.
       description: Accepts a valid signed extrinsic. Replaces `/tx` from versions
         < v1.0.0.
       operationId: submitTransaction
@@ -266,18 +266,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionSuccess'
         "400":
-          description: invalid transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionFailure'
+            description: failed to parse or submit transaction
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TransactionFailure'
   /transaction/dry-run:
     post:
       tags:
       - transaction
       summary: Dry run an extrinsic.
-      description: Use the dryrun call to practice submission of a transaction. A
-        fee will be charged, but the extrinsic will not produce other state change.
+      description: Use the dryrun call to practice submission of a transaction.
       operationId: dryrunTransaction
       requestBody:
         $ref: '#/components/requestBodies/Transaction'
@@ -319,13 +318,13 @@ paths:
       - transaction
       summary: Get the baseline material to construct a transaction.
       description: Returns the material that is universal to constructing any 
-        signed extrinsic offline. Replaces `/tx/artifacts` from versions < v1.0.0.
+        signed transaction offline. Replaces `/tx/artifacts` from versions < v1.0.0.
       operationId: getTransactionMaterial
       parameters:
       - name: at
         in: query
         description: Block at which to retrieve the transaction construction 
-          material at.
+          material.
         required: false
         schema:
           type: string
@@ -356,7 +355,7 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Block at which to retrieve a staking progress report at.
+        description: Block at which to retrieve a staking progress report.
         required: false
         schema:
           type: string
@@ -392,8 +391,7 @@ paths:
           type: boolean
       - name: at
         in: query
-        description: Block at which to retrieve a list of the runtime's pallets 
-          at.
+        description: Block at which to retrieve a list of the runtime's pallets.
         required: false
         schema:
           type: string
@@ -422,14 +420,14 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to query the constant of.
+        description: Name or index of the pallet to query the constant of.
         required: true
         schema:
           type: string
       - name: at
         in: query
         description: Block at which to retrieve the list of exposed pallet
-          constants at.
+          constants.
         required: false
         schema:
           type: string
@@ -463,7 +461,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to query the constant of.
+        description: Name or index of the pallet to query the constant of.
         required: true
         schema:
           type: string
@@ -505,11 +503,12 @@ paths:
       tags:
       - pallets
       summary: Get a list of dispatchables for a pallet.
-      description: Returns a list of metadata for dispatchables of the specified palletId.
+      description: Returns a list of the dispatchables of the specified palletId
+         and the associated metadata of each.
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to get the metadata of its dispatchables.
+        description: Name or index of the pallet to get the metadata of its dispatchables.
         required: true
         schema:
           type: string
@@ -550,7 +549,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to get the dispatchable of.
+        description: Name or index of the pallet to get the dispatchable of.
         required: true
         schema:
           type: string
@@ -562,7 +561,7 @@ paths:
           type: string
       - name: at
         in: query
-        description:  Block at which to retrieve the dispatchable at.
+        description: Block at which to retrieve the dispatchable at.
         required: false
         schema:
           type: string
@@ -596,7 +595,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to get the metadata of its errors.
+        description: Name or index of the pallet to get the metadata of its errors.
         required: true
         schema:
           type: string
@@ -637,7 +636,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to the error of.
+        description: Name or index of the pallet to the error of.
         required: true
         schema:
           type: string
@@ -649,7 +648,7 @@ paths:
           type: string
       - name: at
         in: query
-        description:  Block at which to retrieve the error at.
+        description: Block at which to retrieve the error at.
         required: false
         schema:
           type: string
@@ -683,7 +682,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to get the metadata of its events.
+        description: Name or index of the pallet to get the metadata of its events.
         required: true
         schema:
           type: string
@@ -723,7 +722,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to the event of.
+        description: Name or index of the pallet to the event of.
         required: true
         schema:
           type: string
@@ -770,14 +769,14 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to query the storage of.
+        description: Name or index of the pallet to query the storage of.
         required: true
         schema:
           type: string
       - name: at
         in: query
-        description: Block at which to retrieve at which to retrieve a list of 
-          the pallet's storage items at.
+        description: Block at which to retrieve a list of 
+          the pallet's storage items.
         required: false
         schema:
           type: string
@@ -816,7 +815,7 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Id of the pallet to query the storage of.
+        description: Name or index of the pallet to query the storage of.
         required: true
         schema:
           type: string
@@ -890,13 +889,13 @@ paths:
             application/json:
               schema:
                 type: object
-                description: Response is dependant on the runtime metadata contents.
+                description: Response is dependent on the runtime metadata contents.
   /runtime/code:
     get:
       tags:
       - runtime
       summary: Get the runtime wasm blob.
-      description: Returns the runtime wasm blob in hex format.
+      description: Returns the runtime Wasm blob in hex format.
       parameters:
       - name: at
         in: query
@@ -1002,13 +1001,13 @@ components:
           format: ss58
         total:
           type: string
-          description: The total amount of the stash's balance that we are currently  accounting
-            for.  Simply `active + unlocking`.
+          description: The total amount of the stash's balance that we are currently accounting
+            for. Simply `active + unlocking`.
           format: unsignedInteger
         active:
           type: string
           description: The total amount of the stash's balance that will be at stake
-            in  any forthcoming eras.
+            in any forthcoming eras.
           format: unsignedInteger
         unlocking:
           type: string
@@ -1032,9 +1031,9 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         rewardDestination:
           type: string
-          description: The account to which rewards will be paid. Can be 'Staked'  (Stash
-            account, adding to the amount at stake), 'Stash'  (Stash address, not
-            adding to the amount at stake), or  'Controller' (Controller address).
+          description: The account to which rewards will be paid. Can be 'Staked' (Stash
+            account, adding to the amount at stake), 'Stash' (Stash address, not
+            adding to the amount at stake), or 'Controller' (Controller address).
           format: ss58
           enum:
           - Staked
@@ -1046,7 +1045,7 @@ components:
           format: ss58
         numSlashingSpans:
           type: string
-          description: Number of slashing spans on Stash account; `null` if provided  address
+          description: Number of slashing spans on Stash account; `null` if provided address
             is not a Controller.
           format: unsignedInteger
         stakingLedger:
@@ -1267,7 +1266,7 @@ components:
           - Mandatory
         partialFee:
           type: string
-          description: Transaction fee, not including any tip.
+          description: The _inclusion fee_ of a transaction, i.e. the minimum fee required for a transaction. Includes weight and encoded length fees, but does not have access to any signed extensions, e.g. the `tip`.
           format: unsignedInteger
       description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
     Extrinsic:
@@ -1308,7 +1307,7 @@ components:
           type: boolean
           description: Whether the extrinsic requires a fee. Careful! This field relates
             to whether or not the extrinsic requires a fee if called as a transaction.
-            Block authors could insert  the extrinsic as an inherent in the block
+            Block authors could insert the extrinsic as an inherent in the block
             and not pay a fee. Always check that `paysFee` is `true` and that the
             extrinsic is signed when reconciling old blocks.
     BlockInitialize:
@@ -1328,7 +1327,7 @@ components:
           items:
             $ref: '#/components/schemas/SanitizedEvent'
       description: Object with an array of `SanitizedEvent`s that occurred during
-        block finalization with the `method` and `data` for each.
+        block construction finalization with the `method` and `data` for each.
     Block:
       type: object
       properties:
@@ -1389,7 +1388,7 @@ components:
           description: Node's implementation name.
         chain:
           type: string
-          description: Chain's name.
+          description: Chain's spec name.
       description: Version information of the node.
     NodeRole:
       type: string
@@ -1429,11 +1428,11 @@ components:
           $ref: '#/components/schemas/NodeRole'
         peers:
           type: string
-          description: Number of peers the node is connected too.
+          description: Number of peers the node is connected to.
           format: unsignedInteger
         isSyncing:
           type: boolean
-          description: Whether or not the node is actively catching up with the chain.
+          description: Whether or not the node is syncing. `False` indicates that the node is in sync.
         shouldHavePeers:
           type: boolean
           description: Whether or not the node should be connected to peers. Might be false
@@ -1666,7 +1665,7 @@ components:
         partialFee:
           type: string
           description: Expected inclusion fee for the transaction. Note that the fee
-            rate changes. up to 30% in a 24 hour period and this will not be the exact
+            rate changes up to 30% in a 24 hour period and this will not be the exact
             fee.
           format: unsignedInteger
       description: >-
