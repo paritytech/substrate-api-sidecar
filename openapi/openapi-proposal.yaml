@@ -137,7 +137,7 @@ paths:
           format: unsignedInteger
       - name: era
         in: query
-        description: The era to query at. Defaults to the `active_era` - 1.
+        description: The era to query at. Defaults to `active_era - 1`.
         required: false
         schema:
           type: string
