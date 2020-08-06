@@ -1143,7 +1143,8 @@ components:
           claimed:
             type: boolean
             description: Whether or not the reward has been claimed.
-        description: Payout information for a stash address.
+        description: Payout estimate for a nominating stash address and
+          information about the validator they were nominating.
     AccountStakingPayouts:
       type: array
       items:
