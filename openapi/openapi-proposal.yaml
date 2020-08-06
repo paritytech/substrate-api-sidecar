@@ -116,8 +116,8 @@ paths:
       description: Returns payout information for the last specified eras. If 
         specifying both the depth and era query params, this endpoint will 
         return information for (era - depth) through era. (i.e. if depth=5 and
-        era=20 information will be return for eras 16 through 20). N.B. non-archive 
-        nodes cannot query eras less then current era - history depth.
+        era=20 information will be returned for eras 16 through 20). N.B. non-archive 
+        nodes cannot query eras less then `active_era` - `HISTORY_DEPTH`.
       operationId: getStakingPayoutsByAccountId
       parameters:
       - name: accountId
@@ -137,7 +137,7 @@ paths:
           format: unsignedInteger
       - name: era
         in: query
-        description: The era to query at. Defaults to the active_era - 1.
+        description: The era to query at. Defaults to the `active_era` - 1.
         required: false
         schema:
           type: string
