@@ -63,7 +63,7 @@ export default class TransactionMaterialController extends AbstractController<
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.getTransactionMaterial(hash)
+			await this.service.fetchTransactionMaterial(hash)
 		);
 	};
 
@@ -82,7 +82,7 @@ export default class TransactionMaterialController extends AbstractController<
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.getTransactionMaterial(hash)
+			await this.service.fetchTransactionMaterial(hash)
 		);
 	};
 }

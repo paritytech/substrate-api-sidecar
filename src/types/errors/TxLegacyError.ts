@@ -4,8 +4,9 @@ import { IBasicLegacyError } from './BasicLegacyError';
  * Error from tx POST methods
  */
 export interface ITxLegacyError extends IBasicLegacyError {
-	data?: string; // extrinsic
-	cause: string;
+	data: string; // extrinsic
+	cause: string | unknown;
+	stack: string;
 }
 
 /**

@@ -4,7 +4,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import U32 from '@polkadot/types/primitive/U32';
 import { RegistryMetadata } from '@polkadot/types/types';
 
-import { kusamaRegistry } from '../test-helpers/testTools';
+import { kusamaRegistry } from '../test-helpers/registries';
 import { AbstractService } from './AbstractService';
 
 // TODO: switch these tests over to mockApi

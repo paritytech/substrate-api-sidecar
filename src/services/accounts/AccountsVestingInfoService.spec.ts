@@ -1,5 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi, testAddress } from '../mock/mockApi';
+import { blockHash789629, mockApi, testAddress } from '../test-helpers/mock';
+import * as response789629 from '../test-helpers/responses/accounts/vestingInfo789629.json';
 import { AccountsVestingInfoService } from './AccountsVestingInfoService';
 
 const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);
@@ -14,7 +15,7 @@ describe('AccountVestingInfoService', () => {
 						testAddress
 					)
 				)
-			);
+			).toStrictEqual(response789629);
 		});
 	});
 });

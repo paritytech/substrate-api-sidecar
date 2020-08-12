@@ -1,5 +1,5 @@
 import { MAX_U64, MAX_U128 } from '../test-helpers/constants';
-import { kusamaRegistry } from '../test-helpers/testTools';
+import { kusamaRegistry } from '../test-helpers/registries';
 
 /**
  * An 'at' object, which has not been sanitized by `sanitizeNumbers`.

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/testTools';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	activeEraAt,
 	blockHash789629,
 	erasStartSessionIndexAt,
 	mockApi,
-} from '../mock/mockApi';
-import * as palletsStakingProgress789629SResponse from './palletsStakingProgress789629.json';
+} from '../test-helpers/mock';
+import * as palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
 /**

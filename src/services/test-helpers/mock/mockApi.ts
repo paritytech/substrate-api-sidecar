@@ -1,41 +1,27 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types/codec';
 import {
+	AccountId,
 	ActiveEraInfo,
 	Block,
 	EraIndex,
+	Extrinsic,
 	Hash,
+	RuntimeDispatchInfo,
 	SessionIndex,
+	StakingLedger,
 } from '@polkadot/types/interfaces';
 
+import { decoratedPolkadotMetadata } from '../../../test-helpers/metadata/decorated';
+import { polkadotRegistry } from '../../../test-helpers/registries';
 import {
-	decoratedPolkadotMetadata,
-	polkadotRegistry,
-} from '../../test-helpers/testTools';
-import * as block789629 from './data/block789629.json';
+	balancesTransferValid,
+	blockHash789629,
+	mockBlock789629,
+	testAddressController,
+} from '.';
 import { events789629 } from './data/events789629Hex';
 import { validators789629Hex } from './data/validators789629Hex';
-
-/**
- * Mock for polkadot block #789629.
- */
-export const mockBlock789629 = polkadotRegistry.createType(
-	'Block',
-	block789629
-);
-
-/**
- * BlockHash for polkadot block #789629.
- */
-export const blockHash789629 = polkadotRegistry.createType(
-	'BlockHash',
-	'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
-);
-
-/**
- * Address to use with Accounts tests.
- */
-export const testAddress = `1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE`;
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -44,7 +30,7 @@ const eventsAt = (_hash: Hash) =>
 
 const chain = () =>
 	Promise.resolve().then(() => {
-		return polkadotRegistry.createType('Text', ' Polkadot');
+		return polkadotRegistry.createType('Text', 'Polkadot');
 	});
 
 export const getBlock = (_hash: Hash): Promise<{ block: Block }> =>
@@ -151,17 +137,75 @@ const accountAt = (_hash: Hash, _address: string) =>
 		)
 	);
 
+export const bondedAt = (
+	_hash: Hash,
+	_address: string
+): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<AccountId>', testAddressController)
+	);
+
 const vestingAt = (_hash: Hash, _address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<VestingInfo>', null)
 	);
 
+export const ledgerAt = (
+	_hash: Hash,
+	_address: string
+): Promise<Option<StakingLedger>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'Option<StakingLedger>',
+			'0x2c2a55b5e0d28cc772b47bb9b25981cbb69eca73f7c3388fb6464e7d24be470e0700e87648170700e8764817008c000000000100000002000000030000000400000005000000060000000700000008000000090000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d0000002e0000002f000000'
+		)
+	);
+
+const payeeAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RewardDestination', 'Controller')
+	);
+
+const slashingSpansAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('SlashingSpans'));
+
+// For getting the blockhash of the genesis block
+const getBlockHashGenesis = (_zero: number) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'BlockHash',
+			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+		)
+	);
+
+export const queryInfoBalancesTransfer = (
+	_extrinsic: string,
+	_hash: Hash
+): Promise<RuntimeDispatchInfo> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RuntimeDispatchInfo', {
+			weight: 195000000,
+			class: 'Normal',
+			partialFee: 149000000,
+		})
+	);
+
+export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
+	Promise.resolve().then(() => polkadotRegistry.createType('Hash'));
+
+const getFinalizedHead = () => Promise.resolve().then(() => blockHash789629);
+
+export const tx = (): Extrinsic =>
+	polkadotRegistry.createType('Extrinsic', balancesTransferValid);
+
 /**
- * Mock polkadot-js ApiPromise.
+ * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
+ * #789629, which is what most Service unit tests are based on.
  */
 export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
+	tx,
 	query: {
 		babe: {
 			currentSlot: { at: currentSlotAt },
@@ -182,6 +226,10 @@ export const mockApi = ({
 			activeEra: { at: activeEraAt },
 			erasStartSessionIndex: { at: erasStartSessionIndexAt },
 			unappliedSlashes: { at: unappliedSlashesAt },
+			bonded: { at: bondedAt },
+			ledger: { at: ledgerAt },
+			payee: { at: payeeAt },
+			slashingSpans: { at: slashingSpansAt },
 		},
 		system: {
 			events: { at: eventsAt },
@@ -221,6 +269,8 @@ export const mockApi = ({
 		chain: {
 			getHeader,
 			getBlock,
+			getBlockHash: getBlockHashGenesis,
+			getFinalizedHead,
 		},
 		state: {
 			getRuntimeVersion,
@@ -228,6 +278,12 @@ export const mockApi = ({
 		},
 		system: {
 			chain,
+		},
+		payment: {
+			queryInfo: queryInfoBalancesTransfer,
+		},
+		author: {
+			submitExtrinsic,
 		},
 	},
 	derive: {

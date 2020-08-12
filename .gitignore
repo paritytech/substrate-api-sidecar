@@ -5,7 +5,7 @@
 yarn-error.log
 **/*.rs.bk
 .env.*
-!.env-sample
+!.env.local
+!.env.docker
 .DS_Store
-/coverage
 /.clinic

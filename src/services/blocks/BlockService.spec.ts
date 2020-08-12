@@ -5,16 +5,19 @@ import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { createCall, kusamaRegistry } from '../../test-helpers/testTools';
-import { polkadotRegistry } from '../../test-helpers/testTools';
-import * as block789629 from '../mock/data/block789629.json';
+import { createCall } from '../../test-helpers/createCall';
+import {
+	kusamaRegistry,
+	polkadotRegistry,
+} from '../../test-helpers/registries';
 import {
 	blockHash789629,
 	getBlock,
 	mockApi,
 	mockBlock789629,
-} from '../mock/mockApi';
-import * as blocks789629Response from './blocks789629.json';
+} from '../test-helpers/mock';
+import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**
