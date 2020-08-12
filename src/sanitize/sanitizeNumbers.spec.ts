@@ -104,13 +104,22 @@ describe('sanitizeNumbers', () => {
 				expect(sanitizeNumbers(new Number(MAX_U128))).toStrictEqual({});
 			});
 
-			it('does not handle BigInt', () => {
+			it('handles BigInt but outputs to console.errors because not convert to AnyJson', () => {
 				const temp = console.error;
-				console.error = jest.fn(); // silence expected console.error
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+				console.error = jest.fn();
 				expect(sanitizeNumbers(BigInt(MAX_U128))?.toString()).toBe(
 					'340282366920938463463374607431768211455'
 				);
+				expect(console.error).toHaveBeenCalled();
+				console.error = temp;
+			});
+
+			it('handles Symbol but outputs to console.error because does not convert to AnyJson', () => {
+				const temp = console.error;
+				console.error = jest.fn();
+				const s = Symbol('sym');
+				expect(sanitizeNumbers(s)?.toString()).toEqual('Symbol(sym)');
+				expect(console.error).toHaveBeenCalled();
 				console.error = temp;
 			});
 
@@ -137,12 +146,6 @@ describe('sanitizeNumbers', () => {
 			).toStrictEqual([MAX_U128, MAX_U64]);
 
 			expect(sanitizeNumbers(new Array(2))).toStrictEqual(new Array(2));
-		});
-
-		it('handles Symbol', () => {
-			const s = Symbol('sym');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-			expect(sanitizeNumbers(s)?.toString()).toEqual('Symbol(sym)');
 		});
 
 		it('converts nested POJO', () => {
@@ -951,7 +954,7 @@ describe('sanitizeNumbers', () => {
 		it('handles ExtrinsicEra', () => {
 			const extrinsicEra = new ExtrinsicEra(kusamaRegistry, '0x6502');
 			expect(sanitizeNumbers(extrinsicEra)).toStrictEqual({
-				MortalEra: '0x6502',
+				MortalEra: ['64', '38'],
 			});
 		});
 

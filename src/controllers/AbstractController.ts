@@ -5,13 +5,14 @@ import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
 import { AbstractService } from 'src/services/AbstractService';
+import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
 	IAddressParam,
 	INumberParam,
 } from 'src/types/requests';
 
-import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
+import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 
 type SidecarRequestHandler =
@@ -171,10 +172,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param res Response
 	 * @param body response body
 	 */
-	static sanitizedSend<T = unknown>(res: Response<T>, body: T): void {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const sanitizedBody = sanitizeNumbers(body);
-
-		res.send(sanitizedBody);
+	static sanitizedSend<T>(res: Response<AnyJson>, body: T): void {
+		res.send(sanitizeNumbers(body));
 	}
 }
