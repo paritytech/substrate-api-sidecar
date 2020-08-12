@@ -165,9 +165,7 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 	}
 
 	if (!isAnyJson(data)) {
-		// TODO Should we throw an error here?
-		// Alternatively this could not guarantee AnyJson as a return type and
-		// instead have `unknown` for return type
+		// TODO this may be removed in the future
 		console.error('data could not be forced to `AnyJson` `sanitizeNumber`');
 		console.error(data);
 	}
