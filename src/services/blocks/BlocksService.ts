@@ -192,7 +192,7 @@ export class BlocksService extends AbstractService {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
-				args: BlocksService.parseGenericCall(method).args,
+				args: this.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -353,7 +353,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param argsArray array of `Codec` values
 	 */
-	private static parseArrayGenericCalls(
+	private parseArrayGenericCalls(
 		argsArray: Codec[]
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
@@ -372,7 +372,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param genericCall `GenericCall`
 	 */
-	private static parseGenericCall(genericCall: GenericCall): ISanitizedCall {
+	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
@@ -389,6 +389,14 @@ export class BlocksService extends AbstractService {
 					newArgs[paramName] = this.parseArrayGenericCalls(argument);
 				} else if (argument instanceof GenericCall) {
 					newArgs[paramName] = this.parseGenericCall(argument);
+				} else if (
+					paramName === 'call' &&
+					argument?.toRawType() === 'Bytes'
+				) {
+					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
+					// serialize to a polkadot-js Call and parse so it is not a hex blob.
+					const call = this.api.createType('Call', argument.toHex());
+					newArgs[paramName] = this.parseGenericCall(call);
 				} else {
 					newArgs[paramName] = argument;
 				}
