@@ -4,7 +4,13 @@ import { stringCamelCase } from '@polkadot/util';
 
 import { decoratedKusamaMetadata } from './metadata/decorated';
 
-type CallArgValues = string | number | Codec | Call | CallArgValues[];
+type CallArgValues =
+	| string
+	| number
+	| Codec
+	| Call
+	| CallArgValues[]
+	| Uint8Array;
 type CallArgs = { [i: string]: CallArgValues | CallArgs };
 
 /**
