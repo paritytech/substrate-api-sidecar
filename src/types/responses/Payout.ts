@@ -1,13 +1,13 @@
-import { Balance } from '@polkadot/types/interfaces';
-import { Big } from 'big.js';
+import { Balance, Perbill, RewardPoint } from '@polkadot/types/interfaces';
+import * as BN from 'bn.js';
 
 export interface IPayout {
 	validatorId: string;
-	nominatorPayoutEstimate: Big;
-	validatorTotalPayoutEstimate: Big;
+	nominatorPayoutEstimate: BN;
+	validatorTotalPayoutEstimate: BN;
 	claimed: boolean;
-	validatorCommission: Big;
-	validatorRewardPoints: string;
+	validatorCommission: Perbill;
+	validatorRewardPoints: RewardPoint;
 	totalValidatorExposure: Balance;
 	nominatorExposure: Balance;
 }

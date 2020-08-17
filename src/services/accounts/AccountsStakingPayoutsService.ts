@@ -1,13 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
 import { DeriveEraExposure } from '@polkadot/api-derive/staking/types';
-import { Compact } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import {
 	EraRewardPoints,
 	Perbill,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
-import { Big } from 'big.js';
 import * as BN from 'bn.js';
 import { BadRequest } from 'http-errors';
 
@@ -19,6 +17,8 @@ import {
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingPayoutsService extends AbstractService {
+	private readonly oneBillion = new BN(1_000_000_000);
+
 	/**
 	 * Fetch and derive payouts for `address`.
 	 *
@@ -137,7 +137,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		const totalEraRewardPoints = eraRewardPoints.total;
 
-		// Cache StakingLedger to reduce redundant queries to node.
+		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: StakingLedger } = {};
 
 		// Payouts for the era
@@ -154,7 +154,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				!validatorRewardPoints ||
 				validatorRewardPoints?.toNumber() === 0
 			) {
-				// Nothing to do if their are no reward points for validator
+				// Nothing to do if there are no reward points for validator
 				continue;
 			}
 
@@ -169,19 +169,25 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			// This is the fraction of the total reward that the validator and the
-			// nominators will get.
-			const validatorTotalRewardPart = new Big(
-				validatorRewardPoints.toString(10)
-			).div(new Big(totalEraRewardPoints.toString(10)));
+			const validatorRewardPointsPerbill = validatorRewardPoints.mul(
+				this.oneBillion
+			);
+			const totalEraRewardPointsPerbill = totalEraRewardPoints.mul(
+				this.oneBillion
+			);
+			// This is the fraction of the total reward that the validator and the nominators will get
+			const validatorTotalRewardPartPerbill = validatorRewardPointsPerbill.div(
+				totalEraRewardPointsPerbill
+			);
 
-			// This is how much validator + nominators are entitled to.
-			const validatorTotalPayout = new Big(validatorTotalRewardPart).mul(
-				new Big(eraPayout.toString(10))
+			const eraPayoutPerbill = eraPayout.mul(this.oneBillion);
+			// This is how much validator + nominators are entitled to
+			const validatorTotalPayoutPerbill = validatorTotalRewardPartPerbill.mul(
+				eraPayoutPerbill
 			);
 
 			const {
-				commission,
+				commission: commissionPerbill,
 				validatorLedger,
 			} = await this.fetchCommissionAndLedger(
 				api,
@@ -201,43 +207,48 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			// Get the validators commission as a decimal so we can multiply it as a percent
-			// Commission is a PerBill (per billion)
-			const commissionDecimal = new Big(
-				commission.unwrap().toString(10)
-			).div(new Big(1_000_000_000));
-
 			// Calculate validators cut off the top
-			const validatorCommissionPayout = commissionDecimal.mul(
-				validatorTotalPayout
+			const validatorCommissionPayoutPerbill = commissionPerbill.mul(
+				validatorTotalPayoutPerbill
 			);
 			// This is whats left after subtracting commission
-			const validatorLeftoverPayout = validatorTotalPayout.sub(
-				validatorCommissionPayout
+			const validatorLeftoverPayoutPerbill = validatorTotalPayoutPerbill.sub(
+				validatorCommissionPayoutPerbill
 			);
 
 			// Calculate the payout for `address`
-			const nominatorExposurePart = new Big(
-				nominatorExposure.unwrap().toString(10)
-			).div(new Big(totalExposure.unwrap().toString(10)));
-			const nominatorLeftoverPayout = nominatorExposurePart.mul(
-				validatorLeftoverPayout
+			const nominatorExposurePerbill = nominatorExposure
+				.unwrap()
+				.mul(this.oneBillion);
+			const totalExposurePerbill = totalExposure
+				.unwrap()
+				.mul(this.oneBillion);
+			const nominatorExposurePartPerbill = nominatorExposurePerbill.div(
+				totalExposurePerbill
 			);
+			const nominatorLeftoverPayoutPerbill = nominatorExposurePartPerbill.mul(
+				validatorLeftoverPayoutPerbill
+			);
+
 			// Add commission if address is validator
 			const nominatorPayoutEstimate =
 				address === validatorId
-					? nominatorLeftoverPayout.add(validatorCommissionPayout)
-					: nominatorLeftoverPayout;
+					? nominatorLeftoverPayoutPerbill.add(
+							validatorCommissionPayoutPerbill
+					  )
+					: nominatorLeftoverPayoutPerbill;
 
 			payouts.push({
 				validatorId,
-				nominatorPayoutEstimate,
-				validatorTotalPayoutEstimate: validatorTotalPayout, // TODO change names
-				claimed,
-				validatorRewardPoints: new BN(validatorRewardPoints).toString(
-					10
+				nominatorPayoutEstimate: nominatorPayoutEstimate.div(
+					this.oneBillion
 				),
-				validatorCommission: commissionDecimal,
+				validatorTotalPayoutEstimate: validatorTotalPayoutPerbill.div(
+					this.oneBillion
+				), // TODO change names
+				claimed,
+				validatorRewardPoints: validatorRewardPoints,
+				validatorCommission: commissionPerbill,
 				totalValidatorExposure: totalExposure.unwrap(),
 				nominatorExposure: nominatorExposure.unwrap(),
 			});
@@ -254,7 +265,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * Fetch the `commission` and `StakingLedger` of `validatorId`.
 	 *
 	 * @param api
-	 * @param validatorId accountId of the validator's _Stash_  account
+	 * @param validatorId accountId of a validator's _Stash_  account
 	 * @param era the era to query
 	 * @param hash `BlockHash` to make call at
 	 * @param validatorLedgerCache object mapping validatorId => StakingLedger to limit redundant queries
@@ -266,7 +277,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		hash: BlockHash,
 		validatorLedgerCache: { [id: string]: StakingLedger }
 	): Promise<{
-		commission: Compact<Perbill>;
+		commission: Perbill;
 		validatorLedger?: StakingLedger;
 	}> {
 		let commission;
@@ -278,14 +289,14 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				validatorId
 			);
 
-			commission = prefs.commission;
+			commission = prefs.commission.unwrap();
 		} else {
 			const [prefs, validatorControllerOption] = await Promise.all([
 				api.query.staking.erasValidatorPrefs.at(hash, era, validatorId),
 				api.query.staking.bonded.at(hash, validatorId),
 			]);
 
-			commission = prefs.commission;
+			commission = prefs.commission.unwrap();
 
 			if (validatorControllerOption.isNone) {
 				return {
@@ -316,13 +327,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * Extract the reward points of `validatorId` from `EraRewardPoints`.
 	 *
 	 * @param eraRewardPoints
-	 * @param validatorId accountId of the validator's _Stash_  account
+	 * @param validatorId accountId of a validator's _Stash_  account
 	 * */
 	private extractValidatorRewardPoints(
 		eraRewardPoints: EraRewardPoints,
 		validatorId: string
 	) {
-		// Ideally we would just use the map's `get`, but since AccountId is an object we can't
+		// Ideally we would just use the map's `get`, but since the key, AccountId, is an object we can't
 		for (const [id, points] of eraRewardPoints.individual.entries()) {
 			if (id.toString() === validatorId) {
 				return points;
@@ -337,7 +348,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * from polkadot-js's `deriveEraExposure`.
 	 *
 	 * @param address address of the _Stash_  account to get the exposure of behind `validatorId`
-	 * @param validatorId accountId of the validator's _Stash_  account
+	 * @param validatorId accountId of a validator's _Stash_  account
 	 * @param deriveEraExposure
 	 */
 	private extractExposure(
