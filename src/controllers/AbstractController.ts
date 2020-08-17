@@ -115,7 +115,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 			// Not a block hash, must be a block height
 			try {
-				blockNumber = this.parseBlockNumber(blockId);
+				blockNumber = this.parseNumberOrThrow(
+					blockId,
+					'Invalid block number'
+				);
 			} catch (err) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` +
@@ -155,14 +158,33 @@ export default abstract class AbstractController<T extends AbstractService> {
 		}
 	}
 
-	private parseBlockNumber(n: string): number {
+	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
 		if (!Number.isInteger(num) || num < 0) {
-			throw new BadRequest('Invalid block number');
+			throw new BadRequest(errorMessage);
 		}
 
 		return num;
+	}
+
+	protected verifyAndCastOr(
+		name: string,
+		str: unknown,
+		or: number | undefined
+	): number | undefined {
+		if (!str) {
+			return or;
+		}
+
+		if (!(typeof str === 'string')) {
+			throw `Incorrect argument quantity or type passed in for ${name} query param`;
+		}
+
+		return this.parseNumberOrThrow(
+			str,
+			`${name} query param is an invalid number`
+		);
 	}
 
 	/**
