@@ -15,7 +15,7 @@ import AbstractController from '../AbstractController';
  *
  * Query
  * - (Optional) `noMeta`: If true, does not return metadata hex. This is useful when metadata is not
- * needed and response time is concern. Defaults to false.
+ * needed and response time is a concern. Defaults to false.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
