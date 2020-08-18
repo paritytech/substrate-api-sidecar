@@ -11,13 +11,11 @@ export class NodeNetworkService extends AbstractService {
 			localPeerId,
 			nodeRoles,
 			localListenAddresses,
-			// systemPeers,
 		] = await Promise.all([
 			api.rpc.system.health(),
 			api.rpc.system.localPeerId(),
 			api.rpc.system.nodeRoles(),
 			api.rpc.system.localListenAddresses(),
-			// api.rpc.system.peers(),
 		]);
 
 		console.log(await api.rpc.system.peers());
@@ -29,7 +27,6 @@ export class NodeNetworkService extends AbstractService {
 			shouldHavePeers,
 			localPeerId,
 			localListenAddresses,
-			// systemPeers,
 		};
 	}
 }

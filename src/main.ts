@@ -67,6 +67,7 @@ async function main() {
 	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
 	const nodeNetworkController = new controllers.NodeNetwork(api);
+	const nodeVersionController = new controllers.NodeVersion(api);
 	const claimsController = new controllers.Claims(api);
 	const txArtifactsController = new controllers.TransactionMaterial(api);
 	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
@@ -83,6 +84,7 @@ async function main() {
 			vestingController,
 			metadataController,
 			nodeNetworkController,
+			nodeVersionController,
 			claimsController,
 			txArtifactsController,
 			txFeeEstimateController,
