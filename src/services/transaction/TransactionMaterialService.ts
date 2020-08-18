@@ -12,11 +12,11 @@ export class TransactionMaterialService extends AbstractService {
 	 */
 	async fetchTransactionMaterial(
 		hash: BlockHash,
-		noMeta?: string
+		noMeta: boolean
 	): Promise<ITransactionMaterial> {
 		const api = await this.ensureMeta(hash);
 
-		if (noMeta === 'true') {
+		if (noMeta) {
 			const [header, genesisHash, name, version] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				api.rpc.chain.getBlockHash(0),

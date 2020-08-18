@@ -11,7 +11,8 @@ describe('TransactionMaterialService', () => {
 			expect(
 				sanitizeNumbers(
 					await transactionMaterialService.fetchTransactionMaterial(
-						blockHash789629
+						blockHash789629,
+						false
 					)
 				)
 			).toStrictEqual(response789629);
