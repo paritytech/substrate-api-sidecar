@@ -13,6 +13,10 @@ import AbstractController from '../AbstractController';
  * - (Optional) `number`: Block hash or number at which to query. If not provided, queries
  *   finalized head.
  *
+ * Query
+ * - (Optional) `noMeta`: If true, does not return metadata hex. This is useful when metadata is not
+ * needed and response time is concern. Defaults to false.
+ *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
  * - `genesisHash`: The hash of the chain's genesis block.
@@ -56,14 +60,16 @@ export default class TransactionMaterialController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getTxArtifacts: RequestHandler = async (
-		_req,
+		{ query: { noMeta } },
 		res
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
+		const noMetaArg = noMeta === 'true' ? noMeta : undefined;
+
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(hash)
+			await this.service.fetchTransactionMaterial(hash, noMetaArg)
 		);
 	};
 
@@ -75,14 +81,16 @@ export default class TransactionMaterialController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getTxArtifactsAtBlock: RequestHandler<INumberParam> = async (
-		{ params: { number } },
+		{ params: { number }, query: { noMeta } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
+		const noMetaArg = noMeta === 'true' ? noMeta : undefined;
+
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(hash)
+			await this.service.fetchTransactionMaterial(hash, noMetaArg)
 		);
 	};
 }
