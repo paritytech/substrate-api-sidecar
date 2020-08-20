@@ -1,4 +1,4 @@
-mod debug;
+use crate::debug;
 
 use core::str::FromStr;
 use log::info;
@@ -12,17 +12,19 @@ type RewardPoint = u32;
 #[derive(Debug)]
 pub struct CalcPayout {
     total_reward_points: RewardPoint,
+    era_payout: Balance,
 }
 
 #[wasm_bindgen]
 impl CalcPayout {
-    pub fn from_params(total_reward_points: &str) -> CalcPayout {
+    pub fn from_params(total_reward_points: u32, era_payout: &str) -> Self {
         debug::setup();
 
-        info!("from_params({}) -> ", total_reward_points);
+        info!("from_params({}, {}) -> ", total_reward_points, era_payout);
 
         let calc_payout = Self {
-            total_reward_points: RewardPoint::from_str(total_reward_points).unwrap(),
+            total_reward_points: total_reward_points as RewardPoint,
+            era_payout: Balance::from_str(era_payout).unwrap(),
         };
 
         info!("calc_payout: {:#?}", calc_payout);
@@ -33,8 +35,7 @@ impl CalcPayout {
     pub fn calc_payout(
         &self,
         validator_reward_points: RewardPoint,
-        era_payout: &str,
-        validator_commission: &str,
+        validator_commission: u32,
         nominator_exposure: &str,
         total_exposure: &str,
         is_validator: bool,
@@ -42,9 +43,8 @@ impl CalcPayout {
         debug::setup();
 
         info!(
-            "calc_payout: ({}, {}, {}, {}, {}, {}) -> ",
+            "calc_payout: ({}, {}, {}, {}, {}) -> ",
             validator_reward_points,
-            era_payout,
             validator_commission,
             nominator_exposure,
             total_exposure,
@@ -56,12 +56,10 @@ impl CalcPayout {
         let validator_total_reward_part =
             Perbill::from_rational_approximation(validator_reward_points, self.total_reward_points);
 
-        let era_payout = Balance::from_str(era_payout).unwrap();
         // This is how much validator + nominators are entitled to.
-        let validator_total_payout = validator_total_reward_part * era_payout;
+        let validator_total_payout = validator_total_reward_part * self.era_payout;
 
-        let validator_commission =
-            Perbill::from_parts(u32::from_str(validator_commission).unwrap());
+        let validator_commission = Perbill::from_parts(validator_commission);
         let validator_commission_payout = validator_commission * validator_total_payout;
 
         let validator_leftover_payout = validator_total_payout - validator_commission_payout;
@@ -88,10 +86,6 @@ impl CalcPayout {
             own_staking_payout
         );
 
-        format!(
-            "{}-{}",
-            validator_total_payout.to_string(),
-            own_staking_payout.to_string()
-        )
+        own_staking_payout.to_string()
     }
 }

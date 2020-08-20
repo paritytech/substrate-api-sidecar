@@ -6,7 +6,7 @@ import {
 	Perbill,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
-import { CalcPayout } from '@substrate/calc-payout';
+import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import {
@@ -131,9 +131,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				message: `No ErasValidatorReward for the era ${era}`,
 			};
 		}
-		const eraPayout = erasValidatorRewardOption.unwrap();
-
-		const totalEraRewardPoints = eraRewardPoints.total;
 
 		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: StakingLedger } = {};
@@ -141,8 +138,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		// Payouts for the era
 		const payouts: IPayout[] = [];
 
+		const totalEraRewardPoints = eraRewardPoints.total;
+		const totalEraPayout = erasValidatorRewardOption.unwrap();
 		const calcPayout = CalcPayout.from_params(
-			totalEraRewardPoints.toString(10)
+			totalEraRewardPoints.toNumber(),
+			totalEraPayout.toString(10)
 		);
 
 		// Loop through validators that this nominator backs
@@ -192,25 +192,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const [
-				validatorTotalPayout,
-				ownStakingPayout,
-			] = calcPayout
-				.calc_payout(
-					validatorRewardPoints.toNumber(),
-					eraPayout.toString(10),
-					validatorCommission.toString(10),
-					ownExposure.unwrap().toString(10),
-					totalExposure.unwrap().toString(),
-					address === validatorId
-				)
-				.split('-');
+			const ownStakingPayout = calcPayout.calc_payout(
+				validatorRewardPoints.toNumber(),
+				validatorCommission.toNumber(),
+				ownExposure.unwrap().toString(10),
+				totalExposure.unwrap().toString(10),
+				address === validatorId
+			);
 
 			payouts.push({
 				validatorId,
 				ownStakingPayout,
 				claimed,
-				validatorTotalPayout,
 				validatorRewardPoints,
 				validatorCommission,
 				totalValidatorExposure: totalExposure.unwrap(),
@@ -221,6 +214,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		return {
 			era: eraIndex,
 			totalEraRewardPoints,
+			totalEraPayout,
 			payouts,
 		};
 	}

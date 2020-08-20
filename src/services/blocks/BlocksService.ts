@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { CalcFee } from '@polkadot/calc-fee';
 import { Struct } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types';
 import {
@@ -12,6 +11,7 @@ import {
 import { AnyJson, Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import { CalcFee } from '@substrate/calc';
 
 import {
 	IBlock,
