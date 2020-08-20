@@ -31,7 +31,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		address: string,
 		depth: number,
 		era: number,
-		unclaimedOnly: boolean
+		unclaimedOnly: boolean,
+		currentEra: number
 	): Promise<IAccountStakingPayouts> {
 		const api = await this.ensureMeta(hash);
 
@@ -40,12 +41,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			api.query.staking.historyDepth.at(hash),
 		]);
 
+		// Information is kept for eras in `[current_era - history_depth; current_era]`
 		if (depth > historyDepth.toNumber()) {
 			throw new BadRequest(
-				'Must specify a depth less than or equal to history depth'
+				'Must specify a depth less than history depth'
 			);
 		}
-
+		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {
+			// In scenarios where depth is not > historyDepth, but theye specify an era
+			// and historyDepth combo that would lead to querying eras older than history depth
+			throw new BadRequest(
+				'Must specify era and depth such that era - (depth - 1) is less ' +
+					'than or equal to current_era - history_depth.'
+			);
+		}
 		const at = {
 			height: number.unwrap().toString(10),
 			hash,

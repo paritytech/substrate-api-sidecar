@@ -122,7 +122,7 @@ paths:
       parameters:
       - name: accountId
         in: path
-        description: SS58 address of the account.
+        description: SS58 address of the account. Must be a _stash_ account.
         required: true
         schema:
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
@@ -130,7 +130,8 @@ paths:
       - name: depth
         in: query
         description: The number of eras to query for payouts of. Must be less
-          than or equal to `HISTORY_DEPTH`.
+          than or equal to `HISTORY_DEPTH`. In cases where `era - (depth -1)` is 
+          less than 0, the first era queried will be 0.
         required: false
         schema:
           type: string
@@ -1146,14 +1147,11 @@ components:
           ownStakingPayout:
             type: string
             format: unsignedInteger
-            description: Estimated payout for the accountId the query was made for.
+            description: Payout for the reward destination associated with the
+              accountId the query was made for.
           claimed:
             type: boolean
             description: Whether or not the reward has been claimed.
-          validatorTotalPayout:
-            type: string
-            format: unsignedInteger
-            description: Estimated total payout for the validator and its nominators.
           validatorRewardPoints:
             type: string
             format: unsignedInteger
@@ -1192,6 +1190,11 @@ components:
                 format: unsignedInteger
                 description: Total reward points for the era. Equals the sum of
                   reward points for all the validators in the set.
+              totalEraPayout:
+                type: string
+                format: unsignedInteger
+                description: Total payout for the era. Validators split the payout
+                  based on the portion of totalEraRewardPoints they have.
               payouts:
                 $ref: '#/components/schemas/Payouts'
     VestingSchedule:
