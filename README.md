@@ -65,16 +65,12 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 
 ## Fee Calculation & Payout Calculation Debugging
 
-It is possible to get more information about the fee or payout calculation process logged to
+It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
 a re-compile with the proper environment variable set is necessary:
 
 ```bash
-# calc-fee logging
-FEE_DEBUG=1 yarn
-
-# calc-payout logging
-PAYOUT_DEBUG=1 yarn
+CALC_DEBUG=1 yarn
 ```
 
 ## Available paths
