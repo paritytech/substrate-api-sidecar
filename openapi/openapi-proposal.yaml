@@ -116,8 +116,8 @@ paths:
       description: Returns payout information for the last specified eras. If
         specifying both the depth and era query params, this endpoint will
         return information for (era - depth) through era. (i.e. if depth=5 and
-        era=20 information will be returned for eras 16 through 20). N.B. non-archive
-        nodes cannot query eras less then `current_era - HISTORY_DEPTH`.
+        era=20 information will be returned for eras 16 through 20). N.B. You
+        cannot query eras less then `current_era - HISTORY_DEPTH`.
       operationId: getStakingPayoutsByAccountId
       parameters:
       - name: accountId
@@ -138,11 +138,12 @@ paths:
           default: 1
       - name: era
         in: query
-        description: The era to query at. Defaults to `active_era - 1`.
+        description: The era to query at.
         required: false
         schema:
           type: string
           format: unsignedInteger
+          default: '`active_era - 1`'
       - name: unclaimedOnly
         in: query
         description: Only return unclaimed rewards.
@@ -1139,42 +1140,60 @@ components:
       items:
         type: object
         properties:
-          rewardEstimate:
-            type: string
-            format: unsignedInteger
-            description: Reward for the accountId the query was made for.
-          validator:
+          validatorId:
             type: string
             description: AccountId of the validator the payout is coming from.
-          validatorRewardPoints:
+          ownStakingPayout:
             type: string
             format: unsignedInteger
-            description: Reward points earned by the given validator.
+            description: Estimated payout for the accountId the query was made for.
           claimed:
             type: boolean
             description: Whether or not the reward has been claimed.
+          validatorTotalPayout:
+            type: string
+            format: unsignedInteger
+            description: Estimated total payout for the validator and its nominators.
+          validatorRewardPoints:
+            type: string
+            format: unsignedInteger
+            description: Amount of reward points earned by the validator.
+          validatorCommission:
+            type: string
+            format: unsignedInteger
+            description: The percentage of the total payout that the validator takes as commission.
+              N.B. This is a Perbill.
+          totalValidatorExposure:
+            type: string
+            format: unsignedInteger
+            description: The sum of the validator's and its nominators stake.
+          ownExposure:
+            type: string
+            format: unsignedInteger
+            description: The amount of stake the nominator has behind the validator.
         description: Payout estimate for a nominating stash address and
           information about the validator they were nominating.
     AccountStakingPayouts:
-      type: array
-      items:
-        type: object
-        properties:
-          era:
-            type: string
-            format: unsignedInteger
-            description: Era this information is associated with.
-          totalRewardPoints:
-            type: string
-            format: unsignedInteger
-            description: Total reward points for the era. Equals the sum of
-              reward points for each validator.
-          validatorCount:
-            type: string
-            format: unsignedInteger
-            description: Size of validator set in the given era.
-          payouts:
-            $ref: '#/components/schemas/Payouts'
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        erasPayouts:
+          type: array
+          items:
+            type: object
+            properties:
+              era:
+                type: string
+                format: unsignedInteger
+                description: Era this information is associated with.
+              totalEraRewardPoints:
+                type: string
+                format: unsignedInteger
+                description: Total reward points for the era. Equals the sum of
+                  reward points for all the validators in the set.
+              payouts:
+                $ref: '#/components/schemas/Payouts'
     VestingSchedule:
       type: object
       properties:

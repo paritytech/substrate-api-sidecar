@@ -643,6 +643,9 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@substrate/calc-payout@file:./calc-payout/pkg":
+  version "0.1.0"
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.9.tgz#77e59d438522a6fb898fa43dc3455c6e72f3963d"

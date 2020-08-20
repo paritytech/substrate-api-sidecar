@@ -6,7 +6,7 @@ import {
 	Perbill,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
-import * as BN from 'bn.js';
+import { CalcPayout } from '@substrate/calc-payout';
 import { BadRequest } from 'http-errors';
 
 import {
@@ -17,8 +17,6 @@ import {
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingPayoutsService extends AbstractService {
-	private readonly oneBillion = new BN(1_000_000_000);
-
 	/**
 	 * Fetch and derive payouts for `address`.
 	 *
@@ -143,6 +141,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		// Payouts for the era
 		const payouts: IPayout[] = [];
 
+		const calcPayout = CalcPayout.from_params(
+			totalEraRewardPoints.toString(10)
+		);
+
 		// Loop through validators that this nominator backs
 		for (const { validatorId } of nominatedExposures) {
 			const validatorRewardPoints = this.extractValidatorRewardPoints(
@@ -158,36 +160,19 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const { totalExposure, nominatorExposure } = this.extractExposure(
+			const { totalExposure, ownExposure } = this.extractExposure(
 				address,
 				validatorId,
 				deriveEraExposure
 			);
 
-			if (nominatorExposure === undefined) {
+			if (ownExposure === undefined) {
 				// This should not happen once at this point, but here for safety
 				continue;
 			}
 
-			const validatorRewardPointsPerbill = validatorRewardPoints.mul(
-				this.oneBillion
-			);
-			const totalEraRewardPointsPerbill = totalEraRewardPoints.mul(
-				this.oneBillion
-			);
-			// This is the fraction of the total reward that the validator and the nominators will get
-			const validatorTotalRewardPartPerbill = validatorRewardPointsPerbill.div(
-				totalEraRewardPointsPerbill
-			);
-
-			const eraPayoutPerbill = eraPayout.mul(this.oneBillion);
-			// This is how much validator + nominators are entitled to
-			const validatorTotalPayoutPerbill = validatorTotalRewardPartPerbill.mul(
-				eraPayoutPerbill
-			);
-
 			const {
-				commission: commissionPerbill,
+				commission: validatorCommission,
 				validatorLedger,
 			} = await this.fetchCommissionAndLedger(
 				api,
@@ -207,50 +192,29 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			// Calculate validators cut off the top
-			const validatorCommissionPayoutPerbill = commissionPerbill.mul(
-				validatorTotalPayoutPerbill
-			);
-			// This is whats left after subtracting commission
-			const validatorLeftoverPayoutPerbill = validatorTotalPayoutPerbill.sub(
-				validatorCommissionPayoutPerbill
-			);
-
-			// Calculate the payout for `address`
-			const nominatorExposurePerbill = nominatorExposure
-				.unwrap()
-				.mul(this.oneBillion);
-			const totalExposurePerbill = totalExposure
-				.unwrap()
-				.mul(this.oneBillion);
-			const nominatorExposurePartPerbill = nominatorExposurePerbill.div(
-				totalExposurePerbill
-			);
-			const nominatorLeftoverPayoutPerbill = nominatorExposurePartPerbill.mul(
-				validatorLeftoverPayoutPerbill
-			);
-
-			// Add commission if address is validator
-			const nominatorPayoutEstimate =
-				address === validatorId
-					? nominatorLeftoverPayoutPerbill.add(
-							validatorCommissionPayoutPerbill
-					  )
-					: nominatorLeftoverPayoutPerbill;
+			const [
+				validatorTotalPayout,
+				ownStakingPayout,
+			] = calcPayout
+				.calc_payout(
+					validatorRewardPoints.toNumber(),
+					eraPayout.toString(10),
+					validatorCommission.toString(10),
+					ownExposure.unwrap().toString(10),
+					totalExposure.unwrap().toString(),
+					address === validatorId
+				)
+				.split('-');
 
 			payouts.push({
 				validatorId,
-				nominatorPayoutEstimate: nominatorPayoutEstimate.div(
-					this.oneBillion
-				),
-				validatorTotalPayoutEstimate: validatorTotalPayoutPerbill.div(
-					this.oneBillion
-				), // TODO change names
+				ownStakingPayout,
 				claimed,
-				validatorRewardPoints: validatorRewardPoints,
-				validatorCommission: commissionPerbill,
+				validatorTotalPayout,
+				validatorRewardPoints,
+				validatorCommission,
 				totalValidatorExposure: totalExposure.unwrap(),
-				nominatorExposure: nominatorExposure.unwrap(),
+				ownExposure: ownExposure.unwrap(),
 			});
 		}
 
@@ -363,20 +327,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const exposureAllNominators =
 			deriveEraExposure.validators[validatorId].others;
 
-		const nominatorExposure =
+		const ownExposure =
 			address === validatorId // validator is also the nominator we are getting payouts for
 				? deriveEraExposure.validators[address].own
 				: exposureAllNominators.find(
 						(exposure) => exposure.who.toString() === address
 				  )?.value;
 
-		if (nominatorExposure === undefined) {
+		if (ownExposure === undefined) {
 			return { totalExposure };
 		}
 
 		return {
 			totalExposure,
-			nominatorExposure,
+			ownExposure,
 		};
 	}
 }
