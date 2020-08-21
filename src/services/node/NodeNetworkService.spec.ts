@@ -6,7 +6,7 @@ import { NodeNetworkService } from '.';
 const nodeNetworkService = new NodeNetworkService(mockApi);
 
 describe('NodeNetworkService', () => {
-	describe('getNodeNetworking', () => {
+	describe('fetchNetwork', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
 				sanitizeNumbers(

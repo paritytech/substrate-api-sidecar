@@ -5,7 +5,7 @@ import { NodeTransactionPoolService } from '.';
 const nodeTranstionPoolService = new NodeTransactionPoolService(mockApi);
 
 describe('NodeTransactionPoolService', () => {
-	describe('fetchNodeTransactionPool', () => {
+	describe('fetchTransactionPool', () => {
 		it('works when ApiPromiseWorks', async () => {
 			expect(
 				sanitizeNumbers(

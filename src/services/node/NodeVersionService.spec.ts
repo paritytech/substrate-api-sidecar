@@ -6,7 +6,7 @@ import { NodeVersionService } from '.';
 const nodeVersionService = new NodeVersionService(mockApi);
 
 describe('NodeVersionService', () => {
-	describe('fetchNodeTransactionPool', () => {
+	describe('fetchVersion', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
 				sanitizeNumbers(
