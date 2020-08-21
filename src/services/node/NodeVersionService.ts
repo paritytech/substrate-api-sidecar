@@ -1,15 +1,12 @@
-import { BlockHash } from '@polkadot/types/interfaces';
 import { INodeVersion } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
 export class NodeVersionService extends AbstractService {
-	async fetchVersion(hash: BlockHash): Promise<INodeVersion> {
-		const api = await this.ensureMeta(hash);
-
+	async fetchVersion(): Promise<INodeVersion> {
 		const [{ implVersion, implName }, chain] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(),
-			api.rpc.system.chain(),
+			this.api.rpc.state.getRuntimeVersion(),
+			this.api.rpc.system.chain(),
 		]);
 
 		return {

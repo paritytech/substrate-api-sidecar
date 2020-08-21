@@ -75,6 +75,8 @@ FEE_DEBUG=1 yarn
 
 ## Available paths
 
+See docs in controllers for more detailed usage info.
+
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
 
@@ -101,6 +103,12 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 -   `/metadata` fetch chain metadata at latest finalized block.
 
 -   `/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.
+
+-   `node/network` fetch network information of the node.
+
+-   `node/transaction-pool` fetch the transaction pool of the node.
+
+-   `/node/version` fetch version information of the node.
 
 -   `/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.
 

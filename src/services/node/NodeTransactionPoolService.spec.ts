@@ -13,7 +13,7 @@ describe('NodeTransactionPoolService', () => {
 						blockHash789629
 					)
 				)
-			).toStrictEqual([]);
+			).toStrictEqual({ pool: [] });
 		});
 	});
 });

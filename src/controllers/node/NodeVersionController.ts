@@ -4,6 +4,14 @@ import { RequestHandler } from 'express';
 import { NodeVersionService } from '../../services';
 import AbstractController from '../AbstractController';
 
+/**
+ * GET version information of the node.
+ *
+ * Returns:
+ * - `clientImplVersion` Node's implementation's version.
+ * - `clientImplName` Node's implementation name.
+ * - `chain` Chain's spec name.
+ */
 export default class NodeVersionController extends AbstractController<
 	NodeVersionService
 > {
@@ -23,11 +31,9 @@ export default class NodeVersionController extends AbstractController<
 	 * @param res Express Response
 	 */
 	getNodeVersion: RequestHandler = async (_req, res): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
 		NodeVersionController.sanitizedSend(
 			res,
-			await this.service.fetchVersion(hash)
+			await this.service.fetchVersion()
 		);
 	};
 }

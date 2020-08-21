@@ -1,27 +1,24 @@
-import { BlockHash } from '@polkadot/types/interfaces';
 import { INodeNetwork } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
 export class NodeNetworkService extends AbstractService {
-	async fetchNetwork(hash: BlockHash): Promise<INodeNetwork> {
-		const api = await this.ensureMeta(hash);
-
+	async fetchNetwork(): Promise<INodeNetwork> {
 		const [
 			{ peers, isSyncing, shouldHavePeers },
 			localPeerId,
 			nodeRoles,
 			localListenAddresses,
 		] = await Promise.all([
-			api.rpc.system.health(),
-			api.rpc.system.localPeerId(),
-			api.rpc.system.nodeRoles(),
-			api.rpc.system.localListenAddresses(),
+			this.api.rpc.system.health(),
+			this.api.rpc.system.localPeerId(),
+			this.api.rpc.system.nodeRoles(),
+			this.api.rpc.system.localListenAddresses(),
 		]);
 
 		let systemPeers;
 		try {
-			systemPeers = await api.rpc.system.peers();
+			systemPeers = await this.api.rpc.system.peers();
 		} catch {
 			systemPeers = 'Cannot query system_Peers from node.';
 		}

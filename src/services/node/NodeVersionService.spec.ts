@@ -1,5 +1,5 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../test-helpers/mock';
+import { mockApi } from '../test-helpers/mock';
 import * as nodeVersionResponse from '../test-helpers/responses/node/nodeVersion.json';
 import { NodeVersionService } from '.';
 
@@ -9,9 +9,7 @@ describe('NodeVersionService', () => {
 	describe('fetchVersion', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
-				sanitizeNumbers(
-					await nodeVersionService.fetchVersion(blockHash789629)
-				)
+				sanitizeNumbers(await nodeVersionService.fetchVersion())
 			).toStrictEqual(nodeVersionResponse);
 		});
 	});

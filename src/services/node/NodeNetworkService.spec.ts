@@ -1,5 +1,5 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../test-helpers/mock';
+import { mockApi } from '../test-helpers/mock';
 import * as nodeNetworkResponse from '../test-helpers/responses/node/nodeNetwork.json';
 import { NodeNetworkService } from '.';
 
@@ -9,9 +9,7 @@ describe('NodeNetworkService', () => {
 	describe('fetchNetwork', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
-				sanitizeNumbers(
-					await nodeNetworkService.fetchNetwork(blockHash789629)
-				)
+				sanitizeNumbers(await nodeNetworkService.fetchNetwork())
 			).toStrictEqual(nodeNetworkResponse);
 		});
 	});

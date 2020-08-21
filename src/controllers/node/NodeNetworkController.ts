@@ -7,7 +7,7 @@ import AbstractController from '../AbstractController';
 /**
  * GET network information of the node.
  *
- * Returns
+ * Returns:
  * - `nodeRoles` Roles the node is running.
  * - `peers` Number of peers the node is connected to.
  * - `isSyncing` Whether or not the node is syncing. `False` indicates that the
@@ -48,11 +48,9 @@ export default class NodeNetworkController extends AbstractController<
 		_req,
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
 		NodeNetworkController.sanitizedSend(
 			res,
-			await this.service.fetchNetwork(hash)
+			await this.service.fetchNetwork()
 		);
 	};
 }

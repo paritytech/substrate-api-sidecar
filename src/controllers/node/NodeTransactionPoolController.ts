@@ -4,6 +4,12 @@ import { RequestHandler } from 'express';
 import { NodeTransactionPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
+/**
+ * GET the transaction pool of the node.
+ *
+ * Returns:
+ * - `pool` array of decoded extrinsics.
+ */
 export default class NodeTransactionPoolController extends AbstractController<
 	NodeTransactionPoolService
 > {

@@ -1507,8 +1507,6 @@ components:
     NodeVersion:
       type: object
       properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
         clientImplVersion:
           type: string
           description: Node's implementation's version.
