@@ -16,11 +16,11 @@ export class NodeNetworkService extends AbstractService {
 			this.api.rpc.system.localListenAddresses(),
 		]);
 
-		let peersInfos;
+		let peersInfo;
 		try {
-			peersInfos = await this.api.rpc.system.peers();
+			peersInfo = await this.api.rpc.system.peers();
 		} catch {
-			peersInfos = 'Cannot query system_peers from node.';
+			peersInfo = 'Cannot query system_peers from node.';
 		}
 
 		return {
@@ -30,7 +30,7 @@ export class NodeNetworkService extends AbstractService {
 			shouldHavePeers,
 			localPeerId,
 			localListenAddresses,
-			peersInfos,
+			peersInfo,
 		};
 	}
 }

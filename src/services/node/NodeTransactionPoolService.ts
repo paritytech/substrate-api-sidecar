@@ -1,14 +1,20 @@
-// import { Vec } from '@polkadot/types';
-// import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
 import { BlockHash } from '@polkadot/types/interfaces';
+import { INodeTransactionPool } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
-	async fetchTransactionPool(hash: BlockHash): Promise<{ pool: any }> {
+	async fetchTransactionPool(hash: BlockHash): Promise<INodeTransactionPool> {
 		const api = await this.ensureMeta(hash);
 
-		const pool = await api.rpc.author.pendingExtrinsics();
+		const extrinsics = await api.rpc.author.pendingExtrinsics();
+
+		const pool = extrinsics.map((ext) => {
+			return {
+				hash: ext.hash.toHex(),
+				encodedExtrinsic: ext.toHex(),
+			};
+		});
 
 		return {
 			pool,

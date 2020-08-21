@@ -5,7 +5,7 @@
     }
   ],
   "isSyncing": false,
-  "peers": "122",
+  "numPeers": "122",
   "shouldHavePeers": true,
   "localPeerId": "12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
   "localListenAddresses": [
@@ -14,5 +14,5 @@
     "/ip4/10.1.1.43/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
     "/ip6/::1/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ"
   ],
-  "systemPeers": "Cannot query system_Peers from node."
+  "peersInfo": "Cannot query system_peers from node."
 }

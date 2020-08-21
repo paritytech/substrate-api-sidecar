@@ -9,5 +9,5 @@ export interface INodeNetwork {
 	shouldHavePeers: Bool;
 	localPeerId: Text;
 	localListenAddresses: Vec<Text>;
-	peersInfos: string | Vec<PeerInfo>;
+	peersInfo: string | Vec<PeerInfo>;
 }
