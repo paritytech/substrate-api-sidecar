@@ -1840,7 +1840,16 @@ components:
         pool:
           type: array
           items:
-            $ref: '#/components/schemas/Extrinsic'
+            type: object
+            properties:
+                hash:
+                  type: string
+                  format: hex
+                  description: H256 hash of the extrinsic.
+                encodedExtrinsic:
+                  type: string
+                  format: hex
+                  description: Scale encoded extrinsic.
     PalletsResponses:
       oneOf:
       - type: object
