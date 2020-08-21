@@ -1,9 +1,10 @@
 import { BlockHash } from '@polkadot/types/interfaces';
+import { INodeNetwork } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
 export class NodeNetworkService extends AbstractService {
-	async fetchNetworking(hash: BlockHash): Promise<any> {
+	async fetchNetworking(hash: BlockHash): Promise<INodeNetwork> {
 		const api = await this.ensureMeta(hash);
 
 		const [
@@ -18,15 +19,21 @@ export class NodeNetworkService extends AbstractService {
 			api.rpc.system.localListenAddresses(),
 		]);
 
-		console.log(await api.rpc.system.peers());
+		let systemPeers;
+		try {
+			systemPeers = await api.rpc.system.peers();
+		} catch {
+			systemPeers = 'Cannot query system_Peers from node.';
+		}
 
 		return {
 			nodeRoles,
-			peers,
 			isSyncing,
+			peers,
 			shouldHavePeers,
 			localPeerId,
 			localListenAddresses,
+			systemPeers,
 		};
 	}
 }

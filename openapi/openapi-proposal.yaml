@@ -1839,8 +1839,6 @@ components:
     TransactionPool:
       type: object
       properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
         pool:
           type: array
           items:
