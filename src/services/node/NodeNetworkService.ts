@@ -5,7 +5,7 @@ import { AbstractService } from '../AbstractService';
 export class NodeNetworkService extends AbstractService {
 	async fetchNetwork(): Promise<INodeNetwork> {
 		const [
-			{ peers, isSyncing, shouldHavePeers },
+			{ peers: numPeers, isSyncing, shouldHavePeers },
 			localPeerId,
 			nodeRoles,
 			localListenAddresses,
@@ -16,21 +16,21 @@ export class NodeNetworkService extends AbstractService {
 			this.api.rpc.system.localListenAddresses(),
 		]);
 
-		let systemPeers;
+		let peersInfos;
 		try {
-			systemPeers = await this.api.rpc.system.peers();
+			peersInfos = await this.api.rpc.system.peers();
 		} catch {
-			systemPeers = 'Cannot query system_Peers from node.';
+			peersInfos = 'Cannot query system_peers from node.';
 		}
 
 		return {
 			nodeRoles,
 			isSyncing,
-			peers,
+			numPeers,
 			shouldHavePeers,
 			localPeerId,
 			localListenAddresses,
-			systemPeers,
+			peersInfos,
 		};
 	}
 }

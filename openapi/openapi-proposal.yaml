@@ -1551,7 +1551,7 @@ components:
       properties:
         nodeRoles:
           $ref: '#/components/schemas/NodeRole'
-        peers:
+        numPeers:
           type: string
           description: Number of peers the node is connected to.
           format: unsignedInteger
@@ -1573,7 +1573,7 @@ components:
             example.
           items:
             type: string
-        systemPeers:
+        peersInfo:
           type: array
           items:
             $ref: '#/components/schemas/PeerInfo'

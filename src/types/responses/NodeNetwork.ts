@@ -5,9 +5,9 @@ import Bool from '@polkadot/types/primitive/Bool';
 export interface INodeNetwork {
 	nodeRoles: Vec<NodeRole>;
 	isSyncing: Bool;
-	peers: u64;
+	numPeers: u64;
 	shouldHavePeers: Bool;
 	localPeerId: Text;
 	localListenAddresses: Vec<Text>;
-	systemPeers: string | Vec<PeerInfo>;
+	peersInfos: string | Vec<PeerInfo>;
 }
