@@ -4,7 +4,7 @@ import { INodeNetwork } from 'src/types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class NodeNetworkService extends AbstractService {
-	async fetchNetworking(hash: BlockHash): Promise<INodeNetwork> {
+	async fetchNetwork(hash: BlockHash): Promise<INodeNetwork> {
 		const api = await this.ensureMeta(hash);
 
 		const [

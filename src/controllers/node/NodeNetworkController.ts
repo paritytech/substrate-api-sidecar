@@ -30,7 +30,7 @@ export default class NodeNetworkController extends AbstractController<
 
 		NodeNetworkController.sanitizedSend(
 			res,
-			await this.service.fetchNetworking(hash)
+			await this.service.fetchNetwork(hash)
 		);
 	};
 }

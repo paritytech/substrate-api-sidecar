@@ -34,7 +34,7 @@ export default class NodeTransactionPoolController extends AbstractController<
 
 		NodeTransactionPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNodeTransactionPool(hash)
+			await this.service.fetchTransactionPool(hash)
 		);
 	};
 }

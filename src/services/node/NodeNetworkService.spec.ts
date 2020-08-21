@@ -10,7 +10,7 @@ describe('NodeNetworkService', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
 				sanitizeNumbers(
-					await nodeNetworkService.fetchNetworking(blockHash789629)
+					await nodeNetworkService.fetchNetwork(blockHash789629)
 				)
 			).toStrictEqual(nodeNetworkResponse);
 		});

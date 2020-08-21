@@ -9,7 +9,7 @@ describe('NodeTransactionPoolService', () => {
 		it('works when ApiPromiseWorks', async () => {
 			expect(
 				sanitizeNumbers(
-					await nodeTranstionPoolService.fetchNodeTransactionPool(
+					await nodeTranstionPoolService.fetchTransactionPool(
 						blockHash789629
 					)
 				)
