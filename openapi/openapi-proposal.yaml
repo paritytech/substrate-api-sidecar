@@ -1169,7 +1169,7 @@ components:
             type: string
             format: unsignedInteger
             description: The amount of stake the nominator has behind the validator.
-        description: Payout estimate for a nominating stash address and
+        description: Payout for a nominating stash address and
           information about the validator they were nominating.
     AccountStakingPayouts:
       type: object

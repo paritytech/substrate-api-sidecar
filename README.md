@@ -75,8 +75,12 @@ CALC_DEBUG=1 yarn
 
 ## Available paths
 
+Below is the most up-to-date list of available paths.
+
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
+
+-  `accounts/ADDRESS/staking-payouts` fetch payouts for `ADDRESS`. See `AccountsStakingPayoutsController.ts` for more info on params.
 
 -   `/block` fetch latest finalized block details.
 
