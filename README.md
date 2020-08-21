@@ -63,7 +63,7 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 }
 ```
 
-## Fee Calculation & Payout Calculation Debugging
+## Debugging Fee & Payout Calculations
 
 It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
