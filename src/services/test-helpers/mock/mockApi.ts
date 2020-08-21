@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -221,7 +222,7 @@ const localPeerId = () =>
 		)
 	);
 
-const pendingExtrinsics = () =>
+export const pendingExtrinsics = (): Promise<Vec<Extrinsic>> =>
 	Promise.resolve().then(() => polkadotRegistry.createType('Vec<Extrinsic>'));
 
 export const tx = (): Extrinsic =>

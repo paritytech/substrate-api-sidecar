@@ -272,7 +272,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get network information of the node.
+      summary: Get information about the Substrate node's activity in the peer-to-peer network.
       description: Returns network related information of the node.
       operationId: getNodeNetworking
       responses:
@@ -286,7 +286,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get the transaction pool of the node.
+      summary: Get pending extrinsics from the Substrate node.
       description: Returns the extrinsics that the node knows of that have not
         been included in a block.
       operationId: getNodeTransactionPool
@@ -301,7 +301,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get version information of the node.
+      summary: Get information about the Substrates node's implementation and versioning.
       description: Returns versioning information of the node.
       operationId: getNodeVersion
       responses:
@@ -1533,18 +1533,18 @@ components:
           description: Peer ID.
         roles:
           type: string
-          description: Roles.
+          description: Roles the peer is running
         protocolVersion:
           type: string
-          description: Protocol version.
+          description: Peer's protocol version.
           format: unsignedInteger
         bestHash:
           type: string
-          description: Peer best block hash.
+          description: Peer's best block hash.
           format: hex
         bestNumber:
           type: string
-          description: Peer
+          description: Peer's best block number.
           format: unsignedInteger
     NodeNetwork:
       type: object

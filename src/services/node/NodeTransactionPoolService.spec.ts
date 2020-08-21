@@ -1,6 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../test-helpers/mock';
+import {
+	blockHash789629,
+	mockApi,
+	pendingExtrinsics,
+} from '../test-helpers/mock';
 import * as transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
 import { NodeTransactionPoolService } from '.';
 
@@ -35,6 +40,8 @@ describe('NodeTransactionPoolService', () => {
 					)
 				)
 			).toStrictEqual(transactionPoolResponse);
+
+			(mockApi.rpc.author as any).pendingExtrinsics = pendingExtrinsics;
 		});
 	});
 });

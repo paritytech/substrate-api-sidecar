@@ -5,10 +5,10 @@ import { NodeTransactionPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * GET the transaction pool of the node.
+ * GET pending extrinsics from the Substrate node.
  *
  * Returns:
- * - `pool` array of decoded extrinsics.
+ * - `pool`: array of decoded extrinsics.
  */
 export default class NodeTransactionPoolController extends AbstractController<
 	NodeTransactionPoolService
