@@ -1155,16 +1155,16 @@ components:
           validatorRewardPoints:
             type: string
             format: unsignedInteger
-            description: Amount of reward points earned by the validator.
+            description: Number of reward points earned by the validator.
           validatorCommission:
             type: string
             format: unsignedInteger
-            description: The percentage of the total payout that the validator takes as commission.
-              N.B. This is a Perbill.
+            description: The percentage of the total payout that the validator takes as commission,
+              expressed as a Perbill.
           totalValidatorExposure:
             type: string
             format: unsignedInteger
-            description: The sum of the validator's and its nominators stake.
+            description: The sum of the validator's and its nominators' stake.
           ownExposure:
             type: string
             format: unsignedInteger
@@ -1194,7 +1194,7 @@ components:
                 type: string
                 format: unsignedInteger
                 description: Total payout for the era. Validators split the payout
-                  based on the portion of totalEraRewardPoints they have.
+                  based on the portion of `totalEraRewardPoints` they have.
               payouts:
                 $ref: '#/components/schemas/Payouts'
     VestingSchedule:
