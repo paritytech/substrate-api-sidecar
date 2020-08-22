@@ -6,7 +6,7 @@ edition = "2018"
 license = "Apache-2.0"
 publish = false
 repository = "https://github.com/paritytech/substrate-api-sidecar"
-description = "Off-chain calculations for substrate"
+description = "Off-chain calculations for Substrate Sidecar."
 
 [lib]
 crate-type = ["cdylib"]
@@ -41,4 +41,3 @@ wasm-opt = false
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
-
