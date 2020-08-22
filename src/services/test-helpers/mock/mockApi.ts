@@ -47,6 +47,8 @@ const getRuntimeVersion = () =>
 			specName: polkadotRegistry.createType('Text', 'polkadot'),
 			specVersion: polkadotRegistry.createType('u32', 16),
 			transactionVersion: polkadotRegistry.createType('u32', 2),
+			authoringVersion: polkadotRegistry.createType('u32', 0),
+			implVersion: polkadotRegistry.createType('u32', 0),
 		};
 	});
 
@@ -193,6 +195,27 @@ export const queryInfoBalancesTransfer = (
 export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
 	Promise.resolve().then(() => polkadotRegistry.createType('Hash'));
 
+const getStorage = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<Raw>', '0x')
+	);
+
+const chainType = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ChainType', {
+			Live: null,
+		})
+	);
+
+const properties = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ChainProperties', {
+			ss58Format: '0',
+			tokenDecimals: '12',
+			tokenSymbol: 'DOT',
+		})
+	);
+
 const getFinalizedHead = () => Promise.resolve().then(() => blockHash789629);
 
 export const tx = (): Extrinsic =>
@@ -275,9 +298,12 @@ export const mockApi = ({
 		state: {
 			getRuntimeVersion,
 			getMetadata,
+			getStorage,
 		},
 		system: {
 			chain,
+			chainType,
+			properties,
 		},
 		payment: {
 			queryInfo: queryInfoBalancesTransfer,
