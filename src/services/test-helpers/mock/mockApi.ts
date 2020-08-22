@@ -104,6 +104,11 @@ const currentIndexAt = (_hash: Hash) =>
 		polkadotRegistry.createType('SessionIndex', 330)
 	);
 
+const version = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Text', '0.8.22-c6ee8675-x86_64-linux-gnu')
+	);
+
 export const activeEraAt = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<ActiveEraInfo>', {
@@ -312,6 +317,7 @@ export const mockApi = ({
 			localListenAddresses,
 			nodeRoles,
 			localPeerId,
+			version,
 		},
 		payment: {
 			queryInfo: queryInfoBalancesTransfer,

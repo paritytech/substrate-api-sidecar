@@ -1507,10 +1507,9 @@ components:
     NodeVersion:
       type: object
       properties:
-        clientImplVersion:
+        clientVersion:
           type: string
-          description: Node's implementation version of the spec version. When
-            the spec version is bumped, the impl version is set to 0.
+          description: Node's binary version.
         clientImplName:
           type: string
           description: Node's implementation name.

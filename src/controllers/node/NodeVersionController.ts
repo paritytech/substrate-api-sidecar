@@ -8,8 +8,7 @@ import AbstractController from '../AbstractController';
  * GET information about the Substrates node's implementation and versioning.
  *
  * Returns:
- * - `clientImplVersion`: Node's implementation version of the spec version. When
- * 		the spec version is bumped, the impl version is set to 0.
+ * - `clientVersion`: Node binary version.
  * - `clientImplName`: Node's implementation name.
  * - `chain`: Node's chain name.
  */

@@ -1,7 +1,7 @@
-import { Text, u32 } from '@polkadot/types';
+import { Text } from '@polkadot/types';
 
 export interface INodeVersion {
-	clientImplVersion: u32;
+	clientVersion: Text;
 	clientImplName: Text;
 	chain: Text;
 }
