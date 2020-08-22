@@ -8,7 +8,7 @@ import AbstractController from '../AbstractController';
  * Get version information of the Substrate runtime.
  *
  * Query:
- * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * - (Optional)`at`: Block at which to retrieve runtime version information. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
@@ -20,7 +20,7 @@ import AbstractController from '../AbstractController';
  * 		optimizations are about the only changes that could be made which would
  * 		result in only the `impl_version` changing. The `impl_version` is set to 0
  * 		when `spec_version` is incremented.
- * - `specName`: Identifies different Substrate runtimes.
+ * - `specName`: Identifies the spec name for the current runtime.
  * - `specVersion`: Version of the runtime specification.
  * - `transactionVersion`: All existing dispatches are fully compatible when this
  * 		number doesn't change. This number must change when an existing dispatchable

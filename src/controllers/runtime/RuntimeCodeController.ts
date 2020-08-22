@@ -13,7 +13,7 @@ import AbstractController from '../AbstractController';
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
- * - `code`: Runtime code wasm blob.
+ * - `code`: Runtime code Wasm blob.
  */
 export default class RuntimeCodeController extends AbstractController<
 	RuntimeCodeService
