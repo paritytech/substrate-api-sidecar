@@ -116,14 +116,14 @@ describe('BlocksService', () => {
 
 		it('does not handle an empty object', () =>
 			expect(() =>
-				BlocksService['parseGenericCall'](
+				blocksService['parseGenericCall'](
 					({} as unknown) as GenericCall
 				)
 			).toThrow());
 
 		it('parses a simple balances.transfer', () => {
 			expect(
-				JSON.stringify(BlocksService['parseGenericCall'](transfer))
+				JSON.stringify(blocksService['parseGenericCall'](transfer))
 			).toBe(JSON.stringify(transferOutput));
 		});
 
@@ -153,7 +153,7 @@ describe('BlocksService', () => {
 			};
 
 			expect(
-				JSON.stringify(BlocksService['parseGenericCall'](batch4))
+				JSON.stringify(blocksService['parseGenericCall'](batch4))
 			).toBe(
 				JSON.stringify({
 					...baseBatch,
@@ -222,7 +222,7 @@ describe('BlocksService', () => {
 			};
 
 			expect(
-				JSON.stringify(BlocksService['parseGenericCall'](batch))
+				JSON.stringify(blocksService['parseGenericCall'](batch))
 			).toEqual(
 				JSON.stringify({
 					method: 'utility.batch',
