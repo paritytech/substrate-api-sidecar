@@ -16,15 +16,15 @@ import AbstractController from '../AbstractController';
  * 		be false for local chains or when running without discovery.
  * - `localPeerId`: Local copy of the `PeerId`.
  * - `localListenAddresses`: Multiaddresses that the local node is listening on.
- * 	The addresses include a trailing `/p2p/` with the local PeerId, and are thus
- * 	suitable to be passed to `system_addReservedPeer` or as a bootnode address
- * 	for example.
+ * 		The addresses include a trailing `/p2p/` with the local PeerId, and are thus
+ * 		suitable to be passed to `system_addReservedPeer` or as a bootnode address
+ * 		for example.
  * - `systemPeers`: array of
  * 	- `peerId`: Peer ID.
  *	- `roles`: Roles the peer is running.
  *	- `protocolVersion`: Peer's protocol version.
- *	- `bestHash`: Hash of the best block on the peers Canon chain.
- *	- `bestNumber`: Height of the best block on the peers Canon chain.
+ *	- `bestHash`: Hash of the best block on the peers canon chain.
+ *	- `bestNumber`: Height of the best block on the peers canon chain.
  *
  * References:
  * - `NodeRole`: https://github.com/paritytech/substrate/blob/master/client/rpc-api/src/system/helpers.rs#L80
