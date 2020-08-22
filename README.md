@@ -104,11 +104,11 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   `/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.
 
--   `node/network` fetch network information of the node.
+-   `node/network` fetch information about the Substrate node's activity in the peer-to-peer network.
 
--   `node/transaction-pool` fetch the transaction pool of the node.
+-   `node/transaction-pool` fetch pending extrinsics from the Substrate node.
 
--   `/node/version` fetch version information of the node.
+-   `/node/version` fetch information about the Substrates node's implementation and versioning.
 
 -   `/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.
 
