@@ -25,7 +25,7 @@ export default class NodeVersionController extends AbstractController<
 	}
 
 	/**
-	 * Get version information of the node.
+	 * GET information about the Substrates node's implementation and versioning.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response

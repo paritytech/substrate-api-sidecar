@@ -8,7 +8,9 @@ import AbstractController from '../AbstractController';
  * GET pending extrinsics from the Substrate node.
  *
  * Returns:
- * - `pool`: array of decoded extrinsics.
+ * - `pool`: array of
+ * 		- `hash`: H256 hash of the extrinsic.
+ * 		- `encodedExtrinsic`: Scale encoded extrinsic.
  */
 export default class NodeTransactionPoolController extends AbstractController<
 	NodeTransactionPoolService
@@ -27,7 +29,7 @@ export default class NodeTransactionPoolController extends AbstractController<
 	}
 
 	/**
-	 * Get the transaction pool of the node.
+	 ** GET pending extrinsics from the Substrate node.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response

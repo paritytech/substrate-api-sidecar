@@ -42,7 +42,7 @@ export default class NodeNetworkController extends AbstractController<
 	}
 
 	/**
-	 * Get network information of the node.
+	 * GET information about the Substrate node's activity in the peer-to-peer network.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response
