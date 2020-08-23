@@ -120,7 +120,7 @@ paths:
         cannot query eras less then `current_era - HISTORY_DEPTH`. N.B. The 
         `nominator*` fields correspond to the address being queried, even if it
         is a validator's _stash_ address. This is because a validator is technically
-        nominating themself.
+        nominating itself.
       operationId: getStakingPayoutsByAccountId
       parameters:
       - name: accountId

@@ -49,7 +49,7 @@ import AbstractController from '../AbstractController';
  *
  * N.B. The `nominator*` fields correspond to the address being queried, even if it
  * is a validator's _stash_ address. This is because a validator is technically
- * nominating themself.
+ * nominating itself.
  *
  * `payouts` Is an array of payouts for a nominating stash address and information
  * about the validator they were nominating. `eraPayouts` contains an array of
