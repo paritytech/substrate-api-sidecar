@@ -156,26 +156,26 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// Loop through validators that this nominator backs
 		for (const { validatorId } of nominatedExposures) {
-			const validatorRewardPoints = this.extractValidatorRewardPoints(
+			const totalValidatorRewardPoints = this.extracttotalValidatorRewardPoints(
 				eraRewardPoints,
 				validatorId
 			);
 
 			if (
-				!validatorRewardPoints ||
-				validatorRewardPoints?.toNumber() === 0
+				!totalValidatorRewardPoints ||
+				totalValidatorRewardPoints?.toNumber() === 0
 			) {
 				// Nothing to do if there are no reward points for validator
 				continue;
 			}
 
-			const { totalExposure, ownExposure } = this.extractExposure(
+			const { totalExposure, nominatorExposure } = this.extractExposure(
 				address,
 				validatorId,
 				deriveEraExposure
 			);
 
-			if (ownExposure === undefined) {
+			if (nominatorExposure === undefined) {
 				// This should not happen once at this point, but here for safety
 				continue;
 			}
@@ -201,22 +201,22 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const ownStakingPayout = calcPayout.calc_payout(
-				validatorRewardPoints.toNumber(),
+			const nominatorStakingPayout = calcPayout.calc_payout(
+				totalValidatorRewardPoints.toNumber(),
 				validatorCommission.toNumber(),
-				ownExposure.unwrap().toString(10),
+				nominatorExposure.unwrap().toString(10),
 				totalExposure.unwrap().toString(10),
 				address === validatorId
 			);
 
 			payouts.push({
 				validatorId,
-				ownStakingPayout,
+				nominatorStakingPayout,
 				claimed,
-				validatorRewardPoints,
+				totalValidatorRewardPoints,
 				validatorCommission,
 				totalValidatorExposure: totalExposure.unwrap(),
-				ownExposure: ownExposure.unwrap(),
+				nominatorExposure: nominatorExposure.unwrap(),
 			});
 		}
 
@@ -296,7 +296,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param eraRewardPoints
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * */
-	private extractValidatorRewardPoints(
+	private extracttotalValidatorRewardPoints(
 		eraRewardPoints: EraRewardPoints,
 		validatorId: string
 	) {
@@ -330,20 +330,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const exposureAllNominators =
 			deriveEraExposure.validators[validatorId].others;
 
-		const ownExposure =
+		const nominatorExposure =
 			address === validatorId // validator is also the nominator we are getting payouts for
 				? deriveEraExposure.validators[address].own
 				: exposureAllNominators.find(
 						(exposure) => exposure.who.toString() === address
 				  )?.value;
 
-		if (ownExposure === undefined) {
+		if (nominatorExposure === undefined) {
 			return { totalExposure };
 		}
 
 		return {
 			totalExposure,
-			ownExposure,
+			nominatorExposure,
 		};
 	}
 }

@@ -2,10 +2,10 @@ import { Balance, Perbill, RewardPoint } from '@polkadot/types/interfaces';
 
 export interface IPayout {
 	validatorId: string;
-	ownStakingPayout: string;
+	nominatorStakingPayout: string;
 	claimed: boolean;
 	validatorCommission: Perbill;
-	validatorRewardPoints: RewardPoint;
+	totalValidatorRewardPoints: RewardPoint;
 	totalValidatorExposure: Balance;
-	ownExposure: Balance;
+	nominatorExposure: Balance;
 }
