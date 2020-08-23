@@ -44,7 +44,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
 		if (depth > historyDepth.toNumber()) {
 			throw new BadRequest(
-				'Must specify a depth less than history depth'
+				'Must specify a depth less than history_depth'
 			);
 		}
 		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {

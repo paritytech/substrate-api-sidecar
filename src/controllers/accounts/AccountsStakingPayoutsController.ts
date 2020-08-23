@@ -11,13 +11,14 @@ import AbstractController from '../AbstractController';
  * GET payout information for a stash account.
  *
  * Path params:
- * - `address`: SS58 address of the account. Must be a _stash_ account.
+ * - `address`: SS58 address of the account. Must be a _Stash_ account.
  *
  * Query params:
  * - (Optional) `depth`: The number of eras to query for payouts of. Must be less
- * 	than or equal to `HISTORY_DEPTH`. In cases where `era - (depth -1)` is less
+ * 	than `HISTORY_DEPTH`. In cases where `era - (depth -1)` is less
  *	than 0, the first era queried will be 0. Defaults to 1.
- * - (Optional) `era`: The era to query at. Defaults to `active_era - 1`.
+ * - (Optional) `era`: The era to query at. Max era payout info is available for
+ * 	 is the latest finished era: `active_era - 1`. Defaults to `active_era - 1`.
  * - (Optional) `unclaimedOnly`: Only return unclaimed rewards. Defaults to true.
  *
  * Returns:

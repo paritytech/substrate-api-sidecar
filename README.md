@@ -75,7 +75,7 @@ CALC_DEBUG=1 yarn
 
 ## Available paths
 
-Below is the most up-to-date list of available paths.
+Below is the most up-to-date list of available paths. See corresponding controllers for in-depth usage info.
 
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
