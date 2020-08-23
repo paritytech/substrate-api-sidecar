@@ -129,7 +129,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		}
 		const currentEra = currentEraOption.unwrap().toNumber();
 
-		if (era && era > activeEra - 1) {
+		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
 				`The specified era (${era}) is too large. ` +
 					`Largest era payout info is available for is ${
@@ -138,6 +138,10 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			);
 		}
 
-		return { hash, eraArg: era ? era : activeEra - 1, currentEra };
+		return {
+			hash,
+			eraArg: era === undefined ? activeEra - 1 : era,
+			currentEra,
+		};
 	}
 }

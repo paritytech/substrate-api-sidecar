@@ -178,7 +178,9 @@ export default abstract class AbstractController<T extends AbstractService> {
 		}
 
 		if (!(typeof str === 'string')) {
-			throw `Incorrect argument quantity or type passed in for ${name} query param`;
+			throw new BadRequest(
+				`Incorrect argument quantity or type passed in for ${name} query param`
+			);
 		}
 
 		return this.parseNumberOrThrow(

@@ -48,7 +48,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			);
 		}
 		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {
-			// In scenarios where depth is not > historyDepth, but theye specify an era
+			// In scenarios where depth is not > historyDepth, but the user specifies an era
 			// and historyDepth combo that would lead to querying eras older than history depth
 			throw new BadRequest(
 				'Must specify era and depth such that era - (depth - 1) is less ' +
@@ -62,7 +62,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		const erasPayouts: (IEraPayouts | { message: string })[] = [];
 
-		// TODO alternatively could throw an error when an invalid depth is specified
+		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
 		const startEra = era - (depth - 1) < 0 ? 0 : era - (depth - 1);
 
 		for (let e = startEra; e <= era; e += 1) {
@@ -84,7 +84,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Derive all the payouts for `address` for `era`.
+	 * Derive all the payouts for `address` at `era`.
 	 *
 	 * @param api
 	 * @param hash `BlockHash` to make call at
@@ -111,11 +111,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			api.query.staking.erasValidatorReward.at(hash, era),
 		]);
 
+		let nominatedExposures = deriveEraExposure.nominators[address];
 		if (deriveEraExposure.validators[address]) {
 			// We treat an `address` that is a validator as nominating itself
-			deriveEraExposure.nominators[address] = deriveEraExposure
-				.nominators[address]
-				? deriveEraExposure.nominators[address].concat({
+			nominatedExposures = nominatedExposures
+				? nominatedExposures.concat({
 						validatorId: address,
 						validatorIndex: 0,
 				  })
@@ -126,8 +126,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						},
 				  ];
 		}
-
-		const nominatedExposures = deriveEraExposure.nominators[address];
 
 		if (!nominatedExposures) {
 			return {
@@ -156,7 +154,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// Loop through validators that this nominator backs
 		for (const { validatorId } of nominatedExposures) {
-			const totalValidatorRewardPoints = this.extracttotalValidatorRewardPoints(
+			const totalValidatorRewardPoints = this.extractTotalValidatorRewardPoints(
 				eraRewardPoints,
 				validatorId
 			);
@@ -165,7 +163,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				!totalValidatorRewardPoints ||
 				totalValidatorRewardPoints?.toNumber() === 0
 			) {
-				// Nothing to do if there are no reward points for validator
+				// Nothing to do if there are no reward points for the validator
 				continue;
 			}
 
@@ -283,7 +281,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 
 			validatorLedger = validatorLedgerOption.unwrap();
-
 			validatorLedgerCache[validatorId] = validatorLedger;
 		}
 
@@ -296,11 +293,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param eraRewardPoints
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * */
-	private extracttotalValidatorRewardPoints(
+	private extractTotalValidatorRewardPoints(
 		eraRewardPoints: EraRewardPoints,
 		validatorId: string
 	) {
-		// Ideally we would just use the map's `get`, but since the key, AccountId, is an object we can't
+		// Ideally we would just use the map's `get`, but that does not seem to be working here
 		for (const [id, points] of eraRewardPoints.individual.entries()) {
 			if (id.toString() === validatorId) {
 				return points;
@@ -311,7 +308,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Extract the exposure of `address` and `validatorId`
+	 * Extract the exposure of `address` and `totalExposure`
 	 * from polkadot-js's `deriveEraExposure`.
 	 *
 	 * @param address address of the _Stash_  account to get the exposure of behind `validatorId`
@@ -336,10 +333,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				: exposureAllNominators.find(
 						(exposure) => exposure.who.toString() === address
 				  )?.value;
-
-		if (nominatorExposure === undefined) {
-			return { totalExposure };
-		}
 
 		return {
 			totalExposure,
