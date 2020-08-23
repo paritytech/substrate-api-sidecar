@@ -25,8 +25,8 @@ export class NodeNetworkService extends AbstractService {
 
 		return {
 			nodeRoles,
-			isSyncing,
 			numPeers,
+			isSyncing,
 			shouldHavePeers,
 			localPeerId,
 			localListenAddresses,
