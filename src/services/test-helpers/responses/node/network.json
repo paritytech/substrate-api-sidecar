@@ -1,0 +1,18 @@
+{
+  "nodeRoles": [
+    {
+      "Full": null
+    }
+  ],
+  "isSyncing": false,
+  "numPeers": "122",
+  "shouldHavePeers": true,
+  "localPeerId": "12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
+  "localListenAddresses": [
+    "/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
+    "/ip4/10.201.0.2/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
+    "/ip4/10.1.1.43/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ",
+    "/ip6/::1/tcp/30333/p2p/12D3KooWAZfhjyqzFtyd55veBJxTYiQkXraMXLpMMj5Zo4qud1HZ"
+  ],
+  "peersInfo": "Cannot query system_peers from node."
+}

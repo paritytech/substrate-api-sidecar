@@ -1,6 +1,6 @@
 import { Compact } from '@polkadot/types';
-import Address from '@polkadot/types/generic/Address';
 import {
+	Address,
 	Balance,
 	EcdsaSignature,
 	Ed25519Signature,

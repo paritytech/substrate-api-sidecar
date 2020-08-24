@@ -66,6 +66,11 @@ async function main() {
 	const stakingController = new controllers.PalletsStakingProgress(api);
 	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
+	const nodeNetworkController = new controllers.NodeNetwork(api);
+	const nodeVersionController = new controllers.NodeVersion(api);
+	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
+		api
+	);
 	const runtimeCodeController = new controllers.RuntimeCode(api);
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const claimsController = new controllers.Claims(api);
@@ -83,6 +88,9 @@ async function main() {
 			stakingController,
 			vestingController,
 			metadataController,
+			nodeNetworkController,
+			nodeVersionController,
+			nodeTransactionPoolController,
 			runtimeCodeController,
 			runtimeSpecController,
 			claimsController,

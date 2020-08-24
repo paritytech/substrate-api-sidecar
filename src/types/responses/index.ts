@@ -11,3 +11,6 @@ export * from './TransactionMaterial';
 export * from './Extrinsic';
 export * from './MetadataCode';
 export * from './RuntimeSpec';
+export * from './NodeNetwork';
+export * from './NodeVersion';
+export * from './NodeTransactionPool';
