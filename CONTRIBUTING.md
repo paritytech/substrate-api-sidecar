@@ -14,7 +14,7 @@ There are a few basic ground-rules for contributors (including the maintainer(s)
 - All modifications must be made in a Pull Request to solicit feedback from other contributors.
 - Contributors should adhere to the [house coding style](https://github.com/paritytech/substrate/blob/master/docs/STYLE_GUIDE.md).
 
-## Reviewing pull requests:
+## Reviewing Pull Requests:
 When reviewing a pull request, the end-goal is to suggest useful changes to the author. Reviews should finish with approval unless there are issues that would result in:
 - Buggy behaviour.
 - Undue maintenance burden.
