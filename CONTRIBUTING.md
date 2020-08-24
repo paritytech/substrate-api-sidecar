@@ -5,7 +5,7 @@ If you’re new to open source or interested in contributing, this guide is part
 ## Contributing Code
 To contribute to this repo, it’s recommended to create a GitHub Issue first; this allows you to gather feedback before writing any code. In the Issues tab, you’ll be able to select from a template to create an Issue. 
 
-To create a Pull Request after you’ve created an issue, you’ll need to head over to the Pull Request tab. This will be where all the PRs will be located, and where reviewers will be able to review your changes made. 
+To create a Pull Request after you’ve created an Issue, you’ll need to head over to the Pull Request tab. This will be where all the PRs will be located, and where reviewers will be able to review your changes made. 
 
 ## Rules
 There are a few basic ground-rules for contributors (including the maintainer(s) of the project):
