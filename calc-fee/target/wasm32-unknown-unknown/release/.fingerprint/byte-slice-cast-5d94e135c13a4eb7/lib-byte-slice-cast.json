@@ -1,0 +1,1 @@
+{"rustc":1392210074234315346,"features":"[\"alloc\"]","target":15994013774695287181,"profile":16671166107992825429,"path":17816390153119289714,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"wasm32-unknown-unknown/release/.fingerprint/byte-slice-cast-5d94e135c13a4eb7/dep-lib-byte-slice-cast"}}],"rustflags":[],"metadata":4028636240650239297}

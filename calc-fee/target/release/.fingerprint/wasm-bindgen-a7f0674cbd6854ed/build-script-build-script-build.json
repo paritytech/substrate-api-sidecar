@@ -1,0 +1,1 @@
+{"rustc":1392210074234315346,"features":"[\"serde\", \"serde-serialize\", \"serde_json\", \"std\"]","target":10429514197457385088,"profile":13053115153518080237,"path":6968301482613485801,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/wasm-bindgen-a7f0674cbd6854ed/dep-build-script-build-script-build"}}],"rustflags":[],"metadata":1893760814388251298}
