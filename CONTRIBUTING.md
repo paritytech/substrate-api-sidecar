@@ -25,9 +25,9 @@ When reviewing a Pull Request, the end-goal is to suggest useful changes to the 
 
 ## Where to Ask for Help
 Asking for help in the Parity community is encouraged and welcomed! The best ways to reach us are:
-- [Substrate Community Page](https://substrate.dev/community)
-- [Substrate Technical Riot](https://riot.im/app/#/room/!HzySYSaIhtyWrwiwEV:matrix.org)
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/substrate)
+- Chat with us: [Substrate Technical Element](https://app.element.io/#/room/!HzySYSaIhtyWrwiwEV:matrix.org)
+- Ask a question tagged `substrate`: [Stack Overflow](https://stackoverflow.com/questions/tagged/substrate)
+- Weekly office hours: [Substrate Seminar](https://substrate.dev/en/seminar)
 
 ## Heritage
 These contributing guidelines are modified from the "OPEN Open Source Project" guidelines for the Level project: https://github.com/Level/community/blob/master/CONTRIBUTING.md
