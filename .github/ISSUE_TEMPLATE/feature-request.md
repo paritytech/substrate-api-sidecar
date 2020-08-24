@@ -10,7 +10,7 @@ assignees: ""
 
 [Describe your request for a new idea/feature or improvement of an existing feature.]
 
-**Describe alternatives you've considered**
+**Alternatives**
 
 [Are there alternative approaches or solutions that you’ve considered?]
 
