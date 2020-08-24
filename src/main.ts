@@ -74,6 +74,8 @@ async function main() {
 	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
 		api
 	);
+	const runtimeCodeController = new controllers.RuntimeCode(api);
+	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const claimsController = new controllers.Claims(api);
 	const txArtifactsController = new controllers.TransactionMaterial(api);
 	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
@@ -93,6 +95,8 @@ async function main() {
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,
+			runtimeCodeController,
+			runtimeSpecController,
 			claimsController,
 			txArtifactsController,
 			txFeeEstimateController,

@@ -984,7 +984,7 @@ paths:
     get:
       tags:
       - runtime
-      summary: Get version information of the runtime.
+      summary: Get version information of the Substrate runtime.
       description: Returns version information related to the runtime.
       parameters:
       - name: at
@@ -1620,16 +1620,17 @@ components:
           - Live
         implVersion:
           type: string
-          description: Version of the implementation of the specification. Non-consensus-breaking
+          description: Version of the implementation specification. Non-consensus-breaking
             optimizations are about the only changes that could be made which would
-            result in only the `impl_version` changing.
+            result in only the `impl_version` changing. The `impl_version` is set to 0
+            when `spec_version` is incremented.
         specName:
           type: string
           description: Identifies the different Substrate runtimes.
         specVersion:
           type: string
-          description: version of the runtime specification
-        txVersion:
+          description: Version of the runtime specification.
+        transactionVersion:
           type: string
           description: All existing dispatches are fully compatible when this number
             doesn't change. This number must change when an existing dispatchable

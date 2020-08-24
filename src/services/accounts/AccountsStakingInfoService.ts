@@ -23,7 +23,7 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const at = {
 			hash,
-			height: header.number.toNumber().toString(10),
+			height: header.number.unwrap().toString(10),
 		};
 
 		if (controllerOption.isNone) {

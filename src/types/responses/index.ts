@@ -9,6 +9,8 @@ export * from './AccountStakingInfo';
 export * from './AccountVestingInfo';
 export * from './TransactionMaterial';
 export * from './Extrinsic';
+export * from './MetadataCode';
+export * from './RuntimeSpec';
 export * from './Payout';
 export * from './EraPayouts';
 export * from './AccountStakingPayouts';

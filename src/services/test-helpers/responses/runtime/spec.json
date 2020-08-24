@@ -1,0 +1,15 @@
+{
+  "authoringVersion": "0",
+  "transactionVersion": "2",
+  "implVersion": "0",
+  "specName": "polkadot",
+  "specVersion": "16",
+  "chainType": {
+    "Live": null
+  },
+  "properties": {
+    "ss58Format": "0",
+    "tokenDecimals": "12",
+    "tokenSymbol": "DOT"
+  }
+}
