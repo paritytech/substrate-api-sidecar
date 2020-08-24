@@ -5,7 +5,7 @@ import { RuntimeCodeService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * Get version information of the Substrate runtime.
+ * Get the Wasm code blob of the Substrate runtime.
  *
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
