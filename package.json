@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "./calc-fee/build.sh",
-    "postinstall": "yarn upgrade @polkadot/calc-fee",
+    "preinstall": "yarn build:calc",
+    "postinstall": "yarn upgrade @substrate/calc",
     "build": "tsc",
+    "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
@@ -18,8 +19,8 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@polkadot/api": "^1.29.1",
-    "@polkadot/calc-fee": "file:./calc-fee/pkg",
     "@polkadot/util-crypto": "^3.2.1",
+    "@substrate/calc": "file:./calc/pkg",
     "body-parser": "^1.19.0",
     "confmgr": "^1.0.6",
     "express": "^4.17.1",

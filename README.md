@@ -63,14 +63,14 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 }
 ```
 
-## Fee Calculation Debugging
+## Debugging Fee & Payout Calculations
 
-It is possible to get more information about the fee calculation process logged to
+It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
 a re-compile with the proper environment variable set is necessary:
 
 ```bash
-FEE_DEBUG=1 yarn
+CALC_DEBUG=1 yarn
 ```
 
 ## Available paths
@@ -79,6 +79,10 @@ Path descriptions link to controllers for detailed docs with usage information.
 
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
+
+-  [`accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
+
+-   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
 -   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
