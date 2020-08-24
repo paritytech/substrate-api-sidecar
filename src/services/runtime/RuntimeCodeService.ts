@@ -4,7 +4,7 @@ import { IMetadataCode } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
-// https://github.com/shawntabrizi/substrate-graph-benchmarks/blob/master/js/extensions/known-keys.js#L21
+// https://github.com/shawntabrizi/substrate-graph-benchmarks/blob/ae9b82f/js/extensions/known-keys.js#L21
 export const CODE_KEY = '0x3a636f6465';
 
 export class RuntimeCodeService extends AbstractService {
