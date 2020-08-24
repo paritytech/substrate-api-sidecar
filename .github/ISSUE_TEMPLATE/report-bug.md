@@ -12,7 +12,7 @@ assignees: ""
 
 **Steps to Reproduce**
 
-[Provide detailed steps for someone else to reproduce your bug]
+[Provide detailed steps for someone else to reproduce your bug.]
 
 **Expected vs. Actual Behavior**
 
