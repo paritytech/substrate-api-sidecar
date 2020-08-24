@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -21,6 +22,7 @@ import {
 	testAddressController,
 } from '.';
 import { events789629 } from './data/events789629Hex';
+import { localListenAddressesHex } from './data/localListenAddresses';
 import { validators789629Hex } from './data/validators789629Hex';
 
 const eventsAt = (_hash: Hash) =>
@@ -47,6 +49,9 @@ const getRuntimeVersion = () =>
 			specName: polkadotRegistry.createType('Text', 'polkadot'),
 			specVersion: polkadotRegistry.createType('u32', 16),
 			transactionVersion: polkadotRegistry.createType('u32', 2),
+			implVersion: polkadotRegistry.createType('u32', 0),
+			implName: polkadotRegistry.createType('Text', 'parity-polkadot'),
+			authoringVersion: polkadotRegistry.createType('u32', 0),
 		};
 	});
 
@@ -98,6 +103,11 @@ const genesisSlotAt = (_hash: Hash) =>
 const currentIndexAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('SessionIndex', 330)
+	);
+
+const version = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Text', '0.8.22-c6ee8675-x86_64-linux-gnu')
 	);
 
 export const activeEraAt = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
@@ -193,7 +203,54 @@ export const queryInfoBalancesTransfer = (
 export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
 	Promise.resolve().then(() => polkadotRegistry.createType('Hash'));
 
+const getStorage = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Option<Raw>', '0x')
+	);
+
+const chainType = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ChainType', {
+			Live: null,
+		})
+	);
+
+const properties = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ChainProperties', {
+			ss58Format: '0',
+			tokenDecimals: '12',
+			tokenSymbol: 'DOT',
+		})
+	);
+
 const getFinalizedHead = () => Promise.resolve().then(() => blockHash789629);
+
+const health = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Health', '0x7a000000000000000001')
+	);
+
+const localListenAddresses = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<Text>', localListenAddressesHex)
+	);
+
+const nodeRoles = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<NodeRole>', '0x0400')
+	);
+
+const localPeerId = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType(
+			'Text',
+			'0x313244334b6f6f57415a66686a79717a4674796435357665424a78545969516b5872614d584c704d4d6a355a6f3471756431485a'
+		)
+	);
+
+export const pendingExtrinsics = (): Promise<Vec<Extrinsic>> =>
+	Promise.resolve().then(() => polkadotRegistry.createType('Vec<Extrinsic>'));
 
 export const tx = (): Extrinsic =>
 	polkadotRegistry.createType('Extrinsic', balancesTransferValid);
@@ -275,15 +332,24 @@ export const mockApi = ({
 		state: {
 			getRuntimeVersion,
 			getMetadata,
+			getStorage,
 		},
 		system: {
 			chain,
+			health,
+			localListenAddresses,
+			nodeRoles,
+			localPeerId,
+			version,
+			chainType,
+			properties,
 		},
 		payment: {
 			queryInfo: queryInfoBalancesTransfer,
 		},
 		author: {
 			submitExtrinsic,
+			pendingExtrinsics,
 		},
 	},
 	derive: {

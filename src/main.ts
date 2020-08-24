@@ -60,12 +60,22 @@ async function main() {
 	}
 
 	// Instantiate controller class instances
+	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
+		api
+	);
 	const blocksController = new controllers.Blocks(api);
 	const balancesController = new controllers.AccountsBalanceInfo(api);
 	const stakingInfoController = new controllers.AccountsStakingInfo(api);
 	const stakingController = new controllers.PalletsStakingProgress(api);
 	const vestingController = new controllers.AccountsVestingInfo(api);
 	const metadataController = new controllers.Metadata(api);
+	const nodeNetworkController = new controllers.NodeNetwork(api);
+	const nodeVersionController = new controllers.NodeVersion(api);
+	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
+		api
+	);
+	const runtimeCodeController = new controllers.RuntimeCode(api);
+	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const claimsController = new controllers.Claims(api);
 	const txArtifactsController = new controllers.TransactionMaterial(api);
 	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
@@ -75,12 +85,18 @@ async function main() {
 	const app = new App({
 		preMiddleware,
 		controllers: [
+			accountsStakingPayoutsController,
 			blocksController,
 			balancesController,
 			stakingInfoController,
 			stakingController,
 			vestingController,
 			metadataController,
+			nodeNetworkController,
+			nodeVersionController,
+			nodeTransactionPoolController,
+			runtimeCodeController,
+			runtimeSpecController,
 			claimsController,
 			txArtifactsController,
 			txFeeEstimateController,

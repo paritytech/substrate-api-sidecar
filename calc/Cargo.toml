@@ -1,12 +1,12 @@
 [package]
-name = "calc-fee"
+name = "calc"
 version = "0.1.0"
-authors = ["Alexander Theißen <alexander.theissen@parity.io>"]
+authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
 publish = false
-repository = "https://github.com/polkadot-js/wasm/"
-description = "Calculate extrinsic fees off-chain"
+repository = "https://github.com/paritytech/substrate-api-sidecar"
+description = "Off-chain calculations for Substrate Sidecar."
 
 [lib]
 crate-type = ["cdylib"]
@@ -23,7 +23,7 @@ console_log = { version = "0.2.0", optional = true }
 log = "0.4.8"
 
 [dependencies.sp-arithmetic]
-version = "2.0.0-rc3"
+version = "2.0.0-rc5"
 default_features = false
 
 [dependencies.sp-arithmetic-legacy]
@@ -35,3 +35,9 @@ default_features = false
 [profile.release]
 opt-level = "z"
 lto = true
+
+[package.metadata.wasm-pack.profile.dev]
+wasm-opt = false
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
