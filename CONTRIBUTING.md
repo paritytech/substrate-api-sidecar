@@ -1,4 +1,4 @@
-Substrate Sidecar API is an Open Source project that welcomes new issues and PRs.
+Substrate Sidecar API is an open source project that welcomes new issues and PRs.
 
 If you’re new to open source or interested in contributing, this guide: [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/) is particularly helpful.
 
