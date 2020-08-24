@@ -10,7 +10,7 @@ Thank you for your Pull Request!
 
 Before you submit, please check that:
 
-- [ ] You mentioned a related issue if this PR related to it, e.g. `Fixes #228` or `Related #1337`.
+- [ ] You mentioned a related Issue if this PR related to it, e.g. `Fixes #228` or `Related #1337`.
 - [ ] You added a brief description of the PR, e.g.:
   - What does it do?
   - What important points reviewers should know?
