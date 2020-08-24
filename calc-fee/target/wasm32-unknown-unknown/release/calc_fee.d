@@ -1,1 +1,0 @@
-/Users/sydney/Documents/parity/substrate-api-sidecar/calc-fee/target/wasm32-unknown-unknown/release/calc_fee.wasm: /Users/sydney/Documents/parity/substrate-api-sidecar/calc-fee/src/debug.rs /Users/sydney/Documents/parity/substrate-api-sidecar/calc-fee/src/lib.rs build.rs
