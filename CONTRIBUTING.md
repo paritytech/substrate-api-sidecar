@@ -3,7 +3,7 @@ Substrate Sidecar API is an open source project that welcomes new issues and PRs
 If you’re new to open source or interested in contributing, this guide is particularly helpful: [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
 
 ## Contributing Code
-To contribute to this repo, it’s recommended to create an issue first; this allows you to gather feedback before writing any code. In the issues tab, you’ll be able to select from a template to create an issue. 
+To contribute to this repo, it’s recommended to create a GitHub Issue first; this allows you to gather feedback before writing any code. In the Issues tab, you’ll be able to select from a template to create an Issue. 
 
 To create a Pull Request after you’ve created an issue, you’ll need to head over to the Pull Request tab. This will be where all the PRs will be located, and where reviewers will be able to review your changes made. 
 
