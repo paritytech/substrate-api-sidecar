@@ -9,7 +9,7 @@ To create a Pull Request after you’ve created an Issue, you’ll need to head 
 
 ## Rules
 There are a few basic ground-rules for contributors (including the maintainer(s) of the project):
-- No `--force` pushes or modifying the Git history in any way. If you need to rebase, ensure you do it in your own repo.
+- Try to avoid `--force` pushes or modifying the Git history in any way. If you need to rebase, ensure you do it in your own repo.
 - Non-master branches, prefixed with a short name moniker (e.g. `gav-my-feature`), must be used for ongoing work.
 - All modifications must be made in a Pull Request to solicit feedback from other contributors.
 - Contributors should adhere to the [house coding style](https://github.com/paritytech/substrate/blob/master/docs/STYLE_GUIDE.md).
