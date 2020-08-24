@@ -272,7 +272,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get network information of the node.
+      summary: Get information about the Substrate node's activity in the peer-to-peer network.
       description: Returns network related information of the node.
       operationId: getNodeNetworking
       responses:
@@ -286,7 +286,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get the transaction pool of the node.
+      summary: Get pending extrinsics from the Substrate node.
       description: Returns the extrinsics that the node knows of that have not
         been included in a block.
       operationId: getNodeTransactionPool
@@ -301,7 +301,7 @@ paths:
     get:
       tags:
       - node
-      summary: Get version information of the node.
+      summary: Get information about the Substrates node's implementation and versioning.
       description: Returns versioning information of the node.
       operationId: getNodeVersion
       responses:
@@ -1507,17 +1507,15 @@ components:
     NodeVersion:
       type: object
       properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
-        clientImplVersion:
+        clientVersion:
           type: string
-          description: Node's implementation's version.
+          description: Node's binary version.
         clientImplName:
           type: string
           description: Node's implementation name.
         chain:
           type: string
-          description: Chain's spec name.
+          description: Node's chain name.
       description: Version information of the node.
     NodeRole:
       type: string
@@ -1535,27 +1533,25 @@ components:
           description: Peer ID.
         roles:
           type: string
-          description: Roles.
+          description: Roles the peer is running
         protocolVersion:
           type: string
-          description: Protocol version.
+          description: Peer's protocol version.
           format: unsignedInteger
         bestHash:
           type: string
-          description: Peer best block hash.
+          description: Hash of the best block on the peer's canon chain.
           format: hex
         bestNumber:
           type: string
-          description: Peer
+          description: Height of the best block on the peer's canon chain.
           format: unsignedInteger
     NodeNetwork:
       type: object
       properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
         nodeRoles:
           $ref: '#/components/schemas/NodeRole'
-        peers:
+        numPeers:
           type: string
           description: Number of peers the node is connected to.
           format: unsignedInteger
@@ -1577,7 +1573,7 @@ components:
             example.
           items:
             type: string
-        systemPeers:
+        peersInfo:
           type: array
           items:
             $ref: '#/components/schemas/PeerInfo'
@@ -1841,12 +1837,19 @@ components:
     TransactionPool:
       type: object
       properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
         pool:
           type: array
           items:
-            $ref: '#/components/schemas/Extrinsic'
+            type: object
+            properties:
+                hash:
+                  type: string
+                  format: hex
+                  description: H256 hash of the extrinsic.
+                encodedExtrinsic:
+                  type: string
+                  format: hex
+                  description: Scale encoded extrinsic.
     PalletsResponses:
       oneOf:
       - type: object
