@@ -60,6 +60,9 @@ async function main() {
 	}
 
 	// Instantiate controller class instances
+	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
+		api
+	);
 	const blocksController = new controllers.Blocks(api);
 	const balancesController = new controllers.AccountsBalanceInfo(api);
 	const stakingInfoController = new controllers.AccountsStakingInfo(api);
@@ -80,6 +83,7 @@ async function main() {
 	const app = new App({
 		preMiddleware,
 		controllers: [
+			accountsStakingPayoutsController,
 			blocksController,
 			balancesController,
 			stakingInfoController,

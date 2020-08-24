@@ -517,9 +517,6 @@
     eventemitter3 "^4.0.4"
     rxjs "^6.6.2"
 
-"@polkadot/calc-fee@file:./calc-fee/pkg":
-  version "0.1.0"
-
 "@polkadot/keyring@^3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-3.2.1.tgz#cfa5bc2908f324af5481d5e5c8afb991056c499a"
@@ -642,6 +639,9 @@
   integrity sha512-MZPUxrmFubI36XS1DI3qmI0YdN1gks62JtFZvxR67ljjSNCeK6U08Zx4msEWOXuofgqUt6zPHSi1H9fbjR/NRA==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
+
+"@substrate/calc@file:./calc/pkg":
+  version "0.1.0"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
