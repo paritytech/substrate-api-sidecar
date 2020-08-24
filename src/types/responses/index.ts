@@ -12,3 +12,6 @@ export * from './Extrinsic';
 export * from './Payout';
 export * from './EraPayouts';
 export * from './AccountStakingPayouts';
+export * from './NodeNetwork';
+export * from './NodeVersion';
+export * from './NodeTransactionPool';
