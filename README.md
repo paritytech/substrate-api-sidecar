@@ -75,44 +75,48 @@ CALC_DEBUG=1 yarn
 
 ## Available paths
 
+Path descriptions link to controllers for detailed docs with usage information.
+
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
 
--  `accounts/ADDRESS/staking-payouts` fetch payouts for `ADDRESS`.
+-  [`accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
 
--   `/block` fetch latest finalized block details.
+-   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
--   `/block/NUMBER` fetch block details at the block identified by 'NUMBER`.
+-   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
--   `/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.
+-   [`/block/NUMBER` fetch block details at the block identified by 'NUMBER`.](/src/controllers/blocks/BlocksController.ts)
 
--   `/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.
+-   [`/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsBalanceInfoController.ts)
 
--   `/staking/ADDRESS` fetch the staking info for `ADDRESS` at latest finalized block.
+-   [`/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsBalanceInfoController.ts)
 
--   `/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.
+-   [`/staking/ADDRESS` fetch the staking info for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsStakingInfoController.ts)
 
--  `/staking-info` fetch information on general staking progress at the latest finalized block.
+-   [`/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsStakingInfoController.ts)
 
--  `/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.
+-  [`/staking-info` fetch information on general staking progress at the latest finalized block.](src/controllers/pallets/PalletsStakingProgressController.ts)
 
--   `/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.
+-  [`/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.](src/controllers/pallets/PalletsStakingProgressController.ts)
 
--   `/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at the block identified by 'NUMBER`.
+-   [`/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsVestingInfoController.ts)
 
--   `/metadata` fetch chain metadata at latest finalized block.
+-   [`/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsVestingInfoController.ts)
 
--   `/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.
+-   [`/metadata` fetch chain metadata at latest finalized block.](src/controllers/runtime/RuntimeMetadataController.ts)
 
--   `/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.
+-   [`/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.](src/controllers/runtime/RuntimeMetadataController.ts)
 
--   `/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.
+-   [`/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.](src/controllers/claims/ClaimsController.ts)
 
--   `/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.
+-   [`/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/claims/ClaimsController.ts)
 
--   `/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at the block identified by 'NUMBER`.
+-   [`/tx/artifacts/` fetch artifacts used for creating transactions at latest finalized block.](src/controllers/transaction/TransactionMaterialController.ts)
 
--   `/tx/fee-estimate` submit a transaction in order to get back a fee estimation. Expects a string
+-   [`/tx/artifacts/NUMBER` fetch artifacts used for creating transactions at the block identified by 'NUMBER`.](src/controllers/transaction/TransactionMaterialController.ts)
+
+-   [`/tx/fee-estimate` submit a transaction in order to get back a fee estimation.](src/controllers/transaction/TransactionFeeEstimateController.ts) Expects a string
     with a hex-encoded transaction in a JSON POST body:
 
     ```
@@ -129,7 +133,7 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
     }
     ```
 
--   `/tx/` submit a signed transaction, expects a string with hex-encoded transaction in a JSON POST
+-   [`/tx/` submit a signed transaction.](src/controllers/transaction/TransactionSubmitController.ts) Expects a string with hex-encoded transaction in a JSON POST
     body:
     ```
     curl localhost:8080/tx/ -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
