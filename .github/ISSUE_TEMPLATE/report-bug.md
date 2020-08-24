@@ -16,4 +16,4 @@ assignees: ""
 
 **Expected vs. Actual Behavior**
 
-[A clear description of what you expected to happen and what actually happened]
+[A clear description of what you expected to happen and what actually happened.]
