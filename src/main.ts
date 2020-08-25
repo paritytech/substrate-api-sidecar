@@ -41,8 +41,8 @@ async function main() {
 	});
 
 	const [chainName, { implName }] = await Promise.all([
-		await api.rpc.system.chain(),
-		await api.rpc.state.getRuntimeVersion(),
+		api.rpc.system.chain(),
+		api.rpc.state.getRuntimeVersion(),
 	]);
 
 	console.log(
