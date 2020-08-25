@@ -1737,6 +1737,42 @@ components:
           items:
             type: string
             format: ss58
+    TransactionDryRun:
+      type: object
+      properties:
+        resultType:
+          type: string
+          enum:
+          - DispatchOutcome
+          - TransactionValidityError
+          description: Either `DispatchOutcome` if the transaction is valid or `TransactionValidityError` if the result is invalid.
+        result:
+          type: string
+          enum:
+          - Ok
+          - CannotLookup
+          - NoUnsignedValidator
+          - Custom(u8)
+          - Call
+          - Payment
+          - Future
+          - Stale
+          - BadProof
+          - AncientBirthBlock
+          - ExhaustsResources
+          - BadMandatory
+          - MandatoryDispatch
+          description: 'If there was an error it will be the cause of the error. If the
+            transaction executed correctly it will be `Ok: []`'
+        validityErrorType:
+          type: string
+          enum:
+          - InvalidTransaction
+          - UnknownTransaction
+      description: >-
+        References:
+        - `UnknownTransaction`: https://github.com/paritytech/substrate/blob/master/primitives/runtime/src/transaction_validity.rs#L116
+        - `InvalidTransaction`: https://github.com/paritytech/substrate/blob/master/primitives/runtime/src/transaction_validity.rs#L37
     Transaction:
       type: object
       properties:
