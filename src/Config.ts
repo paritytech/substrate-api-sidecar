@@ -1,5 +1,6 @@
 import { ConfigManager } from 'confmgr';
 
+import { setCodeBlocks } from '../config/setCodeBlocks';
 import * as configTypes from '../config/types.json';
 
 /**
@@ -11,6 +12,7 @@ export interface ISidecarConfig {
 	LOG_MODE: string;
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
+	PARENT_VERSION: string;
 }
 
 /**
@@ -30,6 +32,15 @@ export enum CONFIG {
 	PORT = 'PORT',
 	WS_URL = 'WS_URL',
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
+	PARENT_VERSION = 'PARENT_VERSION',
+}
+
+/**
+ * Options for PARENT_VERSION enviroment variable.
+ */
+export enum ParentVersion {
+	on = 'on',
+	off = 'off',
 }
 
 function hr(): string {
@@ -37,7 +48,9 @@ function hr(): string {
 }
 
 export default class Config {
-	/**
+	static UPGRADE_BLOCKS: Record<string, true> | undefined;
+	static PARENT_VERSION: ParentVersion;
+	/*
 	 * Gather env vars for config and make sure they are valid.
 	 */
 	public static GetConfig(): ISidecarConfig | null {
@@ -60,12 +73,30 @@ export default class Config {
 			config.Print({ compact: true });
 		}
 
+		this.PARENT_VERSION = config.Get(
+			MODULES.SUBSTRATE,
+			CONFIG.PARENT_VERSION
+		) as ParentVersion;
+
 		return {
 			HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
 			PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
 			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
 			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
+			PARENT_VERSION: this.PARENT_VERSION,
 		};
+	}
+
+	/**
+	 * Set UPGRADE_BLOCKS static variable. This must be called when the server
+	 * is being initialized to ensure hard coded block hashes are read in.
+	 *
+	 * @param specName the specName of the node sidecar is connected to.
+	 */
+	public static SetUpgradeBlocks(chainName: string): void {
+		this.UPGRADE_BLOCKS = setCodeBlocks[chainName] as
+			| Record<string, true>
+			| undefined;
 	}
 }

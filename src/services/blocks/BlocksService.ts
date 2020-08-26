@@ -38,15 +38,15 @@ export class BlocksService extends AbstractService {
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
 		const api = await this.ensureMeta(hash);
-		const [{ block }, events] = await Promise.all([
+		const [{ block }, events, deriveHeader] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
+			api.derive.chain.getHeader(hash),
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
-		const header = await api.derive.chain.getHeader(hash);
-		const authorId = header?.author;
+		const authorId = deriveHeader?.author;
 
 		const logs = block.header.digest.logs.map((log) => {
 			const { type, index, value } = log;

@@ -22,3 +22,9 @@ SAS:
       default: ws://127.0.0.1:9944
       mandatory: true
       regexp: ^wss?:\/\/.*(:\d{4,5})?$
+    PARENT_VERSION:
+      description: Wether or not to always use the version of the parent block to set metadata for
+        scale decoding.
+      default: 'off'
+      mandatory: false
+      regexp: ^on|off$

@@ -4,6 +4,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import U32 from '@polkadot/types/primitive/U32';
 import { RegistryMetadata } from '@polkadot/types/types';
 
+import Config, { ParentVersion } from '../Config';
 import { kusamaRegistry } from '../test-helpers/registries';
 import { AbstractService } from './AbstractService';
 
@@ -38,6 +39,8 @@ const setMetadata = () => (_metadata: RegistryMetadata) => 'setMetadata set!';
 
 const register = (..._args: unknown[]) => 'registered!';
 
+const parentHash = '0xParentHash';
+
 /**
  * Mock polkadot-js ApiPromise. This is its own thing for now just for
  * simplicity sake. In the future this may be replaced by `mockApi` in ./utils/mock
@@ -55,6 +58,9 @@ const api = {
 		},
 		system: {
 			chain,
+		},
+		chain: {
+			getHeader: jest.fn().mockResolvedValue({ parentHash }),
 		},
 	},
 };
@@ -126,6 +132,26 @@ describe('AbstractService', () => {
 	});
 
 	describe('ensureMeta', () => {
+		it('calls getRuntimeVersion with the parentHash when PARENT_VERSION is on', async () => {
+			Config.PARENT_VERSION = ParentVersion.on;
+			const mockService = await mockServiceSetup();
+
+			api.rpc.state.getRuntimeVersion = jest.fn().mockResolvedValue({
+				transactionVersion: new U32(kusamaRegistry, 2),
+				specVersion: new U32(kusamaRegistry, 16),
+				specName: 'kusama',
+			});
+
+			await mockService.pubEnsureMeta('0xDummyBlockHash');
+			expect(api.rpc.state.getRuntimeVersion).toHaveBeenCalledTimes(1);
+			expect(mockService['txVersion'].toNumber()).toBe(2);
+			expect(mockService['specVersion'].toNumber()).toBe(16);
+			expect(api.rpc.state.getRuntimeVersion).toBeCalledWith(parentHash);
+
+			api.rpc.state.getRuntimeVersion = getRuntimeVersion;
+			Config.PARENT_VERSION = ParentVersion.off;
+		});
+
 		it('does not change metadata, specVersion or txVersion when they are static', async () => {
 			api.registry.setMetadata = jest.fn();
 			const mockService = await mockServiceSetup();

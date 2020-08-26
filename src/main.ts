@@ -41,9 +41,12 @@ async function main() {
 	});
 
 	const [chainName, { implName }] = await Promise.all([
-		await api.rpc.system.chain(),
-		await api.rpc.state.getRuntimeVersion(),
+		api.rpc.system.chain(),
+		api.rpc.state.getRuntimeVersion(),
 	]);
+
+	// Dynamically UPGRADE_BLOCKS using the chainName from the node Sidecar is connected to
+	Config.SetUpgradeBlocks(chainName.toString());
 
 	console.log(
 		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${

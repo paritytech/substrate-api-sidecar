@@ -51,6 +51,15 @@ Following ENV variables can be set:
     setting it to anything else. LOG_MODE defaults to only "errors".
 -   `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`.
+-   `SAS_SUBSTRATE_PARENT_VERSION`: wether or not to always use the version of the parent block to set
+    metadata for scale decoding. This will normally have a slight time penalty, but will guarantee that
+    extrinsics within a block that does a runtime upgrade with `set_code` are always decoded correctly.
+    If set to `off`, one can selectively hard code the hash of blocks to use the parents version of to
+    set the metadata for scale decoding. The hash for block's with `set_code` can be hardcoded in
+    `config/setCodeBlocks.ts`. Defaults to false. Note: for chains that use the `scheduler` pallet to
+    do runtime upgrades, it is very unlikely this will be an issue as `scheduler` ensures that `set_code`
+    is executed in `on_initialize` and it is highly unlikely there would be any additional room in a
+    block for other extrinsics.
 
 If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `config/types.json`.
 
