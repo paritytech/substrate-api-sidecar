@@ -17,3 +17,4 @@ export * from './AccountStakingPayouts';
 export * from './NodeNetwork';
 export * from './NodeVersion';
 export * from './NodeTransactionPool';
+export * from './TransactionDryRun';

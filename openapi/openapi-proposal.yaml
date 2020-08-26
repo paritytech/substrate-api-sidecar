@@ -351,6 +351,10 @@ paths:
       responses:
         "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDryRun'
         "500":
           description: failed to dry-run transaction
           content:
@@ -1737,6 +1741,42 @@ components:
           items:
             type: string
             format: ss58
+    TransactionDryRun:
+      type: object
+      properties:
+        resultType:
+          type: string
+          enum:
+          - DispatchOutcome
+          - TransactionValidityError
+          description: Either `DispatchOutcome` if the transaction is valid or `TransactionValidityError` if the result is invalid.
+        result:
+          type: string
+          enum:
+          - Ok
+          - CannotLookup
+          - NoUnsignedValidator
+          - Custom(u8)
+          - Call
+          - Payment
+          - Future
+          - Stale
+          - BadProof
+          - AncientBirthBlock
+          - ExhaustsResources
+          - BadMandatory
+          - MandatoryDispatch
+          description: 'If there was an error it will be the cause of the error. If the
+            transaction executed correctly it will be `Ok: []`'
+        validityErrorType:
+          type: string
+          enum:
+          - InvalidTransaction
+          - UnknownTransaction
+      description: >-
+        References:
+        - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
+        - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
     Transaction:
       type: object
       properties:

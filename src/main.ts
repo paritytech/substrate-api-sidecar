@@ -80,6 +80,7 @@ async function main() {
 	const txArtifactsController = new controllers.TransactionMaterial(api);
 	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
 	const txSubmitController = new controllers.TransactionSubmit(api);
+	const transactionDryRunController = new controllers.TransactionDryRun(api);
 
 	// Create our App
 	const app = new App({
@@ -101,6 +102,7 @@ async function main() {
 			txArtifactsController,
 			txFeeEstimateController,
 			txSubmitController,
+			transactionDryRunController,
 		],
 		postMiddleware: [
 			middleware.txError,
