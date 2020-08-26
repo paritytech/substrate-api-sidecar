@@ -4,3 +4,4 @@ export * from './blocks';
 export * from './claims';
 export * from './runtime';
 export * from './pallets';
+export * from './node';

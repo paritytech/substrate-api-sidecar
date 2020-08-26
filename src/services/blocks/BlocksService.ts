@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { CalcFee } from '@polkadot/calc-fee';
 import { Struct } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types';
 import {
@@ -12,6 +11,7 @@ import {
 import { AnyJson, Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import { CalcFee } from '@substrate/calc';
 
 import {
 	IBlock,
@@ -38,15 +38,15 @@ export class BlocksService extends AbstractService {
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
 		const api = await this.ensureMeta(hash);
-		const [{ block }, events] = await Promise.all([
+		const [{ block }, events, headerDerive] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
+			api.derive.chain.getHeader(hash),
 		]);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
 
-		const header = await api.derive.chain.getHeader(hash);
-		const authorId = header?.author;
+		const authorId = headerDerive?.author;
 
 		const logs = block.header.digest.logs.map((log) => {
 			const { type, index, value } = log;
@@ -192,7 +192,7 @@ export class BlocksService extends AbstractService {
 				method: `${method.sectionName}.${method.methodName}`,
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
-				args: BlocksService.parseGenericCall(method).args,
+				args: this.parseGenericCall(method).args,
 				tip,
 				hash,
 				info: {},
@@ -353,7 +353,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param argsArray array of `Codec` values
 	 */
-	private static parseArrayGenericCalls(
+	private parseArrayGenericCalls(
 		argsArray: Codec[]
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
@@ -372,7 +372,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param genericCall `GenericCall`
 	 */
-	private static parseGenericCall(genericCall: GenericCall): ISanitizedCall {
+	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
 		const { sectionName, methodName, callIndex } = genericCall;
 		const newArgs = {};
 
@@ -389,6 +389,14 @@ export class BlocksService extends AbstractService {
 					newArgs[paramName] = this.parseArrayGenericCalls(argument);
 				} else if (argument instanceof GenericCall) {
 					newArgs[paramName] = this.parseGenericCall(argument);
+				} else if (
+					paramName === 'call' &&
+					argument?.toRawType() === 'Bytes'
+				) {
+					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
+					// serialize to a polkadot-js Call and parse so it is not a hex blob.
+					const call = this.api.createType('Call', argument.toHex());
+					newArgs[paramName] = this.parseGenericCall(call);
 				} else {
 					newArgs[paramName] = argument;
 				}

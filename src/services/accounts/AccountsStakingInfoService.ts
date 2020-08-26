@@ -23,7 +23,7 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const at = {
 			hash,
-			height: header.number.toNumber().toString(10),
+			height: header.number.unwrap().toString(10),
 		};
 
 		if (controllerOption.isNone) {
@@ -41,9 +41,9 @@ export class AccountsStakingInfoService extends AbstractService {
 			rewardDestination,
 			slashingSpansOption,
 		] = await Promise.all([
-			await api.query.staking.ledger.at(hash, controller),
-			await api.query.staking.payee.at(hash, stash),
-			await api.query.staking.slashingSpans.at(hash, stash),
+			api.query.staking.ledger.at(hash, controller),
+			api.query.staking.payee.at(hash, stash),
+			api.query.staking.slashingSpans.at(hash, stash),
 		]);
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);

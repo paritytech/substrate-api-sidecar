@@ -5,13 +5,14 @@ import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
 import { AbstractService } from 'src/services/AbstractService';
+import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
 	IAddressParam,
 	INumberParam,
 } from 'src/types/requests';
 
-import { sanitizeNumbers } from '../sanitize/sanitizeNumbers';
+import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 
 type SidecarRequestHandler =
@@ -114,7 +115,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 			// Not a block hash, must be a block height
 			try {
-				blockNumber = this.parseBlockNumber(blockId);
+				blockNumber = this.parseNumberOrThrow(
+					blockId,
+					'Invalid block number'
+				);
 			} catch (err) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` +
@@ -154,14 +158,35 @@ export default abstract class AbstractController<T extends AbstractService> {
 		}
 	}
 
-	private parseBlockNumber(n: string): number {
+	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
 		if (!Number.isInteger(num) || num < 0) {
-			throw new BadRequest('Invalid block number');
+			throw new BadRequest(errorMessage);
 		}
 
 		return num;
+	}
+
+	protected verifyAndCastOr(
+		name: string,
+		str: unknown,
+		or: number | undefined
+	): number | undefined {
+		if (!str) {
+			return or;
+		}
+
+		if (!(typeof str === 'string')) {
+			throw new BadRequest(
+				`Incorrect argument quantity or type passed in for ${name} query param`
+			);
+		}
+
+		return this.parseNumberOrThrow(
+			str,
+			`${name} query param is an invalid number`
+		);
 	}
 
 	/**
@@ -171,10 +196,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param res Response
 	 * @param body response body
 	 */
-	static sanitizedSend<T = unknown>(res: Response<T>, body: T): void {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const sanitizedBody = sanitizeNumbers(body);
-
-		res.send(sanitizedBody);
+	static sanitizedSend<T>(res: Response<AnyJson>, body: T): void {
+		res.send(sanitizeNumbers(body));
 	}
 }

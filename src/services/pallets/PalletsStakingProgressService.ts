@@ -24,11 +24,11 @@ export class PalletsStakingProgressService extends AbstractService {
 			validators,
 			{ number },
 		] = await Promise.all([
-			await api.query.staking.validatorCount.at(hash),
-			await api.query.staking.forceEra.at(hash),
-			await api.query.staking.eraElectionStatus.at(hash),
-			await api.query.session.validators.at(hash),
-			await api.rpc.chain.getHeader(hash),
+			api.query.staking.validatorCount.at(hash),
+			api.query.staking.forceEra.at(hash),
+			api.query.staking.eraElectionStatus.at(hash),
+			api.query.session.validators.at(hash),
+			api.rpc.chain.getHeader(hash),
 		]);
 
 		const {
@@ -131,11 +131,11 @@ export class PalletsStakingProgressService extends AbstractService {
 			currentIndex,
 			activeEraOption,
 		] = await Promise.all([
-			await api.query.babe.currentSlot.at(hash),
-			await api.query.babe.epochIndex.at(hash),
-			await api.query.babe.genesisSlot.at(hash),
-			await api.query.session.currentIndex.at(hash),
-			await api.query.staking.activeEra.at(hash),
+			api.query.babe.currentSlot.at(hash),
+			api.query.babe.epochIndex.at(hash),
+			api.query.babe.genesisSlot.at(hash),
+			api.query.session.currentIndex.at(hash),
+			api.query.staking.activeEra.at(hash),
 		]);
 
 		if (activeEraOption.isNone) {

@@ -10,5 +10,5 @@ export interface ITransactionMaterial {
 	specName: string;
 	specVersion: U32;
 	txVersion: U32;
-	metadata: string;
+	metadata?: string;
 }
