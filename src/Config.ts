@@ -50,7 +50,7 @@ function hr(): string {
 export default class Config {
 	static UPGRADE_BLOCKS: Record<string, true> | undefined;
 	static PARENT_VERSION: ParentVersion;
-	/*
+	/**
 	 * Gather env vars for config and make sure they are valid.
 	 */
 	public static GetConfig(): ISidecarConfig | null {

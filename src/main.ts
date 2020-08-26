@@ -45,7 +45,7 @@ async function main() {
 		api.rpc.state.getRuntimeVersion(),
 	]);
 
-	// Dynamically UPGRADE_BLOCKS using the chainName from the node Sidecar is connected to
+	// Dynamically read in UPGRADE_BLOCKS based on the chainName
 	Config.SetUpgradeBlocks(chainName.toString());
 
 	console.log(
