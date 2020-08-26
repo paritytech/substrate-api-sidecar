@@ -16,17 +16,16 @@ import { extractCauseAndStack } from './extractCauseAndStack';
  * 		- `hash`: The block's hash.
  * 		- `height`: The block's height.
  * - `dryRunResult`:
- * 		- `resultType`: Either `DispatchOutcome` if the transaction is valid or
- * 			`TransactionValidityError` if the result is invalid.
+ * 		- `resultType`: Either `DispatchOutcome` if the construction is valid
+ * 			or `TransactionValidityError` if the transaction has invalid construction.
  * 		- `result`: If there was an error it will be the cause of the error. If the
  * 			transaction executed correctly it will be `Ok: []`.
- * 			or `TransactionValidityError` if the transaction is invalid.
  * 		- `validityErrorType`: Only present if the `resultType` is
  * 			`TransactionValidityError`. Either `InvalidTransaction` or `UnknownTransaction`.
  *
  * References:
- * - `UnknownTransaction`: https://github.com/paritytech/substrate/blob/master/primitives/runtime/src/transaction_validity.rs#L116
- * - `InvalidTransaction`: https://github.com/paritytech/substrate/blob/master/primitives/runtime/src/transaction_validity.rs#L37
+ * - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
+ * - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
  */
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
