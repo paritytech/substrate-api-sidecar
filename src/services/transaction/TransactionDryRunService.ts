@@ -8,25 +8,6 @@ import {
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
-/**
- * Dry run an extrinsic.
- *
- * Returns:
- * - `at`:
- * 		- `hash`: The block's hash.
- * 		- `height`: The block's height.
- * - `dryRunResult`:
- * 		- `resultType`: Either `DispatchOutcome` if the construction is valid
- * 			or `TransactionValidityError` if the transaction has invalid construction.
- * 		- `result`: If there was an error it will be the cause of the error. If the
- * 			transaction executed correctly it will be `Ok: []`.
- * 		- `validityErrorType`: Only present if the `resultType` is
- * 			`TransactionValidityError`. Either `InvalidTransaction` or `UnknownTransaction`.
- *
- * References:
- * - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
- * - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
- */
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
 		hash: BlockHash,
