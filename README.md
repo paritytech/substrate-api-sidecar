@@ -52,9 +52,9 @@ Following ENV variables can be set:
 -   `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`.
 -   `SAS_SUBSTRATE_PARENT_VERSION`: always use the version of the parent block to set
-    metadata for scale decoding. `on` means always fetch and use the parent blocks metadata, while `off`
+    metadata for scale decoding. `on` means always fetch and use the parent block's metadata, while `off`
     means _only_ fetch and use the parent blocks metadata for the blocks with hashes specified in
-    `config/setCodeBlocks.ts`. Fetching and using the parent blocks metadata will have a slight time
+    `config/setCodeBlocks.ts`. Fetching and using the parent block's metadata will have a slight time
     penalty, but will guarantee that extrinsics within a block that executed a runtime upgrade with
     `set_code` are always decoded correctly. Defaults to `off`. Note: for chains that use the
     `scheduler` pallet to do runtime upgrades, it is very unlikely this will be an issue as
