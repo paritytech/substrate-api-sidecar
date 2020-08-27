@@ -24,8 +24,8 @@ import AbstractController from '../AbstractController';
  * - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
  * - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
  *
- * Note: If you get the error `-32601: Method not found` it means the node sidecar
- * is connected too does not expose the system_dryRun RPC. One way to resolve this
+ * Note: If you get the error `-32601: Method not found` it means that the node sidecar
+ * is connected to does not expose the `system_dryRun` RPC. One way to resolve this
  * issue is to pass the `--rpc-external` flag to that node.
  */
 export default class TransactionDryRunController extends AbstractController<
