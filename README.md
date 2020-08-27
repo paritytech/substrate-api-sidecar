@@ -155,6 +155,14 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
     }
     ```
 
+- [`transaction/dry-run` dry run a transaction to check if it is valid.](src/controllers/transaction/TransactionDryRunController.ts)
+Expects a string with hex-encoded transaction in a JSON POST
+    body:
+    ```
+    curl localhost:8080/transaction/dry-run -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
+    ```
+    See [here for details](src/controllers/transaction/TransactionDryRunController.ts) on expected result.
+
 ## Chain compatibility
 
 Sidecar should be compatible with any [Substrate](https://substrate.dev/) based chain, given
