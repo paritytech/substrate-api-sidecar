@@ -2,7 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import { RuntimeMetadataService } from '../../services';
+import { RuntimeMetadataService } from '../../services/v0';
 import AbstractController from '../AbstractController';
 
 /**

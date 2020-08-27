@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
-import { AccountsVestingInfoService } from '../../services';
+import { AccountsVestingInfoService } from '../../services/v0';
 import AbstractController from '../AbstractController';
 
 /**

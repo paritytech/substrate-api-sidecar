@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
-import { AccountsStakingPayoutsService } from '../../services/';
+import { AccountsStakingPayoutsService } from '../../services';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 

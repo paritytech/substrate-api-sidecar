@@ -59,10 +59,26 @@ async function main() {
 		preMiddleware.push(middleware.allLogger);
 	}
 
+	// Instantiate v0 controllers
+	const claimsController = new controllers.v0.v0Claims(api);
+	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
+	const txFeeEstimateController = new controllers.v0.v0TransactionFeeEstimate(
+		api
+	);
+	const txSubmitController = new controllers.v0.v0TransactionSubmit(api);
+
+	const v0Controllers = [
+		claimsController,
+		txArtifactsController,
+		txFeeEstimateController,
+		txSubmitController,
+	];
+
 	// Instantiate controller class instances
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
+
 	const blocksController = new controllers.Blocks(api);
 	const balancesController = new controllers.AccountsBalanceInfo(api);
 	const stakingInfoController = new controllers.AccountsStakingInfo(api);
@@ -76,10 +92,7 @@ async function main() {
 	);
 	const runtimeCodeController = new controllers.RuntimeCode(api);
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
-	const claimsController = new controllers.Claims(api);
-	const txArtifactsController = new controllers.TransactionMaterial(api);
-	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
-	const txSubmitController = new controllers.TransactionSubmit(api);
+
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
 
 	// Create our App
@@ -98,11 +111,8 @@ async function main() {
 			nodeTransactionPoolController,
 			runtimeCodeController,
 			runtimeSpecController,
-			claimsController,
-			txArtifactsController,
-			txFeeEstimateController,
-			txSubmitController,
 			transactionDryRunController,
+			...v0Controllers,
 		],
 		postMiddleware: [
 			middleware.txError,
