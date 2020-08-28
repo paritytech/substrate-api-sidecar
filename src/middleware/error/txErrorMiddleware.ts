@@ -3,7 +3,7 @@ import { ErrorRequestHandler } from 'express';
 import { isTxLegacyError } from '../../types/errors';
 
 /**
- * Handle errors from tx POST methods
+ * Handle errors from transaction POST methods
  *
  * @param exception unknown
  * @param _req Express Request
@@ -20,12 +20,13 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 		return next(err);
 	}
 
-	const { error, data, cause, stack } = err;
+	const { error, data, cause, stack, extrinsic } = err;
 
 	res.status(500).send({
 		code: 500,
 		error,
 		data,
+		extrinsic,
 		cause,
 		stack,
 	});

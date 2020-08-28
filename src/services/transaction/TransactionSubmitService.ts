@@ -1,7 +1,8 @@
 import { Hash } from '@polkadot/types/interfaces';
+import { BlockHash } from '@polkadot/types/interfaces';
 
-import { AbstractService } from '../../AbstractService';
-import { extractCauseAndStack } from '../../transaction/extractCauseAndStack';
+import { AbstractService } from '../AbstractService';
+import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**
@@ -9,10 +10,11 @@ export class TransactionSubmitService extends AbstractService {
 	 *
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
-	async submitTransaction(extrinsic: string): Promise<{ hash: Hash }> {
-		const api = await this.ensureMeta(
-			await this.api.rpc.chain.getFinalizedHead() // TODO move this out to controller for consistency with other services
-		);
+	async submitTransaction(
+		hash: BlockHash,
+		extrinsic: string
+	): Promise<{ hash: Hash }> {
+		const api = await this.ensureMeta(hash);
 
 		let tx;
 
@@ -22,8 +24,8 @@ export class TransactionSubmitService extends AbstractService {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
-				error: 'Failed to parse a tx',
-				data: extrinsic,
+				error: 'Failed to parse transaction.',
+				extrinsic,
 				cause,
 				stack,
 			};
@@ -39,8 +41,8 @@ export class TransactionSubmitService extends AbstractService {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
-				error: 'Failed to submit a tx',
-				data: extrinsic,
+				error: 'Failed to submit transaction.',
+				extrinsic,
 				cause,
 				stack,
 			};
