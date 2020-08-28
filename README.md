@@ -108,7 +108,7 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/node/version` fetch information about the Substrates node's implementation and versioning.](src/controllers/node/NodeVersionController.ts)
 
--   [`/runtime/metadata` fetch the runtime metadata in decoded, JSON form.](src/controllers/runtime/RuntimeMetadataController.ts)
+-   [`/runtime/metadata` fetch the runtime metadata in decoded, JSON form.](src/controllers/runtime/RuntimeMetadataController.ts) (replaces `/metadata`)
 
 -   [`/runtime/code` fetch the Wasm code blob of the Substrate runtime.](src/controllers/runtime/RuntimeCodeController.ts)
 
