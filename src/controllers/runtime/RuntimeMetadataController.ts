@@ -36,7 +36,6 @@ export default class RuntimeMetadataController extends AbstractController<
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-
 	private getMetadata: RequestHandler = async (
 		{ query: { at } },
 		res
