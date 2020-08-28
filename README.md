@@ -84,8 +84,6 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
--   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
-
 -   [`/block/NUMBER` fetch block details at the block identified by 'NUMBER`.](/src/controllers/blocks/BlocksController.ts)
 
 -   [`/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsBalanceInfoController.ts)
