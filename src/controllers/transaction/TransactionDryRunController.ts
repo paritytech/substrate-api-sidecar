@@ -51,10 +51,7 @@ export default class TransactionDryRunController extends AbstractController<
 			throw new BadRequest('Missing field `tx` on request body.');
 		}
 
-		const hash =
-			typeof at === 'string'
-				? await this.getHashForBlock(at)
-				: await this.api.rpc.chain.getFinalizedHead();
+		const hash = await this.getHashFromAt(at);
 
 		TransactionDryRunController.sanitizedSend(
 			res,

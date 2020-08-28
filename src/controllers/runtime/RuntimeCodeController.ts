@@ -38,10 +38,7 @@ export default class RuntimeCodeController extends AbstractController<
 		{ query: { at } },
 		res
 	): Promise<void> => {
-		const hash =
-			typeof at === 'string'
-				? await this.getHashForBlock(at)
-				: await this.api.rpc.chain.getFinalizedHead();
+		const hash = await this.getHashFromAt(at);
 
 		RuntimeCodeController.sanitizedSend(
 			res,

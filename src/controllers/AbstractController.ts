@@ -190,6 +190,17 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	/**
+	 * Get a BlockHash based on the `at` query param.
+	 *
+	 * @param at should be a block height, hash, or none from the `at` query param
+	 */
+	protected async getHashFromAt(at: unknown): Promise<BlockHash> {
+		return typeof at === 'string'
+			? await this.getHashForBlock(at)
+			: await this.api.rpc.chain.getFinalizedHead();
+	}
+
+	/**
 	 * Sanitize the numbers within the response body and then send the response
 	 * body using the original Express Response object.
 	 *
