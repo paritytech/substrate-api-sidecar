@@ -14,13 +14,19 @@ export class RuntimeSpecService extends AbstractService {
 			},
 			chainType,
 			properties,
+			{ number },
 		] = await Promise.all([
 			this.api.rpc.state.getRuntimeVersion(hash),
 			this.api.rpc.system.chainType(),
 			this.api.rpc.system.properties(),
+			this.api.rpc.chain.getHeader(hash),
 		]);
 
 		return {
+			at: {
+				height: number.unwrap().toString(10),
+				hash,
+			},
 			authoringVersion,
 			transactionVersion,
 			implVersion,
