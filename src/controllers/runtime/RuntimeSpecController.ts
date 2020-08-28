@@ -42,10 +42,7 @@ export default class RuntimeSpecController extends AbstractController<
 	}
 
 	private getSpec: RequestHandler = async ({ query: { at } }, res) => {
-		const hash =
-			typeof at === 'string'
-				? await this.getHashForBlock(at)
-				: await this.api.rpc.chain.getFinalizedHead();
+		const hash = await this.getHashFromAt(at);
 
 		RuntimeSpecController.sanitizedSend(
 			res,
