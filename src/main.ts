@@ -59,32 +59,37 @@ async function main() {
 		preMiddleware.push(middleware.allLogger);
 	}
 
-	// Instantiate v0 controllers
+	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
 	const claimsController = new controllers.v0.v0Claims(api);
 	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
 	const txFeeEstimateController = new controllers.v0.v0TransactionFeeEstimate(
 		api
 	);
 	const txSubmitController = new controllers.v0.v0TransactionSubmit(api);
+	const vestingController = new controllers.v0.v0AccountsVestingInfo(api);
+	const balancesController = new controllers.v0.v0AccountsBalanceInfo(api);
+	const stakingInfoController = new controllers.v0.v0AccountsStakingInfo(api);
+	const blocksController = new controllers.v0.v0Blocks(api);
+	const stakingController = new controllers.v0.v0PalletsStakingProgress(api);
+	const metadataController = new controllers.v0.v0Metadata(api);
 
 	const v0Controllers = [
 		claimsController,
 		txArtifactsController,
 		txFeeEstimateController,
 		txSubmitController,
+		stakingInfoController,
+		vestingController,
+		balancesController,
+		blocksController,
+		stakingController,
+		metadataController,
 	];
 
-	// Instantiate controller class instances
+	// Instantiate v1 controllers
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
-
-	const blocksController = new controllers.Blocks(api);
-	const balancesController = new controllers.AccountsBalanceInfo(api);
-	const stakingInfoController = new controllers.AccountsStakingInfo(api);
-	const stakingController = new controllers.PalletsStakingProgress(api);
-	const vestingController = new controllers.AccountsVestingInfo(api);
-	const metadataController = new controllers.Metadata(api);
 	const nodeNetworkController = new controllers.NodeNetwork(api);
 	const nodeVersionController = new controllers.NodeVersion(api);
 	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
@@ -92,7 +97,6 @@ async function main() {
 	);
 	const runtimeCodeController = new controllers.RuntimeCode(api);
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
-
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
 
 	// Create our App
@@ -100,12 +104,6 @@ async function main() {
 		preMiddleware,
 		controllers: [
 			accountsStakingPayoutsController,
-			blocksController,
-			balancesController,
-			stakingInfoController,
-			stakingController,
-			vestingController,
-			metadataController,
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,

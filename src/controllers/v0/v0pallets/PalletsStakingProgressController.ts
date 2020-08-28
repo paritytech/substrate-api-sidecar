@@ -2,8 +2,8 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { INumberParam } from 'src/types/requests';
 
-import { PalletsStakingProgressService } from '../../services/v0';
-import AbstractController from '../AbstractController';
+import { PalletsStakingProgressService } from '../../../services/v0';
+import AbstractController from '../../AbstractController';
 
 /**
  * GET generalized staking information.

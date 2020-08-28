@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
-import { BlocksService } from '../../services/v0';
-import { INumberParam } from '../../types/requests';
-import AbstractController from '../AbstractController';
+import { BlocksService } from '../../../services/v0';
+import { INumberParam } from '../../../types/requests';
+import AbstractController from '../../AbstractController';
 
 /**
  * GET a block.

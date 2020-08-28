@@ -2,9 +2,9 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
-import { validateAddress } from '../../middleware';
-import { AccountsBalanceInfoService } from '../../services/v0';
-import AbstractController from '../AbstractController';
+import { validateAddress } from '../../../middleware';
+import { AccountsBalanceInfoService } from '../../../services/v0';
+import AbstractController from '../../AbstractController';
 
 /**
  * GET balance information for an address.
