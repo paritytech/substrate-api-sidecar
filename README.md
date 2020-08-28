@@ -77,16 +77,43 @@ CALC_DEBUG=1 yarn
 
 Path descriptions link to controllers for detailed docs with usage information.
 
+N.B. Paths in the [soon to be deprecated paths](#soon-to-be-deprecated-paths) section will not
+be supported as of v1.0.0.
+
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
 
 -   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
 
--   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
+-   [`/node/network` fetch information about the Substrate node's activity in the peer-to-peer network.](src/controllers/node/NodeNetworkController.ts)
+
+-   [`/node/transaction-pool` fetch pending extrinsics from the Substrate node.](src/controllers/node/NodeTransactionPoolController.ts)
+
+-   [`/node/version` fetch information about the Substrates node's implementation and versioning.](src/controllers/node/NodeVersionController.ts)
+
+-   [`/runtime/code` fetch the Wasm code blob of the Substrate runtime.](src/controllers/runtime/RuntimeCodeController.ts)
+
+-   [`/runtime/spec` version information of the Substrate runtime.](src/controllers/runtime/RuntimeSpecController.ts)
+
+- [`transaction/dry-run` dry run a transaction to check if it is valid.](src/controllers/transaction/TransactionDryRunController.ts)
+Expects a string with hex-encoded transaction in a JSON POST
+    body:
+    ```
+    curl localhost:8080/transaction/dry-run -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
+    ```
+    See [here for details](src/controllers/transaction/TransactionDryRunController.ts) on expected result.
+
+### Soon to be deprecated paths
+
+We currently are working on implementing new versions of the below paths (except for `/claims`) that
+will be part of v1.0.0. In the interim period these paths will still be supported through v1.0.0.beta.x.
+However, v1.0.0 will not contain the below paths.
 
 -   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
 -   [`/block/NUMBER` fetch block details at the block identified by 'NUMBER`.](/src/controllers/blocks/BlocksController.ts)
+
+-   [`/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.](src/controllers/runtime/RuntimeMetadataController.ts)
 
 -   [`/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsBalanceInfoController.ts)
 
@@ -106,18 +133,17 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/metadata` fetch chain metadata at latest finalized block.](src/controllers/runtime/RuntimeMetadataController.ts)
 
--   [`/metadata/NUMBER` fetch chain metadata at the block identified by 'NUMBER`.](src/controllers/runtime/RuntimeMetadataController.ts)
-
--   [`/node/network` fetch information about the Substrate node's activity in the peer-to-peer network.](src/controllers/node/NodeNetworkController.ts)
-
--   [`/node/transaction-pool` fetch pending extrinsics from the Substrate node.](src/controllers/node/NodeTransactionPoolController.ts)
-
--   [`/node/version` fetch information about the Substrates node's implementation and versioning.](src/controllers/node/NodeVersionController.ts)
-
--   [`/runtime/code` fetch the Wasm code blob of the Substrate runtime.](src/controllers/runtime/RuntimeCodeController.ts)
-
--   [`/runtime/spec` version information of the Substrate runtime.](src/controllers/runtime/RuntimeSpecController.ts)
-
+-   [`/tx/` submit a signed transaction.](src/controllers/transaction/TransactionSubmitController.ts) Expects a string with hex-encoded transaction in a JSON POST
+    body:
+    ```
+    curl localhost:8080/tx/ -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
+    ```
+    Expected result is a JSON with transaction hash:
+    ```
+    {
+        "hash": "..."
+    }
+    ```
 -   [`/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.](src/controllers/claims/ClaimsController.ts)
 
 -   [`/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/claims/ClaimsController.ts)
@@ -142,26 +168,6 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
       "partialFee": "165600000"
     }
     ```
-
--   [`/tx/` submit a signed transaction.](src/controllers/transaction/TransactionSubmitController.ts) Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/tx/ -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    Expected result is a JSON with transaction hash:
-    ```
-    {
-        "hash": "..."
-    }
-    ```
-
-- [`transaction/dry-run` dry run a transaction to check if it is valid.](src/controllers/transaction/TransactionDryRunController.ts)
-Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/transaction/dry-run -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    See [here for details](src/controllers/transaction/TransactionDryRunController.ts) on expected result.
 
 ## Chain compatibility
 

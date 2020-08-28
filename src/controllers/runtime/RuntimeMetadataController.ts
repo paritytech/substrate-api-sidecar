@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
+import { RequestHandler } from 'express';
 
 import { RuntimeMetadataService } from '../../services';
 import AbstractController from '../AbstractController';
-import { RequestHandler } from 'express';
 
 /**
  * GET the chain's metadata.
@@ -27,9 +27,7 @@ export default class RuntimeMetadataController extends AbstractController<
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([
-			['', this.getMetadata],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getMetadata]]);
 	}
 
 	/**
@@ -39,7 +37,10 @@ export default class RuntimeMetadataController extends AbstractController<
 	 * @param res Express Response
 	 */
 
-	private getMetadata: RequestHandler = async ({ query: { at }}, res): Promise<void> => {
+	private getMetadata: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		RuntimeMetadataController.sanitizedSend(
@@ -47,3 +48,4 @@ export default class RuntimeMetadataController extends AbstractController<
 			await this.service.fetchMetadata(hash)
 		);
 	};
+}
