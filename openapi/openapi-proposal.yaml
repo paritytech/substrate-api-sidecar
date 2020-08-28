@@ -944,7 +944,11 @@ paths:
       tags:
       - runtime
       summary: Get the runtime metadata in decoded, JSON form.
-      description: Returns the runtime metadata as a JSON object.
+      description: >-
+       Returns the runtime metadata as a JSON object.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
       parameters:
       - name: at
         in: query
