@@ -97,6 +97,7 @@ async function main() {
 	);
 	const runtimeCodeController = new controllers.RuntimeCode(api);
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
+	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
 	const transactionMaterialController = new controllers.TransactionMaterial(
 		api
@@ -116,6 +117,7 @@ async function main() {
 			nodeTransactionPoolController,
 			runtimeCodeController,
 			runtimeSpecController,
+			runtimeMetadataController,
 			transactionDryRunController,
 			transactionMaterialController,
 			transactionFeeEstimateController,
