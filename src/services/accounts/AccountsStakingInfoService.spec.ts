@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { sanitizeNumbers } from '../../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../../test-helpers/registries';
+import { BadRequest, InternalServerError } from 'http-errors';
+
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	blockHash789629,
 	bondedAt,
@@ -9,8 +11,8 @@ import {
 	mockApi,
 	testAddress,
 	testAddressController,
-} from '../../test-helpers/mock';
-import * as response789629 from '../../test-helpers/responses/accounts/stakingInfo789629.json';
+} from '../test-helpers/mock';
+import * as response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
@@ -39,10 +41,9 @@ describe('AccountsStakingInfoService', () => {
 					blockHash789629,
 					'NotStash'
 				)
-			).rejects.toStrictEqual({
-				error: 'The address NotStash is not a stash address.',
-				statusCode: 400,
-			});
+			).rejects.toStrictEqual(
+				new BadRequest('The address NotStash is not a stash address.')
+			);
 
 			(mockApi.query.staking.bonded as any).at = bondedAt;
 		});
@@ -58,10 +59,11 @@ describe('AccountsStakingInfoService', () => {
 					blockHash789629,
 					testAddress
 				)
-			).rejects.toStrictEqual({
-				error: `Staking ledger could not be found for controller address "${testAddressController.toString()}"`,
-				statusCode: 404,
-			});
+			).rejects.toStrictEqual(
+				new InternalServerError(
+					`Staking ledger could not be found for controller address "${testAddressController.toString()}"`
+				)
+			);
 
 			(mockApi.query.staking.ledger as any).at = ledgerAt;
 		});

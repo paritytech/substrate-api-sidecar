@@ -12,9 +12,9 @@ import AbstractController from '../AbstractController';
  * Paths:
  * - `address`: The address to query.
  *
- * Query
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
- *   finalized head.
+ * Query:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
