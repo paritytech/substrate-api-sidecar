@@ -82,13 +82,11 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
 
+-   [`/accounts/ADDRESS/balance-info` fetch balances info for `ADDRESS`](src/controllers/accounts/AccountsBalanceInfoController.ts) (Replaces `/balance/ADDRESS`.)
+
 -   [`/block` fetch latest finalized block details.](/src/controllers/blocks/BlocksController.ts)
 
 -   [`/block/NUMBER` fetch block details at the block identified by 'NUMBER`.](/src/controllers/blocks/BlocksController.ts)
-
--   [`/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsBalanceInfoController.ts)
-
--   [`/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsBalanceInfoController.ts)
 
 -   [`/staking/ADDRESS` fetch the staking info for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsStakingInfoController.ts)
 

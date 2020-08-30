@@ -99,12 +99,16 @@ async function main() {
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
+	const accountsBalanceInfoController = new controllers.AccountsBalanceInfo(
+		api
+	);
 
 	// Create our App
 	const app = new App({
 		preMiddleware,
 		controllers: [
 			accountsStakingPayoutsController,
+			accountsBalanceInfoController,
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,
