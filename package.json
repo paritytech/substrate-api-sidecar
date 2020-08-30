@@ -18,7 +18,7 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@polkadot/api": "^1.31.beta.15",
+    "@polkadot/api": "^1.31.beta.16",
     "@polkadot/util-crypto": "^3.3.1",
     "@substrate/calc": "file:./calc/pkg",
     "body-parser": "^1.19.0",
