@@ -37,7 +37,14 @@ async function main() {
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
-		types: config.CUSTOM_TYPES,
+		types: {
+			Announcement: {
+				real: 'AccountId',
+				call_hash: 'Hash',
+				height: 'BlockNumber',
+			},
+			...config.CUSTOM_TYPES,
+		},
 	});
 
 	const [chainName, { implName }] = await Promise.all([
