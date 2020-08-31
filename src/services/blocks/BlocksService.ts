@@ -236,7 +236,10 @@ export class BlocksService extends AbstractService {
 			for (const record of events) {
 				const { event, phase } = record;
 				const sanitizedEvent = {
-					method: `${event.section}.${event.method}`,
+					method: {
+						pallet: event.section,
+						methodName: event.method,
+					},
 					data: event.data,
 				};
 
@@ -416,7 +419,10 @@ export class BlocksService extends AbstractService {
 		}
 
 		return {
-			method: `${sectionName}.${methodName}`,
+			method: {
+				pallet: sectionName,
+				methodName: methodName,
+			},
 			args: newArgs,
 		};
 	}
