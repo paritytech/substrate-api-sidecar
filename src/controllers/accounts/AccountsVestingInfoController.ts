@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
+import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
 import { AccountsVestingInfoService } from '../../services/v0';
