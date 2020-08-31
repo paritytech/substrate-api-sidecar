@@ -76,6 +76,7 @@ export default class AccountsStakingInfoController extends AbstractController<
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
+
 		AccountsStakingInfoController.sanitizedSend(
 			res,
 			await this.service.fetchAccountStakingInfo(hash, address)
