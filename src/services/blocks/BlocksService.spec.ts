@@ -107,7 +107,6 @@ describe('BlocksService', () => {
 
 		const transferOutput = {
 			method: 'balances.transfer',
-			callIndex: new Uint8Array([6, 0]),
 			args: {
 				dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 				value: 12,
@@ -146,7 +145,6 @@ describe('BlocksService', () => {
 
 			const baseBatch = {
 				method: 'utility.batch',
-				callIndex: new Uint8Array([1, 0]),
 				args: {
 					calls: [],
 				},
@@ -206,11 +204,9 @@ describe('BlocksService', () => {
 
 			const sudoOutput = {
 				method: 'sudo.sudo',
-				callIndex: new Uint8Array([18, 0]),
 				args: {
 					call: {
 						method: 'proxy.proxy',
-						callIndex: new Uint8Array([28, 0]),
 						args: {
 							real:
 								'5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
@@ -226,7 +222,6 @@ describe('BlocksService', () => {
 			).toEqual(
 				JSON.stringify({
 					method: 'utility.batch',
-					callIndex: new Uint8Array([1, 0]),
 					args: {
 						calls: [sudoOutput, sudoOutput, sudoOutput],
 					},

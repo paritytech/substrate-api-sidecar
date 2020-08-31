@@ -384,7 +384,7 @@ export class BlocksService extends AbstractService {
 	 * @param genericCall `GenericCall`
 	 */
 	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
-		const { sectionName, methodName, callIndex } = genericCall;
+		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
@@ -416,7 +416,6 @@ export class BlocksService extends AbstractService {
 
 		return {
 			method: `${sectionName}.${methodName}`,
-			callIndex,
 			args: newArgs,
 		};
 	}

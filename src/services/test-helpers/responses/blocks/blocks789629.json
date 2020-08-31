@@ -28,7 +28,10 @@
   },
   "extrinsics": [
     {
-      "method": "timestamp.set",
+      "method": {
+        "pallet": "timestamp",
+        "methodName": "set"
+      },
       "signature": null,
       "nonce": "0",
       "args": {
@@ -53,7 +56,10 @@
       "paysFee": true
     },
     {
-      "method": "finalityTracker.finalHint",
+      "method": {
+        "pallet": "finalityTracker",
+        "methodName": "finalHint"
+      },
       "signature": null,
       "nonce": "0",
       "args": {
@@ -78,7 +84,10 @@
       "paysFee": true
     },
     {
-      "method": "parachains.setHeads",
+      "method": {
+        "pallet": "parachains",
+        "methodName": "setHeads"
+      },
       "signature": null,
       "nonce": "0",
       "args": {
@@ -103,7 +112,10 @@
       "paysFee": true
     },
     {
-      "method": "utility.batch",
+      "method": {
+        "pallet": "utility",
+        "methodName": "batch"
+      },
       "signature": {
         "signature": "0x5e4a0ffba337ce7ad6e334a8199e9e574355baf90253fc216ae07fecec4b2b33526fa0e338531fec0c8178fb2335e8ca0015c7ff3eb3edf42dab166657060085",
         "signer": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc"
@@ -113,10 +125,6 @@
         "calls": [
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
               "era": "44"
@@ -124,10 +132,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
               "era": "44"
@@ -135,10 +139,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
               "era": "44"
@@ -146,10 +146,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
               "era": "44"
@@ -157,10 +153,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
               "era": "44"
@@ -168,10 +160,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
               "era": "44"
@@ -179,10 +167,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
               "era": "45"
@@ -190,10 +174,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
               "era": "45"
@@ -201,10 +181,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
               "era": "45"
@@ -212,10 +188,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
               "era": "45"
@@ -223,10 +195,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
               "era": "45"
@@ -234,10 +202,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
               "era": "45"
@@ -245,10 +209,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
               "era": "46"
@@ -256,10 +216,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
               "era": "46"
@@ -267,10 +223,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
               "era": "46"
@@ -278,10 +230,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
               "era": "46"
@@ -289,10 +237,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
               "era": "46"
@@ -300,10 +244,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
               "era": "46"
@@ -311,10 +251,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
               "era": "47"
@@ -322,10 +258,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
               "era": "47"
@@ -333,10 +265,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
               "era": "47"
@@ -344,10 +272,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
               "era": "47"
@@ -355,10 +279,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
               "era": "47"
@@ -366,10 +286,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
               "era": "47"
@@ -377,10 +293,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
               "era": "48"
@@ -388,10 +300,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
               "era": "48"
@@ -399,10 +307,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
               "era": "48"
@@ -410,10 +314,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
               "era": "48"
@@ -421,10 +321,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
               "era": "48"
@@ -432,10 +328,6 @@
           },
           {
             "method": "staking.payoutStakers",
-            "callIndex": {
-              "0": "7",
-              "1": "18"
-            },
             "args": {
               "validator_stash": "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
               "era": "48"
@@ -938,7 +830,10 @@
       "paysFee": true
     },
     {
-      "method": "proxy.proxy",
+      "method": {
+        "pallet": "proxy",
+        "methodName": "proxy"
+      },
       "signature": {
         "signature": "0x005267278172d49fde8a23513165bcd894ba0d9b5a7ee3e2976b5202d9f2a942515021b2c175ea46139b066709dfe610ec96d019b9622f7a46ee8f2587378b8a",
         "signer": "1QqpeG1LEaRFuhtvy5QPn7syF2hn21e5aYv4cqkji8m7cnq"
@@ -949,10 +844,6 @@
         "force_proxy_type": null,
         "call": {
           "method": "electionsPhragmen.vote",
-          "callIndex": {
-            "0": "17",
-            "1": "0"
-          },
           "args": {
             "votes": [
               "1363HWTPzDrzAQ6ChFiMU6mP4b6jmQid2ae55JQcKtZnpLGv",
