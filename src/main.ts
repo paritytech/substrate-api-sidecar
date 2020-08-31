@@ -38,11 +38,6 @@ async function main() {
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
 		types: {
-			Announcement: {
-				real: 'AccountId',
-				callHash: 'Hash',
-				height: 'BlockNumber',
-			},
 			...config.CUSTOM_TYPES,
 		},
 	});
