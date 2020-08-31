@@ -106,7 +106,10 @@ describe('BlocksService', () => {
 		});
 
 		const transferOutput = {
-			method: 'balances.transfer',
+			method: {
+				pallet: 'balances',
+				methodName: 'transfer',
+			},
 			args: {
 				dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 				value: 12,
@@ -144,7 +147,10 @@ describe('BlocksService', () => {
 			});
 
 			const baseBatch = {
-				method: 'utility.batch',
+				method: {
+					pallet: 'utility',
+					methodName: 'batch',
+				},
 				args: {
 					calls: [],
 				},
@@ -203,10 +209,16 @@ describe('BlocksService', () => {
 			});
 
 			const sudoOutput = {
-				method: 'sudo.sudo',
+				method: {
+					pallet: 'sudo',
+					methodName: 'sudo',
+				},
 				args: {
 					call: {
-						method: 'proxy.proxy',
+						method: {
+							pallet: 'proxy',
+							methodName: 'proxy',
+						},
 						args: {
 							real:
 								'5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
@@ -221,7 +233,10 @@ describe('BlocksService', () => {
 				JSON.stringify(blocksService['parseGenericCall'](batch))
 			).toEqual(
 				JSON.stringify({
-					method: 'utility.batch',
+					method: {
+						pallet: 'utility',
+						methodName: 'batch',
+					},
 					args: {
 						calls: [sudoOutput, sudoOutput, sudoOutput],
 					},

@@ -39,7 +39,8 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
-		const api = await this.ensureMeta(hash);
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
 		const [{ block }, events, validators] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
@@ -235,7 +236,10 @@ export class BlocksService extends AbstractService {
 			for (const record of events) {
 				const { event, phase } = record;
 				const sanitizedEvent = {
-					method: `${event.section}.${event.method}`,
+					method: {
+						pallet: event.section,
+						methodName: event.method,
+					},
 					data: event.data,
 				};
 
@@ -415,7 +419,10 @@ export class BlocksService extends AbstractService {
 		}
 
 		return {
-			method: `${sectionName}.${methodName}`,
+			method: {
+				pallet: sectionName,
+				methodName: methodName,
+			},
 			args: newArgs,
 		};
 	}

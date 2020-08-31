@@ -13,7 +13,8 @@ export class TransactionDryRunService extends AbstractService {
 		hash: BlockHash,
 		extrinsic: string
 	): Promise<ITransactionDryRun> {
-		const api = await this.ensureMeta(hash);
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
 
 		try {
 			const [applyExtrinsicResult, { number }] = await Promise.all([

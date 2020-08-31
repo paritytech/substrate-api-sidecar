@@ -39,7 +39,9 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
-		const api = await this.ensureMeta(hash);
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
+
 		const [{ block }, events, validators] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
