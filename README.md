@@ -92,8 +92,6 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/block/NUMBER` fetch block details at the block identified by 'NUMBER`.](/src/controllers/blocks/BlocksController.ts)
 
--   [`/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsStakingInfoController.ts)
-
 -   [`/staking-info` fetch information on general staking progress at the latest finalized block.](src/controllers/pallets/PalletsStakingProgressController.ts)
 
 -   [`/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.](src/controllers/pallets/PalletsStakingProgressController.ts)
