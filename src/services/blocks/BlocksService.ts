@@ -200,7 +200,7 @@ export class BlocksService extends AbstractService {
 			return {
 				method: {
 					pallet: method.sectionName,
-					methodName: method.methodName,
+					method: method.methodName,
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
@@ -238,7 +238,7 @@ export class BlocksService extends AbstractService {
 				const sanitizedEvent = {
 					method: {
 						pallet: event.section,
-						methodName: event.method,
+						method: event.method,
 					},
 					data: event.data,
 				};
@@ -421,7 +421,7 @@ export class BlocksService extends AbstractService {
 		return {
 			method: {
 				pallet: sectionName,
-				methodName: methodName,
+				method: methodName,
 			},
 			args: newArgs,
 		};
