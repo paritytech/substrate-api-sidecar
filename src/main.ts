@@ -40,7 +40,7 @@ async function main() {
 		types: {
 			Announcement: {
 				real: 'AccountId',
-				call_hash: 'Hash',
+				callHash: 'Hash',
 				height: 'BlockNumber',
 			},
 			...config.CUSTOM_TYPES,
