@@ -1,4 +1,3 @@
-import { Metadata } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { IAccountVestingInfo } from 'src/types/responses';
 
@@ -31,13 +30,5 @@ export class AccountsVestingInfoService extends AbstractService {
 			at,
 			vesting: vesting.isNone ? {} : vesting.unwrap(),
 		};
-	}
-
-	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
-		const api = await this.ensureMeta(hash);
-
-		const metadata = await api.rpc.state.getMetadata(hash);
-
-		return metadata;
 	}
 }

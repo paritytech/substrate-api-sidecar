@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
-import { AccountsVestingInfoService } from '../../services/v0';
+import { AccountsVestingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
@@ -13,6 +13,10 @@ import AbstractController from '../AbstractController';
  * - `address`: Address to query.
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
+ *
+ * Query params:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -44,7 +48,7 @@ export default class AccountsVestingInfoController extends AbstractController<
 	}
 
 	/**
-	 * Get the latest account vesting summary of `address`.
+	 * Get vesting information for an account.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response

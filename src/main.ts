@@ -105,6 +105,9 @@ async function main() {
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
+	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
+		api
+	);
 
 	// Create our App
 	const app = new App({
@@ -113,6 +116,7 @@ async function main() {
 			accountsStakingPayoutsController,
 			accountsBalanceInfoController,
 			accountsStakingInfoController,
+			accountsVestingInfoController,
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,
