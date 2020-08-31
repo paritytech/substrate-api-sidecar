@@ -4,20 +4,20 @@ import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
-import { sanitizeNumbers } from '../../../sanitize/sanitizeNumbers';
-import { createCall } from '../../../test-helpers/createCall';
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { createCall } from '../../test-helpers/createCall';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
-} from '../../../test-helpers/registries';
+} from '../../test-helpers/registries';
 import {
 	blockHash789629,
 	getBlock,
 	mockApi,
 	mockBlock789629,
-} from '../../test-helpers/mock';
-import * as block789629 from '../../test-helpers/mock/data/block789629.json';
-import * as blocks789629Response from '../../test-helpers/responses/blocks/blocks789629.json';
+} from '../test-helpers/mock';
+import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**
@@ -107,7 +107,6 @@ describe('BlocksService', () => {
 
 		const transferOutput = {
 			method: 'balances.transfer',
-			callIndex: new Uint8Array([6, 0]),
 			args: {
 				dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 				value: 12,
@@ -146,7 +145,6 @@ describe('BlocksService', () => {
 
 			const baseBatch = {
 				method: 'utility.batch',
-				callIndex: new Uint8Array([1, 0]),
 				args: {
 					calls: [],
 				},
@@ -206,11 +204,9 @@ describe('BlocksService', () => {
 
 			const sudoOutput = {
 				method: 'sudo.sudo',
-				callIndex: new Uint8Array([18, 0]),
 				args: {
 					call: {
 						method: 'proxy.proxy',
-						callIndex: new Uint8Array([28, 0]),
 						args: {
 							real:
 								'5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
@@ -226,7 +222,6 @@ describe('BlocksService', () => {
 			).toEqual(
 				JSON.stringify({
 					method: 'utility.batch',
-					callIndex: new Uint8Array([1, 0]),
 					args: {
 						calls: [sudoOutput, sudoOutput, sudoOutput],
 					},

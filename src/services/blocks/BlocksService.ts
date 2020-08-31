@@ -20,9 +20,9 @@ import {
 	IExtrinsic,
 	ISanitizedCall,
 	ISanitizedEvent,
-} from '../../../types/responses';
-import { isPaysFee } from '../../../types/util';
-import { AbstractService } from '../../AbstractService';
+} from '../../types/responses';
+import { isPaysFee } from '../../types/util';
+import { AbstractService } from '../AbstractService';
 
 /**
  * Event methods that we check for.
@@ -39,9 +39,7 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
-		// const api = await this.ensureMeta(hash);
-		const { api } = this;
-
+		const api = await this.ensureMeta(hash);
 		const [{ block }, events, validators] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
@@ -199,7 +197,10 @@ export class BlocksService extends AbstractService {
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
 			return {
-				method: `${method.sectionName}.${method.methodName}`,
+				method: {
+					pallet: method.sectionName,
+					methodName: method.methodName,
+				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args: this.parseGenericCall(method).args,
@@ -383,7 +384,7 @@ export class BlocksService extends AbstractService {
 	 * @param genericCall `GenericCall`
 	 */
 	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
-		const { sectionName, methodName, callIndex } = genericCall;
+		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
@@ -415,7 +416,6 @@ export class BlocksService extends AbstractService {
 
 		return {
 			method: `${sectionName}.${methodName}`,
-			callIndex,
 			args: newArgs,
 		};
 	}
