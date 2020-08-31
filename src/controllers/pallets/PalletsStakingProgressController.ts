@@ -70,14 +70,14 @@ export default class PalletsStakingProgressController extends AbstractController
 	constructor(api: ApiPromise) {
 		super(
 			api,
-			'pallets/staking/progress',
+			'/pallets/staking/progress',
 			new PalletsStakingProgressService(api)
 		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([['', this.getStakingPalletProgress]]);
+		this.safeMountAsyncGetHandlers([['', this.getPalletStakingProgress]]);
 	}
 
 	/**
@@ -86,7 +86,7 @@ export default class PalletsStakingProgressController extends AbstractController
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getStakingPalletProgress: RequestHandler = async (
+	private getPalletStakingProgress: RequestHandler = async (
 		{ query: { at } },
 		res
 	): Promise<void> => {

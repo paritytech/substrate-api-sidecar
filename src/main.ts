@@ -96,6 +96,9 @@ async function main() {
 	const accountsStakingInfoController = new controllers.AccountsStakingInfo(
 		api
 	);
+	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
+		api
+	);
 	const nodeNetworkController = new controllers.NodeNetwork(api);
 	const nodeVersionController = new controllers.NodeVersion(api);
 	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
@@ -105,7 +108,7 @@ async function main() {
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
-	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
+	const palletsStakingProgressController = new controllers.palletsStakingProgress(
 		api
 	);
 
@@ -124,6 +127,7 @@ async function main() {
 			runtimeSpecController,
 			runtimeMetadataController,
 			transactionDryRunController,
+			palletsStakingProgressController,
 			...v0Controllers,
 		],
 		postMiddleware: [
