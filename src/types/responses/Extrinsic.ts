@@ -12,7 +12,12 @@ import {
 import { ISanitizedArgs, ISanitizedEvent } from '.';
 
 export interface IExtrinsic {
-	method: string;
+	method:
+		| string
+		| {
+				pallet: string;
+				methodName: string;
+		  };
 	signature: ISignature | null;
 	nonce: Compact<Index>;
 	args: ISanitizedArgs;

@@ -69,7 +69,7 @@ async function main() {
 	const vestingController = new controllers.v0.v0AccountsVestingInfo(api);
 	const balancesController = new controllers.v0.v0AccountsBalanceInfo(api);
 	const stakingInfoController = new controllers.v0.v0AccountsStakingInfo(api);
-	const blocksController = new controllers.v0.v0Blocks(api);
+	const v0blocksController = new controllers.v0.v0Blocks(api);
 	const stakingController = new controllers.v0.v0PalletsStakingProgress(api);
 	const metadataController = new controllers.v0.v0Metadata(api);
 
@@ -81,12 +81,13 @@ async function main() {
 		stakingInfoController,
 		vestingController,
 		balancesController,
-		blocksController,
+		v0blocksController,
 		stakingController,
 		metadataController,
 	];
 
 	// Instantiate v1 controllers
+	const blocksController = new controllers.Blocks(api);
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
@@ -104,6 +105,7 @@ async function main() {
 	const app = new App({
 		preMiddleware,
 		controllers: [
+			blocksController,
 			accountsStakingPayoutsController,
 			nodeNetworkController,
 			nodeVersionController,
