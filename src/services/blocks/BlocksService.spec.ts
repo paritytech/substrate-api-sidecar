@@ -108,7 +108,7 @@ describe('BlocksService', () => {
 		const transferOutput = {
 			method: {
 				pallet: 'balances',
-				methodName: 'transfer',
+				method: 'transfer',
 			},
 			args: {
 				dest: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
@@ -149,7 +149,7 @@ describe('BlocksService', () => {
 			const baseBatch = {
 				method: {
 					pallet: 'utility',
-					methodName: 'batch',
+					method: 'batch',
 				},
 				args: {
 					calls: [],
@@ -211,13 +211,13 @@ describe('BlocksService', () => {
 			const sudoOutput = {
 				method: {
 					pallet: 'sudo',
-					methodName: 'sudo',
+					method: 'sudo',
 				},
 				args: {
 					call: {
 						method: {
 							pallet: 'proxy',
-							methodName: 'proxy',
+							method: 'proxy',
 						},
 						args: {
 							real:
@@ -235,7 +235,7 @@ describe('BlocksService', () => {
 				JSON.stringify({
 					method: {
 						pallet: 'utility',
-						methodName: 'batch',
+						method: 'batch',
 					},
 					args: {
 						calls: [sudoOutput, sudoOutput, sudoOutput],
