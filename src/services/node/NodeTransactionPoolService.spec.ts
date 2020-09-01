@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
-	blockHash789629,
+	// blockHash789629,
 	mockApi,
 	pendingExtrinsics,
 } from '../test-helpers/mock';
@@ -16,9 +16,10 @@ describe('NodeTransactionPoolService', () => {
 		it('works when ApiPromiseWorks (no txs)', async () => {
 			expect(
 				sanitizeNumbers(
-					await nodeTranstionPoolService.fetchTransactionPool(
-						blockHash789629
-					)
+					await nodeTranstionPoolService
+						.fetchTransactionPool
+						// blockHash789629
+						()
 				)
 			).toStrictEqual({ pool: [] });
 		});
@@ -35,9 +36,10 @@ describe('NodeTransactionPoolService', () => {
 
 			expect(
 				sanitizeNumbers(
-					await nodeTranstionPoolService.fetchTransactionPool(
-						blockHash789629
-					)
+					await nodeTranstionPoolService
+						.fetchTransactionPool
+						// blockHash789629
+						()
 				)
 			).toStrictEqual(transactionPoolResponse);
 

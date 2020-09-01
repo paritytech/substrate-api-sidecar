@@ -38,11 +38,9 @@ export default class NodeTransactionPoolController extends AbstractController<
 		_req,
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
 		NodeTransactionPoolController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionPool(hash)
+			await this.service.fetchTransactionPool()
 		);
 	};
 }
