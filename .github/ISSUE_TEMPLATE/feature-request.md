@@ -1,9 +1,9 @@
 ---
 name: Feature Request
-about: Request a new feature or request an improvement to an existing feature. 
-title: ""
-labels: New Feature
-assignees: ""
+about: Request a new feature or request an improvement to an existing feature.
+title: ''
+labels: Enhancement
+assignees: ''
 ---
 
 **Proposed Change or Idea**
