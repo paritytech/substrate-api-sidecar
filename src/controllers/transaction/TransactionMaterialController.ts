@@ -5,7 +5,7 @@ import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * GET all the information needed to construct a transaction offline.
+ * GET all the network information needed to construct a transaction offline.
  *
  * Query
  * - (Optional) `noMeta`: If true, does not return metadata hex. This is useful when metadata is not
@@ -51,7 +51,7 @@ export default class TransactionMaterialController extends AbstractController<
 	}
 
 	/**
-	 * Get the baseline material to construct a transaction.
+	 * GET all the network information needed to construct a transaction offline.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response

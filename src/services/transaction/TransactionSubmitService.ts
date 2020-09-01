@@ -12,20 +12,20 @@ export class TransactionSubmitService extends AbstractService {
 	 */
 	async submitTransaction(
 		hash: BlockHash,
-		extrinsic: string
+		transaction: string
 	): Promise<{ hash: Hash }> {
 		const api = await this.ensureMeta(hash);
 
 		let tx;
 
 		try {
-			tx = api.tx(extrinsic);
+			tx = api.tx(transaction);
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
 				error: 'Failed to parse transaction.',
-				extrinsic,
+				transaction,
 				cause,
 				stack,
 			};
@@ -42,7 +42,7 @@ export class TransactionSubmitService extends AbstractService {
 
 			throw {
 				error: 'Failed to submit transaction.',
-				extrinsic,
+				transaction,
 				cause,
 				stack,
 			};

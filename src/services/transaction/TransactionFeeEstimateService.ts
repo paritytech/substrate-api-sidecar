@@ -13,12 +13,12 @@ export class TransactionFeeEstimateService extends AbstractService {
 	 */
 	async fetchTransactionFeeEstimate(
 		hash: BlockHash,
-		extrinsic: string
+		transaction: string
 	): Promise<RuntimeDispatchInfo> {
 		const api = await this.ensureMeta(hash);
 
 		try {
-			return await api.rpc.payment.queryInfo(extrinsic, hash);
+			return await api.rpc.payment.queryInfo(transaction, hash);
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);
 
@@ -27,7 +27,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 					hash: hash.toString(),
 				},
 				error: 'Unable to fetch fee info',
-				extrinsic,
+				transaction,
 				cause,
 				stack,
 			};

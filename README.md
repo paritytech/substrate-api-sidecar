@@ -118,7 +118,7 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/claims/ClaimsController.ts)
 
--   [`/transaction/material` fetch the baseline material to construct a transaction offline.](src/controllers/transaction/TransactionMaterialController.ts) (Replaces `/tx/artifacts`.)
+-   [`/transaction/material` fetch all the network information needed to construct a transaction offline.](src/controllers/transaction/TransactionMaterialController.ts) (Replaces `/tx/artifacts`.)
 
 -   [`/transaction/fee-estimate` submit a transaction in order to get back a fee estimation.](src/controllers/transaction/TransactionFeeEstimateController.ts) (Replaces `/tx/fee-estimate`.) Expects a string
     with a hex-encoded transaction in a JSON POST body:

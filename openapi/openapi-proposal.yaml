@@ -395,7 +395,7 @@ paths:
     get:
       tags:
       - transaction
-      summary: Get the baseline material to construct a transaction.
+      summary: GET all the network information needed to construct a transaction offline.
       description: Returns the material that is universal to constructing any
         signed transaction offline. Replaces `/tx/artifacts` from versions < v1.0.0.
       operationId: getTransactionMaterial
