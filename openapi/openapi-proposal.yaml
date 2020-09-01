@@ -1853,7 +1853,7 @@ components:
           type: string
           description: >-
             `Failed to parse a tx.`
-        extrinsic:
+        transaction:
           type: string
           format: hex
         cause:
@@ -1869,7 +1869,7 @@ components:
         error:
           type: string
           description: Failed to submit transaction.
-        extrinsic:
+        transaction:
           type: string
           format: hex
         cause:
@@ -1895,7 +1895,7 @@ components:
         error:
           type: string
           description:  Error description.
-        extrinsic:
+        transaction:
           type: string
           format: hex
         block:
