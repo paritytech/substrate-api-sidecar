@@ -5,7 +5,7 @@ import { IBasicLegacyError } from './BasicLegacyError';
  */
 export interface ITxLegacyError extends IBasicLegacyError {
 	data?: string; // deprecated
-	extrinsic?: string;
+	transaction?: string;
 	cause: string | unknown;
 	stack: string;
 }
