@@ -11,14 +11,14 @@ import { extractCauseAndStack } from './extractCauseAndStack';
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
 		hash: BlockHash,
-		extrinsic: string
+		transaction: string
 	): Promise<ITransactionDryRun> {
 		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		try {
 			const [applyExtrinsicResult, { number }] = await Promise.all([
-				api.rpc.system.dryRun(extrinsic, hash),
+				api.rpc.system.dryRun(transaction, hash),
 				api.rpc.chain.getHeader(hash),
 			]);
 
@@ -56,7 +56,7 @@ export class TransactionDryRunService extends AbstractService {
 					hash,
 				},
 				error: 'Unable to dry-run transaction',
-				extrinsic,
+				transaction,
 				cause,
 				stack,
 			};

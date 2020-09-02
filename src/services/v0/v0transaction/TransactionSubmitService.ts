@@ -1,7 +1,7 @@
 import { Hash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../../AbstractService';
-import { extractCauseAndStack } from './extractCauseAndStack';
+import { extractCauseAndStack } from '../../transaction/extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**

@@ -366,8 +366,15 @@ paths:
       tags:
       - transaction
       summary: Receive a fee estimate for a transaction.
-      description: Send a serialized transaction and receive back a naive fee
-        estimate. Replaces `/tx/fee-estimate` from versions < v1.0.0.
+      description: >-
+        Send a serialized transaction and receive back a naive fee estimate.
+        Note: `partialFee` does not include any tips that you may add to increase
+        a transaction's priority. See the reference on `compute_fee`.
+        Replaces `/tx/fee-estimate` from versions < v1.0.0.
+        Substrate Reference:
+        - `RuntimeDispatchInfo`: https://crates.parity.io/pallet_transaction_payment_rpc_runtime_api/struct.RuntimeDispatchInfo.html
+        - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
+        - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
       operationId: feeEstimateTransaction
       requestBody:
         $ref: '#/components/requestBodies/Transaction'
@@ -388,7 +395,7 @@ paths:
     get:
       tags:
       - transaction
-      summary: Get the baseline material to construct a transaction.
+      summary: Get all the network information needed to construct a transaction offline.
       description: Returns the material that is universal to constructing any
         signed transaction offline. Replaces `/tx/artifacts` from versions < v1.0.0.
       operationId: getTransactionMaterial
@@ -402,6 +409,13 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: noMeta
+        in: query
+        schema:
+          type: boolean
+          description: If true, does not return metadata hex. This is useful when
+            metadata is not needed and response time is a concern. Defaults to false.
+          default: false
       responses:
         "200":
           description: successful operation
@@ -1784,7 +1798,7 @@ components:
     Transaction:
       type: object
       properties:
-        transaction:
+        tx:
           type: string
           format: hex
     TransactionMaterial:
@@ -1814,12 +1828,16 @@ components:
         metadata:
           type: string
           description: The chain's metadata in hex format.
-          format: hexScaleEncoded
+          format: hex
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
         of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining
         this registry, but in other Substrate-based chains that re-launch their network without
         changing the `specName`, the `chainName` would be needed to create the correct registry.
+        Substrate Reference:
+        - `RuntimeVersion`: https://crates.parity.io/sp_version/struct.RuntimeVersion.html
+        - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
+        -  FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
     TransactionSuccess:
       type: object
       properties:
@@ -1831,7 +1849,7 @@ components:
       properties:
         code:
           type: number
-        message:
+        error:
           type: string
           description: >-
             `Failed to parse a tx.`
@@ -1848,9 +1866,9 @@ components:
       properties:
         code:
           type: number
-        message:
+        error:
           type: string
-          description: Failed to submit a tx
+          description: Failed to submit transaction.
         transaction:
           type: string
           format: hex
@@ -1869,9 +1887,14 @@ components:
       properties:
         code:
           type: number
-        message:
+        at:
+            type: object
+            properties:
+              hash:
+                type: string
+        error:
           type: string
-          description: Unable to fetch fee info
+          description:  Error description.
         transaction:
           type: string
           format: hex
@@ -1880,6 +1903,7 @@ components:
           description: Block hash of the block fee estimation was attempted at.
         cause:
           type: string
+          description: Error message from the client.
         stack:
           type: string
     TransactionFeeEstimate:

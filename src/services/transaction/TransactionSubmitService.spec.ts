@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { polkadotRegistry } from '../../../test-helpers/registries';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
+	blockHash789629,
 	mockApi,
 	submitExtrinsic,
 	tx,
-} from '../../test-helpers/mock';
-import * as failParseResponse from '../../test-helpers/responses/transaction/submitFailParse.json';
-import * as nodeRejectResponse from '../../test-helpers/responses/transaction/submitNodeReject.json';
+} from '../test-helpers/mock';
+import * as failParseResponse from '../test-helpers/responses/transaction/submitFailParse.json';
+import * as nodeRejectResponse from '../test-helpers/responses/transaction/submitNodeReject.json';
 import { TransactionSubmitService } from './TransactionSubmitService';
 
 const transactionSubmitService = new TransactionSubmitService(mockApi);
@@ -19,6 +20,7 @@ describe('TransactionSubmitService', () => {
 		it('works with a valid a transaction', async () => {
 			return expect(
 				transactionSubmitService.submitTransaction(
+					blockHash789629,
 					balancesTransferValid
 				)
 			).resolves.toStrictEqual({
@@ -26,7 +28,7 @@ describe('TransactionSubmitService', () => {
 			});
 		});
 
-		it('throws with "Failed to parse a Tx" when tx is not parsable', async () => {
+		it('throws with "Failed to parse a transaction" when tx is not parsable', async () => {
 			const err = new Error(
 				// eslint-disable-next-line no-useless-escape
 				`createType(ExtrinsicV4):: Struct: failed on 'signature':: Struct: cannot decode type Type with value \"0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0\"`
@@ -40,6 +42,7 @@ describe('TransactionSubmitService', () => {
 
 			await expect(
 				transactionSubmitService.submitTransaction(
+					blockHash789629,
 					balancesTransferInvalid
 				)
 			).rejects.toStrictEqual(failParseResponse);
@@ -47,7 +50,7 @@ describe('TransactionSubmitService', () => {
 			(mockApi as any).tx = tx;
 		});
 
-		it('throws with "Failed to submit tx" when the node rejects the transaction', async () => {
+		it('throws with "Failed to submit transaction" when the node rejects the transaction', async () => {
 			const err = new Error('1012: Transaction is temporarily banned');
 			err.stack =
 				'Error: 1012: Transaction is temporarily banned ... this is a unit test mock';
@@ -59,6 +62,7 @@ describe('TransactionSubmitService', () => {
 
 			await expect(
 				transactionSubmitService.submitTransaction(
+					blockHash789629,
 					balancesTransferValid
 				)
 			).rejects.toStrictEqual(nodeRejectResponse);

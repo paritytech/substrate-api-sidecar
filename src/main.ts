@@ -102,6 +102,13 @@ async function main() {
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
+	const transactionMaterialController = new controllers.TransactionMaterial(
+		api
+	);
+	const transactionFeeEstimateController = new controllers.TransactionFeeEstimate(
+		api
+	);
+	const transactionSubmitController = new controllers.TransactionSubmit(api);
 
 	// Create our App
 	const app = new App({
@@ -116,6 +123,9 @@ async function main() {
 			runtimeSpecController,
 			runtimeMetadataController,
 			transactionDryRunController,
+			transactionMaterialController,
+			transactionFeeEstimateController,
+			transactionSubmitController,
 			...v0Controllers,
 		],
 		postMiddleware: [
