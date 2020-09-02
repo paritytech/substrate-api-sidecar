@@ -6,7 +6,7 @@ import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**
-	 * Submit a fully formed scale encoded extrinsic for block inclusion.
+	 * Submit a fully formed SCALE-encoded extrinsic for block inclusion.
 	 *
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
