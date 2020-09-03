@@ -15,7 +15,7 @@ There are a few basic ground-rules for contributors (including the maintainer(s)
 - Contributors should adhere to the [house coding style](https://github.com/paritytech/substrate/blob/master/docs/STYLE_GUIDE.md).
 
 ## Reviewing Pull Requests:
-When reviewing a Pull Request, the end-goal is to suggest useful changes to the author. Reviews should finish with approval unless there are issues that would result in:
+When reviewing a Pull Request, the end goal is to suggest useful changes to the author. Reviews should finish with approval unless there are issues that would result in:
 - Buggy behaviour.
 - Undue maintenance burden.
 - Breaking with house coding style.
