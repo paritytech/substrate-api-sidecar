@@ -1,7 +1,7 @@
 import { Hash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../../AbstractService';
-import { extractCauseAndStack } from './extractCauseAndStack';
+import { extractCauseAndStack } from '../../transaction/extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**
@@ -10,9 +10,11 @@ export class TransactionSubmitService extends AbstractService {
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
 	async submitTransaction(extrinsic: string): Promise<{ hash: Hash }> {
-		const api = await this.ensureMeta(
-			await this.api.rpc.chain.getFinalizedHead() // TODO move this out to controller for consistency with other services
-		);
+		// const api = await this.ensureMeta(
+		// 	await this.api.rpc.chain.getFinalizedHead() // TODO move this out to controller for consistency with other services
+		// );
+
+		const { api } = this;
 
 		let tx;
 

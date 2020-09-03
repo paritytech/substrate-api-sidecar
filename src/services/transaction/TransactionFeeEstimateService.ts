@@ -1,11 +1,11 @@
 import { BlockHash, RuntimeDispatchInfo } from '@polkadot/types/interfaces';
 
-import { AbstractService } from '../../AbstractService';
+import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionFeeEstimateService extends AbstractService {
 	/**
-	 * Fetch estimated fee information for a scale encoded extrinsic at a given
+	 * Fetch estimated fee information for a SCALE-encoded extrinsic at a given
 	 * block.
 	 *
 	 * @param hash `BlockHash` to make call at
@@ -13,22 +13,21 @@ export class TransactionFeeEstimateService extends AbstractService {
 	 */
 	async fetchTransactionFeeEstimate(
 		hash: BlockHash,
-		extrinsic: string
+		transaction: string
 	): Promise<RuntimeDispatchInfo> {
-		// const api = await this.ensureMeta(hash);
-		const { api } = this;
+		const api = await this.ensureMeta(hash);
 
 		try {
-			return await api.rpc.payment.queryInfo(extrinsic, hash);
+			return await api.rpc.payment.queryInfo(transaction, hash);
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
-				error: 'Unable to fetch fee info',
-				data: {
-					extrinsic,
-					block: hash.toString(),
+				at: {
+					hash: hash.toString(),
 				},
+				error: 'Unable to fetch fee info',
+				transaction,
 				cause,
 				stack,
 			};

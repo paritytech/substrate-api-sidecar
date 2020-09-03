@@ -1,12 +1,11 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { ITransactionMaterial } from 'src/types/responses';
 
-import { AbstractService } from '../../AbstractService';
+import { AbstractService } from '../AbstractService';
 
 export class TransactionMaterialService extends AbstractService {
 	/**
-	 * Fetch the baseline "material" at a given block to construct a transaction
-	 * offline.
+	 * Fetch all the network information needed to construct a transaction offline.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
@@ -14,8 +13,7 @@ export class TransactionMaterialService extends AbstractService {
 		hash: BlockHash,
 		noMeta: boolean
 	): Promise<ITransactionMaterial> {
-		// const api = await this.ensureMeta(hash);
-		const { api } = this;
+		const api = await this.ensureMeta(hash);
 
 		if (noMeta) {
 			const [header, genesisHash, name, version] = await Promise.all([

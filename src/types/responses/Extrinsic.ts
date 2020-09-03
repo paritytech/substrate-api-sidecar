@@ -9,10 +9,10 @@ import {
 	Sr25519Signature,
 } from '@polkadot/types/interfaces';
 
-import { ISanitizedArgs, ISanitizedEvent } from '.';
+import { IDispatchable, ISanitizedArgs, ISanitizedEvent } from '.';
 
 export interface IExtrinsic {
-	method: string;
+	method: string | IDispatchable;
 	signature: ISignature | null;
 	nonce: Compact<Index>;
 	args: ISanitizedArgs;

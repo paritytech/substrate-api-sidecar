@@ -37,7 +37,9 @@ async function main() {
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
-		types: config.CUSTOM_TYPES,
+		types: {
+			...config.CUSTOM_TYPES,
+		},
 	});
 
 	const [chainName, { implName }] = await Promise.all([
@@ -69,7 +71,7 @@ async function main() {
 	const vestingController = new controllers.v0.v0AccountsVestingInfo(api);
 	const balancesController = new controllers.v0.v0AccountsBalanceInfo(api);
 	const stakingInfoController = new controllers.v0.v0AccountsStakingInfo(api);
-	const blocksController = new controllers.v0.v0Blocks(api);
+	const v0blocksController = new controllers.v0.v0Blocks(api);
 	const stakingController = new controllers.v0.v0PalletsStakingProgress(api);
 	const metadataController = new controllers.v0.v0Metadata(api);
 
@@ -81,12 +83,13 @@ async function main() {
 		stakingInfoController,
 		vestingController,
 		balancesController,
-		blocksController,
+		v0blocksController,
 		stakingController,
 		metadataController,
 	];
 
 	// Instantiate v1 controllers
+	const blocksController = new controllers.Blocks(api);
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
@@ -108,6 +111,13 @@ async function main() {
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
 	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
+	const transactionMaterialController = new controllers.TransactionMaterial(
+		api
+	);
+	const transactionFeeEstimateController = new controllers.TransactionFeeEstimate(
+		api
+	);
+	const transactionSubmitController = new controllers.TransactionSubmit(api);
 	const palletsStakingProgressController = new controllers.palletsStakingProgress(
 		api
 	);
@@ -116,6 +126,7 @@ async function main() {
 	const app = new App({
 		preMiddleware,
 		controllers: [
+			blocksController,
 			accountsStakingPayoutsController,
 			accountsBalanceInfoController,
 			accountsStakingInfoController,
@@ -127,6 +138,9 @@ async function main() {
 			runtimeSpecController,
 			runtimeMetadataController,
 			transactionDryRunController,
+			transactionMaterialController,
+			transactionFeeEstimateController,
+			transactionSubmitController,
 			palletsStakingProgressController,
 			...v0Controllers,
 		],

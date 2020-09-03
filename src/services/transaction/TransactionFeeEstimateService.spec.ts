@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { sanitizeNumbers } from '../../../sanitize/sanitizeNumbers';
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
 	blockHash789629,
 	mockApi,
 	queryInfoBalancesTransfer,
-} from '../../test-helpers/mock';
-import * as invalidResponse from '../../test-helpers/responses/transaction/feeEstimateInvalid.json';
-import * as validResponse from '../../test-helpers/responses/transaction/feeEstimateValid.json';
+} from '../test-helpers/mock';
+import * as invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
+import * as validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(
