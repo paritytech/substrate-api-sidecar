@@ -12,6 +12,11 @@ import AbstractController from '../../AbstractController';
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
+ * Query:
+ * - (Optional) `noAuthor`: If true, skip extra queries and do not include block author in
+ * 		response. This is useful if you want the endpoint to be faster and induce less
+ * 		network traffic.
+ *
  * Returns:
  * - `number`: Block height.
  * - `hash`: The block's hash.
@@ -72,12 +77,17 @@ export default class BlocksController extends AbstractController<
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async (_req, res) => {
+	private getLatestBlock: RequestHandler = async (
+		{ query: { noAuthor } },
+		res
+	) => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
+
+		const noAuthorArg = noAuthor === 'true' ? true : false;
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash)
+			await this.service.fetchBlock(hash, noAuthorArg)
 		);
 	};
 
@@ -88,14 +98,16 @@ export default class BlocksController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number } },
+		{ params: { number }, query: { noAuthor } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
+		const noAuthorArg = noAuthor === 'true' ? true : false;
+
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash)
+			await this.service.fetchBlock(hash, noAuthorArg)
 		);
 	};
 }

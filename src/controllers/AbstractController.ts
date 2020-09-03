@@ -24,7 +24,7 @@ type SidecarRequestHandler =
 /**
  * Abstract base class for creating controller classes.
  */
-export default abstract class AbstractController<T extends AbstractService> {
+export default abstract class AbstractController<T extends AbstractService | undefined> {
 	private _router: Router = express.Router();
 	constructor(
 		protected api: ApiPromise,
