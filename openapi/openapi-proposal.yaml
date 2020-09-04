@@ -433,7 +433,7 @@ paths:
     get:
       tags:
       - staking
-      summary: Get a progress report on the chain's staking system.
+      summary: Get progress on the general Staking pallet system.
       description: Returns information on the progress of key components of the
         staking system and estimates of future points of interest. Replaces
         `/staking-info` from versions < v1.0.0.
