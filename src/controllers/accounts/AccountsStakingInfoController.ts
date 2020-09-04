@@ -20,7 +20,7 @@ import AbstractController from '../AbstractController';
  * - `at`: Block number and hash at which the call was made.
  * - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
  *   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
- *   stake), or 'Controller' (Controller address).
+ *   stake), 'Controller' (Controller address), or 'Account(AccountId)' (address identified by AccountId).
  * - `controller`: Controller address for the given Stash.
  * - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
  *    not a Controller.
