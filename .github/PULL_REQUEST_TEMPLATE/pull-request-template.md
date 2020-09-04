@@ -22,7 +22,7 @@ Before you submit, please check that:
 -   [ ] You asked any particular reviewers to review. If you aren't sure, start with GH suggestions.
 -   [ ] Your PR adheres to the style guide.
     -   In particular, mind the maximal line length of 100 (120 in exceptional circumstances).
-    -   `yarn lint` is run.
+    -   Run `yarn lint`.
     -   There is no commented code checked in unless necessary.
 -   [ ] You updated any documentation that may have changed.
 
