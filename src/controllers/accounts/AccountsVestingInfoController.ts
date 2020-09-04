@@ -11,8 +11,6 @@ import AbstractController from '../AbstractController';
  *
  * Paths:
  * - `address`: Address to query.
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
- *   finalized head.
  *
  * Query params:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block

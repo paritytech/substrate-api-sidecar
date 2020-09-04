@@ -11,6 +11,10 @@ import AbstractController from '../AbstractController';
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
+ * Query params:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
+ *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
  * - `activeEra`: `EraIndex` of the era being rewarded.
