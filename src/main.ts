@@ -93,6 +93,15 @@ async function main() {
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
+	const accountsBalanceInfoController = new controllers.AccountsBalanceInfo(
+		api
+	);
+	const accountsStakingInfoController = new controllers.AccountsStakingInfo(
+		api
+	);
+	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
+		api
+	);
 	const nodeNetworkController = new controllers.NodeNetwork(api);
 	const nodeVersionController = new controllers.NodeVersion(api);
 	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
@@ -109,6 +118,9 @@ async function main() {
 		api
 	);
 	const transactionSubmitController = new controllers.TransactionSubmit(api);
+	const palletsStakingProgressController = new controllers.palletsStakingProgress(
+		api
+	);
 
 	// Create our App
 	const app = new App({
@@ -116,6 +128,9 @@ async function main() {
 		controllers: [
 			blocksController,
 			accountsStakingPayoutsController,
+			accountsBalanceInfoController,
+			accountsStakingInfoController,
+			accountsVestingInfoController,
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,
@@ -126,6 +141,7 @@ async function main() {
 			transactionMaterialController,
 			transactionFeeEstimateController,
 			transactionSubmitController,
+			palletsStakingProgressController,
 			...v0Controllers,
 		],
 		postMiddleware: [

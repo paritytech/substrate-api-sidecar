@@ -82,23 +82,15 @@ a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the b
 
 -   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
 
--   [`/blocks` fetch a block.](/src/controllers/blocks/BlocksController.ts) (Replaces `/block`.)
+-   [`/accounts/ADDRESS/balance-info` fetch balances info for `ADDRESS`.](src/controllers/accounts/AccountsBalanceInfoController.ts) (Replaces `/balance/ADDRESS`.)
 
--   [`/balance/ADDRESS` fetch balances for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsBalanceInfoController.ts)
+-   [`/accounts/ADDRESS/vesting-info` vesting info for `ADDRESS`.](src/controllers/accounts/AccountsVestingInfoController.ts) (Replaces `/vesting/ADDRESS`.)
 
--   [`/balance/ADDRESS/NUMBER` fetch balances for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsBalanceInfoController.ts)
+-   [`/accounts/ADDRESS/staking-info` fetch the staking info for `ADDRESS`.](src/controllers/accounts/AccountsStakingInfoController.ts) (Replaces `/staking/ADDRESS`.)
 
--   [`/staking/ADDRESS` fetch the staking info for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsStakingInfoController.ts)
+-   [`/blocks/{head, BlockId}` fetch the finalized head or block identified by BlockId.](/src/controllers/blocks/BlocksController.ts) (Replaces `/block`.)
 
--   [`/staking/ADDRESS/NUMBER` fetch the staking info for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsStakingInfoController.ts)
-
--   [`/staking-info` fetch information on general staking progress at the latest finalized block.](src/controllers/pallets/PalletsStakingProgressController.ts)
-
--   [`/staking-info/NUMBER` fetch information on general staking progress at the block identified by 'NUMBER`.](src/controllers/pallets/PalletsStakingProgressController.ts)
-
--   [`/vesting/ADDRESS` fetch the vesting info for `ADDRESS` at latest finalized block.](src/controllers/accounts/AccountsVestingInfoController.ts)
-
--   [`/vesting/ADDRESS/NUMBER` fetch the vesting info for `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/accounts/AccountsVestingInfoController.ts)
+-   [`/pallets/staking/progress` fetch information on general staking progress.](src/controllers/pallets/PalletsStakingProgressController.ts) (Replaces `/staking-info`.)
 
 -   [`/node/network` fetch information about the Substrate node's activity in the peer-to-peer network.](src/controllers/node/NodeNetworkController.ts)
 
