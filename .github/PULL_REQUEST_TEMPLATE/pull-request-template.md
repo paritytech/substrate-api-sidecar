@@ -17,14 +17,14 @@ Before you submit, please check that:
     -   What does it do?
     -   What important points reviewers should know?
 
--   [ ] You labeled the PR appropriately with the labels listed in the sidebar
--   [ ] PR status, release notes, various implications/requirements
--   [ ] You asked any particular reviewers to review. If you aren't sure, start with GH suggestions
--   [ ] Your PR adheres to the style guide
-    -   In particular, mind the maximal line length of 100 (120 in exceptional circumstances)
-    -   `yarn lint` is run
-    -   There is no commented code checked in unless necessary
--   [ ] You updated any documentation that may have changed
+-   [ ] You labeled the PR appropriately with the labels listed in the sidebar.
+-   [ ] PR status, release notes, various implications/requirements.
+-   [ ] You asked any particular reviewers to review. If you aren't sure, start with GH suggestions.
+-   [ ] Your PR adheres to the style guide.
+    -   In particular, mind the maximal line length of 100 (120 in exceptional circumstances).
+    -   `yarn lint` is run.
+    -   There is no commented code checked in unless necessary.
+-   [ ] You updated any documentation that may have changed.
 
 Refer to Substrates’s
 [contributing guide](https://github.com/paritytech/substrate/blob/master/docs/CONTRIBUTING.adoc) or
