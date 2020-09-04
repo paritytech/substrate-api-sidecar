@@ -1,14 +1,15 @@
 ---
 name: Feature Request
 about: Request a new feature or request an improvement to an existing feature.
-title: ''
+title: ""
 labels: Enhancement
-assignees: ''
+assignees: ""
 ---
 
 **Proposed Change or Idea**
 
-[Describe your request for a new idea/feature or improvement of an existing feature.]
+[Describe your request for a new idea/feature or improvement of an existing
+feature.]
 
 **Alternatives**
 
