@@ -5,7 +5,7 @@ import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * GET get progress on the general staking pallet system
+ * GET progress on the general Staking pallet system.
  *
  * Paths:
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
