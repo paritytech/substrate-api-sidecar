@@ -1,6 +1,6 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import { AbstractService } from '../AbstractService';
+import { AbstractService } from '../../AbstractService';
 
 export class ClaimsService extends AbstractService {
 	/**
@@ -13,7 +13,8 @@ export class ClaimsService extends AbstractService {
 		hash: BlockHash,
 		ethAddress: string
 	): Promise<null | { type: string }> {
-		const api = await this.ensureMeta(hash);
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
 		const agreementType = await api.query.claims.signing.at(
 			hash,
 			ethAddress

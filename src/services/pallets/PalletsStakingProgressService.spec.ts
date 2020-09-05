@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { InternalServerError } from 'http-errors';
+
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import {
@@ -38,11 +40,11 @@ describe('PalletStakingProgressService', () => {
 				palletStakingProgressService.derivePalletStakingProgress(
 					blockHash789629
 				)
-			).rejects.toStrictEqual({
-				statusCode: 500,
-				error:
-					'Unwrapping `await api.query.staking.erasStartSessionIndex.at(hash, activeEra)` returned None when Some was expected',
-			});
+			).rejects.toStrictEqual(
+				new InternalServerError(
+					'EraStartSessionIndex is None when Some was expected.'
+				)
+			);
 
 			(mockApi.query.staking
 				.erasStartSessionIndex as any).at = erasStartSessionIndexAt;
@@ -58,11 +60,11 @@ describe('PalletStakingProgressService', () => {
 				palletStakingProgressService.derivePalletStakingProgress(
 					blockHash789629
 				)
-			).rejects.toStrictEqual({
-				statusCode: 500,
-				error:
-					'Unwrapping the result of `await api.query.staking.activeEra.at(hash)` returned None when Some was expected.',
-			});
+			).rejects.toStrictEqual(
+				new InternalServerError(
+					'ActiveEra is None when Some was expected.'
+				)
+			);
 
 			(mockApi.query.staking.activeEra as any).at = activeEraAt;
 		});

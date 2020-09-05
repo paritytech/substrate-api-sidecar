@@ -1,1 +1,1 @@
-export { default as PalletsStakingProgress } from './PalletsStakingProgressController';
+export { default as palletsStakingProgress } from './PalletsStakingProgressController';

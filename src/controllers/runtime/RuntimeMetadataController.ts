@@ -1,6 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { INumberParam } from 'src/types/requests';
 
 import { RuntimeMetadataService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -8,8 +7,8 @@ import AbstractController from '../AbstractController';
 /**
  * GET the chain's metadata.
  *
- * Paths:
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+ * Query:
+ * - (Optional) `at`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
  * Returns:
@@ -23,15 +22,12 @@ export default class RuntimeMetadataController extends AbstractController<
 	RuntimeMetadataService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/metadata', new RuntimeMetadataService(api));
+		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([
-			['', this.getMetadata],
-			['/:number', this.getMetadataAtBlock],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getMetadata]]);
 	}
 
 	/**
@@ -40,28 +36,11 @@ export default class RuntimeMetadataController extends AbstractController<
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-
-	private getMetadata: RequestHandler = async (_req, res): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		RuntimeMetadataController.sanitizedSend(
-			res,
-			await this.service.fetchMetadata(hash)
-		);
-	};
-
-	/**
-	 * Get the chain's metadata in a decoded, JSON format at a block identified
-	 * by its hash or number.
-	 *
-	 * @param req Express Request
-	 * @param res Express Response
-	 */
-	private getMetadataAtBlock: RequestHandler<INumberParam> = async (
-		{ params: { number } },
+	private getMetadata: RequestHandler = async (
+		{ query: { at } },
 		res
 	): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
+		const hash = await this.getHashFromAt(at);
 
 		RuntimeMetadataController.sanitizedSend(
 			res,

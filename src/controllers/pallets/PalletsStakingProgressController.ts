@@ -1,16 +1,19 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { INumberParam } from 'src/types/requests';
 
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * GET generalized staking information.
+ * GET progress on the general Staking pallet system.
  *
  * Paths:
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
+ *
+ * Query params:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -69,47 +72,29 @@ export default class PalletsStakingProgressController extends AbstractController
 	PalletsStakingProgressService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/staking-info', new PalletsStakingProgressService(api));
+		super(
+			api,
+			'/pallets/staking/progress',
+			new PalletsStakingProgressService(api)
+		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([
-			['', this.getStakingInfo],
-			['/:number', this.getStakingInfoAtBlock],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getPalletStakingProgress]]);
 	}
 
 	/**
-	 * Get staking information and progress summary.
+	 * Get the progress of the staking pallet system.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getStakingInfo: RequestHandler = async (
-		_req,
+	private getPalletStakingProgress: RequestHandler = async (
+		{ query: { at } },
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		PalletsStakingProgressController.sanitizedSend(
-			res,
-			await this.service.derivePalletStakingProgress(hash)
-		);
-	};
-
-	/**
-	 * Get staking information and progress summary at a block identified by its
-	 * hash or number.
-	 *
-	 * @param req Express Request
-	 * @param res Express Response
-	 */
-	private getStakingInfoAtBlock: RequestHandler<INumberParam> = async (
-		{ params: { number } },
-		res
-	): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
+		const hash = await this.getHashFromAt(at);
 
 		PalletsStakingProgressController.sanitizedSend(
 			res,

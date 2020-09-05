@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
+import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress } from '../../middleware/';
+import { validateAddress } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -11,14 +11,16 @@ import AbstractController from '../AbstractController';
  *
  * Paths:
  * - `address`: The _Stash_ address for staking.
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
- *   finalized head.
+ *
+ * Query:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
  * - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
  *   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at
- *   stake), or 'Controller' (Controller address).
+ *   stake), 'Controller' (Controller address), or 'Account(AccountId)' (address identified by AccountId).
  * - `controller`: Controller address for the given Stash.
  * - `numSlashingSpans`: Number of slashing spans on Stash account; `null` if provided address is
  *    not a Controller.
@@ -49,17 +51,18 @@ export default class AccountsStakingInfoController extends AbstractController<
 	AccountsStakingInfoService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/staking/:address', new AccountsStakingInfoService(api));
+		super(
+			api,
+			'/accounts/:address/staking-info',
+			new AccountsStakingInfoService(api)
+		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 
-		this.safeMountAsyncGetHandlers([
-			['', this.getAccountStakingSummary],
-			['/:number', this.getAccountStakingSummaryAtBlock],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getAccountStakingInfo]]);
 	}
 
 	/**
@@ -68,30 +71,11 @@ export default class AccountsStakingInfoController extends AbstractController<
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountStakingSummary: RequestHandler<IAddressParam> = async (
-		{ params: { address } },
+	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
+		{ params: { address }, query: { at } },
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		AccountsStakingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountStakingInfo(hash, address)
-		);
-	};
-
-	/**
-	 * Get the account staking summary of `address` at a block identified by its
-	 * hash or number.
-	 *
-	 * @param req Express Request
-	 * @param res Express Response
-	 */
-	private getAccountStakingSummaryAtBlock: RequestHandler<
-		IAddressNumberParams
-	> = async (req, res): Promise<void> => {
-		const { address, number } = req.params;
-		const hash = await this.getHashForBlock(number);
+		const hash = await this.getHashFromAt(at);
 
 		AccountsStakingInfoController.sanitizedSend(
 			res,

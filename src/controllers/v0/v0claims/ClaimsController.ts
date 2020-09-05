@@ -2,8 +2,8 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
 
-import { ClaimsService } from '../../services';
-import AbstractController from '../AbstractController';
+import { ClaimsService } from '../../../services/v0';
+import AbstractController from '../../AbstractController';
 
 /**
  * GET the claims type for an Ethereum address.

@@ -34,7 +34,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		unclaimedOnly: boolean,
 		currentEra: number
 	): Promise<IAccountStakingPayouts> {
-		const api = await this.ensureMeta(hash);
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
 
 		const [{ number }, historyDepth] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

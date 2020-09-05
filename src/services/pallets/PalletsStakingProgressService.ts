@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
 import * as BN from 'bn.js';
+import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
-import * as errors from '../../../config/errors-en.json';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingProgressService extends AbstractService {
@@ -140,7 +140,9 @@ export class PalletsStakingProgressService extends AbstractService {
 
 		if (activeEraOption.isNone) {
 			// TODO refactor to newer error type
-			throw errors.ActiveEra_IS_NONE;
+			throw new InternalServerError(
+				'ActiveEra is None when Some was expected.'
+			);
 		}
 		const { index: activeEra } = activeEraOption.unwrap();
 
@@ -149,8 +151,9 @@ export class PalletsStakingProgressService extends AbstractService {
 			activeEra
 		);
 		if (activeEraStartSessionIndexOption.isNone) {
-			// TODO refactor to newer error type
-			throw errors.ErasStartSessionIndex_IS_NONE;
+			throw new InternalServerError(
+				'EraStartSessionIndex is None when Some was expected.'
+			);
 		}
 		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
 

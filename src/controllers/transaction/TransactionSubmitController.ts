@@ -15,17 +15,17 @@ import AbstractController from '../AbstractController';
  * - Success:
  *   - `hash`: The hash of the encoded transaction.
  * - Failure:
- *   - `error`: 'Failed to parse a tx' or 'Failed to submit a tx'. In the case of the former, the
- *     Sidecar was unable to parse the transaction and never even submitted it to the client. In
+ *   - `error`: 'Failed to parse transaction' or 'Failed to submit transaction'. In the case of the former,
+ *     Sidecar was unable to parse the transaction and never submitted it to the client. In
  *     the case of the latter, the transaction queue rejected the transaction.
- *   - `data`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
+ *   - `extrinsic`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
  *   - `cause`: The error message from parsing or from the client.
  */
 export default class TransactionSubmitController extends AbstractController<
 	TransactionSubmitService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/tx', new TransactionSubmitService(api));
+		super(api, '/transaction', new TransactionSubmitService(api));
 		this.initRoutes();
 	}
 
@@ -52,6 +52,8 @@ export default class TransactionSubmitController extends AbstractController<
 			};
 		}
 
-		res.send(await this.service.submitTransaction(tx));
+		const hash = await this.api.rpc.chain.getFinalizedHead();
+
+		res.send(await this.service.submitTransaction(hash, tx));
 	};
 }

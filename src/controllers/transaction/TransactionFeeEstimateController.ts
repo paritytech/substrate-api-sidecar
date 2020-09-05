@@ -19,7 +19,7 @@ import AbstractController from '../AbstractController';
  *     up to 30% in a 24 hour period and this will not be the exact fee.
  * - Failure:
  *   - `error`: Error description.
- *   - `data`: The extrinsic and reference block hash.
+ *   - `extrinsic`: The extrinsic and reference block hash.
  *   - `cause`: Error message from the client.
  *
  * Note: `partialFee` does not include any tips that you may add to increase a transaction's
@@ -34,7 +34,11 @@ export default class TransactionFeeEstimateController extends AbstractController
 	TransactionFeeEstimateService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/tx/fee-estimate', new TransactionFeeEstimateService(api));
+		super(
+			api,
+			'/transaction/fee-estimate',
+			new TransactionFeeEstimateService(api)
+		);
 		this.initRoutes();
 	}
 

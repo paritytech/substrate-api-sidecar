@@ -37,7 +37,9 @@ async function main() {
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.WS_URL),
-		types: config.CUSTOM_TYPES,
+		types: {
+			...config.CUSTOM_TYPES,
+		},
 	});
 
 	const [chainName, { implName }] = await Promise.all([
@@ -59,16 +61,47 @@ async function main() {
 		preMiddleware.push(middleware.allLogger);
 	}
 
-	// Instantiate controller class instances
+	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
+	const claimsController = new controllers.v0.v0Claims(api);
+	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
+	const txFeeEstimateController = new controllers.v0.v0TransactionFeeEstimate(
+		api
+	);
+	const txSubmitController = new controllers.v0.v0TransactionSubmit(api);
+	const vestingController = new controllers.v0.v0AccountsVestingInfo(api);
+	const balancesController = new controllers.v0.v0AccountsBalanceInfo(api);
+	const stakingInfoController = new controllers.v0.v0AccountsStakingInfo(api);
+	const v0blocksController = new controllers.v0.v0Blocks(api);
+	const stakingController = new controllers.v0.v0PalletsStakingProgress(api);
+	const metadataController = new controllers.v0.v0Metadata(api);
+
+	const v0Controllers = [
+		claimsController,
+		txArtifactsController,
+		txFeeEstimateController,
+		txSubmitController,
+		stakingInfoController,
+		vestingController,
+		balancesController,
+		v0blocksController,
+		stakingController,
+		metadataController,
+	];
+
+	// Instantiate v1 controllers
+	const blocksController = new controllers.Blocks(api);
 	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
 		api
 	);
-	const blocksController = new controllers.Blocks(api);
-	const balancesController = new controllers.AccountsBalanceInfo(api);
-	const stakingInfoController = new controllers.AccountsStakingInfo(api);
-	const stakingController = new controllers.PalletsStakingProgress(api);
-	const vestingController = new controllers.AccountsVestingInfo(api);
-	const metadataController = new controllers.Metadata(api);
+	const accountsBalanceInfoController = new controllers.AccountsBalanceInfo(
+		api
+	);
+	const accountsStakingInfoController = new controllers.AccountsStakingInfo(
+		api
+	);
+	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
+		api
+	);
 	const nodeNetworkController = new controllers.NodeNetwork(api);
 	const nodeVersionController = new controllers.NodeVersion(api);
 	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
@@ -76,33 +109,40 @@ async function main() {
 	);
 	const runtimeCodeController = new controllers.RuntimeCode(api);
 	const runtimeSpecController = new controllers.RuntimeSpec(api);
-	const claimsController = new controllers.Claims(api);
-	const txArtifactsController = new controllers.TransactionMaterial(api);
-	const txFeeEstimateController = new controllers.TransactionFeeEstimate(api);
-	const txSubmitController = new controllers.TransactionSubmit(api);
+	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
 	const transactionDryRunController = new controllers.TransactionDryRun(api);
+	const transactionMaterialController = new controllers.TransactionMaterial(
+		api
+	);
+	const transactionFeeEstimateController = new controllers.TransactionFeeEstimate(
+		api
+	);
+	const transactionSubmitController = new controllers.TransactionSubmit(api);
+	const palletsStakingProgressController = new controllers.palletsStakingProgress(
+		api
+	);
 
 	// Create our App
 	const app = new App({
 		preMiddleware,
 		controllers: [
-			accountsStakingPayoutsController,
 			blocksController,
-			balancesController,
-			stakingInfoController,
-			stakingController,
-			vestingController,
-			metadataController,
+			accountsStakingPayoutsController,
+			accountsBalanceInfoController,
+			accountsStakingInfoController,
+			accountsVestingInfoController,
 			nodeNetworkController,
 			nodeVersionController,
 			nodeTransactionPoolController,
 			runtimeCodeController,
 			runtimeSpecController,
-			claimsController,
-			txArtifactsController,
-			txFeeEstimateController,
-			txSubmitController,
+			runtimeMetadataController,
 			transactionDryRunController,
+			transactionMaterialController,
+			transactionFeeEstimateController,
+			transactionSubmitController,
+			palletsStakingProgressController,
+			...v0Controllers,
 		],
 		postMiddleware: [
 			middleware.txError,

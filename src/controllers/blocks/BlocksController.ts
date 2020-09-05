@@ -9,6 +9,7 @@ import AbstractController from '../AbstractController';
  * GET a block.
  *
  * Paths:
+ * - `head`: Get the latest finalized block.
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
@@ -24,7 +25,7 @@ import AbstractController from '../AbstractController';
  *   initialization with the `method` and `data` for each.
  * - `extrinsics`: Array of extrinsics (inherents and transactions) within the block. Each
  *   contains:
- *   - `method`: Extrinsic method, `{module}.{function}`.
+ *   - `method`: Extrinsic method.
  *   - `signature`: Object with `signature` and `signer`, or `null` if unsigned.
  *   - `nonce`: Account nonce, if applicable.
  *   - `args`: Array of arguments.
@@ -55,13 +56,13 @@ export default class BlocksController extends AbstractController<
 	BlocksService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/block', new BlocksService(api));
+		super(api, '/blocks', new BlocksService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['', this.getLatestBlock],
+			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
 		]);
 	}

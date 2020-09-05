@@ -1,4 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
+import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -27,11 +28,9 @@ export class AccountsStakingInfoService extends AbstractService {
 		};
 
 		if (controllerOption.isNone) {
-			throw {
-				// TODO convert to newer type error
-				error: `The address ${stash} is not a stash address.`,
-				statusCode: 400,
-			};
+			throw new BadRequest(
+				`The address ${stash} is not a stash address.`
+			);
 		}
 
 		const controller = controllerOption.unwrap();
@@ -49,12 +48,10 @@ export class AccountsStakingInfoService extends AbstractService {
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
 		if (stakingLedger === null) {
-			// TODO convert to newer type error
 			// should never throw because by time we get here we know we have a bonded pair
-			throw {
-				error: `Staking ledger could not be found for controller address "${controller.toString()}"`,
-				statusCode: 404,
-			};
+			throw new InternalServerError(
+				`Staking ledger could not be found for controller address "${controller.toString()}"`
+			);
 		}
 
 		const numSlashingSpans = slashingSpansOption.isSome

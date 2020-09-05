@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
+import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
 import { AccountsBalanceInfoService } from '../../services';
@@ -11,8 +11,10 @@ import AbstractController from '../AbstractController';
  *
  * Paths:
  * - `address`: The address to query.
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
- *   finalized head.
+ *
+ * Query:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -41,17 +43,18 @@ export default class AccountsBalanceController extends AbstractController<
 	AccountsBalanceInfoService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/balance/:address', new AccountsBalanceInfoService(api));
+		super(
+			api,
+			'/accounts/:address/balance-info',
+			new AccountsBalanceInfoService(api)
+		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 
-		this.safeMountAsyncGetHandlers([
-			['', this.getAccountBalanceSummary],
-			['/:number', this.getAccountBalanceSummaryAtBlock],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}
 
 	/**
@@ -60,29 +63,11 @@ export default class AccountsBalanceController extends AbstractController<
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountBalanceSummary: RequestHandler<IAddressParam> = async (
-		{ params: { address } },
+	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
+		{ params: { address }, query: { at } },
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		AccountsBalanceController.sanitizedSend(
-			res,
-			await this.service.fetchAccountBalanceInfo(hash, address)
-		);
-	};
-
-	/**
-	 * Get the account balance summary of `address` at a block identified by its
-	 * hash or number.
-	 *
-	 * @param req Express Request
-	 * @param res Express Response
-	 */
-	private getAccountBalanceSummaryAtBlock: RequestHandler<
-		IAddressNumberParams
-	> = async ({ params: { number, address } }, res): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
+		const hash = await this.getHashFromAt(at);
 
 		AccountsBalanceController.sanitizedSend(
 			res,

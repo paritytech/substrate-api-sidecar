@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IAddressNumberParams, IAddressParam } from 'src/types/requests';
+import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
 import { AccountsVestingInfoService } from '../../services';
@@ -11,8 +11,10 @@ import AbstractController from '../AbstractController';
  *
  * Paths:
  * - `address`: Address to query.
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
- *   finalized head.
+ *
+ * Query params:
+ * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
+ * 		identifier, as the block height or block hash. Defaults to most recent block.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -29,49 +31,31 @@ export default class AccountsVestingInfoController extends AbstractController<
 	AccountsVestingInfoService
 > {
 	constructor(api: ApiPromise) {
-		super(api, '/vesting/:address', new AccountsVestingInfoService(api));
+		super(
+			api,
+			'/accounts/:address/vesting-info',
+			new AccountsVestingInfoService(api)
+		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 
-		this.safeMountAsyncGetHandlers([
-			['', this.getAccountVestingSummary],
-			['/:number', this.getAccountVestingSummaryAtBlock],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getAccountVestingInfo]]);
 	}
 
 	/**
-	 * Get the latest account vesting summary of `address`.
+	 * Get vesting information for an account.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getAccountVestingSummary: RequestHandler<IAddressParam> = async (
-		{ params: { address } },
+	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
+		{ params: { address }, query: { at } },
 		res
 	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		AccountsVestingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountVestingInfo(hash, address)
-		);
-	};
-
-	/**
-	 * Get the account vesting summary of `address` at a block identified by its
-	 * hash or number.
-	 *
-	 * @param req Express Request
-	 * @param res Express Response
-	 */
-	private getAccountVestingSummaryAtBlock: RequestHandler<
-		IAddressNumberParams
-	> = async (req, res): Promise<void> => {
-		const { address, number } = req.params;
-		const hash = await this.getHashForBlock(number);
+		const hash = await this.getHashFromAt(at);
 
 		AccountsVestingInfoController.sanitizedSend(
 			res,

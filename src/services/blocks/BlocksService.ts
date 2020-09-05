@@ -2,8 +2,10 @@ import { ApiPromise } from '@polkadot/api';
 import { Struct } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types';
 import {
+	AccountId,
 	Block,
 	BlockHash,
+	Digest,
 	DispatchInfo,
 	EventRecord,
 	Hash,
@@ -37,18 +39,25 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlock(hash: BlockHash): Promise<IBlock> {
-		const api = await this.ensureMeta(hash);
-		const [{ block }, events, headerDerive] = await Promise.all([
+		// const api = await this.ensureMeta(hash);
+		const { api } = this;
+		const [{ block }, events, validators] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			this.fetchEvents(api, hash),
-			api.derive.chain.getHeader(hash),
+			api.query.session.validators.at(hash),
 		]);
 
-		const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
+		const {
+			parentHash,
+			number,
+			stateRoot,
+			extrinsicsRoot,
+			digest,
+		} = block.header;
 
-		const authorId = headerDerive?.author;
+		const authorId = this.extractAuthor(validators, digest);
 
-		const logs = block.header.digest.logs.map((log) => {
+		const logs = digest.logs.map((log) => {
 			const { type, index, value } = log;
 
 			return { type, index, value };
@@ -189,7 +198,10 @@ export class BlocksService extends AbstractService {
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
 			return {
-				method: `${method.sectionName}.${method.methodName}`,
+				method: {
+					pallet: method.sectionName,
+					method: method.methodName,
+				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce,
 				args: this.parseGenericCall(method).args,
@@ -224,7 +236,10 @@ export class BlocksService extends AbstractService {
 			for (const record of events) {
 				const { event, phase } = record;
 				const sanitizedEvent = {
-					method: `${event.section}.${event.method}`,
+					method: {
+						pallet: event.section,
+						method: event.method,
+					},
 					data: event.data,
 				};
 
@@ -373,7 +388,7 @@ export class BlocksService extends AbstractService {
 	 * @param genericCall `GenericCall`
 	 */
 	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
-		const { sectionName, methodName, callIndex } = genericCall;
+		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
@@ -404,9 +419,40 @@ export class BlocksService extends AbstractService {
 		}
 
 		return {
-			method: `${sectionName}.${methodName}`,
-			callIndex,
+			method: {
+				pallet: sectionName,
+				method: methodName,
+			},
 			args: newArgs,
 		};
+	}
+
+	// Almost exact mimic of https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getHeader.ts#L27
+	// but we save a call to `getHeader` by hardcoding the logic here and using the digest from the blocks header.
+	private extractAuthor(
+		sessionValidators: AccountId[],
+		digest: Digest
+	): AccountId | undefined {
+		const [pitem] = digest.logs.filter(({ type }) => type === 'PreRuntime');
+
+		// extract from the substrate 2.0 PreRuntime digest
+		if (pitem) {
+			const [engine, data] = pitem.asPreRuntime;
+
+			return engine.extractAuthor(data, sessionValidators);
+		} else {
+			const [citem] = digest.logs.filter(
+				({ type }) => type === 'Consensus'
+			);
+
+			// extract author from the consensus (substrate 1.0, digest)
+			if (citem) {
+				const [engine, data] = citem.asConsensus;
+
+				return engine.extractAuthor(data, sessionValidators);
+			}
+		}
+
+		return undefined;
 	}
 }

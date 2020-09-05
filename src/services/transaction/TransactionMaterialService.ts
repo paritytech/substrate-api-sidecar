@@ -5,8 +5,7 @@ import { AbstractService } from '../AbstractService';
 
 export class TransactionMaterialService extends AbstractService {
 	/**
-	 * Fetch the baseline "material" at a given block to construct a transaction
-	 * offline.
+	 * Fetch all the network information needed to construct a transaction offline.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
