@@ -4,10 +4,10 @@ info:
   description: Substrate API Sidecar is a REST service that makes it easy to
     interact with blockchain nodes built using Substrate's FRAME framework.
   contact:
-    url: https://github.com/paritytech/substrate-api-sidecar/issues/new
+    url: https://github.com/paritytech/substrate-api-sidecar
   license:
-    name: Apache License Version 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+    name: GPL-3.0-or-later
+    url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
   version: 1.0.0-oas3
 tags:
 - name: accounts

@@ -15,7 +15,7 @@
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "jest"
   },
-  "author": "",
+  "author": "Parity Technologies <admin@parity.io>",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@polkadot/api": "^1.31.2",
