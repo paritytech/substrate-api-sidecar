@@ -1,8 +1,7 @@
 {
-  "name": "polkadot-rpc-proxy",
+  "name": "substrate-api-sidecar",
   "version": "0.16.0",
-  "description": "",
-  "main": "index.js",
+  "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "scripts": {
     "preinstall": "yarn build:calc",
     "postinstall": "yarn upgrade @substrate/calc",
