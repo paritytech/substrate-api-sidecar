@@ -42,7 +42,7 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		eventDocs: boolean,
-		extrinsicDoc: boolean
+		extrinsicDocs: boolean
 	): Promise<IBlock> {
 		// const api = await this.ensureMeta(hash);
 		const { api } = this;
@@ -71,7 +71,7 @@ export class BlocksService extends AbstractService {
 		const nonSanitizedExtrinsics = this.extractExtrinsics(
 			block,
 			events,
-			extrinsicDoc
+			extrinsicDocs
 		);
 
 		const { extrinsics, onInitialize, onFinalize } = this.sanitizeEvents(
@@ -120,7 +120,7 @@ export class BlocksService extends AbstractService {
 				const completedEvent = xtEvents.find(
 					({ method }) =>
 						isFrameMethod(method) &&
-						(method.method === Event.success || // TODO make a type check for IDispatchable and rename IDispatchable
+						(method.method === Event.success ||
 							method.method === Event.failure)
 				);
 
@@ -199,7 +199,7 @@ export class BlocksService extends AbstractService {
 	private extractExtrinsics(
 		block: Block,
 		events: EventRecord[] | string,
-		extrinsicDoc: boolean
+		extrinsicDocs: boolean
 	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 
@@ -229,7 +229,7 @@ export class BlocksService extends AbstractService {
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
-				docs: extrinsicDoc ? extrinsic.meta.documentation : undefined,
+				docs: extrinsicDocs ? extrinsic.meta.documentation : undefined,
 			};
 		});
 	}
@@ -273,8 +273,6 @@ export class BlocksService extends AbstractService {
 							`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`
 						);
 					}
-
-					// const method = `${event.section}.${event.method}`;
 
 					if (event.method === Event.success) {
 						extrinsic.success = true;

@@ -37,11 +37,7 @@ describe('BlocksService', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(
-						blockHash789629,
-						false,
-						false
-					)
+					await blocksService.fetchBlock(blockHash789629, true, true)
 				)
 			).toStrictEqual(blocks789629Response);
 		});
