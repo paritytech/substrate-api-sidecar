@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Struct } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types';
+import { EventData } from '@polkadot/types/generic/Event';
 import {
 	AccountId,
 	Block,
@@ -121,7 +122,7 @@ export class BlocksService extends AbstractService {
 					continue;
 				}
 
-				const completedData = completedEvent.data;
+				const completedData = completedEvent.data as EventData;
 				if (!completedData) {
 					extrinsics[idx].info = {
 						error:

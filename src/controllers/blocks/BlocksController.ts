@@ -13,6 +13,15 @@ import AbstractController from '../AbstractController';
  * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
+ * Query:
+ * - (Optional) `eventDocs`: When set to `true`, every event will have an extra
+ * 	`docs` property containing an array of strings that represent each line of
+ * 	events documentation
+ * - (Optional) `extrinsicDocs`: When set to `true`, every extrinsic will have an extra
+ * 	`docs` property containing an array of strings that represent each line of
+ * 	events documentation
+ *
+ *
  * Returns:
  * - `number`: Block height.
  * - `hash`: The block's hash.
@@ -73,12 +82,18 @@ export default class BlocksController extends AbstractController<
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async (_req, res) => {
+	private getLatestBlock: RequestHandler = async (
+		{ query: { eventDocs, extrinsicDocs } },
+		res
+	) => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
+
+		const eventDocsArg = eventDocs === 'true';
+		const extrsinsicDocsArg = extrinsicDocs === 'true';
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash)
+			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg)
 		);
 	};
 
@@ -89,14 +104,17 @@ export default class BlocksController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
+		const eventDocsArg = eventDocs === 'true';
+		const extrsinsicDocsArg = extrinsicDocs === 'true';
+
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash)
+			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg)
 		);
 	};
 }
