@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Struct } from '@polkadot/types';
-import { GenericCall } from '@polkadot/types';
+import { GenericCall, Text, Vec } from '@polkadot/types';
 import {
 	AccountId,
 	Block,
@@ -20,6 +20,7 @@ import {
 	IExtrinsic,
 	ISanitizedCall,
 	ISanitizedEvent,
+	isFrameMethod,
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
@@ -28,8 +29,8 @@ import { AbstractService } from '../AbstractService';
  * Event methods that we check for.
  */
 enum Event {
-	success = 'system.ExtrinsicSuccess',
-	failure = 'system.ExtrinsicFailed',
+	success = 'ExtrinsicSuccess',
+	failure = 'ExtrinsicFailed',
 }
 
 export class BlocksService extends AbstractService {
@@ -38,7 +39,11 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
-	async fetchBlock(hash: BlockHash): Promise<IBlock> {
+	async fetchBlock(
+		hash: BlockHash,
+		eventDocs: boolean,
+		extrinsicDocs: boolean
+	): Promise<IBlock> {
 		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 		const [{ block }, events, validators] = await Promise.all([
@@ -63,12 +68,17 @@ export class BlocksService extends AbstractService {
 			return { type, index, value };
 		});
 
-		const nonSanitizedExtrinsics = this.extractExtrinsics(block, events);
+		const nonSanitizedExtrinsics = this.extractExtrinsics(
+			block,
+			events,
+			extrinsicDocs
+		);
 
 		const { extrinsics, onInitialize, onFinalize } = this.sanitizeEvents(
 			events,
 			nonSanitizedExtrinsics,
-			hash
+			hash,
+			eventDocs
 		);
 
 		// The genesis block is a special case with little information associated with it.
@@ -109,8 +119,11 @@ export class BlocksService extends AbstractService {
 				const xtEvents = extrinsics[idx].events;
 				const completedEvent = xtEvents.find(
 					({ method }) =>
-						method === Event.success || method === Event.failure
+						isFrameMethod(method) &&
+						(method.method === Event.success ||
+							method.method === Event.failure)
 				);
+
 				if (!completedEvent) {
 					extrinsics[idx].info = {
 						error:
@@ -183,7 +196,11 @@ export class BlocksService extends AbstractService {
 	 * @param block Block
 	 * @param events events fetched by `fetchEvents`
 	 */
-	private extractExtrinsics(block: Block, events: EventRecord[] | string) {
+	private extractExtrinsics(
+		block: Block,
+		events: EventRecord[] | string,
+		extrinsicDocs: boolean
+	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 
 		return block.extrinsics.map((extrinsic) => {
@@ -212,6 +229,9 @@ export class BlocksService extends AbstractService {
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
+				docs: extrinsicDocs
+					? this.sanitizeDocs(extrinsic.meta.documentation)
+					: undefined,
 			};
 		});
 	}
@@ -227,7 +247,8 @@ export class BlocksService extends AbstractService {
 	private sanitizeEvents(
 		events: EventRecord[] | string,
 		extrinsics: IExtrinsic[],
-		hash: BlockHash
+		hash: BlockHash,
+		eventDocs: boolean
 	) {
 		const onInitialize = { events: [] as ISanitizedEvent[] };
 		const onFinalize = { events: [] as ISanitizedEvent[] };
@@ -235,12 +256,16 @@ export class BlocksService extends AbstractService {
 		if (Array.isArray(events)) {
 			for (const record of events) {
 				const { event, phase } = record;
+
 				const sanitizedEvent = {
 					method: {
 						pallet: event.section,
 						method: event.method,
 					},
 					data: event.data,
+					docs: eventDocs
+						? this.sanitizeDocs(event.data.meta.documentation)
+						: undefined,
 				};
 
 				if (phase.isApplyExtrinsic) {
@@ -253,13 +278,14 @@ export class BlocksService extends AbstractService {
 						);
 					}
 
-					const method = `${event.section}.${event.method}`;
-
-					if (method === Event.success) {
+					if (event.method === Event.success) {
 						extrinsic.success = true;
 					}
 
-					if (method === Event.success || method === Event.failure) {
+					if (
+						event.method === Event.success ||
+						event.method === Event.failure
+					) {
 						const sanitizedData = event.data.toJSON() as AnyJson[];
 
 						for (const data of sanitizedData) {
@@ -454,5 +480,18 @@ export class BlocksService extends AbstractService {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Process metadata documention.
+	 *
+	 * @param docs metadata doucumentation array
+	 */
+	private sanitizeDocs(docs: Vec<Text>): string {
+		return docs
+			.map((l, idx, arr) =>
+				idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`
+			)
+			.join('');
 	}
 }

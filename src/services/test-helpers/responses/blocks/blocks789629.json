@@ -52,11 +52,13 @@
               "class": "Mandatory",
               "paysFee": "Yes"
             }
-          ]
+          ],
+          "docs": " An extrinsic completed successfully. [info]"
         }
       ],
       "success": true,
-      "paysFee": true
+      "paysFee": true,
+      "docs": " Set the current time.\n\n This call should be invoked exactly once per block. It will panic at the finalization\n phase, if this call hasn't been invoked by that time.\n\n The timestamp should be greater than the previous one by the amount specified by\n `MinimumPeriod`.\n\n The dispatch origin for this call must be `Inherent`.\n\n # <weight>\n - `O(T)` where `T` complexity of `on_timestamp_set`\n - 1 storage read and 1 storage mutation (codec `O(1)`). (because of `DidUpdate::take` in `on_finalize`)\n - 1 event handler `on_timestamp_set` `O(T)`.\n - Benchmark: 7.678 (min squares analysis)\n   - NOTE: This benchmark was done for a runtime with insignificant `on_timestamp_set` handlers.\n     New benchmarking is needed when adding new handlers.\n # </weight>"
     },
     {
       "method": {
@@ -83,11 +85,13 @@
               "class": "Mandatory",
               "paysFee": "Yes"
             }
-          ]
+          ],
+          "docs": " An extrinsic completed successfully. [info]"
         }
       ],
       "success": true,
-      "paysFee": true
+      "paysFee": true,
+      "docs": " Hint that the author of this block thinks the best finalized\n block is the given number."
     },
     {
       "method": {
@@ -114,11 +118,13 @@
               "class": "Mandatory",
               "paysFee": "Yes"
             }
-          ]
+          ],
+          "docs": " An extrinsic completed successfully. [info]"
         }
       ],
       "success": true,
-      "paysFee": true
+      "paysFee": true,
+      "docs": " Provide candidate receipts for parachains, in ascending order by id."
     },
     {
       "method": {
@@ -437,7 +443,9 @@
       "tip": "0",
       "hash": "0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045",
       "info": {
-        "error": "Unable to find success or failure event for extrinsic"
+        "weight": "941325000000",
+        "class": "Normal",
+        "partialFee": "1257000075"
       },
       "events": [
         {
@@ -448,7 +456,8 @@
           "data": [
             "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
             "10885828687302"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -458,7 +467,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -468,7 +478,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -478,7 +489,8 @@
           "data": [
             "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
             "11663389343063"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -488,7 +500,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -498,7 +511,8 @@
           "data": [
             "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
             "11145015572556"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -508,7 +522,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -518,7 +533,8 @@
           "data": [
             "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
             "10497049290937"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -528,7 +544,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -538,7 +555,8 @@
           "data": [
             "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
             "8034778538608"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -548,7 +566,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -558,7 +577,8 @@
           "data": [
             "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
             "8812337331337"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -568,7 +588,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -578,7 +599,8 @@
           "data": [
             "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
             "11207586529668"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -588,7 +610,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -598,7 +621,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -608,7 +632,8 @@
           "data": [
             "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
             "12119832075527"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -618,7 +643,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -628,7 +654,8 @@
           "data": [
             "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
             "9904379142071"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -638,7 +665,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -648,7 +676,8 @@
           "data": [
             "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
             "8601169881765"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -658,7 +687,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -668,7 +698,8 @@
           "data": [
             "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
             "9513415427624"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -678,7 +709,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -688,7 +720,8 @@
           "data": [
             "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
             "7297962494168"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -698,7 +731,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -708,7 +742,8 @@
           "data": [
             "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
             "11504029448815"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -718,7 +753,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -728,7 +764,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -738,7 +775,8 @@
           "data": [
             "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
             "9785036149946"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -748,7 +786,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -758,7 +797,8 @@
           "data": [
             "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
             "9256114404846"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -768,7 +808,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -778,7 +819,8 @@
           "data": [
             "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
             "11239567627182"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -788,7 +830,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -798,7 +841,8 @@
           "data": [
             "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
             "11371797588916"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -808,7 +852,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -818,7 +863,8 @@
           "data": [
             "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
             "8594964596178"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -828,7 +874,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -838,7 +885,8 @@
           "data": [
             "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
             "10729489455200"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -848,7 +896,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -858,7 +907,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -868,7 +918,8 @@
           "data": [
             "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
             "9007472464752"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -878,7 +929,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -888,7 +940,8 @@
           "data": [
             "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
             "9669786253100"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -898,7 +951,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -908,7 +962,8 @@
           "data": [
             "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
             "9404861878505"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -918,7 +973,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -928,7 +984,8 @@
           "data": [
             "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
             "8610083051000"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -938,7 +995,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -948,7 +1006,8 @@
           "data": [
             "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
             "9139935602670"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -958,7 +1017,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -968,7 +1028,8 @@
           "data": [
             "1462Rm6ZhAeK3HVhNU4n7t2jACnm2GDgUS4BYmWMGB7Y95VY",
             "10746277048255"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -978,7 +1039,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -988,7 +1050,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -998,7 +1061,8 @@
           "data": [
             "16KuUsyfxgQovzp8QXgtJH1K5Tmok6M8hgSoHaGbyyTQtQg",
             "9286904915234"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1008,7 +1072,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1018,7 +1083,8 @@
           "data": [
             "16X3K5R15mvc4SmCUKBw9WfW718fRqXdDAKim1S7TxEXCDzQ",
             "10082926425041"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1028,7 +1094,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1038,7 +1105,8 @@
           "data": [
             "156G1ZiWHeSvLYwgbfNCknU8NfTkGZvEVvcrFs2Dn5Zm6Lus",
             "8888896065208"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1048,7 +1116,8 @@
           "data": [
             "13fWfiEQ59hDRySKteLwNcadALnTCWr9YUUzUq3k9YXnMWVJ",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1058,7 +1127,8 @@
           "data": [
             "14gRuVzZSsFLWHCsere3DXbTwon4BK381LFbjWdG3HGvELKv",
             "10215595406758"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1068,7 +1138,8 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1078,7 +1149,8 @@
           "data": [
             "143eus3Ki72VUJ9AWYsFEGvkUAjeFw8yMfTaSiuAEq3n8yZc",
             "10613606161661"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
@@ -1088,14 +1160,16 @@
           "data": [
             "14rSLrbz47o83C9KywrHGt7cz1rXC1Bp3rLgUH6W27TNoU7U",
             "0"
-          ]
+          ],
+          "docs": " The staker has been rewarded by this amount. [stash, amount]"
         },
         {
           "method": {
             "pallet": "utility",
             "method": "BatchCompleted"
           },
-          "data": []
+          "data": [],
+          "docs": " Batch of dispatches completed fully with no error."
         },
         {
           "method": {
@@ -1104,7 +1178,8 @@
           },
           "data": [
             "1005600060"
-          ]
+          ],
+          "docs": " Some funds have been deposited. [deposit]"
         },
         {
           "method": {
@@ -1114,7 +1189,8 @@
           "data": [
             "1zugcajGg5yDD9TEqKKzGx7iKuGWZMkRbYcyaFnaUaEkwMK",
             "251400015"
-          ]
+          ],
+          "docs": " Some amount was deposited (e.g. for transaction fees). [who, deposit]"
         },
         {
           "method": {
@@ -1127,11 +1203,13 @@
               "class": "Normal",
               "paysFee": "Yes"
             }
-          ]
+          ],
+          "docs": " An extrinsic completed successfully. [info]"
         }
       ],
       "success": true,
-      "paysFee": true
+      "paysFee": true,
+      "docs": " Send a batch of dispatch calls.\n\n May be called from any origin.\n\n - `calls`: The calls to be dispatched from the same origin.\n\n If origin is root then call are dispatch without checking origin filter. (This includes\n bypassing `frame_system::Trait::BaseCallFilter`).\n\n # <weight>\n - Base weight: 14.39 + .987 * c µs\n - Plus the sum of the weights of the `calls`.\n - Plus one additional event. (repeat read/write)\n # </weight>\n\n This will return `Ok` in all circumstances. To determine the success of the batch, an\n event is deposited. If a call failed and the batch was interrupted, then the\n `BatchInterrupted` event is deposited, along with the number of successful calls made\n and the error of the failed call. If all were successful, then the `BatchCompleted`\n event is deposited."
     },
     {
       "method": {
@@ -1173,7 +1251,9 @@
       "tip": "0",
       "hash": "0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f",
       "info": {
-        "error": "Unable to find success or failure event for extrinsic"
+        "weight": "399480000",
+        "class": "Normal",
+        "partialFee": "544000000"
       },
       "events": [
         {
@@ -1185,7 +1265,8 @@
             {
               "Ok": []
             }
-          ]
+          ],
+          "docs": " A proxy was executed correctly, with the given [result]."
         },
         {
           "method": {
@@ -1194,7 +1275,8 @@
           },
           "data": [
             "435200000"
-          ]
+          ],
+          "docs": " Some funds have been deposited. [deposit]"
         },
         {
           "method": {
@@ -1204,7 +1286,8 @@
           "data": [
             "1zugcajGg5yDD9TEqKKzGx7iKuGWZMkRbYcyaFnaUaEkwMK",
             "108800000"
-          ]
+          ],
+          "docs": " Some amount was deposited (e.g. for transaction fees). [who, deposit]"
         },
         {
           "method": {
@@ -1217,11 +1300,13 @@
               "class": "Normal",
               "paysFee": "Yes"
             }
-          ]
+          ],
+          "docs": " An extrinsic completed successfully. [info]"
         }
       ],
       "success": true,
-      "paysFee": true
+      "paysFee": true,
+      "docs": " Dispatch the given `call` from an account that the sender is authorised for through\n `add_proxy`.\n\n The dispatch origin for this call must be _Signed_.\n\n Parameters:\n - `real`: The account that the proxy will make a call on behalf of.\n - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.\n - `call`: The call to be made by the `real` account.\n\n # <weight>\n P is the number of proxies the user has\n - Base weight: 19.87 + .141 * P µs\n - DB weight: 1 storage read.\n - Plus the weight of the `call`\n # </weight>"
     }
   ],
   "onFinalize": {

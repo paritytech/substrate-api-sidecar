@@ -1,8 +1,8 @@
-import { IDispatchable, ISanitizedArgs } from '.';
+import { IFrameMethod, ISanitizedArgs } from '.';
 
 export interface ISanitizedCall {
 	[key: string]: unknown;
-	method: string | IDispatchable;
+	method: string | IFrameMethod;
 	callIndex?: Uint8Array | string;
 	args: ISanitizedArgs;
 }

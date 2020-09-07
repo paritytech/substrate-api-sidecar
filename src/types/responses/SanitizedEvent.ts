@@ -1,8 +1,8 @@
 import { EventData } from '@polkadot/types/generic/Event';
 
-import { IDispatchable } from '.';
+import { IFrameMethod } from '.';
 
 export interface ISanitizedEvent {
-	method: string | IDispatchable;
+	method: string | IFrameMethod;
 	data: EventData;
 }
