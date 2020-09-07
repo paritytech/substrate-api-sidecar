@@ -942,7 +942,7 @@ components:
       description: Version information of the node.
     NodeRole:
       type: string
-      description: Role the node is running. (Sentry nodes are being deprecated.)
+      description: Role of this node. (N.B. Sentry nodes are being deprecated.)
       enum:
       - Full
       - LightClient
