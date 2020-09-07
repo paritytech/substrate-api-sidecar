@@ -7,7 +7,7 @@
     "start": "webpack --watch"
   },
   "author": "Parity Technologies <admin@parity.io>",
-  "license": "Apache-2.0",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "clean-webpack-plugin": "^1.0.1",
     "copy-webpack-plugin": "^4.6.0",
