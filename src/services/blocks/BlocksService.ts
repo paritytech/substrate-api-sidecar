@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Struct } from '@polkadot/types';
-import { GenericCall } from '@polkadot/types';
+import { GenericCall, Text, Vec } from '@polkadot/types';
 import {
 	AccountId,
 	Block,
@@ -230,9 +230,7 @@ export class BlocksService extends AbstractService {
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
 				docs: extrinsicDocs
-					? extrinsic.meta.documentation
-							.map((l) => `${l.toString()}\n`)
-							.join(' ')
+					? this.sanitizeDocs(extrinsic.meta.documentation)
 					: undefined,
 			};
 		});
@@ -266,9 +264,7 @@ export class BlocksService extends AbstractService {
 					},
 					data: event.data,
 					docs: eventDocs
-						? event.data.meta.documentation
-								.map((l) => `${l.toString()}\n`)
-								.join(' ')
+						? this.sanitizeDocs(event.data.meta.documentation)
 						: undefined,
 				};
 
@@ -484,5 +480,18 @@ export class BlocksService extends AbstractService {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Process metadata documention.
+	 *
+	 * @param docs metadata doucumentation array
+	 */
+	private sanitizeDocs(docs: Vec<Text>): string {
+		return docs
+			.map((l, idx, arr) =>
+				idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`
+			)
+			.join('');
 	}
 }
