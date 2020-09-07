@@ -229,7 +229,11 @@ export class BlocksService extends AbstractService {
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				paysFee: null as null | boolean,
-				docs: extrinsicDocs ? extrinsic.meta.documentation : undefined,
+				docs: extrinsicDocs
+					? extrinsic.meta.documentation
+							.map((l) => `${l.toString()}\n`)
+							.join(' ')
+					: undefined,
 			};
 		});
 	}
@@ -261,7 +265,11 @@ export class BlocksService extends AbstractService {
 						method: event.method,
 					},
 					data: event.data,
-					docs: eventDocs ? event.data.meta.documentation : undefined,
+					docs: eventDocs
+						? event.data.meta.documentation
+								.map((l) => `${l.toString()}\n`)
+								.join(' ')
+						: undefined,
 				};
 
 				if (phase.isApplyExtrinsic) {
