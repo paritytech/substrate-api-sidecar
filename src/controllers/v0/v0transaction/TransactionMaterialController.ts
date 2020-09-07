@@ -65,7 +65,7 @@ export default class TransactionMaterialController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		const noMetaArg = noMeta === 'true' ? true : false;
+		const noMetaArg = noMeta === 'true';
 
 		TransactionMaterialController.sanitizedSend(
 			res,
@@ -86,7 +86,7 @@ export default class TransactionMaterialController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		const noMetaArg = noMeta === 'true' ? true : false;
+		const noMetaArg = noMeta === 'true';
 
 		TransactionMaterialController.sanitizedSend(
 			res,

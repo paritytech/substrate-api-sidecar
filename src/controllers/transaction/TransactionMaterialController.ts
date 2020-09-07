@@ -62,7 +62,7 @@ export default class TransactionMaterialController extends AbstractController<
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const noMetaArg = noMeta === 'true' ? true : false;
+		const noMetaArg = noMeta === 'true';
 
 		TransactionMaterialController.sanitizedSend(
 			res,
