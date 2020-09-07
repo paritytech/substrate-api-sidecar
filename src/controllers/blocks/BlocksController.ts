@@ -15,11 +15,9 @@ import AbstractController from '../AbstractController';
  *
  * Query:
  * - (Optional) `eventDocs`: When set to `true`, every event will have an extra
- * 	`docs` property containing an array of strings that represent each line of
- * 	the event's documentation.
+ * 	`docs` property with a string of the events documentation.
  * - (Optional) `extrinsicDocs`: When set to `true`, every extrinsic will have an extra
- * 	`docs` property containing an array of strings that represent each line of
- * 	the extrinsic's documentation.
+ * 	`docs` property with a string of the extrinsics documentation.
  *
  *
  * Returns:

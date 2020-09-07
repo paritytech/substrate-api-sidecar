@@ -235,6 +235,17 @@ paths:
         schema:
           pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
           type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs`
+          property with a string of the events documentation.
+        required: false
+        schema:
+          type: boolean
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs`
+          property with a string of the extrinsics documentation.
       responses:
         "200":
           description: successful operation
