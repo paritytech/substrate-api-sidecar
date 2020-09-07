@@ -26,12 +26,13 @@
     "./node_modules/@types"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "docs"
   ],
   "include": [
     "./src/**/*.ts",
     "./src/**/*.json",
     "./config/**/*.json",
-    "./config/**/*.ts",
+    "./config/**/*.ts"
   ]
 }

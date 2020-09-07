@@ -1,21 +1,21 @@
 {
-  "name": "polkadot-rpc-proxy",
+  "name": "substrate-api-sidecar",
   "version": "0.16.0",
-  "description": "",
-  "main": "index.js",
+  "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "scripts": {
     "preinstall": "yarn build:calc",
     "postinstall": "yarn upgrade @substrate/calc",
     "build": "tsc",
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
+    "build:docs": "(cd docs && yarn && yarn build)",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "start": "yarn run build && yarn run main",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "jest"
   },
-  "author": "",
+  "author": "Parity Technologies <admin@parity.io>",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@polkadot/api": "^1.31.2",
