@@ -110,11 +110,15 @@ export default class BlocksController extends AbstractController<
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
-		const extrsinsicDocsArg = extrinsicDocs === 'true';
+		const extrinsinsicDocsArg = extrinsicDocs === 'true';
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg)
+			await this.service.fetchBlock(
+				hash,
+				eventDocsArg,
+				extrinsinsicDocsArg
+			)
 		);
 	};
 }
