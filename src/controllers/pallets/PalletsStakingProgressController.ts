@@ -7,7 +7,6 @@ import AbstractController from '../AbstractController';
 /**
  * GET progress on the general Staking pallet system.
  *
- *
  * Query params:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
