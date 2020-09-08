@@ -35,15 +35,18 @@ const oldLog = console.log;
  *
  * @param data any data passed to console.log
  */
-function consoleWithApiLog(...data: any[]) {
+function consoleWithApiLog(...data: unknown[]) {
 	const joined = data.join(' ');
 	if (!joined.includes('API-WS:')) {
 		oldLog.apply(console, data);
 	}
 
-	fs.writeFile('./SAS.log', joined, { flag: 'a' }, (err) => console.log(err));
+	fs.writeFile('./SAS.log', joined, { flag: 'a' }, (err) =>
+		oldLog.call(console, err)
+	);
 }
 
+// Monkey patch console functions so data can be intercepted and written to file
 console.log = consoleWithApiLog;
 console.warn = consoleWithApiLog;
 console.error = consoleWithApiLog;
