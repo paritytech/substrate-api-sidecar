@@ -18,11 +18,35 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
+import * as fs from 'fs';
 
 import App from './App';
 import Config, { ISidecarConfig } from './Config';
 import * as controllers from './controllers';
 import * as middleware from './middleware';
+
+const oldLog = console.log;
+/**
+ * console.log any output that is not from API-WS logging, and write all data
+ * to file, including API-WS logging. This is especially useful when running
+ * NODE_ENV=test, which causes a large amount of RPC info to be logged, which
+ * is not helpful when logged to the developer console, but is helpful in log
+ * files.
+ *
+ * @param data any data passed to console.log
+ */
+function consoleWithApiLog(...data: any[]) {
+	const joined = data.join(' ');
+	if (!joined.includes('API-WS:')) {
+		oldLog.apply(console, data);
+	}
+
+	fs.writeFile('./SAS.log', joined, { flag: 'a' }, (err) => console.log(err));
+}
+
+console.log = consoleWithApiLog;
+console.warn = consoleWithApiLog;
+console.error = consoleWithApiLog;
 
 async function main() {
 	const configOrNull = Config.GetConfig();
