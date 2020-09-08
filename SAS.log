@@ -1,0 +1,721 @@
+[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[34mSAS:[39m
+    [32m ✅ PORT: [39m[37m8080[39m
+[36m  📦 SUBSTRATE:[39m
+    [32m ✅ WS_URL: [39m[37m"ws://127.0.0.1:9944"[39m
+[36m  📦 EXPRESS:[39m
+    [32m ✅ LOG_MODE: [39m[37m"errors"[39m
+    [32m ✅ BIND_HOST: [39m[37m"127.0.0.1"[39m
+[90m2020-09-08 16:23:37[39m
+[31m2020-09-08 16:23:37[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+(node:70030) UnhandledPromiseRejectionWarning: #<_Event>
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70030) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). To terminate the node process on unhandled promise rejection, use the CLI flag `--unhandled-rejections=strict` (see https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode). (rejection id: 1)
+(node:70030) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:38[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:23:38[39m
+[90m2020-09-08 16:23:39[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:39[39m
+[31m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:23:40[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m2020-09-08 16:23:40[39m
+socket error
+[90m2020-09-08 16:23:41[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:41[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:42[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:42[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:43[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error
+[31m2020-09-08 16:23:43[39m
+[90m2020-09-08 16:23:44[39m
+socket error
+[31m2020-09-08 16:23:44[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:23:45[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:23:45[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m2020-09-08 16:23:46[39m
+[31m2020-09-08 16:23:46[39m
+[90m2020-09-08 16:23:47[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:23:47[39m
+[90m2020-09-08 16:23:48[39m
+[31m2020-09-08 16:23:48[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[90m2020-09-08 16:23:49[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:49[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:50[39m
+[31m2020-09-08 16:23:50[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error
+[31m         API-WS:[39m
+[90m2020-09-08 16:23:51[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:51[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:52[39m
+[31m2020-09-08 16:23:52[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:53[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:23:53[39m
+[90m         API-WS:[39m
+[90m2020-09-08 16:23:54[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:23:54[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:23:55[39m
+[31m2020-09-08 16:23:55[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:56[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:56[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:57[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:23:57[39m
+socket error
+[90m2020-09-08 16:23:58[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:23:58[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:23:59[39m
+[31m2020-09-08 16:23:59[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:00[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:00[39m
+[90m2020-09-08 16:24:01[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:01[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:02[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:02[39m
+socket error
+[90m2020-09-08 16:24:03[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:03[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:04[39m
+[31m2020-09-08 16:24:04[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:05[39m
+[31m2020-09-08 16:24:05[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:06[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:06[39m
+socket error
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:07[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:07[39m
+[90m2020-09-08 16:24:08[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:08[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:09[39m
+[31m2020-09-08 16:24:09[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:10[39m
+[90m2020-09-08 16:24:10[39m
+socket error
+[90m2020-09-08 16:24:11[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:11[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:12[39m
+socket error
+[31m2020-09-08 16:24:12[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:13[39m
+socket error
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:13[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:14[39m
+[31m2020-09-08 16:24:14[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:15[39m
+[31m2020-09-08 16:24:15[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:16[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:16[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:17[39m
+[31m2020-09-08 16:24:17[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:18[39m
+socket error
+[31m2020-09-08 16:24:18[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:19[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error
+[31m2020-09-08 16:24:19[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:20[39m
+[90m2020-09-08 16:24:20[39m
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:21[39m
+socket error
+[31m2020-09-08 16:24:21[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m2020-09-08 16:24:22[39m
+[31m2020-09-08 16:24:22[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:23[39m
+socket error
+[31m2020-09-08 16:24:23[39m
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:24[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:24[39m
+socket error
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:24:25[39m
+[90m2020-09-08 16:24:25[39m
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:24:26[39m
+[90m2020-09-08 16:24:26[39m
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:27[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:27[39m
+socket error
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:28[39m
+[90m         API-WS:[39m
+socket error
+[31m2020-09-08 16:24:28[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:29[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:29[39m
+[90m2020-09-08 16:24:30[39m
+socket error
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:30[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:31[39m
+[31m2020-09-08 16:24:31[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:24:32[39m
+[90m2020-09-08 16:24:32[39m
+[90m2020-09-08 16:24:33[39m
+[31m2020-09-08 16:24:33[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:34[39m
+[90m         API-WS:[39m
+socket error
+[31m2020-09-08 16:24:34[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:35[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:35[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:36[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:36[39m
+[31m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:37[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:37[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:38[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:38[39m
+[90m2020-09-08 16:24:39[39m
+[90m         API-WS:[39m
+socket error
+[31m         API-WS:[39m
+[31m2020-09-08 16:24:39[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:40[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:40[39m
+[90m2020-09-08 16:24:41[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:41[39m
+[90m2020-09-08 16:24:42[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:24:42[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:43[39m
+[90m2020-09-08 16:24:43[39m
+socket error
+[90m2020-09-08 16:24:44[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:44[39m
+[90m         API-WS:[39m
+socket error
+[90m2020-09-08 16:24:45[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:45[39m
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:46[39m
+socket error
+[31m2020-09-08 16:24:46[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:47[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:47[39m
+[90m2020-09-08 16:24:48[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:24:48[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:49[39m
+[31m2020-09-08 16:24:49[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+[90m2020-09-08 16:24:50[39m
+[31m         API-WS:[39m
+socket error
+[31m2020-09-08 16:24:50[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:51[39m
+[90m         API-WS:[39m
+socket error
+[31m2020-09-08 16:24:51[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:24:52[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m2020-09-08 16:24:52[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:24:53[39m
+[90m2020-09-08 16:24:53[39m
+[90m2020-09-08 16:24:54[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:54[39m
+[31m         API-WS:[39m
+socket error
+[90m         API-WS:[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m2020-09-08 16:24:55[39m
+[31m2020-09-08 16:24:55[39m
+[90m2020-09-08 16:24:56[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:24:56[39m
+socket error
+[90m2020-09-08 16:24:57[39m
+[31m2020-09-08 16:24:57[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:24:58[39m
+socket error
+[90m2020-09-08 16:24:58[39m
+[90m2020-09-08 16:24:59[39m
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m         API-WS:[39m
+[31m2020-09-08 16:24:59[39m
+[90m2020-09-08 16:25:00[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+[31m         API-WS:[39m
+[31m2020-09-08 16:25:00[39m
+[34mSAS:[39m
+[36m  📦 EXPRESS:[39m    [32m ✅ BIND_HOST: [39m[37m"127.0.0.1"[39m
+    [32m ✅ PORT: [39m[37m8080[39m
+[36m  📦 SUBSTRATE:[39m
+    [32m ✅ WS_URL: [39m[37m"ws://127.0.0.1:9944"[39m
+
+
+    [32m ✅ LOG_MODE: [39m[37m"errors"[39m[90m2020-09-08 16:25:13[39m[31m2020-09-08 16:25:13[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m(node:70181) UnhandledPromiseRejectionWarning: #<_Event>
+(Use `node --trace-warnings ...` to show where the warning was created)(node:70181) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). To terminate the node process on unhandled promise rejection, use the CLI flag `--unhandled-rejections=strict` (see https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode). (rejection id: 1)socket error
+(node:70181) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+
+
+[90m2020-09-08 16:25:14[39m[31m2020-09-08 16:25:14[39m[90m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m         API-WS:[39m[90m         API-WS:[39m[90m2020-09-08 16:25:15[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[31m2020-09-08 16:25:15[39m[90m2020-09-08 16:25:16[39m[31m2020-09-08 16:25:16[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[90m         API-WS:[39msocket error[90m         API-WS:[39m[90m2020-09-08 16:25:17[39msocket error
+[31m2020-09-08 16:25:17[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m[90m2020-09-08 16:25:18[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:25:18[39m
+socket error[90m2020-09-08 16:25:19[39m[90m         API-WS:[39m[31m2020-09-08 16:25:19[39msocket error
+[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m2020-09-08 16:25:20[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:25:20[39m[90m         API-WS:[39m[31m2020-09-08 16:25:21[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:25:21[39m
+socket error[90m         API-WS:[39m[90m2020-09-08 16:25:22[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[31m2020-09-08 16:25:22[39msocket error[90m2020-09-08 16:25:23[39m[31m2020-09-08 16:25:23[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:24[39msocket error[31m         API-WS:[39m[90m         API-WS:[39m
+
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:25:24[39m[90m2020-09-08 16:25:25[39msocket error[90m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:25:25[39m[90m         API-WS:[39m[31m         API-WS:[39m[31m2020-09-08 16:25:26[39m
+
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m2020-09-08 16:25:26[39m[90m2020-09-08 16:25:27[39m[90m         API-WS:[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[31m         API-WS:[39m[31m2020-09-08 16:25:27[39m[90m2020-09-08 16:25:28[39m[31m2020-09-08 16:25:28[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error[90m2020-09-08 16:25:29[39m[31m2020-09-08 16:25:29[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m         API-WS:[39m[90m2020-09-08 16:25:30[39msocket error[31m2020-09-08 16:25:30[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m2020-09-08 16:25:31[39m[31m2020-09-08 16:25:31[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m         API-WS:[39m
+socket error[90m2020-09-08 16:25:32[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:25:32[39msocket error
+
+[90m2020-09-08 16:25:33[39m[31m2020-09-08 16:25:33[39m[31m         API-WS:[39m
+
+[90m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error[90m2020-09-08 16:25:34[39m[31m         API-WS:[39m[31m2020-09-08 16:25:34[39msocket error
+
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:25:35[39m[90m2020-09-08 16:25:35[39m
+
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:25:36[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:25:36[39msocket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:37[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[31m2020-09-08 16:25:37[39m[90m2020-09-08 16:25:38[39m[31m         API-WS:[39m[31m2020-09-08 16:25:38[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:39[39m[31m         API-WS:[39m[31m2020-09-08 16:25:39[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error[90m2020-09-08 16:25:40[39m[31m2020-09-08 16:25:40[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39m
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:41[39m[31m         API-WS:[39m[31m2020-09-08 16:25:41[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m
+socket error[90m2020-09-08 16:25:42[39m[90m         API-WS:[39m[31m2020-09-08 16:25:42[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m         API-WS:[39m[90m2020-09-08 16:25:43[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+socket error[31m2020-09-08 16:25:43[39m[90m2020-09-08 16:25:44[39msocket error[31m2020-09-08 16:25:44[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+[90m         API-WS:[39m[90m2020-09-08 16:25:45[39m[31m2020-09-08 16:25:45[39msocket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39m
+[90m         API-WS:[39m[90m2020-09-08 16:25:46[39m[90m         API-WS:[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[31m2020-09-08 16:25:46[39m[31m         API-WS:[39m[90m2020-09-08 16:25:47[39m[31m2020-09-08 16:25:47[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+socket error[90m         API-WS:[39m[90m2020-09-08 16:25:48[39m[31m2020-09-08 16:25:48[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:49[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:25:49[39m[90m2020-09-08 16:25:50[39m[31m2020-09-08 16:25:50[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:51[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:25:51[39m[90m         API-WS:[39m[90m2020-09-08 16:25:52[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:25:52[39m
+[31m         API-WS:[39m[90m2020-09-08 16:25:53[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:25:53[39m
+socket error[90m2020-09-08 16:25:54[39msocket error[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[90m         API-WS:[39m[31m2020-09-08 16:25:54[39m[90m2020-09-08 16:25:55[39m
+[31m2020-09-08 16:25:55[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error[90m         API-WS:[39m[31m         API-WS:[39m[90m2020-09-08 16:25:56[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:25:56[39m[90m         API-WS:[39m[31m2020-09-08 16:25:57[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m2020-09-08 16:25:57[39m[90m2020-09-08 16:25:58[39m[31m2020-09-08 16:25:58[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:25:59[39m[90m         API-WS:[39m[31m2020-09-08 16:25:59[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39msocket error
+
+[90m2020-09-08 16:26:00[39m[90m         API-WS:[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:00[39m[31m         API-WS:[39m
+
+[90m2020-09-08 16:26:01[39m[31m2020-09-08 16:26:01[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:02[39m[31m2020-09-08 16:26:02[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:03[39m[31m2020-09-08 16:26:03[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:04[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[31m2020-09-08 16:26:04[39msocket error[90m2020-09-08 16:26:05[39m
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:26:05[39m[90m         API-WS:[39m[90m2020-09-08 16:26:06[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[31m2020-09-08 16:26:06[39m[90m         API-WS:[39m[90m2020-09-08 16:26:07[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:26:07[39m[90m         API-WS:[39m[90m2020-09-08 16:26:08[39m[31m2020-09-08 16:26:08[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[31m         API-WS:[39m[90m2020-09-08 16:26:09[39m[31m2020-09-08 16:26:09[39m[31m         API-WS:[39msocket error
+
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:26:10[39m[31m         API-WS:[39m[90m2020-09-08 16:26:10[39m
+socket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m2020-09-08 16:26:11[39m
+[31m         API-WS:[39m[90m         API-WS:[39m
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:11[39m[90m2020-09-08 16:26:12[39m[31m         API-WS:[39m[31m2020-09-08 16:26:12[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:13[39m[90m         API-WS:[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:26:13[39m[90m         API-WS:[39m[90m2020-09-08 16:26:14[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:26:14[39m[90m         API-WS:[39m[31m2020-09-08 16:26:15[39m[31m         API-WS:[39msocket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:26:15[39m[90m2020-09-08 16:26:16[39m
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m         API-WS:[39m[31m2020-09-08 16:26:16[39m[31m         API-WS:[39m[90m2020-09-08 16:26:17[39m[31m2020-09-08 16:26:17[39m[31m         API-WS:[39m[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error[90m         API-WS:[39m[90m2020-09-08 16:26:18[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:18[39msocket error
+
+[90m2020-09-08 16:26:19[39m[31m2020-09-08 16:26:19[39m[90m         API-WS:[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error[90m2020-09-08 16:26:20[39m[90m         API-WS:[39m[31m2020-09-08 16:26:20[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m
+socket error[90m         API-WS:[39m
+[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:26:21[39m[90m2020-09-08 16:26:21[39msocket error[90m2020-09-08 16:26:22[39m[31m2020-09-08 16:26:22[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39m
+
+socket error[90m         API-WS:[39m[90m2020-09-08 16:26:23[39msocket error[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:23[39m
+[31m         API-WS:[39m[90m         API-WS:[39m[90m2020-09-08 16:26:24[39m[31m         API-WS:[39m
+
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:24[39m[90m2020-09-08 16:26:25[39m[31m2020-09-08 16:26:25[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:26:26[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m2020-09-08 16:26:26[39m[90m2020-09-08 16:26:27[39m
+[31m2020-09-08 16:26:27[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39msocket error[90m         API-WS:[39m
+[90m2020-09-08 16:26:28[39m[31m2020-09-08 16:26:28[39m[31m         API-WS:[39msocket error
+[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m2020-09-08 16:26:29[39m[90m         API-WS:[39m[31m2020-09-08 16:26:29[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m         API-WS:[39m[90m         API-WS:[39m[31m2020-09-08 16:26:30[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:26:30[39m
+socket error[90m2020-09-08 16:26:31[39m[31m2020-09-08 16:26:31[39m[31m         API-WS:[39m
+
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m         API-WS:[39m[90m2020-09-08 16:26:32[39msocket error[31m2020-09-08 16:26:32[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m         API-WS:[39m
+[31m         API-WS:[39m
+[90m2020-09-08 16:26:33[39m[31m2020-09-08 16:26:33[39m[31m         API-WS:[39m
+socket error
+[90m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[90m2020-09-08 16:26:34[39m
+[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:26:34[39m[90m         API-WS:[39msocket error[90m         API-WS:[39m[31m2020-09-08 16:26:35[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:26:35[39m
+socket error[90m2020-09-08 16:26:36[39m[90m         API-WS:[39m[31m2020-09-08 16:26:36[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[31m         API-WS:[39m[90m2020-09-08 16:26:37[39m[90m         API-WS:[39m[31m         API-WS:[39msocket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:26:37[39m[90m2020-09-08 16:26:38[39m[90m         API-WS:[39m
+socket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m2020-09-08 16:26:38[39m[31m         API-WS:[39m[90m         API-WS:[39m[31m         API-WS:[39m[31m2020-09-08 16:26:39[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[90m2020-09-08 16:26:39[39m[90m2020-09-08 16:26:40[39m[31m         API-WS:[39m[31m2020-09-08 16:26:40[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:41[39m[90m         API-WS:[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error
+[31m2020-09-08 16:26:41[39m[90m         API-WS:[39m[90m2020-09-08 16:26:42[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:26:42[39m[90m         API-WS:[39m[90m2020-09-08 16:26:43[39m[31m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m2020-09-08 16:26:43[39msocket error
+[90m         API-WS:[39m[90m2020-09-08 16:26:44[39m[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+socket error
+[31m2020-09-08 16:26:44[39m[90m2020-09-08 16:26:45[39m[90m         API-WS:[39msocket error
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'[31m         API-WS:[39m
+[31m2020-09-08 16:26:45[39m[90m         API-WS:[39m[90m2020-09-08 16:26:46[39msocket errordisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+
+[31m2020-09-08 16:26:46[39m[31m         API-WS:[39m[90m         API-WS:[39msocket error[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[90m2020-09-08 16:26:47[39m
+[31m2020-09-08 16:26:48[39m[90m2020-09-08 16:26:49[39m[90m         API-WS:[39m
+disconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'
+[31m         API-WS:[39m[31m2020-09-08 16:26:49[39msocket error[90m2020-09-08 16:26:50[39m[31m2020-09-08 16:26:50[39m[90m         API-WS:[39m
+
+[31m         API-WS:[39mdisconnected from ws://127.0.0.1:9944 code: '1006' reason: 'connection failed'socket error

@@ -18,38 +18,54 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
-import * as fs from 'fs';
 
+// import * as fs from 'fs';
 import App from './App';
 import Config, { ISidecarConfig } from './Config';
 import * as controllers from './controllers';
 import * as middleware from './middleware';
 
-const oldLog = console.log;
-/**
- * console.log any output that is not from API-WS logging, and write all data
- * to file, including API-WS logging. This is especially useful when running
- * NODE_ENV=test, which causes a large amount of RPC info to be logged, which
- * is not helpful when logged to the developer console, but is helpful in log
- * files.
- *
- * @param data any data passed to console.log
- */
-function consoleWithApiLog(...data: unknown[]) {
-	const joined = data.join(' ');
-	if (!joined.includes('API-WS:')) {
-		oldLog.apply(console, data);
-	}
+// const oldLog = console.log;
+// /**
+//  * console.log any output that is not from API-WS logging, and write all data
+//  * to file, including API-WS logging. This is especially useful when running
+//  * NODE_ENV=test, which causes a large amount of RPC info to be logged, which
+//  * is not helpful when logged to the developer console, but is helpful in log
+//  * files.
+//  *
+//  * @param data any data passed to console.log
+//  */
+// function consoleWithApiLog(...data: unknown[]) {
+// 	data.forEach((l) => {
+// 		if (!(typeof l === 'string')) {
+// 			oldLog.call(console, l);
+// 			return;
+// 		}
 
-	fs.writeFile('./SAS.log', joined, { flag: 'a' }, (err) =>
-		oldLog.call(console, err)
-	);
-}
+// 		if (!l.includes('API-WS:')) {
+// 			oldLog.call(console, l);
+// 		}
+
+// 		fs.writeFile(
+// 			'./SAS.log',
+// 			l,
+// 			{ flag: 'a' },
+// 			(err) => err && oldLog.call(console, err)
+// 		);
+// 	});
+
+// 	fs.writeFile(
+// 		'./SAS.log',
+// 		'\n',
+// 		{ flag: 'a' },
+// 		(err) => err && oldLog.call(console, err)
+// 	);
+// }
 
 // Monkey patch console functions so data can be intercepted and written to file
-console.log = consoleWithApiLog;
-console.warn = consoleWithApiLog;
-console.error = consoleWithApiLog;
+// console.log = consoleWithApiLog;
+// console.warn = consoleWithApiLog;
+// console.error = consoleWithApiLog;
 
 async function main() {
 	const configOrNull = Config.GetConfig();
