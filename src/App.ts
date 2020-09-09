@@ -7,6 +7,7 @@ import {
 	Response,
 } from 'express';
 
+import * as packageJson from '../package.json';
 import AbstractController from './controllers/AbstractController';
 import { AbstractService } from './services/AbstractService';
 
@@ -39,15 +40,21 @@ export default class App {
 
 		this.initMiddleware(preMiddleware);
 
+		this.initControllers(controllers);
+		this.initRoot();
+		this.initErrorMiddleware(postMiddleware);
+	}
+
+	private initRoot() {
 		// Set up a root route
 		this.app.get('/', (_req: Request, res: Response) =>
-			res.send(
-				'Sidecar is running, go to /block to get latest finalized block'
-			)
+			res.send({
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				routes: this.app._router?.stack,
+				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
+				version: packageJson.version,
+			})
 		);
-
-		this.initControllers(controllers);
-		this.initErrorMiddleware(postMiddleware);
 	}
 
 	/**
