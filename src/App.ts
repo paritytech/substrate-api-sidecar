@@ -95,6 +95,7 @@ export default class App {
 		this.app.get('/', (_req: Request, res: Response) =>
 			res.send({
 				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
+				github: 'https://github.com/paritytech/substrate-api-sidecar',
 				version: packageJson.version,
 				listen: `${this.host}:${this.port}`,
 				routes: this.getRoutes(),
@@ -111,16 +112,15 @@ export default class App {
 		return (this.app._router as IRegisteredRoutes).stack.reduce(
 			(acc, middleware) => {
 				if (middleware.route) {
-					// routes registered directly on the app
+					// This middleware is a route mounted directly on the app (i.e. app.get('/test', fn)
 					acc.push(this.extractPathAndMethod(middleware.route));
 				} else if (middleware.name === 'router') {
-					// router middleware
-					middleware.handle?.stack &&
-						middleware.handle?.stack.forEach(({ route }) => {
-							if (route) {
-								acc.push(this.extractPathAndMethod(route));
-							}
-						});
+					// This middleware is an express.Router (i.e. app.use('/', express.Router()))
+					middleware.handle?.stack.forEach(({ route }) => {
+						if (route) {
+							acc.push(this.extractPathAndMethod(route));
+						}
+					});
 				}
 
 				return acc;
@@ -129,6 +129,9 @@ export default class App {
 		);
 	}
 
+	/**
+	 * Helper function for `getRoutes`.
+	 */
 	private extractPathAndMethod({ path, methods }: IRouteInfo) {
 		return {
 			path,
