@@ -1,4 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
+import { Option } from '@polkadot/types';
+import * as BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
@@ -110,7 +112,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	};
 
 	private async getEraAndHash(era?: number) {
-		const [hash, activeEraOption, currentEraOption] = await Promise.all([
+		const [
+			hash,
+			activeEraOption,
+			currentEraMaybeOption,
+		] = await Promise.all([
 			this.api.rpc.chain.getFinalizedHead(),
 			this.api.query.staking.activeEra(),
 			this.api.query.staking.currentEra(),
@@ -123,12 +129,23 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		}
 		const activeEra = activeEraOption.unwrap().index.toNumber();
 
-		if (currentEraOption.isNone) {
+		let currentEra;
+		if (currentEraMaybeOption instanceof Option) {
+			if (currentEraMaybeOption.isNone) {
+				throw new InternalServerError(
+					'CurrentEra is None when Some was expected'
+				);
+			}
+
+			currentEra = currentEraMaybeOption.unwrap().toNumber();
+		} else if ((currentEraMaybeOption as unknown) instanceof BN) {
+			// EraIndex extends u32, which extends BN so this should always be true
+			currentEra = (currentEraMaybeOption as BN).toNumber();
+		} else {
 			throw new InternalServerError(
-				'CurrentEra is None when Some was expected'
+				'Query for current_era returned a non-processable result.'
 			);
 		}
-		const currentEra = currentEraOption.unwrap().toNumber();
 
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
