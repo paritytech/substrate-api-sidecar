@@ -1,10 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
-import { Option } from '@polkadot/types';
+import * as BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
+import { isOption } from '../../types/polkadot-js';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -111,7 +112,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	};
 
 	private async getEraAndHash(era?: number) {
-		const [hash, activeEraOption, currentEraOption] = await Promise.all([
+		const [
+			hash,
+			activeEraOption,
+			currentEraMaybeOption,
+		] = await Promise.all([
 			this.api.rpc.chain.getFinalizedHead(),
 			this.api.query.staking.activeEra(),
 			this.api.query.staking.currentEra(),
@@ -124,15 +129,19 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		}
 		const activeEra = activeEraOption.unwrap().index.toNumber();
 
-		const currentEraIsOption = currentEraOption instanceof Option;
-		if (currentEraIsOption && currentEraOption.isNone) {
-			throw new InternalServerError(
-				'CurrentEra is None when Some was expected'
-			);
+		let currentEra;
+		if (isOption(currentEraMaybeOption)) {
+			if (currentEraMaybeOption.isNone) {
+				throw new InternalServerError(
+					'CurrentEra is None when Some was expected'
+				);
+			}
+
+			currentEra = currentEraMaybeOption.unwrap().toNumber();
+		} else if (currentEraMaybeOption instanceof BN) {
+			// EraIndex extends u32, which extends BN so this should always be true
+			currentEra = currentEraMaybeOption.toNumber();
 		}
-		const currentEra = currentEraIsOption
-			? currentEraOption.unwrap().toNumber()
-			: currentEraOption;
 
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
@@ -146,7 +155,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		return {
 			hash,
 			eraArg: era === undefined ? activeEra - 1 : era,
-			currentEra,
+			currentEra: currentEra as number,
 		};
 	}
 }
