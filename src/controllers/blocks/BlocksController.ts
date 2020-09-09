@@ -18,6 +18,9 @@ import AbstractController from '../AbstractController';
  * 	`docs` property with a string of the events documentation.
  * - (Optional) `extrinsicDocs`: When set to `true`, every extrinsic will have an extra
  * 	`docs` property with a string of the extrinsics documentation.
+ * - (Optional for `/blocks/head`) `finalized`: When set to `false`, it will fetch the head of
+ * 	the node's canon chain, which might not be finalized. When set to `true` it
+ * 	will fetch the head of the finalized chain.
  *
  *
  * Returns:
@@ -81,13 +84,16 @@ export default class BlocksController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs } },
+		{ query: { eventDocs, extrinsicDocs, finalized } },
 		res
 	) => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
 		const eventDocsArg = eventDocs === 'true';
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
+
+		const hash =
+			finalized === 'false'
+				? (await this.api.rpc.chain.getHeader()).hash
+				: await this.api.rpc.chain.getFinalizedHead();
 
 		BlocksController.sanitizedSend(
 			res,
