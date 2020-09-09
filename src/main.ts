@@ -22,6 +22,7 @@ import { RequestHandler } from 'express';
 import App from './App';
 import Config, { ISidecarConfig } from './Config';
 import * as controllers from './controllers';
+import { fileLog } from './fileLog';
 import * as middleware from './middleware';
 
 async function main() {
@@ -33,6 +34,12 @@ async function main() {
 	}
 
 	const config: ISidecarConfig = configOrNull;
+
+	if (config.LOG_FILE && !(config.LOG_FILE === 'none')) {
+		const log = fileLog(config.LOG_FILE);
+		console.log = log;
+		console.error = log;
+	}
 
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({

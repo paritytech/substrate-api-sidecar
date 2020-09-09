@@ -11,6 +11,7 @@ export interface ISidecarConfig {
 	LOG_MODE: string;
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
+	LOG_FILE: string;
 }
 
 /**
@@ -30,6 +31,7 @@ export enum CONFIG {
 	PORT = 'PORT',
 	WS_URL = 'WS_URL',
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
+	LOG_FILE = 'LOG_FILE',
 }
 
 function hr(): string {
@@ -66,6 +68,7 @@ export default class Config {
 			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
 			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
+			LOG_FILE: config.Get(MODULES.EXPRESS, CONFIG.LOG_FILE) as string,
 		};
 	}
 }
