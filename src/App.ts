@@ -87,16 +87,17 @@ export default class App {
 		});
 	}
 
+	/**
+	 * Mount the root route.
+	 */
 	private initRoot() {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-
 		// Set up a root route
 		this.app.get('/', (_req: Request, res: Response) =>
 			res.send({
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				routes: this.getRoutes(),
 				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
 				version: packageJson.version,
+				listen: `${this.host}:${this.port}`,
+				routes: this.getRoutes(),
 			})
 		);
 	}
