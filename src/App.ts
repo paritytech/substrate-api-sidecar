@@ -40,7 +40,6 @@ export default class App {
 		this.host = host;
 
 		this.initMiddleware(preMiddleware);
-
 		this.initControllers(controllers);
 		this.initRoot();
 		this.initErrorMiddleware(postMiddleware);
