@@ -14,9 +14,9 @@ import { IFrameMethod, ISanitizedArgs, ISanitizedEvent } from '.';
 export interface IExtrinsic {
 	method: string | IFrameMethod;
 	signature: ISignature | null;
-	nonce: Compact<Index>;
+	nonce: Compact<Index> | undefined;
 	args: ISanitizedArgs;
-	tip: Compact<Balance>;
+	tip: Compact<Balance> | undefined;
 	hash: string;
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	info: RuntimeDispatchInfo | { error: string } | {};

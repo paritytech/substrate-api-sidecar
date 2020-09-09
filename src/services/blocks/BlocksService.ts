@@ -220,15 +220,15 @@ export class BlocksService extends AbstractService {
 					method: method.methodName,
 				},
 				signature: isSigned ? { signature, signer } : null,
-				nonce,
+				nonce: isSigned ? nonce : undefined,
 				args: this.parseGenericCall(method).args,
-				tip,
+				tip: isSigned ? tip : undefined,
 				hash,
 				info: {},
 				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
-				paysFee: null as null | boolean,
+				paysFee: false,
 				docs: extrinsicDocs
 					? this.sanitizeDocs(extrinsic.meta.documentation)
 					: undefined,
@@ -289,7 +289,7 @@ export class BlocksService extends AbstractService {
 						const sanitizedData = event.data.toJSON() as AnyJson[];
 
 						for (const data of sanitizedData) {
-							if (isPaysFee(data)) {
+							if (extrinsic.signature && isPaysFee(data)) {
 								extrinsic.paysFee =
 									data.paysFee === true ||
 									data.paysFee === 'Yes';

@@ -33,11 +33,9 @@
         "method": "set"
       },
       "signature": null,
-      "nonce": "0",
       "args": {
         "now": "1595260344000"
       },
-      "tip": "0",
       "hash": "0xeb76fff97b8ec4e6b309a266728be3e216abd269fc2e6ee6434f7cce74be515e",
       "info": {},
       "events": [
@@ -57,7 +55,7 @@
         }
       ],
       "success": true,
-      "paysFee": true,
+      "paysFee": false,
       "docs": " Set the current time.\n\n This call should be invoked exactly once per block. It will panic at the finalization\n phase, if this call hasn't been invoked by that time.\n\n The timestamp should be greater than the previous one by the amount specified by\n `MinimumPeriod`.\n\n The dispatch origin for this call must be `Inherent`.\n\n # <weight>\n - `O(T)` where `T` complexity of `on_timestamp_set`\n - 1 storage read and 1 storage mutation (codec `O(1)`). (because of `DidUpdate::take` in `on_finalize`)\n - 1 event handler `on_timestamp_set` `O(T)`.\n - Benchmark: 7.678 (min squares analysis)\n   - NOTE: This benchmark was done for a runtime with insignificant `on_timestamp_set` handlers.\n     New benchmarking is needed when adding new handlers.\n # </weight>"
     },
     {
@@ -66,11 +64,9 @@
         "method": "finalHint"
       },
       "signature": null,
-      "nonce": "0",
       "args": {
         "hint": "789626"
       },
-      "tip": "0",
       "hash": "0xe7b1069f9212245b685bb1f1689b657a2bfbeb724a760a6a1c3e9fa28664c7d5",
       "info": {},
       "events": [
@@ -90,7 +86,7 @@
         }
       ],
       "success": true,
-      "paysFee": true,
+      "paysFee": false,
       "docs": " Hint that the author of this block thinks the best finalized\n block is the given number."
     },
     {
@@ -99,11 +95,9 @@
         "method": "setHeads"
       },
       "signature": null,
-      "nonce": "0",
       "args": {
         "heads": []
       },
-      "tip": "0",
       "hash": "0xcf52705d1ade64fc0b05859ac28358c0770a217dd76b75e586ae848c56ae810d",
       "info": {},
       "events": [
@@ -123,7 +117,7 @@
         }
       ],
       "success": true,
-      "paysFee": true,
+      "paysFee": false,
       "docs": " Provide candidate receipts for parachains, in ascending order by id."
     },
     {
