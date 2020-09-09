@@ -267,15 +267,15 @@ paths:
       tags:
       - blocks
       summary: Get the most recently finalized block.
-      description: Returns the most recently finalized block
+      description: Returns the most recently finalized block. Replaces `/block`
+        from versions < v1.0.0.
       operationId: getHeadBlock
       parameters:
       - name: finalized
         in: query
         description: Boolean representing whether or not to get the finalized head.
           If it is not set the value defaults to true. When set to false it will attempt
-          to get the newest known block, which may not be finalized. Replaces `/block`
-          from versions < v1.0.0.
+          to get the newest known block, which may not be finalized.
         required: false
         schema:
           type: boolean
