@@ -80,6 +80,8 @@ Path descriptions link to controllers for detailed docs with usage information.
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
 
+-   `/` fetch information on Sidecars version, docs, and available routes.
+
 -   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
 
 -   [`/accounts/ADDRESS/balance-info` fetch balances info for `ADDRESS`.](src/controllers/accounts/AccountsBalanceInfoController.ts) (Replaces `/balance/ADDRESS`.)
