@@ -1,11 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
+import { Option } from '@polkadot/types';
 import * as BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
-import { isOption } from '../../types/polkadot-js';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -130,7 +130,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		const activeEra = activeEraOption.unwrap().index.toNumber();
 
 		let currentEra;
-		if (isOption(currentEraMaybeOption)) {
+		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
 				throw new InternalServerError(
 					'CurrentEra is None when Some was expected'
@@ -138,9 +138,13 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			}
 
 			currentEra = currentEraMaybeOption.unwrap().toNumber();
-		} else if (currentEraMaybeOption instanceof BN) {
+		} else if ((currentEraMaybeOption as unknown) instanceof BN) {
 			// EraIndex extends u32, which extends BN so this should always be true
-			currentEra = currentEraMaybeOption.toNumber();
+			currentEra = (currentEraMaybeOption as BN).toNumber();
+		} else {
+			throw new InternalServerError(
+				'Query for current_era returned a non-processable result.'
+			);
 		}
 
 		if (era !== undefined && era > activeEra - 1) {
@@ -155,7 +159,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		return {
 			hash,
 			eraArg: era === undefined ? activeEra - 1 : era,
-			currentEra: currentEra as number,
+			currentEra,
 		};
 	}
 }
