@@ -10,6 +10,7 @@ import {
 import * as packageJson from '../package.json';
 import AbstractController from './controllers/AbstractController';
 import { AbstractService } from './services/AbstractService';
+import { IRegisteredRoutes, IRouteInfo } from './types/util';
 
 interface IAppConfiguration {
 	controllers: AbstractController<AbstractService>[];
@@ -43,18 +44,6 @@ export default class App {
 		this.initControllers(controllers);
 		this.initRoot();
 		this.initErrorMiddleware(postMiddleware);
-	}
-
-	private initRoot() {
-		// Set up a root route
-		this.app.get('/', (_req: Request, res: Response) =>
-			res.send({
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				routes: this.app._router?.stack,
-				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
-				version: packageJson.version,
-			})
-		);
 	}
 
 	/**
@@ -96,5 +85,53 @@ export default class App {
 		this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
 		});
+	}
+
+	private initRoot() {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+
+		// Set up a root route
+		this.app.get('/', (_req: Request, res: Response) =>
+			res.send({
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				routes: this.getRoutes(),
+				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
+				version: packageJson.version,
+			})
+		);
+	}
+
+	/**
+	 * Get the routes currently mounted on the Express App. N.B. this uses
+	 * a private property (`_router`) on the Express App, so it should be
+	 * checked that this works as expected whenever updating Express dependencies.
+	 */
+	private getRoutes() {
+		return (this.app._router as IRegisteredRoutes).stack.reduce(
+			(acc, middleware) => {
+				if (middleware.route) {
+					// routes registered directly on the app
+					acc.push(this.extractPathAndMethod(middleware.route));
+				} else if (middleware.name === 'router') {
+					// router middleware
+					middleware.handle?.stack &&
+						middleware.handle?.stack.forEach(({ route }) => {
+							if (route) {
+								acc.push(this.extractPathAndMethod(route));
+							}
+						});
+				}
+
+				return acc;
+			},
+			[] as { path: string; method: string }[]
+		);
+	}
+
+	private extractPathAndMethod({ path, methods }: IRouteInfo) {
+		return {
+			path,
+			method: Object.keys(methods)[0],
+		};
 	}
 }
