@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { Option } from '@polkadot/types';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
@@ -123,12 +124,15 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		}
 		const activeEra = activeEraOption.unwrap().index.toNumber();
 
-		if (currentEraOption.isNone) {
+		const currentEraIsOption = currentEraOption instanceof Option;
+		if (currentEraIsOption && currentEraOption.isNone) {
 			throw new InternalServerError(
 				'CurrentEra is None when Some was expected'
 			);
 		}
-		const currentEra = currentEraOption.unwrap().toNumber();
+		const currentEra = currentEraIsOption
+			? currentEraOption.unwrap().toNumber()
+			: currentEraOption;
 
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
