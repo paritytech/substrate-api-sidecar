@@ -220,15 +220,16 @@ export class BlocksService extends AbstractService {
 					method: method.methodName,
 				},
 				signature: isSigned ? { signature, signer } : null,
-				nonce: isSigned ? nonce : undefined,
+				nonce: isSigned ? nonce : null,
 				args: this.parseGenericCall(method).args,
-				tip: isSigned ? tip : undefined,
+				tip: isSigned ? tip : null,
 				hash,
 				info: {},
 				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
-				paysFee: false,
+				// we set to false if !isSigned because unsigned never pays a fee
+				paysFee: isSigned ? null : false,
 				docs: extrinsicDocs
 					? this.sanitizeDocs(extrinsic.meta.documentation)
 					: undefined,
