@@ -2,17 +2,17 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { PalletsStorageQueryService } from '../../services';
+import { PalletsStorageItemService } from '../../services';
 import AbstractController from '../AbstractController';
 
-export default class PalletsStorageQueryController extends AbstractController<
-	PalletsStorageQueryService
+export default class PalletsStorageItemController extends AbstractController<
+	PalletsStorageItemService
 > {
 	constructor(api: ApiPromise) {
 		super(
 			api,
 			'/pallets/:palletId/storage/:storageId',
-			new PalletsStorageQueryService(api)
+			new PalletsStorageItemService(api)
 		);
 
 		this.initRoutes();
@@ -20,7 +20,6 @@ export default class PalletsStorageQueryController extends AbstractController<
 
 	protected initRoutes(): void {
 		// TODO in future PR, look into middleware validation of storageId and palletId
-
 		this.safeMountAsyncGetHandlers([['', this.getStorageItem]]);
 	}
 
@@ -37,16 +36,16 @@ export default class PalletsStorageQueryController extends AbstractController<
 
 		const hash = await this.getHashFromAt(at);
 
-		PalletsStorageQueryController.sanitizedSend(
+		PalletsStorageItemController.sanitizedSend(
 			res,
-			await this.service.fetchStorageItem(
+			await this.service.fetchStorageItem({
 				hash,
-				stringCamelCase(palletId),
-				stringCamelCase(storageId),
-				key1Arg,
-				key2Arg,
-				metadataArg,
-			)
+				palletId: stringCamelCase(palletId),
+				storageId: stringCamelCase(storageId),
+				key1: key1Arg,
+				key2: key2Arg,
+				metadata: metadataArg,
+			})
 		);
 	};
 }

@@ -142,7 +142,7 @@ async function main() {
 			transactionFeeEstimateController,
 			transactionSubmitController,
 			palletsStakingProgressController,
-			new controllers.palletsStorageQuery(api), // TODO: Future PR: change remaining controllers to this style in order to reduce redundancy.
+			new controllers.palletsStorageItem(api), // TODO: Future PR: change remaining controllers to this style in order to reduce redundancy.
 			...v0Controllers,
 		],
 		postMiddleware: [

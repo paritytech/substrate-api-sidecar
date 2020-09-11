@@ -1,2 +1,2 @@
 export { default as palletsStakingProgress } from './PalletsStakingProgressController';
-export { default as palletsStorageQuery } from './PalletsStorageQueryController';
+export { default as palletsStorageItem } from './PalletsStorageItemController';

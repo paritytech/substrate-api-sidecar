@@ -560,6 +560,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeSpec'
+  /pallets/{palletId}/storage/{storageItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a storage item.
+      description: Returns the value stored under the storageItemId. If it is a
+        map, query param key1 is required. If the storage item is double map
+        query params key1 and key2 are required.
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to query the storage of.
+        required: true
+        schema:
+          type: string
+      - name: storageItemId
+        in: path
+        description: Id of the storage item to query for.
+        required: true
+        schema:
+          type: string
+      - name: key1
+        in: query
+        description: Key for a map, or first key for a double map. Required for querying
+          a map.
+        required: false
+        schema:
+          type: string
+      - name: key2
+        in: query
+        description: Second key for a double map. Required for querying a double map.
+        required: false
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the storage item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Successful query response type is dependent on the storage
+                  item value.
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     BalanceLock:
@@ -1365,6 +1428,48 @@ components:
           type: string
         stack:
           type: string
+    PalletStorageType:
+      type: object
+      description: Info about the data structure used for storage.
+    PalletStorageItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+        modifier:
+          type: string
+        type:
+          $ref: '#/components/schemas/PalletStorageType'
+        fallback:
+          type: string
+        documentation:
+          type: array
+          items:
+            type: string
+      description: Metadata of a storage item from a FRAME pallet.
+    PalletStorageItem:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+        storageItem:
+          type: string
+          description: Name of the storage item.
+        key1:
+          type: string
+          description: Key1 query param. Will not show up in response if not defined URI.
+        key2:
+          type: string
+          description: Key2 query param. Will not show up in response if not defined in URI.
+        value:
+          type: object
+          description: Value returned by this storage query.
+        metadata:
+          $ref: '#/components/schemas/BlockIdentifiers'
+
   requestBodies:
     Transaction:
       content:
