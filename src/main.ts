@@ -142,7 +142,8 @@ async function main() {
 			transactionFeeEstimateController,
 			transactionSubmitController,
 			palletsStakingProgressController,
-			new controllers.palletsStorageItem(api), // TODO: Future PR: change remaining controllers to this style in order to reduce redundancy.
+			// TODO: change remaining controllers to this style. https://github.com/paritytech/substrate-api-sidecar/issues/280
+			new controllers.palletsStorageItem(api),
 			...v0Controllers,
 		],
 		postMiddleware: [

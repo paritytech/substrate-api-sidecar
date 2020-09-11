@@ -28,7 +28,7 @@ export default class PalletsStorageItemController extends AbstractController<
 	}
 
 	protected initRoutes(): void {
-		// TODO in future PR, look into middleware validation of storageId and palletId
+		// TODO look into middleware validation of in path IDs. https://github.com/paritytech/substrate-api-sidecar/issues/281
 		this.safeMountAsyncGetHandlers([
 			['/:storageItemId', this.getStorageItem],
 		]);

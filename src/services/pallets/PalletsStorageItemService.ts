@@ -26,13 +26,13 @@ export class PalletsStorageItemService extends AbstractService {
 	}): Promise<IPalletStorageItem> {
 		if (!this.api.query[palletId]) {
 			throw new BadRequest(
-				`Invalid palletId: "${palletId}". Currently only pallet names are expected as a palletId.`
+				`Unrecognized palletId: "${palletId}" was not recognized as a queryable pallet. Only came camel case pallet names are accepted as a palletId`
 			);
 		}
 
 		if (!this.api.query[palletId][storageItemId]) {
 			throw new BadRequest(
-				`Invalid storageItemId: "${storageItemId}". Currently only camel case storage item names are expected as storageItemId.`
+				`Invalid storageItemId: "${storageItemId}" was not recognized as queryable storage item for ${palletId}. Only camel case storage item names are accepted as storageItemId.`
 			);
 		}
 
