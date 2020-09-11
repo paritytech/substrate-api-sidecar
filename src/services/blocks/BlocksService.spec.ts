@@ -39,7 +39,7 @@ describe('BlocksService', () => {
 				sanitizeNumbers(
 					await blocksService.fetchBlock(blockHash789629, true, true)
 				)
-			).toMatchObject(blocks789629Response);
+			).toStrictEqual(blocks789629Response);
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
