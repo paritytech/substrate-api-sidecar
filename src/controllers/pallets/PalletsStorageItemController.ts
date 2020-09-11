@@ -5,6 +5,15 @@ import { RequestHandler } from 'express-serve-static-core';
 import { PalletsStorageItemService } from '../../services';
 import AbstractController from '../AbstractController';
 
+/**
+ * `/pallets/{palletId}/storage/{storageItemId}`
+ *
+ * Returns the value stored under the storageItemId. If it is a
+ * map, query param key1 is required. If the storage item is double map
+ * query params key1 and key2 are required.
+ *
+ * See `docs/src/openapi-v1.yaml` for usage information.
+ */
 export default class PalletsStorageItemController extends AbstractController<
 	PalletsStorageItemService
 > {
