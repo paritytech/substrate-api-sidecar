@@ -12,27 +12,27 @@ export class PalletsStorageItemService extends AbstractService {
 	async fetchStorageItem({
 		hash,
 		palletId,
-		storageId,
+		storageItemId,
 		key1,
 		key2,
 		metadata,
 	}: {
 		hash: BlockHash;
 		palletId: string;
-		storageId: string;
+		storageItemId: string;
 		key1: string | undefined;
 		key2: string | undefined;
 		metadata: boolean;
 	}): Promise<IPalletStorageItem> {
 		if (!this.api.query[palletId]) {
 			throw new BadRequest(
-				`Invalid palletId: ${palletId}. Currently only pallet names are expected as a palletId.`
+				`Invalid palletId: "${palletId}". Currently only pallet names are expected as a palletId.`
 			);
 		}
 
-		if (!this.api.query[palletId][storageId]) {
+		if (!this.api.query[palletId][storageItemId]) {
 			throw new BadRequest(
-				`Invalid storageItemId: ${storageId}. Currently only camel case storage item names are expected as storageItemId.`
+				`Invalid storageItemId: "${storageItemId}". Currently only camel case storage item names are expected as storageItemId.`
 			);
 		}
 
@@ -40,11 +40,11 @@ export class PalletsStorageItemService extends AbstractService {
 
 		const [storageItemMeta] = this.findStorageItemMeta(
 			palletMeta,
-			storageId
+			storageItemId
 		);
 
 		const [value, { number }] = await Promise.all([
-			this.api.query[palletId.toLowerCase()][storageId].at(
+			this.api.query[palletId.toLowerCase()][storageItemId].at(
 				hash,
 				key1,
 				key2
@@ -66,21 +66,28 @@ export class PalletsStorageItemService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Find the storage item's metadata within the pallets's metadata.
+	 *
+	 * @param palletMeta the metadata of the pallet that contains the storage item
+	 * @param storageId name of the storage item in camel or pascal case
+	 */
 	private findStorageItemMeta(
 		palletMeta: ModuleMetadataV11,
-		storageId: string
+		storageItemId: string
 	): [StorageEntryMetadataV11, number] {
-		// Find the storage item's metadata info within the pallets's metadata info
 		if (palletMeta.storage.isNone) {
-			throw new InternalServerError('No storage items found in metadata');
+			throw new InternalServerError(
+				`No storage items found in ${palletMeta.name.toString()}'s metadata`
+			);
 		}
 		const palletMetaStorage = palletMeta.storage.unwrap().items;
 		const storageItemMetaIdx = palletMetaStorage.findIndex(
-			(item) => item.name.toLowerCase() === storageId.toLowerCase()
+			(item) => item.name.toLowerCase() === storageItemId.toLowerCase()
 		);
 		if (storageItemMetaIdx === -1) {
 			throw new InternalServerError(
-				'Could not find storage item in metadata'
+				`Could not find storage item ("${storageItemId}") in metadata.`
 			);
 		}
 		const storageItemMeta = palletMetaStorage[storageItemMetaIdx];
@@ -98,7 +105,9 @@ export class PalletsStorageItemService extends AbstractService {
 			(mod) => mod.name.toLowerCase() === palletId.toLowerCase()
 		);
 		if (palletMetaIdx === -1) {
-			throw new InternalServerError('Could not find pallet in metadata.');
+			throw new InternalServerError(
+				`Could not find pallet ("${palletId}")in metadata.`
+			);
 		}
 		const palletMeta = this.api.runtimeMetadata.asLatest.modules[
 			palletMetaIdx

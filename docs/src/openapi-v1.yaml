@@ -602,15 +602,21 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the storage items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                description: Successful query response type is dependent on the storage
-                  item value.
+                $ref: '#/components/schemas/PalletStorageItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1468,8 +1474,7 @@ components:
           type: object
           description: Value returned by this storage query.
         metadata:
-          $ref: '#/components/schemas/BlockIdentifiers'
-
+          $ref: '#/components/schemas/PalletStorageItemMetadata'
   requestBodies:
     Transaction:
       content:

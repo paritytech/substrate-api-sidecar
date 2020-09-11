@@ -11,7 +11,7 @@ export default class PalletsStorageItemController extends AbstractController<
 	constructor(api: ApiPromise) {
 		super(
 			api,
-			'/pallets/:palletId/storage/:storageId',
+			'/pallets/:palletId/storage',
 			new PalletsStorageItemService(api)
 		);
 
@@ -20,13 +20,15 @@ export default class PalletsStorageItemController extends AbstractController<
 
 	protected initRoutes(): void {
 		// TODO in future PR, look into middleware validation of storageId and palletId
-		this.safeMountAsyncGetHandlers([['', this.getStorageItem]]);
+		this.safeMountAsyncGetHandlers([
+			['/:storageItemId', this.getStorageItem],
+		]);
 	}
 
 	private getStorageItem: RequestHandler = async (
 		{
 			query: { at, key1, key2, metadata },
-			params: { palletId, storageId },
+			params: { palletId, storageItemId },
 		},
 		res
 	): Promise<void> => {
@@ -40,8 +42,9 @@ export default class PalletsStorageItemController extends AbstractController<
 			res,
 			await this.service.fetchStorageItem({
 				hash,
+				// stringCamelCase ensures we don't have snake case or kebab case
 				palletId: stringCamelCase(palletId),
-				storageId: stringCamelCase(storageId),
+				storageItemId: stringCamelCase(storageItemId),
 				key1: key1Arg,
 				key2: key2Arg,
 				metadata: metadataArg,
