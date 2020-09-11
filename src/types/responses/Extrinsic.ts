@@ -16,7 +16,7 @@ export interface IExtrinsic {
 	signature: ISignature | null;
 	nonce: Compact<Index>;
 	args: ISanitizedArgs;
-	tip: Compact<Balance> | null;
+	tip: Compact<Balance>;
 	hash: string;
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	info: RuntimeDispatchInfo | { error: string } | {};

@@ -228,8 +228,7 @@ export class BlocksService extends AbstractService {
 				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
-				// we set to false if !isSigned because unsigned never pays a fee
-				paysFee: null,
+				paysFee: null as null | boolean,
 				docs: extrinsicDocs
 					? this.sanitizeDocs(extrinsic.meta.documentation)
 					: undefined,
