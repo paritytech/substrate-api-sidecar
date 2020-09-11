@@ -1438,19 +1438,12 @@ components:
       type: object
       description: Info about the data structure used for storage.
       example:
-        type: object
-        properties:
           Map:
-            type: object
-            properties:
-              hasher:
-                example: "Twox64Concat"
+              hasher: "Twox64Concat"
               key:
                 example: "ReferendumIndex"
-              value:
-                example: "ReferendumInfo"
-              linked:
-                example: false
+              value: "ReferendumInfo"
+              linked: false
     PalletStorageItemMetadata:
       type: object
       properties:
@@ -1489,10 +1482,20 @@ components:
         key2:
           type: string
           description: Key2 query param. Will not show up in response if not defined in URI.
-          example: undefined
+          example: ""
         value:
           type: object
           description: Value returned by this storage query.
+          example:
+            Ongoing:
+              end: "1612800"
+              proposalHash: "0x7de70fc8be782076d0b5772be77153d172a5381c72dd56d3385e25f62abf507e"
+              threshold: "Supermajorityapproval"
+              delay: "403200"
+              tally:
+                ayes: "41925212461400000"
+                nays: "214535586500000"
+                turnout: "34485320658000000"
         metadata:
           $ref: '#/components/schemas/PalletStorageItemMetadata'
   requestBodies:
