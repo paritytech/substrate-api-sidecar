@@ -1437,21 +1437,37 @@ components:
     PalletStorageType:
       type: object
       description: Info about the data structure used for storage.
+      example:
+        type: object
+        properties:
+          Map:
+            type: object
+            properties:
+              hasher:
+                example: "Twox64Concat"
+              key:
+                example: "ReferendumIndex"
+              value:
+                example: "ReferendumInfo"
+              linked:
+                example: false
     PalletStorageItemMetadata:
       type: object
       properties:
         name:
           type: string
+          example: "ReferendumInfoOf"
         modifier:
           type: string
+          example: "Optional"
         type:
           $ref: '#/components/schemas/PalletStorageType'
         fallback:
           type: string
+          example: "0x00"
         documentation:
-          type: array
-          items:
-            type: string
+          type: string
+          example: " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageItem:
       type: object
@@ -1461,15 +1477,19 @@ components:
         pallet:
           type: string
           description: Name of the pallet.
+          example: "democracy"
         storageItem:
           type: string
           description: Name of the storage item.
+          example: "referendumInfoOf"
         key1:
           type: string
           description: Key1 query param. Will not show up in response unless it was passed as part of the URI.
+          example: "2"
         key2:
           type: string
           description: Key2 query param. Will not show up in response if not defined in URI.
+          example: undefined
         value:
           type: object
           description: Value returned by this storage query.

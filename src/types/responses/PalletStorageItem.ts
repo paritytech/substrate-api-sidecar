@@ -1,14 +1,11 @@
-import { StorageEntryMetadataV11 } from '@polkadot/types/interfaces';
-import { Text } from '@polkadot/types/primitive';
-
 import { Codec } from '../polkadot-js';
-import { IAt } from './At';
+import { IAt, ISanitizedStorageItemMetadata } from '.';
 export interface IPalletStorageItem {
 	at: IAt;
-	pallet: Text;
-	storageItem: Text;
+	pallet: string;
+	storageItem: string;
 	key1: string | undefined;
 	key2: string | undefined;
 	value: Codec;
-	metadata: StorageEntryMetadataV11 | undefined;
+	metadata: ISanitizedStorageItemMetadata | undefined;
 }

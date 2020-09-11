@@ -19,3 +19,4 @@ export * from './NodeVersion';
 export * from './NodeTransactionPool';
 export * from './TransactionDryRun';
 export * from './FrameMethod';
+export * from './SanitizedStorageItemMetadata';

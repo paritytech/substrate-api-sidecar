@@ -4,8 +4,10 @@ import {
 	StorageEntryMetadataV11,
 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
+import { ISanitizedStorageItemMetadata } from 'src/types/responses';
 import { IPalletStorageItem } from 'src/types/responses/PalletStorageItem';
 
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStorageItemService extends AbstractService {
@@ -24,6 +26,7 @@ export class PalletsStorageItemService extends AbstractService {
 		key2: string | undefined;
 		metadata: boolean;
 	}): Promise<IPalletStorageItem> {
+		console.log(palletId);
 		if (!this.api.query[palletId]) {
 			throw new BadRequest(
 				`"${palletId}" was not recognized as a queryable pallet. Pallet names are expected to be in camel case, e.g. 'palletId`
@@ -36,19 +39,25 @@ export class PalletsStorageItemService extends AbstractService {
 			);
 		}
 
-		const [palletMeta] = this.findPalletMeta(palletId);
+		let sanitizedStorageItemMeta;
+		if (metadata) {
+			const palletMeta = this.findPalletMeta(palletId);
 
-		const [storageItemMeta] = this.findStorageItemMeta(
-			palletMeta,
-			storageItemId
-		);
+			const storageItemMeta = this.findStorageItemMeta(
+				palletMeta,
+				storageItemId
+			);
+
+			sanitizedStorageItemMeta = (sanitizeNumbers(
+				storageItemMeta
+			) as unknown) as ISanitizedStorageItemMetadata;
+			sanitizedStorageItemMeta.documentation = this.sanitizeDocs(
+				storageItemMeta.documentation
+			);
+		}
 
 		const [value, { number }] = await Promise.all([
-			this.api.query[palletId.toLowerCase()][storageItemId].at(
-				hash,
-				key1,
-				key2
-			),
+			this.api.query[palletId][storageItemId].at(hash, key1, key2),
 			this.api.rpc.chain.getHeader(hash),
 		]);
 
@@ -57,12 +66,12 @@ export class PalletsStorageItemService extends AbstractService {
 				hash: hash,
 				height: number.unwrap().toString(10),
 			},
-			pallet: palletMeta.name,
-			storageItem: storageItemMeta.name,
+			pallet: palletId,
+			storageItem: storageItemId,
 			key1,
 			key2,
 			value,
-			metadata: metadata ? storageItemMeta : undefined,
+			metadata: sanitizedStorageItemMeta,
 		};
 	}
 
@@ -75,7 +84,7 @@ export class PalletsStorageItemService extends AbstractService {
 	private findStorageItemMeta(
 		palletMeta: ModuleMetadataV11,
 		storageItemId: string
-	): [StorageEntryMetadataV11, number] {
+	): StorageEntryMetadataV11 {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
@@ -92,7 +101,7 @@ export class PalletsStorageItemService extends AbstractService {
 		}
 		const storageItemMeta = palletMetaStorage[storageItemMetaIdx];
 
-		return [storageItemMeta, storageItemMetaIdx];
+		return storageItemMeta;
 	}
 
 	/**
@@ -100,7 +109,7 @@ export class PalletsStorageItemService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet.
 	 */
-	private findPalletMeta(palletId: string): [ModuleMetadataV11, number] {
+	private findPalletMeta(palletId: string): ModuleMetadataV11 {
 		const palletMetaIdx = this.api.runtimeMetadata.asLatest.modules.findIndex(
 			(mod) => mod.name.toLowerCase() === palletId.toLowerCase()
 		);
@@ -113,6 +122,6 @@ export class PalletsStorageItemService extends AbstractService {
 			palletMetaIdx
 		];
 
-		return [palletMeta, palletMetaIdx];
+		return palletMeta;
 	}
 }
