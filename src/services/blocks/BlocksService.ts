@@ -229,7 +229,7 @@ export class BlocksService extends AbstractService {
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				// we set to false if !isSigned because unsigned never pays a fee
-				paysFee: isSigned ? null : false,
+				paysFee: null,
 				docs: extrinsicDocs
 					? this.sanitizeDocs(extrinsic.meta.documentation)
 					: undefined,

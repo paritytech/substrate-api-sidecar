@@ -14,7 +14,7 @@ import { IFrameMethod, ISanitizedArgs, ISanitizedEvent } from '.';
 export interface IExtrinsic {
 	method: string | IFrameMethod;
 	signature: ISignature | null;
-	nonce: Compact<Index> | null;
+	nonce: Compact<Index>;
 	args: ISanitizedArgs;
 	tip: Compact<Balance> | null;
 	hash: string;
