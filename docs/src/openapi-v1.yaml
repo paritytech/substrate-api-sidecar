@@ -1466,7 +1466,7 @@ components:
           description: Name of the storage item.
         key1:
           type: string
-          description: Key1 query param. Will not show up in response if not defined URI.
+          description: Key1 query param. Will not show up in response unless it was passed as part of the URI.
         key2:
           type: string
           description: Key2 query param. Will not show up in response if not defined in URI.

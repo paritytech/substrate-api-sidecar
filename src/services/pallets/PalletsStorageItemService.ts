@@ -32,7 +32,7 @@ export class PalletsStorageItemService extends AbstractService {
 
 		if (!this.api.query[palletId][storageItemId]) {
 			throw new BadRequest(
-				`Invalid storageItemId: "${storageItemId}". Currently only camel case storage item names are expected as storageItemId.`
+				`Invalid storageItemId: "${storageItemId}". Storage item names are expected to be in camel case, e.g. 'storageItemId'.`
 			);
 		}
 
