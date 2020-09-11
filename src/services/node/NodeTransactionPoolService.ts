@@ -4,7 +4,6 @@ import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
 	async fetchTransactionPool(): Promise<INodeTransactionPool> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		const extrinsics = await api.rpc.author.pendingExtrinsics();

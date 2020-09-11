@@ -15,7 +15,6 @@ export class PalletsStakingProgressService extends AbstractService {
 	async derivePalletStakingProgress(
 		hash: BlockHash
 	): Promise<IPalletStakingProgress> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		const [

@@ -4,7 +4,6 @@ import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
-	blockHash789629,
 	mockApi,
 	submitExtrinsic,
 	tx,
@@ -20,7 +19,6 @@ describe('TransactionSubmitService', () => {
 		it('works with a valid a transaction', async () => {
 			return expect(
 				transactionSubmitService.submitTransaction(
-					blockHash789629,
 					balancesTransferValid
 				)
 			).resolves.toStrictEqual({
@@ -42,7 +40,6 @@ describe('TransactionSubmitService', () => {
 
 			await expect(
 				transactionSubmitService.submitTransaction(
-					blockHash789629,
 					balancesTransferInvalid
 				)
 			).rejects.toStrictEqual(failParseResponse);
@@ -62,7 +59,6 @@ describe('TransactionSubmitService', () => {
 
 			await expect(
 				transactionSubmitService.submitTransaction(
-					blockHash789629,
 					balancesTransferValid
 				)
 			).rejects.toStrictEqual(nodeRejectResponse);
