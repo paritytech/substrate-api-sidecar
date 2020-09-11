@@ -35,9 +35,7 @@ export class AccountsVestingInfoService extends AbstractService {
 	}
 
 	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
-		const api = await this.ensureMeta(hash);
-
-		const metadata = await api.rpc.state.getMetadata(hash);
+		const metadata = await this.api.rpc.state.getMetadata(hash);
 
 		return metadata;
 	}

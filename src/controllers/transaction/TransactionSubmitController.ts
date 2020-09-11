@@ -52,8 +52,6 @@ export default class TransactionSubmitController extends AbstractController<
 			};
 		}
 
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		res.send(await this.service.submitTransaction(hash, tx));
+		res.send(await this.service.submitTransaction(tx));
 	};
 }

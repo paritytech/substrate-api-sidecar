@@ -14,7 +14,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		hash: BlockHash,
 		address: string
 	): Promise<IAccountBalanceInfo> {
-		const api = await this.ensureMeta(hash);
+		const { api } = this;
 
 		const [header, locks, sysAccount] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

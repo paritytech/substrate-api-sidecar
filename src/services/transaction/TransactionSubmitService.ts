@@ -1,5 +1,4 @@
 import { Hash } from '@polkadot/types/interfaces';
-import { BlockHash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
@@ -10,11 +9,8 @@ export class TransactionSubmitService extends AbstractService {
 	 *
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
-	async submitTransaction(
-		hash: BlockHash,
-		transaction: string
-	): Promise<{ hash: Hash }> {
-		const api = await this.ensureMeta(hash);
+	async submitTransaction(transaction: string): Promise<{ hash: Hash }> {
+		const { api } = this;
 
 		let tx;
 
