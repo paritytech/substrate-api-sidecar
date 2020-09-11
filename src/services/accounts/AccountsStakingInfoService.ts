@@ -15,7 +15,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		hash: BlockHash,
 		stash: string
 	): Promise<IAccountStakingInfo> {
-		const api = await this.ensureMeta(hash);
+		const { api } = this;
 
 		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
