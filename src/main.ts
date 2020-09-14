@@ -88,62 +88,26 @@ async function main() {
 		metadataController,
 	];
 
-	// Instantiate v1 controllers
-	const blocksController = new controllers.Blocks(api);
-	const accountsStakingPayoutsController = new controllers.AccountsStakingPayouts(
-		api
-	);
-	const accountsBalanceInfoController = new controllers.AccountsBalanceInfo(
-		api
-	);
-	const accountsStakingInfoController = new controllers.AccountsStakingInfo(
-		api
-	);
-	const accountsVestingInfoController = new controllers.AccountsVestingInfo(
-		api
-	);
-	const nodeNetworkController = new controllers.NodeNetwork(api);
-	const nodeVersionController = new controllers.NodeVersion(api);
-	const nodeTransactionPoolController = new controllers.NodeTransactionPool(
-		api
-	);
-	const runtimeCodeController = new controllers.RuntimeCode(api);
-	const runtimeSpecController = new controllers.RuntimeSpec(api);
-	const runtimeMetadataController = new controllers.RuntimeMetadata(api);
-	const transactionDryRunController = new controllers.TransactionDryRun(api);
-	const transactionMaterialController = new controllers.TransactionMaterial(
-		api
-	);
-	const transactionFeeEstimateController = new controllers.TransactionFeeEstimate(
-		api
-	);
-	const transactionSubmitController = new controllers.TransactionSubmit(api);
-	const palletsStakingProgressController = new controllers.palletsStakingProgress(
-		api
-	);
-
 	// Create our App
 	const app = new App({
 		preMiddleware,
 		controllers: [
-			blocksController,
-			accountsStakingPayoutsController,
-			accountsBalanceInfoController,
-			accountsStakingInfoController,
-			accountsVestingInfoController,
-			nodeNetworkController,
-			nodeVersionController,
-			nodeTransactionPoolController,
-			runtimeCodeController,
-			runtimeSpecController,
-			runtimeMetadataController,
-			transactionDryRunController,
-			transactionMaterialController,
-			transactionFeeEstimateController,
-			transactionSubmitController,
-			palletsStakingProgressController,
-			// TODO: change remaining controllers to this style. https://github.com/paritytech/substrate-api-sidecar/issues/280
-			new controllers.palletsStorageItem(api),
+			new controllers.Blocks(api),
+			new controllers.AccountsStakingPayouts(api),
+			new controllers.AccountsBalanceInfo(api),
+			new controllers.AccountsStakingInfo(api),
+			new controllers.AccountsVestingInfo(api),
+			new controllers.NodeNetwork(api),
+			new controllers.NodeVersion(api),
+			new controllers.NodeTransactionPool(api),
+			new controllers.RuntimeCode(api),
+			new controllers.RuntimeSpec(api),
+			new controllers.RuntimeMetadata(api),
+			new controllers.TransactionDryRun(api),
+			new controllers.TransactionMaterial(api),
+			new controllers.TransactionFeeEstimate(api),
+			new controllers.TransactionSubmit(api),
+			new controllers.palletsStakingProgress(api),
 			...v0Controllers,
 		],
 		postMiddleware: [
