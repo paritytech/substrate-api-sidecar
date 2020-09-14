@@ -1,7 +1,7 @@
 import {
 	BlockHash,
-	ModuleMetadataV11,
-	StorageEntryMetadataV11,
+	ModuleMetadataV12,
+	StorageEntryMetadataV12,
 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { ISanitizedStorageItemMetadata } from 'src/types/responses';
@@ -26,7 +26,6 @@ export class PalletsStorageItemService extends AbstractService {
 		key2: string | undefined;
 		metadata: boolean;
 	}): Promise<IPalletStorageItem> {
-		console.log(palletId);
 		if (!this.api.query[palletId]) {
 			throw new BadRequest(
 				`"${palletId}" was not recognized as a queryable pallet. Pallet names are expected to be in camel case, e.g. 'palletId`
@@ -39,10 +38,10 @@ export class PalletsStorageItemService extends AbstractService {
 			);
 		}
 
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletId);
+
 		let sanitizedStorageItemMeta;
 		if (metadata) {
-			const palletMeta = this.findPalletMeta(palletId);
-
 			const storageItemMeta = this.findStorageItemMeta(
 				palletMeta,
 				storageItemId
@@ -67,6 +66,7 @@ export class PalletsStorageItemService extends AbstractService {
 				height: number.unwrap().toString(10),
 			},
 			pallet: palletId,
+			palletIndex: palletMetaIdx,
 			storageItem: storageItemId,
 			key1,
 			key2,
@@ -82,9 +82,9 @@ export class PalletsStorageItemService extends AbstractService {
 	 * @param storageId name of the storage item in camel or pascal case
 	 */
 	private findStorageItemMeta(
-		palletMeta: ModuleMetadataV11,
+		palletMeta: ModuleMetadataV12,
 		storageItemId: string
-	): StorageEntryMetadataV11 {
+	): StorageEntryMetadataV12 {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
@@ -99,9 +99,8 @@ export class PalletsStorageItemService extends AbstractService {
 				`Could not find storage item ("${storageItemId}") in metadata.`
 			);
 		}
-		const storageItemMeta = palletMetaStorage[storageItemMetaIdx];
 
-		return storageItemMeta;
+		return palletMetaStorage[storageItemMetaIdx];
 	}
 
 	/**
@@ -109,19 +108,38 @@ export class PalletsStorageItemService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet.
 	 */
-	private findPalletMeta(palletId: string): ModuleMetadataV11 {
-		const palletMetaIdx = this.api.runtimeMetadata.asLatest.modules.findIndex(
-			(mod) => mod.name.toLowerCase() === palletId.toLowerCase()
-		);
-		if (palletMetaIdx === -1) {
+	private findPalletMeta(palletId: string): [ModuleMetadataV12, number] {
+		const { modules } = this.api.runtimeMetadata.asLatest;
+
+		const filtered = modules.filter((mod) => mod.storage.isSome);
+
+		let palletMeta: ModuleMetadataV12 | undefined;
+		let palletIdx: number | undefined;
+		for (const [_sectionIdx, section] of filtered.entries()) {
+			if (section.name.toLowerCase() === palletId.toLowerCase()) {
+				// ModuleMetadataV11 and lower have a `index` but they use 255 as a reserve value to signify
+				// that they are meaningless. So if the index is 255 we use its index in the filtered array
+				// of modules. But if the index is something else than we use `ModuleMetadataV12.index`.
+				// The reason they use a reserve value is that all previous ModuleMetadata versions actually
+				// extend the latest. So since the intro of ModuleMetadataV12 all versions have `index` in
+				// polkadot-js, but at the substrate level, only versions >= 12 have pallet `index`.
+				// https://github.com/polkadot-js/api/pull/2599
+				// https://github.com/paritytech/substrate/pull/6969
+				// https://github.com/polkadot-js/api/issues/2596
+				palletIdx = section.index.eqn(255)
+					? _sectionIdx
+					: section.index.toNumber();
+				palletMeta = section;
+				break;
+			}
+		}
+
+		if (!palletMeta || !palletIdx) {
 			throw new InternalServerError(
 				`Could not find pallet ("${palletId}")in metadata.`
 			);
 		}
-		const palletMeta = this.api.runtimeMetadata.asLatest.modules[
-			palletMetaIdx
-		];
 
-		return palletMeta;
+		return [palletMeta, palletIdx];
 	}
 }
