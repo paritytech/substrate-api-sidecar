@@ -1471,6 +1471,10 @@ components:
           type: string
           description: Name of the pallet.
           example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up storage.
+          example: "15"
         storageItem:
           type: string
           description: Name of the storage item.
