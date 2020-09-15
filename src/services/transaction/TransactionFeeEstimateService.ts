@@ -15,7 +15,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 		hash: BlockHash,
 		transaction: string
 	): Promise<RuntimeDispatchInfo> {
-		const api = await this.ensureMeta(hash);
+		const { api } = this;
 
 		try {
 			return await api.rpc.payment.queryInfo(transaction, hash);

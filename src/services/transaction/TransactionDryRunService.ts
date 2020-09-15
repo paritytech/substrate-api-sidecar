@@ -13,7 +13,6 @@ export class TransactionDryRunService extends AbstractService {
 		hash: BlockHash,
 		transaction: string
 	): Promise<ITransactionDryRun> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		try {

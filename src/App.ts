@@ -7,8 +7,10 @@ import {
 	Response,
 } from 'express';
 
+import * as packageJson from '../package.json';
 import AbstractController from './controllers/AbstractController';
 import { AbstractService } from './services/AbstractService';
+import { IRegisteredRoutes, IRouteInfo } from './types/util';
 
 interface IAppConfiguration {
 	controllers: AbstractController<AbstractService>[];
@@ -38,15 +40,8 @@ export default class App {
 		this.host = host;
 
 		this.initMiddleware(preMiddleware);
-
-		// Set up a root route
-		this.app.get('/', (_req: Request, res: Response) =>
-			res.send(
-				'Sidecar is running, go to /block to get latest finalized block'
-			)
-		);
-
 		this.initControllers(controllers);
+		this.initRoot();
 		this.initErrorMiddleware(postMiddleware);
 	}
 
@@ -89,5 +84,57 @@ export default class App {
 		this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
 		});
+	}
+
+	/**
+	 * Mount the root route.
+	 */
+	private initRoot() {
+		// Set up a root route
+		this.app.get('/', (_req: Request, res: Response) =>
+			res.send({
+				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
+				github: 'https://github.com/paritytech/substrate-api-sidecar',
+				version: packageJson.version,
+				listen: `${this.host}:${this.port}`,
+				routes: this.getRoutes(),
+			})
+		);
+	}
+
+	/**
+	 * Get the routes currently mounted on the Express App. N.B. this uses
+	 * a private property (`_router`) on the Express App, so it should be
+	 * checked that this works as expected whenever updating Express dependencies.
+	 */
+	private getRoutes() {
+		return (this.app._router as IRegisteredRoutes).stack.reduce(
+			(acc, middleware) => {
+				if (middleware.route) {
+					// This middleware is a route mounted directly on the app (i.e. app.get('/test', fn)
+					acc.push(this.extractPathAndMethod(middleware.route));
+				} else if (middleware.name === 'router') {
+					// This middleware is an express.Router (i.e. app.use('/', express.Router()))
+					middleware.handle?.stack.forEach(({ route }) => {
+						if (route) {
+							acc.push(this.extractPathAndMethod(route));
+						}
+					});
+				}
+
+				return acc;
+			},
+			[] as { path: string; method: string }[]
+		);
+	}
+
+	/**
+	 * Helper function for `getRoutes`.
+	 */
+	private extractPathAndMethod({ path, methods }: IRouteInfo) {
+		return {
+			path,
+			method: Object.keys(methods)[0],
+		};
 	}
 }
