@@ -2,6 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import * as HttpErrorConstructor from 'http-errors';
 import { InternalServerError } from 'http-errors';
 
+import { Log } from '../../logging/Log';
 import { isBasicLegacyError, isLegacyError } from '../../types/errors';
 
 /**
@@ -23,9 +24,14 @@ export const legacyErrorMiddleware: ErrorRequestHandler = (
 	}
 
 	if (isLegacyError(err)) {
-		res.status(err.statusCode).send(
-			HttpErrorConstructor(err.statusCode, err.error)
-		);
+		const info = {
+			code: err.statusCode,
+			message: HttpErrorConstructor(err.statusCode, err.error),
+		};
+
+		Log.logger.error(info);
+
+		res.status(err.statusCode).send(info.message);
 		return;
 	}
 

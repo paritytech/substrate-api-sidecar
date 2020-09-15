@@ -2,16 +2,25 @@ import { ConfigManager } from 'confmgr';
 
 import * as configTypes from '../config/types.json';
 
+export enum FileUse {
+	yes = 'yes',
+	no = 'no',
+}
+
 /**
  * Object to house the values of all the configurable components for Sidecar.
  */
 export interface ISidecarConfig {
 	HOST: string;
 	PORT: number;
-	LOG_MODE: string;
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
-	LOG_FILE: string;
+	CONSOLE_LEVEL: string;
+	FILE_USE: FileUse;
+	FILE_LEVEL: string;
+	FILE_SIZE: number;
+	FILE_COUNT: number;
+	FILE_PATH: string;
 }
 
 /**
@@ -20,29 +29,38 @@ export interface ISidecarConfig {
 export enum MODULES {
 	EXPRESS = 'EXPRESS',
 	SUBSTRATE = 'SUBSTRATE',
+	LOG = 'LOG',
 }
 
 /**
  * Names of config env vars of Sidecar.
  */
 export enum CONFIG {
-	LOG_MODE = 'LOG_MODE',
 	BIND_HOST = 'BIND_HOST',
 	PORT = 'PORT',
 	WS_URL = 'WS_URL',
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
-	LOG_FILE = 'LOG_FILE',
+	CONSOLE_LEVEL = 'CONSOLE_LEVEL',
+	FILE_USE = 'FILE_USE',
+	FILE_LEVEL = 'FILE_LEVEL',
+	FILE_SIZE = 'FILE_SIZE',
+	FILE_COUNT = 'FILE_COUNT',
+	FILE_PATH = 'FILE_PATH',
 }
 
 function hr(): string {
 	return Array(80).fill('━').join('');
 }
 
-export default class Config {
+/**
+ * Access a singleton config object that will be intialized on first use.
+ */
+export class Config {
+	private static _config: ISidecarConfig | undefined;
 	/**
 	 * Gather env vars for config and make sure they are valid.
 	 */
-	public static GetConfig(): ISidecarConfig | null {
+	private static create(): ISidecarConfig {
 		// Instantiate ConfigManager which is used to read in the specs.yml
 		const config = ConfigManager.getInstance('specs.yml').getConfig();
 
@@ -62,13 +80,29 @@ export default class Config {
 			config.Print({ compact: true });
 		}
 
-		return {
+		this._config = {
 			HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
 			PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
-			LOG_MODE: config.Get(MODULES.EXPRESS, CONFIG.LOG_MODE) as string,
 			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
 			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
-			LOG_FILE: config.Get(MODULES.EXPRESS, CONFIG.LOG_FILE) as string,
+			CONSOLE_LEVEL: config.Get(
+				MODULES.LOG,
+				CONFIG.CONSOLE_LEVEL
+			) as string,
+			FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as FileUse,
+			FILE_LEVEL: config.Get(MODULES.LOG, CONFIG.FILE_LEVEL) as string,
+			FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
+			FILE_COUNT: config.Get(MODULES.LOG, CONFIG.FILE_COUNT) as number,
+			FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
 		};
+
+		return this._config;
+	}
+
+	/**
+	 * Sidecar's configuaration.
+	 */
+	static get config(): ISidecarConfig {
+		return this._config || this.create();
 	}
 }

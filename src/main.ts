@@ -16,30 +16,28 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
-import * as bodyParser from 'body-parser';
-import { RequestHandler } from 'express';
+import { json } from 'express';
 
 import App from './App';
-import Config, { ISidecarConfig } from './Config';
+import { Config, FileUse } from './Config';
 import * as controllers from './controllers';
-import { fileLog } from './fileLog';
+import { consoleOverride } from './logging/consoleOverride';
+import { Log } from './logging/Log';
+import { fileTransport } from './logging/transports';
 import * as middleware from './middleware';
 
 async function main() {
-	const configOrNull = Config.GetConfig();
+	const { config } = Config;
 
-	if (!configOrNull) {
-		console.log('Your config is NOT valid, exiting');
-		process.exit(1);
+	const { logger } = Log;
+
+	// Remove the fileTransport if the config opts out of it
+	if (config.FILE_USE === FileUse.no) {
+		logger.remove(fileTransport);
 	}
 
-	const config: ISidecarConfig = configOrNull;
-
-	if (config.LOG_FILE && !(config.LOG_FILE === 'none')) {
-		const log = fileLog(config.LOG_FILE);
-		console.log = log;
-		console.error = log;
-	}
+	// Overide console.{log, error, warn, etc}
+	consoleOverride(logger);
 
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
@@ -49,24 +47,16 @@ async function main() {
 		},
 	});
 
+	// Gather some basic details about the node so we can display a nice message
 	const [chainName, { implName }] = await Promise.all([
 		api.rpc.system.chain(),
 		api.rpc.state.getRuntimeVersion(),
 	]);
-
-	console.log(
+	logger.info(
 		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
 			config.WS_URL
 		}`
 	);
-
-	// Create array of middleware that is to be mounted before the routes
-	const preMiddleware: RequestHandler[] = [bodyParser.json()];
-	if (config.LOG_MODE === 'errors') {
-		preMiddleware.push(middleware.errorLogger);
-	} else if (config.LOG_MODE === 'all') {
-		preMiddleware.push(middleware.allLogger);
-	}
 
 	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
 	const claimsController = new controllers.v0.v0Claims(api);
@@ -131,7 +121,7 @@ async function main() {
 
 	// Create our App
 	const app = new App({
-		preMiddleware,
+		preMiddleware: [json(), middleware.httpLoggerCreate(logger)],
 		controllers: [
 			blocksController,
 			accountsStakingPayoutsController,

@@ -1,6 +1,8 @@
 import { ErrorRequestHandler } from 'express';
 import { InternalServerError } from 'http-errors';
 
+import { Log } from '../../logging/Log';
+
 /**
  * The last backstop for errors that do not conform to one of Sidecars error
  * format. Used to create a standardized 500 error instead of relying on express.
@@ -22,5 +24,9 @@ export const internalErrorMiddleware: ErrorRequestHandler = (
 		return next(exception);
 	}
 
-	res.status(500).send(new InternalServerError('Internal Error'));
+	const message = new InternalServerError('Internal Error');
+
+	Log.logger.error({ code: 500, message });
+
+	res.status(500).send(message);
 };

@@ -53,11 +53,6 @@ Following ENV variables can be set:
     setting it to anything else. LOG_MODE defaults to only "errors".
 -   `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`.
--   `SAS_EXPRESS_LOG_FILE`: Path of file to output logs to. If set to 'none', sidecar will not
-    output to a file. Defaults to 'none'. Example usage: if you set `SAS_EXPRESS_LOG_FILE=./sas.log`,
-    logs will be appended to the file `sas.log` in the root directory. N.B. if logging to file while
-    running with `yarn start:log-rpc`, API-WS logging will not show up in the console but will still
-    be written to file.
 
 If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `config/types.json`.
 

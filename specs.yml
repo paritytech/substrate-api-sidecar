@@ -1,15 +1,39 @@
 SAS:
-  EXPRESS:
-    LOG_MODE:
-      description: Log level
-      default: errors
-      regexp: ^error|all|none$
+  LOG:
+    CONSOLE_LEVEL:
+      description: Log level for console transport
+      default: info
+      regexp: ^error|warn|info|http|verbose|debug|silly$,
 
-    LOG_FILE:
-      description: File path to output logs to. If "none", will not log to file.
-      default: none
+    FILE_USE:
+      description: Wether or not to use file transport
+      default: yes
+      type: string
+      regexp: ^yes|no$
+
+    FILE_LEVEL:
+      description: Log level for file transport
+      default: http
+      regexp: ^error|warn|info|http|verbose|debug|silly$,
+
+    FILE_SIZE:
+      description: Max size for .log file in bytes
+      default: 524288000
+      type: number
+      regexp: "[0-9]+"
+
+    FILE_COUNT:
+      description: Max number of files before deleting oldest
+      default: 2
+      type: number
+      regexp: "[0-9]+"
+
+    FILE_PATH:
+      description: Path to log file
+      default: ./logs/file-transport.log
       type: string
 
+  EXPRESS:
     BIND_HOST:
       description: Network interface we bind to. You *MUST* use 0.0.0.0 if you are using Docker.
       default: 127.0.0.1
