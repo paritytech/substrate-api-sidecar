@@ -26,16 +26,18 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 	const info = {
 		code: 500,
 		error,
-		message: `${error}\n Cause: ${cause as string}\n Transaction: ${
-			transaction as string
-		}`,
 		data,
 		transaction,
 		cause,
 		stack,
 	};
 
-	Log.logger.error(info);
+	Log.logger.error({
+		...info,
+		message: `${error}\n Cause: ${cause as string}\n Transaction: ${
+			transaction as string
+		}`,
+	});
 
 	res.status(500).send(info);
 };
