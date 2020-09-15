@@ -5,7 +5,7 @@ import { format } from 'util';
 import { Logger } from 'winston';
 
 /**
- * Override console methods with a Winston.Logger.
+ * Override console methods with a winston.Logger.
  *
  * @param logger
  */

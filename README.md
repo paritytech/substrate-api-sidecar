@@ -88,18 +88,18 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 
 Log levels in order of decreasing importance are: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`.
 
-| http status code range | log level |   |   |   |
-|------------------------|-----------|---|---|---|
-| `code` < 400           | `http`    |   |   |   |
-| 400 <= `code` < 500    | `warn`    |   |   |   |
-| 500 < `code`           | `error`   |   |   |   |
+| http status code range | log level |
+|------------------------|-----------|
+| `code` < 400           | `http`    |
+| 400 <= `code` < 500    | `warn`    |
+| 500 < `code`           | `error`   |
 
 #### RPC logging
 
-If looking to track raw RPC req/res between the node Sidecar, one can use 
+If looking to track raw RPC requests/responses, one can use 
 `yarn start:log-rpc` to turn on polkadot-js's logging. It is reccomended to also set 
-`SAS_LOG_FILE_STRIP_ANSI=true` to increase the readability fo the files. Note that RPC req/res are
-filtered out of the console transport.
+`SAS_LOG_FILE_STRIP_ANSI=true` to increase the readability fo the files. Note that RPC requests/responses 
+are filtered out of the console transport.
 
 **N.B.** If running `yarn start:log-rpc`, the NODE_ENV will be set to `test`. In order still run your `.env`
 file you can `symlink` it with `.env.test`. For example you could run

@@ -6,7 +6,7 @@ import { consoleTransport } from './transports';
 const transports = [consoleTransport()];
 
 /**
- * Access a singleton Winston.Logger that will be intialized on first use.
+ * Access a singleton winston.Logger that will be intialized on first use.
  */
 export class Log {
 	private static _logger: Logger | undefined;
@@ -25,7 +25,7 @@ export class Log {
 	}
 
 	/**
-	 * Sidecar's Winston.Logger.
+	 * Sidecar's winston.Logger.
 	 */
 	static get logger(): Logger {
 		return this._logger || this.create();
