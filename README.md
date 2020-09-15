@@ -41,7 +41,10 @@ To use a specific env profile (here for instance a profile called 'env.sample'):
 NODE_ENV=sample yarn start
 ```
 
-N.B. If running `yarn start:log-rpc`, `.env` cannot be used. (Hopefully thi will change soon.)
+N.B. If running `yarn start:log-rpc`, the NODE_ENV will be set to test. In order still run your `.env`
+file you can `symlink` it with `.env.test`. For example you could run
+`ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
+commands `ln` and `unlink` for more info.)
 
 For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `specs.yaml` to view the env configuration spec.
 
