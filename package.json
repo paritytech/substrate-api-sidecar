@@ -19,7 +19,7 @@
   "author": "Parity Technologies <admin@parity.io>",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@polkadot/api": "^1.33.1",
+    "@polkadot/api": "^1.34.0.beta",
     "@polkadot/util-crypto": "^3.4.1",
     "@substrate/calc": "file:./calc/pkg",
     "confmgr": "^1.0.6",

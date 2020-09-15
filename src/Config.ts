@@ -2,11 +2,6 @@ import { ConfigManager } from 'confmgr';
 
 import * as configTypes from '../config/types.json';
 
-export enum FileUse {
-	yes = 'yes',
-	no = 'no',
-}
-
 /**
  * Object to house the values of all the configurable components for Sidecar.
  */
@@ -16,7 +11,7 @@ export interface ISidecarConfig {
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
 	CONSOLE_LEVEL: string;
-	FILE_USE: FileUse;
+	FILE_USE: boolean;
 	FILE_LEVEL: string;
 	FILE_SIZE: number;
 	FILE_COUNT: number;
@@ -89,7 +84,7 @@ export class Config {
 				MODULES.LOG,
 				CONFIG.CONSOLE_LEVEL
 			) as string,
-			FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as FileUse,
+			FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as boolean,
 			FILE_LEVEL: config.Get(MODULES.LOG, CONFIG.FILE_LEVEL) as string,
 			FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
 			FILE_COUNT: config.Get(MODULES.LOG, CONFIG.FILE_COUNT) as number,

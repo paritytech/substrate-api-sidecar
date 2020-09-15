@@ -19,7 +19,7 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import { json } from 'express';
 
 import App from './App';
-import { Config, FileUse } from './Config';
+import { Config } from './Config';
 import * as controllers from './controllers';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
@@ -31,9 +31,9 @@ async function main() {
 
 	const { logger } = Log;
 
-	// Remove the fileTransport if the config opts out of it
-	if (config.FILE_USE === FileUse.no) {
-		logger.remove(fileTransport);
+	// Add the fileTransport if the config opts in
+	if (config.FILE_USE === true) {
+		logger.add(fileTransport);
 	}
 
 	// Overide console.{log, error, warn, etc}

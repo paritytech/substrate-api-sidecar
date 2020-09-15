@@ -10,7 +10,13 @@ import { Logger } from 'winston';
  * @param logger
  */
 export function consoleOverride(logger: Logger): void {
-	console.log = function (...args: unknown[]) {
+	[
+		['log', 'info'],
+		['info', 'info'],
+		['warn', 'warn'],
+		['error', 'error'],
+		['debug', 'debug'],
+	].forEach(([consoleLevel, winstonLevel]) => {
 		// Sacrereligious typecasting explained:
 		//
 		// `args as [string]`: fomat @types dictate that it needs an array of at least length 1. However,
@@ -19,33 +25,12 @@ export function consoleOverride(logger: Logger): void {
 		// `(format.apply(format, args as [string]) as unknown) as object: TS incorrectly says the we
 		// need a object as an argument to `info.call`. However, it will except a string perfectly fine,
 		// which is what `format.apply` returns.
-		logger.info.call(
-			logger,
-			(format.apply(format, args as [string]) as unknown) as object
-		);
-	};
-	console.info = function (...args: unknown[]) {
-		logger.info.call(
-			logger,
-			(format.apply(format, args as [string]) as unknown) as object
-		);
-	};
-	console.warn = function (...args: unknown[]) {
-		logger.warn.call(
-			logger,
-			(format.apply(format, args as [string]) as unknown) as object
-		);
-	};
-	console.error = function (...args: unknown[]) {
-		logger.error.call(
-			logger,
-			(format.apply(format, args as [string]) as unknown) as object
-		);
-	};
-	console.debug = function (...args: unknown[]) {
-		logger.debug.call(
-			logger,
-			(format.apply(format, args as [string]) as unknown) as object
-		);
-	};
+		console[consoleLevel] = function (...args: unknown[]) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+			logger[winstonLevel].call(
+				logger,
+				(format.apply(format, args as [string]) as unknown) as object
+			);
+		};
+	});
 }

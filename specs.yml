@@ -7,9 +7,9 @@ SAS:
 
     FILE_USE:
       description: Wether or not to use file transport
-      default: yes
-      type: string
-      regexp: ^yes|no$
+      default: "true"
+      type: boolean
+      regexp: ^true|false$
 
     FILE_LEVEL:
       description: Log level for file transport
