@@ -33,7 +33,7 @@ async function main() {
 
 	// Add the fileTransport if the config opts in
 	if (config.FILE_USE === true) {
-		logger.add(fileTransport);
+		logger.add(fileTransport());
 	}
 
 	// Overide console.{log, error, warn, etc}

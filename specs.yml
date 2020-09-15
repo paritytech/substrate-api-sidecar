@@ -1,5 +1,6 @@
 SAS:
   LOG:
+
     CONSOLE_LEVEL:
       description: Log level for console transport
       default: info
@@ -32,6 +33,11 @@ SAS:
       description: Path to log file
       default: ./logs/file-transport.log
       type: string
+
+    FILE_STRIP_ANSI:
+      description: Wether or not to strip ANSI characters when writing to file transport
+      default: "false"
+      regexp: ^true|false$
 
   EXPRESS:
     BIND_HOST:

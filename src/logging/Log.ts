@@ -3,7 +3,7 @@ import { createLogger, Logger } from 'winston';
 import { consoleTransport } from './transports';
 
 // Note: there is a `fileTransport` that gets added in main.
-const transports = [consoleTransport];
+const transports = [consoleTransport()];
 
 /**
  * Access a singleton Winston.Logger that will be intialized on first use.

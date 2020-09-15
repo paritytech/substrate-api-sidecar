@@ -16,6 +16,7 @@ export interface ISidecarConfig {
 	FILE_SIZE: number;
 	FILE_COUNT: number;
 	FILE_PATH: string;
+	FILE_STRIP_ANSI: boolean;
 }
 
 /**
@@ -41,6 +42,7 @@ export enum CONFIG {
 	FILE_SIZE = 'FILE_SIZE',
 	FILE_COUNT = 'FILE_COUNT',
 	FILE_PATH = 'FILE_PATH',
+	FILE_STRIP_ANSI = 'FILE_STRIP_ANSI',
 }
 
 function hr(): string {
@@ -89,6 +91,10 @@ export class Config {
 			FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
 			FILE_COUNT: config.Get(MODULES.LOG, CONFIG.FILE_COUNT) as number,
 			FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
+			FILE_STRIP_ANSI: config.Get(
+				MODULES.LOG,
+				CONFIG.FILE_STRIP_ANSI
+			) as boolean,
 		};
 
 		return this._config;

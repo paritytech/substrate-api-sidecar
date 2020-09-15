@@ -6,20 +6,32 @@ import { nodeUtilFormat, stripAnsi, stripTimestamp } from '../transformers';
 const { config } = Config;
 
 /**
- * File transport for Winston.Logger.
+ * File transport for winston.Logger.
  */
-export const fileTransport = new transports.File({
-	level: config.FILE_LEVEL || 'http',
-	filename: config.FILE_PATH || `./logs/file-transport.log`,
-	maxsize: config.FILE_SIZE || 524_288_000, // 500MB
-	maxFiles: config.FILE_COUNT || 2, // Max 1gb
-	format: format.combine(
+export function fileTransport() {
+	const transformers = [
 		stripTimestamp(),
-		stripAnsi(),
 		nodeUtilFormat(),
 		format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-		format.prettyPrint()
-	),
-	// Silence using `jest --silent`
-	silent: process.argv.indexOf('--silent') >= 0,
-});
+		format.prettyPrint(),
+	];
+
+	if (config.FILE_STRIP_ANSI) {
+		console.info('STRIP');
+		// If the user opts in to strip ANSI characters add the appropriate transformer.
+		// IMPORTANT: We need to add this at the front so it is before `prettyPrint`
+		transformers.unshift(stripAnsi());
+	} else {
+		console.debug('NO STRIP');
+	}
+
+	return new transports.File({
+		level: config.FILE_LEVEL || 'http',
+		filename: config.FILE_PATH || `./logs/file-transport.log`,
+		maxsize: config.FILE_SIZE || 524_288_000, // 500MB
+		maxFiles: config.FILE_COUNT || 2, // Max 1gb
+		format: format.combine(...transformers),
+		// Silence using `jest --silent`
+		silent: process.argv.indexOf('--silent') >= 0,
+	});
+}
