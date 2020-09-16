@@ -6,13 +6,13 @@ SAS:
       regexp: ^error|warn|info|http|verbose|debug|silly$,
 
     CONSOLE_JSON:
-      description: Whether or not to format console transport as JSON.
+      description: Whether or not to format console transport as JSON
       default: "false"
       type: boolean
       regexp: ^true|false$
 
     CONSOLE_FILTER_RPC:
-      description: Wether or not filter out API-WS RPC logging info
+      description: Wether or not filter out API-WS RPC logging for console transport
       default: "true"
       type: boolean
       regexp: ^true|false$

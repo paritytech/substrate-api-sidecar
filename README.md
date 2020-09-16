@@ -72,6 +72,10 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 
 -   `SAS_LOG_CONSOLE_LEVEL`: log level for console transport, defaults to `info`. Tip: set to `http`
     to see all HTTP requests.
+-   `SAS_LOG_CONSOLE_JSON`: wether or not to have JSON written to console transport, defaults to `false`.
+    Useful when using `stdout` to programmatically process Sidecar log data.
+-   `SAS_LOG_CONSOLE_FILTER_RPC`: wether or not filter polkadot-js API-WS RPC logging for console 
+    transport, defaults to `true`.
 -   `SAS_LOG_FILE_USE`: wether or not to use a file transport, defaults to `true`. If set to `false`
     no files will be created and all other file logging options have no effect.
 -   `SAS_LOG_FILE_LEVEL`: log level for file transport, defaults to `http`.
@@ -81,8 +85,8 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 -   `SAS_LOG_FILE_COUNT`: maximium number of log files to store before deleting oldest, defaults to `2`.
 -   `SAS_LOG_FILE_PATH`: path from the root directory to the (initial) log file, defaults to 
     `./logs/file-transport.log`
--   `SAS_LOG_FILE_STRIP_ANSI`: wether or not to strip ANSI characters in the file transport, defaults
-    to `false`.
+-   `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters in either transport, defaults
+    to `false`. Useful when logging RPC calls with JSON written to transports.
 
 #### Log levels
 
