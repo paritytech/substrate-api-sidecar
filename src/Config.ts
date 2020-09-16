@@ -11,12 +11,14 @@ export interface ISidecarConfig {
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
 	CONSOLE_LEVEL: string;
+	CONSOLE_JSON: boolean;
+	CONSOLE_FILTER_RPC: boolean;
 	FILE_USE: boolean;
 	FILE_LEVEL: string;
 	FILE_SIZE: number;
 	FILE_COUNT: number;
 	FILE_PATH: string;
-	FILE_STRIP_ANSI: boolean;
+	STRIP_ANSI: boolean;
 }
 
 /**
@@ -37,12 +39,14 @@ export enum CONFIG {
 	WS_URL = 'WS_URL',
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
 	CONSOLE_LEVEL = 'CONSOLE_LEVEL',
+	CONSOLE_JSON = 'CONSOLE_JSON',
+	CONSOLE_FILTER_RPC = 'CONSOLE_FILTER_RPC',
 	FILE_USE = 'FILE_USE',
 	FILE_LEVEL = 'FILE_LEVEL',
 	FILE_SIZE = 'FILE_SIZE',
 	FILE_COUNT = 'FILE_COUNT',
 	FILE_PATH = 'FILE_PATH',
-	FILE_STRIP_ANSI = 'FILE_STRIP_ANSI',
+	STRIP_ANSI = 'STRIP_ANSI',
 }
 
 function hr(): string {
@@ -86,15 +90,20 @@ export class Config {
 				MODULES.LOG,
 				CONFIG.CONSOLE_LEVEL
 			) as string,
+			CONSOLE_JSON: config.Get(
+				MODULES.LOG,
+				CONFIG.CONSOLE_JSON
+			) as boolean,
+			CONSOLE_FILTER_RPC: config.Get(
+				MODULES.LOG,
+				CONFIG.CONSOLE_FILTER_RPC
+			) as boolean,
 			FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as boolean,
 			FILE_LEVEL: config.Get(MODULES.LOG, CONFIG.FILE_LEVEL) as string,
 			FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
 			FILE_COUNT: config.Get(MODULES.LOG, CONFIG.FILE_COUNT) as number,
 			FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
-			FILE_STRIP_ANSI: config.Get(
-				MODULES.LOG,
-				CONFIG.FILE_STRIP_ANSI
-			) as boolean,
+			STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
 		};
 
 		return this._config;

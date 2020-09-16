@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { u32 } from '@polkadot/types';
+import { Text, u32, Vec } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 import { BlockHash } from '@polkadot/types/interfaces';
 
@@ -60,5 +60,18 @@ export abstract class AbstractService {
 		}
 
 		return api;
+	}
+
+	/**
+	 * Process metadata documention.
+	 *
+	 * @param docs metadata doucumentation array
+	 */
+	protected sanitizeDocs(docs: Vec<Text>): string {
+		return docs
+			.map((l, idx, arr) =>
+				idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`
+			)
+			.join('');
 	}
 }

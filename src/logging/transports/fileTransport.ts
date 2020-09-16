@@ -21,8 +21,7 @@ export function fileTransport(): transports.FileTransportInstance {
 		format.prettyPrint(),
 	];
 
-	if (config.FILE_STRIP_ANSI) {
-		// If the user opts in to strip ANSI characters add the appropriate transformer.
+	if (config.STRIP_ANSI) {
 		// IMPORTANT: We need to add this at the front so it is before `prettyPrint`
 		transformers.unshift(stripAnsi());
 	}

@@ -5,6 +5,7 @@ import { Config } from '../../Config';
 import {
 	filterApiRpc,
 	nodeUtilFormat,
+	stripAnsi,
 	stripTimestamp,
 	timeStamp,
 } from '../transformers';
@@ -29,17 +30,26 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		return `${info?.timestamp as string} ${info?.level}: ${info?.message}`;
 	});
 
+	const transformers = [stripTimestamp(), nodeUtilFormat(), timeStamp];
+
+	if (!config.CONSOLE_JSON) {
+		transformers.push(format.colorize(), simplePrint);
+	} else {
+		transformers.push(format.prettyPrint());
+	}
+
+	if (config.STRIP_ANSI) {
+		transformers.unshift(stripAnsi());
+	}
+
+	if (config.CONSOLE_FILTER_RPC) {
+		transformers.unshift(filterApiRpc());
+	}
+
 	return new transports.Console({
 		level: config.CONSOLE_LEVEL || 'info',
 		handleExceptions: true,
-		format: format.combine(
-			filterApiRpc(),
-			stripTimestamp(),
-			nodeUtilFormat(),
-			timeStamp,
-			format.colorize(),
-			simplePrint
-		),
+		format: format.combine(...transformers),
 		// Silence using `jest --silent`
 		silent: process.argv.indexOf('--silent') >= 0,
 	});

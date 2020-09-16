@@ -1,10 +1,21 @@
 SAS:
   LOG:
-
     CONSOLE_LEVEL:
       description: Log level for console transport
       default: info
       regexp: ^error|warn|info|http|verbose|debug|silly$,
+
+    CONSOLE_JSON:
+      description: Whether or not to format console transport as JSON.
+      default: "false"
+      type: boolean
+      regexp: ^true|false$
+
+    CONSOLE_FILTER_RPC:
+      description: Wether or not filter out API-WS RPC logging info
+      default: "true"
+      type: boolean
+      regexp: ^true|false$
 
     FILE_USE:
       description: Whether or not to use file transport
@@ -34,8 +45,8 @@ SAS:
       default: ./logs/file-transport.log
       type: string
 
-    FILE_STRIP_ANSI:
-      description: Whether or not to strip ANSI characters when writing to file transport
+    STRIP_ANSI:
+      description: Whether or not to strip ANSI characters when writing to either transport
       default: "false"
       regexp: ^true|false$
 

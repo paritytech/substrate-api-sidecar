@@ -106,6 +106,7 @@ async function main() {
 			new controllers.TransactionFeeEstimate(api),
 			new controllers.TransactionSubmit(api),
 			new controllers.palletsStakingProgress(api),
+			new controllers.palletsStorageItem(api),
 			...v0Controllers,
 		],
 		postMiddleware: [
