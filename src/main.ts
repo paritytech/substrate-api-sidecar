@@ -52,6 +52,7 @@ async function main() {
 		api.rpc.system.chain(),
 		api.rpc.state.getRuntimeVersion(),
 	]);
+
 	logger.info(
 		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
 			config.WS_URL

@@ -1,18 +1,23 @@
 import { format, transports } from 'winston';
 
 import { Config } from '../../Config';
-import { nodeUtilFormat, stripAnsi, stripTimestamp } from '../transformers';
+import {
+	// nodeUtilFormat,
+	stripAnsi,
+	stripTimestamp,
+	timeStamp,
+} from '../transformers';
 
 const { config } = Config;
 
 /**
  * File transport for winston.Logger.
  */
-export function fileTransport() {
+export function fileTransport(): transports.FileTransportInstance {
 	const transformers = [
 		stripTimestamp(),
-		nodeUtilFormat(),
-		format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+		// nodeUtilFormat(),
+		timeStamp,
 		format.prettyPrint(),
 	];
 
