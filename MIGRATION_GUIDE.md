@@ -15,16 +15,16 @@ Below is a table that is intended to give an overview of what the mapping of
 deprecated endpoints to there v1 equivalents. Many of the new
 endpoints have unlisted options for query params.
 
-| v0 path           	              | v1 equivalent path            	                            |
+| v0 path           	              | v1 equivalent path            	                  |
 |--------------------	              |---------------------	                            |
 | `/block`           	              | `/blocks/head`      	                            |
 | `/block/{blockId}` 	              | `/blocks/{blockId}` 	                            |
-| `/balance/{accountId}`           	| `accounts/{accountId}/balance-info`               |
-| `/balance/{accountId}/{blockId}` 	| `accounts/{accountId}/balance-info?at={blockId}`  |
-| `/staking/{accountId}`           	| `accounts/{accountId}/staking-info`               |
-| `/staking/{accountId}/{blockId}` 	| `accounts/{accountId}/staking-info?at={blockId}`  |
-| `/vesting/{accountId}`           	| `accounts/{accountId}/vesting-info`               |
-| `/vesting/{accountId}/{blockId}` 	| `accounts/{accountId}/vesting-info?at={blockId}`  |
+| `/balance/{accountId}`            | `accounts/{accountId}/balance-info`               |
+| `/balance/{accountId}/{blockId}`  | `accounts/{accountId}/balance-info?at={blockId}`  |
+| `/staking/{accountId}`            | `accounts/{accountId}/staking-info`               |
+| `/staking/{accountId}/{blockId}`  | `accounts/{accountId}/staking-info?at={blockId}`  |
+| `/vesting/{accountId}`            | `accounts/{accountId}/vesting-info`               |
+| `/vesting/{accountId}/{blockId}`  | `accounts/{accountId}/vesting-info?at={blockId}`  |
 | `/claims/{accountId}`             | (None)                                            |
 | `/claims/{accountId}/{blockId}`   | (None)                                            |
 | (None)                            | `accounts/{accountId}/staking-payouts`            |
