@@ -1,6 +1,6 @@
 # v0.x.x &rightarrow; v1.0.0-beta.0
 
-Documentation for v1 endpoints are available here: https://paritytech.github.io/substrate-api-sidecar/dist/
+Full documentation for v1 endpoints is available here: https://paritytech.github.io/substrate-api-sidecar/dist/
 
 For most users, the major bump will require transitioning all the endpoint paths
 they use to an updated version. The v1.0.0.beta.0 release contains both the old
