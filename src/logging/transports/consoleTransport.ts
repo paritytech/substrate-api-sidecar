@@ -4,7 +4,7 @@ import { format, transports } from 'winston';
 import { Config } from '../../Config';
 import {
 	filterApiRpc,
-	// nodeUtilFormat,
+	nodeUtilFormat,
 	stripTimestamp,
 	timeStamp,
 } from '../transformers';
@@ -35,7 +35,7 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		format: format.combine(
 			filterApiRpc(),
 			stripTimestamp(),
-			// nodeUtilFormat(),
+			nodeUtilFormat(),
 			timeStamp,
 			format.colorize(),
 			simplePrint
