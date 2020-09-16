@@ -82,7 +82,7 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
 -   `SAS_LOG_FILE_SIZE`: maximum size, as measured in bytes, that a log file will reach before Sidecar
     starts logging to a new file, defaults to `524288000` (500mb). New files wil take the name of the
     initial file with an increasing digit appended to each new one.
--   `SAS_LOG_FILE_COUNT`: maximium number of log files to store before deleting oldest, defaults to `2`.
+-   `SAS_LOG_FILE_COUNT`: maximum number of log files to store before deleting oldest, defaults to `2`.
 -   `SAS_LOG_FILE_PATH`: path from the root directory to the (initial) log file, defaults to 
     `./logs/file-transport.log`
 -   `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters in either transport, defaults
