@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Struct } from '@polkadot/types';
-import { GenericCall, Text, Vec } from '@polkadot/types';
+import { GenericCall } from '@polkadot/types';
 import {
 	AccountId,
 	Block,
@@ -480,18 +480,5 @@ export class BlocksService extends AbstractService {
 		}
 
 		return undefined;
-	}
-
-	/**
-	 * Process metadata documention.
-	 *
-	 * @param docs metadata doucumentation array
-	 */
-	private sanitizeDocs(docs: Vec<Text>): string {
-		return docs
-			.map((l, idx, arr) =>
-				idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`
-			)
-			.join('');
 	}
 }

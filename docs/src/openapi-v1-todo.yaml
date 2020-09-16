@@ -437,69 +437,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /pallets/{palletId}/storage/{storageItemId}:
-    get:
-      tags:
-      - pallets
-      summary: Get the value of a storage item.
-      description: Returns the value stored under the storageItemId. If it is a
-        map, query param key1 is required. If the storage item is double map
-        query params key1 and key2 are required.
-      parameters:
-      - name: palletId
-        in: path
-        description: Name or index of the pallet to query the storage of.
-        required: true
-        schema:
-          type: string
-      - name: storageItemId
-        in: path
-        description: Id of the storage item to query for.
-        required: true
-        schema:
-          type: string
-      - name: key1
-        in: query
-        description: Key for a map, or first key for a double map. Required for querying
-          a map.
-        required: false
-        schema:
-          type: string
-      - name: key2
-        in: query
-        description: Second key for a double map. Required for querying a double map.
-        required: false
-        schema:
-          type: string
-      - name: at
-        in: query
-        description: Block at which to query the storage item at.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                description: Successful query response type is dependent on the storage
-                  item value.
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: could not find resource with with id
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 components:
   schemas:
     BlockIdentifiers:
@@ -552,7 +489,7 @@ components:
       description: Metadata of an error from a FRAME pallet.
     PalletStorageType:
       type: object
-    PalletStorageItem:
+    PalletStorageItemMetadata:
       type: object
       properties:
         storageItemIndex:
