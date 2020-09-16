@@ -15,15 +15,6 @@ const pattern = [
 const ansiRegex = new RegExp(pattern, 'g');
 
 /**
- * Remove ANSI characters from a string by replacing them with empty an empty string.
- *
- * @param text
- */
-function ansiReplace(text: unknown): typeof text {
-	return typeof text === 'string' ? text.replace(ansiRegex, '') : text;
-}
-
-/**
  * Strip ANSI characters from strings in simple, arbitrary data. N.B. this is not
  * hardened to work with any possible javascript type and is only meant for arrays,
  * basic objects and strings.
@@ -36,7 +27,7 @@ function stripAnsiShellCodes(data: unknown): unknown {
 	}
 
 	if (typeof data === 'string') {
-		return ansiReplace(data);
+		return data.replace(ansiRegex, '');
 	}
 
 	if (Array.isArray(data)) {
