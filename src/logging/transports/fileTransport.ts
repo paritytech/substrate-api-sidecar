@@ -2,7 +2,7 @@ import { format, transports } from 'winston';
 
 import { Config } from '../../Config';
 import {
-	// nodeUtilFormat,
+	nodeUtilFormat,
 	stripAnsi,
 	stripTimestamp,
 	timeStamp,
@@ -16,7 +16,7 @@ const { config } = Config;
 export function fileTransport(): transports.FileTransportInstance {
 	const transformers = [
 		stripTimestamp(),
-		// nodeUtilFormat(),
+		nodeUtilFormat(),
 		timeStamp,
 		format.prettyPrint(),
 	];

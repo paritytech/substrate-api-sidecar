@@ -30,7 +30,7 @@ function ansiReplace(text: unknown): typeof text {
  *
  * @param data arbitrary data
  */
-function sanitizeAnsi(data: unknown): unknown {
+function stripAnsiShellCodes(data: unknown): unknown {
 	if (data === null || data === undefined) {
 		return data;
 	}
@@ -40,13 +40,13 @@ function sanitizeAnsi(data: unknown): unknown {
 	}
 
 	if (Array.isArray(data)) {
-		return data.map((val) => sanitizeAnsi(val));
+		return data.map((val) => stripAnsiShellCodes(val));
 	}
 
 	if (typeof data === 'object' && data !== null) {
 		const sanitizedData = {};
 		for (const [k, v] of Object.entries(data)) {
-			sanitizedData[k] = sanitizeAnsi(v);
+			sanitizedData[k] = stripAnsiShellCodes(v);
 		}
 		return sanitizedData;
 	}
@@ -58,6 +58,6 @@ function sanitizeAnsi(data: unknown): unknown {
  * Strip ANSI characters from `TransformableInfo.message`.
  */
 export const stripAnsi = format((info: TransformableInfo, _opts: unknown) => {
-	info.message = sanitizeAnsi(info.message) as string;
+	info.message = stripAnsiShellCodes(info.message) as string;
 	return info;
 });
