@@ -15,10 +15,10 @@ Below is a table that is intended to give an overview of what the mapping of
 deprecated endpoints to there v1 equivalents. Many of the new
 endpoints have unlisted options for query params.
 
-| v0 path           	              | v1 equivalent path            	                  |
-|--------------------	              |---------------------	                            |
-| `/block`           	              | `/blocks/head`      	                            |
-| `/block/{blockId}` 	              | `/blocks/{blockId}` 	                            |
+| v0 path                           | v1 equivalent path            	                  |
+|--------------------               |---------------------	                            |
+| `/block`                          | `/blocks/head`      	                            |
+| `/block/{blockId}`                | `/blocks/{blockId}` 	                            |
 | `/balance/{accountId}`            | `accounts/{accountId}/balance-info`               |
 | `/balance/{accountId}/{blockId}`  | `accounts/{accountId}/balance-info?at={blockId}`  |
 | `/staking/{accountId}`            | `accounts/{accountId}/staking-info`               |
