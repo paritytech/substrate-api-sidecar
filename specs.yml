@@ -7,7 +7,7 @@ SAS:
       regexp: ^error|warn|info|http|verbose|debug|silly$,
 
     FILE_USE:
-      description: Wether or not to use file transport
+      description: Whether or not to use file transport
       default: "true"
       type: boolean
       regexp: ^true|false$
@@ -35,7 +35,7 @@ SAS:
       type: string
 
     FILE_STRIP_ANSI:
-      description: Wether or not to strip ANSI characters when writing to file transport
+      description: Whether or not to strip ANSI characters when writing to file transport
       default: "false"
       regexp: ^true|false$
 
