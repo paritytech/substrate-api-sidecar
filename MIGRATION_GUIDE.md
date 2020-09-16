@@ -1,19 +1,19 @@
-# v0.x.x => v1.0.0-beta.0
+# v0.x.x &rightarrow; v1.0.0-beta.0
 
 Documentation for v1 endpoints are available here: https://paritytech.github.io/substrate-api-sidecar/dist/
 
-Today we are rolling `substrate-api-sidecar` v1.0.0.beta.0. For most users, the
-major bump will require transitioning all the endpoint paths they use to an updated
-version. This v1.0.0.beta.0 release contains both the old and new endpoints to
-help facilitate the transition. 
+For most users, the major bump will require transitioning all the endpoint paths
+they use to an updated version. The v1.0.0.beta.0 release contains both the old
+and new endpoints to help facilitate the transition.
 
 **`substrate-api-sidecar` releases after Friday, October 2nd, 2020, will not
-include deprecated endpoints.** It is important that users finishing transitioning
-to the new endpoints by this date so they are ready for any emergency updates.
+make any gurantees to include deprecated endpoints.** It is important that users
+finishing transitioning to the new endpoints by this date so they are ready for
+any subsequent emergency updates.
 
-Below is a table that is intended to give an overview of what the mapping of 
+Below is a table that is intended to give an overview of what the mapping of
 deprecated endpoints to there v1 equivalents. Many of the new
-endpoints have unlisted options for query params. 
+endpoints have unlisted options for query params.
 
 | v0 path           	              | v1 equivalent path            	                            |
 |--------------------	              |---------------------	                            |
@@ -26,6 +26,7 @@ endpoints have unlisted options for query params.
 | `/vesting/{accountId}`           	| `accounts/{accountId}/vesting-info`               |
 | `/vesting/{accountId}/{blockId}` 	| `accounts/{accountId}/vesting-info?at={blockId}`  |
 | `/claims/{accountId}`             | (None)                                            |
+| `/claims/{accountId}/{blockId}`   | (None)                                            |
 | (None)                            | `accounts/{accountId}/staking-payouts`            |
 | `/tx/artifacts`                   | `/transaction/material`                           |
 | `/tx/artifacts/{blockId}`         | `/transaction/material?at={blockId}`              |
@@ -47,12 +48,13 @@ endpoints have unlisted options for query params.
 
 **N.B.** the `/blocks` endpoint sees two significant breaking changes:
 
-1) extrinsic and event methods names no longer are a string of the form 
-`pallet.method`, but are not instead objects of the form `{ pallet: string, method: string }`.
+1) extrinsic and event methods names no longer are a string of the form
+`pallet.method`, instead they are an object of the form
+`{ pallet: string, method: string }`.
 
-2) Unsigned extrinsics and inherents will have `null` for nonce and tip, while 
+2) Unsigned extrinsics and inherents will have `null` for nonce and tip, while
 `paysFee` will always be `false`. Previously the latter two fields where 0, while
 `paysFee` was often `true`. (#274)
 
-There are some other changes throughout in the user interface, including some
-updated error message formats which have not yet been updated in the new docs UI.
+There are some other changes throughout the API, including some slightly updated
+error messages which have not yet been updated in the new docs UI.
