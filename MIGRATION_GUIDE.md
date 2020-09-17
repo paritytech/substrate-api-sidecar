@@ -3,16 +3,16 @@
 Full documentation for v1 endpoints is available here: https://paritytech.github.io/substrate-api-sidecar/dist/
 
 For most users, the major bump will require transitioning all the endpoint paths
-they use to an updated version. The v1.0.0.beta.0 release contains both the old
+that they use to an updated version. The v1.0.0.beta.0 release contains both the old
 and new endpoints to help facilitate the transition.
 
 **`substrate-api-sidecar` releases after Friday, October 2nd, 2020, will not
 make any gurantees to include deprecated endpoints.** It is important that users
-finishing transitioning to the new endpoints by this date so they are ready for
+complete the transition to the new endpoints by this date so they are ready for
 any subsequent emergency updates.
 
-Below is a table that is intended to give an overview of what the mapping of
-deprecated endpoints to there v1 equivalents. Many of the new
+Below is a table that gives an overview of what the mapping from
+deprecated endpoints to their v1 equivalents. Many of the new
 endpoints have unlisted options for query params.
 
 | v0 path                           | v1 equivalent path            	                  |
@@ -48,13 +48,13 @@ endpoints have unlisted options for query params.
 
 **N.B.** the `/blocks` endpoint sees two significant breaking changes:
 
-1) extrinsic and event methods names no longer are a string of the form
+1) extrinsic and event method names are no longer a string of the form
 `pallet.method`, instead they are an object of the form
 `{ pallet: string, method: string }`.
 
 2) Unsigned extrinsics and inherents will have `null` for nonce and tip, while
-`paysFee` will always be `false`. Previously the latter two fields where 0, while
+`paysFee` will always be `false`. Previously the latter two fields were 0, while
 `paysFee` was often `true`. (#274)
 
 There are some other changes throughout the API, including some slightly updated
-error messages which have not yet been updated in the new docs UI.
+error messages that have not yet been updated in the new docs UI.
