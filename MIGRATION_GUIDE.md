@@ -6,14 +6,14 @@ For most users, the major bump will require transitioning all the endpoint paths
 that they use to an updated version. The v1.0.0.beta.0 release contains both the old
 and new endpoints to help facilitate the transition.
 
-**`substrate-api-sidecar` releases after Friday, October 2nd, 2020, will not
-make any gurantees to include deprecated endpoints.** It is important that users
+**`substrate-api-sidecar` releases after Friday, October 16th, 2020, will not
+make any guarantees to include deprecated endpoints.** It is important that users
 complete the transition to the new endpoints by this date so they are ready for
 any subsequent emergency updates.
 
-Below is a table that gives an overview of what the mapping from
-deprecated endpoints to their v1 equivalents. Many of the new
-endpoints have unlisted options for query params.
+Below is a table that gives an overview of what the mapping from deprecated
+endpoints to their v1 equivalents. Many of the new endpoints have additional
+options for query params, which you can find the documentation linked at the top.
 
 | v0 path                           | v1 equivalent path            	                  |
 |--------------------               |---------------------	                            |
