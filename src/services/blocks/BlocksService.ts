@@ -44,8 +44,7 @@ export class BlocksService extends AbstractService {
 		eventDocs: boolean,
 		extrinsicDocs: boolean
 	): Promise<IBlock> {
-		const api = await this.ensureMeta(hash);
-		// const { api } = this;
+		const { api } = this;
 
 		const [{ block }, events, validators] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
