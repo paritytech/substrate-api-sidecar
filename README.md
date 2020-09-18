@@ -235,8 +235,4 @@ curl -s http://0.0.0.0:8080/block | jq
 
 ## Contribute
 
-We welcome contributions. Before submitting your PR, make sure to run the following commands:
-
--   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
-    automatically fix some of those errors.
--   `yarn test`: Make sure all tests pass.
+Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](CONTRIBUTING.md) doc for more information.
