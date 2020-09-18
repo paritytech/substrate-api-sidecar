@@ -32,7 +32,7 @@ async function main() {
 	const { logger } = Log;
 
 	// Add the fileTransport if the config opts in
-	if (config.FILE_USE === true) {
+	if (config.LOG.FILE_USE === true) {
 		logger.add(fileTransport());
 	}
 
@@ -41,9 +41,9 @@ async function main() {
 
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
-		provider: new WsProvider(config.WS_URL),
+		provider: new WsProvider(config.SUBSTRATE.WS_URL),
 		types: {
-			...config.CUSTOM_TYPES,
+			...config.SUBSTRATE.CUSTOM_TYPES,
 		},
 	});
 
@@ -55,7 +55,7 @@ async function main() {
 
 	logger.info(
 		`Connected to chain ${chainName.toString()} on the ${implName.toString()} client at ${
-			config.WS_URL
+			config.SUBSTRATE.WS_URL
 		}`
 	);
 
@@ -116,8 +116,8 @@ async function main() {
 			middleware.legacyError,
 			middleware.internalError,
 		],
-		port: config.PORT,
-		host: config.HOST,
+		port: config.EXPRESS.PORT,
+		host: config.EXPRESS.HOST,
 	});
 
 	// Start the server

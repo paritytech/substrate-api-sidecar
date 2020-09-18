@@ -8,7 +8,9 @@ import {
 	timeStamp,
 } from '../transformers';
 
-const { config } = Config;
+const {
+	config: { LOG },
+} = Config;
 
 /**
  * File transport for winston.Logger.
@@ -21,16 +23,16 @@ export function fileTransport(): transports.FileTransportInstance {
 		format.prettyPrint(),
 	];
 
-	if (config.STRIP_ANSI) {
+	if (LOG.STRIP_ANSI) {
 		// IMPORTANT: We need to add this at the front so it is before `prettyPrint`
 		transformers.unshift(stripAnsi());
 	}
 
 	return new transports.File({
-		level: config.FILE_LEVEL || 'http',
-		filename: config.FILE_PATH || `./logs/file-transport.log`,
-		maxsize: config.FILE_SIZE || 524_288_000, // 500MB
-		maxFiles: config.FILE_COUNT || 2, // Max 1gb
+		level: LOG.FILE_LEVEL || 'http',
+		filename: LOG.FILE_PATH || `./logs/file-transport.log`,
+		maxsize: LOG.FILE_SIZE || 524_288_000, // 500MB
+		maxFiles: LOG.FILE_COUNT || 2, // Max 1gb
 		format: format.combine(...transformers),
 		// Silence using `jest --silent`
 		silent: process.argv.indexOf('--silent') >= 0,

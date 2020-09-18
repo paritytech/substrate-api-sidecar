@@ -6,10 +6,22 @@ import * as configTypes from '../config/types.json';
  * Object to house the values of all the configurable components for Sidecar.
  */
 export interface ISidecarConfig {
-	HOST: string;
-	PORT: number;
+	EXPRESS: ISidecarConfigExpress;
+	SUBSTRATE: ISidecarConfigSubstrate;
+	LOG: ISidecarConfigLog;
+}
+
+export interface ISidecarConfigSubstrate {
 	WS_URL: string;
 	CUSTOM_TYPES: Record<string, string> | undefined;
+}
+
+export interface ISidecarConfigExpress {
+	HOST: string;
+	PORT: number;
+}
+
+export interface ISidecarConfigLog {
 	CONSOLE_LEVEL: string;
 	CONSOLE_JSON: boolean;
 	CONSOLE_FILTER_RPC: boolean;
@@ -82,28 +94,43 @@ export class Config {
 		}
 
 		this._config = {
-			HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
-			PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
-			WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
-			CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
-			CONSOLE_LEVEL: config.Get(
-				MODULES.LOG,
-				CONFIG.CONSOLE_LEVEL
-			) as string,
-			CONSOLE_JSON: config.Get(
-				MODULES.LOG,
-				CONFIG.CONSOLE_JSON
-			) as boolean,
-			CONSOLE_FILTER_RPC: config.Get(
-				MODULES.LOG,
-				CONFIG.CONSOLE_FILTER_RPC
-			) as boolean,
-			FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as boolean,
-			FILE_LEVEL: config.Get(MODULES.LOG, CONFIG.FILE_LEVEL) as string,
-			FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
-			FILE_COUNT: config.Get(MODULES.LOG, CONFIG.FILE_COUNT) as number,
-			FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
-			STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
+			EXPRESS: {
+				HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
+				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
+			},
+			SUBSTRATE: {
+				WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
+				CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
+			},
+			LOG: {
+				CONSOLE_LEVEL: config.Get(
+					MODULES.LOG,
+					CONFIG.CONSOLE_LEVEL
+				) as string,
+				CONSOLE_JSON: config.Get(
+					MODULES.LOG,
+					CONFIG.CONSOLE_JSON
+				) as boolean,
+				CONSOLE_FILTER_RPC: config.Get(
+					MODULES.LOG,
+					CONFIG.CONSOLE_FILTER_RPC
+				) as boolean,
+				FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as boolean,
+				FILE_LEVEL: config.Get(
+					MODULES.LOG,
+					CONFIG.FILE_LEVEL
+				) as string,
+				FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
+				FILE_COUNT: config.Get(
+					MODULES.LOG,
+					CONFIG.FILE_COUNT
+				) as number,
+				FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
+				STRIP_ANSI: config.Get(
+					MODULES.LOG,
+					CONFIG.STRIP_ANSI
+				) as boolean,
+			},
 		};
 
 		return this._config;

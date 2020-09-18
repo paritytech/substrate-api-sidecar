@@ -10,7 +10,9 @@ import {
 	timeStamp,
 } from '../transformers';
 
-const { config } = Config;
+const {
+	config: { LOG },
+} = Config;
 
 /**
  * Console transport for winston logger.
@@ -32,22 +34,22 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 
 	const transformers = [stripTimestamp(), nodeUtilFormat(), timeStamp];
 
-	if (!config.CONSOLE_JSON) {
+	if (!LOG.CONSOLE_JSON) {
 		transformers.push(format.colorize(), simplePrint);
 	} else {
 		transformers.push(format.prettyPrint());
 	}
 
-	if (config.STRIP_ANSI) {
+	if (LOG.STRIP_ANSI) {
 		transformers.unshift(stripAnsi());
 	}
 
-	if (config.CONSOLE_FILTER_RPC) {
+	if (LOG.CONSOLE_FILTER_RPC) {
 		transformers.unshift(filterApiRpc());
 	}
 
 	return new transports.Console({
-		level: config.CONSOLE_LEVEL || 'info',
+		level: LOG.CONSOLE_LEVEL || 'info',
 		handleExceptions: true,
 		format: format.combine(...transformers),
 		// Silence using `jest --silent`
