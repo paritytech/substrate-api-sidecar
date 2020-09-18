@@ -15,6 +15,12 @@ To create a Pull Request after you’ve created an Issue, you’ll need to head 
 to the Pull Request tab. This will be where all the PRs will be located, and
 where reviewers will be able to review your changes made.
 
+### Before submitting a PR
+
+-   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
+    automatically fix some of those errors.
+-   `yarn test`: Make sure all tests pass.
+
 ## Rules
 
 There are a few basic ground-rules for contributors (including the maintainer(s)
