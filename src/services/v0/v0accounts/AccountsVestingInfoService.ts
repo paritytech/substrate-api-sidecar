@@ -15,7 +15,6 @@ export class AccountsVestingInfoService extends AbstractService {
 		hash: BlockHash,
 		address: string
 	): Promise<IAccountVestingInfo> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		const [header, vesting] = await Promise.all([

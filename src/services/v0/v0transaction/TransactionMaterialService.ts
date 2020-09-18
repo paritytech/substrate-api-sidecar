@@ -14,7 +14,6 @@ export class TransactionMaterialService extends AbstractService {
 		hash: BlockHash,
 		noMeta: boolean
 	): Promise<ITransactionMaterial> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
 
 		if (noMeta) {
