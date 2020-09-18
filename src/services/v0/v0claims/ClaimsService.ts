@@ -13,8 +13,8 @@ export class ClaimsService extends AbstractService {
 		hash: BlockHash,
 		ethAddress: string
 	): Promise<null | { type: string }> {
-		// const api = await this.ensureMeta(hash);
 		const { api } = this;
+
 		const agreementType = await api.query.claims.signing.at(
 			hash,
 			ethAddress

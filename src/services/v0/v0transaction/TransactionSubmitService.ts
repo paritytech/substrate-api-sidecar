@@ -10,10 +10,6 @@ export class TransactionSubmitService extends AbstractService {
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
 	async submitTransaction(extrinsic: string): Promise<{ hash: Hash }> {
-		// const api = await this.ensureMeta(
-		// 	await this.api.rpc.chain.getFinalizedHead() // TODO move this out to controller for consistency with other services
-		// );
-
 		const { api } = this;
 
 		let tx;
