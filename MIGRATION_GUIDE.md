@@ -48,8 +48,8 @@ options for query params, which you can find the documentation linked at the top
 
 **N.B.** the `/blocks` endpoint sees two significant breaking changes:
 
-1) extrinsic and event method names are no longer a string of the form
-`pallet.method`, instead they are an object of the form
+1) Extrinsic and event method names are no longer a string of the form
+`pallet.method`; instead they are an object of the form
 `{ pallet: string, method: string }`.
 
 2) Unsigned extrinsics and inherents will have `null` for nonce and tip, while
