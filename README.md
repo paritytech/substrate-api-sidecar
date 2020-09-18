@@ -76,7 +76,7 @@ If you are connecting to [Substrate Node Template](https://github.com/substrate-
     Useful when using `stdout` to programmatically process Sidecar log data.
 -   `SAS_LOG_CONSOLE_FILTER_RPC`: wether or not filter polkadot-js API-WS RPC logging for console 
     transport, defaults to `true`.
--   `SAS_LOG_FILE_USE`: wether or not to use a file transport, defaults to `true`. If set to `false`
+-   `SAS_LOG_FILE_USE`: wether or not to use a file transport, defaults to `false`. When set to `false`
     no files will be created and all other file logging options have no effect.
 -   `SAS_LOG_FILE_LEVEL`: log level for file transport, defaults to `http`.
 -   `SAS_LOG_FILE_SIZE`: maximum size, as measured in bytes, that a log file will reach before Sidecar
@@ -100,10 +100,9 @@ Log levels in order of decreasing importance are: `error`, `warn`, `info`, `http
 
 #### RPC logging
 
-If looking to track raw RPC requests/responses, one can use 
-`yarn start:log-rpc` to turn on polkadot-js's logging. It is reccomended to also set 
-`SAS_LOG_FILE_STRIP_ANSI=true` to increase the readability fo the files. Note that RPC requests/responses 
-are filtered out of the console transport.
+If looking to track raw RPC requests/responses, one can use `yarn start:log-rpc` to turn on polkadot-js's 
+logging. It is recommended to also set `SAS_LOG_STRIP_ANSI=true` to increase the readability of
+written files. Note that RPC requests/responses default to being filtered out of the console transport.
 
 **N.B.** If running `yarn start:log-rpc`, the NODE_ENV will be set to `test`. In order still run your `.env`
 file you can `symlink` it with `.env.test`. For example you could run

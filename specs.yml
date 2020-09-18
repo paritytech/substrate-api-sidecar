@@ -19,7 +19,7 @@ SAS:
 
     FILE_USE:
       description: Whether or not to use file transport
-      default: "true"
+      default: "false"
       type: boolean
       regexp: ^true|false$
 
