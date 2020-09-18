@@ -1,5 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 
+import { Log } from '../../logging/Log';
+
 /**
  * Handle Error instances.
  *
@@ -18,9 +20,13 @@ export const errorMiddleware: ErrorRequestHandler = (
 		return next(err);
 	}
 
-	res.status(500).send({
+	const info = {
 		code: 500,
 		message: err.message ?? 'Internal Error',
 		stack: err.stack,
-	});
+	};
+
+	Log.logger.error(info);
+
+	res.status(500).send(info);
 };

@@ -1,6 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
 
+import { Log } from '../../logging/Log';
 /**
  * Handle HttpError instances.
  *
@@ -23,9 +24,14 @@ export const httpErrorMiddleware: ErrorRequestHandler = (
 	}
 
 	const code = err.status;
-	res.status(code).send({
+
+	const info = {
 		code,
 		message: err.message,
 		stack: err.stack,
-	});
+	};
+
+	Log.logger.error(info);
+
+	res.status(code).send(info);
 };

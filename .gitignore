@@ -9,3 +9,5 @@ yarn-error.log
 !.env.docker
 .DS_Store
 /.clinic
+**.log
+**/logs
