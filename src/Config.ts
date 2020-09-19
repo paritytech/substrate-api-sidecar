@@ -75,7 +75,7 @@ export class Config {
 	 */
 	private static create(): ISidecarConfig {
 		// Instantiate ConfigManager which is used to read in the specs.yml
-		const config = ConfigManager.getInstance('specs.yml').getConfig();
+		const config = ConfigManager.getInstance('./src/specs.yml').getConfig();
 
 		if (!config.Validate()) {
 			config.Print({ compact: false });
