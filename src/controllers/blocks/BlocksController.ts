@@ -89,7 +89,7 @@ export default class BlocksController extends AbstractController<
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
-		const authorIdArg = authorId !== 'false';
+		const includeAuthorId = authorId !== 'false';
 
 		const hash =
 			finalized === 'false'
@@ -102,7 +102,7 @@ export default class BlocksController extends AbstractController<
 				hash,
 				eventDocsArg,
 				extrsinsicDocsArg,
-				authorIdArg
+				includeAuthorId
 			)
 		);
 	};
@@ -121,7 +121,7 @@ export default class BlocksController extends AbstractController<
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
-		const authorIdArg = authorId !== 'false';
+		const includeAuthorId = authorId !== 'false';
 
 		BlocksController.sanitizedSend(
 			res,
@@ -129,7 +129,7 @@ export default class BlocksController extends AbstractController<
 				hash,
 				eventDocsArg,
 				extrinsinsicDocsArg,
-				authorIdArg
+				includeAuthorId
 			)
 		);
 	};
