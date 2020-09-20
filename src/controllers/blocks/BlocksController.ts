@@ -84,12 +84,12 @@ export default class BlocksController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, noAuthor } },
+		{ query: { eventDocs, extrinsicDocs, finalized, authorId } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
-		const noAuthorArg = noAuthor === 'true';
+		const authorIdArg = authorId !== 'false';
 
 		const hash =
 			finalized === 'false'
@@ -102,7 +102,7 @@ export default class BlocksController extends AbstractController<
 				hash,
 				eventDocsArg,
 				extrsinsicDocsArg,
-				noAuthorArg
+				authorIdArg
 			)
 		);
 	};
@@ -114,14 +114,14 @@ export default class BlocksController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, noAuthor } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, authorId } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
-		const noAuthorArg = noAuthor === 'true';
+		const authorIdArg = authorId !== 'false';
 
 		BlocksController.sanitizedSend(
 			res,
@@ -129,7 +129,7 @@ export default class BlocksController extends AbstractController<
 				hash,
 				eventDocsArg,
 				extrinsinsicDocsArg,
-				noAuthorArg
+				authorIdArg
 			)
 		);
 	};

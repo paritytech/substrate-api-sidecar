@@ -43,21 +43,21 @@ export class BlocksService extends AbstractService {
 		hash: BlockHash,
 		eventDocs: boolean,
 		extrinsicDocs: boolean,
-		noAuthor: boolean
+		includeAuthorId: boolean
 	): Promise<IBlock> {
 		const { api } = this;
 
 		let block, events, validators;
-		if (noAuthor) {
-			[{ block }, events] = await Promise.all([
-				api.rpc.chain.getBlock(hash),
-				this.fetchEvents(api, hash),
-			]);
-		} else {
+		if (includeAuthorId) {
 			[{ block }, events, validators] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
 				api.query.session.validators.at(hash),
+			]);
+		} else {
+			[{ block }, events] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
+				this.fetchEvents(api, hash),
 			]);
 		}
 
