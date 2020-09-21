@@ -5,14 +5,12 @@ with meaningful responses.
 
 ## Quick start for @substrate/api-sidecar CLI npm package
 
-
-
 ```bash
 # Globally install the package
 npm install -g @substrate/api-sidecar
 
-# Start 
-
+# Start the service
+substrate-api-sidecar
 ```
 
 ## Installation
