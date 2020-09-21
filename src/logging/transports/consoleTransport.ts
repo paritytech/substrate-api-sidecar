@@ -34,7 +34,7 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 
 	const transformers = [stripTimestamp(), nodeUtilFormat(), timeStamp];
 
-	if (!LOG.CONSOLE_JSON) {
+	if (!LOG.JSON) {
 		transformers.push(format.colorize(), simplePrint);
 	} else {
 		transformers.push(format.prettyPrint());
@@ -44,12 +44,12 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		transformers.unshift(stripAnsi());
 	}
 
-	if (LOG.CONSOLE_FILTER_RPC) {
+	if (LOG.FILTER_RPC) {
 		transformers.unshift(filterApiRpc());
 	}
 
 	return new transports.Console({
-		level: LOG.CONSOLE_LEVEL || 'info',
+		level: LOG.LEVEL || 'info',
 		handleExceptions: true,
 		format: format.combine(...transformers),
 		// Silence using `jest --silent`
