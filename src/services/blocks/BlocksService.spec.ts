@@ -41,7 +41,7 @@ describe('BlocksService', () => {
 						blockHash789629,
 						true,
 						true,
-						false
+						true
 					)
 				)
 			).toMatchObject(blocks789629Response);
@@ -66,7 +66,7 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(blockHash789629, false, false, false)
+				blocksService.fetchBlock(blockHash789629, false, false, true)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
