@@ -3,10 +3,29 @@
 REST API service intended to run next to Substrate, exposing a limited set of endpoints over HTTP
 with meaningful responses.
 
+## Quick start for @substrate/api-sidecar CLI npm package
+
+
+
+```bash
+# Globally install the package
+npm install -g @substrate/api-sidecar
+
+# Start 
+
+```
+
 ## Installation
 
-Make sure your machine has an
-[up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
+### Quick install
+
+Simply run `yarn`.
+
+### Rust development installation
+
+If you are looking to hack on the `calc` Rust crate you will also need to do the following:
+
+Make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
 dependencies.
 
 Install `wasm-pack` if your machine does not already have it:
