@@ -20,6 +20,7 @@ SAS:
     STRIP_ANSI:
       description: Whether or not to strip ANSI characters
       default: "false"
+      type: boolean
       regexp: ^true|false$
 
   EXPRESS:

@@ -91,8 +91,7 @@ Log levels in order of decreasing importance are: `error`, `warn`, `info`, `http
 #### RPC logging
 
 If looking to track raw RPC requests/responses, one can use `yarn start:log-rpc` to turn on polkadot-js's 
-logging. It is recommended to also set `SAS_LOG_STRIP_ANSI=true` to increase the readability of
-written files.
+logging. It is recommended to also set `SAS_LOG_STRIP_ANSI=true` to increase the readability of the logging stream.
 
 **N.B.** If running `yarn start:log-rpc`, the NODE_ENV will be set to `test`. In order still run your `.env`
 file you can `symlink` it with `.env.test`. For example you could run
