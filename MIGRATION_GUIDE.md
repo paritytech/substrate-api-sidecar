@@ -1,4 +1,4 @@
-# v0.x.x &rightarrow; v1.0.0-beta.0
+# v0.x.x &rightarrow; v1.0.0-rc1
 
 Full documentation for v1 endpoints is available here: https://paritytech.github.io/substrate-api-sidecar/dist/
 
