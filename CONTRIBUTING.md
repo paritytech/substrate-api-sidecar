@@ -20,6 +20,7 @@ where reviewers will be able to review your changes made.
 -   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
     automatically fix some of those errors.
 -   `yarn test`: Make sure all tests pass.
+-   `yarn build:docs`: If any changes are made to the OpenApi specs make sure to rebuild the UI.
 
 ## Rules
 

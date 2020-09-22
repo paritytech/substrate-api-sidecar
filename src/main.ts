@@ -24,18 +24,12 @@ import { Config } from './Config';
 import * as controllers from './controllers';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
-import { fileTransport } from './logging/transports';
 import * as middleware from './middleware';
 
 async function main() {
 	const { config } = Config;
 
 	const { logger } = Log;
-
-	// Add the fileTransport if the config opts in
-	if (config.LOG.FILE_USE === true) {
-		logger.add(fileTransport());
-	}
 
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
