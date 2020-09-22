@@ -2,7 +2,7 @@
 <br /><br />
 
 <h1 align="center">@substrate/api-sidecar</h1>
-<h4 align="center">REST API service intended to run next to Substrate</h4>
+<h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@substrate/txwrapper">
@@ -27,6 +27,10 @@ npm install -g @substrate/api-sidecar
 # Start the service
 substrate-api-sidecar
 ```
+
+[Jump to the configuration section](#configuration) for more details on connecting to a node.
+
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
 ## Installation from github
 
@@ -142,7 +146,7 @@ CALC_DEBUG=1 yarn
 
 ## Available paths
 
-Path descriptions link to controllers for detailed docs with usage information.
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
 Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
 a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
