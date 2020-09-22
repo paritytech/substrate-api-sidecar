@@ -1,7 +1,23 @@
-# Substrate API Sidecar
 
-REST API service intended to run next to Substrate, exposing a limited set of endpoints over HTTP
-with meaningful responses.
+<br /><br />
+
+<h1 align="center">@substrate/api-sidecar</h1>
+<h4 align="center">REST API service intended to run next to Substrate </h4>
+<h4 align="center">exposing a limited set of endpoints over HTTP with meaningful responses.</h4>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@substrate/txwrapper">
+    <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
+  </a>
+  <a href="https://github.com/paritytech/txwrapper/actions">
+    <img alt="Github Actions" src="https://github.com/paritytech/substrate-api-sidecar/workflows/pr/badge.svg" />
+  </a>
+  <a href="https://opensource.org/licenses/Apache-2.0">
+    <img alt="GPL-3.0-or-later" src="https://img.shields.io/npm/l/@substrate/api-sidecar" />
+  </a>
+</p>
+
+<br /><br />
 
 ## Quick start for @substrate/api-sidecar CLI npm package
 
@@ -13,7 +29,7 @@ npm install -g @substrate/api-sidecar
 substrate-api-sidecar
 ```
 
-## Installation
+## Installation from github
 
 ### Quick install
 

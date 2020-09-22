@@ -1,6 +1,6 @@
 {
   "name": "@substrate/api-sidecar",
-  "version": "0.18.1",
+  "version": "0.18.6",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
   "author": "Parity Technologies <admin@parity.io>",
