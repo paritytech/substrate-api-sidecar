@@ -42,15 +42,24 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		eventDocs: boolean,
-		extrinsicDocs: boolean
+		extrinsicDocs: boolean,
+		includeAuthorId: boolean
 	): Promise<IBlock> {
 		const { api } = this;
 
-		const [{ block }, events, validators] = await Promise.all([
-			api.rpc.chain.getBlock(hash),
-			this.fetchEvents(api, hash),
-			api.query.session.validators.at(hash),
-		]);
+		let block, events, validators;
+		if (includeAuthorId) {
+			[{ block }, events, validators] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
+				this.fetchEvents(api, hash),
+				api.query.session.validators.at(hash),
+			]);
+		} else {
+			[{ block }, events] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
+				this.fetchEvents(api, hash),
+			]);
+		}
 
 		const {
 			parentHash,
@@ -60,7 +69,9 @@ export class BlocksService extends AbstractService {
 			digest,
 		} = block.header;
 
-		const authorId = this.extractAuthor(validators, digest);
+		const authorId = validators
+			? this.extractAuthor(validators, digest)
+			: undefined;
 
 		const logs = digest.logs.map((log) => {
 			const { type, index, value } = log;
