@@ -1,6 +1,6 @@
 {
   "name": "substrate-api-sidecar",
-  "version": "0.18.0",
+  "version": "v1.0.0-rc1",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "scripts": {
     "preinstall": "yarn build:calc",
