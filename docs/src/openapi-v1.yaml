@@ -251,16 +251,6 @@ paths:
         schema:
           type: boolean
           default: false
-      - name: authorId
-        in: query
-        description: When set to `false`, there will be no `authorId` in the response
-          object. This eliminates an expensive RPC call to the node and thus
-          recommended that this query param be set to `false` if the consumer is 
-          not using the `authorId`.
-        required: false
-        schema:
-          type: boolean
-          default: true
       responses:
         "200":
           description: successful operation
@@ -308,16 +298,6 @@ paths:
         schema:
           type: boolean
           default: false
-      - name: authorId
-        in: query
-        description: When set to `false`, there will be no `authorId` in the response
-          object. This eliminates an expensive RPC call to the node and thus
-          recommended that this query param be set to `false` if the consumer is 
-          not using the `authorId`.
-        required: false
-        schema:
-          type: boolean
-          default: true
       responses:
         "200":
           description: successful operation
