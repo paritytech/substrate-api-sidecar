@@ -2,8 +2,7 @@
 <br /><br />
 
 <h1 align="center">@substrate/api-sidecar</h1>
-<h4 align="center">REST API service intended to run next to Substrate </h4>
-<h4 align="center">exposing a limited set of endpoints over HTTP with meaningful responses.</h4>
+<h4 align="center">REST API service intended to run next to Substrate</h4>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@substrate/txwrapper">
