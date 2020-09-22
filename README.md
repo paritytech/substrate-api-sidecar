@@ -5,13 +5,13 @@
 <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@substrate/txwrapper">
+  <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
     <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
   </a>
-  <a href="https://github.com/paritytech/txwrapper/actions">
+  <a href="https://github.com/paritytech/substrate-api-sidecar/actions">
     <img alt="Github Actions" src="https://github.com/paritytech/substrate-api-sidecar/workflows/pr/badge.svg" />
   </a>
-  <a href="https://opensource.org/licenses/Apache-2.0">
+  <a href="https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE">
     <img alt="GPL-3.0-or-later" src="https://img.shields.io/npm/l/@substrate/api-sidecar" />
   </a>
 </p>
@@ -147,80 +147,6 @@ CALC_DEBUG=1 yarn
 ## Available paths
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
-
-Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
-a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
-
--   `/` fetch information on Sidecars version, docs, and available routes.
-
--   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
-
--   [`/accounts/ADDRESS/balance-info` fetch balances info for `ADDRESS`.](src/controllers/accounts/AccountsBalanceInfoController.ts) (Replaces `/balance/ADDRESS`.)
-
--   [`/accounts/ADDRESS/vesting-info` vesting info for `ADDRESS`.](src/controllers/accounts/AccountsVestingInfoController.ts) (Replaces `/vesting/ADDRESS`.)
-
--   [`/accounts/ADDRESS/staking-info` fetch the staking info for `ADDRESS`.](src/controllers/accounts/AccountsStakingInfoController.ts) (Replaces `/staking/ADDRESS`.)
-
--   [`/blocks/{head, BlockId}` fetch the finalized head or block identified by BlockId.](/src/controllers/blocks/BlocksController.ts) (Replaces `/block`.)
-
--   [`/pallets/staking/progress` fetch information on general staking progress.](src/controllers/pallets/PalletsStakingProgressController.ts) (Replaces `/staking-info`.)
-
--   [`/pallets/{palletId}/storage/{storageItemId}` fetch the value of a storage item.](src/controllers/pallets/PalletsStorageItemController.ts)
-
--   [`/node/network` fetch information about the Substrate node's activity in the peer-to-peer network.](src/controllers/node/NodeNetworkController.ts)
-
--   [`/node/transaction-pool` fetch pending extrinsics from the Substrate node.](src/controllers/node/NodeTransactionPoolController.ts)
-
--   [`/node/version` fetch information about the Substrates node's implementation and versioning.](src/controllers/node/NodeVersionController.ts)
-
--   [`/runtime/metadata` fetch the runtime metadata in decoded, JSON form.](src/controllers/runtime/RuntimeMetadataController.ts) (Replaces `/metadata`.)
-
--   [`/runtime/code` fetch the Wasm code blob of the Substrate runtime.](src/controllers/runtime/RuntimeCodeController.ts)
-
--   [`/runtime/spec` version information of the Substrate runtime.](src/controllers/runtime/RuntimeSpecController.ts)
-
--   [`/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.](src/controllers/claims/ClaimsController.ts) (Will be deprecated in v1.)
-
--   [`/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/claims/ClaimsController.ts) (Will be deprecated in v1.)
-
--   [`/transaction/material` fetch all the network information needed to construct a transaction offline.](src/controllers/transaction/TransactionMaterialController.ts) (Replaces `/tx/artifacts`.)
-
--   [`/transaction/fee-estimate` submit a transaction in order to get back a fee estimation.](src/controllers/transaction/TransactionFeeEstimateController.ts) (Replaces `/tx/fee-estimate`.) Expects a string
-    with a hex-encoded transaction in a JSON POST body:
-
-    ```
-    curl localhost:8080/transaction/fee-estimate -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-
-    Expected result is a JSON with fee information:
-
-    ```
-    {
-      "weight": "195000000",
-      "class": "Normal",
-      "partialFee": "165600000"
-    }
-    ```
-
--   [`/transaction` submit a signed transaction.](src/controllers/transaction/TransactionSubmitController.ts) (Replaces `/tx`.) Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/transaction -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    Expected result is a JSON with transaction hash:
-    ```
-    {
-        "hash": "..."
-    }
-    ```
-
-- [`/transaction/dry-run` dry run a transaction to check if it is valid.](src/controllers/transaction/TransactionDryRunController.ts)
-Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/transaction/dry-run -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    See [here for details](src/controllers/transaction/TransactionDryRunController.ts) on expected result.
 
 ## Chain compatibility
 
