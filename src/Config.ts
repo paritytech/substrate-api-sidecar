@@ -22,14 +22,9 @@ export interface ISidecarConfigExpress {
 }
 
 export interface ISidecarConfigLog {
-	CONSOLE_LEVEL: string;
-	CONSOLE_JSON: boolean;
-	CONSOLE_FILTER_RPC: boolean;
-	FILE_USE: boolean;
-	FILE_LEVEL: string;
-	FILE_SIZE: number;
-	FILE_COUNT: number;
-	FILE_PATH: string;
+	LEVEL: string;
+	JSON: boolean;
+	FILTER_RPC: boolean;
 	STRIP_ANSI: boolean;
 }
 
@@ -50,14 +45,9 @@ export enum CONFIG {
 	PORT = 'PORT',
 	WS_URL = 'WS_URL',
 	CUSTOM_TYPES = 'CUSTOM_TYPES',
-	CONSOLE_LEVEL = 'CONSOLE_LEVEL',
-	CONSOLE_JSON = 'CONSOLE_JSON',
-	CONSOLE_FILTER_RPC = 'CONSOLE_FILTER_RPC',
-	FILE_USE = 'FILE_USE',
-	FILE_LEVEL = 'FILE_LEVEL',
-	FILE_SIZE = 'FILE_SIZE',
-	FILE_COUNT = 'FILE_COUNT',
-	FILE_PATH = 'FILE_PATH',
+	LEVEL = 'LEVEL',
+	JSON = 'JSON',
+	FILTER_RPC = 'FILTER_RPC',
 	STRIP_ANSI = 'STRIP_ANSI',
 }
 
@@ -103,29 +93,12 @@ export class Config {
 				CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
 			},
 			LOG: {
-				CONSOLE_LEVEL: config.Get(
+				LEVEL: config.Get(MODULES.LOG, CONFIG.LEVEL) as string,
+				JSON: config.Get(MODULES.LOG, CONFIG.JSON) as boolean,
+				FILTER_RPC: config.Get(
 					MODULES.LOG,
-					CONFIG.CONSOLE_LEVEL
-				) as string,
-				CONSOLE_JSON: config.Get(
-					MODULES.LOG,
-					CONFIG.CONSOLE_JSON
+					CONFIG.FILTER_RPC
 				) as boolean,
-				CONSOLE_FILTER_RPC: config.Get(
-					MODULES.LOG,
-					CONFIG.CONSOLE_FILTER_RPC
-				) as boolean,
-				FILE_USE: config.Get(MODULES.LOG, CONFIG.FILE_USE) as boolean,
-				FILE_LEVEL: config.Get(
-					MODULES.LOG,
-					CONFIG.FILE_LEVEL
-				) as string,
-				FILE_SIZE: config.Get(MODULES.LOG, CONFIG.FILE_SIZE) as number,
-				FILE_COUNT: config.Get(
-					MODULES.LOG,
-					CONFIG.FILE_COUNT
-				) as number,
-				FILE_PATH: config.Get(MODULES.LOG, CONFIG.FILE_PATH) as string,
 				STRIP_ANSI: config.Get(
 					MODULES.LOG,
 					CONFIG.STRIP_ANSI
