@@ -36,7 +36,6 @@ This service requires Node version 12 or higher.
 
 - [NPM package installation and usage](#npm-package-installation-and-usage)
 - [Source code installation and usage](#source-code-installation-and-usage)
-- [Running](#running)
 - [Configuration](#configuration)
 - [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
@@ -107,7 +106,7 @@ Use yarn to do the remaining setup:
 yarn
 ```
 
-## Running
+### Running
 
 ```bash
 # For live reload in development
