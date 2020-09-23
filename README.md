@@ -1,20 +1,22 @@
 
 <br /><br />
 
-<h1 align="center">@substrate/api-sidecar</h1>
-<h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
+<div align="center">
+  <h1 align="center">@substrate/api-sidecar</h1>
+  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
-    <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
-  </a>
-  <a href="https://github.com/paritytech/substrate-api-sidecar/actions">
-    <img alt="Github Actions" src="https://github.com/paritytech/substrate-api-sidecar/workflows/pr/badge.svg" />
-  </a>
-  <a href="https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE">
-    <img alt="GPL-3.0-or-later" src="https://img.shields.io/npm/l/@substrate/api-sidecar" />
-  </a>
-</p>
+  <p align="center">
+    <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
+      <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
+    </a>
+    <a href="https://github.com/paritytech/substrate-api-sidecar/actions">
+      <img alt="Github Actions" src="https://github.com/paritytech/substrate-api-sidecar/workflows/pr/badge.svg" />
+    </a>
+    <a href="https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE">
+      <img alt="GPL-3.0-or-later" src="https://img.shields.io/npm/l/@substrate/api-sidecar" />
+    </a>
+  </p>
+</div>
 
 <br /><br />
 
@@ -24,7 +26,7 @@
 # Globally install the package
 npm install -g @substrate/api-sidecar
 
-# Start the service. Defaults to the local substrate node websocket URL
+# Start the service
 substrate-api-sidecar
 ```
 
@@ -32,7 +34,7 @@ substrate-api-sidecar
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
-## Installation from github
+## Installation
 
 ### Quick install
 
@@ -40,7 +42,7 @@ Simply run `yarn`.
 
 ### Rust development installation
 
-If you are looking to hack on the `calc` Rust crate you will also need to do the following:
+If you are looking to hack on the `calc` Rust crate:
 
 Make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
 dependencies.

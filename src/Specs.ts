@@ -4,7 +4,7 @@ import { CONFIG, MODULES } from './types/config';
 
 /**
  * Access a singleton specification for config enviroment variables that will
- * initialized on first use.
+ * be initialized on first use.
  */
 export class Specs {
 	private static _specs: SpecsFactory | undefined;
