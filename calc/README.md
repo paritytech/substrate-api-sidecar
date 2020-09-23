@@ -21,8 +21,8 @@
 
 ## About
 
-This package is generated from a Rust crate using `wasm-bindgen` and package was initially developed
-solely for use as a dependency for `substrate-api-sidecar`. We are now offering this package as a
+This package is generated from a Rust crate using `wasm-bindgen` and was initially developed
+solely to use as a dependency for `substrate-api-sidecar`. We are now offering this package as a
 standalone through the npm registry.
 
 ## Usage
