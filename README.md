@@ -20,15 +20,65 @@
 
 <br /><br />
 
-## Quick start for @substrate/api-sidecar CLI npm package
+## Note
+
+This a release candidate for v1.0.0 and it contains both v0 and v1 endpoints. **`substrate-api-sidecar`
+releases after Friday, October 16th, 2020, will not make any guarantees to include deprecated v0
+endpoints.** It is important that users complete the transition to the new endpoints by this date so
+they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
+learn more.
+
+## Perquisites
+
+This service requires Node version 12 or higher.
+
+## Table of contents
+
+- [Installation and usage for CLI npm package](#installation-and-usage-for-cli-npm-package)
+- [Installation](#installation)
+- [Running](#running)
+- [Configuration](#configuration)
+- [Debugging fee & payout calculations](#debugging-fee-&-payout-calculations)
+- [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
+- [Chain compatibility](#chain-compatibility)
+- [Docker](#docker)
+- [Note for maintainers](#note-for-maintainers)
+
+## Installation and usage for CLI npm package
+
+### Global installation
+
+Install the service globally:
 
 ```bash
-# Globally install the package
 npm install -g @substrate/api-sidecar
+# OR
+yarn global add @substrate/api-sidecar
+```
 
-# Start the service
+To run the service:
+
+```bash
 substrate-api-sidecar
 ```
+
+### Local installation
+
+Install the service locally:
+
+```bash
+npm install @substrate/api-sidecar
+# OR
+yarn add @substrate/api-sidecar
+```
+
+To run the service from within the local directory:
+
+```bash
+node_modules/.bin/substrate-api-sidecar
+```
+
+### Finishing up
 
 [Jump to the configuration section](#configuration) for more details on connecting to a node.
 
@@ -42,10 +92,8 @@ Simply run `yarn`.
 
 ### Rust development installation
 
-If you are looking to hack on the `calc` Rust crate:
-
-Make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
-dependencies.
+If you are looking to hack on the `calc` Rust crate make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) 
+installed to manage Rust dependencies.
 
 Install `wasm-pack` if your machine does not already have it:
 
@@ -136,7 +184,7 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
-## Debugging Fee & Payout Calculations
+## Debugging fee & payout calculations
 
 It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
@@ -146,7 +194,7 @@ a re-compile with the proper environment variable set is necessary:
 CALC_DEBUG=1 yarn
 ```
 
-## Available paths
+## Available endpoints
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
@@ -192,17 +240,17 @@ Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](C
 
 ## Note for maintainers
 
-All the commits in this repo follow the Conventional Commits spec. When merging a PR, make sure 1/ to
-use squash merge and 2/ that the title of the PR follows the Conventional Commits spec. This will
-make squash the PR into one conventional commit.
+All the commits in this repo follow the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#summary). When merging a PR, make sure 1/ to
+use squash merge and 2/ that the title of the PR follows the Conventional Commits spec.
 
-The history of commits will be used to generate the `CHANGELOG`. To do so, run yarn deploy on the master
+The history of commits will be used to generate the `CHANGELOG`. To do so, run `yarn deploy` on the master
 branch. This command will look at all the commits since the latest tag, bump the package version according
 to semver rules, and generate a new `CHANGELOG`.
 
-There might be special cases where you don't want to follow semver. In this case, run `yarn deploy -r {major,minor,patch}`.
+If you don't want to follow semver or need to do a dry run, consult the [`standard-version` CLI usage](https://github.com/conventional-changelog/standard-version#cli-usag)
+docs. Flags for `standard-version` can be passed to `yarn deploy`.
 
-The above command, which only does local operations and doesn't push anything, will output more or
+`yarn deploy`, which only does local operations and doesn't push anything, will output more or
 less the following lines:
 
 ``` bash
@@ -217,5 +265,5 @@ $ rimraf lib/ && tsc
 ℹ Run `git push --follow-tags origin master && npm publish` to publish
 ```
 
-To publish the new package, just follow the instructions: `git push --follow-tags origin master && npm publish.` 
-You must have access to the @substrate organization on npm to be able to publish.
+To publish the new package, just follow the instructions: `git push --follow-tags origin master && npm publish.`
+You must have access to the @substrate organization on npm to publish.
