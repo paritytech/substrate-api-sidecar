@@ -34,17 +34,17 @@ This service requires Node version 12 or higher.
 
 ## Table of contents
 
-- [Installation and usage for CLI npm package](#installation-and-usage-for-cli-npm-package)
-- [Installation](#installation)
+- [NPM package installation and usage](#npm-package-installation-and-usage)
+- [Source code installation and usage](#source-code-installation-and-usage)
 - [Running](#running)
 - [Configuration](#configuration)
-- [Debugging fee & payout calculations](#debugging-fee-&-payout-calculations)
+- [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
 - [Chain compatibility](#chain-compatibility)
 - [Docker](#docker)
 - [Note for maintainers](#note-for-maintainers)
 
-## Installation and usage for CLI npm package
+## NPM package installation and usage
 
 ### Global installation
 
@@ -56,7 +56,7 @@ npm install -g @substrate/api-sidecar
 yarn global add @substrate/api-sidecar
 ```
 
-To run the service:
+Run the service:
 
 ```bash
 substrate-api-sidecar
@@ -72,7 +72,7 @@ npm install @substrate/api-sidecar
 yarn add @substrate/api-sidecar
 ```
 
-To run the service from within the local directory:
+Run the service from within the local directory:
 
 ```bash
 node_modules/.bin/substrate-api-sidecar
@@ -84,7 +84,7 @@ node_modules/.bin/substrate-api-sidecar
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
-## Installation
+## Source code installation and usage
 
 ### Quick install
 
@@ -184,7 +184,7 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
-## Debugging fee & payout calculations
+## Debugging fee and payout calculations
 
 It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
