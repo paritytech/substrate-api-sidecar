@@ -24,7 +24,7 @@
 # Globally install the package
 npm install -g @substrate/api-sidecar
 
-# Start the service
+# Start the service. Defaults to the local substrate node websocket URL
 substrate-api-sidecar
 ```
 
@@ -77,7 +77,7 @@ To use a specific env profile (here for instance a profile called 'env.sample'):
 NODE_ENV=sample yarn start
 ```
 
-For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `specs.yaml` to view the env configuration spec.
+For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `Specs.ts` to view the env configuration spec.
 
 ### Express server
 
