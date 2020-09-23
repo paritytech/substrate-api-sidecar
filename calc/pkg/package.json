@@ -3,7 +3,7 @@
   "collaborators": [
     "Parity Technologies <admin@parity.io>"
   ],
-  "description": "Off-chain calculations for Substrate Sidecar.",
+  "description": "Off-chain calculations for @substrate/api-sidecar.",
   "version": "0.1.1",
   "license": "Apache-2.0",
   "repository": {
