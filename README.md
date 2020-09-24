@@ -55,7 +55,7 @@ npm install -g @substrate/api-sidecar
 yarn global add @substrate/api-sidecar
 ```
 
-Run the service:
+Run the service from any directory on your machine:
 
 ```bash
 substrate-api-sidecar
