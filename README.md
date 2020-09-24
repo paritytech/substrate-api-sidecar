@@ -142,8 +142,8 @@ For more information on our configuration manager visit its readme [here](https:
 
 #### Custom substrate types
 
-Some chains my require custom type definitions in order for Sidecar to know how to decode the data
-retrieved from the node. You can define this types in `config/types.json`. Read more about [defining
+Some chains require custom type definitions in order for Sidecar to know how to decode the data
+retrieved from the node. You can define chain specific types in `config/types.json`. Read more about [defining
 types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
 
 If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `config/types.json`.
