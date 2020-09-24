@@ -28,7 +28,7 @@ endpoints.** It is important that users complete the transition to the new endpo
 they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
 learn more.
 
-## Perquisites
+## Prerequisites
 
 This service requires Node version 12 or higher.
 
