@@ -1,12 +1,12 @@
 [package]
 name = "calc"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
 publish = false
-repository = "https://github.com/paritytech/substrate-api-sidecar"
-description = "Off-chain calculations for Substrate Sidecar."
+repository = "git+https://github.com/paritytech/substrate-api-sidecar.git"
+description = "Off-chain calculations for @substrate/api-sidecar."
 
 [lib]
 crate-type = ["cdylib"]

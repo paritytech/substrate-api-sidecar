@@ -1,13 +1,98 @@
-# Substrate API Sidecar
 
-REST API service intended to run next to Substrate, exposing a limited set of endpoints over HTTP
-with meaningful responses.
+<br /><br />
 
-## Installation
+<div align="center">
+  <h1 align="center">@substrate/api-sidecar</h1>
+  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
 
-Make sure your machine has an
-[up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) installed to manage Rust
-dependencies.
+  <p align="center">
+    <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
+      <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
+    </a>
+    <a href="https://github.com/paritytech/substrate-api-sidecar/actions">
+      <img alt="Github Actions" src="https://github.com/paritytech/substrate-api-sidecar/workflows/pr/badge.svg" />
+    </a>
+    <a href="https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE">
+      <img alt="GPL-3.0-or-later" src="https://img.shields.io/npm/l/@substrate/api-sidecar" />
+    </a>
+  </p>
+</div>
+
+<br /><br />
+
+## Note
+
+This a release candidate for v1.0.0 and it contains both v0 and v1 endpoints. **`substrate-api-sidecar`
+releases after Friday, October 16th, 2020, will not make any guarantees to include deprecated v0
+endpoints.** It is important that users complete the transition to the new endpoints by this date so
+they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
+learn more.
+
+## Prerequisites
+
+This service requires Node version 12 or higher.
+
+## Table of contents
+
+- [NPM package installation and usage](#npm-package-installation-and-usage)
+- [Source code installation and usage](#source-code-installation-and-usage)
+- [Configuration](#configuration)
+- [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
+- [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
+- [Chain compatibility](#chain-compatibility)
+- [Docker](#docker)
+- [Note for maintainers](#note-for-maintainers)
+
+## NPM package installation and usage
+
+### Global installation
+
+Install the service globally:
+
+```bash
+npm install -g @substrate/api-sidecar
+# OR
+yarn global add @substrate/api-sidecar
+```
+
+Run the service from any directory on your machine:
+
+```bash
+substrate-api-sidecar
+```
+
+### Local installation
+
+Install the service locally:
+
+```bash
+npm install @substrate/api-sidecar
+# OR
+yarn add @substrate/api-sidecar
+```
+
+Run the service from within the local directory:
+
+```bash
+node_modules/.bin/substrate-api-sidecar
+```
+
+### Finishing up
+
+[Jump to the configuration section](#configuration) for more details on connecting to a node.
+
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
+
+## Source code installation and usage
+
+### Quick install
+
+Simply run `yarn`.
+
+### Rust development installation
+
+If you are looking to hack on the `calc` Rust crate make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) 
+installed to manage Rust dependencies.
 
 Install `wasm-pack` if your machine does not already have it:
 
@@ -21,7 +106,7 @@ Use yarn to do the remaining setup:
 yarn
 ```
 
-## Running
+### Running
 
 ```bash
 # For live reload in development
@@ -41,7 +126,7 @@ To use a specific env profile (here for instance a profile called 'env.sample'):
 NODE_ENV=sample yarn start
 ```
 
-For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `specs.yaml` to view the env configuration spec.
+For more information on our configuration manager visit its readme [here](https://gitlab.com/chevdor/confmgr/-/raw/master/README.adoc). See `Specs.ts` to view the env configuration spec.
 
 ### Express server
 
@@ -56,6 +141,10 @@ For more information on our configuration manager visit its readme [here](https:
     `ws://127.0.0.1:9944`.
 
 #### Custom substrate types
+
+Some chains require custom type definitions in order for Sidecar to know how to decode the data
+retrieved from the node. You can define chain specific types in `config/types.json`. Read more about [defining
+types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
 
 If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `config/types.json`.
 
@@ -98,7 +187,7 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
-## Debugging Fee & Payout Calculations
+## Debugging fee and payout calculations
 
 It is possible to get more information about the fee and payout calculation process logged to
 the console. Because this fee calculation happens in the statically compiled web assembly part
@@ -108,83 +197,9 @@ a re-compile with the proper environment variable set is necessary:
 CALC_DEBUG=1 yarn
 ```
 
-## Available paths
+## Available endpoints
 
-Path descriptions link to controllers for detailed docs with usage information.
-
-Block IDs may take two forms: a non-negative decimal integer that denotes the block _height_ **or**
-a 32-byte hex string (`0x` followed by 64 hexadecimal digits) that denotes the block _hash_.
-
--   `/` fetch information on Sidecars version, docs, and available routes.
-
--   [`/accounts/ADDRESS/staking-payouts` fetch staking payouts for `ADDRESS`.](/src/controllers/accounts/AccountsStakingPayoutsController.ts)
-
--   [`/accounts/ADDRESS/balance-info` fetch balances info for `ADDRESS`.](src/controllers/accounts/AccountsBalanceInfoController.ts) (Replaces `/balance/ADDRESS`.)
-
--   [`/accounts/ADDRESS/vesting-info` vesting info for `ADDRESS`.](src/controllers/accounts/AccountsVestingInfoController.ts) (Replaces `/vesting/ADDRESS`.)
-
--   [`/accounts/ADDRESS/staking-info` fetch the staking info for `ADDRESS`.](src/controllers/accounts/AccountsStakingInfoController.ts) (Replaces `/staking/ADDRESS`.)
-
--   [`/blocks/{head, BlockId}` fetch the finalized head or block identified by BlockId.](/src/controllers/blocks/BlocksController.ts) (Replaces `/block`.)
-
--   [`/pallets/staking/progress` fetch information on general staking progress.](src/controllers/pallets/PalletsStakingProgressController.ts) (Replaces `/staking-info`.)
-
--   [`/pallets/{palletId}/storage/{storageItemId}` fetch the value of a storage item.](src/controllers/pallets/PalletsStorageItemController.ts)
-
--   [`/node/network` fetch information about the Substrate node's activity in the peer-to-peer network.](src/controllers/node/NodeNetworkController.ts)
-
--   [`/node/transaction-pool` fetch pending extrinsics from the Substrate node.](src/controllers/node/NodeTransactionPoolController.ts)
-
--   [`/node/version` fetch information about the Substrates node's implementation and versioning.](src/controllers/node/NodeVersionController.ts)
-
--   [`/runtime/metadata` fetch the runtime metadata in decoded, JSON form.](src/controllers/runtime/RuntimeMetadataController.ts) (Replaces `/metadata`.)
-
--   [`/runtime/code` fetch the Wasm code blob of the Substrate runtime.](src/controllers/runtime/RuntimeCodeController.ts)
-
--   [`/runtime/spec` version information of the Substrate runtime.](src/controllers/runtime/RuntimeSpecController.ts)
-
--   [`/claims/ADDRESS` fetch claims data for an Ethereum `ADDRESS`.](src/controllers/claims/ClaimsController.ts) (Will be deprecated in v1.)
-
--   [`/claims/ADDRESS/NUMBER` fetch claims data for an Ethereum `ADDRESS` at the block identified by 'NUMBER`.](src/controllers/claims/ClaimsController.ts) (Will be deprecated in v1.)
-
--   [`/transaction/material` fetch all the network information needed to construct a transaction offline.](src/controllers/transaction/TransactionMaterialController.ts) (Replaces `/tx/artifacts`.)
-
--   [`/transaction/fee-estimate` submit a transaction in order to get back a fee estimation.](src/controllers/transaction/TransactionFeeEstimateController.ts) (Replaces `/tx/fee-estimate`.) Expects a string
-    with a hex-encoded transaction in a JSON POST body:
-
-    ```
-    curl localhost:8080/transaction/fee-estimate -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-
-    Expected result is a JSON with fee information:
-
-    ```
-    {
-      "weight": "195000000",
-      "class": "Normal",
-      "partialFee": "165600000"
-    }
-    ```
-
--   [`/transaction` submit a signed transaction.](src/controllers/transaction/TransactionSubmitController.ts) (Replaces `/tx`.) Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/transaction -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    Expected result is a JSON with transaction hash:
-    ```
-    {
-        "hash": "..."
-    }
-    ```
-
-- [`/transaction/dry-run` dry run a transaction to check if it is valid.](src/controllers/transaction/TransactionDryRunController.ts)
-Expects a string with hex-encoded transaction in a JSON POST
-    body:
-    ```
-    curl localhost:8080/transaction/dry-run -X POST --data '{"tx": "0x..."}' -H 'Content-Type: application/json'
-    ```
-    See [here for details](src/controllers/transaction/TransactionDryRunController.ts) on expected result.
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
 ## Chain compatibility
 
@@ -225,3 +240,33 @@ curl -s http://0.0.0.0:8080/block | jq
 ## Contribute
 
 Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](CONTRIBUTING.md) doc for more information.
+
+## Note for maintainers
+
+All the commits in this repo follow the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#summary). When merging a PR, make sure 1/ to
+use squash merge and 2/ that the title of the PR follows the Conventional Commits spec.
+
+The history of commits will be used to generate the `CHANGELOG`. To do so, run `yarn deploy` on the master
+branch. This command will look at all the commits since the latest tag, bump the package version according
+to semver rules, and generate a new `CHANGELOG`.
+
+If you don't want to follow semver or need to do a dry run, consult the [`standard-version` CLI usage](https://github.com/conventional-changelog/standard-version#cli-usag)
+docs. Flags for `standard-version` can be passed to `yarn deploy`.
+
+`yarn deploy`, which only does local operations and doesn't push anything, will output more or
+less the following lines:
+
+``` bash
+$ yarn deploy
+yarn run v1.21.1
+$ yarn build && standard-version -r minor
+$ rimraf lib/ && tsc
+✔ bumping version in package.json from 0.18.1 to 0.18.2
+✔ outputting changes to CHANGELOG.md
+✔ committing package.json and CHANGELOG.md
+✔ tagging release v0.18.2
+ℹ Run `git push --follow-tags origin master && npm publish` to publish
+```
+
+To publish the new package, just follow the instructions: `git push --follow-tags origin master && npm publish.`
+You must have access to the @substrate organization on npm to publish.

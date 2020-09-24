@@ -1,55 +1,8 @@
 import { ConfigManager } from 'confmgr';
 
 import * as configTypes from '../config/types.json';
-
-/**
- * Object to house the values of all the configurable components for Sidecar.
- */
-export interface ISidecarConfig {
-	EXPRESS: ISidecarConfigExpress;
-	SUBSTRATE: ISidecarConfigSubstrate;
-	LOG: ISidecarConfigLog;
-}
-
-export interface ISidecarConfigSubstrate {
-	WS_URL: string;
-	CUSTOM_TYPES: Record<string, string> | undefined;
-}
-
-export interface ISidecarConfigExpress {
-	HOST: string;
-	PORT: number;
-}
-
-export interface ISidecarConfigLog {
-	LEVEL: string;
-	JSON: boolean;
-	FILTER_RPC: boolean;
-	STRIP_ANSI: boolean;
-}
-
-/**
- * Modules of specs.yml
- */
-export enum MODULES {
-	EXPRESS = 'EXPRESS',
-	SUBSTRATE = 'SUBSTRATE',
-	LOG = 'LOG',
-}
-
-/**
- * Names of config env vars of Sidecar.
- */
-export enum CONFIG {
-	BIND_HOST = 'BIND_HOST',
-	PORT = 'PORT',
-	WS_URL = 'WS_URL',
-	CUSTOM_TYPES = 'CUSTOM_TYPES',
-	LEVEL = 'LEVEL',
-	JSON = 'JSON',
-	FILTER_RPC = 'FILTER_RPC',
-	STRIP_ANSI = 'STRIP_ANSI',
-}
+import { Specs } from './Specs';
+import { CONFIG, ISidecarConfig, MODULES } from './types/config';
 
 function hr(): string {
 	return Array(80).fill('━').join('');
@@ -65,7 +18,7 @@ export class Config {
 	 */
 	private static create(): ISidecarConfig {
 		// Instantiate ConfigManager which is used to read in the specs.yml
-		const config = ConfigManager.getInstance('specs.yml').getConfig();
+		const config = ConfigManager.getInstance(Specs.specs).getConfig();
 
 		if (!config.Validate()) {
 			config.Print({ compact: false });
