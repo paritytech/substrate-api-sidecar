@@ -1318,7 +1318,7 @@ components:
     TransactionSuccess:
       type: object
       properties:
-        transactionHash:
+        hash:
           type: string
           description: The hash of the encoded transaction.
     TransactionFailedToParse:
