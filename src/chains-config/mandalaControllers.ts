@@ -23,6 +23,7 @@ import { initLRUCache, QueryFeeDetailsCache } from './cache';
 export const mandalaControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsIdentity',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
 		'AccountsValidate',
