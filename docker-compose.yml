@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  polkadot:
+    container_name: polkadot
+    image: chevdor/polkadot:latest
+    volumes:
+      - ~/polkadot-data:/data
+    # ports:
+    #   - "9944:9944"
+    command: 'polkadot --chain polkadot --unsafe-ws-external --rpc-cors=all'
+
+  sidecar:
+    # build: .
+    image: chevdor/substrate-api-sidecar
+    ports:
+      - "8080:8080"
+    environment:
+      SAS_SUBSTRATE_WS_URL: ws://polkadot:9944
