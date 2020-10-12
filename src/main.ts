@@ -31,6 +31,22 @@ async function main() {
 
 	const { logger } = Log;
 
+	const publicWsUrls: string[] = [
+		'wss://rpc.polkadot.io',
+		'wss://cc1-1.polkadot.network',
+		'wss://kusama-rpc.polkadot.io',
+		'wss://cc3-5.kusama.network',
+		'wss://fullnode.centrifuge.io',
+		'wss://crab.darwinia.network',
+		'wss://mainnet-node.dock.io',
+		'wss://mainnet1.edgewa.re',
+		'wss://rpc.kulupu.corepaper.org/ws',
+		'wss://main1.nodleprotocol.io',
+		'wss://rpc.plasmnet.io/',
+		'wss://mainnet-rpc.stafi.io',
+		'wss://rpc.subsocial.network'
+	];
+
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
