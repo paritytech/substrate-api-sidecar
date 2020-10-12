@@ -44,7 +44,7 @@ async function main() {
 		'wss://main1.nodleprotocol.io',
 		'wss://rpc.plasmnet.io/',
 		'wss://mainnet-rpc.stafi.io',
-		'wss://rpc.subsocial.network'
+		'wss://rpc.subsocial.network',
 	];
 
 	// Overide console.{log, error, warn, etc}
@@ -70,7 +70,9 @@ async function main() {
 		}`
 	);
 
-	const isPublicUrl: string = publicWsUrls.includes(config.SUBSTRATE.WS_URL) ? 'PUBLIC' : 'PRIVATE';
+	const isPublicUrl: string = publicWsUrls.includes(config.SUBSTRATE.WS_URL)
+		? 'PUBLIC'
+		: 'PRIVATE';
 
 	logger.info(
 		`[${isPublicUrl} URL] ${config.SUBSTRATE.WS_URL} is a ${isPublicUrl} URL`
