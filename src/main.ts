@@ -70,6 +70,12 @@ async function main() {
 		}`
 	);
 
+	const isPublicUrl: string = publicWsUrls.includes(config.SUBSTRATE.WS_URL) ? 'PUBLIC' : 'PRIVATE';
+
+	logger.info(
+		`[${isPublicUrl} URL] ${config.SUBSTRATE.WS_URL} is a ${isPublicUrl} URL`
+	);
+
 	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
 	const claimsController = new controllers.v0.v0Claims(api);
 	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
