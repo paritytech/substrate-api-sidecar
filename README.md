@@ -42,6 +42,7 @@ This service requires Node version 12 or higher.
 - [Chain compatibility](#chain-compatibility)
 - [Docker](#docker)
 - [Note for maintainers](#note-for-maintainers)
+- [Roadmap](#roadmap)
 
 ## NPM package installation and usage
 
@@ -270,3 +271,10 @@ $ rimraf lib/ && tsc
 
 To publish the new package, just follow the instructions: `git push --follow-tags origin master && npm publish.`
 You must have access to the @substrate organization on npm to publish.
+
+## Roadmap
+
+- Investigate and implement support for parachains in Sidecar. At this moment there is no concrete
+plan, but options that allow configuration and plugins specified by parachain development teams is
+one possible path forward. Initial support will be focused on enabling the workflow for core balance
+transfer and monitoring features.
