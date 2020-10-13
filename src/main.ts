@@ -78,8 +78,7 @@ async function main() {
 
 	if (isPublicUrl) {
 		logger.info(
-			`${config.SUBSTRATE.WS_URL} is a public node. Too many users will 
-			overload this public endpoint. Switch to a privately hosted node when possible.`
+			`${config.SUBSTRATE.WS_URL} is a public node. Too many users will overload this public endpoint. Switch to a privately hosted node when possible.`
 		);
 	}
 
