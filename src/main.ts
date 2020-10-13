@@ -82,6 +82,19 @@ async function main() {
 		);
 	}
 
+	// Split the Url to check for 2 things. Secure connection, and if its a local IP. 
+	const splitUrl: string[] = config.SUBSTRATE.WS_URL.split(':');
+	// If its 'ws' its not a secure connection.
+	const isSecure: boolean = splitUrl[0] === 'wss';
+	// Check if its a local IP.
+	const isLocal: boolean = splitUrl[1] === '//0.0.0.0' || splitUrl[1] === '//127.0.0.1';
+
+	if(!isSecure && !isLocal) {
+		logger.warn(
+			`Using unencrypted connection to a public node (${config.SUBSTRATE.WS_URL}); All traffic is sent over the internet in cleartext.`
+		);
+	}
+
 	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
 	const claimsController = new controllers.v0.v0Claims(api);
 	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
