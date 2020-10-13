@@ -30,7 +30,11 @@ async function main() {
 	const { config } = Config;
 
 	const { logger } = Log;
-
+ 
+	/**
+	 * Best effort list of known public nodes that do not encourage high traffic
+	 * sidecar installations connecting to them for non - testing / development purposes.
+	 */
 	const publicWsUrls: string[] = [
 		'wss://rpc.polkadot.io',
 		'wss://cc1-1.polkadot.network',
