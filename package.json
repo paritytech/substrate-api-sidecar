@@ -43,6 +43,7 @@
     "express": "^4.17.1",
     "express-winston": "^4.0.5",
     "http-errors": "^1.8.0",
+    "http-graceful-shutdown": "^2.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {

@@ -80,8 +80,8 @@ export default class App {
 		}
 	}
 
-	listen(): void {
-		this.app.listen(this.port, this.host, () => {
+	listen() {
+		return this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
 		});
 	}

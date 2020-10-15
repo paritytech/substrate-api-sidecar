@@ -25,6 +25,7 @@ import * as controllers from './controllers';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
+import * as shutdown from 'http-graceful-shutdown';
 
 async function main() {
 	const { config } = Config;
@@ -116,11 +117,14 @@ async function main() {
 	});
 
 	// Start the server
-	app.listen();
+	const server = app.listen();
+	shutdown(server, {
+		signals: 'SIGINT SIGTERM',
+		timeout: 10 * 1000,
+		finally() {
+			console.log('Caught interrupt signal, exiting...');
+		},
+	});
 }
 
-process.on('SIGINT', function () {
-	console.log('Caught interrupt signal, exiting...');
-	process.exit(0);
-});
 main().catch(console.log);
