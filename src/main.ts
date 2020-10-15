@@ -18,6 +18,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { json } from 'express';
+import * as shutdown from 'http-graceful-shutdown';
 
 import App from './App';
 import { Config } from './Config';
@@ -25,7 +26,6 @@ import * as controllers from './controllers';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
-import * as shutdown from 'http-graceful-shutdown';
 
 async function main() {
 	const { config } = Config;
