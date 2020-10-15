@@ -134,7 +134,7 @@ export class PalletsStorageItemService extends AbstractService {
 			}
 		}
 
-		if (!palletMeta || !palletIdx) {
+		if (!palletMeta || palletIdx === undefined || palletIdx < 0) {
 			throw new InternalServerError(
 				`Could not find pallet ("${palletId}")in metadata.`
 			);
