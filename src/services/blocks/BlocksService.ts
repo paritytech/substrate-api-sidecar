@@ -437,8 +437,15 @@ export class BlocksService extends AbstractService {
 				) {
 					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
 					// serialize to a polkadot-js Call and parse so it is not a hex blob.
-					const call = this.api.createType('Call', argument.toHex());
-					newArgs[paramName] = this.parseGenericCall(call);
+					try {
+						const call = this.api.createType(
+							'Call',
+							argument.toHex()
+						);
+						newArgs[paramName] = this.parseGenericCall(call);
+					} catch {
+						newArgs[paramName] = argument;
+					}
 				} else {
 					newArgs[paramName] = argument;
 				}
