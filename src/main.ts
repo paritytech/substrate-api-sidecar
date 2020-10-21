@@ -31,6 +31,26 @@ async function main() {
 
 	const { logger } = Log;
 
+	/**
+	 * Best effort list of known public nodes that do not encourage high traffic
+	 * sidecar installations connecting to them for non - testing / development purposes.
+	 */
+	const publicWsUrls: string[] = [
+		'wss://rpc.polkadot.io',
+		'wss://cc1-1.polkadot.network',
+		'wss://kusama-rpc.polkadot.io',
+		'wss://cc3-5.kusama.network',
+		'wss://fullnode.centrifuge.io',
+		'wss://crab.darwinia.network',
+		'wss://mainnet-node.dock.io',
+		'wss://mainnet1.edgewa.re',
+		'wss://rpc.kulupu.corepaper.org/ws',
+		'wss://main1.nodleprotocol.io',
+		'wss://rpc.plasmnet.io/',
+		'wss://mainnet-rpc.stafi.io',
+		'wss://rpc.subsocial.network',
+	];
+
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
@@ -53,6 +73,30 @@ async function main() {
 			config.SUBSTRATE.WS_URL
 		}`
 	);
+
+	const isPublicUrl: boolean = publicWsUrls.includes(config.SUBSTRATE.WS_URL);
+
+	if (isPublicUrl) {
+		logger.info(
+			`${config.SUBSTRATE.WS_URL} is a public node. Too many users will overload this public endpoint. Switch to a privately hosted node when possible.`
+		);
+	}
+
+	// Split the Url to check for 2 things. Secure connection, and if its a local IP.
+	const splitUrl: string[] = config.SUBSTRATE.WS_URL.split(':');
+	// If its 'ws' its not a secure connection.
+	const isSecure: boolean = splitUrl[0] === 'wss';
+	// Check if its a local IP.
+	const isLocal: boolean =
+		splitUrl[1] === '//0.0.0.0' ||
+		splitUrl[1] === '//127.0.0.1' ||
+		splitUrl[1] === '//localhost';
+
+	if (!isSecure && !isLocal) {
+		logger.warn(
+			`Using unencrypted connection to a public node (${config.SUBSTRATE.WS_URL}); All traffic is sent over the internet in cleartext.`
+		);
+	}
 
 	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
 	const claimsController = new controllers.v0.v0Claims(api);
