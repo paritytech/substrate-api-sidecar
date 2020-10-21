@@ -1,6 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { Struct } from '@polkadot/types';
-import { GenericCall } from '@polkadot/types';
+import { GenericCall, Struct } from '@polkadot/types';
 import {
 	AccountId,
 	Block,
@@ -10,7 +9,7 @@ import {
 	EventRecord,
 	Hash,
 } from '@polkadot/types/interfaces';
-import { AnyJson, Codec } from '@polkadot/types/types';
+import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
@@ -221,7 +220,7 @@ export class BlocksService extends AbstractService {
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce: isSigned ? nonce : null,
-				args: this.parseGenericCall(method, block).args,
+				args: this.parseGenericCall(method, block.registry).args,
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
@@ -394,14 +393,15 @@ export class BlocksService extends AbstractService {
 	 * Helper function for `parseGenericCall`.
 	 *
 	 * @param argsArray array of `Codec` values
+	 * @param registry type registry of the block the call belongs to
 	 */
 	private parseArrayGenericCalls(
 		argsArray: Codec[],
-		block: Block
+		registry: Registry
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
-				return this.parseGenericCall(argument, block);
+				return this.parseGenericCall(argument, registry);
 			}
 
 			return argument;
@@ -414,10 +414,11 @@ export class BlocksService extends AbstractService {
 	 * call index). Parses `GenericCall`s that are nested as arguments.
 	 *
 	 * @param genericCall `GenericCall`
+	 * @param registry type registry of the block the call belongs to
 	 */
 	private parseGenericCall(
 		genericCall: GenericCall,
-		block: Block
+		registry: Registry
 	): ISanitizedCall {
 		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
@@ -434,21 +435,21 @@ export class BlocksService extends AbstractService {
 				if (Array.isArray(argument)) {
 					newArgs[paramName] = this.parseArrayGenericCalls(
 						argument,
-						block
+						registry
 					);
 				} else if (argument instanceof GenericCall) {
-					newArgs[paramName] = this.parseGenericCall(argument, block);
+					newArgs[paramName] = this.parseGenericCall(
+						argument,
+						registry
+					);
 				} else if (
 					paramName === 'call' &&
 					argument?.toRawType() === 'Bytes'
 				) {
 					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
 					// serialize to a polkadot-js Call and parse so it is not a hex blob.
-					const call = block.registry.createType(
-						'Call',
-						argument.toHex()
-					);
-					newArgs[paramName] = this.parseGenericCall(call, block);
+					const call = registry.createType('Call', argument.toHex());
+					newArgs[paramName] = this.parseGenericCall(call, registry);
 				} else {
 					newArgs[paramName] = argument;
 				}

@@ -122,14 +122,17 @@ describe('BlocksService', () => {
 			expect(() =>
 				blocksService['parseGenericCall'](
 					({} as unknown) as GenericCall,
-					mockBlock789629
+					mockBlock789629.registry
 				)
 			).toThrow());
 
 		it('parses a simple balances.transfer', () => {
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](transfer, mockBlock789629)
+					blocksService['parseGenericCall'](
+						transfer,
+						mockBlock789629.registry
+					)
 				)
 			).toBe(JSON.stringify(transferOutput));
 		});
@@ -163,7 +166,10 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](batch4, mockBlock789629)
+					blocksService['parseGenericCall'](
+						batch4,
+						mockBlock789629.registry
+					)
 				)
 			).toBe(
 				JSON.stringify({
@@ -238,7 +244,10 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](batch, mockBlock789629)
+					blocksService['parseGenericCall'](
+						batch,
+						mockBlock789629.registry
+					)
 				)
 			).toEqual(
 				JSON.stringify({
