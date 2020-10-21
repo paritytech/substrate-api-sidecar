@@ -221,7 +221,7 @@ export class BlocksService extends AbstractService {
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce: isSigned ? nonce : null,
-				args: this.parseGenericCall(method).args,
+				args: this.parseGenericCall(method, block).args,
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
@@ -396,11 +396,12 @@ export class BlocksService extends AbstractService {
 	 * @param argsArray array of `Codec` values
 	 */
 	private parseArrayGenericCalls(
-		argsArray: Codec[]
+		argsArray: Codec[],
+		block: Block
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
-				return this.parseGenericCall(argument);
+				return this.parseGenericCall(argument, block);
 			}
 
 			return argument;
@@ -414,7 +415,10 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param genericCall `GenericCall`
 	 */
-	private parseGenericCall(genericCall: GenericCall): ISanitizedCall {
+	private parseGenericCall(
+		genericCall: GenericCall,
+		block: Block
+	): ISanitizedCall {
 		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
 
@@ -428,17 +432,23 @@ export class BlocksService extends AbstractService {
 				const argument = callArgs.get(paramName);
 
 				if (Array.isArray(argument)) {
-					newArgs[paramName] = this.parseArrayGenericCalls(argument);
+					newArgs[paramName] = this.parseArrayGenericCalls(
+						argument,
+						block
+					);
 				} else if (argument instanceof GenericCall) {
-					newArgs[paramName] = this.parseGenericCall(argument);
+					newArgs[paramName] = this.parseGenericCall(argument, block);
 				} else if (
 					paramName === 'call' &&
 					argument?.toRawType() === 'Bytes'
 				) {
 					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
 					// serialize to a polkadot-js Call and parse so it is not a hex blob.
-					const call = this.api.createType('Call', argument.toHex());
-					newArgs[paramName] = this.parseGenericCall(call);
+					const call = block.registry.createType(
+						'Call',
+						argument.toHex()
+					);
+					newArgs[paramName] = this.parseGenericCall(call, block);
 				} else {
 					newArgs[paramName] = argument;
 				}
