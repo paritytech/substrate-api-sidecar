@@ -98,33 +98,6 @@ async function main() {
 		);
 	}
 
-	// Instantiate v0 controllers (note these will be removed upon the release of v1.0.0)
-	const claimsController = new controllers.v0.v0Claims(api);
-	const txArtifactsController = new controllers.v0.v0TransactionMaterial(api);
-	const txFeeEstimateController = new controllers.v0.v0TransactionFeeEstimate(
-		api
-	);
-	const txSubmitController = new controllers.v0.v0TransactionSubmit(api);
-	const vestingController = new controllers.v0.v0AccountsVestingInfo(api);
-	const balancesController = new controllers.v0.v0AccountsBalanceInfo(api);
-	const stakingInfoController = new controllers.v0.v0AccountsStakingInfo(api);
-	const v0blocksController = new controllers.v0.v0Blocks(api);
-	const stakingController = new controllers.v0.v0PalletsStakingProgress(api);
-	const metadataController = new controllers.v0.v0Metadata(api);
-
-	const v0Controllers = [
-		claimsController,
-		txArtifactsController,
-		txFeeEstimateController,
-		txSubmitController,
-		stakingInfoController,
-		vestingController,
-		balancesController,
-		v0blocksController,
-		stakingController,
-		metadataController,
-	];
-
 	// Create our App
 	const app = new App({
 		preMiddleware: [json(), middleware.httpLoggerCreate(logger)],
@@ -146,7 +119,6 @@ async function main() {
 			new controllers.TransactionSubmit(api),
 			new controllers.palletsStakingProgress(api),
 			new controllers.palletsStorageItem(api),
-			...v0Controllers,
 		],
 		postMiddleware: [
 			middleware.txError,
