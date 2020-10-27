@@ -22,10 +22,7 @@
 
 ## Note
 
-This a release candidate for v1.0.0 and it contains both v0 and v1 endpoints. **`substrate-api-sidecar`
-releases after Friday, October 16th, 2020, will not make any guarantees to include deprecated v0
-endpoints.** It is important that users complete the transition to the new endpoints by this date so
-they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
+v1.0.0 was released on 2020-10-23. This major release introduced several renamed endpoints as breaking changes. It is important that users complete the transition to the new endpoints ASAP so they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
 learn more.
 
 ## Prerequisites
