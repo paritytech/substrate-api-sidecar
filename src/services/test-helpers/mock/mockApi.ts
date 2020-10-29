@@ -13,7 +13,7 @@ import {
 	StakingLedger,
 } from '@polkadot/types/interfaces';
 
-import { decoratedPolkadotMetadata } from '../../../test-helpers/metadata/decorated';
+import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import { polkadotRegistry } from '../../../test-helpers/registries';
 import {
 	balancesTransferValid,
@@ -55,8 +55,7 @@ const getRuntimeVersion = () =>
 		};
 	});
 
-const getMetadata = () =>
-	Promise.resolve().then(() => decoratedPolkadotMetadata.metadata);
+const getMetadata = () => Promise.resolve().then(() => polkadotMetadata);
 
 const deriveGetHeader = () =>
 	Promise.resolve().then(() => {
