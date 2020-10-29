@@ -1,4 +1,4 @@
-FROM node:12 as builder
+FROM node:15 as builder
 LABEL author="chevdor@gmail.com"
 
 WORKDIR /opt/builder
@@ -12,7 +12,7 @@ RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y && \
 
 # ---------------------------------
 
-FROM node:12-alpine
+FROM node:15-alpine
 WORKDIR /usr/src/app
 
 COPY --from=builder /opt/builder /usr/src/app
