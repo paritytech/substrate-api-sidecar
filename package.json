@@ -66,6 +66,11 @@
     "tsc-watch": "^4.2.9",
     "typescript": "^4.0.3"
   },
+  "resolutions": {
+    "node-forge": ">=0.10.0",
+    "node-fetch": ">=2.6.1",
+    "prismjs": ">=1.21.1"
+  },
   "keywords": [
     "substrate",
     "api",
