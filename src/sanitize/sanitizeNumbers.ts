@@ -8,8 +8,8 @@ import {
 } from '@polkadot/types';
 import AbstractArray from '@polkadot/types/codec/AbstractArray';
 import AbstractInt from '@polkadot/types/codec/AbstractInt';
+import StructAny from '@polkadot/types/codec/Json';
 import CodecMap from '@polkadot/types/codec/Map';
-import StructAny from '@polkadot/types/codec/StructAny';
 import { isObject } from '@polkadot/util';
 import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';

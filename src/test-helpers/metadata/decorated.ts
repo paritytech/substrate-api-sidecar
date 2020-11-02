@@ -1,23 +1,21 @@
-import Decorated from '@polkadot/metadata/Decorated';
-import substrateMetadataRpc from '@polkadot/metadata/Metadata/v11/static';
-import { Metadata } from '@polkadot/types';
+import expandMetadata from '@polkadot/metadata/decorate';
 
 import { kusamaRegistry } from '../registries/kusamaRegistry';
 import { polkadotRegistry } from '../registries/polkadotRegistry';
-import { polkadotV16MetadataRpc } from './polkadotV16Metadata';
+import { kusamaMetadata, polkadotMetadata } from './metadata';
 
 /**
  * Decorated metadata of the kusamaRegistry (v2008).
  */
-export const decoratedKusamaMetadata = new Decorated(
+export const decoratedKusamaMetadata = expandMetadata(
 	kusamaRegistry,
-	new Metadata(kusamaRegistry, substrateMetadataRpc)
+	kusamaMetadata
 );
 
 /**
  * Decorated metadata of the polkadotRegistry (v16).
  */
-export const decoratedPolkadotMetadata = new Decorated(
+export const decoratedPolkadotMetadata = expandMetadata(
 	polkadotRegistry,
-	new Metadata(polkadotRegistry, polkadotV16MetadataRpc)
+	polkadotMetadata
 );

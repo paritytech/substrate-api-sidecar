@@ -19,8 +19,8 @@ import {
 } from '@polkadot/types';
 import CodecDate from '@polkadot/types/codec/Date';
 import Int from '@polkadot/types/codec/Int';
+import StructAny from '@polkadot/types/codec/Json';
 import Option from '@polkadot/types/codec/Option';
-import StructAny from '@polkadot/types/codec/StructAny';
 import UInt from '@polkadot/types/codec/UInt';
 import VecFixed from '@polkadot/types/codec/VecFixed';
 import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
@@ -94,8 +94,8 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('does not handle WeakSet', () => {
-				const negInt = new Int(kusamaRegistry, MIN_I32, 32, true);
-				const maxInt = new Int(kusamaRegistry, MAX_I64, 64, true);
+				const negInt = new Int(kusamaRegistry, MIN_I32, 32);
+				const maxInt = new Int(kusamaRegistry, MAX_I64, 64);
 				const set = new WeakSet([maxInt, negInt]);
 				expect(sanitizeNumbers(set)).toStrictEqual({});
 			});
@@ -184,9 +184,9 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts javascript Set', () => {
-			const negInt = new Int(kusamaRegistry, MIN_I32, 32, true);
+			const negInt = new Int(kusamaRegistry, MIN_I32, 32);
 
-			const maxInt = new Int(kusamaRegistry, MAX_I64, 64, true);
+			const maxInt = new Int(kusamaRegistry, MAX_I64, 64);
 
 			const struct = new Struct(
 				kusamaRegistry,
@@ -386,10 +386,10 @@ describe('sanitizeNumbers', () => {
 				);
 				expect(sanitizeNumbers(intPaddedHex)).toBe('22493750000000000');
 
-				const maxInt = new Int(kusamaRegistry, MAX_I64, 64, true);
+				const maxInt = new Int(kusamaRegistry, MAX_I64, 64);
 				expect(sanitizeNumbers(maxInt)).toBe(MAX_I64);
 
-				const negInt = new Int(kusamaRegistry, MIN_I32, 32, true);
+				const negInt = new Int(kusamaRegistry, MIN_I32, 32);
 				expect(sanitizeNumbers(negInt)).toBe(MIN_I32);
 			});
 
