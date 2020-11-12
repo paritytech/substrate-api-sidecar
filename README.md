@@ -111,6 +111,7 @@ yarn
 yarn dev
 
 # To build and run
+yarn build
 yarn start
 ```
 
