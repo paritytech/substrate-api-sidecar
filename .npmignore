@@ -1,0 +1,5 @@
+*.ts
+/src
+/config
+Dockerfile
+docker-compose.yml
