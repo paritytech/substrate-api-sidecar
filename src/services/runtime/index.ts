@@ -15,5 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from './RuntimeCodeService';
+export * from './RuntimeConstantsService';
 export * from './RuntimeMetadataService';
 export * from './RuntimeSpecService';

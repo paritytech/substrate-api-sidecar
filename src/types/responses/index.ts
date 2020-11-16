@@ -22,6 +22,7 @@ export * from './AccountVestingInfo';
 export * from './Assets';
 export * from './At';
 export * from './Block';
+export * from './Constants';
 export * from './EraPayouts';
 export * from './Extrinsic';
 export * from './FrameMethod';

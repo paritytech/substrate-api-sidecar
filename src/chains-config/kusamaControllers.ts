@@ -38,6 +38,7 @@ export const kusamaControllers: ControllerConfig = {
 		'PalletsStorage',
 		'Paras',
 		'RuntimeCode',
+		'RuntimeConstants',
 		'RuntimeMetadata',
 		'RuntimeSpec',
 		'TransactionDryRun',
