@@ -1,11 +1,11 @@
-import { GenericAccountId } from '@polkadot/types';
+import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { RewardDestination, StakingLedger } from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 
 export interface IAccountStakingInfo {
 	at: IAt;
-	controller: GenericAccountId;
+	controller: AccountId;
 	rewardDestination: RewardDestination;
 	numSlashingSpans: number;
 	staking: StakingLedger;

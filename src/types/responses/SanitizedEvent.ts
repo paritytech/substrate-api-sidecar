@@ -1,4 +1,4 @@
-import { GenericEventData } from '@polkadot/types/generic';
+import { GenericEventData } from '@polkadot/types';
 
 import { IFrameMethod } from '.';
 
