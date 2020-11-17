@@ -1,6 +1,6 @@
-import checkChecksum from '@polkadot/util-crypto/address/checkChecksum';
-import defaults from '@polkadot/util-crypto/address/defaults';
-import base58Decode from '@polkadot/util-crypto/base58/decode';
+import { checkAddressChecksum } from '@polkadot/util-crypto';
+import { base58Decode } from '@polkadot/util-crypto';
+import { defaults } from '@polkadot/util-crypto/address/defaults';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
@@ -42,7 +42,7 @@ function checkAddress(address: string): [boolean, string | undefined] {
 		return [false, 'Invalid decoded address length'];
 	}
 
-	const [isValid] = checkChecksum(decoded);
+	const [isValid] = checkAddressChecksum(decoded);
 
 	return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
 }

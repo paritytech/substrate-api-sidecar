@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
-import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
+import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
@@ -50,7 +50,7 @@ describe('BlocksService', () => {
 			);
 			mockBlock789629BadExt.extrinsics.pop();
 			mockBlock789629BadExt.extrinsics.unshift(
-				(undefined as unknown) as Extrinsic
+				(undefined as unknown) as GenericExtrinsic
 			);
 
 			mockApi.rpc.chain.getBlock = (() =>

@@ -6,10 +6,10 @@ import {
 	Set as CodecSet,
 	Struct,
 } from '@polkadot/types';
-import AbstractArray from '@polkadot/types/codec/AbstractArray';
-import AbstractInt from '@polkadot/types/codec/AbstractInt';
-import StructAny from '@polkadot/types/codec/Json';
-import CodecMap from '@polkadot/types/codec/Map';
+import { AbstractArray } from '@polkadot/types/codec/AbstractArray';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+import { Json } from '@polkadot/types/codec/Json';
+import { CodecMap } from '@polkadot/types/codec/Map';
 import { isObject } from '@polkadot/util';
 import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
@@ -53,14 +53,14 @@ function sanitizeCodec(value: Codec): AnyJson {
 		}, {} as Record<string, AnyJson>);
 	}
 
-	if (value instanceof StructAny) {
+	if (value instanceof Json) {
 		// This is essentially a Map with [keys: strings]: any
-		const jsonStructAny: Record<string, AnyJson> = {};
+		const jsonJson: Record<string, AnyJson> = {};
 		value.forEach((element, prop) => {
-			jsonStructAny[prop] = sanitizeNumbers(element);
+			jsonJson[prop] = sanitizeNumbers(element);
 		});
 
-		return jsonStructAny;
+		return jsonJson;
 	}
 
 	if (value instanceof Enum) {

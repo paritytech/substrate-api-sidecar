@@ -1,5 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
-import U32 from '@polkadot/types/primitive/U32';
+import { u32 as U32 } from '@polkadot/types/primitive';
 
 import { IAt } from '.';
 

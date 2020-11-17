@@ -5,42 +5,28 @@ import {
 	Compact,
 	Data,
 	Enum,
+	GenericCall,
 	HashMap,
+	Int,
+	Json,
 	Null,
 	Raw,
 	Result,
 	Set as CodecSet,
 	StorageKey,
 	Struct,
+	Text,
 	Tuple,
 	u8,
 	U8aFixed,
+	u32,
+	u64,
+	u128,
 	Vec,
+	VecFixed,
 } from '@polkadot/types';
-import CodecDate from '@polkadot/types/codec/Date';
-import Int from '@polkadot/types/codec/Int';
-import StructAny from '@polkadot/types/codec/Json';
-import Option from '@polkadot/types/codec/Option';
-import UInt from '@polkadot/types/codec/UInt';
-import VecFixed from '@polkadot/types/codec/VecFixed';
-import Extrinsic from '@polkadot/types/extrinsic/Extrinsic';
-import ExtrinsicEra from '@polkadot/types/extrinsic/ExtrinsicEra';
-import ExtrinsicPayload from '@polkadot/types/extrinsic/ExtrinsicPayload';
-import AccountId from '@polkadot/types/generic/AccountId';
-import Call from '@polkadot/types/generic/Call';
-import Event from '@polkadot/types/generic/Event';
-import Vote from '@polkadot/types/generic/Vote';
-import Bool from '@polkadot/types/primitive/Bool';
-import I8 from '@polkadot/types/primitive/I8';
-import I16 from '@polkadot/types/primitive/I16';
-import I32 from '@polkadot/types/primitive/I32';
-import I64 from '@polkadot/types/primitive/I64';
-import I128 from '@polkadot/types/primitive/I128';
-import Text from '@polkadot/types/primitive/Text';
-import U16 from '@polkadot/types/primitive/U16';
-import U32 from '@polkadot/types/primitive/U32';
-import U64 from '@polkadot/types/primitive/U64';
-import U128 from '@polkadot/types/primitive/U128';
+import { CodecDate } from '@polkadot/types/codec/Date';
+import { UInt } from '@polkadot/types/codec/UInt';
 import * as BN from 'bn.js';
 
 import {
@@ -82,13 +68,16 @@ describe('sanitizeNumbers', () => {
 	describe('javscript native', () => {
 		describe('javascript types it cannot handle properly', () => {
 			it('does not handle WeakMap', () => {
-				const compact = new (Compact.with(U128))(
+				const compact = new (Compact.with(u128))(
 					kusamaRegistry,
 					MAX_U128
 				);
 				const map = new WeakMap()
 					.set({ x: 'x' }, compact)
-					.set({ y: 'y' }, new U128(kusamaRegistry, MAX_U128));
+					.set(
+						{ y: 'y' },
+						kusamaRegistry.createType('u128', MAX_U128)
+					);
 
 				expect(sanitizeNumbers(map)).toStrictEqual({});
 			});
@@ -140,8 +129,8 @@ describe('sanitizeNumbers', () => {
 		it('converts Array', () => {
 			expect(
 				sanitizeNumbers([
-					new U128(kusamaRegistry, MAX_U128),
-					new U64(kusamaRegistry, MAX_U64),
+					kusamaRegistry.createType('u128', MAX_U128),
+					kusamaRegistry.createType('u64', MAX_U64),
 				])
 			).toStrictEqual([MAX_U128, MAX_U64]);
 
@@ -150,11 +139,11 @@ describe('sanitizeNumbers', () => {
 
 		it('converts nested POJO', () => {
 			const pojo = {
-				three: new U32(kusamaRegistry, MAX_U32),
+				three: kusamaRegistry.createType('u32', MAX_U32),
 				x: {
-					six: new U64(kusamaRegistry, MAX_U64),
+					six: kusamaRegistry.createType('u64', MAX_U64),
 					x: {
-						one: new U128(kusamaRegistry, MAX_U128),
+						one: kusamaRegistry.createType('u128', MAX_U128),
 						b: kusamaRegistry.createType('Balance', MAX_U128),
 					},
 				},
@@ -184,15 +173,15 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts javascript Set', () => {
-			const negInt = new Int(kusamaRegistry, MIN_I32, 32);
+			const negInt = kusamaRegistry.createType('i32', MIN_I32);
 
-			const maxInt = new Int(kusamaRegistry, MAX_I64, 64);
+			const maxInt = kusamaRegistry.createType('i64', MAX_I64);
 
 			const struct = new Struct(
 				kusamaRegistry,
 				{
 					foo: Text,
-					bar: U32,
+					bar: 'u32',
 				},
 				{ foo: 'hi :)', bar: MAX_U32 }
 			);
@@ -212,12 +201,12 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				kusamaRegistry,
 				{
-					foo: Text,
-					bar: U32,
+					foo: 'Text',
+					bar: 'u32',
 				},
 				{ foo: 'hi :)', bar: MAX_U32 }
 			);
-			const compact = new (Compact.with(U128))(kusamaRegistry, MAX_U128);
+			const compact = new (Compact.with(u128))(kusamaRegistry, MAX_U128);
 			const nest = new Map().set('s', struct).set('b', new BN(MAX_U128));
 			const outer = new Map().set('c', compact).set('n', nest);
 			expect(sanitizeNumbers(outer)).toStrictEqual({
@@ -240,8 +229,8 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				kusamaRegistry,
 				{
-					foo: Text,
-					bar: U32,
+					foo: 'Text',
+					bar: 'u32',
 				},
 				{ foo: 'hi :)', bar: MAX_U32 }
 			);
@@ -251,14 +240,14 @@ describe('sanitizeNumbers', () => {
 				bar: MAX_U32,
 			});
 
-			const structAny = new StructAny(kusamaRegistry, {
-				b: new Bool(kusamaRegistry, true),
-				i: new I128(kusamaRegistry, MAX_I128),
-				o: new Option(kusamaRegistry, 'Option<i128>', MAX_I128),
+			const json = new Json(kusamaRegistry, {
+				b: kusamaRegistry.createType('Bool', true),
+				i: kusamaRegistry.createType('i128', MAX_I128),
+				o: kusamaRegistry.createType('Option<i128>', MAX_I128),
 				s: struct,
 			});
 
-			expect(sanitizeNumbers(structAny)).toStrictEqual({
+			expect(sanitizeNumbers(json)).toStrictEqual({
 				b: true,
 				i: MAX_I128,
 				o: MAX_I128,
@@ -296,10 +285,10 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Codec Bool', () => {
-			const t = new Bool(kusamaRegistry, true);
+			const t = kusamaRegistry.createType('Bool', true);
 			expect(sanitizeNumbers(t)).toBe(true);
 
-			const f = new Bool(kusamaRegistry, false);
+			const f = kusamaRegistry.createType('Bool', false);
 			expect(sanitizeNumbers(f)).toBe(false);
 		});
 
@@ -334,13 +323,13 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Text', () => {
-			const notEnglish = new Text(kusamaRegistry, '中文');
+			const notEnglish = kusamaRegistry.createType('Text', '中文');
 			expect(sanitizeNumbers(notEnglish)).toBe('中文');
 		});
 
 		describe('number primitives', () => {
 			it('converts u8', () => {
-				const z = new u8(kusamaRegistry, 0);
+				const z = kusamaRegistry.createType('u8', 0);
 				expect(sanitizeNumbers(z)).toBe('0');
 
 				const m = new u8(kusamaRegistry, MAX_U8);
@@ -348,32 +337,32 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('converts i8', () => {
-				const z = new I8(kusamaRegistry, 0);
+				const z = kusamaRegistry.createType('i8', 0);
 				expect(sanitizeNumbers(z)).toBe('0');
 
-				const min = new I8(kusamaRegistry, MIN_I8);
+				const min = kusamaRegistry.createType('i8', MIN_I8);
 				expect(sanitizeNumbers(min)).toBe(MIN_I8);
 
-				const max = new I8(kusamaRegistry, MAX_I8);
+				const max = kusamaRegistry.createType('i8', MAX_I8);
 				expect(sanitizeNumbers(max)).toBe(MAX_I8);
 			});
 
 			it('converts u16', () => {
-				const z = new U16(kusamaRegistry, 0);
+				const z = kusamaRegistry.createType('u16', 0);
 				expect(sanitizeNumbers(z)).toBe('0');
 
-				const max = new U16(kusamaRegistry, MAX_U16);
+				const max = kusamaRegistry.createType('u16', MAX_U16);
 				expect(sanitizeNumbers(max)).toBe(MAX_U16);
 			});
 
 			it('converts i16', () => {
-				const z = new I16(kusamaRegistry, 0);
+				const z = kusamaRegistry.createType('i16', 0);
 				expect(sanitizeNumbers(z)).toBe('0');
 
-				const min = new I16(kusamaRegistry, MIN_I16);
+				const min = kusamaRegistry.createType('i16', MIN_I16);
 				expect(sanitizeNumbers(min)).toBe(MIN_I16);
 
-				const max = new I16(kusamaRegistry, MAX_I16);
+				const max = kusamaRegistry.createType('i16', MAX_I16);
 				expect(sanitizeNumbers(max)).toBe(MAX_I16);
 			});
 			it('converts Int', () => {
@@ -407,71 +396,77 @@ describe('sanitizeNumbers', () => {
 			});
 
 			it('converts U32', () => {
-				const u32Zero = new U32(kusamaRegistry, '0x0');
+				const u32Zero = kusamaRegistry.createType('u32', '0x0');
 				expect(sanitizeNumbers(u32Zero)).toBe('0');
 
-				const u32Max = new U32(kusamaRegistry, MAX_U32);
+				const u32Max = kusamaRegistry.createType('u32', MAX_U32);
 				expect(sanitizeNumbers(u32Max)).toBe(MAX_U32);
 			});
 
 			it('converts I32', () => {
-				expect(sanitizeNumbers(new I32(kusamaRegistry, MIN_I32))).toBe(
-					MIN_I32
-				);
+				expect(
+					sanitizeNumbers(kusamaRegistry.createType('i32', MIN_I32))
+				).toBe(MIN_I32);
 
-				expect(sanitizeNumbers(new I32(kusamaRegistry, MAX_I32))).toBe(
-					MAX_I32
-				);
+				expect(
+					sanitizeNumbers(kusamaRegistry.createType('i32', MAX_I32))
+				).toBe(MAX_I32);
 			});
 
 			it('converts U64', () => {
-				const u64Zero = new U64(kusamaRegistry, '0x0');
+				const u64Zero = kusamaRegistry.createType('u64', '0x0');
 				expect(sanitizeNumbers(u64Zero)).toBe('0');
 
-				const u64Max = new U64(kusamaRegistry, MAX_U64);
+				const u64Max = kusamaRegistry.createType('u64', MAX_U64);
 				expect(sanitizeNumbers(u64Max)).toBe(MAX_U64);
 			});
 
 			it('converts I64', () => {
-				expect(sanitizeNumbers(new I64(kusamaRegistry, MIN_I64))).toBe(
-					MIN_I64
-				);
+				expect(
+					sanitizeNumbers(kusamaRegistry.createType('i64', MIN_I64))
+				).toBe(MIN_I64);
 
-				expect(sanitizeNumbers(new I64(kusamaRegistry, MAX_I64))).toBe(
-					MAX_I64
-				);
+				expect(
+					sanitizeNumbers(kusamaRegistry.createType('i64', MAX_I64))
+				).toBe(MAX_I64);
 			});
 
 			it('converts U128', () => {
-				const u128Zero = new U128(kusamaRegistry, '0x0');
+				const u128Zero = kusamaRegistry.createType('u128', '0x0');
 				expect(sanitizeNumbers(u128Zero)).toBe('0');
 
-				const u128Max = new U128(kusamaRegistry, MAX_U128);
+				const u128Max = kusamaRegistry.createType('u128', MAX_U128);
 				expect(sanitizeNumbers(u128Max)).toBe(MAX_U128);
 			});
 
 			it('converts II28', () => {
 				expect(
-					sanitizeNumbers(new I128(kusamaRegistry, MAX_I128))
+					sanitizeNumbers(kusamaRegistry.createType('I128', MAX_I128))
 				).toBe(MAX_I128);
 
 				expect(
-					sanitizeNumbers(new I128(kusamaRegistry, MIN_I128))
+					sanitizeNumbers(kusamaRegistry.createType('I128', MIN_I128))
 				).toBe(MIN_I128);
 			});
 		});
 
 		describe('BTreeMap', () => {
-			const mockU32TextMap = new Map<Text, U32>()
+			const mockU32TextMap = new Map<Text, u32>()
 				.set(
-					new Text(kusamaRegistry, 'u32Max'),
-					new U32(kusamaRegistry, '0xffffffff')
+					(kusamaRegistry.createType(
+						'Text',
+						'u32Max'
+					) as unknown) as Text,
+					kusamaRegistry.createType('u32', '0xffffffff')
 				)
 				.set(
-					new Text(kusamaRegistry, 'zero'),
-					new U32(kusamaRegistry, 0)
+					(kusamaRegistry.createType(
+						'Text',
+						'zero'
+					) as unknown) as Text,
+					kusamaRegistry.createType('u32', 0)
 				);
-			const bTreeMapConstructor = BTreeMap.with(Text, U32);
+			const bTreeMapConstructor = BTreeMap.with('Text', 'u32');
 
 			it('converts BTreeMap and nested BTreeMap', () => {
 				const sanitizedBTreeMap = {
@@ -488,10 +483,10 @@ describe('sanitizeNumbers', () => {
 
 			it('converts a nested BTreeMap', () => {
 				const structWithBTreeMap = new Struct(kusamaRegistry, {
-					foo: U32,
+					foo: u32,
 					value: 'BTreeMap<Text, u32>' as 'u32',
 				})
-					.set('foo', new U32(kusamaRegistry, 50))
+					.set('foo', kusamaRegistry.createType('u32', 50))
 					.set(
 						'value',
 						new bTreeMapConstructor(kusamaRegistry, mockU32TextMap)
@@ -508,11 +503,11 @@ describe('sanitizeNumbers', () => {
 		});
 
 		describe('BTreeSet', () => {
-			const U64Set = new Set<U64>()
-				.add(new U64(kusamaRegistry, '0x0'))
-				.add(new U64(kusamaRegistry, '24'))
-				.add(new U64(kusamaRegistry, '30'))
-				.add(new U64(kusamaRegistry, MAX_U64));
+			const U64Set = new Set<u64>()
+				.add(kusamaRegistry.createType('u64', '0x0'))
+				.add(kusamaRegistry.createType('u64', '24'))
+				.add(kusamaRegistry.createType('u64', '30'))
+				.add(kusamaRegistry.createType('u64', MAX_U64));
 
 			const sanitizedBTreeSet = ['0', '24', '30', MAX_U64];
 
@@ -525,10 +520,10 @@ describe('sanitizeNumbers', () => {
 
 			it('converts nested BTreeSet', () => {
 				const structWithBTreeSet = new Struct(kusamaRegistry, {
-					foo: U64,
-					value: BTreeSet.with(U64),
+					foo: 'u64',
+					value: BTreeSet.with('u64'),
 				})
-					.set('foo', new U64(kusamaRegistry, 50))
+					.set('foo', kusamaRegistry.createType('u64', 50))
 					.set('value', new BTreeSet(kusamaRegistry, 'u64', U64Set));
 
 				expect(sanitizeNumbers(structWithBTreeSet)).toStrictEqual({
@@ -548,24 +543,24 @@ describe('sanitizeNumbers', () => {
 
 			expect(
 				sanitizeNumbers(
-					new (Compact.with(U32))(kusamaRegistry, MAX_U32)
+					new (Compact.with(u32))(kusamaRegistry, MAX_U32)
 				)
 			).toBe(MAX_U32);
 
 			expect(
 				sanitizeNumbers(
-					new (Compact.with(U128))(kusamaRegistry, MAX_U128)
+					new (Compact.with('u128'))(kusamaRegistry, MAX_U128)
 				)
 			).toBe(MAX_U128);
 		});
 
 		it('converts nested Enum', () => {
 			const Nest = Enum.with({
-				C: U64,
-				D: U64,
+				C: 'u64',
+				D: 'u64',
 			});
 			const Test = Enum.with({
-				A: U64,
+				A: 'u64',
 				B: Nest,
 			});
 			const test = new Test(
@@ -597,19 +592,18 @@ describe('sanitizeNumbers', () => {
 
 		describe('Option', () => {
 			it('converts None to null', () => {
-				const none = new Option(kusamaRegistry, Text, null);
+				const none = kusamaRegistry.createType('Option<Text>', null);
 				expect(sanitizeNumbers(none)).toBe(null);
 			});
 
 			it('handles wrapped Some(Text)', () => {
-				const hi = new Option(kusamaRegistry, Text, 'hi');
+				const hi = kusamaRegistry.createType('Text', 'hi');
 				expect(sanitizeNumbers(hi)).toBe('hi');
 			});
 
 			it('converts Some(U128)', () => {
-				const u128MaxOption = new Option(
-					kusamaRegistry,
-					U128,
+				const u128MaxOption = kusamaRegistry.createType(
+					'Option<u128>',
 					MAX_U128
 				);
 				expect(sanitizeNumbers(u128MaxOption)).toBe(MAX_U128);
@@ -622,8 +616,8 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts nested HashMap', () => {
-			const outer = HashMap.with(Text, HashMap);
-			const inner = HashMap.with(Text, U128);
+			const outer = HashMap.with('Text', HashMap);
+			const inner = HashMap.with('Text', 'U128');
 
 			const map = new outer(kusamaRegistry, {
 				nest: new inner(kusamaRegistry, { n: MAX_U128 }),
@@ -635,11 +629,11 @@ describe('sanitizeNumbers', () => {
 
 		describe('Result', () => {
 			const ResultConstructor = Result.with({
-				Error: Text,
-				Ok: U128,
+				Error: 'Text',
+				Ok: 'u128',
 			});
-			const message = new Text(kusamaRegistry, 'message');
-			const maxU128 = new U128(kusamaRegistry, MAX_U128);
+			const message = kusamaRegistry.createType('Text', 'message');
+			const maxU128 = kusamaRegistry.createType('u128', MAX_U128);
 
 			// it('handles Ok()', () => {
 			// 	const ok = kusamaRegistry.createType('DispatchResult');
@@ -703,7 +697,7 @@ describe('sanitizeNumbers', () => {
 			// 	expect(sanitizeNumbers(ok)).toBe(message.toString());
 			// });
 			it('handles Ok(Text)', () => {
-				const R = Result.with({ Error: Text, Ok: Text });
+				const R = Result.with({ Error: 'Text', Ok: 'Text' });
 				const ok = new R(kusamaRegistry, {
 					Ok: message,
 				});
@@ -730,8 +724,8 @@ describe('sanitizeNumbers', () => {
 				const struct = new Struct(
 					kusamaRegistry,
 					{
-						foo: Text,
-						bar: U32,
+						foo: 'Text',
+						bar: 'u32',
 					},
 					{ foo: 'hi :)', bar: MAX_U32 }
 				);
@@ -748,8 +742,8 @@ describe('sanitizeNumbers', () => {
 					{
 						foo: Vec.with(
 							Struct.with({
-								w: Text,
-								bar: U32,
+								w: 'Text',
+								bar: 'u32',
 							})
 						),
 					},
@@ -789,16 +783,16 @@ describe('sanitizeNumbers', () => {
 				const struct = new Struct(
 					kusamaRegistry,
 					{
-						n: U32,
+						n: 'u32',
 						x: Struct.with({
-							n: U32,
+							n: 'u32',
 							x: Struct.with({
-								n: U32,
+								n: 'u32',
 								x: Struct.with({
-									n: U32,
+									n: 'u32',
 									x: Struct.with({
-										n: U128,
-										w: Text,
+										n: 'u128',
+										w: 'Text',
 									}),
 								}),
 							}),
@@ -815,7 +809,7 @@ describe('sanitizeNumbers', () => {
 			it('converts a simple Tuple', () => {
 				const tuple = new Tuple(
 					kusamaRegistry,
-					[Text, U128],
+					['Text', 'u128'],
 					['xX', MAX_U128]
 				);
 
@@ -825,7 +819,7 @@ describe('sanitizeNumbers', () => {
 			it('converts a 3 deep nested Tuple', () => {
 				const tuple = new Tuple(
 					kusamaRegistry,
-					[Tuple.with([Tuple.with([U32, U128]), U128]), U32],
+					[Tuple.with([Tuple.with(['u32', 'u128']), 'u128']), 'u32'],
 					[[0, 6074317682114550], 0]
 				);
 
@@ -842,7 +836,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts Vec<U128>', () => {
-			const vec = new (Vec.with(U128))(kusamaRegistry, [
+			const vec = new (Vec.with('u128'))(kusamaRegistry, [
 				'0',
 				'366920938463463374607431768211455',
 				MAX_U128,
@@ -855,7 +849,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts VecFixed<U128>', () => {
-			const vec = new (VecFixed.with(U128, 3))(kusamaRegistry, [
+			const vec = new (VecFixed.with('u128', 3))(kusamaRegistry, [
 				'0',
 				'366920938463463374607431768211455',
 				MAX_U128,
@@ -886,7 +880,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Call', () => {
-			const c = new Call(kusamaRegistry, {
+			const c = new GenericCall(kusamaRegistry, {
 				args: [
 					'5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
 					100000,
@@ -903,8 +897,8 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Event', () => {
-			const event = new Event(
-				kusamaRegistry,
+			const event = kusamaRegistry.createType(
+				'Event',
 				new Uint8Array([6, 1, 1, 1])
 			);
 			expect(sanitizeNumbers(event)).toStrictEqual({
@@ -942,8 +936,8 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Extrinsic', () => {
-			const extrinsic = new Extrinsic(
-				kusamaRegistry,
+			const extrinsic = kusamaRegistry.createType(
+				'Extrinsic',
 				'0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a4830'
 			);
 			expect(sanitizeNumbers(extrinsic)).toBe(
@@ -952,7 +946,10 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles ExtrinsicEra', () => {
-			const extrinsicEra = new ExtrinsicEra(kusamaRegistry, '0x6502');
+			const extrinsicEra = kusamaRegistry.createType(
+				'ExtrinsicEra',
+				'0x6502'
+			);
 			expect(sanitizeNumbers(extrinsicEra)).toStrictEqual({
 				MortalEra: ['64', '38'],
 			});
@@ -973,8 +970,8 @@ describe('sanitizeNumbers', () => {
 				tip: '0x00000000000000000000000000005678',
 			};
 
-			const extrinsicPayload = new ExtrinsicPayload(
-				kusamaRegistry,
+			const extrinsicPayload = kusamaRegistry.createType(
+				'ExtrinsicPayload',
 				load,
 				{
 					version: 4,
@@ -986,13 +983,13 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Vote', () => {
-			const aye = new Vote(kusamaRegistry, {
+			const aye = kusamaRegistry.createType('Vote', {
 				aye: true,
 				conviction: 'Locked2x',
 			});
 			expect(sanitizeNumbers(aye)).toBe('0x82');
 
-			const nay = new Vote(kusamaRegistry, {
+			const nay = kusamaRegistry.createType('Vote', {
 				aye: false,
 				conviction: 'Locked2x',
 			});
@@ -1181,7 +1178,7 @@ describe('sanitizeNumbers', () => {
 	});
 
 	it('handles Vec<AccountId>', () => {
-		const vec = new Vec(kusamaRegistry, AccountId, [
+		const vec = new Vec(kusamaRegistry, 'AccountId', [
 			'5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
 			'5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 			'5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
