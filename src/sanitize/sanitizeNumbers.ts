@@ -55,12 +55,12 @@ function sanitizeCodec(value: Codec): AnyJson {
 
 	if (value instanceof Json) {
 		// This is essentially a Map with [keys: strings]: any
-		const jsonJson: Record<string, AnyJson> = {};
+		const json: Record<string, AnyJson> = {};
 		value.forEach((element, prop) => {
-			jsonJson[prop] = sanitizeNumbers(element);
+			json[prop] = sanitizeNumbers(element);
 		});
 
-		return jsonJson;
+		return json;
 	}
 
 	if (value instanceof Enum) {

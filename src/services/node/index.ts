@@ -1,3 +1,3 @@
 export * from './NodeNetworkService';
-export * from './NodeVersionService';
 export * from './NodeTransactionPoolService';
+export * from './NodeVersionService';
