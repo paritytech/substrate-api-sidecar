@@ -1,4 +1,5 @@
-import { Metadata, TypeRegistry } from '@polkadot/types';
+import { Metadata } from '@polkadot/metadata';
+import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
 import { polkadotV16MetadataRpc } from '../metadata/polkadotV16Metadata';

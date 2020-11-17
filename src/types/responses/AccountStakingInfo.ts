@@ -1,5 +1,5 @@
-import AccountId from '@polkadot/types/generic/AccountId';
 import { RewardDestination, StakingLedger } from '@polkadot/types/interfaces';
+import { AccountId } from '@polkadot/types/interfaces/runtime';
 
 import { IAt } from '.';
 

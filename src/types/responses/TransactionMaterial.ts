@@ -1,5 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
-import U32 from '@polkadot/types/primitive/U32';
+import { u32 } from '@polkadot/types/primitive';
 
 import { IAt } from '.';
 
@@ -8,7 +8,7 @@ export interface ITransactionMaterial {
 	genesisHash: BlockHash;
 	chainName: string;
 	specName: string;
-	specVersion: U32;
-	txVersion: U32;
+	specVersion: u32;
+	txVersion: u32;
 	metadata?: string;
 }

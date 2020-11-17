@@ -1,8 +1,8 @@
-import { EventData } from '@polkadot/types/generic/Event';
+import { GenericEventData } from '@polkadot/types';
 
 import { IFrameMethod } from '.';
 
 export interface ISanitizedEvent {
 	method: string | IFrameMethod;
-	data: EventData;
+	data: GenericEventData;
 }
