@@ -101,7 +101,6 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	 * Best effort list of known public nodes that do not encourage high traffic
 	 * sidecar installations connecting to them for non - testing / development purposes.
 	 */
-	// TODO move this to config folder and update
 	const publicWsUrls: string[] = [
 		'wss://rpc.polkadot.io',
 		'wss://cc1-1.polkadot.network',

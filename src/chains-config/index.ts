@@ -8,6 +8,7 @@ import { defaultControllers } from './defaultControllers';
 import { kulupuControllers } from './kulupuControllers';
 
 /**
+ * Return an array of instantiated controller instances based off of a `specName`.
  *
  * @param api ApiPromise to inject into controllers
  * @param implName
