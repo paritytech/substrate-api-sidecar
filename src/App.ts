@@ -83,6 +83,9 @@ export default class App {
 	listen(): void {
 		this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
+			console.log(
+				`Check the root endpoint (http://${this.host}:${this.port}/) to see the available endpoints for the current node`
+			);
 		});
 	}
 

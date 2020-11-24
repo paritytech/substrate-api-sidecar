@@ -12,9 +12,7 @@ import AbstractController from '../AbstractController';
  * 		- `hash`: H256 hash of the extrinsic.
  * 		- `encodedExtrinsic`: Scale encoded extrinsic.
  */
-export default class NodeTransactionPoolController extends AbstractController<
-	NodeTransactionPoolService
-> {
+export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

@@ -60,9 +60,7 @@ import AbstractController from '../AbstractController';
  * aformentioned payouts.
  *
  */
-export default class AccountsStakingPayoutsController extends AbstractController<
-	AccountsStakingPayoutsService
-> {
+export default class AccountsStakingPayoutsController extends AbstractController<AccountsStakingPayoutsService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,
@@ -86,9 +84,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getStakingPayoutsByAccountId: RequestHandler<
-		IAddressParam
-	> = async (
+	private getStakingPayoutsByAccountId: RequestHandler<IAddressParam> = async (
 		{ params: { address }, query: { depth, era, unclaimedOnly } },
 		res
 	): Promise<void> => {

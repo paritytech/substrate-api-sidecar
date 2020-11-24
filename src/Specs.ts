@@ -1,6 +1,6 @@
 import { ConfigSpecs, SpecsFactory } from 'confmgr';
 
-import { CONFIG, MODULES } from './types/config';
+import { CONFIG, MODULES } from './types/sidecar-config';
 
 /**
  * Access a singleton specification for config enviroment variables that will

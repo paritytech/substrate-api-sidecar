@@ -40,9 +40,7 @@ const api = {
 	},
 };
 
-const MockController = class MockController extends AbstractController<
-	AbstractService
-> {
+const MockController = class MockController extends AbstractController<AbstractService> {
 	protected initRoutes(): void {
 		throw new Error('Method not implemented.');
 	}

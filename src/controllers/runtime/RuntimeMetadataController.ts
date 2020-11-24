@@ -18,9 +18,7 @@ import AbstractController from '../AbstractController';
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
-export default class RuntimeMetadataController extends AbstractController<
-	RuntimeMetadataService
-> {
+export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
 	constructor(api: ApiPromise) {
 		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();

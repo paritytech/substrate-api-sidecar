@@ -28,9 +28,7 @@ import AbstractController from '../AbstractController';
  * is connected to does not expose the `system_dryRun` RPC. One way to resolve this
  * issue is to pass the `--rpc-external` flag to that node.
  */
-export default class TransactionDryRunController extends AbstractController<
-	TransactionDryRunService
-> {
+export default class TransactionDryRunController extends AbstractController<TransactionDryRunService> {
 	constructor(api: ApiPromise) {
 		super(api, '/transaction/dry-run', new TransactionDryRunService(api));
 		this.initRoutes();

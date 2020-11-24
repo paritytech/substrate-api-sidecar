@@ -27,9 +27,7 @@ import AbstractController from '../AbstractController';
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
  * - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
  */
-export default class AccountsVestingInfoController extends AbstractController<
-	AccountsVestingInfoService
-> {
+export default class AccountsVestingInfoController extends AbstractController<AccountsVestingInfoService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

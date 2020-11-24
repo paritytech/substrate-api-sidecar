@@ -8,9 +8,12 @@ import AbstractController from '../AbstractController';
 /**
  * GET a block.
  *
+ * N.B. this controller assumes the chain does not have a finality
+ * gadget (e.g. PoW in Kulupu))
+ *
  * Paths:
- * - `head`: Get the latest finalized block.
- * - (Optional) `number`: Block hash or height at which to query. If not provided, queries
+ * - `kulupuBlocks\head`: Get the latest finalized block.
+ * - (Optional) `kulupuBlocks\number`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
  *
  * Query:
@@ -18,9 +21,6 @@ import AbstractController from '../AbstractController';
  * 	`docs` property with a string of the events documentation.
  * - (Optional) `extrinsicDocs`: When set to `true`, every extrinsic will have an extra
  * 	`docs` property with a string of the extrinsics documentation.
- * - (Optional for `/blocks/head`) `finalized`: When set to `false`, it will fetch the head of
- * 	the node's canon chain, which might not be finalized. When set to `true` it
- * 	will fetch the head of the finalized chain.
  *
  *
  * Returns:
@@ -51,8 +51,6 @@ import AbstractController from '../AbstractController';
  * - `onFinalize`: Object with an array of `SanitizedEvent`s that occurred during block
  *   finalization with the `method` and `data` for each.
  *
- * Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
- * canonical chain. It denotes the finalization of block _construction._
  *
  * Substrate Reference:
  * - `DigestItem`: https://crates.parity.io/sp_runtime/enum.DigestItem.html
@@ -62,9 +60,9 @@ import AbstractController from '../AbstractController';
  * - `OnInitialize`: https://crates.parity.io/frame_support/traits/trait.OnInitialize.html
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
-export default class BlocksController extends AbstractController<BlocksService> {
+export default class KulupuBlocksController extends AbstractController<BlocksService> {
 	constructor(api: ApiPromise) {
-		super(api, '/blocks', new BlocksService(api));
+		super(api, '/kulupuBlocks', new BlocksService(api));
 		this.initRoutes();
 	}
 
@@ -82,18 +80,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized } },
+		{ query: { eventDocs, extrinsicDocs } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
 
-		const hash =
-			finalized === 'false'
-				? (await this.api.rpc.chain.getHeader()).hash
-				: await this.api.rpc.chain.getFinalizedHead();
+		const hash = (await this.api.rpc.chain.getHeader()).hash;
 
-		BlocksController.sanitizedSend(
+		KulupuBlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg)
 		);
@@ -114,7 +109,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
 
-		BlocksController.sanitizedSend(
+		KulupuBlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
 				hash,

@@ -14,9 +14,7 @@ import AbstractController from '../AbstractController';
  *
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
-export default class PalletsStorageItemController extends AbstractController<
-	PalletsStorageItemService
-> {
+export default class PalletsStorageItemController extends AbstractController<PalletsStorageItemService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

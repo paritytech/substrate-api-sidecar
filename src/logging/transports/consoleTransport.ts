@@ -1,7 +1,7 @@
 import { TransformableInfo } from 'logform';
 import { format, transports } from 'winston';
 
-import { Config } from '../../Config';
+import { SidecarConfig } from '../../SidecarConfig';
 import {
 	filterApiRpc,
 	nodeUtilFormat,
@@ -12,7 +12,7 @@ import {
 
 const {
 	config: { LOG },
-} = Config;
+} = SidecarConfig;
 
 /**
  * Console transport for winston logger.

@@ -39,9 +39,7 @@ import AbstractController from '../AbstractController';
  * - `AccountData`: https://crates.parity.io/pallet_balances/struct.AccountData.html
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
-export default class AccountsBalanceController extends AbstractController<
-	AccountsBalanceInfoService
-> {
+export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

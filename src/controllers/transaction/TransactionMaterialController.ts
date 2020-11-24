@@ -34,9 +34,7 @@ import AbstractController from '../AbstractController';
  * - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
  * -  FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  */
-export default class TransactionMaterialController extends AbstractController<
-	TransactionMaterialService
-> {
+export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,
