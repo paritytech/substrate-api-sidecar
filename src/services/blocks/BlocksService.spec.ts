@@ -53,7 +53,7 @@ describe('BlocksService', () => {
 				(undefined as unknown) as GenericExtrinsic
 			);
 
-			mockApi.rpc.chain.getBlock = (() =>
+			mockApi.derive.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
@@ -68,7 +68,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
+			mockApi.derive.chain.getBlock = (getBlock as unknown) as GetBlock;
 		});
 	});
 

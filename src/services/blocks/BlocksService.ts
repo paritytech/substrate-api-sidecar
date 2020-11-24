@@ -47,7 +47,7 @@ export class BlocksService extends AbstractService {
 		let block;
 		let events;
 		let author;
-		if (typeof api.query?.session?.validators === 'function') {
+		if (typeof api.query?.session?.validators?.at === 'function') {
 			[{ author, block }, events] = await Promise.all([
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),

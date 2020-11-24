@@ -27,7 +27,6 @@
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",
-    "clean": "rm -rf node_modules/ yarn.lock build/",
     "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "deploy": "yarn build && standard-version",
