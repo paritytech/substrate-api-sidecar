@@ -2,7 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { PalletsStorageItemService } from '../../services';
+import { PalletsStorageService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
@@ -14,14 +14,12 @@ import AbstractController from '../AbstractController';
  *
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
-export default class PalletsStorageItemController extends AbstractController<
-	PalletsStorageItemService
-> {
+export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,
 			'/pallets/:palletId/storage',
-			new PalletsStorageItemService(api)
+			new PalletsStorageService(api)
 		);
 
 		this.initRoutes();
@@ -31,6 +29,7 @@ export default class PalletsStorageItemController extends AbstractController<
 		// TODO look into middleware validation of in path IDs. https://github.com/paritytech/substrate-api-sidecar/issues/281
 		this.safeMountAsyncGetHandlers([
 			['/:storageItemId', this.getStorageItem],
+			['/', this.getStorage],
 		]);
 	}
 
@@ -47,7 +46,7 @@ export default class PalletsStorageItemController extends AbstractController<
 
 		const hash = await this.getHashFromAt(at);
 
-		PalletsStorageItemController.sanitizedSend(
+		PalletsStorageController.sanitizedSend(
 			res,
 			await this.service.fetchStorageItem({
 				hash,
@@ -57,6 +56,21 @@ export default class PalletsStorageItemController extends AbstractController<
 				key1: key1Arg,
 				key2: key2Arg,
 				metadata: metadataArg,
+			})
+		);
+	};
+
+	private getStorage: RequestHandler = async (
+		{ params: { palletId }, query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		PalletsStorageController.sanitizedSend(
+			res,
+			await this.service.fetchStorage({
+				hash,
+				palletId: stringCamelCase(palletId),
 			})
 		);
 	};

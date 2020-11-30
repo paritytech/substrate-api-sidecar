@@ -4,13 +4,34 @@ import {
 	StorageEntryMetadataV12,
 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
-import { ISanitizedStorageItemMetadata } from 'src/types/responses';
-import { IPalletStorageItem } from 'src/types/responses/PalletStorageItem';
+import {
+	IPalletStorage,
+	IPalletStorageItem,
+	ISanitizedStorageItemMetadata,
+} from 'src/types/responses';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { AbstractService } from '../AbstractService';
 
-export class PalletsStorageItemService extends AbstractService {
+interface IFetchPalletArgs {
+	hash: BlockHash;
+	palletId: string;
+}
+
+interface IFetchStorageItemArgs extends IFetchPalletArgs {
+	storageItemId: string;
+	key1: string | undefined;
+	key2: string | undefined;
+	metadata: boolean;
+}
+
+function cannotFindPalletId(palletId: string) {
+	throw new BadRequest(
+		`"${palletId}" was not recognized as a queryable pallet. Pallet names are expected to be in camel case, e.g. 'palletId`
+	);
+}
+
+export class PalletsStorageService extends AbstractService {
 	async fetchStorageItem({
 		hash,
 		palletId,
@@ -18,18 +39,9 @@ export class PalletsStorageItemService extends AbstractService {
 		key1,
 		key2,
 		metadata,
-	}: {
-		hash: BlockHash;
-		palletId: string;
-		storageItemId: string;
-		key1: string | undefined;
-		key2: string | undefined;
-		metadata: boolean;
-	}): Promise<IPalletStorageItem> {
+	}: IFetchStorageItemArgs): Promise<IPalletStorageItem> {
 		if (!this.api.query[palletId]) {
-			throw new BadRequest(
-				`"${palletId}" was not recognized as a queryable pallet. Pallet names are expected to be in camel case, e.g. 'palletId`
-			);
+			cannotFindPalletId(palletId);
 		}
 
 		if (!this.api.query[palletId][storageItemId]) {
@@ -40,18 +52,15 @@ export class PalletsStorageItemService extends AbstractService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletId);
 
-		let sanitizedStorageItemMeta;
+		let normalizedStorageItemMeta;
 		if (metadata) {
 			const storageItemMeta = this.findStorageItemMeta(
 				palletMeta,
 				storageItemId
 			);
 
-			sanitizedStorageItemMeta = (sanitizeNumbers(
+			normalizedStorageItemMeta = this.normalizeStorageItemMeta(
 				storageItemMeta
-			) as unknown) as ISanitizedStorageItemMetadata;
-			sanitizedStorageItemMeta.documentation = this.sanitizeDocs(
-				storageItemMeta.documentation
 			);
 		}
 
@@ -71,8 +80,63 @@ export class PalletsStorageItemService extends AbstractService {
 			key1,
 			key2,
 			value,
-			metadata: sanitizedStorageItemMeta,
+			metadata: normalizedStorageItemMeta,
 		};
+	}
+
+	async fetchStorage({
+		hash,
+		palletId,
+	}: IFetchPalletArgs): Promise<IPalletStorage> {
+		if (!this.api.query[palletId]) {
+			cannotFindPalletId(palletId);
+		}
+
+		const { number } = await this.api.rpc.chain.getHeader(hash);
+
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletId);
+
+		let items: [] | ISanitizedStorageItemMetadata[];
+		if (palletMeta.storage.isNone) {
+			items = [];
+		} else {
+			items = palletMeta.storage
+				.unwrap()
+				.items.map((itemMeta: StorageEntryMetadataV12) => {
+					return this.normalizeStorageItemMeta(itemMeta);
+				});
+		}
+
+		return {
+			at: {
+				hash: hash,
+				height: number.unwrap().toString(10),
+			},
+			pallet: palletId,
+			palletIndex: palletMetaIdx,
+			items,
+		};
+	}
+
+	/**
+	 * Normalize storage item metadata by running it through `sanitizeNumbers` and
+	 * converting the docs section from an array of strings to a single string
+	 * joined with new line characters.
+	 *
+	 * @param storageItemMeta polkadot-js StorageEntryMetadataV12
+	 */
+	private normalizeStorageItemMeta(
+		storageItemMeta: StorageEntryMetadataV12
+	): ISanitizedStorageItemMetadata {
+		const normalizedStorageItemMeta = (sanitizeNumbers(
+			storageItemMeta
+		) as unknown) as ISanitizedStorageItemMetadata;
+
+		normalizedStorageItemMeta.documentation = this.sanitizeDocs(
+			storageItemMeta.documentation
+		);
+
+		return normalizedStorageItemMeta;
 	}
 
 	/**
