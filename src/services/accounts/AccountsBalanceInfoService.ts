@@ -1,4 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 import { IAccountBalanceInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -29,7 +30,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		const at = {
 			hash,
-			height: header.number.toNumber().toString(10),
+			height: header.number.unwrap().toString(10),
 		};
 
 		if (account && locks && sysAccount) {
@@ -46,10 +47,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				locks,
 			};
 		} else {
-			throw {
-				at,
-				error: 'Account not found',
-			};
+			throw new BadRequest('Account not found');
 		}
 	}
 }
