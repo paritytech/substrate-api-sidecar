@@ -61,16 +61,18 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	};
 
 	private getStorage: RequestHandler = async (
-		{ params: { palletId }, query: { at } },
+		{ params: { palletId }, query: { at, onlyIds } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
+		const onlyIdsArg = onlyIds === 'true' ? true : false;
 
 		PalletsStorageController.sanitizedSend(
 			res,
 			await this.service.fetchStorage({
 				hash,
 				palletId: stringCamelCase(palletId),
+				onlyIds: onlyIdsArg,
 			})
 		);
 	};

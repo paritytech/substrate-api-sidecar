@@ -578,6 +578,13 @@ paths:
         required: true
         schema:
           type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the storage items instead of all of each storage
+          items metadata.
+        required: false
+        schema:
+          type: boolean
       - name: at
         in: query
         description: Block at which to retrieve a list of

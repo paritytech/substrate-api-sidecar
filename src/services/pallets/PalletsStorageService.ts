@@ -1,3 +1,4 @@
+import { Text } from '@polkadot/types';
 import {
 	BlockHash,
 	ModuleMetadataV12,
@@ -87,7 +88,8 @@ export class PalletsStorageService extends AbstractService {
 	async fetchStorage({
 		hash,
 		palletId,
-	}: IFetchPalletArgs): Promise<IPalletStorage> {
+		onlyIds,
+	}: IFetchPalletArgs & { onlyIds: boolean }): Promise<IPalletStorage> {
 		if (!this.api.query[palletId]) {
 			cannotFindPalletId(palletId);
 		}
@@ -96,15 +98,19 @@ export class PalletsStorageService extends AbstractService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletId);
 
-		let items: [] | ISanitizedStorageItemMetadata[];
+		let items: [] | ISanitizedStorageItemMetadata[] | Text[];
 		if (palletMeta.storage.isNone) {
 			items = [];
+		} else if (onlyIds) {
+			items = palletMeta.storage
+				.unwrap()
+				.items.map((itemMeta) => itemMeta.name);
 		} else {
 			items = palletMeta.storage
 				.unwrap()
-				.items.map((itemMeta: StorageEntryMetadataV12) => {
-					return this.normalizeStorageItemMeta(itemMeta);
-				});
+				.items.map((itemMeta) =>
+					this.normalizeStorageItemMeta(itemMeta)
+				);
 		}
 
 		return {
