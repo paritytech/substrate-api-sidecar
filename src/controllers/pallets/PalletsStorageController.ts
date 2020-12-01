@@ -6,6 +6,10 @@ import { PalletsStorageService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
+ * `/pallets/{palletId}/storage`
+ *
+ * Returns the metadata for each storage item of the pallet.
+ *
  * `/pallets/{palletId}/storage/{storageItemId}`
  *
  * Returns the value stored under the storageItemId. If it is a
@@ -64,8 +68,9 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		{ params: { palletId }, query: { at, onlyIds } },
 		res
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
 		const onlyIdsArg = onlyIds === 'true' ? true : false;
+
+		const hash = await this.getHashFromAt(at);
 
 		PalletsStorageController.sanitizedSend(
 			res,
