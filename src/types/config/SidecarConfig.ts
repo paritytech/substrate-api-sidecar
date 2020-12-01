@@ -1,3 +1,5 @@
+import { AnyJson } from '@polkadot/types/types';
+
 /**
  * Object to house the values of all the configurable components for Sidecar.
  */
@@ -9,7 +11,7 @@ export interface ISidecarConfig {
 
 interface ISidecarConfigSubstrate {
 	WS_URL: string;
-	CUSTOM_TYPES: Record<string, string> | undefined;
+	CUSTOM_TYPES: AnyJson;
 }
 
 interface ISidecarConfigExpress {
