@@ -574,15 +574,15 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: 'Name or index of the pallet to query the storage of. Note: pallet name aligns with
-          pallet name as specified in runtime metadata.'
+        description: 'Name or index of the pallet to query the storage of. Note: the pallet name must match what is
+          specified in the runtime metadata.'
         required: true
         schema:
           type: string
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
-          items metadata.
+          item's metadata.
         required: false
         schema:
           type: boolean
@@ -602,7 +602,7 @@ paths:
             application/json:
               schema:
                 type: array
-                description: Pallet info andArray of storageItemIds.
+                description: Pallet info and Array of storageItemIds.
                 items:
                   $ref: '#/components/schemas/PalletStorage'
         "400":
@@ -1511,7 +1511,7 @@ components:
         name:
           type: string
           example: "ReferendumInfoOf"
-          description: The storage item's name, (which is the same as the storage item's ID).
+          description: The storage item's name (which is the same as the storage item's ID).
         modifier:
           type: string
           example: "Optional"

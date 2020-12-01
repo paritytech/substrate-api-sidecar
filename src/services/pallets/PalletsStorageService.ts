@@ -193,7 +193,7 @@ export class PalletsStorageService extends AbstractService {
 		} else if (isValidPalletName) {
 			for (const [_sectionIdx, section] of filtered.entries()) {
 				if (section.name.toLowerCase() === palletId.toLowerCase()) {
-					// ModuleMetadataV11 and lower have a `index` but they use 255 as a reserve value to signify
+					// ModuleMetadataV11 and lower have an `index` but they use 255 as a reserve value to signify
 					// that they are meaningless. So if the index is 255 we use its index in the filtered array
 					// of modules. But if the index is something else than we use `ModuleMetadataV12.index`.
 					// The reason they use a reserve value is that all previous ModuleMetadata versions actually
@@ -228,7 +228,7 @@ export class PalletsStorageService extends AbstractService {
 		isValidPalletIndex: boolean;
 		parsedPalletId: string | number;
 	} {
-		// Either a pallet name (string) or an pallet index (number)
+		// Either a pallet name (string) or a pallet index (number)
 		const parsedPalletId = PalletsStorageService.palletIdxOrName(palletId);
 
 		const isValidPalletName =
@@ -250,7 +250,7 @@ export class PalletsStorageService extends AbstractService {
 	}
 
 	/**
-	 * Identify if a pallet Identifier should be a index or a string. If it should
+	 * Identify if a pallet Identifier should be an index or a string. If it should
 	 * be an index return a number and if it should be a name return a string.
 	 *
 	 * @param palletId FRAME pallet identifier as a pallet name or index
