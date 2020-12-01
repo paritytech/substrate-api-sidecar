@@ -254,6 +254,11 @@ export const pendingExtrinsics = (): Promise<Vec<Extrinsic>> =>
 export const tx = (): Extrinsic =>
 	polkadotRegistry.createType('Extrinsic', balancesTransferValid);
 
+const referendumInfoOfAt = () =>
+	Promise.resolve().then(() => {
+		polkadotRegistry.createType('ReferendumInfo');
+	});
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -298,7 +303,9 @@ export const mockApi = ({
 		vesting: {
 			vesting: { at: vestingAt },
 		},
-		democracy: () => Promise.resolve().then(() => 'stub'),
+		democracy: {
+			referendumInfoOf: { at: referendumInfoOfAt },
+		},
 	},
 	consts: {
 		babe: {

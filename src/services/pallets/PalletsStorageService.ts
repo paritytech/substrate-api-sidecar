@@ -22,8 +22,8 @@ interface IFetchPalletArgs {
 
 interface IFetchStorageItemArgs extends IFetchPalletArgs {
 	storageItemId: string;
-	key1: string | undefined;
-	key2: string | undefined;
+	key1?: string;
+	key2?: string;
 	metadata: boolean;
 }
 
