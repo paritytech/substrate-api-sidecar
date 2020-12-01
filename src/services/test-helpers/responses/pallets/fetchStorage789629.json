@@ -1,0 +1,171 @@
+{
+  "at": {
+    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+    "height": "789629"
+  },
+  "pallet": "democracy",
+  "palletIndex": "15",
+  "items": [
+    {
+      "name": "PublicPropCount",
+      "modifier": "Default",
+      "type": {
+        "Plain": "PropIndex"
+      },
+      "fallback": "0x00000000",
+      "documentation": " The number of (public) proposals that have been made so far."
+    },
+    {
+      "name": "PublicProps",
+      "modifier": "Default",
+      "type": {
+        "Plain": "Vec<(PropIndex,Hash,AccountId)>"
+      },
+      "fallback": "0x00",
+      "documentation": " The public proposals. Unsorted. The second item is the proposal's hash."
+    },
+    {
+      "name": "DepositOf",
+      "modifier": "Optional",
+      "type": {
+        "Map": {
+          "hasher": "Twox64Concat",
+          "key": "PropIndex",
+          "value": "(Vec<AccountId>,BalanceOf)",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " Those who have locked a deposit.\n\n TWOX-NOTE: Safe, as increasing integer keys are safe."
+    },
+    {
+      "name": "Preimages",
+      "modifier": "Optional",
+      "type": {
+        "Map": {
+          "hasher": "Identity",
+          "key": "Hash",
+          "value": "PreimageStatus",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " Map of hashes to the proposal preimage, along with who registered it and their deposit.\n The block number is the block at which it was deposited."
+    },
+    {
+      "name": "ReferendumCount",
+      "modifier": "Default",
+      "type": {
+        "Plain": "ReferendumIndex"
+      },
+      "fallback": "0x00000000",
+      "documentation": " The next free referendum index, aka the number of referenda started so far."
+    },
+    {
+      "name": "LowestUnbaked",
+      "modifier": "Default",
+      "type": {
+        "Plain": "ReferendumIndex"
+      },
+      "fallback": "0x00000000",
+      "documentation": " The lowest referendum index representing an unbaked referendum. Equal to\n `ReferendumCount` if there isn't a unbaked referendum."
+    },
+    {
+      "name": "ReferendumInfoOf",
+      "modifier": "Optional",
+      "type": {
+        "Map": {
+          "hasher": "Twox64Concat",
+          "key": "ReferendumIndex",
+          "value": "ReferendumInfo",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+    },
+    {
+      "name": "VotingOf",
+      "modifier": "Default",
+      "type": {
+        "Map": {
+          "hasher": "Twox64Concat",
+          "key": "AccountId",
+          "value": "Voting",
+          "linked": false
+        }
+      },
+      "fallback": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "documentation": " All votes for a particular voter. We store the balance for the number of votes that we\n have recorded. The second item is the total amount of delegations, that will be added.\n\n TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway."
+    },
+    {
+      "name": "Locks",
+      "modifier": "Optional",
+      "type": {
+        "Map": {
+          "hasher": "Twox64Concat",
+          "key": "AccountId",
+          "value": "BlockNumber",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " Accounts for which there are locks in action which may be removed at some point in the\n future. The value is the block number at which the lock expires and may be removed.\n\n TWOX-NOTE: OK ― `AccountId` is a secure hash."
+    },
+    {
+      "name": "LastTabledWasExternal",
+      "modifier": "Default",
+      "type": {
+        "Plain": "bool"
+      },
+      "fallback": "0x00",
+      "documentation": " True if the last referendum tabled was submitted externally. False if it was a public\n proposal."
+    },
+    {
+      "name": "NextExternal",
+      "modifier": "Optional",
+      "type": {
+        "Plain": "(Hash,VoteThreshold)"
+      },
+      "fallback": "0x00",
+      "documentation": " The referendum to be tabled whenever it would be valid to table an external proposal.\n This happens when a referendum needs to be tabled and one of two conditions are met:\n - `LastTabledWasExternal` is `false`; or\n - `PublicProps` is empty."
+    },
+    {
+      "name": "Blacklist",
+      "modifier": "Optional",
+      "type": {
+        "Map": {
+          "hasher": "Identity",
+          "key": "Hash",
+          "value": "(BlockNumber,Vec<AccountId>)",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " A record of who vetoed what. Maps proposal hash to a possible existent block number\n (until when it may not be resubmitted) and who vetoed it."
+    },
+    {
+      "name": "Cancellations",
+      "modifier": "Default",
+      "type": {
+        "Map": {
+          "hasher": "Identity",
+          "key": "Hash",
+          "value": "bool",
+          "linked": false
+        }
+      },
+      "fallback": "0x00",
+      "documentation": " Record of all proposals that have been subject to emergency cancellation."
+    },
+    {
+      "name": "StorageVersion",
+      "modifier": "Optional",
+      "type": {
+        "Plain": "Releases"
+      },
+      "fallback": "0x00",
+      "documentation": " Storage version of the pallet.\n\n New networks start with last version."
+    }
+  ]
+}

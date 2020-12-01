@@ -574,7 +574,8 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Name or index of the pallet to query the storage of.
+        description: 'Name or index of the pallet to query the storage of. Note: pallet name aligns with
+          pallet name as specified in runtime metadata.'
         required: true
         schema:
           type: string
@@ -627,7 +628,8 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Name or index of the pallet to query the storage of.
+        description: 'Name or index of the pallet to query the storage of. Note: pallet name aligns with
+          pallet name as specified in runtime metadata.'
         required: true
         schema:
           type: string

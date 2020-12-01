@@ -262,6 +262,7 @@ export const mockApi = ({
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	tx,
+	runtimeMetadata: polkadotMetadata,
 	query: {
 		babe: {
 			currentSlot: { at: currentSlotAt },
@@ -297,6 +298,7 @@ export const mockApi = ({
 		vesting: {
 			vesting: { at: vestingAt },
 		},
+		democracy: () => Promise.resolve().then(() => 'stub'),
 	},
 	consts: {
 		babe: {
