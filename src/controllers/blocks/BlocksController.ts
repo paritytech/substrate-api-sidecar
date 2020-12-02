@@ -65,7 +65,7 @@ import AbstractController from '../AbstractController';
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
 export default class BlocksController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise) {
+	constructor(api: ApiPromise, private finalizes = true) {
 		super(api, '/blocks', new BlocksService(api));
 		this.initRoutes();
 	}
@@ -91,7 +91,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
 
 		const hash =
-			finalized === 'false'
+			finalized === 'false' || !this.finalizes
 				? (await this.api.rpc.chain.getHeader()).hash
 				: await this.api.rpc.chain.getFinalizedHead();
 

@@ -5,7 +5,6 @@ import {
 	AccountsVestingInfo,
 } from './accounts';
 import { Blocks } from './blocks';
-import { KulupuBlocks } from './chains';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import { PalletsStakingProgress, PalletsStorage } from './pallets';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
@@ -25,7 +24,6 @@ export const controllers = {
 	AccountsStakingInfo,
 	AccountsVestingInfo,
 	AccountsStakingPayouts,
-	KulupuBlocks,
 	PalletsStakingProgress,
 	PalletsStorage,
 	NodeNetwork,
