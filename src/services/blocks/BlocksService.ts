@@ -323,7 +323,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Create calcFee from params.
+	 * Create calcFee from params or return `null` if calcFee cannot be created.
 	 *
 	 * @param api ApiPromise
 	 * @param parentHash Hash of the parent block
@@ -334,46 +334,70 @@ export class BlocksService extends AbstractService {
 		parentHash: Hash,
 		block: Block
 	) {
-		let parentParentHash: Hash;
-		if (block.header.number.toNumber() > 1) {
-			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-				.parentHash;
+		const perByte = api?.consts?.transactionPayment?.transactionByteFee;
+		const extrinsicBaseWeight = api?.consts?.system?.extrinsicBaseWeight;
+
+		let calcFee;
+		let specName;
+		let specVersion;
+		if (perByte === undefined || extrinsicBaseWeight === undefined) {
+			// We do not have the neccesary materials to build calcFee, so we just give a dummy function
+			// that aligns with the expected API of calcFee.
+			calcFee = { calc_fee: () => null };
+
+			const version = await api.rpc.state.getRuntimeVersion(parentHash);
+			[specVersion, specName] = [
+				version.specName.toString(),
+				version.specVersion.toNumber(),
+			];
 		} else {
-			parentParentHash = parentHash;
-		}
+			const coefficients = api.consts.transactionPayment.weightToFee.map(
+				(c) => {
+					return {
+						coeffInteger: c.coeffInteger.toString(),
+						coeffFrac: c.coeffFrac,
+						degree: c.degree,
+						negative: c.negative,
+					};
+				}
+			);
 
-		const perByte = api.consts.transactionPayment.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
-			parentHash
-		);
-		// The block where the runtime is deployed falsely proclaims it would
-		// be already using the new runtime. This workaround therefore uses the
-		// parent of the parent in order to determine the correct runtime under which
-		// this block was produced.
-		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
-		const specName = version.specName.toString();
-		const specVersion = version.specVersion.toNumber();
-		const coefficients = api.consts.transactionPayment.weightToFee.map(
-			(c) => {
-				return {
-					coeffInteger: c.coeffInteger.toString(),
-					coeffFrac: c.coeffFrac,
-					degree: c.degree,
-					negative: c.negative,
-				};
+			// The block where the runtime is deployed falsely proclaims it would
+			// be already using the new runtime. This workaround therefore uses the
+			// parent of the parent in order to determine the correct runtime under which
+			// this block was produced.
+			let parentParentHash: Hash;
+			if (block.header.number.toNumber() > 1) {
+				parentParentHash = (await api.rpc.chain.getHeader(parentHash))
+					.parentHash;
+			} else {
+				parentParentHash = parentHash;
 			}
-		);
 
-		return {
-			calcFee: CalcFee.from_params(
+			const [version, multiplier] = await Promise.all([
+				api.rpc.state.getRuntimeVersion(parentParentHash),
+				api.query?.transactionPayment?.nextFeeMultiplier?.at(
+					parentHash
+				),
+			]);
+
+			[specName, specVersion] = [
+				version.specName.toString(),
+				version.specVersion.toNumber(),
+			];
+
+			calcFee = CalcFee.from_params(
 				coefficients,
 				BigInt(extrinsicBaseWeight.toString()),
 				multiplier.toString(),
 				perByte.toString(),
 				specName,
 				specVersion
-			),
+			);
+		}
+
+		return {
+			calcFee,
 			specName,
 			specVersion,
 		};

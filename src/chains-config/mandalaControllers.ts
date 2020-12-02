@@ -1,10 +1,9 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * Controllers that Sidecar will always default to. This likely will always be
- * the optimal controller selection for Polkadot and Kusama.
+ * Controllers for mandala, acala's test network.
  */
-export const defaultControllers: ControllerConfig = {
+export const mandalaControllers: ControllerConfig = {
 	Blocks: true,
 	KulupuBlocks: false,
 	AccountsStakingPayouts: true,

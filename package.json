@@ -28,11 +28,12 @@
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",
     "main": "node ./build/src/main.js",
+    "main:inspect": "node --inspect ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "deploy": "yarn build && standard-version",
     "start": "yarn run main",
     "start:log-rpc": "yarn run build && NODE_ENV=test yarn run main ",
-    "dev": "tsc-watch --onSuccess \"yarn run main\"",
+    "dev": "tsc-watch --onSuccess \"yarn run main:inspect\"",
     "test": "jest --silent"
   },
   "dependencies": {

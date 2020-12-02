@@ -6,7 +6,7 @@ import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
 import { kulupuControllers } from './kulupuControllers';
-
+import { mandalaControllers } from './mandalaControllers';
 /**
  * Return an array of instantiated controller instances based off of a `specName`.
  *
@@ -20,6 +20,8 @@ export function getControllersForSpec(
 	switch (specName) {
 		case 'kulupu':
 			return getControllersFromConfig(api, kulupuControllers);
+		case 'mandala':
+			return getControllersFromConfig(api, mandalaControllers);
 		default:
 			return getControllersFromConfig(api, defaultControllers);
 	}

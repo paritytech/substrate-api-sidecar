@@ -12,7 +12,8 @@ describe('AccountsBalanceInfoService', () => {
 				sanitizeNumbers(
 					await accountsBalanceInfoService.fetchAccountBalanceInfo(
 						blockHash789629,
-						testAddress
+						testAddress,
+						'DOT'
 					)
 				)
 			).toStrictEqual(accountsBalanceInfo789629);

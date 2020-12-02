@@ -12,15 +12,22 @@ export class AccountsBalanceInfoService extends AbstractService {
 	 */
 	async fetchAccountBalanceInfo(
 		hash: BlockHash,
-		address: string
+		address: string,
+		token: string
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
+
+		console.log(token);
 
 		const [header, locks, sysAccount] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.balances.locks.at(hash, address),
 			api.query.system.account.at(hash, address),
 		]);
+
+		debugger;
+		console.log('token ', token);
+		console.log('sysAccount ', sysAccount.data.free);
 
 		const account =
 			sysAccount.data != null

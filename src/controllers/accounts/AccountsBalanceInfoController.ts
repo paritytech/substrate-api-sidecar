@@ -62,14 +62,17 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 * @param res Express Response
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at } },
+		{ params: { address }, query: { at, token } },
 		res
 	): Promise<void> => {
+		const tokenArg =
+			typeof token === 'string' ? token : this.api.registry.chainToken;
+
 		const hash = await this.getHashFromAt(at);
 
 		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalanceInfo(hash, address)
+			await this.service.fetchAccountBalanceInfo(hash, address, tokenArg)
 		);
 	};
 }
