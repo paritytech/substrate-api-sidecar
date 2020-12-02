@@ -19,8 +19,8 @@ module.exports = {
 		// Sort imports
 		'simple-import-sort/imports': 'error',
 		'simple-import-sort/exports': 'error',
-		// https://github.com/eslint/eslint/issues/2321#issuecomment-134665757
-		'no-unused-vars': [2, { args: 'all', argsIgnorePattern: '^_' }],
+		// // https://github.com/eslint/eslint/issues/2321#issuecomment-134665757
+		// 'no-unused-vars': [2, { args: 'all', argsIgnorePattern: '^_' }],
 		'@typescript-eslint/no-unused-vars': [
 			2,
 			{ args: 'all', argsIgnorePattern: '^_' }

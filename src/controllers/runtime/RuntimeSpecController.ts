@@ -29,9 +29,7 @@ import AbstractController from '../AbstractController';
  * 		its index.
  * - `properties`: Arbitrary properties defined in the chain spec.
  */
-export default class RuntimeSpecController extends AbstractController<
-	RuntimeSpecService
-> {
+export default class RuntimeSpecController extends AbstractController<RuntimeSpecService> {
 	constructor(api: ApiPromise) {
 		super(api, '/runtime/spec', new RuntimeSpecService(api));
 		this.initRoutes();

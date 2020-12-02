@@ -392,51 +392,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /pallets/{palletId}/storage:
-    get:
-      tags:
-      - pallets
-      summary: Get a list of storage items for a pallet.
-      description: Returns a list of storage item metadata for storage items of the
-        specified palletId.
-      parameters:
-      - name: palletId
-        in: path
-        description: Name or index of the pallet to query the storage of.
-        required: true
-        schema:
-          type: string
-      - name: at
-        in: query
-        description: Block at which to retrieve a list of
-          the pallet's storage items.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                description: Array of storageItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletStorageItem'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: could not find pallet with palletId
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 components:
   schemas:
     BlockIdentifiers:

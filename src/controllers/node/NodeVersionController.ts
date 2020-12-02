@@ -12,9 +12,7 @@ import AbstractController from '../AbstractController';
  * - `clientImplName`: Node's implementation name.
  * - `chain`: Node's chain name.
  */
-export default class NodeVersionController extends AbstractController<
-	NodeVersionService
-> {
+export default class NodeVersionController extends AbstractController<NodeVersionService> {
 	constructor(api: ApiPromise) {
 		super(api, '/node/version', new NodeVersionService(api));
 		this.initRoutes();

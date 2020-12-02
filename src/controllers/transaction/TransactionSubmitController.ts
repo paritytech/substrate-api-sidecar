@@ -21,9 +21,7 @@ import AbstractController from '../AbstractController';
  *   - `extrinsic`: The hex-encoded extrinsic. Only present if Sidecar fails to parse a transaction.
  *   - `cause`: The error message from parsing or from the client.
  */
-export default class TransactionSubmitController extends AbstractController<
-	TransactionSubmitService
-> {
+export default class TransactionSubmitController extends AbstractController<TransactionSubmitService> {
 	constructor(api: ApiPromise) {
 		super(api, '/transaction', new TransactionSubmitService(api));
 		this.initRoutes();

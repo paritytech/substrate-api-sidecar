@@ -40,13 +40,13 @@ const api = {
 	},
 };
 
-const MockController = class MockController extends AbstractController<
-	AbstractService
-> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MockController = class MockController extends AbstractController<AbstractService> {
 	protected initRoutes(): void {
 		throw new Error('Method not implemented.');
 	}
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MockService = new (class MockService extends AbstractService {})(
 	(api as unknown) as ApiPromise
 );
@@ -71,6 +71,7 @@ describe('AbstractController', () => {
 				});
 
 			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				AbstractController['catchWrap'](throws)(req, res, next)
 			).resolves.toBe(undefined);
 			expect(next).toBeCalledTimes(1);
@@ -87,6 +88,7 @@ describe('AbstractController', () => {
 			};
 
 			await expect(
+				// eslint-disable-next-line @typescript-eslint/await-thenable
 				AbstractController['catchWrap'](throws)(req, res, next)
 			).resolves.toBe(undefined);
 			expect(next).toBeCalledTimes(1);
@@ -99,6 +101,7 @@ describe('AbstractController', () => {
 				Promise.resolve().then(() => 'Great success!');
 
 			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				AbstractController['catchWrap'](success)(req, res, next)
 			).resolves.toBe(undefined);
 			expect(next).not.toBeCalled();

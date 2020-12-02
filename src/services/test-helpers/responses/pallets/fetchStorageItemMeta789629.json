@@ -1,0 +1,24 @@
+{
+  "at": {
+    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+    "height": "789629"
+  },
+  "pallet": "democracy",
+  "palletIndex": "15",
+  "storageItem": "referendumInfoOf",
+  "key1": "0",
+  "metadata": {
+    "name": "ReferendumInfoOf",
+    "modifier": "Optional",
+    "type": {
+      "Map": {
+        "hasher": "Twox64Concat",
+        "key": "ReferendumIndex",
+        "value": "ReferendumInfo",
+        "linked": false
+      }
+    },
+    "fallback": "0x00",
+    "documentation": " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+  }
+}

@@ -29,9 +29,7 @@ import AbstractController from '../AbstractController';
  * References:
  * - `NodeRole`: https://github.com/paritytech/substrate/blob/master/client/rpc-api/src/system/helpers.rs#L80
  */
-export default class NodeNetworkController extends AbstractController<
-	NodeNetworkService
-> {
+export default class NodeNetworkController extends AbstractController<NodeNetworkService> {
 	constructor(api: ApiPromise) {
 		super(api, '/node/network', new NodeNetworkService(api));
 		this.initRoutes();
