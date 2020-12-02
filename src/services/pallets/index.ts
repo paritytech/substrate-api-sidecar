@@ -1,2 +1,2 @@
 export * from './PalletsStakingProgressService';
-export * from './PalletsStorageItemService';
+export * from './PalletsStorageService';

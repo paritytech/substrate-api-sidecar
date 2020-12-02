@@ -564,6 +564,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeSpec'
+  /pallets/{palletId}/storage:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of storage items for a pallet.
+      description: Returns a list of storage item metadata for storage items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to query the storage of. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the storage items instead of all of each storage
+          item's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's storage items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of storageItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletStorage'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/storage/{storageItemId}:
     get:
       tags:
@@ -575,7 +628,8 @@ paths:
       parameters:
       - name: palletId
         in: path
-        description: Name or index of the pallet to query the storage of.
+        description: 'Name or index of the pallet to query the storage of. Note: pallet name aligns with
+          pallet name as specified in runtime metadata.'
         required: true
         schema:
           type: string
@@ -936,7 +990,10 @@ components:
           format: unsignedInteger
         args:
           type: object
-          description: Object of arguments keyed by parameter name.
+          description: >-
+            Object of arguments keyed by parameter name. Note: if you are expecting an [`OpaqueCall`](https://substrate.dev/rustdocs/v2.0.0/pallet_multisig/type.OpaqueCall.html)
+            and it is not decoded in the response (i.e. it is just a hex string), then Sidecar was
+            not able to decode it and likely that it is not a valid call for the runtime.
         tip:
           type: string
           description: Any tip added to the transaction.
@@ -1454,6 +1511,7 @@ components:
         name:
           type: string
           example: "ReferendumInfoOf"
+          description: The storage item's name (which is the same as the storage item's ID).
         modifier:
           type: string
           example: "Optional"
@@ -1506,6 +1564,22 @@ components:
                 turnout: "34485320658000000"
         metadata:
           $ref: '#/components/schemas/PalletStorageItemMetadata'
+    PalletStorage:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up storage.
+          example: "15"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletStorageItemMetadata'
+          description: Array containing metadata for each storage entry of the pallet.
   requestBodies:
     Transaction:
       content:

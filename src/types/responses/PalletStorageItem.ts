@@ -1,9 +1,7 @@
 import { Codec } from '../polkadot-js';
-import { IAt, ISanitizedStorageItemMetadata } from '.';
-export interface IPalletStorageItem {
-	at: IAt;
-	pallet: string;
-	palletIndex: number;
+import { IPallet, ISanitizedStorageItemMetadata } from '.';
+
+export interface IPalletStorageItem extends IPallet {
 	storageItem: string;
 	key1: string | undefined;
 	key2: string | undefined;
