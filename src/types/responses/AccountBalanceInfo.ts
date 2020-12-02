@@ -5,6 +5,7 @@ import { IAt } from '.';
 
 export interface IAccountBalanceInfo {
 	at: IAt;
+	tokenSymbol: string;
 	nonce: Index;
 	free: Balance;
 	reserved: Balance;

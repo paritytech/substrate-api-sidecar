@@ -18,5 +18,5 @@ export const kulupuControllers: ControllerConfig = {
 	TransactionFeeEstimate: true,
 	TransactionSubmit: true,
 	PalletsStakingProgress: false,
-	PalletsStorageItem: true,
+	PalletsStorage: true,
 };

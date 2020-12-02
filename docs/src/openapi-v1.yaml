@@ -45,6 +45,15 @@ paths:
           description: Block height (as a non-negative integer) or hash
             (as a hex string).
           format: unsignedInteger or $hex
+      - name: token
+        in: query
+        description: 'Token to query the balance of. If not specified it will query
+          the chains native token (e.g. DOT for Polkadot). Note: this is only relevant
+          for chains that support multiple tokens through the ORML tokens pallet.'
+        required: false
+        schema:
+          type: string
+          description: Token symbol
       responses:
         "200":
           description: successful operation
@@ -716,6 +725,10 @@ components:
         nonce:
           type: string
           description: Account nonce.
+          format: unsignedInteger
+        tokenSymbol:
+          type: string
+          description: Token symbol of the balances displayed in this response.
           format: unsignedInteger
         free:
           type: string

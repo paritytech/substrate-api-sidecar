@@ -66,7 +66,9 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 		res
 	): Promise<void> => {
 		const tokenArg =
-			typeof token === 'string' ? token : this.api.registry.chainToken;
+			typeof token === 'string'
+				? token.toUpperCase()
+				: this.api.registry.chainToken;
 
 		const hash = await this.getHashFromAt(at);
 

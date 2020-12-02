@@ -21,5 +21,5 @@ export const mandalaControllers: ControllerConfig = {
 	TransactionFeeEstimate: true,
 	TransactionSubmit: true,
 	PalletsStakingProgress: true,
-	PalletsStorageItem: true,
+	PalletsStorage: true,
 };

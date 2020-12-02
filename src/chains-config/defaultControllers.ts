@@ -22,5 +22,5 @@ export const defaultControllers: ControllerConfig = {
 	TransactionFeeEstimate: true,
 	TransactionSubmit: true,
 	PalletsStakingProgress: true,
-	PalletsStorageItem: true,
+	PalletsStorage: true,
 };

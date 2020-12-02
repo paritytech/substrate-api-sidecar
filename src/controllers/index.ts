@@ -7,7 +7,7 @@ import {
 import { Blocks } from './blocks';
 import { KulupuBlocks } from './chains';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
-import { PalletsStakingProgress, PalletsStorageItem } from './pallets';
+import { PalletsStakingProgress, PalletsStorage } from './pallets';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import {
 	TransactionDryRun,
@@ -27,7 +27,7 @@ export const controllers = {
 	AccountsStakingPayouts,
 	KulupuBlocks,
 	PalletsStakingProgress,
-	PalletsStorageItem,
+	PalletsStorage,
 	NodeNetwork,
 	NodeTransactionPool,
 	NodeVersion,
