@@ -15,9 +15,7 @@ import AbstractController from '../AbstractController';
  * - `at`: Block number and hash at which the call was made.
  * - `code`: Runtime code Wasm blob.
  */
-export default class RuntimeCodeController extends AbstractController<
-	RuntimeCodeService
-> {
+export default class RuntimeCodeController extends AbstractController<RuntimeCodeService> {
 	constructor(api: ApiPromise) {
 		super(api, '/runtime/code', new RuntimeCodeService(api));
 		this.initRoutes();

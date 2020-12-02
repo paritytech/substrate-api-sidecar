@@ -64,9 +64,7 @@ import AbstractController from '../AbstractController';
  * - `Forcing`: https://crates.parity.io/pallet_staking/enum.Forcing.html
  * - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
  */
-export default class PalletsStakingProgressController extends AbstractController<
-	PalletsStakingProgressService
-> {
+export default class PalletsStakingProgressController extends AbstractController<PalletsStakingProgressService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

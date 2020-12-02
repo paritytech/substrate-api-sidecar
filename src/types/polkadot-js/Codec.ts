@@ -6,7 +6,7 @@ export function isCodec(thing: unknown): thing is Codec {
 	// Null errors on .hash access so we do not check for .hash
 
 	return (
-		thing &&
+		!!thing &&
 		(thing as Codec).encodedLength !== undefined &&
 		(thing as Codec).registry !== undefined &&
 		(thing as Codec).isEmpty !== undefined &&

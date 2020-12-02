@@ -64,9 +64,7 @@ import AbstractController from '../AbstractController';
  * - `OnInitialize`: https://crates.parity.io/frame_support/traits/trait.OnInitialize.html
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
-export default class BlocksController extends AbstractController<
-	BlocksService
-> {
+export default class BlocksController extends AbstractController<BlocksService> {
 	constructor(api: ApiPromise) {
 		super(api, '/blocks', new BlocksService(api));
 		this.initRoutes();

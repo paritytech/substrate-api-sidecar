@@ -80,6 +80,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		next
 	): Promise<void> => {
 		try {
+			// eslint-disable-next-line @typescript-eslint/await-thenable
 			await cb(req, res, next);
 		} catch (err) {
 			next(err);

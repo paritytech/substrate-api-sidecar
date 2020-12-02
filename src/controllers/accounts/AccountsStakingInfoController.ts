@@ -47,9 +47,7 @@ import AbstractController from '../AbstractController';
  * - `Bonded`: https://crates.parity.io/pallet_staking/struct.Bonded.html
  * - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
  */
-export default class AccountsStakingInfoController extends AbstractController<
-	AccountsStakingInfoService
-> {
+export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,

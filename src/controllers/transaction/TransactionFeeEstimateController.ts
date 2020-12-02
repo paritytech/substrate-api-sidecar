@@ -30,9 +30,7 @@ import AbstractController from '../AbstractController';
  * - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
  * - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
  */
-export default class TransactionFeeEstimateController extends AbstractController<
-	TransactionFeeEstimateService
-> {
+export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
 	constructor(api: ApiPromise) {
 		super(
 			api,
