@@ -89,7 +89,7 @@ process.on('SIGINT', function () {
 main().catch(console.log);
 
 /**
- * Prompt the user with some basic info abou the node and the network they have
+ * Prompt the user with some basic info about the node and the network they have
  * connected Sidecar to.
  *
  * @param wsUrl websocket url of the node Sidecar is connected to
