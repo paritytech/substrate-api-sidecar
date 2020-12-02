@@ -1,7 +1,7 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * Controllers that Sidecar will always default to. This likely will always be
+ * Controllers that Sidecar will always default to. This will always be
  * the optimal controller selection for Polkadot and Kusama.
  */
 export const defaultControllers: ControllerConfig = {

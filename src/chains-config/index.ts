@@ -7,6 +7,7 @@ import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
 import { kulupuControllers } from './kulupuControllers';
 import { mandalaControllers } from './mandalaControllers';
+
 /**
  * Return an array of instantiated controller instances based off of a `specName`.
  *
@@ -43,7 +44,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 
 	return controllersToInclude.reduce((acc, [controllerName, shouldMount]) => {
 		if (shouldMount) {
-			return acc.concat(new controllers[controllerName](api));
+			acc.push(new controllers[controllerName](api));
 		}
 
 		return acc;

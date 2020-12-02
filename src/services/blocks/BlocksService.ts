@@ -337,9 +337,7 @@ export class BlocksService extends AbstractService {
 		const perByte = api?.consts?.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeight = api?.consts?.system?.extrinsicBaseWeight;
 
-		let calcFee;
-		let specName;
-		let specVersion;
+		let calcFee, specName, specVersion;
 		if (perByte === undefined || extrinsicBaseWeight === undefined) {
 			// We do not have the neccesary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.

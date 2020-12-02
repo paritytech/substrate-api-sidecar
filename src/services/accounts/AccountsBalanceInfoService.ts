@@ -14,9 +14,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 	 * Fetch balance information for an account at a given block.
 	 * N.B. assumes all non native tokens are from ORML tokens pallet.
 	 *
-	 * @param hash `BlockHash` to make call at
-	 * @param address address of the account to get the balance info of
-	 * @param token token to get the balance info of for the user
+	 * @param hash `BlockHash` to make call at.
+	 * @param address Address of the account to get the balance info of.
+	 * @param token Token to get the balance info of.
 	 */
 	async fetchAccountBalanceInfo(
 		hash: BlockHash,
