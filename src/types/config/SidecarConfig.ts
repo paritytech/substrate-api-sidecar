@@ -1,4 +1,4 @@
-import { AnyJson } from '@polkadot/types/types';
+import { RegistryTypes } from '@polkadot/types/types';
 
 /**
  * Object to house the values of all the configurable components for Sidecar.
@@ -11,7 +11,7 @@ export interface ISidecarConfig {
 
 interface ISidecarConfigSubstrate {
 	WS_URL: string;
-	CUSTOM_TYPES: AnyJson;
+	CUSTOM_TYPES: RegistryTypes | undefined;
 }
 
 interface ISidecarConfigExpress {
