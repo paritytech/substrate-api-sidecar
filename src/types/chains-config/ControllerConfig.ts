@@ -11,11 +11,17 @@ import { controllers } from '../../controllers';
  *  getHeader (in the case it does not finalize)
  */
 export interface ControllerConfig {
+	/**
+	 * Controller class names and wether or not to include them
+	 */
 	controllers: Record<keyof typeof controllers, boolean>;
 	/**
-	 * Wether or not the chain finalizes blocks
+	 * Options relating to how the controllers are configured.
 	 */
 	options: {
+		/**
+		 * Wether or not the chain finalizes blocks
+		 */
 		finalizes: boolean;
 	};
 }

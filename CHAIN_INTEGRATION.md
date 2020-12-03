@@ -1,0 +1,75 @@
+# Substrate Api Sidecar chain integration guide
+
+This guide aims to help chain builders integrate their Substrate FRAME based chain with Substrate API Sidecar.
+
+## Table of contents
+
+- [Polkadot-js API type definition support](#polkadot-js-API-type-definition-support)
+- [Controller configuration](controller-configuration)
+
+## Polkadot-js API type definition support
+
+In order decode the SCALE encoded data from a substrate based node, polkadot-js needs to have a registry of type definitions. Sidecar pulls in chain type definitions from the [@polkadot/apps-config package hosted on NPM](https://www.npmjs.com/package/@polkadot/apps-config).
+
+If the chains type definitions do not already exist in [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config) they will need to be added via PR to polkadot-js/apps by following their [instructions for API config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config#api).
+
+Before taking any other steps to integrate a chain with Sidecar, a chains up-to-date type definitions must be included in a published version of @polkadot/apps-config.
+
+## Controller configuration
+
+Sidecar offers the ability to configure which controllers to mount. Sidecar uses a chain's spec name to determine which controller config to use, and if no config is linked to a spec name, then the [default config](/src/chains-config/defaultControllers.ts) is used.
+
+A chain builder can follow the below steps and submit a chain's controller config via PR, where it will be reviewed and merged once deemed ready by the maintainers.
+
+#### 1) Create a controller config
+
+ Create a controller config for your chain. The shape of the controller config is specified [here](/src/chains-config/ControllerConfig.ts). The `controller` property has keys from the [controller export](/src/controllers/index.ts), which is an exhaustive collection of the available controller classes.
+
+ The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/ControllerConfig.ts) and name the file and export `{specName}Controllers`. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts).
+
+ To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service logic makes and what exact pallets the service queries. E.g. in order to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), one would check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts). There one would see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime.
+
+In some circumstance, a chain may need a new path, modify a path or altered bushiness logic for a path it. Path changes that help a chain support custodial wallets will be given priority. Breaking path changes are strongly not preferred.
+
+##### Basic balance transfer support
+
+In order to support traditional balance transfers the chain's Sidecar endpoints should support account balance lookup, transaction submission, transaction material retrieval, and block queries.
+
+To support those actions the following endpoints are necessary:
+
+|                   Path                   |           Controller          |                                 Description                                |
+|:----------------------------------------:|:-----------------------------:|:--------------------------------------------------------------------------:|
+|       GET  `/transaction/material`       | TransactionMaterialController | Get all the network information needed to construct a transaction offline. |
+|            POST `/transaction`           |  TransactionSubmitController  |            Submit a transaction to the node's transaction pool.            |
+| GET `/blocks/head`  & `/blocks/{number}` |        BlocksController       |                                Get a block.                                |
+|  GET `accounts/{accountId}/balance-info` | AccountsBalanceInfoController |                   Get balance information for an account.                  |
+
+#### 2) Update `specToControllerMap`
+
+In order for Sidecar to use your controller config, the `specToControllerMap` in [/src/chains-config/index.ts](/src/chains-config/index.ts) must be updated with the chain's `specName` and controller config by adding them as a property to `specToControllerMap`:
+
+```javascript
+const specToControllerMap = {
+  kulupu: kulupuControllers,
+  mandala: mandalaControllers,
+  {specName}: {specName}Controllers,
+};
+```
+
+#### 3) Test
+
+Run it against an archive version of your chains node:
+
+- Ensure all the correct paths work, including the root path
+- Exercise each query param of every path
+- Make sure transaction submission works
+- Try out historic queries across runtimes where types might change
+
+#### 4) Submit your PR
+
+Make sure it passes lint with `yarn lint --fix` and tests with `yarn test`. Then submit a PR for review.
+
+#### 5) Maintenance
+
+- Keep types up-to-date in `@polkadot/apps-config`
+- If the business logic or storage of a chain's pallet queried by a Sidecar endpoint is changed, ensure Sidecar has service logic has any relevant updates.
