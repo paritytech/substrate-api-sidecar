@@ -11,9 +11,9 @@ This guide aims to help chain builders integrate their Substrate FRAME based cha
 
 In order decode the SCALE encoded data from a substrate based node, polkadot-js needs to have a registry of type definitions. Sidecar pulls in chain type definitions from the [@polkadot/apps-config package hosted on NPM](https://www.npmjs.com/package/@polkadot/apps-config).
 
-If the chains type definitions do not already exist in [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config) they will need to be added via PR to polkadot-js/apps by following their [instructions for API config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config#api).
+If the chain's type definitions do not already exist in [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config) they will need to be added via PR to polkadot-js/apps by following their [instructions for API config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config#api).
 
-Before taking any other steps to integrate a chain with Sidecar, a chains up-to-date type definitions must be included in a published version of @polkadot/apps-config.
+Before taking any other steps to integrate a chain with Sidecar, a chain's up-to-date type definitions must be included in a published version of @polkadot/apps-config.
 
 ## Controller configuration
 
@@ -29,7 +29,7 @@ A chain builder can follow the below steps and submit a chain's controller confi
 
  To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service's logic makes and what exact pallets the service queries. E.g. in order to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), one would check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts). There one would see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime.
 
-In some circumstance, a chain may need a new path, modify a path or altered bushiness logic for a path it. Path changes that help a chain support custodial wallets will be given priority. Breaking path changes are strongly not preferred.
+In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support custodial wallets will be given priority. Breaking path changes are strongly not preferred.
 
 ##### Basic balance transfer support
 
@@ -58,7 +58,7 @@ const specToControllerMap = {
 
 #### 3) Test
 
-Run it against an archive version of your chains node:
+Run it against an archive version of your chain's node:
 
 - Ensure all the correct paths work, including the root path
 - Exercise each query param of every path
