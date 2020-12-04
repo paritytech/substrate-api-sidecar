@@ -25,11 +25,11 @@ A chain builder can follow the below steps and submit a chain's controller confi
 
  Create a controller config for your chain. The shape of the controller config is specified [here](/src/chains-config/ControllerConfig.ts). The `controller` property has keys from the [controller export](/src/controllers/index.ts), which is an exhaustive collection of the available controller classes. In order to see the path(s) associated with a controller one must look in the controller source code.
 
- The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/ControllerConfig.ts) and name the file and export `{specName}Controllers`. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts). Then change the boolean values to indicate wether or not to mount a controller and its paths.
+ The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/ControllerConfig.ts) and name the file and export `{specName}Controllers`. Then change the boolean values to indicate wether or not to mount a controller and its paths. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts).
 
  To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service's logic makes and what exact pallets the service queries. E.g. in order to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), one would check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts). There one would see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime.
 
-In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support custodial wallets will be given priority. Breaking path changes are strongly not preferred.
+In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support wallets will be given priority. Breaking path changes are strongly not preferred.
 
 ##### Basic balance transfer support
 
