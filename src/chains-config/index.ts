@@ -48,9 +48,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 
 	return controllersToInclude.reduce((acc, [controllerName, shouldMount]) => {
 		if (shouldMount) {
-			acc.push(
-				new controllers[controllerName](api, config.options.finalizes)
-			);
+			acc.push(new controllers[controllerName](api, config.options));
 		}
 
 		return acc;

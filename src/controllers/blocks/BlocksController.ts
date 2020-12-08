@@ -5,6 +5,10 @@ import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
+interface ControllerOptions {
+	finalizes: boolean;
+}
+
 /**
  * GET a block.
  *
@@ -65,7 +69,7 @@ import AbstractController from '../AbstractController';
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
 export default class BlocksController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, private finalizes = true) {
+	constructor(api: ApiPromise, private readonly options: ControllerOptions) {
 		super(api, '/blocks', new BlocksService(api));
 		this.initRoutes();
 	}
@@ -91,7 +95,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
 
 		const hash =
-			finalized === 'false' || !this.finalizes
+			finalized === 'false' || !this.options.finalizes
 				? (await this.api.rpc.chain.getHeader()).hash
 				: await this.api.rpc.chain.getFinalizedHead();
 
