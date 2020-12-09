@@ -23,7 +23,7 @@ export class AccountsVestingInfoService extends AbstractService {
 
 		const at = {
 			hash,
-			height: number.toNumber().toString(10),
+			height: number.unwrap().toString(10),
 		};
 
 		return {
