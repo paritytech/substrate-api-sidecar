@@ -337,8 +337,8 @@ export class BlocksService extends AbstractService {
 		parentHash: Hash,
 		block: Block
 	) {
-		const perByte = api?.consts?.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeight = api?.consts?.system?.extrinsicBaseWeight;
+		const perByte = api.consts.transactionPayment?.transactionByteFee;
+		const extrinsicBaseWeight = api.consts.system?.extrinsicBaseWeight;
 
 		let calcFee, specName, specVersion;
 		if (
