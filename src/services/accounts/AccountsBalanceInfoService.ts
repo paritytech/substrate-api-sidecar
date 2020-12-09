@@ -1,3 +1,40 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+
+@emostov
+paritytech
+	/
+	substrate - api - sidecar
+12
+56
+29
+Code
+Issues
+20
+Pull requests
+1
+Actions
+Security
+4
+Insights
+Settings
+substrate - api - sidecar / src / services / accounts / AccountsBalanceInfoService.ts /
+@emostov
+emostov Initial reply david review
+Latest commit be66056 6 days ago
+History
+2 contributors
+@emostov @joepetrowski
+We found potential security vulnerabilities in your dependencies.
+You can see this message because you have been granted access to Dependabot alerts for this repository.
+
+95 lines(87 sloc)  2.38 KB
+
 import { Vec } from '@polkadot/types';
 import {
 	AccountData,
@@ -57,7 +94,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 			} catch {
 				throw new BadRequest(
 					'An error occured while attempting to query for a non-native token; ' +
-						'the token specified is likely invalid.'
+					'the token specified is likely invalid.'
 				);
 			}
 
@@ -86,10 +123,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				locks,
 			};
 		} else {
-			throw {
-				at,
-				error: 'Account not found',
-			};
+			throw new BadRequest('Account not found')
 		}
 	}
 }
