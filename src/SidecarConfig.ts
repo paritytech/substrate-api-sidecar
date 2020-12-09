@@ -2,7 +2,7 @@ import { ConfigManager } from 'confmgr';
 
 import * as configTypes from '../config/types.json';
 import { Specs } from './Specs';
-import { CONFIG, ISidecarConfig, MODULES } from './types/config';
+import { CONFIG, ISidecarConfig, MODULES } from './types/sidecar-config';
 
 function hr(): string {
 	return Array(80).fill('━').join('');
@@ -11,7 +11,7 @@ function hr(): string {
 /**
  * Access a singleton config object that will be intialized on first use.
  */
-export class Config {
+export class SidecarConfig {
 	private static _config: ISidecarConfig | undefined;
 	/**
 	 * Gather env vars for config and make sure they are valid.

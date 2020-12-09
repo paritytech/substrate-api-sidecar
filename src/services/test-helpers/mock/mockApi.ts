@@ -37,7 +37,22 @@ const chain = () =>
 
 export const getBlock = (_hash: Hash): Promise<{ block: Block }> =>
 	Promise.resolve().then(() => {
-		return { block: mockBlock789629 };
+		return {
+			block: mockBlock789629,
+		};
+	});
+
+export const deriveGetBlock = (
+	_hash: Hash
+): Promise<{ block: Block; author: AccountId }> =>
+	Promise.resolve().then(() => {
+		return {
+			author: polkadotRegistry.createType(
+				'AccountId',
+				'1zugcajGg5yDD9TEqKKzGx7iKuGWZMkRbYcyaFnaUaEkwMK'
+			),
+			block: mockBlock789629,
+		};
 	});
 
 const getHeader = (_hash: Hash) =>
@@ -363,6 +378,7 @@ export const mockApi = ({
 	derive: {
 		chain: {
 			getHeader: deriveGetHeader,
+			getBlock: deriveGetBlock,
 		},
 	},
 } as unknown) as ApiPromise;

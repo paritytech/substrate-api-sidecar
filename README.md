@@ -36,7 +36,7 @@ This service requires Node version 12 or higher.
 - [Configuration](#configuration)
 - [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
-- [Chain compatibility](#chain-compatibility)
+- [Chain integration guide](/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
 - [Note for maintainers](#note-for-maintainers)
 - [Roadmap](#roadmap)
@@ -200,15 +200,9 @@ CALC_DEBUG=1 yarn
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
-## Chain compatibility
+## Chain integration guide
 
-Sidecar should be compatible with any [Substrate](https://substrate.dev/) based chain, given
-constraints:
-
--   The chain ought to use FRAME and the `balances` pallet.
--   The chain is being finalized (by running `grandpa`).
--   If the chain is running on custom Node binaries, the JSON-RPC API should be backwards compatible
-    with the default Substrate Node.
+[Click here for chain integration guide.](/CHAIN_INTEGRATION.md)
 
 ## Docker
 

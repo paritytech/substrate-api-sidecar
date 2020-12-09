@@ -1,10 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
+import { SignedBlockExtended } from '@polkadot/api-derive/type';
 import { GenericCall, Struct } from '@polkadot/types';
 import {
-	AccountId,
 	Block,
 	BlockHash,
-	Digest,
 	DispatchInfo,
 	EventRecord,
 	Hash,
@@ -45,11 +44,24 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
-		const [{ block }, events, validators] = await Promise.all([
-			api.rpc.chain.getBlock(hash),
-			this.fetchEvents(api, hash),
-			api.query.session.validators.at(hash),
-		]);
+		let block;
+		let events;
+		let author;
+		if (typeof api.query.session?.validators?.at === 'function') {
+			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
+			// is a function in order to query the validator set to pull out the author
+			// see: https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getBlock.ts#L31
+			[{ author, block }, events] = await Promise.all([
+				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
+				this.fetchEvents(api, hash),
+			]);
+		} else {
+			[{ block }, events] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
+				this.fetchEvents(api, hash),
+			]);
+		}
+		const authorId = author;
 
 		const {
 			parentHash,
@@ -58,8 +70,6 @@ export class BlocksService extends AbstractService {
 			extrinsicsRoot,
 			digest,
 		} = block.header;
-
-		const authorId = this.extractAuthor(validators, digest);
 
 		const logs = digest.logs.map((log) => {
 			const { type, index, value } = log;
@@ -316,7 +326,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Create calcFee from params.
+	 * Create calcFee from params or return `null` if calcFee cannot be created.
 	 *
 	 * @param api ApiPromise
 	 * @param parentHash Hash of the parent block
@@ -327,46 +337,71 @@ export class BlocksService extends AbstractService {
 		parentHash: Hash,
 		block: Block
 	) {
-		let parentParentHash: Hash;
-		if (block.header.number.toNumber() > 1) {
-			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-				.parentHash;
+		const perByte = api.consts.transactionPayment?.transactionByteFee;
+		const extrinsicBaseWeight = api.consts.system?.extrinsicBaseWeight;
+
+		let calcFee, specName, specVersion;
+		if (
+			perByte === undefined ||
+			extrinsicBaseWeight === undefined ||
+			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
+				'function'
+		) {
+			// We do not have the neccesary materials to build calcFee, so we just give a dummy function
+			// that aligns with the expected API of calcFee.
+			calcFee = { calc_fee: () => null };
+
+			const version = await api.rpc.state.getRuntimeVersion(parentHash);
+			[specVersion, specName] = [
+				version.specName.toString(),
+				version.specVersion.toNumber(),
+			];
 		} else {
-			parentParentHash = parentHash;
-		}
+			const coefficients = api.consts.transactionPayment.weightToFee.map(
+				(c) => {
+					return {
+						coeffInteger: c.coeffInteger.toString(),
+						coeffFrac: c.coeffFrac,
+						degree: c.degree,
+						negative: c.negative,
+					};
+				}
+			);
 
-		const perByte = api.consts.transactionPayment.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight;
-		const multiplier = await api.query.transactionPayment.nextFeeMultiplier.at(
-			parentHash
-		);
-		// The block where the runtime is deployed falsely proclaims it would
-		// be already using the new runtime. This workaround therefore uses the
-		// parent of the parent in order to determine the correct runtime under which
-		// this block was produced.
-		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
-		const specName = version.specName.toString();
-		const specVersion = version.specVersion.toNumber();
-		const coefficients = api.consts.transactionPayment.weightToFee.map(
-			(c) => {
-				return {
-					coeffInteger: c.coeffInteger.toString(),
-					coeffFrac: c.coeffFrac,
-					degree: c.degree,
-					negative: c.negative,
-				};
+			// The block where the runtime is deployed falsely proclaims it would
+			// be already using the new runtime. This workaround therefore uses the
+			// parent of the parent in order to determine the correct runtime under which
+			// this block was produced.
+			let parentParentHash: Hash;
+			if (block.header.number.toNumber() > 1) {
+				parentParentHash = (await api.rpc.chain.getHeader(parentHash))
+					.parentHash;
+			} else {
+				parentParentHash = parentHash;
 			}
-		);
 
-		return {
-			calcFee: CalcFee.from_params(
+			const [version, multiplier] = await Promise.all([
+				api.rpc.state.getRuntimeVersion(parentParentHash),
+				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
+			]);
+
+			[specName, specVersion] = [
+				version.specName.toString(),
+				version.specVersion.toNumber(),
+			];
+
+			calcFee = CalcFee.from_params(
 				coefficients,
 				BigInt(extrinsicBaseWeight.toString()),
 				multiplier.toString(),
 				perByte.toString(),
 				specName,
 				specVersion
-			),
+			);
+		}
+
+		return {
+			calcFee,
 			specName,
 			specVersion,
 		};
@@ -473,34 +508,5 @@ export class BlocksService extends AbstractService {
 			},
 			args: newArgs,
 		};
-	}
-
-	// Almost exact mimic of https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getHeader.ts#L27
-	// but we save a call to `getHeader` by hardcoding the logic here and using the digest from the blocks header.
-	private extractAuthor(
-		sessionValidators: AccountId[],
-		digest: Digest
-	): AccountId | undefined {
-		const [pitem] = digest.logs.filter(({ type }) => type === 'PreRuntime');
-
-		// extract from the substrate 2.0 PreRuntime digest
-		if (pitem) {
-			const [engine, data] = pitem.asPreRuntime;
-
-			return engine.extractAuthor(data, sessionValidators);
-		} else {
-			const [citem] = digest.logs.filter(
-				({ type }) => type === 'Consensus'
-			);
-
-			// extract author from the consensus (substrate 1.0, digest)
-			if (citem) {
-				const [engine, data] = citem.asConsensus;
-
-				return engine.extractAuthor(data, sessionValidators);
-			}
-		}
-
-		return undefined;
 	}
 }
