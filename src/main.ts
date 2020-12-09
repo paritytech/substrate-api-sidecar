@@ -135,9 +135,7 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	const isSecure: boolean = splitUrl[0] === 'wss';
 	// Check if its a local IP.
 	const isLocal: boolean =
-		splitUrl[1] === '//0.0.0.0' ||
-		splitUrl[1] === '//127.0.0.1' ||
-		splitUrl[1] === '//localhost';
+		splitUrl[1] === '//127.0.0.1' || splitUrl[1] === '//localhost';
 
 	if (!isSecure && !isLocal) {
 		logger.warn(

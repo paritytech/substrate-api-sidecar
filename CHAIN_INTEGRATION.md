@@ -72,4 +72,4 @@ Make sure it passes lint with `yarn lint --fix` and tests with `yarn test`. Then
 #### 5) Maintenance
 
 - Keep types up-to-date in `@polkadot/apps-config`
-- If the business logic or storage of a chain's pallet queried by a Sidecar endpoint is changed, ensure Sidecar has service logic has any relevant updates.
+- If the business logic or storage of a chain's pallet queried by a Sidecar endpoint is changed, ensure that the corresponding service logic is updated in Sidecar as well

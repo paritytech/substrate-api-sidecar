@@ -47,7 +47,10 @@ export class BlocksService extends AbstractService {
 		let block;
 		let events;
 		let author;
-		if (typeof api.query?.session?.validators?.at === 'function') {
+		if (typeof api.query.session?.validators?.at === 'function') {
+			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
+			// is a function in order to query the validator set to pull out the author
+			// see: https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getBlock.ts#L31
 			[{ author, block }, events] = await Promise.all([
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),
@@ -338,7 +341,12 @@ export class BlocksService extends AbstractService {
 		const extrinsicBaseWeight = api?.consts?.system?.extrinsicBaseWeight;
 
 		let calcFee, specName, specVersion;
-		if (perByte === undefined || extrinsicBaseWeight === undefined) {
+		if (
+			perByte === undefined ||
+			extrinsicBaseWeight === undefined ||
+			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
+				'function'
+		) {
 			// We do not have the neccesary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.
 			calcFee = { calc_fee: () => null };
@@ -374,9 +382,7 @@ export class BlocksService extends AbstractService {
 
 			const [version, multiplier] = await Promise.all([
 				api.rpc.state.getRuntimeVersion(parentParentHash),
-				api.query?.transactionPayment?.nextFeeMultiplier?.at(
-					parentHash
-				),
+				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
 			]);
 
 			[specName, specVersion] = [
