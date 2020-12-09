@@ -31,7 +31,7 @@ A chain builder can follow the steps below and submit a chain's controller confi
 
 An example is in order. If we want to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), first check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts); here we see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime. If we determine that both have all storage items queried, and the assumptions made about the staking system are correct, we can then declare in `{specName}Controllers` (the controller config object) that we want to mount the controller by giving `PalletsStakingProgressController` property `true` as the value (`{ PalletsStakingProgressController: true }`). Finally, we can test it out by starting up Sidecar against our chain and accessing the `pallets/staking/progress` endpoint, verifying that the information returned is correct.
 
-In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support wallets will be given priority. Breaking changes to paths are usually rejected.
+In some circumstances, a chain may need a new path, modify a path or alter business logic for a path. Path changes that help a chain support wallets will be given priority. Breaking changes to paths are usually rejected.
 
 ##### Basic balance transfer support
 
