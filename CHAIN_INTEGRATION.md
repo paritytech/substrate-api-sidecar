@@ -19,7 +19,7 @@ Before taking any other steps to integrate a chain with Sidecar, a chain's up-to
 
 Sidecar offers the ability to configure which controllers to mount. Sidecar uses a chain's spec name to determine which controller config to use, and if no config is linked to a spec name, then the [default config](/src/chains-config/defaultControllers.ts) is used.
 
-A chain builder can follow the below steps and submit a chain's controller config via PR, where it will be reviewed and merged once deemed ready by the maintainers.
+A chain builder can follow the steps below and submit a chain's controller config via PR, where it will be reviewed and merged once deemed ready by the maintainers.
 
 #### 1) Create a controller config
 
@@ -27,15 +27,16 @@ A chain builder can follow the below steps and submit a chain's controller confi
 
  The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/ControllerConfig.ts) and name the file and export `{specName}Controllers`. Then change the boolean values to indicate wether or not to mount a controller and its paths. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts).
 
- To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service's logic makes and what exact pallets the service queries. E.g. in order to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), one would check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts). There one would see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime.
+ To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service's logic makes and what exact pallets the service queries.
+An example is in order. If we want to use [`PalletsStakingProgressController`](/src/controllers/pallets/PalletsStakingProgressController.ts), first check [`PalletsStakingProgressService.ts`](/src/services/pallets/PalletsStakingProgressService.ts); here we see it queries `staking`, `sessions`, `babe` pallets and makes certain assumptions about how the pallets are used together in the runtime. 
 
-In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support wallets will be given priority. Breaking path changes are strongly not preferred.
+In some circumstance, a chain may need a new path, modify a path or altered business logic for a path. Path changes that help a chain support wallets will be given priority. Breaking changes to paths are usually rejected.
 
 ##### Basic balance transfer support
 
 In order to support traditional balance transfers the chain's Sidecar endpoints should support account balance lookup, transaction submission, transaction material retrieval, and block queries.
 
-To support those actions the following endpoints are necessary:
+To support these features the following endpoints are necessary:
 
 |                   Path                   |           Controller          |                                 Description                                |
 |:----------------------------------------:|:-----------------------------:|:--------------------------------------------------------------------------:|
@@ -58,9 +59,9 @@ const specToControllerMap = {
 
 #### 3) Test
 
-Run it against an archive version of your chain's node:
+Run it against a node running your chain in archive mode:
 
-- Ensure all the correct paths work, including the root path
+- Ensure all the expected paths work, including the root path, preferably with tests
 - Exercise each query param of every path
 - Make sure transaction submission works
 - Try out historic queries across runtimes where types might change
