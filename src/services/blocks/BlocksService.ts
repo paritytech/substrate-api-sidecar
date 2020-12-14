@@ -347,7 +347,7 @@ export class BlocksService extends AbstractService {
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
 				'function'
 		) {
-			// We do not have the neccesary materials to build calcFee, so we just give a dummy function
+			// We do not have the necessary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.
 			calcFee = { calc_fee: () => null };
 

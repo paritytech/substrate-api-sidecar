@@ -796,7 +796,7 @@
     loglevel "^1.7.0"
     loglevel-plugin-prefix "^0.8.4"
 
-"@substrate/calc@^0.1.2":
+"@substrate/calc@^0.1.3":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@substrate/calc/-/calc-0.1.2.tgz#7004563c04a268ecacebcba2be78a55fd44e42fa"
   integrity sha512-iftibGOcr4fwp6RFP7Zl6JruSppIt8EL9ZBVgQcymIYJw1cr99mOph+W+8HUAyqF1bKJuwAthHnae2J7bGTn0w==
