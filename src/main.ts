@@ -16,12 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import {
-	typesBundle,
-	typesChain,
-	typesRpc,
-	typesSpec,
-} from '@polkadot/apps-config/api';
+import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { json } from 'express';
 
@@ -42,7 +37,6 @@ async function main() {
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.SUBSTRATE.WS_URL),
-		rpc: typesRpc,
 		typesBundle,
 		typesChain,
 		typesSpec,
