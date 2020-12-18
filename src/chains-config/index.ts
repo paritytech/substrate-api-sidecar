@@ -5,12 +5,16 @@ import { AbstractService } from 'src/services/AbstractService';
 import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
+import { dockMainnetControllers } from './dockMainnetControllers';
+import { dockTestnetControllers } from './dockTestnetControllers';
 import { kulupuControllers } from './kulupuControllers';
 import { mandalaControllers } from './mandalaControllers';
 
 const specToControllerMap = {
 	kulupu: kulupuControllers,
 	mandala: mandalaControllers,
+	'dock-testnet': dockTestnetControllers,
+	'dock-main-runtime': dockMainnetControllers,
 };
 
 /**
