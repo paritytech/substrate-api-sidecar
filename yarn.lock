@@ -550,9 +550,9 @@
   integrity sha512-6asf2W/sluGQ6LNiGSdCg/Xop54mq/Q2FcV2Z9cBxys6QC4qXfo4JwUL6kJsRh/vcIIbUxoyGgKUrU/6Xdm7wA==
 
 "@open-web3/orml-type-definitions@^0.8.2-2":
-  version "0.8.2-3"
-  resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-0.8.2-3.tgz#9671267cfb41b51dfbc520059025946f47500a17"
-  integrity sha512-NnRxI4Zyv/b8+on/mZeUWxYxGBbMD/w1ZV7Qznk8dyelZM9TlaJnXOLuuDlJowd3eAc6nGRjcAKZUyLS9R0/Iw==
+  version "0.8.2-4"
+  resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-0.8.2-4.tgz#852a16cf4b7b4d78d0c74e116375391213f074d7"
+  integrity sha512-2PfltpT6hX7kCUomwceQWWXenQuPaNj23/DwwD9HRsV3qEMJl9idQ4Ncu+X4XXe5rGzOdugRK4xcfyMa63hv0A==
 
 "@polkadot/api-derive@3.0.1":
   version "3.0.1"
@@ -824,10 +824,10 @@
     loglevel "^1.7.0"
     loglevel-plugin-prefix "^0.8.4"
 
-"@substrate/calc@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@substrate/calc/-/calc-0.1.2.tgz#7004563c04a268ecacebcba2be78a55fd44e42fa"
-  integrity sha512-iftibGOcr4fwp6RFP7Zl6JruSppIt8EL9ZBVgQcymIYJw1cr99mOph+W+8HUAyqF1bKJuwAthHnae2J7bGTn0w==
+"@substrate/calc@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@substrate/calc/-/calc-0.1.3.tgz#15bb24d1295100cfd7c69a27b8642244f8c1cd93"
+  integrity sha512-35eUmCksX04/wc46/cw0LMoE/jF+kDWk+sIco59UpsmO68DR1E5Vx+vqflI6vrQEjkmESqBjJZ9VhmuwsGQF4g==
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
@@ -6343,9 +6343,9 @@ typescript@^4.1.3:
   integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
 
 uglify-js@^3.1.4:
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.12.1.tgz#78307f539f7b9ca5557babb186ea78ad30cc0375"
-  integrity sha512-o8lHP20KjIiQe5b/67Rh68xEGRrc2SRsCuuoYclXXoC74AfSRGblU1HKzJWH3HxPZ+Ort85fWHpSX7KwBUC9CQ==
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.12.2.tgz#c7ae89da0ed1bb58999c7fce07190b347fdbdaba"
+  integrity sha512-rWYleAvfJPjduYCt+ELvzybNah/zIkRteGXIBO8X0lteRZPGladF61hFi8tU7qKTsF7u6DUQCtT9k00VlFOgkg==
 
 union-value@^1.0.0:
   version "1.0.1"
