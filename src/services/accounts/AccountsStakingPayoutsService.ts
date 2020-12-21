@@ -13,7 +13,6 @@ import {
 	StakingLedger,
 } from '@polkadot/types/interfaces';
 import { CalcPayout } from '@substrate/calc';
-// import * as BN from 'bn.js';
 import { BadRequest } from 'http-errors';
 
 import {
