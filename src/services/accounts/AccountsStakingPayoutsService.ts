@@ -115,7 +115,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			allErasGeneral.map((el) => el[0])
 		);
 
-		// Group together data by Era so we can easily associate parts that are used congruently later
+		// Group together data by Era so we can easily associate parts that are used congruently downstream
 		const allEraData = allErasGeneral.map(
 			(
 				[
