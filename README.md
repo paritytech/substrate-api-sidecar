@@ -225,7 +225,7 @@ docker run --rm -it --env-file .env.docker -p 8080:8080 substrate-api-sidecar
 then you can test with:
 
 ```bash
-curl -s http://0.0.0.0:8080/block | jq
+curl -s http://0.0.0.0:8080/blocks/head | jq
 ```
 
 **N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
