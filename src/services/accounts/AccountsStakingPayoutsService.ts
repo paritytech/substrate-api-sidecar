@@ -467,21 +467,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		address: string,
 		deriveEraExposure: DeriveEraExposure
 	): DeriveEraExposureNominating[] | undefined {
-		let nominatedExposures: DeriveEraExposureNominating[] | undefined =
-			deriveEraExposure.nominators[address];
+		let nominatedExposures: DeriveEraExposureNominating[] =
+			deriveEraExposure.nominators[address] ?? [];
 		if (deriveEraExposure.validators[address]) {
 			// We treat an `address` that is a validator as nominating itself
-			nominatedExposures = nominatedExposures
-				? nominatedExposures.concat({
-						validatorId: address,
-						validatorIndex: 0,
-				  })
-				: [
-						{
-							validatorId: address,
-							validatorIndex: 0,
-						},
-				  ];
+			nominatedExposures = nominatedExposures.concat({
+				validatorId: address,
+				// We put in an arbitrary number because we do not use the index
+				validatorIndex: 9999,
+			});
 		}
 
 		return nominatedExposures;
