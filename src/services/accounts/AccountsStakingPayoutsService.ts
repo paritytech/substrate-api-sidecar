@@ -456,7 +456,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Derive the list of validators `address` nominates. Note: we count validators as nominating
+	 * Derive the list of validators nominated by `address`. Note: we count validators as nominating
 	 * themself.
 	 *
 	 * @param address address of the _Stash_  account to get the payouts of
