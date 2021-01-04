@@ -95,7 +95,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		};
 
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
-		const startEra = era - (depth - 1) < 0 ? 0 : era - (depth - 1);
+		const startEra = Math.max(0, era - (depth - 1));
 
 		// Fetch general data about the era
 		const allErasGeneral = await this.fetchAllErasGeneral(
@@ -111,7 +111,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			hash,
 			address,
 			startEra,
-			allErasGeneral.map((el) => el[0])
+			// Create an array of `DeriveEraExposure`
+			allErasGeneral.map((eraGeneral) => eraGeneral[0])
 		);
 
 		// Group together data by Era so we can easily associate parts that are used congruently downstream
