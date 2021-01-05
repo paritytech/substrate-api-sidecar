@@ -330,9 +330,9 @@ export const mockApi = ({
 			transactionByteFee: polkadotRegistry.createType('Balance', 1000000),
 			weightToFee: [
 				{
-					coeffFrac: 80000000,
-					coeffInteger: 0,
-					degree: 1,
+					coeffFrac: polkadotRegistry.createType('Perbill', 80000000),
+					coeffInteger: polkadotRegistry.createType('Balance', 0),
+					degree: polkadotRegistry.createType('u8', 1),
 					negative: false,
 				},
 			],
