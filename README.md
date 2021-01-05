@@ -193,7 +193,7 @@ the console. Because this fee calculation happens in the statically compiled web
 a re-compile with the proper environment variable set is necessary:
 
 ```bash
-CALC_DEBUG=1 yarn
+CALC_DEBUG=1 bash calc/build.sh
 ```
 
 ## Available endpoints

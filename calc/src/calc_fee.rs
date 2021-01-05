@@ -97,7 +97,11 @@ impl CalcFee {
         spec_name: &str,
         spec_version: u32,
     ) -> Option<CalcFee> {
-        debug::setup();
+		debug::setup();
+		info!(
+            "CalcFee::from_params({:#?}, {}, {}, {}, {}, {})",
+            polynomial, extrinsic_base_weight, multiplier, per_byte_fee, spec_name, spec_version
+        );
 
         let polynomial: Vec<Coefficient> = {
             let poly: Option<Vec<JSCoefficient>> = polynomial.into_serde().unwrap();
