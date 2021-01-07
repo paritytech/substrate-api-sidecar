@@ -98,7 +98,7 @@ impl CalcFee {
         spec_version: u32,
     ) -> Option<CalcFee> {
         debug::setup();
-	    info!(
+        info!(
             "CalcFee::from_params({:#?}, {}, {}, {}, {}, {})",
             polynomial, extrinsic_base_weight, multiplier, per_byte_fee, spec_name, spec_version
         );

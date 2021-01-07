@@ -340,7 +340,8 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system?.extrinsicBaseWeight;
+		const extrinsicBaseWeight = api.consts.system
+			?.extrinsicBaseWeight as AbstractInt;
 
 		let calcFee, specName, specVersion;
 		if (
@@ -394,15 +395,9 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
-			// The compiler doesn't know this is an AbastractInt so we do a runtime check.
-			const extrinsicBaseWeightBigInt =
-				extrinsicBaseWeight instanceof AbstractInt
-					? extrinsicBaseWeight.toBigInt()
-					: BigInt(extrinsicBaseWeight.toString());
-
 			calcFee = CalcFee.from_params(
 				coefficients,
-				extrinsicBaseWeightBigInt,
+				extrinsicBaseWeight.toBigInt(),
 				multiplier.toString(10),
 				perByte.toString(10),
 				specName,
