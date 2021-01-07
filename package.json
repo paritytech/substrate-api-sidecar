@@ -36,7 +36,7 @@
     "test": "jest --silent"
   },
   "dependencies": {
-    "@polkadot/api": "^3.3.1",
+    "@polkadot/api": "^3.3.2",
     "@polkadot/apps-config": "^0.74.1",
     "@polkadot/util-crypto": "^5.2.3",
     "@substrate/calc": "^0.1.3",

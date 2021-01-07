@@ -1,7 +1,13 @@
 import { ApiPromise } from '@polkadot/api';
-import { DeriveEraExposure } from '@polkadot/api-derive/staking/types';
-import { BlockHash } from '@polkadot/types/interfaces';
 import {
+	DeriveEraExposure,
+	DeriveEraExposureNominating,
+} from '@polkadot/api-derive/staking/types';
+import { Option } from '@polkadot/types';
+import {
+	BalanceOf,
+	BlockHash,
+	EraIndex,
 	EraRewardPoints,
 	Perbill,
 	StakingLedger,
@@ -15,6 +21,33 @@ import {
 	IPayout,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+
+/**
+ * General information about an era, in tuple form because we initially get it
+ * by destructuring a Promise.all(...)
+ */
+type IErasGeneral = [DeriveEraExposure, EraRewardPoints, Option<BalanceOf>];
+
+/**
+ * Commission and staking ledger of a validator
+ */
+interface ICommissionAndLedger {
+	commission: Perbill;
+	validatorLedger?: StakingLedger;
+}
+
+/**
+ * All the data we need to calculate payouts for an address at a given era.
+ */
+interface IEraData {
+	deriveEraExposure: DeriveEraExposure;
+	eraRewardPoints: EraRewardPoints;
+	erasValidatorRewardOption: Option<BalanceOf>;
+	exposuresWithCommission?: (ICommissionAndLedger & {
+		validatorId: string;
+	})[];
+	eraIndex: EraIndex;
+}
 
 export class AccountsStakingPayoutsService extends AbstractService {
 	/**
@@ -55,95 +88,188 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					'than or equal to current_era - history_depth.'
 			);
 		}
+
 		const at = {
 			height: number.unwrap().toString(10),
 			hash,
 		};
 
-		const erasPayouts: (IEraPayouts | { message: string })[] = [];
-
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
-		const startEra = era - (depth - 1) < 0 ? 0 : era - (depth - 1);
+		const startEra = Math.max(0, era - (depth - 1));
 
-		for (let e = startEra; e <= era; e += 1) {
-			erasPayouts.push(
-				await this.deriveEraPayouts(
-					api,
-					hash,
+		// Fetch general data about the era
+		const allErasGeneral = await this.fetchAllErasGeneral(
+			api,
+			hash,
+			startEra,
+			era
+		);
+
+		// With the general data, we can now fetch the commission of each validator `address` nominates
+		const allErasCommissions = await this.fetchAllErasCommissions(
+			api,
+			hash,
+			address,
+			startEra,
+			// Create an array of `DeriveEraExposure`
+			allErasGeneral.map((eraGeneral) => eraGeneral[0])
+		);
+
+		// Group together data by Era so we can easily associate parts that are used congruently downstream
+		const allEraData = allErasGeneral.map(
+			(
+				[
+					deriveEraExposure,
+					eraRewardPoints,
+					erasValidatorRewardOption,
+				]: IErasGeneral,
+				idx: number
+			): IEraData => {
+				const eraCommissions = allErasCommissions[idx];
+
+				const nominatedExposures = this.deriveNominatedExposures(
 					address,
-					e,
-					unclaimedOnly
-				)
-			);
-		}
+					deriveEraExposure
+				);
+
+				// Zip the `validatorId` with its associated `commission`, making the data easier to reason
+				// about downstream
+				const exposuresWithCommission = nominatedExposures?.map(
+					({ validatorId }, idx) => {
+						return {
+							validatorId,
+							...eraCommissions[idx],
+						};
+					}
+				);
+
+				return {
+					deriveEraExposure,
+					eraRewardPoints,
+					erasValidatorRewardOption,
+					exposuresWithCommission,
+					eraIndex: api.createType('EraIndex', idx + startEra),
+				};
+			}
+		);
 
 		return {
 			at,
-			erasPayouts,
+			erasPayouts: allEraData.map((eraData) =>
+				this.deriveEraPayouts(address, unclaimedOnly, eraData)
+			),
 		};
+	}
+
+	/**
+	 * Fetch general info about eras in the inclusive range `startEra` .. `era`.
+	 *
+	 * @param api `ApiPromise`
+	 * @param hash `BlockHash` to make call at
+	 * @param startEra first era to get data for
+	 * @param era the last era to get data for
+	 */
+	async fetchAllErasGeneral(
+		api: ApiPromise,
+		hash: BlockHash,
+		startEra: number,
+		era: number
+	): Promise<IErasGeneral[]> {
+		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
+		for (let e = startEra; e <= era; e += 1) {
+			const eraIndex = api.createType('EraIndex', e);
+
+			const eraGeneralTuple = Promise.all([
+				api.derive.staking.eraExposure(eraIndex),
+				api.query.staking.erasRewardPoints.at(hash, eraIndex),
+				api.query.staking.erasValidatorReward.at(hash, eraIndex),
+			]);
+
+			allDeriveQuerys.push(eraGeneralTuple);
+		}
+
+		return Promise.all(allDeriveQuerys);
+	}
+
+	/**
+	 * Fetch the commission & staking ledger for each `validatorId` in `deriveErasExposures`.
+	 *
+	 * @param api `ApiPromise`
+	 * @param hash `BlockHash` to make call at
+	 * @param address address of the _Stash_  account to get the payouts of
+	 * @param startEra first era to get data for
+	 * @param deriveErasExposures exposures per era for `address`
+	 */
+	fetchAllErasCommissions(
+		api: ApiPromise,
+		hash: BlockHash,
+		address: string,
+		startEra: number,
+		deriveErasExposures: DeriveEraExposure[]
+	): Promise<ICommissionAndLedger[][]> {
+		// Cache StakingLedger to reduce redundant queries to node
+		const validatorLedgerCache: { [id: string]: StakingLedger } = {};
+
+		const allErasCommissions = deriveErasExposures.map(
+			(deriveEraExposure, idx) => {
+				const currEra = idx + startEra;
+
+				const nominatedExposures = this.deriveNominatedExposures(
+					address,
+					deriveEraExposure
+				);
+
+				if (!nominatedExposures) {
+					return [];
+				}
+
+				const singleEraCommissions = nominatedExposures.map(
+					({ validatorId }) =>
+						this.fetchCommissionAndLedger(
+							api,
+							validatorId,
+							currEra,
+							hash,
+							validatorLedgerCache
+						)
+				);
+
+				return Promise.all(singleEraCommissions);
+			}
+		);
+
+		return Promise.all(allErasCommissions);
 	}
 
 	/**
 	 * Derive all the payouts for `address` at `era`.
 	 *
-	 * @param api
-	 * @param hash `BlockHash` to make call at
 	 * @param address address of the _Stash_  account to get the payouts of
 	 * @param era the era to query
-	 * @param unclaimedOnly whether or not to only show unclaimed payouts
+	 * @param eraData data about the address and era we are calculating payouts for
 	 */
-	async deriveEraPayouts(
-		api: ApiPromise,
-		hash: BlockHash,
+	deriveEraPayouts(
 		address: string,
-		era: number,
-		unclaimedOnly: boolean
-	): Promise<IEraPayouts | { message: string }> {
-		const eraIndex = api.createType('EraIndex', era);
-
-		const [
+		unclaimedOnly: boolean,
+		{
 			deriveEraExposure,
 			eraRewardPoints,
 			erasValidatorRewardOption,
-		] = await Promise.all([
-			api.derive.staking.eraExposure(eraIndex),
-			api.query.staking.erasRewardPoints.at(hash, era),
-			api.query.staking.erasValidatorReward.at(hash, era),
-		]);
-
-		let nominatedExposures = deriveEraExposure.nominators[address];
-		if (deriveEraExposure.validators[address]) {
-			// We treat an `address` that is a validator as nominating itself
-			nominatedExposures = nominatedExposures
-				? nominatedExposures.concat({
-						validatorId: address,
-						validatorIndex: 0,
-				  })
-				: [
-						{
-							validatorId: address,
-							validatorIndex: 0,
-						},
-				  ];
-		}
-
-		if (!nominatedExposures) {
+			exposuresWithCommission,
+			eraIndex,
+		}: IEraData
+	): IEraPayouts | { message: string } {
+		if (!exposuresWithCommission) {
 			return {
-				message: `${address} has no nominations for the era ${era}`,
+				message: `${address} has no nominations for the era ${eraIndex.toString()}`,
 			};
 		}
 
 		if (erasValidatorRewardOption.isNone) {
 			return {
-				message: `No ErasValidatorReward for the era ${era}`,
+				message: `No ErasValidatorReward for the era ${eraIndex.toString()}`,
 			};
 		}
-
-		// Cache StakingLedger to reduce redundant queries to node
-		const validatorLedgerCache: { [id: string]: StakingLedger } = {};
-
-		// Payouts for the era
-		const payouts: IPayout[] = [];
 
 		const totalEraRewardPoints = eraRewardPoints.total;
 		const totalEraPayout = erasValidatorRewardOption.unwrap();
@@ -152,8 +278,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			totalEraPayout.toString(10)
 		);
 
-		// Loop through validators that this nominator backs
-		for (const { validatorId } of nominatedExposures) {
+		// Iterate through validators that this nominator backs and calculate payouts for the era
+		const payouts: IPayout[] = [];
+		for (const {
+			validatorId,
+			commission: validatorCommission,
+			validatorLedger,
+		} of exposuresWithCommission) {
 			const totalValidatorRewardPoints = this.extractTotalValidatorRewardPoints(
 				eraRewardPoints,
 				validatorId
@@ -178,21 +309,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const {
-				commission: validatorCommission,
-				validatorLedger,
-			} = await this.fetchCommissionAndLedger(
-				api,
-				validatorId,
-				era,
-				hash,
-				validatorLedgerCache
-			);
-
 			if (!validatorLedger) {
 				continue;
 			}
-
 			// Check if the reward has already been claimed
 			const claimed = validatorLedger.claimedRewards.includes(eraIndex);
 			if (unclaimedOnly && claimed) {
@@ -241,10 +360,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 		hash: BlockHash,
 		validatorLedgerCache: { [id: string]: StakingLedger }
-	): Promise<{
-		commission: Perbill;
-		validatorLedger?: StakingLedger;
-	}> {
+	): Promise<ICommissionAndLedger> {
 		let commission;
 		let validatorLedger;
 		if (validatorId in validatorLedgerCache) {
@@ -338,5 +454,30 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			totalExposure,
 			nominatorExposure,
 		};
+	}
+
+	/**
+	 * Derive the list of validators nominated by `address`. Note: we count validators as nominating
+	 * themself.
+	 *
+	 * @param address address of the _Stash_  account to get the payouts of
+	 * @param deriveEraExposure result of query api.derive.staking.eraExposure(eraIndex)
+	 */
+	deriveNominatedExposures(
+		address: string,
+		deriveEraExposure: DeriveEraExposure
+	): DeriveEraExposureNominating[] | undefined {
+		let nominatedExposures: DeriveEraExposureNominating[] =
+			deriveEraExposure.nominators[address] ?? [];
+		if (deriveEraExposure.validators[address]) {
+			// We treat an `address` that is a validator as nominating itself
+			nominatedExposures = nominatedExposures.concat({
+				validatorId: address,
+				// We put in an arbitrary number because we do not use the index
+				validatorIndex: 9999,
+			});
+		}
+
+		return nominatedExposures;
 	}
 }
