@@ -193,7 +193,7 @@ the console. Because this fee calculation happens in the statically compiled web
 a re-compile with the proper environment variable set is necessary:
 
 ```bash
-CALC_DEBUG=1 yarn
+CALC_DEBUG=1 sh calc/build.sh
 ```
 
 ## Available endpoints
@@ -225,7 +225,7 @@ docker run --rm -it --env-file .env.docker -p 8080:8080 substrate-api-sidecar
 then you can test with:
 
 ```bash
-curl -s http://0.0.0.0:8080/block | jq
+curl -s http://0.0.0.0:8080/blocks/head | jq
 ```
 
 **N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
