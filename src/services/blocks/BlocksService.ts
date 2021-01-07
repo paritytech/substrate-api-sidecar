@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { SignedBlockExtended } from '@polkadot/api-derive/type';
 import { GenericCall, Struct } from '@polkadot/types';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	Block,
 	BlockHash,
@@ -222,15 +223,16 @@ export class BlocksService extends AbstractService {
 				tip,
 			} = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
+			const call = block.registry.createType('Call', method);
 
 			return {
 				method: {
-					pallet: method.sectionName,
-					method: method.methodName,
+					pallet: method.section,
+					method: method.method,
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce: isSigned ? nonce : null,
-				args: this.parseGenericCall(method, block.registry).args,
+				args: this.parseGenericCall(call, block.registry).args,
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
@@ -338,7 +340,8 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system?.extrinsicBaseWeight;
+		const extrinsicBaseWeight = api.consts.system
+			?.extrinsicBaseWeight as AbstractInt;
 
 		let calcFee, specName, specVersion;
 		if (
@@ -360,9 +363,11 @@ export class BlocksService extends AbstractService {
 			const coefficients = api.consts.transactionPayment.weightToFee.map(
 				(c) => {
 					return {
-						coeffInteger: c.coeffInteger.toString(),
-						coeffFrac: c.coeffFrac,
-						degree: c.degree,
+						// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
+						// to BigInt or string.
+						coeffInteger: c.coeffInteger.toString(10),
+						coeffFrac: c.coeffFrac.toNumber(),
+						degree: c.degree.toNumber(),
 						negative: c.negative,
 					};
 				}
@@ -392,9 +397,9 @@ export class BlocksService extends AbstractService {
 
 			calcFee = CalcFee.from_params(
 				coefficients,
-				BigInt(extrinsicBaseWeight.toString()),
-				multiplier.toString(),
-				perByte.toString(),
+				extrinsicBaseWeight.toBigInt(),
+				multiplier.toString(10),
+				perByte.toString(10),
 				specName,
 				specVersion
 			);
@@ -455,7 +460,6 @@ export class BlocksService extends AbstractService {
 		genericCall: GenericCall,
 		registry: Registry
 	): ISanitizedCall {
-		const { sectionName, methodName } = genericCall;
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
@@ -503,8 +507,8 @@ export class BlocksService extends AbstractService {
 
 		return {
 			method: {
-				pallet: sectionName,
-				method: methodName,
+				pallet: genericCall.section,
+				method: genericCall.method,
 			},
 			args: newArgs,
 		};
