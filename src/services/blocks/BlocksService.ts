@@ -49,18 +49,21 @@ export class BlocksService extends AbstractService {
 		let block;
 		let events;
 		let author;
+		let finalizedHead;
 		if (typeof api.query.session?.validators?.at === 'function') {
 			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
 			// is a function in order to query the validator set to pull out the author
 			// see: https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getBlock.ts#L31
-			[{ author, block }, events] = await Promise.all([
+			[{ author, block }, events, finalizedHead] = await Promise.all([
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),
+				api.rpc.chain.getFinalizedHead(),
 			]);
 		} else {
-			[{ block }, events] = await Promise.all([
+			[{ block }, events, finalizedHead] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
+				api.rpc.chain.getFinalizedHead(),
 			]);
 		}
 		const authorId = author;
@@ -93,7 +96,7 @@ export class BlocksService extends AbstractService {
 		);
 
 		// Check if the requested block is finalized
-		const finalized = await this.isFinalizedBlock(api, number);
+		const finalized = await this.isFinalizedBlock(api, number, finalizedHead);
 
 		// The genesis block is a special case with little information associated with it.
 		if (parentHash.every((byte) => !byte)) {
@@ -529,11 +532,9 @@ export class BlocksService extends AbstractService {
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
-		blockNumber: Compact<BlockNumber>
+		blockNumber: Compact<BlockNumber>,
+		finalizedHead: BlockHash
 	): Promise<boolean> {
-		// Retrieve Finalized Block Head with a type of BlockHash
-		const finalizedHead = await api.rpc.chain.getFinalizedHead();
-
 		// Returns a Finalized head Object
 		const finalizedHeadBlock = await api.derive.chain.getBlock(
 			finalizedHead
