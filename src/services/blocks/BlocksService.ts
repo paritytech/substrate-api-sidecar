@@ -92,6 +92,9 @@ export class BlocksService extends AbstractService {
 			eventDocs
 		);
 
+		// Check if the requested block is finalized
+		const finalized = await this.isFinalizedBlock(api, number);
+
 		// The genesis block is a special case with little information associated with it.
 		if (parentHash.every((byte) => !byte)) {
 			return {
@@ -105,6 +108,7 @@ export class BlocksService extends AbstractService {
 				onInitialize,
 				extrinsics,
 				onFinalize,
+				finalized,
 			};
 		}
 
@@ -187,8 +191,6 @@ export class BlocksService extends AbstractService {
 			}
 		}
 
-		const isFinalized = await this.isFinalizedBlock(api, number);
-
 		return {
 			number,
 			hash,
@@ -200,6 +202,7 @@ export class BlocksService extends AbstractService {
 			onInitialize,
 			extrinsics,
 			onFinalize,
+			finalized,
 		};
 	}
 
@@ -521,23 +524,28 @@ export class BlocksService extends AbstractService {
 	 * When querying a block this will immediately inform the request whether
 	 * or not the queired block is considered finalized at the time of querying
 	 * 
-	 * @param api 
-	 * @param blockNumber 
+	 * @param api ApiPromise to use for query
+	 * @param blockNumber Queried Block Number
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
 		blockNumber: Compact<BlockNumber>
 	) : Promise<boolean> {
+		// Retrieve Finalized Block Head with a type of BlockHash
 		const finalizedHead = await api.rpc.chain.getFinalizedHead();
 
+		// Returns a Finalized head Object
 		const finalizedHeadBlock = await api.derive.chain.getBlock(finalizedHead);
 
-		const finalizedHeadBlockNumber = await finalizedHeadBlock?.block.header.number.toNumber();
+		// Retreive the finalized head blockNumber
+		const finalizedHeadBlockNumber = finalizedHeadBlock?.block
+			.header.number.toNumber();
 
-		if (finalizedHeadBlockNumber && (blockNumber.toNumber() < finalizedHeadBlockNumber)) {
-			return true
-		}
+		// If finalized head block number is undefined return false
+		if (!finalizedHeadBlockNumber) return false;
 
-		return false
+		// Check if the finalized head blockNumber is greater than the 
+		// blockNumber in the request. If so the requested block is finalized.
+		return blockNumber.toNumber() <= finalizedHeadBlockNumber;
 	}
 }
