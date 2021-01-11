@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { SignedBlockExtended } from '@polkadot/api-derive/type';
-import { GenericCall, Struct } from '@polkadot/types';
+import { GenericCall, Struct, Compact } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	Block,
@@ -8,6 +8,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	BlockNumber
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -185,6 +186,8 @@ export class BlocksService extends AbstractService {
 				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
 			}
 		}
+
+		const isFinalized = await this.isFinalizedBlock(api, number);
 
 		return {
 			number,
@@ -512,5 +515,29 @@ export class BlocksService extends AbstractService {
 			},
 			args: newArgs,
 		};
+	}
+
+	/**
+	 * When querying a block this will immediately inform the request whether
+	 * or not the queired block is considered finalized at the time of querying
+	 * 
+	 * @param api 
+	 * @param blockNumber 
+	 */
+	private async isFinalizedBlock(
+		api: ApiPromise,
+		blockNumber: Compact<BlockNumber>
+	) : Promise<boolean> {
+		const finalizedHead = await api.rpc.chain.getFinalizedHead();
+
+		const finalizedHeadBlock = await api.derive.chain.getBlock(finalizedHead);
+
+		const finalizedHeadBlockNumber = await finalizedHeadBlock?.block.header.number.toNumber();
+
+		if (finalizedHeadBlockNumber && (blockNumber.toNumber() < finalizedHeadBlockNumber)) {
+			return true
+		}
+
+		return false
 	}
 }
