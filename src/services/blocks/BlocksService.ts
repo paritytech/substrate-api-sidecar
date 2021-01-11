@@ -1,14 +1,14 @@
 import { ApiPromise } from '@polkadot/api';
 import { SignedBlockExtended } from '@polkadot/api-derive/type';
-import { GenericCall, Struct, Compact } from '@polkadot/types';
+import { Compact, GenericCall, Struct } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	Block,
 	BlockHash,
+	BlockNumber,
 	DispatchInfo,
 	EventRecord,
 	Hash,
-	BlockNumber
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -523,28 +523,29 @@ export class BlocksService extends AbstractService {
 	/**
 	 * When querying a block this will immediately inform the request whether
 	 * or not the queired block is considered finalized at the time of querying
-	 * 
+	 *
 	 * @param api ApiPromise to use for query
 	 * @param blockNumber Queried Block Number
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
 		blockNumber: Compact<BlockNumber>
-	) : Promise<boolean> {
+	): Promise<boolean> {
 		// Retrieve Finalized Block Head with a type of BlockHash
 		const finalizedHead = await api.rpc.chain.getFinalizedHead();
 
 		// Returns a Finalized head Object
-		const finalizedHeadBlock = await api.derive.chain.getBlock(finalizedHead);
+		const finalizedHeadBlock = await api.derive.chain.getBlock(
+			finalizedHead
+		);
 
 		// Retreive the finalized head blockNumber
-		const finalizedHeadBlockNumber = finalizedHeadBlock?.block
-			.header.number.toNumber();
+		const finalizedHeadBlockNumber = finalizedHeadBlock?.block.header.number.toNumber();
 
 		// If finalized head block number is undefined return false
 		if (!finalizedHeadBlockNumber) return false;
 
-		// Check if the finalized head blockNumber is greater than the 
+		// Check if the finalized head blockNumber is greater than the
 		// blockNumber in the request. If so the requested block is finalized.
 		return blockNumber.toNumber() <= finalizedHeadBlockNumber;
 	}
