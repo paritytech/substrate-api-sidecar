@@ -96,7 +96,7 @@ export class BlocksService extends AbstractService {
 		);
 
 		// Check if the requested block is finalized
-		const finalized = await this.isFinalizedBlock(api, number, finalizedHead);
+		const finalized = await this.isFinalizedBlock(api, number, hash, finalizedHead);
 
 		// The genesis block is a special case with little information associated with it.
 		if (parentHash.every((byte) => !byte)) {
@@ -529,17 +529,33 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param api ApiPromise to use for query
 	 * @param blockNumber Queried Block Number
+	 * @param queriedHash This is the Queried Hash param
+	 * @param finalizedHead This is the finalized head for our chain
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
 		blockNumber: Compact<BlockNumber>,
+		queriedHash: BlockHash,
 		finalizedHead: BlockHash
 	): Promise<boolean> {
 		// Returns a Finalized head Object
 		const finalizedHeadBlock = await api.derive.chain.getBlock(
 			finalizedHead
 		);
+		// If queried by hash this is the param
+		const hash = queriedHash.toHex();
 
+		// We requery the block via RPC to make sure that both our hash and 
+		// Sanity hash match. Because when we query by blockNumber it will 
+		// retrieve the block from the Canonical chain, and we can compare it
+		// to the value that was passed in which is the queried hash above.  
+		const sanityHash = await api.rpc.chain.getBlockHash(blockNumber.toNumber());
+
+		// If this conditional is satisfied, the queried hash is on a fork,
+		// and is not on the canonical chain and therefor not finalized
+		if(sanityHash.toHex() !== hash) {
+			return false;
+		}
 		// Retreive the finalized head blockNumber
 		const finalizedHeadBlockNumber = finalizedHeadBlock?.block.header.number.toNumber();
 
