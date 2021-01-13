@@ -197,12 +197,6 @@ export class Trace {
 						? (e?.values?.string_values?.result as string)
 						: (e?.values?.string_values?.value as string);
 
-				console.log();
-				console.log(accountInfoEncoded?.slice(0, 5));
-				console.log('GET', e?.values?.string_values?.result);
-				console.log('PUT', e?.values?.string_values?.valuś);
-				console.log();
-
 				let accountInfo;
 				if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
 					const len = accountInfoEncoded.length;
