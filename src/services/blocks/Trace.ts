@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { AccountInfo, Address } from '@polkadot/types/interfaces';
+import * as BN from 'bn.js';
 
 import { KeyInfo, TraceBlock, TraceEvent, TraceSpan } from './types';
 
@@ -14,12 +15,26 @@ type EventWithAccountInfo = EventWithParent & {
 	address: Address;
 };
 
+interface AccountTransitionInfo {
+	address: string;
+	free: BN;
+	reserved: BN;
+	miscFrozen: BN;
+	feeFrozen: BN;
+}
+
 export interface TraceTestOne {
 	onlySystemAccount: EventWithAccountInfo[];
 	// Spans grouped by Id
 	spansById: Map<number, SpanWithName[]>;
 	// Events grouped by parent_id
 	eventsByParent: Map<number, EventWithParent[]>;
+}
+
+export interface TraceTestTwo {
+	systemAccountTransitions: Map<string, AccountTransitionInfo[]>;
+	systemAccountByAddress: Map<string, EventWithAccountInfo[]>;
+	onlySystemAccount: EventWithAccountInfo[];
 }
 
 const EMPTY_KEY_INFO = {
@@ -48,6 +63,14 @@ export class Trace {
 			onlySystemAccount: this.systemAccountEvents(),
 			spansById: this.spansById(),
 			eventsByParent: this.eventsByParentId(),
+		};
+	}
+
+	testTwo(): TraceTestTwo {
+		return {
+			systemAccountTransitions: this.transitionPerAccount(),
+			systemAccountByAddress: this.accountEventsByAddress(),
+			onlySystemAccount: this.systemAccountEvents(),
 		};
 	}
 
@@ -167,10 +190,19 @@ export class Trace {
 					'Address',
 					`0x${addressRaw}`
 				);
-				const accountInfoEncoded = e?.values?.string_values
-					?.result as string;
 
+				const { method } = e.values.string_values;
+				const accountInfoEncoded =
+					method === 'Get'
+						? (e?.values?.string_values?.result as string)
+						: (e?.values?.string_values?.value as string);
+
+				console.log();
 				console.log(accountInfoEncoded?.slice(0, 5));
+				console.log('GET', e?.values?.string_values?.result);
+				console.log('PUT', e?.values?.string_values?.valuś);
+				console.log();
+
 				let accountInfo;
 				if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
 					const len = accountInfoEncoded.length;
@@ -180,10 +212,57 @@ export class Trace {
 						`0x${scale}`
 					);
 				} else {
-					accountInfo = this.registry.createType('AccountInfo');
+					throw 'Expect there to always be some account info';
 				}
 
 				return { ...e, accountInfo, address };
 			});
+	}
+
+	private accountEventsByAddress(): Map<string, EventWithAccountInfo[]> {
+		return this.systemAccountEvents().reduce((acc, cur) => {
+			const addr = cur.address.toString();
+			if (!acc.has(addr)) {
+				acc.set(addr, []);
+			}
+
+			acc.get(addr)?.push(cur);
+
+			return acc;
+		}, new Map<string, EventWithAccountInfo[]>());
+	}
+
+	private transitionPerAccount(): Map<string, AccountTransitionInfo[]> {
+		return [...this.accountEventsByAddress().entries()].reduce(
+			(acc, [addr, events]) => {
+				const transitions = [];
+				for (const [i, e] of events.entries()) {
+					if (i === 0) {
+						continue;
+					}
+
+					const prev = events[i - 1].accountInfo.data;
+					const cur = e.accountInfo.data;
+
+					const free = prev.free.sub(cur.free);
+					const reserved = prev.reserved.sub(cur.reserved);
+					const miscFrozen = prev.miscFrozen.sub(cur.miscFrozen);
+					const feeFrozen = prev.feeFrozen.sub(cur.feeFrozen);
+
+					transitions.push({
+						address: addr,
+						free,
+						reserved,
+						miscFrozen,
+						feeFrozen,
+					});
+				}
+
+				acc.set(addr, transitions);
+
+				return acc;
+			},
+			new Map<string, AccountTransitionInfo[]>()
+		);
 	}
 }

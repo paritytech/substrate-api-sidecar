@@ -23,7 +23,7 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { Trace, TraceTestOne } from './Trace';
+import { Trace, TraceTestOne, TraceTestTwo } from './Trace';
 import { TraceBlock } from './types';
 
 /**
@@ -45,7 +45,7 @@ export class BlocksService extends AbstractService {
 		eventDocs: boolean,
 		extrinsicDocs: boolean,
 		trace: boolean
-	): Promise<IBlock | TraceTestOne> {
+	): Promise<IBlock | TraceTestOne | TraceTestTwo> {
 		const { api } = this;
 
 		let block;
@@ -55,7 +55,7 @@ export class BlocksService extends AbstractService {
 			// @ts-ignore
 			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
 			const trace = new Trace(this.api, traceBlock);
-			return trace.testOne();
+			return trace.testTwo();
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
 			// is a function in order to query the validator set to pull out the author
