@@ -54,7 +54,7 @@ export class BlocksService extends AbstractService {
 		let events;
 		let author;
 		let finalizedHead;
-		
+
 		if (typeof api.query.session?.validators?.at === 'function') {
 			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
 			// is a function in order to query the validator set to pull out the author
@@ -62,13 +62,17 @@ export class BlocksService extends AbstractService {
 			[{ author, block }, events, finalizedHead] = await Promise.all([
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),
-				queryFinalizedHead ? api.rpc.chain.getFinalizedHead() : Promise.resolve(hash),
+				queryFinalizedHead
+					? api.rpc.chain.getFinalizedHead()
+					: Promise.resolve(hash),
 			]);
 		} else {
 			[{ block }, events, finalizedHead] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
-				queryFinalizedHead ? api.rpc.chain.getFinalizedHead() : Promise.resolve(hash),
+				queryFinalizedHead
+					? api.rpc.chain.getFinalizedHead()
+					: Promise.resolve(hash),
 			]);
 		}
 		const authorId = author;
@@ -556,7 +560,7 @@ export class BlocksService extends AbstractService {
 		 * If the blockId is not a hash, it is a block height, and will
 		 * run the else conditional
 		 */
-		if(checkFinalized) {
+		if (checkFinalized) {
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
@@ -566,10 +570,10 @@ export class BlocksService extends AbstractService {
 				// to the original hash which is passed via the request params.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
-			
+
 			// If queried by hash this is the original request param
 			const hash = queriedHash.toHex();
-	
+
 			// If this conditional is satisfied, the queried hash is on a fork,
 			// and is not on the canonical chain and therefor not finalized
 			if (canonHash.toHex() !== hash) {
@@ -578,18 +582,20 @@ export class BlocksService extends AbstractService {
 
 			// Retreive the finalized head blockNumber
 			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
-	
+
 			// If finalized head block number is undefined return false
 			if (!finalizedHeadBlockNumber) {
 				return false;
 			}
-	
+
 			// Check if the finalized head blockNumber is greater than the
 			// blockNumber in the request. If so the requested block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		} else {
 			// Returns a Finalized head Object
-			const finalizedHeadBlock = await api.rpc.chain.getHeader(finalizedHead);
+			const finalizedHeadBlock = await api.rpc.chain.getHeader(
+				finalizedHead
+			);
 
 			// Retreive the finalized head blockNumber
 			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;

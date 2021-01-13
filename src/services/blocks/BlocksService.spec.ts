@@ -16,7 +16,7 @@ import {
 	getBlock,
 	mockApi,
 	mockBlock789629,
-	mockForkedBlock789629
+	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
@@ -39,7 +39,13 @@ describe('BlocksService', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(blockHash789629, true, true, false, false)
+					await blocksService.fetchBlock(
+						blockHash789629,
+						true,
+						true,
+						false,
+						false
+					)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -63,7 +69,13 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(blockHash789629, false, false, false, false)
+				blocksService.fetchBlock(
+					blockHash789629,
+					false,
+					false,
+					false,
+					false
+				)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
@@ -268,7 +280,7 @@ describe('BlocksService', () => {
 	describe('BlockService.isFinalizedBlock', () => {
 		it('Returns false when queried blockId is on a fork', async () => {
 			const getHeader = (_hash: Hash) =>
-				Promise.resolve().then(() => mockForkedBlock789629.header); 
+				Promise.resolve().then(() => mockForkedBlock789629.header);
 
 			const getBlockHash = (_zero: number) =>
 				Promise.resolve().then(() =>
@@ -278,14 +290,14 @@ describe('BlocksService', () => {
 					)
 				);
 
-			const forkMockApi = ({
+			const forkMockApi = {
 				rpc: {
 					chain: {
 						getHeader,
 						getBlockHash,
-					}
-				}
-			}) as ApiPromise;
+					},
+				},
+			} as ApiPromise;
 
 			const queriedHash = polkadotRegistry.createType(
 				'BlockHash',

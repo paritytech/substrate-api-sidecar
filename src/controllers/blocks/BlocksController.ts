@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { RequestHandler } from 'express';
 import { isHex } from '@polkadot/util';
+import { RequestHandler } from 'express';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
@@ -100,19 +100,19 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		if (finalized === 'false' || !this.options.finalizes) {
 			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash
+			hash = (await this.api.rpc.chain.getHeader()).hash;
 		} else {
 			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead()
+			hash = await this.api.rpc.chain.getFinalizedHead();
 		}
 
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
-				hash, 
-				eventDocsArg, 
-				extrsinsicDocsArg, 
-				finalized === 'false' ? false : true, 
+				hash,
+				eventDocsArg,
+				extrsinsicDocsArg,
+				finalized === 'false' ? false : true,
 				queryFinalizedHead
 			)
 		);
@@ -128,8 +128,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
-		let checkFinalized = isHex(number) && number.length === 66;
-		
+		const checkFinalized = isHex(number) && number.length === 66;
+
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
