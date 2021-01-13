@@ -34,15 +34,66 @@ async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
+	const rpc = {
+		state: {
+			traceBlock: {
+				description: 'State trace prototype',
+				params: [
+					{
+						name: 'at',
+						type: 'BlockHash',
+						isOptional: true,
+						isHistoric: true,
+					},
+				],
+				type: 'Json',
+			},
+		},
+	};
+
+	// Note: These are not working - currently just using `Json` type
+	const types = {
+		Duration: {
+			secs: 'u64',
+			nanos: 'u32',
+		},
+		Event: {
+			name: 'Text',
+			values: 'Values',
+			parentId: 'Option<u64>',
+		},
+		Span: {
+			id: 'u64',
+			parentId: 'Option<u64>',
+			name: 'Text',
+			target: 'Text',
+			line: 'u32',
+			overallTime: 'Duration',
+			values: 'Values',
+		},
+		Values: {
+			boolValues: 'HashMap<Text, bool>',
+			i64Values: 'HashMap<Text, i64>',
+			u64Values: 'HashMap<Text, u64>',
+			stringValues: 'HashMap<Text, Text>',
+		},
+		BlockTrace: {
+			blockHash: `Text`,
+			parentHash: `Text`,
+			tracingTargets: `String`,
+			spans: 'Vec<Span>',
+			events: 'Vec<Event>',
+		},
+	};
+
 	// Instantiate a web socket connection to the node for basic polkadot-js use
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.SUBSTRATE.WS_URL),
 		typesBundle,
 		typesChain,
 		typesSpec,
-		types: {
-			...config.SUBSTRATE.CUSTOM_TYPES,
-		},
+		types,
+		rpc,
 	});
 
 	// Gather some basic details about the node so we can display a nice message

@@ -88,11 +88,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized } },
+		{ query: { eventDocs, extrinsicDocs, finalized, trace } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrsinsicDocsArg = extrinsicDocs === 'true';
+		const traceArgs = trace === 'true';
 
 		const hash =
 			finalized === 'false' || !this.options.finalizes
@@ -101,7 +102,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg)
+			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg, traceArgs)
 		);
 	};
 
@@ -112,20 +113,22 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, trace } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
+		const traceArgs = trace === 'true';
 
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
 				hash,
 				eventDocsArg,
-				extrinsinsicDocsArg
+				extrinsinsicDocsArg,
+				traceArgs
 			)
 		);
 	};

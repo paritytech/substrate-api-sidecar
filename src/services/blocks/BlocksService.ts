@@ -23,6 +23,8 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
+import { Trace, TraceTestOne } from './Trace';
+import { TraceBlock } from './types';
 
 /**
  * Event methods that we check for.
@@ -41,14 +43,20 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		eventDocs: boolean,
-		extrinsicDocs: boolean
-	): Promise<IBlock> {
+		extrinsicDocs: boolean,
+		trace: boolean
+	): Promise<IBlock | TraceTestOne> {
 		const { api } = this;
 
 		let block;
 		let events;
 		let author;
-		if (typeof api.query.session?.validators?.at === 'function') {
+		if (trace) {
+			// @ts-ignore
+			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
+			const trace = new Trace(this.api, traceBlock);
+			return trace.testOne();
+		} else if (typeof api.query.session?.validators?.at === 'function') {
 			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
 			// is a function in order to query the validator set to pull out the author
 			// see: https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getBlock.ts#L31
