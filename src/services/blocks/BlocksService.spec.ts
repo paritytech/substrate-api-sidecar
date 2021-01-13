@@ -37,7 +37,7 @@ describe('BlocksService', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(blockHash789629, true, true)
+					await blocksService.fetchBlock(blockHash789629, true, true, false, false)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -61,7 +61,7 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(blockHash789629, false, false)
+				blocksService.fetchBlock(blockHash789629, false, false, false, false)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
