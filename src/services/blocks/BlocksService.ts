@@ -62,22 +62,13 @@ export class BlocksService extends AbstractService {
 			[{ author, block }, events, finalizedHead] = await Promise.all([
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),
-				api.rpc.chain.getFinalizedHead(),
-			]);
-		} else if(!queryFinalizedHead)  {
-			// We already queried the finalized head via the Controller,
-			// So we save a rpc call in this conditional
-			finalizedHead = hash;
-
-			[{ block }, events] = await Promise.all([
-				api.rpc.chain.getBlock(hash),
-				this.fetchEvents(api, hash),
+				queryFinalizedHead ? api.rpc.chain.getFinalizedHead() : Promise.resolve(hash),
 			]);
 		} else {
 			[{ block }, events, finalizedHead] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
-				api.rpc.chain.getFinalizedHead(),
+				queryFinalizedHead ? api.rpc.chain.getFinalizedHead() : Promise.resolve(hash),
 			]);
 		}
 		const authorId = author;
@@ -560,7 +551,6 @@ export class BlocksService extends AbstractService {
 		finalizedHead: BlockHash,
 		checkFinalized: boolean
 	): Promise<boolean> {
-
 		/**
 		 * If the blockId is a hash it will run this first conditional.
 		 * If the blockId is not a hash, it is a block height, and will
@@ -576,6 +566,7 @@ export class BlocksService extends AbstractService {
 				// to the original hash which is passed via the request params.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
+			
 			// If queried by hash this is the original request param
 			const hash = queriedHash.toHex();
 	
