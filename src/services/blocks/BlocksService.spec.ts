@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import { ApiPromise } from '@polkadot/api';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
@@ -15,6 +16,7 @@ import {
 	getBlock,
 	mockApi,
 	mockBlock789629,
+	mockForkedBlock789629
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
@@ -260,6 +262,82 @@ describe('BlocksService', () => {
 					},
 				})
 			);
+		});
+	});
+
+	describe('BlockService.isFinalizedBlock', () => {
+		it('Returns false when queried blockId is on a fork', async () => {
+			const getHeader = (_hash: Hash) =>
+				Promise.resolve().then(() => mockForkedBlock789629.header); 
+
+			const getBlockHash = (_zero: number) =>
+				Promise.resolve().then(() =>
+					polkadotRegistry.createType(
+						'BlockHash',
+						'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+					)
+				);
+
+			const forkMockApi = ({
+				rpc: {
+					chain: {
+						getHeader,
+						getBlockHash,
+					}
+				}
+			}) as ApiPromise;
+
+			const queriedHash = polkadotRegistry.createType(
+				'BlockHash',
+				'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
+			);
+
+			const blockNumber = polkadotRegistry.createType(
+				'Compact<BlockNumber>',
+				789629
+			);
+
+			const finalizedHead = polkadotRegistry.createType(
+				'BlockHash',
+				'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+			);
+
+			expect(
+				await blocksService['isFinalizedBlock'](
+					forkMockApi,
+					blockNumber,
+					queriedHash,
+					finalizedHead,
+					true
+				)
+			).toEqual(false);
+		});
+
+		it('Returns true when finalized tag is not on a fork', async () => {
+			const queriedHash = polkadotRegistry.createType(
+				'BlockHash',
+				'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+			);
+
+			const blockNumber = polkadotRegistry.createType(
+				'Compact<BlockNumber>',
+				789629
+			);
+
+			const finalizedHead = polkadotRegistry.createType(
+				'BlockHash',
+				'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+			);
+
+			expect(
+				await blocksService['isFinalizedBlock'](
+					mockApi,
+					blockNumber,
+					queriedHash,
+					finalizedHead,
+					true
+				)
+			).toEqual(true);
 		});
 	});
 });
