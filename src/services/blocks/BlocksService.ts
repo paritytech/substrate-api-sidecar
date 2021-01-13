@@ -38,11 +38,15 @@ export class BlocksService extends AbstractService {
 	 * Fetch a block enhanced with augmented and derived values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
+	 * @param checkFinalized boolean to help reduce rpc calls in isFinalized
+	 * @param queryFinalizedHead boolean to help reduce rpc in fetchBlock
 	 */
 	async fetchBlock(
 		hash: BlockHash,
 		eventDocs: boolean,
-		extrinsicDocs: boolean
+		extrinsicDocs: boolean,
+		checkFinalized: boolean,
+		queryFinalizedHead: boolean
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -50,6 +54,7 @@ export class BlocksService extends AbstractService {
 		let events;
 		let author;
 		let finalizedHead;
+		
 		if (typeof api.query.session?.validators?.at === 'function') {
 			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
 			// is a function in order to query the validator set to pull out the author
@@ -58,6 +63,15 @@ export class BlocksService extends AbstractService {
 				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
 				this.fetchEvents(api, hash),
 				api.rpc.chain.getFinalizedHead(),
+			]);
+		} else if(!queryFinalizedHead)  {
+			// We already queried the finalized head via the Controller,
+			// So we save a rpc call in this conditional
+			finalizedHead = hash;
+
+			[{ block }, events] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
+				this.fetchEvents(api, hash),
 			]);
 		} else {
 			[{ block }, events, finalizedHead] = await Promise.all([
@@ -100,7 +114,8 @@ export class BlocksService extends AbstractService {
 			api,
 			number,
 			hash,
-			finalizedHead
+			finalizedHead,
+			checkFinalized
 		);
 
 		// The genesis block is a special case with little information associated with it.
@@ -536,38 +551,61 @@ export class BlocksService extends AbstractService {
 	 * @param blockNumber Queried Block Number
 	 * @param queriedHash This is the Queried Hash param
 	 * @param finalizedHead This is the finalized head for our chain
+	 * @param checkFinalized If the passed in blockId is a hash we check query canonHash
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
 		blockNumber: Compact<BlockNumber>,
 		queriedHash: BlockHash,
-		finalizedHead: BlockHash
+		finalizedHead: BlockHash,
+		checkFinalized: boolean
 	): Promise<boolean> {
-		const [finalizedHeadBlock, sanityHash] = await Promise.all([
+
+		/**
+		 * If the blockId is a hash it will run this first conditional.
+		 * If the blockId is not a hash, it is a block height, and will
+		 * run the else conditional
+		 */
+		if(checkFinalized) {
+			const [finalizedHeadBlock, canonHash] = await Promise.all([
+				// Returns a Finalized head Object
+				api.rpc.chain.getHeader(finalizedHead),
+				// We requery the block via RPC to make sure that both our hash and
+				// Sanity hash match. Because when we query by blockNumber it will
+				// retrieve the block from the Canonical chain, and we can compare it
+				// to the original hash which is passed via the request params.
+				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
+			]);
+			// If queried by hash this is the original request param
+			const hash = queriedHash.toHex();
+	
+			// If this conditional is satisfied, the queried hash is on a fork,
+			// and is not on the canonical chain and therefor not finalized
+			if (canonHash.toHex() !== hash) {
+				return false;
+			}
+
+			// Retreive the finalized head blockNumber
+			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
+	
+			// If finalized head block number is undefined return false
+			if (!finalizedHeadBlockNumber) {
+				return false;
+			}
+	
+			// Check if the finalized head blockNumber is greater than the
+			// blockNumber in the request. If so the requested block is finalized.
+			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
+		} else {
 			// Returns a Finalized head Object
-			api.derive.chain.getBlock(finalizedHead),
-			// We requery the block via RPC to make sure that both our hash and
-			// Sanity hash match. Because when we query by blockNumber it will
-			// retrieve the block from the Canonical chain, and we can compare it
-			// to the original hash which is passed via the request params.
-			api.rpc.chain.getBlockHash(blockNumber.toNumber()),
-		]);
+			const finalizedHeadBlock = await api.rpc.chain.getHeader(finalizedHead);
 
-		// If queried by hash this is the original request param
-		const hash = queriedHash.toHex();
+			// Retreive the finalized head blockNumber
+			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
 
-		// If this conditional is satisfied, the queried hash is on a fork,
-		// and is not on the canonical chain and therefor not finalized
-		if (sanityHash.toHex() !== hash) return false;
-
-		// Retreive the finalized head blockNumber
-		const finalizedHeadBlockNumber = finalizedHeadBlock?.block.header.number.toNumber();
-
-		// If finalized head block number is undefined return false
-		if (!finalizedHeadBlockNumber) return false;
-
-		// Check if the finalized head blockNumber is greater than the
-		// blockNumber in the request. If so the requested block is finalized.
-		return blockNumber.toNumber() <= finalizedHeadBlockNumber;
+			// Check if the finalized head blockNumber is greater than the
+			// blockNumber in the request. If so the requested block is finalized.
+			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
+		}
 	}
 }
