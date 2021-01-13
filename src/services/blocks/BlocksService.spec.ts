@@ -325,7 +325,7 @@ describe('BlocksService', () => {
 			).toEqual(false);
 		});
 
-		it('Returns true when finalized tag is not on a fork', async () => {
+		it('Returns true when queried blockId is not on a fork', async () => {
 			const queriedHash = polkadotRegistry.createType(
 				'BlockHash',
 				'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'

@@ -39,7 +39,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 * @param checkFinalized boolean to help reduce rpc calls in isFinalized
-	 * @param queryFinalizedHead boolean to help reduce rpc in fetchBlock
+	 * @param queryFinalizedHead boolean to help reduce rpc calls in fetchBlock
 	 */
 	async fetchBlock(
 		hash: BlockHash,
@@ -564,8 +564,8 @@ export class BlocksService extends AbstractService {
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
-				// We requery the block via RPC to make sure that both our hash and
-				// Sanity hash match. Because when we query by blockNumber it will
+				// We re-query the block via RPC to make sure that both our hash and
+				// canonHash match. Because when we query by blockNumber it will
 				// retrieve the block from the Canonical chain, and we can compare it
 				// to the original hash which is passed via the request params.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
@@ -575,7 +575,7 @@ export class BlocksService extends AbstractService {
 			const hash = queriedHash.toHex();
 
 			// If this conditional is satisfied, the queried hash is on a fork,
-			// and is not on the canonical chain and therefor not finalized
+			// and is not on the canonical chain and therefore not finalized
 			if (canonHash.toHex() !== hash) {
 				return false;
 			}
@@ -583,7 +583,7 @@ export class BlocksService extends AbstractService {
 			// Retreive the finalized head blockNumber
 			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
 
-			// If finalized head block number is undefined return false
+			// If the finalized head blockNumber is undefined return false
 			if (!finalizedHeadBlockNumber) {
 				return false;
 			}
