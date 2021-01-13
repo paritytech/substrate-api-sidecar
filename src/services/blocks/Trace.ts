@@ -238,10 +238,10 @@ export class Trace {
 					const prev = events[i - 1].accountInfo.data;
 					const cur = e.accountInfo.data;
 
-					const free = prev.free.sub(cur.free);
-					const reserved = prev.reserved.sub(cur.reserved);
-					const miscFrozen = prev.miscFrozen.sub(cur.miscFrozen);
-					const feeFrozen = prev.feeFrozen.sub(cur.feeFrozen);
+					const free = cur.free.sub(prev.free);
+					const reserved = cur.reserved.sub(prev.reserved);
+					const miscFrozen = cur.miscFrozen.sub(prev.miscFrozen);
+					const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
 
 					transitions.push({
 						address: addr,
