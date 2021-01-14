@@ -397,19 +397,13 @@ export class BlocksService extends AbstractService {
 				extrinsicBaseWeight = api.consts.system
 					.extrinsicBaseWeight as AbstractInt;
 			} else {
-				[
-					version,
-					multiplier,
-					{
-						normal: { baseExtrinsic: extrinsicBaseWeight },
-					},
-				] = await Promise.all([
+				[version, multiplier] = await Promise.all([
 					api.rpc.state.getRuntimeVersion(parentParentHash),
 					api.query.transactionPayment.nextFeeMultiplier.at(
 						parentHash
 					),
-					api.query.system.blockWeight.at(parentHash),
 				]);
+				extrinsicBaseWeight = api.consts.system.blockWeights.normal.block;
 			}
 
 			[specName, specVersion] = [
@@ -417,9 +411,12 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
+			console.log('extrinsic base weight', extrinsicBaseWeight);
+
 			calcFee = CalcFee.from_params(
 				coefficients,
 				extrinsicBaseWeight.toBigInt(),
+				// BigInt(10),
 				multiplier.toString(10),
 				perByte.toString(10),
 				specName,
