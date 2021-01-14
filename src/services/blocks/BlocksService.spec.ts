@@ -278,7 +278,7 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlockService.isFinalizedBlock', () => {
-		it('Returns false when queried blockId is on a fork', async () => {
+		it('Returns false when queried blockId is not canonical', async () => {
 			const getHeader = (_hash: Hash) =>
 				Promise.resolve().then(() => mockForkedBlock789629.header);
 
