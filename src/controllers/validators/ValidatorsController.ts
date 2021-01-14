@@ -57,21 +57,33 @@ export default class ValidatorsController extends AbstractController<ValidatorsS
 	 * @param res Express Response
 	 */
 	getValidatorsList: RequestHandler = async (
-		{ query: { addresses, status, detailed } },
+		{ query: { addresses, status, detailed, ignoreCache } },
 		res
 	): Promise<void> => {
+		const ignoreCacheArg = ignoreCache === 'true' ? true : false;
 		const detailedArg = detailed === 'true' ? true : false;
 		const addressesArg = this.castArray(addresses);
 		const statusArg = this.parseStatus(status);
 
-		ValidatorsController.sanitizedSend(
-			res,
-			await this.service.fetchValidatorsList(
-				statusArg,
-				addressesArg,
-				detailedArg
-			)
-		);
+		if (ignoreCacheArg) {
+			ValidatorsController.sanitizedSend(
+				res,
+				await this.service.fetchValidatorsList(
+					statusArg,
+					addressesArg,
+					detailedArg
+				)
+			);
+		} else {
+			ValidatorsController.sanitizedSend(
+				res,
+				await this.service.cachedValidatorsList(
+					statusArg,
+					addressesArg,
+					detailedArg
+				)
+			);
+		}
 	};
 
 	/**

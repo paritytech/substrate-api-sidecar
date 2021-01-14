@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountId, EraIndex, RewardPoint } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
+import LRU from 'lru-cache';
 import { IIdentity, IValidator } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -12,6 +13,11 @@ const QUERY_OPTS = {
 	withLedger: true,
 	withPrefs: true,
 };
+
+const validatorsCache = new LRU<string, Promise<IValidator[]>>({
+	max: 10,
+	maxAge: 1000 * 60 * 60,
+});
 
 export class ValidatorsService extends AbstractService {
 	identitiesService: IdentitiesService;
@@ -24,22 +30,53 @@ export class ValidatorsService extends AbstractService {
 		this.identitiesService = new IdentitiesService(api);
 	}
 
+	getCacheKey(
+		activeEraIndex: number,
+		status: string,
+		detailed: boolean
+	): string {
+		return `${activeEraIndex}_${status}_${detailed ? 'detailed' : 'short'}`;
+	}
+
+	async cachedValidatorsList(
+		status = 'all',
+		addresses?: string[],
+		detailed = false
+	): Promise<IValidator[]> {
+		if (addresses) {
+			return this.fetchValidatorsList(status, addresses, detailed);
+		}
+
+		const activeOpt = await this.api.query.staking.activeEra();
+		const { index: activeEra } = activeOpt.unwrapOrDefault();
+		const activeEraIndex = activeEra.toNumber();
+
+		const cacheKey = this.getCacheKey(activeEraIndex, status, detailed);
+		const cachedValue = validatorsCache.get(cacheKey);
+
+		if (cachedValue) return cachedValue;
+
+		const newValue = this.fetchValidatorsList(status, addresses, detailed);
+
+		validatorsCache.set(cacheKey, newValue);
+
+		// Clear failed promise from cache
+		newValue.catch(() => validatorsCache.del(cacheKey));
+
+		return newValue;
+	}
+
 	/**
 	 * Fetch the list of all validators
 	 */
 	async fetchValidatorsList(
 		status = 'all',
 		addresses?: string[],
-		detailed: Boolean = false
+		detailed = false
 	): Promise<IValidator[]> {
 		const { api } = this;
 
-		const [
-			activeOpt,
-			allStashes,
-			elected,
-			nextElected,
-		] = await Promise.all([
+		const [activeOpt, allStashes, elected, nextElected] = await Promise.all([
 			api.query.staking.activeEra(),
 			api.derive.staking.stashes(),
 			api.query.session.validators(),
@@ -60,9 +97,7 @@ export class ValidatorsService extends AbstractService {
 					selected = electedIds;
 					break;
 				case 'waiting': {
-					const waitingIds = allIds.filter(
-						(v) => !electedIds.includes(v)
-					);
+					const waitingIds = allIds.filter((v) => !electedIds.includes(v));
 					selected = waitingIds;
 					break;
 				}
@@ -70,9 +105,7 @@ export class ValidatorsService extends AbstractService {
 					selected = nextElected.map((s) => s.toString());
 					break;
 				case 'all': {
-					const waitingIds = allIds.filter(
-						(v) => !electedIds.includes(v)
-					);
+					const waitingIds = allIds.filter((v) => !electedIds.includes(v));
 					// Keep order of elected validators
 					selected = [...electedIds, ...waitingIds];
 					break;
@@ -128,13 +161,7 @@ export class ValidatorsService extends AbstractService {
 			this.identitiesService.fetchIdentity(accountId),
 		]);
 
-		return this.formatValidator(
-			validator,
-			identity,
-			rewards,
-			elected,
-			true
-		);
+		return this.formatValidator(validator, identity, rewards, elected, true);
 	}
 
 	private async fetchRewardsPoints(
@@ -157,10 +184,10 @@ export class ValidatorsService extends AbstractService {
 		identity: IIdentity,
 		rewards: Map<String, RewardPoint>,
 		elected: AccountId[],
-		detailed: Boolean = false
+		detailed = false
 	): IValidator {
-		const maxNominatorRewardedPerValidator = this.api.consts?.staking
-			?.maxNominatorRewardedPerValidator;
+		const maxNominatorRewardedPerValidator =
+			this.api.consts?.staking?.maxNominatorRewardedPerValidator;
 
 		return {
 			accountId: validator.accountId,
