@@ -136,6 +136,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
 
 		// Add Check finalized boolean
+		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
@@ -143,7 +144,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				eventDocsArg,
 				extrinsinsicDocsArg,
 				checkFinalized,
-				true // We set to true because we havent queried the finalizedHead
+				true
 			)
 		);
 	};
