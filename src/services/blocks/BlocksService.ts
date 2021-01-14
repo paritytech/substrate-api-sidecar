@@ -342,7 +342,8 @@ export class BlocksService extends AbstractService {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight
 			? (api.consts.system.extrinsicBaseWeight as AbstractInt)
-			: api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
+			: // We assume all dispatch classes have the same base_extrinsic value
+			  api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
 		let calcFee, specName, specVersion;
 		if (
