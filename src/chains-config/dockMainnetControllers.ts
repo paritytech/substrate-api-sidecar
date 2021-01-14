@@ -6,6 +6,7 @@ import { ControllerConfig } from '../types/chains-config';
 export const dockMainnetControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
+		BlocksExtrinsics: true,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: false,
