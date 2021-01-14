@@ -35,7 +35,7 @@ enum Event {
 
 export class BlocksService extends AbstractService {
 	/**
-	 * Fetch a block enhanced with augmented and derived values.
+	 * Fetch a block augmented with derived values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 * @param checkFinalized boolean to help reduce rpc calls in isFinalized
