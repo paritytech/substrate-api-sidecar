@@ -340,13 +340,14 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system
-			?.extrinsicBaseWeight as AbstractInt;
+		const extrinsicBaseWeightExists =
+			api.consts.system?.extrinsicBaseWeight ||
+			api.query.system.blockWeight;
 
 		let calcFee, specName, specVersion;
 		if (
 			perByte === undefined ||
-			extrinsicBaseWeight === undefined ||
+			!extrinsicBaseWeightExists ||
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
 				'function'
 		) {
@@ -385,10 +386,31 @@ export class BlocksService extends AbstractService {
 				parentParentHash = parentHash;
 			}
 
-			const [version, multiplier] = await Promise.all([
-				api.rpc.state.getRuntimeVersion(parentParentHash),
-				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
-			]);
+			let version, multiplier, extrinsicBaseWeight;
+			if (api.consts.system.extrinsicBaseWeight) {
+				[version, multiplier] = await Promise.all([
+					api.rpc.state.getRuntimeVersion(parentParentHash),
+					api.query.transactionPayment.nextFeeMultiplier.at(
+						parentHash
+					),
+				]);
+				extrinsicBaseWeight = api.consts.system
+					.extrinsicBaseWeight as AbstractInt;
+			} else {
+				[
+					version,
+					multiplier,
+					{
+						normal: { baseExtrinsic: extrinsicBaseWeight },
+					},
+				] = await Promise.all([
+					api.rpc.state.getRuntimeVersion(parentParentHash),
+					api.query.transactionPayment.nextFeeMultiplier.at(
+						parentHash
+					),
+					api.query.system.blockWeight.at(parentHash),
+				]);
+			}
 
 			[specName, specVersion] = [
 				version.specName.toString(),
