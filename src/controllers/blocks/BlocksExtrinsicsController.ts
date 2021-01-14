@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import { BadRequest } from 'http-errors';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
@@ -39,11 +40,22 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
             hash,
             eventDocsArg,
             extrinsinsicDocsArg
-        )
+        );
+
+        this.parseNumberOrThrow(
+            extrinsicsIndex, 
+            'ExstrinsicIndex is not a number'
+        );
+
+        if (parseInt(extrinsicsIndex, 10) > block.extrinsics.length - 1) {
+            throw new BadRequest(
+                'Requested ExtrinsicIndex does not exist'
+            )
+        }
 
         BlocksExtrinsicsController.sanitizedSend(
             res,
-            block.extrinsics[extrinsicsIndex],
+            block.extrinsics[parseInt(extrinsicsIndex, 10)],
         )
     }
 }
