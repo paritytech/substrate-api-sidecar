@@ -340,14 +340,14 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeightExists =
-			api.consts.system?.extrinsicBaseWeight ||
-			api.query.system.blockWeight;
+		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight
+			? (api.consts.system.extrinsicBaseWeight as AbstractInt)
+			: api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
 		let calcFee, specName, specVersion;
 		if (
 			perByte === undefined ||
-			!extrinsicBaseWeightExists ||
+			extrinsicBaseWeight === undefined ||
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
 				'function'
 		) {
@@ -386,37 +386,19 @@ export class BlocksService extends AbstractService {
 				parentParentHash = parentHash;
 			}
 
-			let version, multiplier, extrinsicBaseWeight;
-			if (api.consts.system.extrinsicBaseWeight) {
-				[version, multiplier] = await Promise.all([
-					api.rpc.state.getRuntimeVersion(parentParentHash),
-					api.query.transactionPayment.nextFeeMultiplier.at(
-						parentHash
-					),
-				]);
-				extrinsicBaseWeight = api.consts.system
-					.extrinsicBaseWeight as AbstractInt;
-			} else {
-				[version, multiplier] = await Promise.all([
-					api.rpc.state.getRuntimeVersion(parentParentHash),
-					api.query.transactionPayment.nextFeeMultiplier.at(
-						parentHash
-					),
-				]);
-				extrinsicBaseWeight = api.consts.system.blockWeights.normal.block;
-			}
+			const [version, multiplier] = await Promise.all([
+				api.rpc.state.getRuntimeVersion(parentParentHash),
+				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
+			]);
 
 			[specName, specVersion] = [
 				version.specName.toString(),
 				version.specVersion.toNumber(),
 			];
 
-			console.log('extrinsic base weight', extrinsicBaseWeight);
-
 			calcFee = CalcFee.from_params(
 				coefficients,
 				extrinsicBaseWeight.toBigInt(),
-				// BigInt(10),
 				multiplier.toString(10),
 				perByte.toString(10),
 				specName,
