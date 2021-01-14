@@ -565,7 +565,7 @@ export class BlocksService extends AbstractService {
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
 				// We re-query the block via RPC to make sure that both our hash and
-				// canonHash match. Because when we query by blockNumber it will
+				// canonHash match. When we query by blockNumber it will
 				// retrieve the block from the Canonical chain, and we can compare it
 				// to the original hash which is passed via the request params.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
