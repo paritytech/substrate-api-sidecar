@@ -524,13 +524,15 @@ export class BlocksService extends AbstractService {
 		block: IBlock,
 		extrinsicsIndex: string
 	): Promise<IExtrinsic> {
-		
-		if (parseInt(extrinsicsIndex, 10) > block.extrinsics.length - 1) {
+
+		const index = parseInt(extrinsicsIndex, 10)
+
+		if (index > block.extrinsics.length - 1) {
 			throw new BadRequest(
 				'Requested ExtrinsicIndex does not exist'
 			)
 		}
 
-		return block.extrinsics[parseInt(extrinsicsIndex, 10)];
+		return block.extrinsics[index];
 	}
 }

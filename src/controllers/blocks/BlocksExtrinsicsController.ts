@@ -48,7 +48,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
         BlocksExtrinsicsController.sanitizedSend(
             res,
-            this.service.fetchExtrinsicsByIndex(
+            await this.service.fetchExtrinsicsByIndex(
                 block, 
                 extrinsicsIndex
             )
