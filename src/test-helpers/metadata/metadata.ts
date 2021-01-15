@@ -1,14 +1,9 @@
 import { Metadata } from '@polkadot/metadata';
 import substrateMetadataRpc from '@polkadot/metadata/v11/static';
 
-
 import { kusamaRegistry } from '../registries/kusamaRegistry';
-import {
-	polkadotRegistry,
-	polkadotV27Registry,
-} from '../registries/polkadotRegistry';
+import { polkadotRegistry } from '../registries/polkadotRegistry';
 import { polkadotV16MetadataRpc } from './polkadotV16Metadata';
-import { polkadotV27MetadataRpc } from './polkadotV27Metadata';
 
 /**
  * Metadata of the polkadotRegistry (v16).
@@ -24,9 +19,4 @@ export const polkadotMetadata = new Metadata(
 export const kusamaMetadata = new Metadata(
 	kusamaRegistry,
 	substrateMetadataRpc
-);
-
-export const polkadotV27Metadata = new Metadata(
-	polkadotV27Registry,
-	polkadotV27MetadataRpc
 );
