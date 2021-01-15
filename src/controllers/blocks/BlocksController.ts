@@ -135,7 +135,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsinsicDocsArg = extrinsicDocs === 'true';
 
-		// Add Check finalized boolean
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
