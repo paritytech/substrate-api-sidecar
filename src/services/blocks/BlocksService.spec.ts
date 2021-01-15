@@ -270,7 +270,6 @@ describe('BlocksService', () => {
 	describe('base block weight constants usage', () => {
 		// These tests are simply here to illustrate how constant usage corresponds to runtime version,
 		// but they don't actually test the BlocksService
-		console.error(decoratedPolkadotV27Metadata.consts.system.blockWeights);
 		it('uses consts.system.extrinsicBaseWeight polkadot versions <= 26', () => {
 			expect(
 				((decoratedPolkadotMetadata.consts.system
@@ -287,9 +286,6 @@ describe('BlocksService', () => {
 			expect(
 				decoratedPolkadotV27Metadata.consts.system.extrinsicBaseWeight
 			).toBe(undefined);
-			console.error(
-				decoratedPolkadotV27Metadata.consts.system.blockWeights
-			);
 			expect(
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
 				((decoratedPolkadotV27Metadata.consts.system
