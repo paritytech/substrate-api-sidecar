@@ -26,6 +26,16 @@ import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 /**
+ * Types for fetchBlock's options
+ */
+interface FetchBlockOptions {
+	eventDocs: boolean;
+	extrinsicDocs: boolean;
+	checkFinalized: boolean;
+	queryFinalizedHead: boolean;
+}
+
+/**
  * Event methods that we check for.
  */
 enum Event {
@@ -43,10 +53,12 @@ export class BlocksService extends AbstractService {
 	 */
 	async fetchBlock(
 		hash: BlockHash,
-		eventDocs: boolean,
-		extrinsicDocs: boolean,
-		checkFinalized: boolean,
-		queryFinalizedHead: boolean
+		{ 
+			eventDocs, 
+			extrinsicDocs, 
+			checkFinalized, 
+			queryFinalizedHead
+		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
 

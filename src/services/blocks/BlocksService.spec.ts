@@ -37,14 +37,19 @@ const blocksService = new BlocksService(mockApi);
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+			}
+			
 			expect(
 				sanitizeNumbers(
 					await blocksService.fetchBlock(
 						blockHash789629,
-						true,
-						true,
-						false,
-						false
+						options
 					)
 				)
 			).toMatchObject(blocks789629Response);
@@ -56,10 +61,20 @@ describe('BlocksService', () => {
 				'Block',
 				block789629
 			);
+
 			mockBlock789629BadExt.extrinsics.pop();
+
 			mockBlock789629BadExt.extrinsics.unshift(
 				(undefined as unknown) as GenericExtrinsic
 			);
+
+			// fetchBlock Options
+			const options = {
+				eventDocs: false,
+				extrinsicDocs: false,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+			}
 
 			mockApi.derive.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
@@ -71,10 +86,7 @@ describe('BlocksService', () => {
 			await expect(
 				blocksService.fetchBlock(
 					blockHash789629,
-					false,
-					false,
-					false,
-					false
+					options
 				)
 			).rejects.toThrow(
 				new Error(

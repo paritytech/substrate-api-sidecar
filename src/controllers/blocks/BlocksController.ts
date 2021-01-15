@@ -93,7 +93,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
-		const extrsinsicDocsArg = extrinsicDocs === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
 
 		let hash;
 		let queryFinalizedHead;
@@ -106,14 +106,18 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			hash = await this.api.rpc.chain.getFinalizedHead();
 		}
 
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized: false,
+			queryFinalizedHead
+		}
+
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
 				hash,
-				eventDocsArg,
-				extrsinsicDocsArg,
-				finalized === 'false' ? false : true,
-				queryFinalizedHead
+				options
 			)
 		);
 	};
@@ -128,22 +132,26 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
-		const checkFinalized = isHex(number) && number.length === 66;
+		const checkFinalized = isHex(number);
 
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
-		const extrinsinsicDocsArg = extrinsicDocs === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
+
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized,
+			queryFinalizedHead: true
+		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(
 				hash,
-				eventDocsArg,
-				extrinsinsicDocsArg,
-				checkFinalized,
-				true
+				options
 			)
 		);
 	};
