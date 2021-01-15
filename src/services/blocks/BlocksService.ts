@@ -340,9 +340,20 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
+		console.error(
+			'extrinsicBaseWeight',
+			api.consts.system.extrinsicBaseWeight
+		);
+		console.error(
+			'baseExtrinsic',
+			api.consts.system.blockWeights.perClass.normal.baseExtrinsic
+		);
 		const extrinsicBaseWeight = api.consts.system.extrinsicBaseWeight
 			? (api.consts.system.extrinsicBaseWeight as AbstractInt)
-			: // We assume all dispatch classes have the same base_extrinsic value
+			: // We assume all dispatch classes have the same base_extrinsic value: https://github.com/paritytech/polkadot/blob/cd0e9186a6620aab846a8a54969a0e5bbecbd060/runtime/common/src/lib.rs#L88
+			  // This changed from using system.extrinsicBaseWeight => system.blockWeights.perClass.normal.baseExtrinsic
+			  // in polkadot v0.8.27
+			  // TODO https://github.com/paritytech/substrate-api-sidecar/issues/393
 			  api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
 		let calcFee, specName, specVersion;
