@@ -17,6 +17,7 @@ import { CalcFee } from '@substrate/calc';
 import {
 	IBlock,
 	IExtrinsic,
+	IExtrinsicIndex,
 	ISanitizedCall,
 	ISanitizedEvent,
 	isFrameMethod,
@@ -197,6 +198,33 @@ export class BlocksService extends AbstractService {
 			onInitialize,
 			extrinsics,
 			onFinalize,
+		};
+	}
+
+	/**
+	 * 
+	 * @param block Takes in a block which is the result of fetchBlock
+	 * @param extrinsicsIndex Parameter passed into the request
+	 */
+	async fetchExtrinsicsByIndex(
+		block: IBlock,
+		extrinsicsIndex: string
+	): Promise<IExtrinsicIndex> {
+
+		const index = parseInt(extrinsicsIndex, 10)
+
+		if (index > block.extrinsics.length - 1) {
+			throw new BadRequest(
+				'Requested ExtrinsicIndex does not exist'
+			)
+		}
+
+		return {
+			at: {
+				number: block.number,
+				hash: block.hash
+			},
+			extrinsics: block.extrinsics[index]
 		};
 	}
 
@@ -512,27 +540,5 @@ export class BlocksService extends AbstractService {
 			},
 			args: newArgs,
 		};
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param block Takes in a block which is the result of fetchBlock
-	 * @param extrinsicsIndex Parameter passed into the request
-	 */
-	async fetchExtrinsicsByIndex (
-		block: IBlock,
-		extrinsicsIndex: string
-	): Promise<IExtrinsic> {
-
-		const index = parseInt(extrinsicsIndex, 10)
-
-		if (index > block.extrinsics.length - 1) {
-			throw new BadRequest(
-				'Requested ExtrinsicIndex does not exist'
-			)
-		}
-
-		return block.extrinsics[index];
 	}
 }
