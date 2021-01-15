@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
+import {
+	decoratedPolkadotMetadata,
+	decoratedPolkadotV27Metadata,
+} from '../../test-helpers/metadata/decorated';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
@@ -260,6 +265,37 @@ describe('BlocksService', () => {
 					},
 				})
 			);
+		});
+	});
+	describe('base block weight constants usage', () => {
+		// These tests are simply here to illustrate how constant usage corresponds to runtime version,
+		// but they don't actually test the BlocksService
+		console.error(decoratedPolkadotV27Metadata.consts.system.blockWeights);
+		it('uses consts.system.extrinsicBaseWeight polkadot versions <= 26', () => {
+			expect(
+				((decoratedPolkadotMetadata.consts.system
+					.extrinsicBaseWeight as unknown) as AbstractInt).toNumber()
+			).toBe(125000000);
+			expect(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+				(decoratedPolkadotMetadata.consts.system?.blockWeights as any)
+					?.perClass?.normal?.baseExtrinsict
+			).toBe(undefined);
+		});
+
+		it('uses consts.system.blockWeights.perClass.normal.baseExtrinsict polkadot versions >= 27', () => {
+			expect(
+				decoratedPolkadotV27Metadata.consts.system.extrinsicBaseWeight
+			).toBe(undefined);
+			console.error(
+				decoratedPolkadotV27Metadata.consts.system.blockWeights
+			);
+			expect(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+				((decoratedPolkadotV27Metadata.consts.system
+					?.blockWeights as any).perClass.normal
+					.baseExtrinsic as AbstractInt).toNumber()
+			).toBe(125000000);
 		});
 	});
 });
