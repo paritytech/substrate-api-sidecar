@@ -420,7 +420,7 @@ export class BlocksService extends AbstractService {
 						?.blockWeights as unknown) as BlockWeights).perClass
 						?.normal?.baseExtrinsic;
 			} else {
-				// We are query a runtime that matches the decorated metadata in the api
+				// We are querying a runtime that matches the decorated metadata in the api
 				extrinsicBaseWeight =
 					(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
 					api.consts.system.blockWeights.perClass?.normal
