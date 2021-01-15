@@ -221,7 +221,7 @@ export class BlocksService extends AbstractService {
 				tip,
 			} = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const call = block.registry.createType('Call', extrinsic);
+			const call = block.registry.createType('Call', method);
 
 			return {
 				method: {
