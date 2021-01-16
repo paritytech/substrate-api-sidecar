@@ -27,7 +27,7 @@
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",
-    "main": "node --stack_size=1300 ./build/src/main.js",
+    "main": "node ./build/src/main.js",
     "lint": "tsc && eslint . --ext ts",
     "deploy": "yarn build && standard-version",
     "start": "yarn run main",
@@ -36,7 +36,7 @@
     "test": "jest --silent"
   },
   "dependencies": {
-    "@polkadot/api": "^3.4.1",
+    "@polkadot/api": "^3.4.2-14",
     "@polkadot/apps-config": "^0.75.1",
     "@polkadot/util-crypto": "^5.2.3",
     "@substrate/calc": "^0.1.3",
