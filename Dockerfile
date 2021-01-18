@@ -4,8 +4,7 @@ WORKDIR /opt/builder
 
 COPY . .
 
-RUN yarn add wasm-pack && \
-    yarn install && \
+RUN yarn install && \
     yarn build
 
 # ---------------------------------
@@ -19,7 +18,7 @@ ARG BUILD_DATE=""
 
 LABEL summary="Substrate-api-sidecar." \
 	name="paritytech/substrate-api-sidecar" \
-	maintainer="devops-team@parity.io" \
+	maintainer="devops-team@parity.io, chevdor@gmail.com" \
 	version="${VERSION}" \
 	description="Substrate-api-sidecar image." \
 	io.parity.image.vendor="Parity Technologies" \

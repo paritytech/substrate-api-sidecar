@@ -34,7 +34,7 @@ jobs:
       uses:                       redhat-actions/buildah-build@v1
       with:
         image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ env.VERSION }}
+        tag:                      debug
         dockerfiles: |
           ./Dockerfile
         build-args: |
@@ -50,7 +50,7 @@ jobs:
         image:                    ${{ env.IMAGE_NAME }}
         tag: |
           ${{ env.IMAGE_TAG }}
-          ${{ env.VERSION }}
+          debug
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 
