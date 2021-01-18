@@ -7,20 +7,20 @@ on: [push] # debug
 
 jobs:
   build:
-    name: Build and push image
-    runs-on: ubuntu-latest
+    name:                         Build and push image
+    runs-on:                      ubuntu-latest
     env:
-      IMAGE_NAME: docker.io/parity/substrate-api-sidecar
-      IMAGE_TAG: latest
+      IMAGE_NAME:                 substrate-api-sidecar
+      IMAGE_TAG:                  latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses:                       actions/checkout@v2
 
-    - name: Build Image
-      uses: redhat-actions/buildah-build@v1
+    - name:                       Build Image
+      uses:                       redhat-actions/buildah-build@v1
       with:
-        image: ${{ env.IMAGE_NAME }}
-        tag: ${{ env.IMAGE_TAG }}
+        image:                    ${{ env.IMAGE_NAME }}
+        tag:                      ${{ env.IMAGE_TAG }}
         dockerfiles: |
           ./Dockerfile
         build-args: |
@@ -28,15 +28,16 @@ jobs:
           VCS_REF=${{ github.ref }}
           BUILD_DATE=${{ github.event.release.published_at }}
 
-    - name: Push To docker.io
-      id: push-to-dockerhub
-      uses: redhat-actions/push-to-registry@v1
+    - name:                       Push To docker.io
+      id:                         push-to-dockerhub
+      uses:                       redhat-actions/push-to-registry@v1
       with:
-        image: ${{ env.IMAGE_NAME }}
-        tag: ${{ env.IMAGE_TAG }}
-        registry: docker.io/parity
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        image:                    ${{ env.IMAGE_NAME }}
+        tag:                      ${{ env.IMAGE_TAG }}
+        registry:                 docker.io/parity
+        username:                 ${{ secrets.DOCKERHUB_USERNAME }}
+        password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Check the image
-      run: echo "New image has been pushed to ${{ steps.push-to-dockerhub.outputs.registry-path }}"
+    - name:                       Check the image
+      run: |
+        echo "New image has been pushed to ${{ steps.push-to-dockerhub.outputs.registry-path }}"
