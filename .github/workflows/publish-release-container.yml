@@ -11,14 +11,12 @@ jobs:
     runs-on:                      ubuntu-latest
     strategy:
       matrix:
-        # tag: ['latest', '${{ github.event.release.tag_name }}']
-        tag: ['latest', '${{ GITHUB_REF }}']
+        tag: ['latest', '${{ github.event.release.tag_name }}']
     env:
       REGISTRY:                   docker.io/paritytech
       IMAGE_NAME:                 substrate-api-sidecar
       # IMAGE_TAG:                  ${{ matrix.tag }}
-      # VERSION:                    ${{ github.event.release.tag_name }}
-      VERSION:                    ${{ GITHUB_REF }}
+      VERSION:                    ${{ github.event.release.tag_name }}
 
     steps:
     - uses:                       actions/checkout@v2
