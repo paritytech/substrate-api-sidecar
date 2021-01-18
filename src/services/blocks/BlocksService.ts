@@ -6,7 +6,6 @@ import {
 	AccountId,
 	Block,
 	BlockHash,
-	BlockNumber,
 	BlockWeights,
 	Digest,
 	DispatchInfo,
