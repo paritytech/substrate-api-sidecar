@@ -12,7 +12,9 @@ jobs:
     strategy:
       matrix:
         # tag: ['latest', '${{ github.event.release.tag_name }}']
-        tag: ['latest', '${GITHUB_SHA}']
+        tag:
+          - latest
+          - ${GITHUB_SHA}
     env:
       REGISTRY:                   docker.io/paritytech
       IMAGE_NAME:                 substrate-api-sidecar
