@@ -10,8 +10,10 @@ jobs:
     name:                         Build and push image
     runs-on:                      ubuntu-latest
     env:
+      REGISTRY:                   docker.io/paritytech
       IMAGE_NAME:                 substrate-api-sidecar
       IMAGE_TAG:                  latest
+      VERSION:                    ${{ github.event.release.tag_name }}
 
     steps:
     - uses:                       actions/checkout@v2
@@ -20,11 +22,13 @@ jobs:
       uses:                       redhat-actions/buildah-build@v1
       with:
         image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ env.IMAGE_TAG }}
+        tag: |
+          ${{ env.IMAGE_TAG }}
+          ${{ env.VERSION }}
         dockerfiles: |
           ./Dockerfile
         build-args: |
-          VERSION=${{ github.event.release.tag_name }}
+          VERSION=${{ env.VERSION }}
           VCS_REF=${{ github.ref }}
           BUILD_DATE=${{ github.event.release.published_at }}
 
@@ -32,9 +36,11 @@ jobs:
       id:                         push-to-dockerhub
       uses:                       redhat-actions/push-to-registry@v1
       with:
+        registry:                 ${{ env.REGISTRY }}
         image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ env.IMAGE_TAG }}
-        registry:                 docker.io/parity
+        tag: |
+          ${{ env.IMAGE_TAG }}
+          ${{ env.VERSION }}
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 
