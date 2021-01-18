@@ -1,9 +1,9 @@
 name: Build and Publish container for new releases
 
-on: [push] # debug
-  # release:
-  #   types:
-  #     - published
+on:
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -11,10 +11,9 @@ jobs:
     runs-on:                      ubuntu-latest
     strategy:
       matrix:
-        # tag: ['latest', '${{ github.event.release.tag_name }}']
         tag:
           - latest
-          - ${GITHUB_SHA}
+          - ${{ github.event.release.tag_name }}
     env:
       REGISTRY:                   docker.io/paritytech
       IMAGE_NAME:                 substrate-api-sidecar
