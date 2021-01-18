@@ -1,10 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
+import { expandMetadata } from '@polkadot/metadata/decorate';
 import { GenericCall, Struct } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
 	Block,
 	BlockHash,
+	BlockWeights,
 	Digest,
 	DispatchInfo,
 	EventRecord,
@@ -14,6 +16,7 @@ import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
+import { InternalServerError } from 'http-errors';
 
 import {
 	IBlock,
@@ -338,13 +341,14 @@ export class BlocksService extends AbstractService {
 		block: Block
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeight = api.consts.system
-			?.extrinsicBaseWeight as AbstractInt;
+		const extrinsicBaseWeightExists =
+			api.consts.system.extrinsicBaseWeight ||
+			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
 		let calcFee, specName, specVersion;
 		if (
 			perByte === undefined ||
-			extrinsicBaseWeight === undefined ||
+			extrinsicBaseWeightExists === undefined ||
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
 				'function'
 		) {
@@ -392,6 +396,42 @@ export class BlocksService extends AbstractService {
 				version.specName.toString(),
 				version.specVersion.toNumber(),
 			];
+
+			// This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass.normal.baseExtrinsic
+			// in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
+			// TODO https://github.com/paritytech/substrate-api-sidecar/issues/393 .
+			// TODO once https://github.com/polkadot-js/api/issues/2365 is resolved we can use that instead.
+			let extrinsicBaseWeight;
+			if (
+				specName !== api.runtimeVersion.specName.toString() ||
+				specVersion !== api.runtimeVersion.specVersion.toNumber()
+			) {
+				// We are in a runtime that does **not** match the decorated metadata in the api,
+				// so we must fetch the correct metadata, decorate it and pull out the constant
+				const metadata = await api.rpc.state.getMetadata(
+					parentParentHash
+				);
+				const decorated = expandMetadata(api.registry, metadata);
+
+				extrinsicBaseWeight =
+					((decorated.consts.system
+						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
+					((decorated.consts.system
+						?.blockWeights as unknown) as BlockWeights).perClass
+						?.normal?.baseExtrinsic;
+			} else {
+				// We are querying a runtime that matches the decorated metadata in the api
+				extrinsicBaseWeight =
+					(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
+					api.consts.system.blockWeights.perClass?.normal
+						?.baseExtrinsic;
+			}
+
+			if (!extrinsicBaseWeight) {
+				throw new InternalServerError(
+					'`extrinsicBaseWeight` is not defined when it was expected to be defined. File an issue at https://github.com/paritytech/substrate-api-sidecar/issues'
+				);
+			}
 
 			calcFee = CalcFee.from_params(
 				coefficients,
