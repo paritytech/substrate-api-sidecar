@@ -37,6 +37,7 @@ interface FetchBlockOptions {
 	extrinsicDocs: boolean;
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
+	omitFinalizeTag: boolean;
 }
 
 /**
@@ -62,6 +63,7 @@ export class BlocksService extends AbstractService {
 			extrinsicDocs,
 			checkFinalized,
 			queryFinalizedHead,
+			omitFinalizeTag,
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
@@ -120,14 +122,20 @@ export class BlocksService extends AbstractService {
 			eventDocs
 		);
 
-		// Check if the requested block is finalized
-		const finalized = await this.isFinalizedBlock(
-			api,
-			number,
-			hash,
-			finalizedHead,
-			checkFinalized
-		);
+		let finalized;
+
+		if (!omitFinalizeTag) {
+			// Check if the requested block is finalized
+			finalized = await this.isFinalizedBlock(
+				api,
+				number,
+				hash,
+				finalizedHead,
+				checkFinalized
+			);
+		} else {
+			finalized = undefined;
+		}
 
 		// The genesis block is a special case with little information associated with it.
 		if (parentHash.every((byte) => !byte)) {

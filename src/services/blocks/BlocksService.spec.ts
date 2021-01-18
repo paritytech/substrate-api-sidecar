@@ -43,6 +43,7 @@ describe('BlocksService', () => {
 				extrinsicDocs: true,
 				checkFinalized: false,
 				queryFinalizedHead: false,
+				omitFinalizeTag: false,
 			};
 
 			expect(
@@ -71,6 +72,7 @@ describe('BlocksService', () => {
 				extrinsicDocs: false,
 				checkFinalized: false,
 				queryFinalizedHead: false,
+				omitFinalizeTag: false,
 			};
 
 			mockApi.rpc.chain.getBlock = (() =>
