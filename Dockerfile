@@ -1,18 +1,35 @@
-FROM node:15 as builder
-LABEL author="chevdor@gmail.com"
+FROM docker.io/library/node:15 as builder
 
 WORKDIR /opt/builder
 
 COPY . .
-RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y && \
-    . $HOME/.cargo/env && \
-    cargo install wasm-pack && \
+
+RUN yarn add wasm-pack && \
     yarn install && \
     yarn build
 
 # ---------------------------------
 
-FROM node:15-alpine
+FROM docker.io/library/node:15-alpine
+
+# metadata
+ARG VERSION=""
+ARG VCS_REF=master
+ARG BUILD_DATE=""
+
+LABEL summary="Substrate-api-sidecar." \
+	name="parity/substrate-api-sidecar" \
+	maintainer="devops-team@parity.io" \
+	version="${VERSION}" \
+	description="Substrate-api-sidecar image." \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.source="https://github.com/paritytech/substrate-api-sidecar/blob/\
+${VCS_REF}/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/substrate-api-sidecar/\
+blob/${VCS_REF}/README.md" \
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
+
 WORKDIR /usr/src/app
 
 COPY --from=builder /opt/builder /usr/src/app

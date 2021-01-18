@@ -1,0 +1,42 @@
+name: Build and Publish container for new releases
+
+on: [push] # debug
+  # release:
+  #   types:
+  #     - published
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: docker.io/parity/substrate-api-sidecar
+      IMAGE_TAG: latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Image
+      uses: redhat-actions/buildah-build@v1
+      with:
+        image: ${{ env.IMAGE_NAME }}
+        tag: ${{ env.IMAGE_TAG }}
+        dockerfiles: |
+          ./Dockerfile
+        build-args: |
+          VERSION=${{ github.event.release.tag_name }}
+          VCS_REF=${{ github.ref }}
+          BUILD_DATE=${{ github.event.release.published_at }}
+
+    - name: Push To docker.io
+      id: push-to-dockerhub
+      uses: redhat-actions/push-to-registry@v1
+      with:
+        image: ${{ env.IMAGE_NAME }}
+        tag: ${{ env.IMAGE_TAG }}
+        registry: docker.io/parity
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Check the image
+      run: echo "New image has been pushed to ${{ steps.push-to-dockerhub.outputs.registry-path }}"
