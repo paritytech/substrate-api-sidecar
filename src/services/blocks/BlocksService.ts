@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { expandMetadata } from '@polkadot/metadata/decorate';
-import { Compact, GenericCall, Struct } from '@polkadot/types';
+import { GenericCall, Struct } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
@@ -66,22 +66,15 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
-		let block,
-		    events,
-		    sessionValidators,
-		    finalizedHead;
-
+		let block, events, sessionValidators;
 		if (typeof api.query.session?.validators?.at === 'function') {
-			[{ block }, events, sessionValidators, finalizedHead] = await Promise.all([
+			[{ block }, events, sessionValidators] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
 				api.query.session.validators.at(hash),
-				queryFinalizedHead
-					? api.rpc.chain.getFinalizedHead()
-					: Promise.resolve(hash),
 			]);
 		} else {
-			[{ block }, events, finalizedHead] = await Promise.all([
+			[{ block }, events] = await Promise.all([
 				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
 				queryFinalizedHead
@@ -119,15 +112,6 @@ export class BlocksService extends AbstractService {
 			eventDocs
 		);
 
-		// Check if the requested block is finalized
-		const finalized = await this.isFinalizedBlock(
-			api,
-			number,
-			hash,
-			finalizedHead,
-			checkFinalized
-		);
-
 		// The genesis block is a special case with little information associated with it.
 		if (parentHash.every((byte) => !byte)) {
 			return {
@@ -141,7 +125,6 @@ export class BlocksService extends AbstractService {
 				onInitialize,
 				extrinsics,
 				onFinalize,
-				finalized,
 			};
 		}
 
@@ -235,7 +218,6 @@ export class BlocksService extends AbstractService {
 			onInitialize,
 			extrinsics,
 			onFinalize,
-			finalized,
 		};
 	}
 
@@ -613,73 +595,5 @@ export class BlocksService extends AbstractService {
 		}
 
 		return undefined;
-	}
-
-	/**
-	 * When querying a block this will immediately inform the request whether
-	 * or not the queired block is considered finalized at the time of querying.
-	 *
-	 * @param api ApiPromise to use for query
-	 * @param blockNumber Queried Block Number
-	 * @param queriedHash This is the Queried Hash param
-	 * @param finalizedHead This is the finalized head for our chain
-	 * @param checkFinalized If the passed in blockId is a hash we check query canonHash
-	 */
-	private async isFinalizedBlock(
-		api: ApiPromise,
-		blockNumber: Compact<BlockNumber>,
-		queriedHash: BlockHash,
-		finalizedHead: BlockHash,
-		checkFinalized: boolean
-	): Promise<boolean> {
-		/**
-		 * If the blockId is a hash it will run this first conditional.
-		 * If the blockId is not a hash, it is a block height, and will
-		 * run the else conditional
-		 */
-		if (checkFinalized) {
-			const [finalizedHeadBlock, canonHash] = await Promise.all([
-				// Returns a Finalized head Object
-				api.rpc.chain.getHeader(finalizedHead),
-				// We re-query the block via RPC to make sure that both our hash and
-				// canonHash match. When we query by blockNumber it will
-				// retrieve the block from the Canonical chain, and we can compare it
-				// to the original hash which is passed via the request params.
-				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
-			]);
-
-			// If queried by hash this is the original request param
-			const hash = queriedHash.toHex();
-
-			// If this conditional is satisfied, the queried hash is on a fork,
-			// and is not on the canonical chain and therefore not finalized
-			if (canonHash.toHex() !== hash) {
-				return false;
-			}
-
-			// Retreive the finalized head blockNumber
-			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
-
-			// If the finalized head blockNumber is undefined return false
-			if (!finalizedHeadBlockNumber) {
-				return false;
-			}
-
-			// Check if the finalized head blockNumber is greater than the
-			// blockNumber in the request. If so the requested block is finalized.
-			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
-		} else {
-			// Returns a Finalized head Object
-			const finalizedHeadBlock = await api.rpc.chain.getHeader(
-				finalizedHead
-			);
-
-			// Retreive the finalized head blockNumber
-			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
-
-			// Check if the finalized head blockNumber is greater than the
-			// blockNumber in the request. If so the requested block is finalized.
-			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
-		}
 	}
 }
