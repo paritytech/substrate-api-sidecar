@@ -1,11 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
-import { SignedBlockExtended } from '@polkadot/api-derive/type';
 import { Compact, GenericCall, Struct } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
+	AccountId,
 	Block,
 	BlockHash,
 	BlockNumber,
+	Digest,
 	DispatchInfo,
 	EventRecord,
 	Hash,
@@ -62,18 +63,16 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
-		let block;
-		let events;
-		let author;
-		let finalizedHead;
+		let block,
+		    events,
+		    sessionValidators,
+		    finalizedHead;
 
 		if (typeof api.query.session?.validators?.at === 'function') {
-			// `api.derive.chain.getBlock` requires that `api.query.session?.validators?.at`
-			// is a function in order to query the validator set to pull out the author
-			// see: https://github.com/polkadot-js/api/blob/master/packages/api-derive/src/chain/getBlock.ts#L31
-			[{ author, block }, events, finalizedHead] = await Promise.all([
-				api.derive.chain.getBlock(hash) as Promise<SignedBlockExtended>,
+			[{ block }, events, sessionValidators, finalizedHead] = await Promise.all([
+				api.rpc.chain.getBlock(hash),
 				this.fetchEvents(api, hash),
+				api.query.session.validators.at(hash),
 				queryFinalizedHead
 					? api.rpc.chain.getFinalizedHead()
 					: Promise.resolve(hash),
@@ -87,7 +86,6 @@ export class BlocksService extends AbstractService {
 					: Promise.resolve(hash),
 			]);
 		}
-		const authorId = author;
 
 		const {
 			parentHash,
@@ -97,11 +95,13 @@ export class BlocksService extends AbstractService {
 			digest,
 		} = block.header;
 
-		const logs = digest.logs.map((log) => {
-			const { type, index, value } = log;
-
+		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };
 		});
+
+		const authorId = sessionValidators
+			? this.extractAuthor(sessionValidators, digest)
+			: undefined;
 
 		const nonSanitizedExtrinsics = this.extractExtrinsics(
 			block,
@@ -548,6 +548,31 @@ export class BlocksService extends AbstractService {
 			},
 			args: newArgs,
 		};
+	}
+
+	// Almost exact mimic of https://github.com/polkadot-js/api/blob/e51e89df5605b692033df864aa5ab6108724af24/packages/api-derive/src/type/util.ts#L6
+	// but we save a call to `getHeader` by hardcoding the logic here and using the digest from the blocks header.
+	private extractAuthor(
+		sessionValidators: AccountId[],
+		digest: Digest
+	): AccountId | undefined {
+		const [pitem] = digest.logs.filter(({ type }) => type === 'PreRuntime');
+		// extract from the substrate 2.0 PreRuntime digest
+		if (pitem) {
+			const [engine, data] = pitem.asPreRuntime;
+			return engine.extractAuthor(data, sessionValidators);
+		} else {
+			const [citem] = digest.logs.filter(
+				({ type }) => type === 'Consensus'
+			);
+			// extract author from the consensus (substrate 1.0, digest)
+			if (citem) {
+				const [engine, data] = citem.asConsensus;
+				return engine.extractAuthor(data, sessionValidators);
+			}
+		}
+
+		return undefined;
 	}
 
 	/**
