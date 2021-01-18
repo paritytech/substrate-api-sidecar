@@ -68,15 +68,7 @@ describe('BlocksService', () => {
 				(undefined as unknown) as GenericExtrinsic
 			);
 
-			// fetchBlock Options
-			const options = {
-				eventDocs: false,
-				extrinsicDocs: false,
-				checkFinalized: false,
-				queryFinalizedHead: false,
-			}
-
-			mockApi.derive.chain.getBlock = (() =>
+			mockApi.rpc.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
