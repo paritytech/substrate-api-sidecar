@@ -88,7 +88,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.derive.chain.getBlock = (getBlock as unknown) as GetBlock;
+			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
 		});
 	});
 
