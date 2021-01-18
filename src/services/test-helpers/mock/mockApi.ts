@@ -58,16 +58,18 @@ export const deriveGetBlock = (
 const getHeader = (_hash: Hash) =>
 	Promise.resolve().then(() => mockBlock789629.header);
 
+const runtimeVersion = {
+	specName: polkadotRegistry.createType('Text', 'polkadot'),
+	specVersion: polkadotRegistry.createType('u32', 16),
+	transactionVersion: polkadotRegistry.createType('u32', 2),
+	implVersion: polkadotRegistry.createType('u32', 0),
+	implName: polkadotRegistry.createType('Text', 'parity-polkadot'),
+	authoringVersion: polkadotRegistry.createType('u32', 0),
+};
+
 const getRuntimeVersion = () =>
 	Promise.resolve().then(() => {
-		return {
-			specName: polkadotRegistry.createType('Text', 'polkadot'),
-			specVersion: polkadotRegistry.createType('u32', 16),
-			transactionVersion: polkadotRegistry.createType('u32', 2),
-			implVersion: polkadotRegistry.createType('u32', 0),
-			implName: polkadotRegistry.createType('Text', 'parity-polkadot'),
-			authoringVersion: polkadotRegistry.createType('u32', 0),
-		};
+		return runtimeVersion;
 	});
 
 const getMetadata = () => Promise.resolve().then(() => polkadotMetadata);
@@ -279,6 +281,7 @@ const referendumInfoOfAt = () =>
  * #789629, which is what most Service unit tests are based on.
  */
 export const mockApi = ({
+	runtimeVersion,
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	tx,

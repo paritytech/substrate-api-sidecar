@@ -43,14 +43,11 @@ describe('BlocksService', () => {
 				extrinsicDocs: true,
 				checkFinalized: false,
 				queryFinalizedHead: false,
-			}
-			
+			};
+
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(
-						blockHash789629,
-						options
-					)
+					await blocksService.fetchBlock(blockHash789629, options)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -68,6 +65,14 @@ describe('BlocksService', () => {
 				(undefined as unknown) as GenericExtrinsic
 			);
 
+			// fetchBlock Options
+			const options = {
+				eventDocs: false,
+				extrinsicDocs: false,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+			};
+
 			mockApi.rpc.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
@@ -76,10 +81,7 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(
-					blockHash789629,
-					options
-				)
+				blocksService.fetchBlock(blockHash789629, options)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`

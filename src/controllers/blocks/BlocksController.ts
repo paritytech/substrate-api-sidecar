@@ -110,15 +110,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized: false,
-			queryFinalizedHead
-		}
+			queryFinalizedHead,
+		};
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(
-				hash,
-				options
-			)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 
@@ -143,16 +140,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized,
-			queryFinalizedHead: true
+			queryFinalizedHead: true,
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(
-				hash,
-				options
-			)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 }
