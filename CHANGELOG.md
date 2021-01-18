@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.1.2](https://github.com/paritytech/substrate-api-sidecar/compare/v2.1.1...v2.1.2) (2021-01-18)
 
 
-**Upgrade priority**: High; This version is required for Polkadot 27, Kusama 2027, and Westend 47. Ths release ensures correct fee calculations and decoding of all blocks in the aforementioned runtimes.
+**Upgrade priority**: High; this version is required for Polkadot 27, Kusama 2027, and Westend 47. This release ensures correct fee calculations and decoding of all blocks in the aforementioned runtimes.
 
 ### Bug Fixes
 
