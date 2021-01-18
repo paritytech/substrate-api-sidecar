@@ -9,20 +9,25 @@ jobs:
   build:
     name:                         Build and push image
     runs-on:                      ubuntu-latest
+    strategy:
+      matrix:
+        # tag: ['latest', '${{ github.event.release.tag_name }}']
+        tag: ['latest', '${{ GITHUB_REF }}']
     env:
       REGISTRY:                   docker.io/paritytech
       IMAGE_NAME:                 substrate-api-sidecar
-      IMAGE_TAG:                  latest
-      VERSION:                    ${{ github.event.release.tag_name }}
+      # IMAGE_TAG:                  ${{ matrix.tag }}
+      # VERSION:                    ${{ github.event.release.tag_name }}
+      VERSION:                    ${{ GITHUB_REF }}
 
     steps:
     - uses:                       actions/checkout@v2
 
-    - name:                       Build Image tagged ${{ env.IMAGE_TAG }}
+    - name:                       Build Image tagged ${{ matrix.tag }}
       uses:                       redhat-actions/buildah-build@v1
       with:
         image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ env.IMAGE_TAG }}
+        tag:                      ${{ matrix.tag }}
         dockerfiles: |
           ./Dockerfile
         build-args: |
@@ -30,27 +35,13 @@ jobs:
           VCS_REF=${{ github.ref }}
           BUILD_DATE=${{ github.event.release.published_at }}
 
-    - name:                       Build Image tagged ${{ env.VERSION }}
-      uses:                       redhat-actions/buildah-build@v1
-      with:
-        image:                    ${{ env.IMAGE_NAME }}
-        tag:                      debug
-        dockerfiles: |
-          ./Dockerfile
-        build-args: |
-          VERSION=${{ env.VERSION }}
-          VCS_REF=${{ github.ref }}
-          BUILD_DATE=${{ github.event.release.published_at }}
-
-    - name:                       Push To docker.io
+    - name:                       Push image tagged ${{ matrix.tag }} to docker.io
       id:                         push-to-dockerhub
       uses:                       redhat-actions/push-to-registry@v1
       with:
         registry:                 ${{ env.REGISTRY }}
         image:                    ${{ env.IMAGE_NAME }}
-        tag: |
-          ${{ env.IMAGE_TAG }}
-          debug
+        tag:                      ${{ matrix.tag }}
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 
