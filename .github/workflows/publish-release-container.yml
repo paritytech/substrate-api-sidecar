@@ -18,13 +18,23 @@ jobs:
     steps:
     - uses:                       actions/checkout@v2
 
-    - name:                       Build Image
+    - name:                       Build Image tagged ${{ env.IMAGE_TAG }}
       uses:                       redhat-actions/buildah-build@v1
       with:
         image:                    ${{ env.IMAGE_NAME }}
-        tag: |
-          ${{ env.IMAGE_TAG }}
-          ${{ env.VERSION }}
+        tag:                      ${{ env.IMAGE_TAG }}
+        dockerfiles: |
+          ./Dockerfile
+        build-args: |
+          VERSION=${{ env.VERSION }}
+          VCS_REF=${{ github.ref }}
+          BUILD_DATE=${{ github.event.release.published_at }}
+
+    - name:                       Build Image tagged ${{ env.VERSION }}
+      uses:                       redhat-actions/buildah-build@v1
+      with:
+        image:                    ${{ env.IMAGE_NAME }}
+        tag:                      ${{ env.VERSION }}
         dockerfiles: |
           ./Dockerfile
         build-args: |
