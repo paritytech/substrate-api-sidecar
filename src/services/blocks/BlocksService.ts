@@ -37,7 +37,7 @@ interface FetchBlockOptions {
 	extrinsicDocs: boolean;
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
-	omitFinalizeTag: boolean;
+	omitFinalizedTag: boolean;
 }
 
 /**
@@ -63,7 +63,7 @@ export class BlocksService extends AbstractService {
 			extrinsicDocs,
 			checkFinalized,
 			queryFinalizedHead,
-			omitFinalizeTag,
+			omitFinalizedTag,
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
@@ -124,7 +124,7 @@ export class BlocksService extends AbstractService {
 
 		let finalized;
 
-		if (!omitFinalizeTag) {
+		if (!omitFinalizedTag) {
 			// Check if the requested block is finalized
 			finalized = await this.isFinalizedBlock(
 				api,

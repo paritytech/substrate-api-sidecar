@@ -43,7 +43,7 @@ describe('BlocksService', () => {
 				extrinsicDocs: true,
 				checkFinalized: false,
 				queryFinalizedHead: false,
-				omitFinalizeTag: false,
+				omitFinalizedTag: false,
 			};
 
 			expect(
@@ -72,7 +72,7 @@ describe('BlocksService', () => {
 				extrinsicDocs: false,
 				checkFinalized: false,
 				queryFinalizedHead: false,
-				omitFinalizeTag: false,
+				omitFinalizedTag: false,
 			};
 
 			mockApi.rpc.chain.getBlock = (() =>
@@ -100,7 +100,7 @@ describe('BlocksService', () => {
 				extrinsicDocs: true,
 				checkFinalized: false,
 				queryFinalizedHead: false,
-				omitFinalizeTag: true,
+				omitFinalizedTag: true,
 			};
 
 			const block = await blocksService.fetchBlock(
