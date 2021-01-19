@@ -309,6 +309,11 @@ describe('BlocksService', () => {
 			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
 		);
 
+		const blockNumber = polkadotRegistry.createType(
+			'Compact<BlockNumber>',
+			789629
+		);
+
 		it('Returns false when queried blockId is not canonical', async () => {
 			const getHeader = (_hash: Hash) =>
 				Promise.resolve().then(() => mockForkedBlock789629.header);
@@ -330,11 +335,6 @@ describe('BlocksService', () => {
 				'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 			);
 
-			const blockNumber = polkadotRegistry.createType(
-				'Compact<BlockNumber>',
-				789629
-			);
-
 			expect(
 				await blocksService['isFinalizedBlock'](
 					forkMockApi,
@@ -347,10 +347,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blockNumber = polkadotRegistry.createType(
-				'Compact<BlockNumber>',
-				789629
-			);
+			
 
 			expect(
 				await blocksService['isFinalizedBlock'](
