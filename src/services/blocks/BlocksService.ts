@@ -624,13 +624,13 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * When querying a block this will immediately inform the request whether
-	 * or not the queired block is considered finalized at the time of querying.
+	 * or not the queried block is considered finalized at the time of querying.
 	 *
 	 * @param api ApiPromise to use for query
-	 * @param blockNumber Queried Block Number
-	 * @param queriedHash This is the Queried Hash param
-	 * @param finalizedHead This is the finalized head for our chain
-	 * @param checkFinalized If the passed in blockId is a hash we check query canonHash
+	 * @param blockNumber Queried block number
+	 * @param queriedHash Hash of user queried block
+	 * @param finalizedHead Finalized head for our chain
+	 * @param checkFinalized If the passed in blockId is a hash
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
@@ -642,11 +642,11 @@ export class BlocksService extends AbstractService {
 		if (checkFinalized) {
 			// The blockId url param is a hash
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
-				// Returns a Finalized head Object
+				// Returns the header of the most recently finalized block
 				api.rpc.chain.getHeader(finalizedHead),
 				// Fetch the hash of the block with equal height on the canon chain.
 				// N.B. We assume when we query by number <= finalized head height,
-				// we will always get block on the finalized, canon chain.
+				// we will always get a block on the finalized, canonical chain.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
 
@@ -667,8 +667,8 @@ export class BlocksService extends AbstractService {
 				return false;
 			}
 
-			// Check if the finalized head blockNumber is greater than the
-			// blockNumber in the request. If so the requested block is finalized.
+			// Check if the user's block is less than or equal to the finalized head.
+			// If so, the user's block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		} else {
 			// The blockId url param is an integer

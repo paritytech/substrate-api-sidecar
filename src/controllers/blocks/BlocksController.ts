@@ -97,7 +97,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		let hash, queryFinalizedHead, omitFinalizedTag;
 
-		// If the network chain doesn't finalize blocks, we dont want a finalize tag.
+		// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 		// For example: Any Proof Of Work chain would want to omit the finalize tag
 		if (!this.options.finalizes) {
 			omitFinalizedTag = true;
