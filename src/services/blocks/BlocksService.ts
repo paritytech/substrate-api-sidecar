@@ -648,7 +648,7 @@ export class BlocksService extends AbstractService {
 				api.rpc.chain.getHeader(finalizedHead),
 				// Fetch the hash of the block with equal height on the canon chain.
 				// N.B. We assume when we query by number <= finalized head height,
-				// we will always get block on the finalized, canon chain.
+				// we will always get a block on the finalized, canonical chain.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
 
