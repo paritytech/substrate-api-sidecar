@@ -19,7 +19,6 @@ jobs:
     env:
       REGISTRY:                   docker.io/parity
       IMAGE_NAME:                 substrate-api-sidecar
-      # IMAGE_TAG:                  ${{ matrix.tag }}
       VERSION:                    ${{ github.event.release.tag_name }}
 
     steps:
