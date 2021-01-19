@@ -31,6 +31,11 @@ import { AbstractService } from '../AbstractService';
 
 /**
  * Types for fetchBlock's options
+ * @field eventDocs 
+ * @field extrinsicDocs
+ * @field checkFinalized Option to reduce rpc calls. Equals true when blockId is a hash.
+ * @field queryFinalizedHead Option to reduce rpc calls. Equals true when finalized head has not been queried.
+ * @field omitFinalizedTag Option to omit the finalized tag, and return it as undefined.
  */
 interface FetchBlockOptions {
 	eventDocs: boolean;
