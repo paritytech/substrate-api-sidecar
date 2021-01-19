@@ -122,7 +122,7 @@ export class BlocksService extends AbstractService {
 			eventDocs
 		);
 
-		let finalized;
+		let finalized = undefined;
 
 		if (!omitFinalizedTag) {
 			// Check if the requested block is finalized
@@ -133,8 +133,6 @@ export class BlocksService extends AbstractService {
 				finalizedHead,
 				checkFinalized
 			);
-		} else {
-			finalized = undefined;
 		}
 
 		// The genesis block is a special case with little information associated with it.
