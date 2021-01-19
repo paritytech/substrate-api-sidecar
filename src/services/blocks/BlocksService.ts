@@ -647,6 +647,7 @@ export class BlocksService extends AbstractService {
 		 * run the else conditional
 		 */
 		if (checkFinalized) {
+		// The blockId url param is a hash
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
