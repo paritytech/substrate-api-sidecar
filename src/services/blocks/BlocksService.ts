@@ -646,10 +646,9 @@ export class BlocksService extends AbstractService {
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
-				// We re-query the block via RPC to make sure that both our hash and
-				// canonHash match. When we query by blockNumber it will
-				// retrieve the block from the Canonical chain, and we can compare it
-				// to the original hash which is passed via the request params.
+				// Fetch the hash of the block with equal height on the canon chain.
+				// N.B. We assume when we query by number <= finalized head height, 
+				// we will always get block on the finalized, canon chain.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
 
