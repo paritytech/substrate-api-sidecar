@@ -58,8 +58,6 @@ export class BlocksService extends AbstractService {
 	 * Fetch a block augmented with derived values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
-	 * @param checkFinalized boolean to help reduce rpc calls in isFinalized
-	 * @param queryFinalizedHead boolean to help reduce rpc calls in fetchBlock
 	 */
 	async fetchBlock(
 		hash: BlockHash,
