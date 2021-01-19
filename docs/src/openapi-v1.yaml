@@ -1094,6 +1094,11 @@ components:
             $ref: '#/components/schemas/Extrinsic'
         onFinalize:
           $ref: '#/components/schemas/BlockFinalize'
+        finalized:
+          type: boolean
+          description: A boolean identifying whether the block is finalized or not. 
+            Note if the network chain is working on a Proo of Work consensus, the return
+            value is undefined. 
       description: >-
         Note: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
