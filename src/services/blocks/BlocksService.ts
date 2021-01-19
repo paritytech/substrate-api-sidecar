@@ -644,7 +644,7 @@ export class BlocksService extends AbstractService {
 		if (checkFinalized) {
 			// The blockId url param is a hash
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
-				// Returns a Finalized head Object
+				// Returns the header of the most recently finalized block
 				api.rpc.chain.getHeader(finalizedHead),
 				// Fetch the hash of the block with equal height on the canon chain.
 				// N.B. We assume when we query by number <= finalized head height,
