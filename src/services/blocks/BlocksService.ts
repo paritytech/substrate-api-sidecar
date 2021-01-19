@@ -679,6 +679,8 @@ export class BlocksService extends AbstractService {
 			// blockNumber in the request. If so the requested block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		} else {
+		// The blockId url param is an integer
+		
 			// Returns a Finalized head Object
 			const finalizedHeadBlock = await api.rpc.chain.getHeader(
 				finalizedHead
