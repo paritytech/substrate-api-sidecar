@@ -1097,9 +1097,12 @@ components:
         finalized:
           type: boolean
           description: >-
-            Note: Block finalization does not correspond to consensus, i.e. whether
-            the block is in the canonical chain. It denotes the finalization of block
-            _construction._
+            A boolean identifying whether the block is finalized or not. 
+            Note: on chains that do not have deterministic finality this field is omitted.
+      description: >-
+        Note: Block finalization does not correspond to consensus, i.e. whether
+        the block is in the canonical chain. It denotes the finalization of block
+        _construction._
     NodeVersion:
       type: object
       properties:
