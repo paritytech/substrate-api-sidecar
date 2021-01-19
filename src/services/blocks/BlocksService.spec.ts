@@ -92,6 +92,24 @@ describe('BlocksService', () => {
 
 			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
 		});
+
+		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizeTag: true,
+			};
+
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
+			);
+
+			expect(block.finalized).toEqual(undefined);
+		});
 	});
 
 	describe('createCalcFee & calc_fee', () => {
