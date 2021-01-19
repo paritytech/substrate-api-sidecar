@@ -626,7 +626,7 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * When querying a block this will immediately inform the request whether
-	 * or not the queired block is considered finalized at the time of querying.
+	 * or not the queried block is considered finalized at the time of querying.
 	 *
 	 * @param api ApiPromise to use for query
 	 * @param blockNumber Queried Block Number
