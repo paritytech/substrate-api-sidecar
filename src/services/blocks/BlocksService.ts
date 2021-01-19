@@ -681,6 +681,11 @@ export class BlocksService extends AbstractService {
 			// Retreive the finalized head blockNumber
 			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;
 
+			// If the finalized head blockNumber is undefined return false
+			if (!finalizedHeadBlockNumber) {
+				return false;
+			}
+
 			// Check if the finalized head blockNumber is greater than the
 			// blockNumber in the request. If so the requested block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
