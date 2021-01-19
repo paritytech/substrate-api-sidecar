@@ -642,12 +642,12 @@ export class BlocksService extends AbstractService {
 		checkFinalized: boolean
 	): Promise<boolean> {
 		if (checkFinalized) {
-		// The blockId url param is a hash
+			// The blockId url param is a hash
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
 				// Returns a Finalized head Object
 				api.rpc.chain.getHeader(finalizedHead),
 				// Fetch the hash of the block with equal height on the canon chain.
-				// N.B. We assume when we query by number <= finalized head height, 
+				// N.B. We assume when we query by number <= finalized head height,
 				// we will always get block on the finalized, canon chain.
 				api.rpc.chain.getBlockHash(blockNumber.unwrap()),
 			]);
@@ -673,8 +673,8 @@ export class BlocksService extends AbstractService {
 			// blockNumber in the request. If so the requested block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		} else {
-		// The blockId url param is an integer
-		
+			// The blockId url param is an integer
+
 			// Returns a Finalized head Object
 			const finalizedHeadBlock = await api.rpc.chain.getHeader(
 				finalizedHead
