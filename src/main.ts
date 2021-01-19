@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
@@ -16,8 +17,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config/api';
+import * as apps from '@polkadot/apps-config/api';
 import { WsProvider } from '@polkadot/rpc-provider';
+import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import App from './App';
@@ -34,15 +36,22 @@ async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
-	// Instantiate a web socket connection to the node for basic polkadot-js use
+	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
+	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.SUBSTRATE.WS_URL),
-		typesBundle,
-		typesChain,
-		typesSpec,
-		types: {
-			...config.SUBSTRATE.CUSTOM_TYPES,
-		},
+		/* eslint-disable @typescript-eslint/no-var-requires */
+		typesBundle: TYPES_BUNDLE
+			? (require(TYPES_BUNDLE) as OverrideBundleType)
+			: apps.typesBundle,
+		typesChain: TYPES_CHAIN
+			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
+			: apps.typesChain,
+		typesSpec: TYPES_SPEC
+			? (require(TYPES_SPEC) as Record<string, RegistryTypes>)
+			: apps.typesSpec,
+		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
+		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
 
 	// Gather some basic details about the node so we can display a nice message

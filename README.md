@@ -89,7 +89,7 @@ Simply run `yarn`.
 
 ### Rust development installation
 
-If you are looking to hack on the `calc` Rust crate make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install) 
+If you are looking to hack on the `calc` Rust crate make sure your machine has an [up-to-date version of `rustup`](https://www.rust-lang.org/tools/install)
 installed to manage Rust dependencies.
 
 Install `wasm-pack` if your machine does not already have it:
@@ -142,18 +142,43 @@ For more information on our configuration manager visit its readme [here](https:
 #### Custom substrate types
 
 Some chains require custom type definitions in order for Sidecar to know how to decode the data
-retrieved from the node. You can define chain specific types in `config/types.json`. Read more about [defining
-types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
+retrieved from the node. Sidecar pulls types for chains from [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config), but in some cases
+the types for the chain you are trying to connect to may be out of date or may simply not exist in
+@polkadot/apps-config.
 
-If you are connecting to [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template), please add the following custom types in `config/types.json`.
+Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file
+that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
+the type formats (see `RegisteredTypes`).
+
+**N.B** Types set from environment variables will override the corresponding types pulled from
+@polkadot/apps-config.
+
+-   `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
+    rpc definitions. Format: `OverrideBundleType` (see `typesBundle`).
+-   `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by the `chainName`. Format: `Record<string, RegistryTypes>` (see `typesChain`).
+-   `SAS_SUBSTRATE_TYPES_SPEC`: type definitions keyed by `specName`. Format: `Record<string, RegistryTypes>` (see `typesSpec`).
+-   `SAS_SUBSTRATE_TYPES`: type definitions and overrides, not keyed. Format: `RegistryTypes` (see `types`).
+
+You can read more about [defining types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
+
+##### Connecting a modified node template
+
+Polkadot-js can recognize the standard node template and inject the correct types, but if you have
+modified the name of your chain in the node template you will need to add the types manually in a
+JSON `types` file like so:
 
 ```json
+// my-chains-types.json
 {
-	"CUSTOM_TYPES": {
-		"Address": "AccountId",
-		"LookupSource": "AccountId"
-	}
+  "Address": "AccountId",
+  "LookupSource": "AccountId"
 }
+```
+
+and then set the enviroment variable to point to your definitions:
+
+```bash
+export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 ```
 
 ### Logging
