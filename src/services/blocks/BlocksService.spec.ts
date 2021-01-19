@@ -347,8 +347,6 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			
-
 			expect(
 				await blocksService['isFinalizedBlock'](
 					mockApi,
