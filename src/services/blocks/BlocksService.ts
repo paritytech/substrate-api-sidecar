@@ -641,11 +641,6 @@ export class BlocksService extends AbstractService {
 		finalizedHead: BlockHash,
 		checkFinalized: boolean
 	): Promise<boolean> {
-		/**
-		 * If the blockId is a hash it will run this first conditional.
-		 * If the blockId is not a hash, it is a block height, and will
-		 * run the else conditional
-		 */
 		if (checkFinalized) {
 		// The blockId url param is a hash
 			const [finalizedHeadBlock, canonHash] = await Promise.all([
