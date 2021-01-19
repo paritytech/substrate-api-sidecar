@@ -206,7 +206,15 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Docker
 
-### Build
+### Pull the latest release
+
+```bash
+docker pull docker.io/parity/substrate-api-sidecar:latest
+```
+
+The specific image tag matches the release version.
+
+### Or build from source
 
 ```bash
 yarn build:docker
