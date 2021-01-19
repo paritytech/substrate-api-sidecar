@@ -673,7 +673,7 @@ export class BlocksService extends AbstractService {
 		} else {
 			// The blockId url param is an integer
 
-			// Returns a Finalized head Object
+			// Returns the header of the most recently finalized block
 			const finalizedHeadBlock = await api.rpc.chain.getHeader(
 				finalizedHead
 			);
