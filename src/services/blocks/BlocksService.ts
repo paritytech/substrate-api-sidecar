@@ -673,7 +673,7 @@ export class BlocksService extends AbstractService {
 		} else {
 			// The blockId url param is an integer
 
-			// Returns a Finalized head Object
+			// Returns the header of the most recently finalized block
 			const finalizedHeadBlock = await api.rpc.chain.getHeader(
 				finalizedHead
 			);
@@ -686,8 +686,8 @@ export class BlocksService extends AbstractService {
 				return false;
 			}
 
-			// Check if the finalized head blockNumber is greater than the
-			// blockNumber in the request. If so the requested block is finalized.
+			// Check if the user's block is less than or equal to the finalized head.
+			// If so, the user's block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		}
 	}
