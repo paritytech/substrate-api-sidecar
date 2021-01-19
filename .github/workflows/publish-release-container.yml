@@ -11,11 +11,13 @@ jobs:
     runs-on:                      ubuntu-latest
     strategy:
       matrix:
+        # this matrix runs the jobs twice, in parallel. This is due to
+        # both buildah actions can't manage more than one image tag.
         tag:
           - latest
           - ${{ github.event.release.tag_name }}
     env:
-      REGISTRY:                   docker.io/paritytech
+      REGISTRY:                   docker.io/parity
       IMAGE_NAME:                 substrate-api-sidecar
       # IMAGE_TAG:                  ${{ matrix.tag }}
       VERSION:                    ${{ github.event.release.tag_name }}
