@@ -632,7 +632,7 @@ export class BlocksService extends AbstractService {
 	 * @param blockNumber Queried block number
 	 * @param queriedHash Hash of user queried block
 	 * @param finalizedHead Finalized head for our chain
-	 * @param checkFinalized If the passed in blockId is a hash we check query canonHash
+	 * @param checkFinalized If the passed in blockId is a hash
 	 */
 	private async isFinalizedBlock(
 		api: ApiPromise,
