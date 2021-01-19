@@ -17,7 +17,7 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 
 LABEL summary="Substrate-api-sidecar." \
-	name="paritytech/substrate-api-sidecar" \
+	name="parity/substrate-api-sidecar" \
 	maintainer="devops-team@parity.io, chevdor@gmail.com" \
 	version="${VERSION}" \
 	description="Substrate-api-sidecar image." \
