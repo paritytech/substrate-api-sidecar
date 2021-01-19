@@ -629,7 +629,7 @@ export class BlocksService extends AbstractService {
 	 * or not the queried block is considered finalized at the time of querying.
 	 *
 	 * @param api ApiPromise to use for query
-	 * @param blockNumber Queried Block Number
+	 * @param blockNumber Queried block number
 	 * @param queriedHash This is the Queried Hash param
 	 * @param finalizedHead This is the finalized head for our chain
 	 * @param checkFinalized If the passed in blockId is a hash we check query canonHash
