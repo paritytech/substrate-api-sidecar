@@ -5,8 +5,12 @@ import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
+interface ControllerOptions {
+    finalizes: boolean;
+}
+
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
-    constructor(api: ApiPromise) {
+    constructor(api: ApiPromise, private readonly options: ControllerOptions) {
         super(
             api, 
             '/blocks/:blockId/extrinsics', 
@@ -33,12 +37,22 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
         const hash = await this.getHashForBlock(blockId);
 
         const eventDocsArg = eventDocs === 'true';
-        const extrinsinsicDocsArg = extrinsicDocs === 'true';
+        const extrinsicDocsArg = extrinsicDocs === 'true';
+
+        const queryFinalizedHead = !this.options.finalizes ? false : true;
+        const omitFinalizedTag = !this.options.finalizes ? true : false;
+
+        const options = {
+            eventDocs: eventDocsArg,
+            extrinsicDocs: extrinsicDocsArg,
+            checkFinalized: true,
+            queryFinalizedHead,
+            omitFinalizedTag,
+        }
 
         let block = await this.service.fetchBlock(
             hash,
-            eventDocsArg,
-            extrinsinsicDocsArg
+            options
         );
 
         this.parseNumberOrThrow(
