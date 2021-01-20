@@ -100,7 +100,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 		if (!this.options.finalizes) {
 			omitFinalizedTag = true;
-			queryFinalizedHead = true;
+			queryFinalizedHead = false;
 			hash = (await this.api.rpc.chain.getHeader()).hash;
 		} else if (finalized === 'false') {
 			omitFinalizedTag = false;
@@ -143,12 +143,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
+		const queryFinalizedHead = !this.options.finalizes ? false : true;
+		const omitFinalizedTag =  !this.options.finalizes ? true : false;
+
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized,
-			queryFinalizedHead: true,
-			omitFinalizedTag: false,
+			queryFinalizedHead,
+			omitFinalizedTag,
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
