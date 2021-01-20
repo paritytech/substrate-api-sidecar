@@ -46,11 +46,15 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
             'ExstrinsicIndex is not a number'
         );
 
+        // Change extrinsicIndex from a type string to a number before passing it
+        // into any service.
+        const index = parseInt(extrinsicsIndex, 10);
+
         BlocksExtrinsicsController.sanitizedSend(
             res,
             await this.service.fetchExtrinsicsByIndex(
                 block, 
-                extrinsicsIndex
+                index
             )
         )
     }

@@ -29,6 +29,7 @@ import {
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 import { BadRequest } from 'http-errors';
+
 /**
  * Event methods that we check for.
  */
@@ -209,23 +210,23 @@ export class BlocksService extends AbstractService {
 	 */
 	async fetchExtrinsicsByIndex(
 		block: IBlock,
-		extrinsicsIndex: string
+		extrinsicsIndex: number
 	): Promise<IExtrinsicIndex> {
 
-		const index = parseInt(extrinsicsIndex, 10)
-
-		if (index > block.extrinsics.length - 1) {
+		if (extrinsicsIndex > block.extrinsics.length - 1) {
 			throw new BadRequest(
 				'Requested ExtrinsicIndex does not exist'
 			)
 		}
 
+		const { hash, number } = block;
+
 		return {
 			at: {
-				number: block.number,
-				hash: block.hash
+				number, 
+				hash
 			},
-			extrinsics: block.extrinsics[index]
+			extrinsics: block.extrinsics[extrinsicsIndex]
 		};
 	}
 
