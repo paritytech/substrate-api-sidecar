@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
@@ -16,8 +17,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config/api';
+import * as apps from '@polkadot/apps-config/api';
 import { WsProvider } from '@polkadot/rpc-provider';
+import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import App from './App';
@@ -52,48 +54,57 @@ async function main() {
 	};
 
 	// Note: These are not working - currently just using `Json` type
-	const types = {
-		Duration: {
-			secs: 'u64',
-			nanos: 'u32',
-		},
-		Event: {
-			name: 'Text',
-			values: 'Values',
-			parentId: 'Option<u64>',
-		},
-		Span: {
-			id: 'u64',
-			parentId: 'Option<u64>',
-			name: 'Text',
-			target: 'Text',
-			line: 'u32',
-			overallTime: 'Duration',
-			values: 'Values',
-		},
-		Values: {
-			boolValues: 'HashMap<Text, bool>',
-			i64Values: 'HashMap<Text, i64>',
-			u64Values: 'HashMap<Text, u64>',
-			stringValues: 'HashMap<Text, Text>',
-		},
-		BlockTrace: {
-			blockHash: `Text`,
-			parentHash: `Text`,
-			tracingTargets: `String`,
-			spans: 'Vec<Span>',
-			events: 'Vec<Event>',
-		},
-	};
+	// const _types = {
+	// 	Duration: {
+	// 		secs: 'u64',
+	// 		nanos: 'u32',
+	// 	},
+	// 	Event: {
+	// 		name: 'Text',
+	// 		values: 'Values',
+	// 		parentId: 'Option<u64>',
+	// 	},
+	// 	Span: {
+	// 		id: 'u64',
+	// 		parentId: 'Option<u64>',
+	// 		name: 'Text',
+	// 		target: 'Text',
+	// 		line: 'u32',
+	// 		overallTime: 'Duration',
+	// 		values: 'Values',
+	// 	},
+	// 	Values: {
+	// 		boolValues: 'HashMap<Text, bool>',
+	// 		i64Values: 'HashMap<Text, i64>',
+	// 		u64Values: 'HashMap<Text, u64>',
+	// 		stringValues: 'HashMap<Text, Text>',
+	// 	},
+	// 	BlockTrace: {
+	// 		blockHash: `Text`,
+	// 		parentHash: `Text`,
+	// 		tracingTargets: `String`,
+	// 		spans: 'Vec<Span>',
+	// 		events: 'Vec<Event>',
+	// 	},
+	// };
 
-	// Instantiate a web socket connection to the node for basic polkadot-js use
+	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
+	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.SUBSTRATE.WS_URL),
-		typesBundle,
-		typesChain,
-		typesSpec,
-		types,
 		rpc,
+		/* eslint-disable @typescript-eslint/no-var-requires */
+		typesBundle: TYPES_BUNDLE
+			? (require(TYPES_BUNDLE) as OverrideBundleType)
+			: apps.typesBundle,
+		typesChain: TYPES_CHAIN
+			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
+			: apps.typesChain,
+		typesSpec: TYPES_SPEC
+			? (require(TYPES_SPEC) as Record<string, RegistryTypes>)
+			: apps.typesSpec,
+		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
+		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
 
 	// Gather some basic details about the node so we can display a nice message

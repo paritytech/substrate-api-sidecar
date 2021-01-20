@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 
 import { BlocksService } from '../../services';
@@ -88,21 +89,41 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, trace } },
+		{ query: { eventDocs, extrinsicDocs, finalized, operations } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
-		const extrsinsicDocsArg = extrinsicDocs === 'true';
-		const traceArgs = trace === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const operationsArg = operations === 'true';
 
-		const hash =
-			finalized === 'false' || !this.options.finalizes
-				? (await this.api.rpc.chain.getHeader()).hash
-				: await this.api.rpc.chain.getFinalizedHead();
+		let hash, queryFinalizedHead, omitFinalizedTag;
+		if (!this.options.finalizes) {
+			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
+			omitFinalizedTag = true;
+			queryFinalizedHead = false;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else if (finalized === 'false') {
+			omitFinalizedTag = false;
+			queryFinalizedHead = true;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else {
+			omitFinalizedTag = false;
+			queryFinalizedHead = false;
+			hash = await this.api.rpc.chain.getFinalizedHead();
+		}
+
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized: false,
+			queryFinalizedHead,
+			omitFinalizedTag,
+			operations: operationsArg,
+		};
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, eventDocsArg, extrsinsicDocsArg, traceArgs)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 
@@ -113,23 +134,33 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, trace } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, operations } },
 		res
 	): Promise<void> => {
+		const checkFinalized = isHex(number);
+
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
-		const extrinsinsicDocsArg = extrinsicDocs === 'true';
-		const traceArgs = trace === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const operationsArg = operations === 'true';
 
+		const queryFinalizedHead = !this.options.finalizes ? false : true;
+		const omitFinalizedTag = !this.options.finalizes ? true : false;
+
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized,
+			queryFinalizedHead,
+			omitFinalizedTag,
+			operations: operationsArg,
+		};
+
+		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(
-				hash,
-				eventDocsArg,
-				extrinsinsicDocsArg,
-				traceArgs
-			)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 }

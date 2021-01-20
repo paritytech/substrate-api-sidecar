@@ -16,6 +16,7 @@ export interface IBlock {
 	onInitialize: IOnInitializeOrFinalize;
 	extrinsics: IExtrinsic[];
 	onFinalize: IOnInitializeOrFinalize;
+	finalized: boolean | undefined;
 }
 
 interface IOnInitializeOrFinalize {

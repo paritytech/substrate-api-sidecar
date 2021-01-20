@@ -2,7 +2,7 @@ version: "3.8"
 services:
   polkadot:
     container_name: polkadot
-    image: chevdor/polkadot:latest
+    image: docker.io/parity/polkadot:latest
     volumes:
       - ~/polkadot-data:/data
     # ports:
@@ -11,7 +11,7 @@ services:
 
   sidecar:
     # build: .
-    image: chevdor/substrate-api-sidecar
+    image: docker.io/parity/substrate-api-sidecar:latest
     ports:
       - "8080:8080"
     environment:

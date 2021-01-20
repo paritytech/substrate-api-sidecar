@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import { ApiPromise } from '@polkadot/api';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
@@ -15,6 +16,7 @@ import {
 	getBlock,
 	mockApi,
 	mockBlock789629,
+	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
@@ -35,14 +37,19 @@ const blocksService = new BlocksService(mockApi);
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				operations: false,
+			};
+
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(
-						blockHash789629,
-						true,
-						true,
-						false
-					)
+					await blocksService.fetchBlock(blockHash789629, options)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -53,12 +60,24 @@ describe('BlocksService', () => {
 				'Block',
 				block789629
 			);
+
 			mockBlock789629BadExt.extrinsics.pop();
+
 			mockBlock789629BadExt.extrinsics.unshift(
 				(undefined as unknown) as GenericExtrinsic
 			);
 
-			mockApi.derive.chain.getBlock = (() =>
+			// fetchBlock Options
+			const options = {
+				eventDocs: false,
+				extrinsicDocs: false,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				operations: false,
+			};
+
+			mockApi.rpc.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
@@ -66,14 +85,34 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(blockHash789629, false, false, false)
+				blocksService.fetchBlock(blockHash789629, options)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
 				)
 			);
 
-			mockApi.derive.chain.getBlock = (getBlock as unknown) as GetBlock;
+			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
+		});
+
+		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: true,
+				operations: false,
+			};
+
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
+			);
+
+			// @ts-ignore
+			expect(block.finalized).toEqual(undefined);
 		});
 	});
 
@@ -265,6 +304,62 @@ describe('BlocksService', () => {
 					},
 				})
 			);
+		});
+	});
+
+	describe('BlockService.isFinalizedBlock', () => {
+		const finalizedHead = polkadotRegistry.createType(
+			'BlockHash',
+			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+		);
+
+		const blockNumber = polkadotRegistry.createType(
+			'Compact<BlockNumber>',
+			789629
+		);
+
+		it('Returns false when queried blockId is not canonical', async () => {
+			const getHeader = (_hash: Hash) =>
+				Promise.resolve().then(() => mockForkedBlock789629.header);
+
+			const getBlockHash = (_zero: number) =>
+				Promise.resolve().then(() => finalizedHead);
+
+			const forkMockApi = {
+				rpc: {
+					chain: {
+						getHeader,
+						getBlockHash,
+					},
+				},
+			} as ApiPromise;
+
+			const queriedHash = polkadotRegistry.createType(
+				'BlockHash',
+				'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
+			);
+
+			expect(
+				await blocksService['isFinalizedBlock'](
+					forkMockApi,
+					blockNumber,
+					queriedHash,
+					finalizedHead,
+					true
+				)
+			).toEqual(false);
+		});
+
+		it('Returns true when queried blockId is canonical', async () => {
+			expect(
+				await blocksService['isFinalizedBlock'](
+					mockApi,
+					blockNumber,
+					finalizedHead,
+					finalizedHead,
+					true
+				)
+			).toEqual(true);
 		});
 	});
 });
