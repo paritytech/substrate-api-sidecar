@@ -39,7 +39,6 @@ This service requires Node version 12 or higher.
 - [Chain integration guide](/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
 - [Note for maintainers](#note-for-maintainers)
-- [Roadmap](#roadmap)
 
 ## NPM package installation and usage
 
@@ -154,10 +153,10 @@ the type formats (see `RegisteredTypes`).
 @polkadot/apps-config.
 
 -   `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
-    rpc definitions. Format: `OverrideBundleType` (see `typesBundle`).
--   `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by the `chainName`. Format: `Record<string, RegistryTypes>` (see `typesChain`).
--   `SAS_SUBSTRATE_TYPES_SPEC`: type definitions keyed by `specName`. Format: `Record<string, RegistryTypes>` (see `typesSpec`).
--   `SAS_SUBSTRATE_TYPES`: type definitions and overrides, not keyed. Format: `RegistryTypes` (see `types`).
+    rpc definitions. Format: `OverrideBundleType` (see [`typesBundle`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L72)).
+-   `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by `chainName`. Format: `Record<string, RegistryTypes>` (see [`typesChain`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L76)).
+-   `SAS_SUBSTRATE_TYPES_SPEC`: type definitions keyed by `specName`. Format: `Record<string, RegistryTypes>` (see [`typesSpec`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L80)).
+-   `SAS_SUBSTRATE_TYPES`: type definitions and overrides, not keyed. Format: `RegistryTypes` (see [`types`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L64)).
 
 You can read more about [defining types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
 
@@ -288,10 +287,3 @@ $ rimraf lib/ && tsc
 
 To publish the new package, just follow the instructions: `git push --follow-tags origin master && npm publish.`
 You must have access to the @substrate organization on npm to publish.
-
-## Roadmap
-
-- Investigate and implement support for parachains in Sidecar. At this moment there is no concrete
-plan, but options that allow configuration and plugins specified by parachain development teams is
-one possible path forward. Initial support will be focused on enabling the workflow for core balance
-transfer and monitoring features.
