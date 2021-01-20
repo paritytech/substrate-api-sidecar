@@ -2,6 +2,8 @@ import { ConfigSpecs, SpecsFactory } from 'confmgr';
 
 import { CONFIG, MODULES } from './types/sidecar-config';
 
+const APPEND_SPEC_ERROR = 'Must create SpecFactory first.';
+
 /**
  * Access a singleton specification for config enviroment variables that will
  * be initialized on first use.
@@ -30,7 +32,7 @@ export class Specs {
 	 */
 	private static appendExpressSpecs() {
 		if (!this._specs) {
-			throw 'Must create SpecFactory first.';
+			throw APPEND_SPEC_ERROR;
 		}
 
 		// HOST
@@ -66,9 +68,10 @@ export class Specs {
 	 */
 	private static appendSubstrateSpecs() {
 		if (!this._specs) {
-			throw 'Must create SpecFactory first.';
+			throw APPEND_SPEC_ERROR;
 		}
 
+		// WS
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
 			this._specs.getSpec(CONFIG.WS_URL, 'Websocket URL', {
@@ -77,6 +80,56 @@ export class Specs {
 				regexp: /^wss?:\/\/.*(:\d{4,5})?$/,
 			})
 		);
+
+		// TYPES_BUNDLE
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.TYPES_BUNDLE,
+				'absolute path to file with `typesBundle` type definitions for @polkadot/api',
+				{
+					default: '',
+					mandatory: false,
+				}
+			)
+		);
+
+		// TYPES_CHAIN
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.TYPES_CHAIN,
+				'absolute path to file with `typesChain` type definitions for @polkadot/api',
+				{
+					default: '',
+					mandatory: false,
+				}
+			)
+		);
+
+		// TYPES_SPEC
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.TYPES_SPEC,
+				'absolute path to file with `typesSpec` type definitions for @polkadot/api',
+				{
+					default: '',
+					mandatory: false,
+				}
+			)
+		);
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.TYPES,
+				'absolute path to file with `typesSpec` type definitions for @polkadot/api',
+				{
+					default: '',
+					mandatory: false,
+				}
+			)
+		);
 	}
 
 	/**
@@ -84,7 +137,7 @@ export class Specs {
 	 */
 	private static appendLogSpecs() {
 		if (!this._specs) {
-			throw 'Must create SpecFactory first.';
+			throw APPEND_SPEC_ERROR;
 		}
 
 		// LEVEL

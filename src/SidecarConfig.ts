@@ -1,6 +1,5 @@
 import { ConfigManager } from 'confmgr';
 
-import * as configTypes from '../config/types.json';
 import { Specs } from './Specs';
 import { CONFIG, ISidecarConfig, MODULES } from './types/sidecar-config';
 
@@ -17,7 +16,7 @@ export class SidecarConfig {
 	 * Gather env vars for config and make sure they are valid.
 	 */
 	private static create(): ISidecarConfig {
-		// Instantiate ConfigManager which is used to read in the specs.yml
+		// Instantiate ConfigManager which is used to read in the specs
 		const config = ConfigManager.getInstance(Specs.specs).getConfig();
 
 		if (!config.Validate()) {
@@ -43,7 +42,19 @@ export class SidecarConfig {
 			},
 			SUBSTRATE: {
 				WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
-				CUSTOM_TYPES: configTypes[CONFIG.CUSTOM_TYPES],
+				TYPES_BUNDLE: config.Get(
+					MODULES.SUBSTRATE,
+					CONFIG.TYPES_BUNDLE
+				) as string,
+				TYPES_CHAIN: config.Get(
+					MODULES.SUBSTRATE,
+					CONFIG.TYPES_CHAIN
+				) as string,
+				TYPES_SPEC: config.Get(
+					MODULES.SUBSTRATE,
+					CONFIG.TYPES_SPEC
+				) as string,
+				TYPES: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES) as string,
 			},
 			LOG: {
 				LEVEL: config.Get(MODULES.LOG, CONFIG.LEVEL) as string,
