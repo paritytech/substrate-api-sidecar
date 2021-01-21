@@ -1083,6 +1083,13 @@ components:
             Block authors could insert the extrinsic as an inherent in the block
             and not pay a fee. Always check that `paysFee` is `true` and that the
             extrinsic is signed when reconciling old blocks.
+    ExtrinsicIndex:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        extrinsic:
+          $ref: '#/components/schemas/Extrinsic'
     BlockInitialize:
       type: object
       properties:
