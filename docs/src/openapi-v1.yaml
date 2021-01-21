@@ -273,11 +273,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /blocks/{blockId}/extrinsics/{extrinsicIndex}:
+  /blocks/{blockId}/extrinsics/{extrinsicsIndex}:
     get:
       tags:
-      -blocks
-      summary: Get a extrinsic by its extrinsicIndex and block height or hash.
+      - blocks
+      summary: Get an extrinsic by its extrinsicIndex and block height or hash.
       description: Returns a single extrinsic.
       operationId: getExtrinsicsByExtrsinsicIndex
       parameters:
@@ -310,19 +310,19 @@ paths:
         schema:
           type: boolean
           default: false
-    responses:
-      "200":
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExtrinsicIndex'
-      "400":
-        description: Requested ExtrinsicIndex does not exist'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtrinsicIndex'
+        "400":
+          description: Requested ExtrinsicIndex does not exist'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks/head:
     get:
       tags:
@@ -1090,6 +1090,7 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         extrinsic:
           $ref: '#/components/schemas/Extrinsic'
+      description: Object received by keying into the extrinsics array. 
     BlockInitialize:
       type: object
       properties:
