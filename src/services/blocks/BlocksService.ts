@@ -18,6 +18,7 @@ import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
 import { InternalServerError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 import {
 	IBlock,
@@ -29,7 +30,6 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { BadRequest } from 'http-errors';
 
 /**
  * Types for fetchBlock's options
