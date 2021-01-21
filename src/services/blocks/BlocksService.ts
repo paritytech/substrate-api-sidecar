@@ -29,6 +29,7 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
+import { BadRequest } from 'http-errors';
 
 /**
  * Types for fetchBlock's options
@@ -260,7 +261,7 @@ export class BlocksService extends AbstractService {
 		extrinsicsIndex: number
 	): IExtrinsicIndex {
 		if (extrinsicsIndex > block.extrinsics.length - 1) {
-			throw new Error('Requested ExtrinsicIndex does not exist');
+			throw new BadRequest('Requested ExtrinsicIndex does not exist');
 		}
 
 		const { hash, number } = block;

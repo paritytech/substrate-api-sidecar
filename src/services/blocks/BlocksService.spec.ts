@@ -22,6 +22,7 @@ import * as block789629 from '../test-helpers/mock/data/block789629.json';
 import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
+import { BadRequest } from 'http-errors';
 
 /**
  * For type casting mock getBlock functions so tsc does not complain
@@ -391,7 +392,7 @@ describe('BlocksService', () => {
 
 			expect(() => {
 				blocksService['fetchExtrinsicsByIndex'](block, 5);
-			}).toThrow(new Error('Requested ExtrinsicIndex does not exist'));
+			}).toThrow(new BadRequest('Requested ExtrinsicIndex does not exist'));
 		});
 	});
 });
