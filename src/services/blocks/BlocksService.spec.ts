@@ -20,6 +20,7 @@ import {
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
+import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import { BlocksService } from './BlocksService';
 
 /**
@@ -356,6 +357,31 @@ describe('BlocksService', () => {
 					true
 				)
 			).toEqual(true);
+		});
+	});
+
+	describe('fetchExrinsicsByIndex', () => {
+		// fetchBlock options
+		const options = {
+			eventDocs: false,
+			extrinsicDocs: false,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+		};
+
+		it('Returns the correct extrinisics object for block 789629', async () => {
+			
+			const block = await blocksService.fetchBlock(blockHash789629, options);
+
+			const extrinsic = await blocksService['fetchExtrinsicsByIndex'](
+				block,
+				0
+			);
+
+			expect(
+				JSON.stringify(sanitizeNumbers(extrinsic))
+			).toEqual(JSON.stringify(block789629Extrinsic));
 		});
 	});
 });
