@@ -29,7 +29,6 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { BadRequest } from 'http-errors';
 
 /**
  * Types for fetchBlock's options
@@ -262,7 +261,7 @@ export class BlocksService extends AbstractService {
 	): Promise<IExtrinsicIndex> {
 
 		if (extrinsicsIndex > block.extrinsics.length - 1) {
-			throw new BadRequest(
+			throw new Error (
 				'Requested ExtrinsicIndex does not exist'
 			)
 		}
