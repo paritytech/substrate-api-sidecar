@@ -11,7 +11,7 @@
         "signature": null,
         "nonce": null,
         "args": {
-            "now": 1595260344000
+            "now": "1595260344000"
         },
         "tip": null,
         "hash": "0xeb76fff97b8ec4e6b309a266728be3e216abd269fc2e6ee6434f7cce74be515e",
@@ -24,7 +24,7 @@
                 },
                 "data": [
                     {
-                        "weight": 158000000,
+                        "weight": "158000000",
                         "class": "Mandatory",
                         "paysFee": "Yes"
                     }
