@@ -310,6 +310,19 @@ paths:
         schema:
           type: boolean
           default: false
+    responses:
+      "200":
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtrinsicIndex'
+      "400":
+        description: Requested ExtrinsicIndex does not exist'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
   /blocks/head:
     get:
       tags:
