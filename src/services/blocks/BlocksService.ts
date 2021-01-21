@@ -20,7 +20,7 @@ import { CalcFee } from '@substrate/calc';
 import { InternalServerError } from 'http-errors';
 
 import {
-	IBlock,
+	// IBlock,
 	IExtrinsic,
 	ISanitizedCall,
 	ISanitizedEvent,
@@ -28,7 +28,7 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { Trace, TraceTestOne, TraceTestTwo } from './Trace';
+import { Trace } from './Trace';
 import { TraceBlock } from './types';
 
 /**
@@ -72,15 +72,17 @@ export class BlocksService extends AbstractService {
 			omitFinalizedTag,
 			operations,
 		}: FetchBlockOptions
-	): Promise<IBlock | TraceTestTwo | TraceTestOne> {
+	): // ): Promise<IBlock | TraceTestTwo | TraceTestOne> {
+	Promise<any> {
 		const { api } = this;
 
 		let block, events, finalizedHead, sessionValidators;
 		if (operations) {
+			const { block } = await api.rpc.chain.getBlock(hash);
 			// @ts-ignore
 			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
-			const trace = new Trace(this.api, traceBlock);
-			return trace.testTwo();
+			const trace = new Trace(this.api, traceBlock, block.registry);
+			return trace.testThree();
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			[
 				{ block },
@@ -495,8 +497,11 @@ export class BlocksService extends AbstractService {
 				extrinsicBaseWeight.toBigInt(),
 				multiplier.toString(10),
 				perByte.toString(10),
-				specName,
-				specVersion
+				'polkadot',
+				27
+				// TODO HACK just to get fees on substrate node, remove before merge
+				// specName,
+				// specVersion
 			);
 		}
 

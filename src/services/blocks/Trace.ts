@@ -1,27 +1,44 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ApiPromise } from '@polkadot/api';
 import { AccountInfo, Address } from '@polkadot/types/interfaces';
-import * as BN from 'bn.js';
+import { Registry } from '@polkadot/types/types';
 
-import { KeyInfo, TraceBlock, TraceEvent, TraceSpan } from './types';
+// import * as BN from 'bn.js';
+import {
+	KeyInfo,
+	Operation,
+	PalletKeyInfo,
+	ParentSpanId,
+	TraceBlock,
+	TraceEvent,
+	TraceSpan,
+	Transition,
+} from './types';
 
-type SpanWithName = TraceSpan & { keyName: KeyInfo };
+type SpanWithName = TraceSpan & { storagePath: KeyInfo };
 
-type EventWithName = TraceEvent & { keyName: KeyInfo };
+type EventWithName = TraceEvent & { storagePath: KeyInfo };
 
-type EventWithParent = EventWithName & { parentName: string[] };
+type EventWithParent = EventWithName & { parentSpanId: ParentSpanId[] };
 
-type EventWithAccountInfo = EventWithParent & {
+type EventFullAnnotated = EventWithParent & { eventIndex: number };
+
+type EventWithAccountInfo = EventFullAnnotated & {
 	accountInfo: AccountInfo;
 	address: Address;
 };
 
-interface AccountTransitionInfo {
-	address: string;
-	free: BN;
-	reserved: BN;
-	miscFrozen: BN;
-	feeFrozen: BN;
-}
+// interface AccountTransitionInfo {
+// 	parentSpanId: ParentSpanId[];
+// 	eventIndex: number;
+// 	address: Address;
+// 	free: BN;
+// 	reserved: BN;
+// 	miscFrozen: BN;
+// 	feeFrozen: BN;
+// }
 
 export interface TraceTestOne {
 	onlySystemAccount: EventWithAccountInfo[];
@@ -32,14 +49,17 @@ export interface TraceTestOne {
 }
 
 export interface TraceTestTwo {
-	systemAccountTransitions: Map<string, AccountTransitionInfo[]>;
+	systemAccountTransitions: Map<string, Transition[]>;
 	systemAccountByAddress: Map<string, EventWithAccountInfo[]>;
 	onlySystemAccount: EventWithAccountInfo[];
 }
 
+export interface TraceTestThree {
+	operations: Operation[];
+}
+
 const EMPTY_KEY_INFO = {
-	name: 'cannot-find-key',
-	key: '',
+	error: 'key not found',
 };
 
 export class Trace {
@@ -47,15 +67,12 @@ export class Trace {
 	 * Known storage keys.
 	 */
 	private keyNames;
-	/**
-	 * Temp, this should get passed in as a registry from something that has the
-	 * correct registry of the type at that block height.
-	 */
-	private registry;
-
-	constructor(private api: ApiPromise, private traceBlock: TraceBlock) {
+	constructor(
+		private api: ApiPromise,
+		private traceBlock: TraceBlock,
+		private registry: Registry
+	) {
 		this.keyNames = this.getKeyNames();
-		this.registry = this.api.registry;
 	}
 
 	testOne(): TraceTestOne {
@@ -74,6 +91,12 @@ export class Trace {
 		};
 	}
 
+	testThree(): TraceTestThree {
+		return {
+			operations: this.operations(),
+		};
+	}
+
 	private getKeyNames() {
 		const result = {};
 		Object.keys(this.api.query).forEach((mod) => {
@@ -81,39 +104,34 @@ export class Trace {
 				const queryObj = this.api.query[mod][item];
 				let key;
 				try {
-					// Slivr off '0x' prefix
+					// Slice off '0x' prefix
 					key = queryObj.key().slice(2);
 				} catch {
 					key = queryObj.keyPrefix().slice(2);
 				}
 
 				result[key] = {
-					name: `${mod}::${item}`,
-					key,
+					module: mod,
+					item,
 				};
 			});
 		});
 
 		const wellKnownKeys = {
 			'3a636f6465': {
-				name: ':code',
-				key: '0x3a636f6465',
+				special: ':code',
 			},
 			'3a686561707061676573': {
-				name: ':heappages',
-				key: '0x3a686561707061676573',
+				special: ':heappages',
 			},
 			'3a65787472696e7369635f696e646578': {
-				name: ':extrinsic_index',
-				key: '0x3a65787472696e7369635f696e646578',
+				special: ':extrinsic_index',
 			},
 			'3a6368616e6765735f74726965': {
-				name: ':changes_trie',
-				key: '0x3a6368616e6765735f74726965',
+				special: ':changes_trie',
 			},
 			'3a6368696c645f73746f726167653a': {
-				name: ':child_storage:',
-				key: '0x3a6368696c645f73746f726167653a',
+				special: ':child_storage:',
 			},
 		};
 
@@ -123,11 +141,11 @@ export class Trace {
 	private spansWithName(): SpanWithName[] {
 		return this.traceBlock.spans.map((s) => {
 			const { key } = s.values.string_values;
-			const keyName =
+			const storagePath =
 				(key && (this.keyNames[key?.slice(0, 64)] as KeyInfo)) ||
 				EMPTY_KEY_INFO;
 
-			return { ...s, keyName };
+			return { ...s, storagePath };
 		});
 	}
 
@@ -143,26 +161,36 @@ export class Trace {
 		}, new Map<number, SpanWithName[]>());
 	}
 
-	private eventsWithName(): EventWithParent[] {
+	private eventsWithName(): EventFullAnnotated[] {
 		const spansById = this.spansById();
 		return this.traceBlock.events
 			.map((e) => {
 				const { key } = e.values.string_values;
 				const keyPrefix = key?.slice(0, 64);
 
-				const keyName =
+				const storagePath =
 					(keyPrefix && (this.keyNames[keyPrefix] as KeyInfo)) ||
 					EMPTY_KEY_INFO;
 
-				return { ...e, keyName };
+				return { ...e, storagePath };
 			})
 			.map((e) => {
-				const parentName: string[] =
+				const parentSpanId: ParentSpanId[] =
 					spansById.get(e.parent_id)?.map((p) => {
-						return `${p?.name}::${p?.target}`;
+						return {
+							name: p.name,
+							target: p.target,
+							id: p.id,
+						};
 					}) || [];
 
-				return { ...e, parentName };
+				return { ...e, parentSpanId };
+			})
+			.map((e, idx) => {
+				return {
+					...e,
+					eventIndex: idx,
+				};
 			});
 	}
 
@@ -180,7 +208,11 @@ export class Trace {
 
 	private systemAccountEvents(): EventWithAccountInfo[] {
 		return this.eventsWithName()
-			.filter((e) => e.keyName?.name == 'system::account')
+			.filter(
+				({ storagePath }) =>
+					(storagePath as PalletKeyInfo).module == 'system' &&
+					(storagePath as PalletKeyInfo).item == 'account'
+			)
 			.map((e) => {
 				// key = h(system) + h(account) + h(address) + address
 				// Remove the storage key + account hash
@@ -200,11 +232,14 @@ export class Trace {
 				let accountInfo;
 				if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
 					const len = accountInfoEncoded.length;
-					const scale = accountInfoEncoded.slice(5, len - 1);
-					accountInfo = this.registry.createType(
-						'AccountInfo',
+					// const scale = accountInfoEncoded.slice(5, len - 1); // should use this with polkadot
+					// HACK to work with substrate node - AccountInfo = u32 + u32 + AccountData. We slice off
+					// the leading u32s and just create AccountData bc it has the wrong type for AccountInfo.
+					const scale = accountInfoEncoded.slice(5 + 16, len - 1);
+					accountInfo = (this.registry.createType(
+						'AccountData',
 						`0x${scale}`
-					);
+					) as unknown) as AccountInfo;
 				} else {
 					throw 'Expect there to always be some account info';
 				}
@@ -226,7 +261,7 @@ export class Trace {
 		}, new Map<string, EventWithAccountInfo[]>());
 	}
 
-	private transitionPerAccount(): Map<string, AccountTransitionInfo[]> {
+	private transitionPerAccount(): Map<string, Transition[]> {
 		return [...this.accountEventsByAddress().entries()].reduce(
 			(acc, [addr, events]) => {
 				const transitions = [];
@@ -235,28 +270,109 @@ export class Trace {
 						continue;
 					}
 
-					const prev = events[i - 1].accountInfo.data;
-					const cur = e.accountInfo.data;
+					// const prev = events[i - 1].accountInfo.data;
+					const prev = events[i - 1].accountInfo as any;
+					// const cur = e.accountInfo.data;
+					const cur = e.accountInfo as any;
 
 					const free = cur.free.sub(prev.free);
 					const reserved = cur.reserved.sub(prev.reserved);
 					const miscFrozen = cur.miscFrozen.sub(prev.miscFrozen);
 					const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
 
-					transitions.push({
-						address: addr,
-						free,
-						reserved,
-						miscFrozen,
-						feeFrozen,
-					});
+					const baseInfo = {
+						parentSpanId: e.parentSpanId,
+						eventIndex: e.eventIndex,
+						address: e.address,
+					};
+					const currency = {
+						symbol: this.registry.chainToken,
+					};
+					const systemAccountData = {
+						pallet: 'system',
+						item: 'Account',
+					};
+
+					if (!free.eqn(0)) {
+						transitions.push({
+							...baseInfo,
+							storage: {
+								...systemAccountData,
+								field: 'data.free',
+							},
+							amount: {
+								value: free,
+								currency,
+							},
+						});
+					}
+					if (!reserved.eqn(0)) {
+						transitions.push({
+							...baseInfo,
+							storage: {
+								...systemAccountData,
+								field: 'data.reserved',
+							},
+							amount: {
+								value: reserved,
+								currency,
+							},
+						});
+					}
+					if (!miscFrozen.eqn(0)) {
+						transitions.push({
+							...baseInfo,
+							storage: {
+								...systemAccountData,
+								field: 'data.miscFrozen',
+							},
+							amount: {
+								value: miscFrozen,
+								currency,
+							},
+						});
+					}
+					if (!feeFrozen.eqn(0)) {
+						transitions.push({
+							...baseInfo,
+							storage: {
+								...systemAccountData,
+								field: 'data.feeFrozen',
+							},
+							amount: {
+								value: feeFrozen,
+								currency,
+							},
+						});
+					}
 				}
 
 				acc.set(addr, transitions);
 
 				return acc;
 			},
-			new Map<string, AccountTransitionInfo[]>()
+			new Map<string, Transition[]>()
 		);
+	}
+
+	private operations(): Operation[] {
+		return [...this.transitionPerAccount().values()]
+			.flat()
+			.sort((a, b) => a.eventIndex - b.eventIndex)
+			.map((transition, idx) => {
+				return {
+					operationId: {
+						operationIndex: idx,
+						phase: {
+							extrinsic: 6666,
+						},
+						eventIndex: transition.eventIndex,
+						parentSpanId: transition.parentSpanId,
+					},
+					address: transition.address,
+					storage: transition.storage,
+					amount: transition.amount,
+				};
+			});
 	}
 }

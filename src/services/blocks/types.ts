@@ -1,3 +1,6 @@
+import { Address } from '@polkadot/types/interfaces';
+import * as BN from 'bn.js';
+
 export interface BoolValues {
 	[i: string]: unknown;
 }
@@ -30,10 +33,6 @@ export interface TraceEvent {
 	parent_id: number;
 	target: string;
 	values: Values;
-	// parentName?: string | string[];
-	// keyName?: KeyInfo;
-	// accountInfo?: any;
-	// address?: any;
 }
 
 export interface TraceSpan {
@@ -57,7 +56,55 @@ export interface TraceBlock {
 	spans: TraceSpan[];
 }
 
-export interface KeyInfo {
+export interface PalletKeyInfo {
+	module: string;
+	item: string;
+}
+
+export interface SpecialKeyInfo {
+	special: string;
+}
+
+export type KeyInfo = PalletKeyInfo | SpecialKeyInfo | { error: string };
+
+export interface ParentSpanId {
 	name: string;
-	key: string;
+	target: string;
+	id: number;
+}
+
+export interface CurrencyId {
+	symbol: string;
+}
+
+export interface StorageResourceId {
+	pallet: string;
+	item: string;
+	field?: string;
+}
+
+export interface Transition {
+	parentSpanId: ParentSpanId[];
+	eventIndex: number;
+	address: Address;
+	storage: StorageResourceId;
+	amount: {
+		value: BN;
+		currency: CurrencyId;
+	};
+}
+
+export interface Operation
+	extends Omit<Transition, 'parentSpanId' | 'eventIndex'> {
+	operationId: {
+		operationIndex: number;
+		phase: {
+			onInitialize?: boolean;
+			onFinalize?: boolean;
+			// extrinsic index
+			extrinsic?: number;
+		};
+		parentSpanId: ParentSpanId[];
+		eventIndex: number;
+	};
 }

@@ -36,10 +36,11 @@ async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
+	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0x01e0f6f63cddbfaaac47c34632ed72f5e76eeaab8eab96e1ce1bb1fe047ef8d5"]}' http://localhost:9933/
 	const rpc = {
 		state: {
 			traceBlock: {
-				description: 'State trace prototype',
+				description: 'Blcok state trace prototype',
 				params: [
 					{
 						name: 'at',
