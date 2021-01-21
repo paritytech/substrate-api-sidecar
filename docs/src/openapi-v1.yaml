@@ -1090,7 +1090,8 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         extrinsic:
           $ref: '#/components/schemas/Extrinsic'
-      description: Object received by keying into the extrinsics array. 
+      description: Object returned after keying into the correct extrinsic, 
+        and adding its blockHash, and block height in a `at` field. 
     BlockInitialize:
       type: object
       properties:

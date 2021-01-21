@@ -17,8 +17,7 @@ import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
-import { InternalServerError } from 'http-errors';
-import { BadRequest } from 'http-errors';
+import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
 	IBlock,
