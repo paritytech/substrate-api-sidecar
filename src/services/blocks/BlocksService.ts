@@ -251,29 +251,26 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param block Takes in a block which is the result of fetchBlock
 	 * @param extrinsicsIndex Parameter passed into the request
 	 */
-	async fetchExtrinsicsByIndex(
+	fetchExtrinsicsByIndex(
 		block: IBlock,
 		extrinsicsIndex: number
-	): Promise<IExtrinsicIndex> {
-
+	): IExtrinsicIndex {
 		if (extrinsicsIndex > block.extrinsics.length - 1) {
-			throw new Error (
-				'Requested ExtrinsicIndex does not exist'
-			)
+			throw new Error('Requested ExtrinsicIndex does not exist');
 		}
 
 		const { hash, number } = block;
 
 		return {
 			at: {
-				number, 
-				hash
+				number,
+				hash,
 			},
-			extrinsics: block.extrinsics[extrinsicsIndex]
+			extrinsics: block.extrinsics[extrinsicsIndex],
 		};
 	}
 

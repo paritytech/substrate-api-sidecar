@@ -19,8 +19,8 @@ import {
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
-import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
+import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**
@@ -371,31 +371,27 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
-			const block = await blocksService.fetchBlock(blockHash789629, options);
-
-			const extrinsic = await blocksService['fetchExtrinsicsByIndex'](
-				block,
-				0
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
 			);
 
-			expect(
-				JSON.stringify(sanitizeNumbers(extrinsic))
-			).toEqual(JSON.stringify(block789629Extrinsic));
+			const extrinsic = blocksService['fetchExtrinsicsByIndex'](block, 0);
+
+			expect(JSON.stringify(sanitizeNumbers(extrinsic))).toEqual(
+				JSON.stringify(block789629Extrinsic)
+			);
 		});
 
-		it('Throw a error when extrinsicIndex doesn\'t exist', async () => {
-			const block = await blocksService.fetchBlock(blockHash789629, options);
+		it("Throw a error when extrinsicIndex doesn't exist", async () => {
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
+			);
 
-			expect(async () => {
-				await blocksService['fetchExtrinsicsByIndex'](
-					block,
-					5
-				)
-			}).rejects.toThrow(
-				new Error(
-					'Requested ExtrinsicIndex does not exist'
-				)
-			)
+			expect(() => {
+				blocksService['fetchExtrinsicsByIndex'](block, 5);
+			}).toThrow(new Error('Requested ExtrinsicIndex does not exist'));
 		});
 	});
 });

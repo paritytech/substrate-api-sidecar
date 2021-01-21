@@ -8,7 +8,7 @@ import {
 	RuntimeDispatchInfo,
 	Sr25519Signature,
 } from '@polkadot/types/interfaces';
-import { BlockNumber, BlockHash } from '@polkadot/types/interfaces';
+import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 
 import { IFrameMethod, ISanitizedArgs, ISanitizedEvent } from '.';
 
@@ -35,6 +35,6 @@ export interface IExtrinsicIndex {
 	at: {
 		number: Compact<BlockNumber>;
 		hash: BlockHash;
-	},
-	extrinsics: IExtrinsic
+	};
+	extrinsics: IExtrinsic;
 }
