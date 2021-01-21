@@ -273,6 +273,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /blocks/{blockId}/extrinsics/{extrinsicIndex}:
+    get:
+      tags:
+      -blocks
+      summary: Get a extrinsic by its extrinsicIndex and block height or hash.
+      description: Returns a single extrinsic.
+      operationId: getExtrinsicsByExtrsinsicIndex
+      parameters:
+      -name: blockId
+      in: path
+      description: Block identifier, as the block height or block hash.
+      required: true
+      schema:
+        pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+        type: string
   /blocks/head:
     get:
       tags:
