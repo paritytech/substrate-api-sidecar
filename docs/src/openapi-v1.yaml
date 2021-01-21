@@ -281,13 +281,19 @@ paths:
       description: Returns a single extrinsic.
       operationId: getExtrinsicsByExtrsinsicIndex
       parameters:
-      -name: blockId
-      in: path
-      description: Block identifier, as the block height or block hash.
-      required: true
-      schema:
-        pattern: a-km-zA-HJ-NP-Z1-9{8,64}
-        type: string
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          type: string
+      - name: extrinsicsIndex
+        in: path
+        description: The index in which the requested extrinsic exists.
+        required: true
+        schema: 
+          type: string
   /blocks/head:
     get:
       tags:
