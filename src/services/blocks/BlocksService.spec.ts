@@ -371,7 +371,6 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
-			
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			const extrinsic = await blocksService['fetchExtrinsicsByIndex'](
@@ -382,6 +381,21 @@ describe('BlocksService', () => {
 			expect(
 				JSON.stringify(sanitizeNumbers(extrinsic))
 			).toEqual(JSON.stringify(block789629Extrinsic));
+		});
+
+		it('Throw a error when extrinsicIndex doesn\'t exist', async () => {
+			const block = await blocksService.fetchBlock(blockHash789629, options);
+
+			expect(async () => {
+				await blocksService['fetchExtrinsicsByIndex'](
+					block,
+					5
+				)
+			}).rejects.toThrow(
+				new Error(
+					'Requested ExtrinsicIndex does not exist'
+				)
+			)
 		});
 	});
 });
