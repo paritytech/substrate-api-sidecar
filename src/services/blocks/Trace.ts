@@ -235,9 +235,14 @@ export class Trace {
 					// const scale = accountInfoEncoded.slice(5, len - 1); // should use this with polkadot
 					// HACK to work with substrate node - AccountInfo = u32 + u32 + AccountData. We slice off
 					// the leading u32s and just create AccountData bc it has the wrong type for AccountInfo.
-					const scale = accountInfoEncoded.slice(5 + 16, len - 1);
+					// const scale = accountInfoEncoded.slice(5 + 16, len - 1);
+					// accountInfo = (this.registry.createType(
+					// 	'AccountData',
+					// 	`0x${scale}`
+					// ) as unknown) as AccountInfo;
+					const scale = accountInfoEncoded.slice(5, len - 1);
 					accountInfo = (this.registry.createType(
-						'AccountData',
+						'AccountInfo',
 						`0x${scale}`
 					) as unknown) as AccountInfo;
 				} else {
@@ -270,10 +275,10 @@ export class Trace {
 						continue;
 					}
 
-					// const prev = events[i - 1].accountInfo.data;
-					const prev = events[i - 1].accountInfo as any;
-					// const cur = e.accountInfo.data;
-					const cur = e.accountInfo as any;
+					const prev = events[i - 1].accountInfo.data;
+					// const prev = events[i - 1].accountInfo as any;
+					const cur = e.accountInfo.data;
+					// const cur = e.accountInfo as any;
 
 					const free = cur.free.sub(prev.free);
 					const reserved = cur.reserved.sub(prev.reserved);

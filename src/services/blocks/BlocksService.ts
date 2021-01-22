@@ -82,7 +82,10 @@ export class BlocksService extends AbstractService {
 			// @ts-ignore
 			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
 			const trace = new Trace(this.api, traceBlock, block.registry);
-			return trace.testThree();
+			return {
+				height: block.header.number.unwrap().toString(10),
+				operations: trace.testThree().operations,
+			};
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			[
 				{ block },
