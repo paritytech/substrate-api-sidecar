@@ -20,6 +20,7 @@ import {
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
@@ -384,7 +385,7 @@ describe('BlocksService', () => {
 			);
 		});
 
-		it("Throw a error when extrinsicIndex doesn't exist", async () => {
+		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
 			const block = await blocksService.fetchBlock(
 				blockHash789629,
 				options
@@ -394,6 +395,17 @@ describe('BlocksService', () => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);
 			}).toThrow(
 				new BadRequest('Requested `extrinsicIndex` does not exist')
+			);
+		});
+
+		it('Throw an error when param `extrinsicIndex` is less than 0', async () => {
+			expect(() => {
+				parseNumberOrThrow(
+					'-5',
+					'`exstrinsicIndex` path param is not a number'
+				);
+			}).toThrow(
+				new BadRequest('`exstrinsicIndex` path param is not a number')
 			);
 		});
 	});

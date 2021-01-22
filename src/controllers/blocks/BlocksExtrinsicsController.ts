@@ -5,12 +5,8 @@ import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
-interface ControllerOptions {
-	finalizes: boolean;
-}
-
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, private readonly options: ControllerOptions) {
+	constructor(api: ApiPromise) {
 		super(api, '/blocks/:blockId/extrinsics', new BlocksService(api));
 		this.initRoutes();
 	}
@@ -38,26 +34,28 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
-		const queryFinalizedHead = !this.options.finalizes ? false : true;
-		const omitFinalizedTag = !this.options.finalizes ? true : false;
-
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized: true,
-			queryFinalizedHead,
-			omitFinalizedTag,
+			queryFinalizedHead: false,
+			omitFinalizedTag: true,
 		};
 
 		const block = await this.service.fetchBlock(hash, options);
 
+		/**
+		 * Verify our param `extrinsicIndex` is an integer represented as a string
+		 */
 		this.parseNumberOrThrow(
 			extrinsicIndex,
-			'ExstrinsicIndex is not a number'
+			'`exstrinsicIndex` path param is not a number'
 		);
 
-		// Change extrinsicIndex from a type string to a number before passing it
-		// into any service.
+		/**
+		 * Change extrinsicIndex from a type string to a number before passing it
+		 * into any service.
+		 */
 		const index = parseInt(extrinsicIndex, 10);
 
 		BlocksExtrinsicsController.sanitizedSend(

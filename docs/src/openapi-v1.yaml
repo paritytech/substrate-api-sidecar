@@ -277,7 +277,8 @@ paths:
     get:
       tags:
       - blocks
-      summary: Get an extrinsic by its extrinsicIndex and block height or hash.
+      summary: Get an extrinsic by its extrinsicIndex and block height or hash. 
+      The pair blockId, extrinsicIndex is sometimes referred to as a Timepoint.
       description: Returns a single extrinsic.
       operationId: getExtrinsicByExtrsinsicIndex
       parameters:
