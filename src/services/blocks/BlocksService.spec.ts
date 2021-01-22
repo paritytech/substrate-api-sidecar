@@ -393,7 +393,7 @@ describe('BlocksService', () => {
 			expect(() => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);
 			}).toThrow(
-				new BadRequest('Requested ExtrinsicIndex does not exist')
+				new BadRequest('Requested `extrinsicIndex` does not exist')
 			);
 		});
 	});

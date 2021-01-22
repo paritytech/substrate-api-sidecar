@@ -260,14 +260,15 @@ export class BlocksService extends AbstractService {
 		extrinsicIndex: number
 	): IExtrinsicIndex {
 		if (extrinsicIndex > block.extrinsics.length - 1) {
-			throw new BadRequest('Requested ExtrinsicIndex does not exist');
+			throw new BadRequest('Requested `extrinsicIndex` does not exist');
 		}
 
 		const { hash, number } = block;
+		const height = number.unwrap().toString(10);
 
 		return {
 			at: {
-				number,
+				height,
 				hash,
 			},
 			extrinsics: block.extrinsics[extrinsicIndex],

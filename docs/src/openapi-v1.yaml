@@ -273,13 +273,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /blocks/{blockId}/extrinsics/{extrinsicsIndex}:
+  /blocks/{blockId}/extrinsics/{extrinsicIndex}:
     get:
       tags:
       - blocks
       summary: Get an extrinsic by its extrinsicIndex and block height or hash.
       description: Returns a single extrinsic.
-      operationId: getExtrinsicsByExtrsinsicIndex
+      operationId: getExtrinsicByExtrsinsicIndex
       parameters:
       - name: blockId
         in: path
@@ -318,7 +318,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExtrinsicIndex'
         "400":
-          description: Requested ExtrinsicIndex does not exist'
+          description: Requested `extrinsicIndex` does not exist
           content:
             application/json:
               schema:
