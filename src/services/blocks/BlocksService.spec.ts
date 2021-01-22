@@ -398,7 +398,7 @@ describe('BlocksService', () => {
 			);
 		});
 
-		it('Throw an error when param `extrinsicIndex` is less than 0', async () => {
+		it('Throw an error when param `extrinsicIndex` is less than 0', () => {
 			expect(() => {
 				parseNumberOrThrow(
 					'-5',
