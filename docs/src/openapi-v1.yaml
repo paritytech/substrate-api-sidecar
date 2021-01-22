@@ -288,7 +288,7 @@ paths:
         schema:
           pattern: a-km-zA-HJ-NP-Z1-9{8,64}
           type: string
-      - name: extrinsicsIndex
+      - name: extrinsicIndex
         in: path
         description: The index in which the requested extrinsic exists.
         required: true
