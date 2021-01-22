@@ -9,7 +9,7 @@ import {
 	Sr25519Signature,
 } from '@polkadot/types/interfaces';
 
-import { IFrameMethod, ISanitizedArgs, ISanitizedEvent, IAt } from '.';
+import { IAt, IFrameMethod, ISanitizedArgs, ISanitizedEvent } from '.';
 
 export interface IExtrinsic {
 	method: string | IFrameMethod;
@@ -31,6 +31,6 @@ export interface ISignature {
 }
 
 export interface IExtrinsicIndex {
-	at: IAt
+	at: IAt;
 	extrinsics: IExtrinsic;
 }
