@@ -17,7 +17,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['/:extrinsicsIndex', this.getExtrinsicsByExtrsinsicIndex],
+			['/:extrinsicIndex', this.getExtrinsicByExtrsinsicIndex],
 		]);
 	}
 
@@ -26,9 +26,9 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getExtrinsicsByExtrsinsicIndex: RequestHandler<INumberParam> = async (
+	private getExtrinsicByExtrsinsicIndex: RequestHandler<INumberParam> = async (
 		{
-			params: { blockId, extrinsicsIndex },
+			params: { blockId, extrinsicIndex },
 			query: { eventDocs, extrinsicDocs },
 		},
 		res
@@ -52,17 +52,17 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		const block = await this.service.fetchBlock(hash, options);
 
 		this.parseNumberOrThrow(
-			extrinsicsIndex,
+			extrinsicIndex,
 			'ExstrinsicIndex is not a number'
 		);
 
 		// Change extrinsicIndex from a type string to a number before passing it
 		// into any service.
-		const index = parseInt(extrinsicsIndex, 10);
+		const index = parseInt(extrinsicIndex, 10);
 
 		BlocksExtrinsicsController.sanitizedSend(
 			res,
-			this.service.fetchExtrinsicsByIndex(block, index)
+			this.service.fetchExtrinsicByIndex(block, index)
 		);
 	};
 }

@@ -361,7 +361,7 @@ describe('BlocksService', () => {
 		});
 	});
 
-	describe('fetchExrinsicsByIndex', () => {
+	describe('fetchExrinsicByIndex', () => {
 		// fetchBlock options
 		const options = {
 			eventDocs: false,
@@ -377,7 +377,7 @@ describe('BlocksService', () => {
 				options
 			);
 
-			const extrinsic = blocksService['fetchExtrinsicsByIndex'](block, 0);
+			const extrinsic = blocksService['fetchExtrinsicByIndex'](block, 0);
 
 			expect(JSON.stringify(sanitizeNumbers(extrinsic))).toEqual(
 				JSON.stringify(block789629Extrinsic)
@@ -391,7 +391,7 @@ describe('BlocksService', () => {
 			);
 
 			expect(() => {
-				blocksService['fetchExtrinsicsByIndex'](block, 5);
+				blocksService['fetchExtrinsicByIndex'](block, 5);
 			}).toThrow(
 				new BadRequest('Requested ExtrinsicIndex does not exist')
 			);
