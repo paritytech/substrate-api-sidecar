@@ -290,7 +290,7 @@ paths:
           type: string
       - name: extrinsicIndex
         in: path
-        description: The index in which the requested extrinsic exists.
+        description: The extrinsic's index within the block's body.
         required: true
         schema: 
           type: string
