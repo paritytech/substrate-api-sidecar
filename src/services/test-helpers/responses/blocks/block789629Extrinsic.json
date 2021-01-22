@@ -5,16 +5,16 @@
     },
     "extrinsics": {
         "method": {
-            "pallet": "timestamp",
-            "method": "set"
+            "pallet": "parachains",
+            "method": "setHeads"
         },
         "signature": null,
         "nonce": null,
         "args": {
-            "now": "1595260344000"
+            "heads": []
         },
         "tip": null,
-        "hash": "0xeb76fff97b8ec4e6b309a266728be3e216abd269fc2e6ee6434f7cce74be515e",
+        "hash": "0xcf52705d1ade64fc0b05859ac28358c0770a217dd76b75e586ae848c56ae810d",
         "info": {},
         "events": [
             {
@@ -24,7 +24,7 @@
                 },
                 "data": [
                     {
-                        "weight": "158000000",
+                        "weight": "1000000000",
                         "class": "Mandatory",
                         "paysFee": "Yes"
                     }

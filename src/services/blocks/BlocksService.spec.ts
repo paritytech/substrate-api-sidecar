@@ -378,7 +378,11 @@ describe('BlocksService', () => {
 				options
 			);
 
-			const extrinsic = blocksService['fetchExtrinsicByIndex'](block, 0);
+			/**
+			 * The `extrinsicIndex` (second param) is being tested for a non-zero
+			 * index here.
+			 */
+			const extrinsic = blocksService['fetchExtrinsicByIndex'](block, 2);
 
 			expect(JSON.stringify(sanitizeNumbers(extrinsic))).toEqual(
 				JSON.stringify(block789629Extrinsic)
@@ -398,7 +402,7 @@ describe('BlocksService', () => {
 			);
 		});
 
-		it('Throw an error when param `extrinsicIndex` is less than 0', async () => {
+		it('Throw an error when param `extrinsicIndex` is less than 0', () => {
 			expect(() => {
 				parseNumberOrThrow(
 					'-5',
