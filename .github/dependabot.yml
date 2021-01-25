@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      # 11 am UTC
+      # 11 am PST
       time: "11:00"
       # PST timezone
       timezone: "America/Los_Angeles"
