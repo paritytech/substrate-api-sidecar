@@ -13,6 +13,7 @@ updates:
     rebase-strategy: "auto"
     commit-message:
       # Prefix all commit messages with "npm"
+      # include a list of updated dependencies
       prefix: "npm"
       include: "scope"
     allow: 
