@@ -1,0 +1,27 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      # 11 am UTC
+      time: "11:00"
+      # PST timezone
+      timezone: "America/Los_Angeles"
+    rebase-strategy: "auto"
+    commit-message:
+      # Prefix all commit messages with "npm"
+      prefix: "npm"
+      include: "scope"
+    allow: 
+      - dependency-name: "@polkadot/api"
+      - dependency-name: "@polkadot/apps-config"
+      - dependency-name: "@polkadot/util-crypto"
+    labels:
+      - "dependencies"
+
+    
+
+
