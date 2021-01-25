@@ -6,7 +6,7 @@ on:
 jobs:
   worker:
     runs-on: ubuntu-latest
-    
+
 if: github.actor == 'dependabot[bot]'
     steps:
       - name: automerge
@@ -25,3 +25,4 @@ if: github.actor == 'dependabot[bot]'
               pull_number: context.payload.pull_request.number
             })
           github-token: ${{github.token}}
+          

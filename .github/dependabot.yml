@@ -21,7 +21,3 @@ updates:
       - dependency-name: "@polkadot/util-crypto"
     labels:
       - "dependencies"
-
-    
-
-
