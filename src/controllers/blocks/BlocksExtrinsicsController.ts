@@ -13,7 +13,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['/:extrinsicIndex', this.getExtrinsicByIndex],
+			['/:extrinsicIndex', this.getExtrinsicByTimepoint],
 		]);
 	}
 
@@ -22,7 +22,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getExtrinsicByIndex: RequestHandler<INumberParam> = async (
+	private getExtrinsicByTimepoint: RequestHandler<INumberParam> = async (
 		{
 			params: { blockId, extrinsicIndex },
 			query: { eventDocs, extrinsicDocs },
