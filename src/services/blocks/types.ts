@@ -11,7 +11,7 @@ export interface I64Values {
 
 export interface StringValues {
 	key?: string;
-	method?: 'Put' | 'Get';
+	method?: 'put' | 'get' | 'set';
 	result?: unknown;
 	[i: string]: unknown;
 }

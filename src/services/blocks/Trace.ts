@@ -41,7 +41,7 @@ type EventWithAccountInfo = EventFullAnnotated & {
 // }
 
 export interface TraceTestOne {
-	onlySystemAccount: EventWithAccountInfo[];
+	// onlySystemAccount: EventWithAccountInfo[];
 	// Spans grouped by Id
 	spansById: Map<number, SpanWithName[]>;
 	// Events grouped by parent_id
@@ -77,7 +77,7 @@ export class Trace {
 
 	testOne(): TraceTestOne {
 		return {
-			onlySystemAccount: this.systemAccountEvents(),
+			// onlySystemAccount: this.systemAccountEvents(),
 			spansById: this.spansById(),
 			eventsByParent: this.eventsByParentId(),
 		};
@@ -223,30 +223,48 @@ export class Trace {
 					`0x${addressRaw}`
 				);
 
-				const { method } = e.values.string_values;
-				const accountInfoEncoded =
-					method === 'Get'
-						? (e?.values?.string_values?.result as string)
-						: (e?.values?.string_values?.value as string);
+				// const { method } = e.values.string_values;
+				// const accountInfoEncoded =
+				// 	method === 'get'
+				// 		? (e?.values?.string_values?.res as string)
+				// 		: (e?.values?.string_values?.value as string);
 
+				const accountInfoEncoded = e?.values?.string_values
+					?.res as string;
+				// method === 'get'
+				// 	? (e?.values?.string_values?.res as string)
+				// 	: (e?.values?.string_values?.value as string);
+				console.log(accountInfoEncoded);
 				let accountInfo;
-				if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
-					const len = accountInfoEncoded.length;
-					// const scale = accountInfoEncoded.slice(5, len - 1); // should use this with polkadot
-					// HACK to work with substrate node - AccountInfo = u32 + u32 + AccountData. We slice off
-					// the leading u32s and just create AccountData bc it has the wrong type for AccountInfo.
-					// const scale = accountInfoEncoded.slice(5 + 16, len - 1);
-					// accountInfo = (this.registry.createType(
-					// 	'AccountData',
-					// 	`0x${scale}`
-					// ) as unknown) as AccountInfo;
-					const scale = accountInfoEncoded.slice(5, len - 1);
-					accountInfo = (this.registry.createType(
-						'AccountInfo',
-						`0x${scale}`
-					) as unknown) as AccountInfo;
-				} else {
-					throw 'Expect there to always be some account info';
+				try {
+					if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
+						const len = accountInfoEncoded.length;
+						// const scale = accountInfoEncoded.slice(5, len - 1); // should use this with polkadot
+						// HACK to work with substrate node - AccountInfo = u32 + u32 + AccountData. We slice off
+						// the leading u32s and just create AccountData bc it has the wrong type for AccountInfo.
+						// const scale = accountInfoEncoded.slice(5 + 16, len - 1);
+						// accountInfo = (this.registry.createType(
+						// 	'AccountData',
+						// 	`0x${scale}`
+						// ) as unknown) as AccountInfo;
+						const scale = accountInfoEncoded.slice(5, len - 1);
+						accountInfo = (this.registry.createType(
+							'AccountInfo',
+							`0x${scale}`
+						) as unknown) as AccountInfo;
+					} else if (accountInfoEncoded.includes('None')) {
+						accountInfo = this.registry.createType('AccountInfo');
+					} else {
+						accountInfo = (this.registry.createType(
+							'AccountInfo',
+							`0x${accountInfoEncoded}`
+						) as unknown) as AccountInfo;
+						console.log(accountInfo.data.toString());
+					}
+				} catch {
+					throw new Error(
+						'Expect there to always be some AccountInfo'
+					);
 				}
 
 				return { ...e, accountInfo, address };
