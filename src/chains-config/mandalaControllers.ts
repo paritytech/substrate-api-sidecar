@@ -6,6 +6,7 @@ import { ControllerConfig } from '../types/chains-config';
 export const mandalaControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
+		BlocksExtrinsics: true,
 		AccountsStakingPayouts: true,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,

@@ -17,11 +17,12 @@ import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
-import { InternalServerError } from 'http-errors';
+import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
 	IBlock,
 	IExtrinsic,
+	IExtrinsicIndex,
 	ISanitizedCall,
 	ISanitizedEvent,
 	isFrameMethod,
@@ -246,6 +247,31 @@ export class BlocksService extends AbstractService {
 			extrinsics,
 			onFinalize,
 			finalized,
+		};
+	}
+
+	/**
+	 *
+	 * @param block Takes in a block which is the result of `BlocksService.fetchBlock`
+	 * @param extrinsicIndex Parameter passed into the request
+	 */
+	fetchExtrinsicByIndex(
+		block: IBlock,
+		extrinsicIndex: number
+	): IExtrinsicIndex {
+		if (extrinsicIndex > block.extrinsics.length - 1) {
+			throw new BadRequest('Requested `extrinsicIndex` does not exist');
+		}
+
+		const { hash, number } = block;
+		const height = number.unwrap().toString(10);
+
+		return {
+			at: {
+				height,
+				hash,
+			},
+			extrinsics: block.extrinsics[extrinsicIndex],
 		};
 	}
 

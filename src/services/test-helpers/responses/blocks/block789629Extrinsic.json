@@ -1,0 +1,37 @@
+{
+    "at": {
+        "height": "789629",
+        "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578"
+    },
+    "extrinsics": {
+        "method": {
+            "pallet": "parachains",
+            "method": "setHeads"
+        },
+        "signature": null,
+        "nonce": null,
+        "args": {
+            "heads": []
+        },
+        "tip": null,
+        "hash": "0xcf52705d1ade64fc0b05859ac28358c0770a217dd76b75e586ae848c56ae810d",
+        "info": {},
+        "events": [
+            {
+                "method": {
+                    "pallet": "system",
+                    "method": "ExtrinsicSuccess"
+                },
+                "data": [
+                    {
+                        "weight": "1000000000",
+                        "class": "Mandatory",
+                        "paysFee": "Yes"
+                    }
+                ]
+            }
+        ],
+        "success": true,
+        "paysFee": false
+    }
+}
