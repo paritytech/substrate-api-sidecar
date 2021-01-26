@@ -14,7 +14,7 @@ updates:
     commit-message:
       # Prefix all commit messages with "chore"
       # include a list of updated dependencies
-      prefix: "chore(packages):"
+      prefix: "chore:"
       include: "scope"
     reviewers:
       - "emostov"
