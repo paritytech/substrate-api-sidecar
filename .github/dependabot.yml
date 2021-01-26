@@ -23,5 +23,11 @@ updates:
       - dependency-name: "@polkadot/api"
       - dependency-name: "@polkadot/apps-config"
       - dependency-name: "@polkadot/util-crypto"
+    ignore:
+      - dependency-name: "confmgr"
+      - dependency-name: "express"
+      - dependency-name: "express-winston"
+      - dependency-name: "http-errors"
+      - dependency-name: "winston"
     labels:
       - "dependencies"
