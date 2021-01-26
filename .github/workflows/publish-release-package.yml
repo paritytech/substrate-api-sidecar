@@ -1,0 +1,26 @@
+name: Publish to Npm
+
+on: 
+  release:
+    types: [published]
+  
+jobs:
+  release:
+    name: publish-npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkoutv@2
+      - name: Use Node 12
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: Build Package
+        run: |
+          npm install -g yarn
+          yarn install
+          yarn build
+      - name: Publish
+        env: 
+          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+      - run: npm publish --access public
