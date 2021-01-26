@@ -12,10 +12,13 @@ updates:
       timezone: "America/Los_Angeles"
     rebase-strategy: "auto"
     commit-message:
-      # Prefix all commit messages with "npm"
+      # Prefix all commit messages with "chore"
       # include a list of updated dependencies
-      prefix: "npm"
+      prefix: "chore(packages):"
       include: "scope"
+    reviewers:
+      - "emostov"
+      - "TarikGul"
     allow: 
       - dependency-name: "@polkadot/api"
       - dependency-name: "@polkadot/apps-config"
