@@ -3,9 +3,9 @@
 
 
 "@acala-network/type-definitions@^0.6.2-7":
-  version "0.6.2-7"
-  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-7.tgz#4a335d831f74999db2ed19d3bd5a1bb3a1b1833c"
-  integrity sha512-01HZuh3qaA1hkj3cmzeg9WJgno8f+a5An3qFwRdJVJyCRtvRqqH5XyB04/oNDfzgQdHPdE6R3LkpTZvGOH8pOA==
+  version "0.6.2-8"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-8.tgz#1ea62096e732946d5e7881d7b90fe2b8d48b0901"
+  integrity sha512-x2dYgpLkpm6Rr2A7FT+A3yckh7movhLYxZJnqbeHvgvkqCVbAPLvwa8e0R9KogYaJREn4/aUYkVSAG7tBgBZIg==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.8.2-6"
 
@@ -309,9 +309,9 @@
     kuler "^2.0.0"
 
 "@edgeware/node-types@^3.2.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.3.0.tgz#ac651114a5a815d6a7192d9242623527bd65b2ab"
-  integrity sha512-JK0bVxmuqDiolErPFFHINJiFW5Z5+mk44esJZDgvI1CsSGF/MTHS/oq0Hv/SlJfGSQV/Xk1et0bSeQETF6LBpQ==
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.3.1.tgz#e98e3ebf63319c497020c1b14105f148d927eaae"
+  integrity sha512-vD8kChXW4qapj5qmeAl7f1P1dOVPwC2FxLJZODxH+ifYjl//mfknaaZ4ApjHTtxT7UrF/MJJ6XtnlkyMaTPEOg==
 
 "@eslint/eslintrc@^0.3.0":
   version "0.3.0"
@@ -573,7 +573,7 @@
     "@polkadot/x-rxjs" "^5.4.4"
     bn.js "^4.11.9"
 
-"@polkadot/api@3.6.4", "@polkadot/api@^3.2.3", "@polkadot/api@^3.6.4":
+"@polkadot/api@3.6.4", "@polkadot/api@^3.6.4":
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-3.6.4.tgz#a7b02eb0f4c2a98b087003edc1c2f7ed4bea077a"
   integrity sha512-jsbBoL99OtBazGyufab9zkC1ORYdvrqzs5tHhLkhUl9zNrDBHyLVawyYNPXAyejtwLl3RMAWMMpnarDjlmjwPQ==
@@ -672,7 +672,7 @@
     "@polkadot/util" "^5.4.4"
     bn.js "^4.11.9"
 
-"@polkadot/types@3.6.4":
+"@polkadot/types@3.6.4", "@polkadot/types@^3.6.4":
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/@polkadot/types/-/types-3.6.4.tgz#cdecfc317dd510b58854fe7c2f08e675f7c160b2"
   integrity sha512-cfI5m08wk/1Cexxm0Qv+TELQPp1GQoWefuKBDMH2g8f4dbMD2lTelsmsAeRWvEoiS9Gd69PGjD0EwSIdjzj5ow==
@@ -3032,12 +3032,12 @@ git-raw-commits@2.0.0:
     through2 "^2.0.0"
 
 git-raw-commits@^2.0.8:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/git-raw-commits/-/git-raw-commits-2.0.9.tgz#5cbc707a615cb77b71e687f8a1ee54af46208b22"
-  integrity sha512-hSpNpxprVno7IOd4PZ93RQ+gNdzPAIrW0x8av6JQDJGV4k1mR9fE01dl8sEqi2P7aKmmwiGUn1BCPuf16Ae0Qw==
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/git-raw-commits/-/git-raw-commits-2.0.10.tgz#e2255ed9563b1c9c3ea6bd05806410290297bbc1"
+  integrity sha512-sHhX5lsbG9SOO6yXdlwgEMQ/ljIn7qMpAbJZCGfXX2fq5T8M5SrDnpYk9/4HswTildcIqatsWa91vty6VhWSaQ==
   dependencies:
     dargs "^7.0.0"
-    lodash.template "^4.0.2"
+    lodash "^4.17.15"
     meow "^8.0.0"
     split2 "^3.0.0"
     through2 "^4.0.0"
@@ -4595,11 +4595,12 @@ modify-values@^1.0.0:
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
 moonbeam-types-bundle@^1.0.6:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/moonbeam-types-bundle/-/moonbeam-types-bundle-1.0.9.tgz#90fb29fdacf6997ca269117b0ef116c64ebe5549"
-  integrity sha512-z/vLHxCCSeGPi4ueGThD7EM4eRv1Zvbv8YP4qqSgyycf74GQflrImOB9SchkZxvMmS0RbxK97ePVCL2ojw+h+g==
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/moonbeam-types-bundle/-/moonbeam-types-bundle-1.1.4.tgz#deec437148d9f9fb39c496ca2d1d46dee2dcf79e"
+  integrity sha512-6dNik2dlhLv8ji8INIKgIw37T36MYjYATT1X/WfFyv20cTwlZJVe5xVWiWhKze884T4Dlr9JVYhvIqRjOkiScQ==
   dependencies:
-    "@polkadot/api" "^3.2.3"
+    "@polkadot/api" "^3.6.4"
+    "@polkadot/types" "^3.6.4"
     typescript "^4.1.3"
 
 ms@2.0.0:

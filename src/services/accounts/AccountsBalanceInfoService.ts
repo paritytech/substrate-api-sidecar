@@ -27,7 +27,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		let locks, header, accountInfo, accountData;
 		// We assume the first token is the native token
-		if (token === api.registry.chainTokens[0]) {
+		if (token === api.registry.chainTokens[0].toUpperCase()) {
 			[header, locks, accountInfo] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				api.query.balances.locks.at(hash, address),
