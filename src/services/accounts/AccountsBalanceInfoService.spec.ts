@@ -31,9 +31,8 @@ describe('AccountsBalanceInfoService', () => {
 				mockTokenAccountAt: jest.Mock<any>,
 				mockBalancesLocksAt: jest.Mock<any>;
 			beforeAll(() => {
-				// Import: these temp values should never be reassinged. These are used
-				// so we can assign these back to there orignal values after this sub-section
-				// of tests run.
+				// Important: these temp values should never be reassinged. They are used so we can assign
+				// the mockApi properties back to there orignal values after this sub-section of tests run.
 				tempQueryTokens = mockApi.query.tokens;
 				tempQueryBalance = mockApi.query.balances;
 
@@ -45,7 +44,7 @@ describe('AccountsBalanceInfoService', () => {
 						hash,
 						address
 					)) as unknown) as AccountInfo).data;
-				// Wrap our functions in a jest mock so we can collect data on how they where called
+				// Wrap our functions in a jest mock so we can collect data on how they are called
 				mockTokensLocksAt = jest.fn(mockApi.query.balances.locks.at);
 				mockTokenAccountAt = jest.fn(tokensAccountAt);
 				mockApi.query.tokens = {
@@ -67,12 +66,11 @@ describe('AccountsBalanceInfoService', () => {
 			});
 
 			afterAll(() => {
-
 				mockApi.query.tokens = tempQueryTokens;
 				mockApi.query.balances = tempQueryBalance;
 			});
 
-			it('only has `DOT` (all uppercase) for the mockApi registry', () => {
+			it('only has `["DOT"]` (all uppercase chars) for the mockApi registry', () => {
 				expect(mockApi.registry.chainTokens).toStrictEqual(['DOT']);
 				expect(mockApi.registry.chainDecimals).toStrictEqual([12]);
 			});
