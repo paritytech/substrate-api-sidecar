@@ -223,11 +223,6 @@ export class Trace {
 					`0x${addressRaw}`
 				);
 
-				// const { method } = e.values.string_values;
-				// const accountInfoEncoded =
-				// 	method === 'get'
-				// 		? (e?.values?.string_values?.res as string)
-				// 		: (e?.values?.string_values?.value as string);
 
 				const method = e?.values?.string_values?.message;
 				const accountInfoEncoded =
@@ -263,7 +258,6 @@ export class Trace {
 							'AccountInfo',
 							`0x${accountInfoEncoded}`
 						) as unknown) as AccountInfo;
-						console.log(accountInfo.data.toString());
 					}
 				} catch {
 					throw new Error(
