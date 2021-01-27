@@ -229,15 +229,21 @@ export class Trace {
 				// 		? (e?.values?.string_values?.res as string)
 				// 		: (e?.values?.string_values?.value as string);
 
-				const accountInfoEncoded = e?.values?.string_values
-					?.res as string;
-				// method === 'get'
-				// 	? (e?.values?.string_values?.res as string)
-				// 	: (e?.values?.string_values?.value as string);
-				console.log(accountInfoEncoded);
+				const method = e?.values?.string_values?.message;
+				const accountInfoEncoded =
+					method === 'clear'
+						? 'no-account'
+						: (e?.values?.string_values?.res as string);
+
 				let accountInfo;
 				try {
-					if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
+					if (method === 'clear') {
+						// Account was likely dusted. For now lets just assume we are ok with the account balance
+						// being zero. In the future this can have richer information
+						accountInfo = this.registry.createType('AccountInfo');
+					} else if (accountInfoEncoded.includes('None')) {
+						accountInfo = this.registry.createType('AccountInfo');
+					} else if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
 						const len = accountInfoEncoded.length;
 						// const scale = accountInfoEncoded.slice(5, len - 1); // should use this with polkadot
 						// HACK to work with substrate node - AccountInfo = u32 + u32 + AccountData. We slice off
@@ -252,8 +258,6 @@ export class Trace {
 							'AccountInfo',
 							`0x${scale}`
 						) as unknown) as AccountInfo;
-					} else if (accountInfoEncoded.includes('None')) {
-						accountInfo = this.registry.createType('AccountInfo');
 					} else {
 						accountInfo = (this.registry.createType(
 							'AccountInfo',
