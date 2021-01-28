@@ -825,9 +825,9 @@
     "@open-web3/orml-type-definitions" "^0.6.0-beta.26"
 
 "@subsocial/types@^0.4.28":
-  version "0.4.28"
-  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.28.tgz#09f1a260b281a18b200355bd305f3a109134b500"
-  integrity sha512-55LRqDPa/bDc1klKNzRBKBgj0/tdI0Hw0HIT1krDlukxKKk5UjE+WHjmNC7ZOvaS5m4Uj9iU5edbLOtDcM68WQ==
+  version "0.4.29"
+  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.29.tgz#a57a8a3d3c9a324aa32a2244df0905d5f4eaed24"
+  integrity sha512-r4s4Yh8D1/3cubmpRh1sRcHSrcArs8Miek29VPq/8ewS/lupTxVmitgifGH5CE3FZkqI4CCsnrUMwTiaor/rZg==
   dependencies:
     "@subsocial/utils" "^0.4.25"
     cids "^0.7.1"
@@ -2768,9 +2768,9 @@ fast-safe-stringify@^2.0.4:
   integrity sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
 
 fastq@^1.6.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.10.0.tgz#74dbefccade964932cdf500473ef302719c652bb"
-  integrity sha512-NL2Qc5L3iQEsyYzweq7qfgy5OtXCmGzGvhElGEd/SoFWEMOEczNh5s5ocaF01HDetxz+p8ecjNPA6cZxxIHmzA==
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.10.1.tgz#8b8f2ac8bf3632d67afcd65dac248d5fdc45385e"
+  integrity sha512-AWuv6Ery3pM+dY7LYS8YIaCiQvUaos9OB1RyNgaOWnaX+Tik7Onvcsf8x8c+YtDeT0maYLniBip2hox5KtEXXA==
   dependencies:
     reusify "^1.0.4"
 
@@ -3235,9 +3235,9 @@ hosted-git-info@^2.1.4:
   integrity sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==
 
 hosted-git-info@^3.0.6:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-3.0.7.tgz#a30727385ea85acfcee94e0aad9e368c792e036c"
-  integrity sha512-fWqc0IcuXs+BmE9orLDyVykAG9GJtGLGuZAAqgcckPgv5xad4AcXGIv8galtQvlwutxSlaMcdw7BUtq2EIvqCQ==
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-3.0.8.tgz#6e35d4cc87af2c5f816e4cb9ce350ba87a3f370d"
+  integrity sha512-aXpmwoOhRBrw6X3j0h5RloK4x1OzsxMPyxqIHyNfSe2pypkVTZFpEiRoSipPEPlMrh0HW/XsjkJ5WgnCirpNUw==
   dependencies:
     lru-cache "^6.0.0"
 
