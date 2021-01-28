@@ -7,7 +7,7 @@ export * from './mockBlock789629';
 export * from './transactions';
 
 /**
- * Convience type for type casting mockApi storage querys.
+ * Convenience type for type casting mockApi storage querys.
  */
 export type PolkadotStorageQuery = <T extends unknown = Codec>(
 	hash: string | Hash | Uint8Array,
