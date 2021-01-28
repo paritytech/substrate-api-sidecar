@@ -24,7 +24,7 @@ describe('AccountsBalanceInfoService', () => {
 			).toStrictEqual(accountsBalanceInfo789629);
 		});
 
-		describe('token recognization', () => {
+		describe('token recognition', () => {
 			let tempQueryTokens: any,
 				tempQueryBalance: any,
 				mockTokensLocksAt: jest.Mock<any>,
@@ -32,7 +32,7 @@ describe('AccountsBalanceInfoService', () => {
 				mockBalancesLocksAt: jest.Mock<any>;
 			beforeAll(() => {
 				// Important: these temp values should never be reassinged. They are used so we can assign
-				// the mockApi properties back to there orignal values after this sub-section of tests run.
+				// the mockApi properties back to their original values after this sub-section of tests run.
 				tempQueryTokens = mockApi.query.tokens;
 				tempQueryBalance = mockApi.query.balances;
 
