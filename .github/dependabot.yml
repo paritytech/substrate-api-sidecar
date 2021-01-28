@@ -11,6 +11,7 @@ updates:
       # PST timezone
       timezone: "America/Los_Angeles"
     rebase-strategy: "auto"
+    open-pull-requests-limit: 10
     commit-message:
       # Prefix all commit messages with "chore"
       # include a list of updated dependencies
