@@ -13,7 +13,7 @@
   },
   "properties": {
     "ss58Format": "0",
-    "tokenDecimals": "12",
-    "tokenSymbol": "DOT"
+    "tokenDecimals": ["12"],
+    "tokenSymbol": ["DOT"]
   }
 }
