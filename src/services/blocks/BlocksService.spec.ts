@@ -374,6 +374,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			operations: false,
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {

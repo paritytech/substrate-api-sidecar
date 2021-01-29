@@ -223,7 +223,6 @@ export class Trace {
 					`0x${addressRaw}`
 				);
 
-
 				const method = e?.values?.string_values?.message;
 				const accountInfoEncoded =
 					method === 'clear'
@@ -307,7 +306,7 @@ export class Trace {
 						address: e.address,
 					};
 					const currency = {
-						symbol: this.registry.chainToken,
+						symbol: this.registry.chainTokens[0],
 					};
 					const systemAccountData = {
 						pallet: 'system',

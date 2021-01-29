@@ -20,7 +20,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
-	// IBlock,
+	IBlock,
 	IExtrinsic,
 	IExtrinsicIndex,
 	ISanitizedCall,
