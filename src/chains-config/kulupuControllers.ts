@@ -3,6 +3,7 @@ import { ControllerConfig } from '../types/chains-config';
 export const kulupuControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
+		BlocksExtrinsics: true,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: false,

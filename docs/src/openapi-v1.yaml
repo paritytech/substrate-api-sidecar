@@ -273,6 +273,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /blocks/{blockId}/extrinsics/{extrinsicIndex}:
+    get:
+      tags:
+      - blocks
+      summary: Get an extrinsic by its extrinsicIndex and block height or hash. 
+        The pair blockId, extrinsicIndex is sometimes referred to as a Timepoint.
+      description: Returns a single extrinsic.
+      operationId: getExtrinsicByTimepoint
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          type: string
+      - name: extrinsicIndex
+        in: path
+        description: The extrinsic's index within the block's body.
+        required: true
+        schema: 
+          type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs`
+          property with a string of the events documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs`
+          property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtrinsicIndex'
+        "400":
+          description: Requested `extrinsicIndex` does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks/head:
     get:
       tags:
@@ -1033,6 +1084,14 @@ components:
             Block authors could insert the extrinsic as an inherent in the block
             and not pay a fee. Always check that `paysFee` is `true` and that the
             extrinsic is signed when reconciling old blocks.
+    ExtrinsicIndex:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        extrinsic:
+          $ref: '#/components/schemas/Extrinsic'
+      description: A single extrinsic at a given block.
     BlockInitialize:
       type: object
       properties:

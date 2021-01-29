@@ -4,6 +4,7 @@ import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
@@ -19,6 +20,8 @@ import {
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
+import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
@@ -360,6 +363,58 @@ describe('BlocksService', () => {
 					true
 				)
 			).toEqual(true);
+		});
+	});
+
+	describe('fetchExrinsicByIndex', () => {
+		// fetchBlock options
+		const options = {
+			eventDocs: false,
+			extrinsicDocs: false,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+		};
+
+		it('Returns the correct extrinisics object for block 789629', async () => {
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
+			);
+
+			/**
+			 * The `extrinsicIndex` (second param) is being tested for a non-zero
+			 * index here.
+			 */
+			const extrinsic = blocksService['fetchExtrinsicByIndex'](block, 2);
+
+			expect(JSON.stringify(sanitizeNumbers(extrinsic))).toEqual(
+				JSON.stringify(block789629Extrinsic)
+			);
+		});
+
+		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				options
+			);
+
+			expect(() => {
+				blocksService['fetchExtrinsicByIndex'](block, 5);
+			}).toThrow(
+				new BadRequest('Requested `extrinsicIndex` does not exist')
+			);
+		});
+
+		it('Throw an error when param `extrinsicIndex` is less than 0', () => {
+			expect(() => {
+				parseNumberOrThrow(
+					'-5',
+					'`exstrinsicIndex` path param is not a number'
+				);
+			}).toThrow(
+				new BadRequest('`exstrinsicIndex` path param is not a number')
+			);
 		});
 	});
 });
