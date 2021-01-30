@@ -37,7 +37,7 @@ export interface TraceEvent {
 
 export interface EventAnnotated extends TraceEvent {
 	storagePath: KeyInfo;
-	parentSpanId: ParentSpanId[];
+	parentSpanId?: ParentSpanId;
 	eventIndex: number;
 }
 
@@ -59,8 +59,15 @@ export interface TraceSpan {
 	values: Values;
 }
 
-export interface SpanWithStoragePath extends TraceSpan {
+/**
+ * Span with direct descendants
+ */
+export interface SpanWithChildren extends TraceSpan {
 	storagePath: KeyInfo;
+	/**
+	 * Id of the child spans.
+	 */
+	children: number[];
 }
 
 export interface TraceBlock {
@@ -98,7 +105,7 @@ export interface StorageResourceId {
 }
 
 export interface Transition {
-	parentSpanId: ParentSpanId[];
+	parentSpanId: ParentSpanId;
 	eventIndex: number;
 	address: Address;
 	storage: StorageResourceId;
@@ -118,7 +125,7 @@ export interface Operation
 			// extrinsic index
 			extrinsic?: number;
 		};
-		parentSpanId: ParentSpanId[];
+		parentSpanId: ParentSpanId;
 		eventIndex: number;
 	};
 }
@@ -127,6 +134,7 @@ export enum Phase {
 	OnInitialze = 'OnInitialize',
 	ApplyExtrinsic = 'ApplyExtrinsic',
 	OnFinalize = 'OnFinalize',
+	Other = 'Other',
 }
 
 /**
@@ -137,13 +145,13 @@ export interface PhaseTraceInfoGather {
 	/**
 	 * Careful, need to make sure we only have one primary span (e.g. apply_extrinsic)
 	 */
-	primarySpan: SpanWithStoragePath;
+	primarySpan: SpanWithChildren;
 	/**
 	 * For extrinsic execution this will be the actual extrinsic.
 	 *
 	 * I think this should only be one span but for now we will track multiple
 	 */
-	secondarySpans: SpanWithStoragePath[];
+	secondarySpanIds: number[];
 	/**
 	 * Events from the primary span
 	 */
@@ -183,7 +191,7 @@ export interface ExtrinsicTraceInfo extends PhaseTraceInfoGather {
 
 export interface TracesByPrimarySpan {
 	/**
-	 * TODO this can be organized by timestamp of the primary.
+	 * TODO this can be organized by timestamp of the primary span.
 	 */
 	onInitialize: PhaseTraceInfoMerge[];
 	extrinsics: ExtrinsicTraceInfo[];

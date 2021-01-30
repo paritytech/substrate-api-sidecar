@@ -29,7 +29,7 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { Trace } from './Trace';
+import { Trace2 } from './Trace2';
 import { TraceBlock } from './types';
 
 /**
@@ -82,11 +82,11 @@ export class BlocksService extends AbstractService {
 			const { block } = await api.rpc.chain.getBlock(hash);
 			// @ts-ignore
 			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
-			const trace = new Trace(this.api, traceBlock, block.registry);
+			const trace2 = new Trace2(this.api, traceBlock, block.registry);
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// operations: trace.testThree().operations,
-				operations: trace.testOne(),
+				operations: trace2.eventsAnnotated(),
 			};
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			[
