@@ -1,4 +1,4 @@
-import { Address } from '@polkadot/types/interfaces';
+import { AccountInfo, Address } from '@polkadot/types/interfaces';
 import * as BN from 'bn.js';
 
 export interface BoolValues {
@@ -12,7 +12,7 @@ export interface I64Values {
 export interface StringValues {
 	key?: string;
 	method?: 'put' | 'get' | 'set';
-	result?: unknown;
+	res?: string;
 	[i: string]: unknown;
 }
 
@@ -35,6 +35,17 @@ export interface TraceEvent {
 	values: Values;
 }
 
+export interface EventAnnotated extends TraceEvent {
+	storagePath: KeyInfo;
+	parentSpanId: ParentSpanId[];
+	eventIndex: number;
+}
+
+export interface EventWithAccountInfo extends EventAnnotated {
+	accountInfo: AccountInfo;
+	address: Address;
+}
+
 export interface TraceSpan {
 	id: number;
 	line: number;
@@ -46,7 +57,10 @@ export interface TraceSpan {
 	parent_id: number;
 	target: string;
 	values: Values;
-	// parentName?: string;
+}
+
+export interface SpanWithStoragePath extends TraceSpan {
+	storagePath: KeyInfo;
 }
 
 export interface TraceBlock {
@@ -107,4 +121,72 @@ export interface Operation
 		parentSpanId: ParentSpanId[];
 		eventIndex: number;
 	};
+}
+
+export enum Phase {
+	OnInitialze = 'OnInitialize',
+	ApplyExtrinsic = 'ApplyExtrinsic',
+	OnFinalize = 'OnFinalize',
+}
+
+/**
+ * Gather info for a data associated with one primary span in a block execution phase.
+ */
+export interface PhaseTraceInfoGather {
+	phase: Phase;
+	/**
+	 * Careful, need to make sure we only have one primary span (e.g. apply_extrinsic)
+	 */
+	primarySpan: SpanWithStoragePath;
+	/**
+	 * For extrinsic execution this will be the actual extrinsic.
+	 *
+	 * I think this should only be one span but for now we will track multiple
+	 */
+	secondarySpans: SpanWithStoragePath[];
+	/**
+	 * Events from the primary span
+	 */
+	primarySpanEvents: EventAnnotated[];
+	/**
+	 * Events from the secondary span
+	 */
+	secondarySpanEvents: EventAnnotated[];
+}
+
+/**
+ * Complete trace info for on_initialize / on_finalize
+ */
+export interface PhaseTraceInfoMerge
+	extends Omit<
+		PhaseTraceInfoGather,
+		'primarySpanEvents' | 'secondarySpanEvents'
+	> {
+	/**
+	 * Primary and secondary events merged together
+	 */
+	mergedEvents: EventAnnotated[];
+	/**
+	 * Only account info events. These are used for operations
+	 */
+	accountInfoEvents: EventWithAccountInfo[];
+	// Operations, either will have phase or extrinsic index
+	operations: Operation[];
+}
+
+/**
+ * Complete Trace Info for an Extrinsic
+ */
+export interface ExtrinsicTraceInfo extends PhaseTraceInfoGather {
+	extrinsicIndexEvent?: EventAnnotated;
+}
+
+export interface TracesByPrimarySpan {
+	/**
+	 * TODO this can be organized by timestamp of the primary.
+	 */
+	onInitialize: PhaseTraceInfoMerge[];
+	extrinsics: ExtrinsicTraceInfo[];
+	onFinalze: PhaseTraceInfoMerge[];
+	other: SpanWithStoragePath[];
 }

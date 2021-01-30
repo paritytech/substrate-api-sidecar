@@ -11,6 +11,7 @@ import {
 	Operation,
 	PalletKeyInfo,
 	ParentSpanId,
+	SpecialKeyInfo,
 	TraceBlock,
 	TraceEvent,
 	TraceSpan,
@@ -30,22 +31,12 @@ type EventWithAccountInfo = EventFullAnnotated & {
 	address: Address;
 };
 
-// interface AccountTransitionInfo {
-// 	parentSpanId: ParentSpanId[];
-// 	eventIndex: number;
-// 	address: Address;
-// 	free: BN;
-// 	reserved: BN;
-// 	miscFrozen: BN;
-// 	feeFrozen: BN;
-// }
-
 export interface TraceTestOne {
-	// onlySystemAccount: EventWithAccountInfo[];
+	// eventsWithName: EventFullAnnotated[];
 	// Spans grouped by Id
 	spansById: Map<number, SpanWithName[]>;
 	// Events grouped by parent_id
-	eventsByParent: Map<number, EventWithParent[]>;
+	// eventsByParent: Map<number, EventWithParent[]>;
 }
 
 export interface TraceTestTwo {
@@ -75,11 +66,14 @@ export class Trace {
 		this.keyNames = this.getKeyNames();
 	}
 
-	testOne(): TraceTestOne {
+	testOne(): any {
 		return {
+			extIndexEvents: this.extrinsicIndexEvents(),
+			// raw: this.traceBlock,
+			eventsWithName: this.eventsWithName(),
 			// onlySystemAccount: this.systemAccountEvents(),
-			spansById: this.spansById(),
-			eventsByParent: this.eventsByParentId(),
+			// spansById: this.spansById(),
+			// eventsByParent: this.eventsByParentId(),
 		};
 	}
 
@@ -194,17 +188,40 @@ export class Trace {
 			});
 	}
 
-	private eventsByParentId(): Map<number, EventWithParent[]> {
-		return this.eventsWithName().reduce((acc, cur) => {
-			if (!acc.has(cur.parent_id)) {
-				acc.set(cur.parent_id, []);
-			}
+	private extrinsicIndexEvents(): EventFullAnnotated[] {
+		const seenParentSpans = new Set<number>();
+		return this.eventsWithName()
+			.filter((e) => {
+				return (
+					(e.storagePath as SpecialKeyInfo).special ===
+						':extrinsic_index' &&
+					// I assume this second part will always be true but here for clarity
+					e.parentSpanId[0]?.name === 'apply_extrinsic' &&
+					e.values.string_values.message == 'get'
+				);
+			})
+			.filter((e) => {
+				const parentSpanNumber = e.parentSpanId[0].id;
+				if (seenParentSpans.has(parentSpanNumber)) {
+					return false;
+				}
 
-			acc.get(cur.parent_id)?.push(cur);
-
-			return acc;
-		}, new Map<number, EventWithParent[]>());
+				seenParentSpans.add(parentSpanNumber);
+				return true;
+			});
 	}
+
+	// private eventsByParentId(): Map<number, EventWithParent[]> {
+	// 	return this.eventsWithName().reduce((acc, cur) => {
+	// 		if (!acc.has(cur.parent_id)) {
+	// 			acc.set(cur.parent_id, []);
+	// 		}
+
+	// 		acc.get(cur.parent_id)?.push(cur);
+
+	// 		return acc;
+	// 	}, new Map<number, EventWithParent[]>());
+	// }
 
 	private systemAccountEvents(): EventWithAccountInfo[] {
 		return this.eventsWithName()

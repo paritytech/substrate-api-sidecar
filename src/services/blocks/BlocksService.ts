@@ -85,8 +85,8 @@ export class BlocksService extends AbstractService {
 			const trace = new Trace(this.api, traceBlock, block.registry);
 			return {
 				height: block.header.number.unwrap().toString(10),
-				operations: trace.testThree().operations,
-				// operations: trace.testOne(),
+				// operations: trace.testThree().operations,
+				operations: trace.testOne(),
 			};
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			[
