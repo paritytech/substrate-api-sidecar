@@ -190,10 +190,6 @@ function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
 				typeof nonCodecKey === 'number'
 			)
 		) {
-			console.log('nonCodecKey', nonCodecKey);
-			console.log(Array.isArray(map));
-			console.log(JSON.stringify(map));
-			console.log(typeof nonCodecKey);
 			throw new InternalServerError(
 				'Unexpected non-string and non-number key while sanitizing a Map-like type'
 			);
