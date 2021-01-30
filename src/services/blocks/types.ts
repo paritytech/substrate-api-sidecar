@@ -131,9 +131,9 @@ export interface Operation
 }
 
 export enum Phase {
-	OnInitialze = 'OnInitialize',
-	ApplyExtrinsic = 'ApplyExtrinsic',
-	OnFinalize = 'OnFinalize',
+	OnInitialze = 'on_initialize',
+	ApplyExtrinsic = 'apply_extrinsic',
+	OnFinalize = 'on_finalize',
 	Other = 'Other',
 }
 
@@ -141,6 +141,13 @@ export enum Phase {
  * Gather info for a data associated with one primary span in a block execution phase.
  */
 export interface PhaseTraceInfoGather {
+	/**
+	 * If this is apply_extrinsic, this will have the extrinsic index.
+	 */
+	extrinsicIndex?: BN;
+	/**
+	 * Phase in block execution
+	 */
 	phase: Phase;
 	/**
 	 * Careful, need to make sure we only have one primary span (e.g. apply_extrinsic)
@@ -155,25 +162,13 @@ export interface PhaseTraceInfoGather {
 	/**
 	 * Events from the primary span
 	 */
-	primarySpanEvents: EventAnnotated[];
-	/**
-	 * Events from the secondary span
-	 */
-	secondarySpanEvents: EventAnnotated[];
+	events: EventAnnotated[];
 }
 
 /**
  * Complete trace info for on_initialize / on_finalize
  */
-export interface PhaseTraceInfoMerge
-	extends Omit<
-		PhaseTraceInfoGather,
-		'primarySpanEvents' | 'secondarySpanEvents'
-	> {
-	/**
-	 * Primary and secondary events merged together
-	 */
-	mergedEvents: EventAnnotated[];
+export interface PhaseTraceInfoMerge extends PhaseTraceInfoGather {
 	/**
 	 * Only account info events. These are used for operations
 	 */
@@ -196,5 +191,5 @@ export interface TracesByPrimarySpan {
 	onInitialize: PhaseTraceInfoMerge[];
 	extrinsics: ExtrinsicTraceInfo[];
 	onFinalze: PhaseTraceInfoMerge[];
-	other: SpanWithStoragePath[];
+	other: SpanWithChildren[];
 }

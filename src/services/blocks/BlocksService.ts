@@ -86,7 +86,7 @@ export class BlocksService extends AbstractService {
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// operations: trace.testThree().operations,
-				operations: trace2.eventsAnnotated(),
+				operations: trace2.traceInfoByPhase(),
 			};
 		} else if (typeof api.query.session?.validators?.at === 'function') {
 			[

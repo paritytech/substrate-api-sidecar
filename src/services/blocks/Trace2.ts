@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { Registry } from '@polkadot/types/types';
+import * as BN from 'bn.js';
 
 import {
 	EventAnnotated,
@@ -8,10 +9,8 @@ import {
 	KeyInfo,
 	PalletKeyInfo,
 	Phase,
-	SpansWithChildren,
 	SpanWithChildren,
-	// ParentSpanId,
-	SpanWithStoragePath,
+	SpecialKeyInfo,
 	TraceBlock,
 } from './types';
 
@@ -32,13 +31,13 @@ const SPANS = {
 		target: 'frame_executive',
 	},
 	onInitialize: {
-		name: 'on_initialize'
+		name: 'on_initialize',
 		// Targets vary by pallet
 	},
 	onFinalize: {
-		name: 'on_finalize'
+		name: 'on_finalize',
 		// Targets vary by pallet
-	}
+	},
 };
 
 export class Trace2 {
@@ -46,16 +45,16 @@ export class Trace2 {
 	 * Known storage keys.
 	 */
 	private keyNames;
-	private spansById: Map<number, SpanWithChildren>;
-	private annotatedEvents;
+	// private spansById: Map<number, SpanWithChildren>;
+	// private annotatedEvents;
 	constructor(
 		private api: ApiPromise,
 		private traceBlock: TraceBlock,
 		private registry: Registry
 	) {
 		this.keyNames = this.getKeyNames();
-		this.spansById = this.getSpansById();
-		this.annotatedEvents = this.getAnnotatedEvents();
+		// this.spansById = this.getSpansById();
+		// this.annotatedEvents = this.getAnnotatedEvents();
 		this.traceInfoByPhase();
 		try {
 			this.annotatedToSysemAccount(
@@ -67,9 +66,13 @@ export class Trace2 {
 	}
 
 	// private traceInfoByPhase(): TracesByPrimarySpan {
-	private traceInfoByPhase(): any {
+	traceInfoByPhase(): any {
 		const eventsByParentId = this.eventsByParentId();
-		const spansById = this.spansById;
+
+		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId();
+		console.log('extrinsicIndexBySpanId', extrinsicIndexBySpanId);
+
+		const spansById = this.getSpansById();
 		// find execute block span
 		const execute_block_span = [...spansById.values()].find(
 			({ name, target }) =>
@@ -79,43 +82,100 @@ export class Trace2 {
 		if (!execute_block_span) {
 			throw new Error('execute_block_span could not be found');
 		}
-		// Gather primary spans spans with parentId == execute_block
+
+		// This is broken up into its own variable because it may be good for debugging
 		const phaseInfoGather = [...spansById.values()]
-			.filter((span) => span.parent_id === execute_block_span.id)
+			.filter((span) => span.parent_id === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
 			.map((primary) => {
+				// Based on primary spans gather all there descendant info
 				const secondarySpanIds = this.findDescendants(primary.id);
-				const secondarySpanEvents = [];
+				const secondarySpanEvents: EventAnnotated[] = [];
+				const secondarySpans: SpanWithChildren[] = [];
 				secondarySpanIds.forEach((id) => {
 					const events = eventsByParentId.get(id);
+					const span = spansById.get(id);
+
 					events && secondarySpanEvents.push(...events);
+					span && secondarySpans.push(span);
 				});
 
-				let phase;
+				const primarySpanEvents = eventsByParentId.get(primary.id);
+				const events = primarySpanEvents
+					?.concat(secondarySpanEvents)
+					.sort((a, b) => a.eventIndex - b.eventIndex);
+
+				// Figure out the phase and potentially the extrinsic index
+				let phase, extrinsicIndex;
 				if (
 					primary.name === SPANS.applyExtrinsic.name &&
-					primary.target === SPANS.applyExtrinsic.target
+					primary.target === SPANS.applyExtrinsic.target // this might be unnescary
 				) {
-					phase = Phase.ApplyExtrinsic,
-				} else if(
-					primary.name === SPANS.onInitialize.name
-				) {
-					phase = Phase.OnInitialze
-				} else if {
-					primary.name === SPANS.onFinalize.name
+					const maybeExtrinsicIndex = secondarySpanIds
+						.concat(primary.id)
+						.filter((id) => extrinsicIndexBySpanId.has(id))
+						.map((id) => extrinsicIndexBySpanId.get(id));
+					if (maybeExtrinsicIndex.length !== 1) {
+						throw new Error(
+							'Expect exactly one extrinsic index per apply extrinsic span grouping'
+						);
+					}
+
+					phase = Phase.ApplyExtrinsic;
+					extrinsicIndex = maybeExtrinsicIndex[0];
+				} else if (primary.name === SPANS.onInitialize.name) {
+					phase = Phase.OnInitialze;
+				} else if (primary.name === SPANS.onFinalize.name) {
+					phase = Phase.OnFinalize;
+				} else {
+					phase = Phase.Other;
 				}
-					// Get a primary span, and all associated descendant spans and events
-					return {
-						primarySpan: primary,
-						secondarySpanIds,
-						primarySpanEvents: eventsByParentId.get(primary.id),
-					};
+
+				// Get a primary span, and all associated descendant spans and events
+				return {
+					extrinsicIndex,
+					phase,
+					primarySpan: primary,
+					secondarySpans,
+					events,
+				};
 			});
 
 		return phaseInfoGather;
 	}
 
+	private extrinsicIndexBySpanId(): Map<number, BN> {
+		return this.getAnnotatedEvents()
+			.filter((e) => {
+				return (
+					// Note: there are many read and writes of extrinsic_index per extrinsic so take care
+					// when modifying this logic
+					(e.storagePath as SpecialKeyInfo).special ===
+						':extrinsic_index' &&
+					// I assume this second part will always be true but here for clarity
+					e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
+					// super important we only do `get`, `set` ops are prep for next extrinsic
+					e.values.string_values.message == 'get'
+				);
+			})
+			.reduce((acc, cur) => {
+				const indexEncoded = cur.values.string_values.res;
+				let extrinsicIndex;
+				if (indexEncoded?.slice(0, 5) === 'Some(') {
+					const len = indexEncoded.length;
+					const scale = indexEncoded.slice(5, len - 1);
+					extrinsicIndex = this.registry.createType('u32', scale);
+				} else {
+					extrinsicIndex = this.registry.createType('u32', 0);
+				}
+
+				acc.set(cur.parent_id, extrinsicIndex.toBn());
+
+				return acc;
+			}, new Map<number, BN>());
+	}
+
 	private eventsByParentId(): Map<number, EventAnnotated[]> {
-		return this.annotatedEvents.reduce((acc, cur) => {
+		return this.getAnnotatedEvents().reduce((acc, cur) => {
 			if (!acc.has(cur.parent_id)) {
 				acc.set(cur.parent_id, [cur]);
 			} else {
@@ -128,7 +188,7 @@ export class Trace2 {
 
 	private findDescendants(root: number): number[] {
 		// Note: traversal order doesn't matter here
-		const stack = this.spansById.get(root)?.children;
+		const stack = this.getSpansById().get(root)?.children;
 		if (!stack) {
 			return [];
 		}
@@ -141,7 +201,7 @@ export class Trace2 {
 			}
 
 			descendants.push(curId);
-			const curSpanChildren = this.spansById.get(curId)?.children;
+			const curSpanChildren = this.getSpansById().get(curId)?.children;
 			curSpanChildren && stack.push(...curSpanChildren);
 		}
 
@@ -165,12 +225,15 @@ export class Trace2 {
 				return acc;
 			}, new Map<number, SpanWithChildren>());
 
-		spansById.forEach((span, _, map) => {
+		[...spansById.values()].forEach((span) => {
 			if (!span.parent_id) {
 				return;
 			}
+			if (!spansById.has(span.parent_id)) {
+				throw new Error('Spans Parens should exist in spansById');
+			}
 			// Warning: in place mutation
-			map.get(span.parent_id)?.children.push(span.id);
+			spansById.get(span.parent_id)?.children.push(span.id);
 		});
 
 		return spansById;
@@ -186,7 +249,7 @@ export class Trace2 {
 				return { ...e, storagePath };
 			})
 			.map((e) => {
-				const p = this.spansById.get(e.parent_id);
+				const p = this.getSpansById().get(e.parent_id);
 				const parentSpanId = p && {
 					name: p.name,
 					target: p.target,
