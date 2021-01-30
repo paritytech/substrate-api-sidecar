@@ -107,7 +107,6 @@ export class Trace2 {
 		const eventsByParentId = this.eventsByParentId();
 
 		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId();
-		console.log('extrinsicIndexBySpanId', extrinsicIndexBySpanId);
 
 		const spansById = this.getSpansById();
 		// find execute block span
