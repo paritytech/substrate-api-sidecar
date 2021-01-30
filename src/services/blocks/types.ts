@@ -41,7 +41,12 @@ export interface EventAnnotated extends TraceEvent {
 	eventIndex: number;
 }
 
-export interface EventWithAccountInfo extends EventAnnotated {
+export interface EventWithPhase extends EventAnnotated {
+	phase: PhaseId;
+	primarySpanId: ParentSpanId;
+}
+
+export interface EventWithAccountInfo extends EventWithPhase {
 	accountInfo: AccountInfo;
 	address: Address;
 }
@@ -50,10 +55,18 @@ export interface TraceSpan {
 	id: number;
 	line: number;
 	name: string;
-	overal_time: {
-		nanos: number;
-		secs: number;
-	};
+	exited: [
+		{
+			nanos: number;
+			secs: number;
+		}
+	];
+	entered: [
+		{
+			nanos: number;
+			secs: number;
+		}
+	];
 	parent_id: number;
 	target: string;
 	values: Values;
@@ -104,32 +117,6 @@ export interface StorageResourceId {
 	field?: string;
 }
 
-export interface Transition {
-	parentSpanId: ParentSpanId;
-	eventIndex: number;
-	address: Address;
-	storage: StorageResourceId;
-	amount: {
-		value: BN;
-		currency: CurrencyId;
-	};
-}
-
-export interface Operation
-	extends Omit<Transition, 'parentSpanId' | 'eventIndex'> {
-	operationId: {
-		operationIndex: number;
-		phase: {
-			onInitialize?: boolean;
-			onFinalize?: boolean;
-			// extrinsic index
-			extrinsic?: number;
-		};
-		parentSpanId: ParentSpanId;
-		eventIndex: number;
-	};
-}
-
 export enum Phase {
 	OnInitialze = 'on_initialize',
 	ApplyExtrinsic = 'apply_extrinsic',
@@ -158,38 +145,58 @@ export interface PhaseTraceInfoGather {
 	 *
 	 * I think this should only be one span but for now we will track multiple
 	 */
-	secondarySpanIds: number[];
+	secondarySpans: SpanWithChildren[];
 	/**
 	 * Events from the primary span
 	 */
-	events: EventAnnotated[];
+	events: EventWithPhase[];
 }
 
 /**
  * Complete trace info for on_initialize / on_finalize
  */
-export interface PhaseTraceInfoMerge extends PhaseTraceInfoGather {
+export interface PhaseTraceInfoWithOps extends PhaseTraceInfoGather {
 	/**
 	 * Only account info events. These are used for operations
 	 */
-	accountInfoEvents: EventWithAccountInfo[];
+	accountInfoEvents: Map<string, EventWithAccountInfo[]>;
 	// Operations, either will have phase or extrinsic index
 	operations: Operation[];
 }
 
-/**
- * Complete Trace Info for an Extrinsic
- */
-export interface ExtrinsicTraceInfo extends PhaseTraceInfoGather {
-	extrinsicIndexEvent?: EventAnnotated;
+export interface CurrencyId {
+	symbol: string;
 }
 
-export interface TracesByPrimarySpan {
-	/**
-	 * TODO this can be organized by timestamp of the primary span.
-	 */
-	onInitialize: PhaseTraceInfoMerge[];
-	extrinsics: ExtrinsicTraceInfo[];
-	onFinalze: PhaseTraceInfoMerge[];
-	other: SpanWithChildren[];
+export interface StorageResourceId {
+	pallet: string;
+	item: string;
+	field?: string;
+}
+
+export interface PhaseId {
+	variant: Phase;
+	applyExtrinsicIndex: BN;
+}
+
+interface TransitionOperationId {
+	operationIndex: number;
+	phase: PhaseId;
+	parentSpanId?: ParentSpanId; // should be the same as parentSpanId for the associated event
+	primarySpanId: ParentSpanId;
+	eventIndex: number;
+}
+
+export interface Transition {
+	id: Omit<TransitionOperationId, 'operationIndex'>;
+	address: Address;
+	storage: StorageResourceId;
+	amount: {
+		value: BN;
+		currency: CurrencyId;
+	};
+}
+
+export interface Operation extends Omit<Transition, 'id'> {
+	id: TransitionOperationId;
 }

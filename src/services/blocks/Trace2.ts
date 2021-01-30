@@ -6,12 +6,18 @@ import * as BN from 'bn.js';
 import {
 	EventAnnotated,
 	EventWithAccountInfo,
+	EventWithPhase,
 	KeyInfo,
+	Operation,
+	// Operation,
 	PalletKeyInfo,
 	Phase,
+	PhaseTraceInfoGather,
+	PhaseTraceInfoWithOps,
 	SpanWithChildren,
 	SpecialKeyInfo,
 	TraceBlock,
+	Transition,
 } from './types';
 
 const EMPTY_KEY_INFO = {
@@ -45,28 +51,59 @@ export class Trace2 {
 	 * Known storage keys.
 	 */
 	private keyNames;
-	// private spansById: Map<number, SpanWithChildren>;
-	// private annotatedEvents;
 	constructor(
 		private api: ApiPromise,
 		private traceBlock: TraceBlock,
 		private registry: Registry
 	) {
 		this.keyNames = this.getKeyNames();
-		// this.spansById = this.getSpansById();
-		// this.annotatedEvents = this.getAnnotatedEvents();
-		this.traceInfoByPhase();
 		try {
 			this.annotatedToSysemAccount(
-				(undefined as unknown) as EventAnnotated
+				(undefined as unknown) as EventWithPhase
 			);
 		} catch {
 			// this is just here to make compiler happy
 		}
+
+		this.systemAccountEventByAddress([]);
+		this.getOperations(new Map());
 	}
 
-	// private traceInfoByPhase(): TracesByPrimarySpan {
-	traceInfoByPhase(): any {
+	operationsAndGrouping(): {
+		primaryGrouping: PhaseTraceInfoWithOps[];
+		operations: Operation[];
+	} {
+		const primaryGrouping = this.traceInfoWithPhaseAndOperations();
+
+		const operations: Operation[] = [];
+		primaryGrouping.forEach((g) => {
+			// Flattening
+			operations.push(...g.operations);
+		});
+
+		operations.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+
+		return {
+			operations,
+			primaryGrouping,
+		};
+	}
+
+	traceInfoWithPhaseAndOperations(): PhaseTraceInfoWithOps[] {
+		return this.traceInfoWithPhase().map((tiwp) => {
+			const accountInfoEvents = this.systemAccountEventByAddress(
+				tiwp.events
+			);
+
+			return {
+				...tiwp,
+				accountInfoEvents,
+				operations: this.getOperations(accountInfoEvents),
+			};
+		});
+	}
+
+	traceInfoWithPhase(): PhaseTraceInfoGather[] {
 		const eventsByParentId = this.eventsByParentId();
 
 		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId();
@@ -86,6 +123,7 @@ export class Trace2 {
 		// This is broken up into its own variable because it may be good for debugging
 		const phaseInfoGather = [...spansById.values()]
 			.filter((span) => span.parent_id === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
+			.sort((a, b) => a.entered[0].nanos - b.entered[0].nanos) // TODO double check nanos is the correct thing to sort on
 			.map((primary) => {
 				// Based on primary spans gather all there descendant info
 				const secondarySpanIds = this.findDescendants(primary.id);
@@ -99,13 +137,8 @@ export class Trace2 {
 					span && secondarySpans.push(span);
 				});
 
-				const primarySpanEvents = eventsByParentId.get(primary.id);
-				const events = primarySpanEvents
-					?.concat(secondarySpanEvents)
-					.sort((a, b) => a.eventIndex - b.eventIndex);
-
 				// Figure out the phase and potentially the extrinsic index
-				let phase, extrinsicIndex;
+				let phase: Phase, extrinsicIndex: BN | undefined;
 				if (
 					primary.name === SPANS.applyExtrinsic.name &&
 					primary.target === SPANS.applyExtrinsic.target // this might be unnescary
@@ -130,13 +163,35 @@ export class Trace2 {
 					phase = Phase.Other;
 				}
 
+				// TODO this logic shouldn't be here
+				const primarySpanEvents = eventsByParentId.get(primary.id);
+				const events =
+					primarySpanEvents
+						?.concat(secondarySpanEvents)
+						.sort((a, b) => a.eventIndex - b.eventIndex) || [];
+
+				const eventsWithPhaseInfo = events.map((e) => {
+					return {
+						...e,
+						phase: {
+							variant: phase,
+							applyExtrinsicIndex: extrinsicIndex as BN,
+						},
+						primarySpanId: {
+							id: primary.id,
+							name: primary.name,
+							target: primary.target,
+						},
+					};
+				});
+
 				// Get a primary span, and all associated descendant spans and events
 				return {
 					extrinsicIndex,
 					phase,
 					primarySpan: primary,
 					secondarySpans,
-					events,
+					events: eventsWithPhaseInfo,
 				};
 			});
 
@@ -267,13 +322,41 @@ export class Trace2 {
 	}
 
 	/**
+	 * Assume passed in events are already sorted
+	 *
+	 * @param events
+	 * @returns
+	 */
+	private systemAccountEventByAddress(
+		events: EventWithPhase[]
+	): Map<string, EventWithAccountInfo[]> {
+		return events
+			.filter(
+				({ storagePath }) =>
+					(storagePath as PalletKeyInfo).module == 'system' &&
+					(storagePath as PalletKeyInfo).item == 'account'
+			)
+			.map((event) => this.annotatedToSysemAccount(event))
+			.reduce((acc, cur) => {
+				const addr = cur.address.toString();
+				if (!acc.has(addr)) {
+					acc.set(addr, []);
+				}
+
+				acc.get(addr)?.push(cur);
+
+				return acc;
+			}, new Map<string, EventWithAccountInfo[]>());
+	}
+
+	/**
 	 * Convert an `EventAnnotated` to a `EventWithAccountInfo`. Will throw if event
 	 * does not have system::account storagePath
 	 *
 	 * @param e EventAnnotated
 	 */
 	private annotatedToSysemAccount(
-		event: EventAnnotated
+		event: EventWithPhase
 	): EventWithAccountInfo {
 		const { storagePath } = event;
 		if (
@@ -374,5 +457,118 @@ export class Trace2 {
 			((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) ||
 			EMPTY_KEY_INFO
 		);
+	}
+
+	private getOperations(
+		accountEventsByAddress: Map<string, EventWithAccountInfo[]>
+	): Operation[] {
+		const es = [...accountEventsByAddress.entries()];
+		const ts = es.reduce((acc, [addr, events]) => {
+			const transitions = [];
+			for (const [i, e] of events.entries()) {
+				if (i === 0) {
+					continue;
+				}
+
+				const prev = events[i - 1].accountInfo.data;
+				// const prev = events[i - 1].accountInfo as any;
+				const cur = e.accountInfo.data;
+				// const cur = e.accountInfo as any;
+
+				const free = cur.free.sub(prev.free);
+				const reserved = cur.reserved.sub(prev.reserved);
+				const miscFrozen = cur.miscFrozen.sub(prev.miscFrozen);
+				const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
+
+				const baseInfo = {
+					id: {
+						phase: e.phase,
+						parentSpanId: e.parentSpanId,
+						primarySpanId: e.primarySpanId,
+						eventIndex: e.eventIndex,
+					},
+					address: e.address,
+				};
+				const currency = {
+					symbol: this.registry.chainTokens[0],
+				};
+				const systemAccountData = {
+					pallet: 'system',
+					item: 'Account',
+				};
+
+				if (!free.eqn(0)) {
+					transitions.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field: 'data.free',
+						},
+						amount: {
+							value: free,
+							currency,
+						},
+					});
+				}
+				if (!reserved.eqn(0)) {
+					transitions.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field: 'data.reserved',
+						},
+						amount: {
+							value: reserved,
+							currency,
+						},
+					});
+				}
+				if (!miscFrozen.eqn(0)) {
+					transitions.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field: 'data.miscFrozen',
+						},
+						amount: {
+							value: miscFrozen,
+							currency,
+						},
+					});
+				}
+				if (!feeFrozen.eqn(0)) {
+					transitions.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field: 'data.feeFrozen',
+						},
+						amount: {
+							value: feeFrozen,
+							currency,
+						},
+					});
+				}
+			}
+
+			acc.set(addr, transitions);
+
+			return acc;
+		}, new Map<string, Transition[]>());
+
+		const sorted = [...ts.values()]
+			.flat()
+			// // TODO should actually already be sorted // maybe can add a test here
+			.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+
+		return sorted.map((t, index) => {
+			return {
+				...t,
+				id: {
+					...t.id,
+					operationIndex: index, // TODO these need to relative to all ops?
+				},
+			} as Operation;
+		});
 	}
 }
