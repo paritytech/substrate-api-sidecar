@@ -9,7 +9,6 @@ import {
 	EventWithPhase,
 	KeyInfo,
 	Operation,
-	// Operation,
 	PalletKeyInfo,
 	Phase,
 	PhaseTraceInfoGather,
@@ -216,12 +215,20 @@ export class Trace2 {
 				let extrinsicIndex;
 				if (indexEncoded?.slice(0, 5) === 'Some(') {
 					const len = indexEncoded.length;
-					const scale = indexEncoded.slice(5, len - 1);
-					extrinsicIndex = this.registry.createType('u32', scale);
+					const scale = indexEncoded
+						.slice(5, len - 1)
+						.match(/.{1,2}/g)
+						?.reverse()
+						.join('');
+					const hex = `0x${scale}`;
+					extrinsicIndex = this.registry.createType('u32', hex);
+					console.log(indexEncoded);
+					console.log(scale);
+					console.log();
 				} else {
 					extrinsicIndex = this.registry.createType('u32', 0);
 				}
-
+				console.log('index', extrinsicIndex.toString(10));
 				acc.set(cur.parent_id, extrinsicIndex.toBn());
 
 				return acc;
