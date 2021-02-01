@@ -6,20 +6,20 @@ export class CalcFee {
   free(): void;
 /**
 * @param {any} polynomial
-* @param {BigInt} extrinsic_base_weight
 * @param {string} multiplier
 * @param {string} per_byte_fee
 * @param {string} spec_name
 * @param {number} spec_version
 * @returns {CalcFee | undefined}
 */
-  static from_params(polynomial: any, extrinsic_base_weight: BigInt, multiplier: string, per_byte_fee: string, spec_name: string, spec_version: number): CalcFee | undefined;
+  static from_params(polynomial: any, multiplier: string, per_byte_fee: string, spec_name: string, spec_version: number): CalcFee | undefined;
 /**
 * @param {BigInt} weight
 * @param {number} len
+* @param {BigInt} extrinsic_base_weight
 * @returns {string}
 */
-  calc_fee(weight: BigInt, len: number): string;
+  calc_fee(weight: BigInt, len: number, extrinsic_base_weight: BigInt): string;
 }
 /**
 */
