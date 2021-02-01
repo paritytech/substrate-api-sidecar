@@ -850,6 +850,9 @@
   resolved "https://registry.yarnpkg.com/@substrate/calc/-/calc-0.1.3.tgz#15bb24d1295100cfd7c69a27b8642244f8c1cd93"
   integrity sha512-35eUmCksX04/wc46/cw0LMoE/jF+kDWk+sIco59UpsmO68DR1E5Vx+vqflI6vrQEjkmESqBjJZ9VhmuwsGQF4g==
 
+"@substrate/calc@file:./calc/pkg":
+  version "0.1.4"
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.12.tgz#4d8e9e51eb265552a7e4f1ff2219ab6133bdfb2d"
@@ -1571,6 +1574,9 @@ cache-base@^1.0.1:
     to-object-path "^0.3.0"
     union-value "^1.0.0"
     unset-value "^1.0.0"
+
+"calc@file:./calc/pkg":
+  version "0.1.4"
 
 callsites@^3.0.0:
   version "3.1.0"
