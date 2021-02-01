@@ -124,7 +124,7 @@ describe('BlocksService', () => {
 				mockBlock789629
 			);
 
-			expect(calcFee?.calc_fee(BigInt(399480000), 534)).toBe('544000000');
+			expect(calcFee?.calc_fee(BigInt(399480000), 534, BigInt(125000000))).toBe('544000000');
 		});
 
 		it('calculates partialFee for utility.batch in polkadot block 789629', async () => {
@@ -135,7 +135,7 @@ describe('BlocksService', () => {
 				mockBlock789629
 			);
 
-			expect(calcFee?.calc_fee(BigInt(941325000000), 1247)).toBe(
+			expect(calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))).toBe(
 				'1257000075'
 			);
 		});
