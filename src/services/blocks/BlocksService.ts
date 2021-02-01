@@ -12,11 +12,12 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	WeightPerClass,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
-import { CalcFee } from 'calc';
+import { CalcFee } from '@substrate/calc';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
@@ -173,9 +174,7 @@ export class BlocksService extends AbstractService {
 			parentParentHash = parentHash;
 		}
 
-		const metadata = await api.rpc.state.getMetadata(
-			parentParentHash
-		);
+		const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -232,21 +231,21 @@ export class BlocksService extends AbstractService {
 				}
 
 				// The Dispatch class used to key into `blockWeights.perClass`
-				// We set default to be normal. 
+				// We set default to be normal.
 				let weightInfoClass = 'normal';
 
 				if (weightInfo.class.isMandatory) {
-					weightInfoClass = 'mandatory'
+					weightInfoClass = 'mandatory';
 				} else if (weightInfo.class.isOperational) {
-					weightInfoClass = 'operational'
+					weightInfoClass = 'operational';
 				}
 
 				/**
-				 * RESOURCES 
+				 * RESOURCES
 				 * This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass.normal.baseExtrinsic
-			     * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
-			     * TODO https://github.com/paritytech/substrate-api-sidecar/issues/393 .
-			     * TODO once https://github.com/polkadot-js/api/issues/2365 is resolved we can use that instead.
+				 * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
+				 * TODO https://github.com/paritytech/substrate-api-sidecar/issues/393 .
+				 * TODO once https://github.com/polkadot-js/api/issues/2365 is resolved we can use that instead.
 				 */
 				let extrinsicBaseWeight;
 				if (
@@ -261,15 +260,18 @@ export class BlocksService extends AbstractService {
 					extrinsicBaseWeight =
 						((decorated.consts.system
 							?.extrinsicBaseWeight as unknown) as AbstractInt) ||
-						((decorated.consts.system
+						(((decorated.consts.system
 							?.blockWeights as unknown) as BlockWeights)
-								.perClass[weightInfoClass].baseExtrinsic;
+							.perClass[weightInfoClass] as WeightPerClass)
+							.baseExtrinsic;
 				} else {
 					// We are querying a runtime that matches the decorated metadata in the api
 					extrinsicBaseWeight =
-						(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
-						api.consts.system.blockWeights.perClass[weightInfoClass]
-							.baseExtrinsic;
+						(api.consts.system
+							?.extrinsicBaseWeight as AbstractInt) ||
+						(api.consts.system.blockWeights.perClass[
+							weightInfoClass
+						] as WeightPerClass).baseExtrinsic;
 				}
 
 				if (!extrinsicBaseWeight) {
@@ -532,7 +534,7 @@ export class BlocksService extends AbstractService {
 			[specName, specVersion] = [
 				version.specName.toString(),
 				version.specVersion.toNumber(),
-			];		
+			];
 
 			calcFee = CalcFee.from_params(
 				coefficients,
