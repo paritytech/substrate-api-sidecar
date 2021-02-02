@@ -308,7 +308,7 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@edgeware/node-types@^3.2.0":
+"@edgeware/node-types@^3.3.1":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.3.1.tgz#e98e3ebf63319c497020c1b14105f148d927eaae"
   integrity sha512-vD8kChXW4qapj5qmeAl7f1P1dOVPwC2FxLJZODxH+ifYjl//mfknaaZ4ApjHTtxT7UrF/MJJ6XtnlkyMaTPEOg==
@@ -329,7 +329,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@interlay/polkabtc-types@^0.3.1":
+"@interlay/polkabtc-types@^0.3.4":
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/@interlay/polkabtc-types/-/polkabtc-types-0.3.4.tgz#256d1c75e62775469c0a7a05f3a847d8f84d53ed"
   integrity sha512-WMvDwhdYo+Q835EnZYhdunNUkfjBa8+WfkPqU09059XEVbXQWiy19X5EFU10gOtLu1wtK26EC8Y8LljTfMYrJw==
@@ -592,20 +592,20 @@
     bn.js "^4.11.9"
     eventemitter3 "^4.0.7"
 
-"@polkadot/apps-config@^0.77.1":
-  version "0.77.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.77.1.tgz#50e98e627a6b58692bf1abd6c9200d17a962e65c"
-  integrity sha512-CVaZF7pQjq0OfCzP+7lGdF8evRLGHWNz/DrMdCcXAPSoFZymNxIu+F7gJk8MzBNAO/9pBjRNgWZWlz+yp7inQQ==
+"@polkadot/apps-config@^0.78.1":
+  version "0.78.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.78.1.tgz#61f31d12d3cc6c1c10c4a92261fd5339b575431b"
+  integrity sha512-cyTJTBiKJI0kbFqv/86ksRkvcnElSrS1KFRK5npi/+vFWFPSEw5R6QxV6e7qwpzAxGMajy3faxvip9IIjrvwWw==
   dependencies:
     "@acala-network/type-definitions" "^0.6.2-7"
     "@babel/runtime" "^7.12.5"
-    "@edgeware/node-types" "^3.2.0"
-    "@interlay/polkabtc-types" "^0.3.1"
+    "@edgeware/node-types" "^3.3.1"
+    "@interlay/polkabtc-types" "^0.3.4"
     "@laminar/type-definitions" "^0.2.0-beta.143"
-    "@polkadot/networks" "^5.4.4"
-    "@sora-substrate/type-definitions" "^0.3.5"
-    "@subsocial/types" "^0.4.28"
-    moonbeam-types-bundle "^1.0.6"
+    "@polkadot/networks" "^5.5.1"
+    "@sora-substrate/type-definitions" "^0.3.7"
+    "@subsocial/types" "^0.4.29"
+    moonbeam-types-bundle "^1.1.4"
 
 "@polkadot/keyring@^5.5.1":
   version "5.5.1"
@@ -635,10 +635,10 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@polkadot/networks@^5.4.4":
-  version "5.4.4"
-  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.4.4.tgz#e1160d2c544a5e3489ea4711cf81a2293ed3130f"
-  integrity sha512-D0e7I77X4wkIJ/G9kkjz8pLauekGdGkKjYLj3W5wZEZKMcFDQy+wYdH3LKf0n+Ni77DZ7SIuqJVKfAk+wXPWVA==
+"@polkadot/networks@^5.5.1":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.5.2.tgz#7a1be26fbb44512084f4575c2f2c876e007b79a5"
+  integrity sha512-KDoqUulR0r0uv8H7iKC4X/+YUcrqrIe0ACeidvCfTcu4iiAnWXwbS9ifv/qj+eWTI+FXMSRFDSCvyYXKz4Ic2A==
   dependencies:
     "@babel/runtime" "^7.12.5"
 
@@ -824,25 +824,25 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sora-substrate/type-definitions@^0.3.5":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.3.7.tgz#2c49d944a2bde59c97d464f3b0a38d3287760f71"
-  integrity sha512-mk68BVNoRf+fHd3qJrkhViohb78dkCGyktbE4NahywTn1SUcq61ANEGnD0W6k54rKewMeDciC4+SuWdsXnvM4w==
+"@sora-substrate/type-definitions@^0.3.7":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.3.8.tgz#ed1df193aa2072324593c6bf3b84bdcb6e237049"
+  integrity sha512-3CADNWTEopfW0944H+ZNNDggfn7zDkmMAV5r8cFqbkZghQsrOyjJoFyYQeR7Uyc8gxNus8Rv6zTmEOIrcqmFEQ==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.6.0-beta.26"
 
-"@subsocial/types@^0.4.28":
-  version "0.4.29"
-  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.29.tgz#a57a8a3d3c9a324aa32a2244df0905d5f4eaed24"
-  integrity sha512-r4s4Yh8D1/3cubmpRh1sRcHSrcArs8Miek29VPq/8ewS/lupTxVmitgifGH5CE3FZkqI4CCsnrUMwTiaor/rZg==
+"@subsocial/types@^0.4.29":
+  version "0.4.30"
+  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.30.tgz#c4326cca82a2077e3667326bedbe6275344942ae"
+  integrity sha512-G3NU8r+Sg7Ul44qDMuQiaDsZyGgn78KlpDhtuqXsGz5kEGuxcDe4zIHw1IsbB1mncT9fWBYUn7BVz64ixz/Y3A==
   dependencies:
-    "@subsocial/utils" "^0.4.25"
+    "@subsocial/utils" "^0.4.26"
     cids "^0.7.1"
 
-"@subsocial/utils@^0.4.25":
-  version "0.4.25"
-  resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.4.25.tgz#11aa5524979f9bd38ff26b9c00f794a8dc70fc61"
-  integrity sha512-YpAwLmY5XP3Md1ogi8lWKCqressHeMNiCUO9Bg8b5mNajfDvfjX5ujUz2p6aF3dzh3lJDqZ1CeTCm8+rFankkA==
+"@subsocial/utils@^0.4.26":
+  version "0.4.26"
+  resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.4.26.tgz#281109622f493682b51207f6d643dd5801f6ce01"
+  integrity sha512-wLPKjMw3sjW4hBYvEB3lMxgm5NICXGOlorFqxF9fI7//LXFUHaieyUOtDUgj/3sNz1siHAd2bZCDZi4UCenPlw==
   dependencies:
     bn.js "^5.1.1"
     chalk "^3.0.0"
@@ -4601,7 +4601,7 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-moonbeam-types-bundle@^1.0.6:
+moonbeam-types-bundle@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/moonbeam-types-bundle/-/moonbeam-types-bundle-1.1.4.tgz#deec437148d9f9fb39c496ca2d1d46dee2dcf79e"
   integrity sha512-6dNik2dlhLv8ji8INIKgIw37T36MYjYATT1X/WfFyv20cTwlZJVe5xVWiWhKze884T4Dlr9JVYhvIqRjOkiScQ==
