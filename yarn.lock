@@ -635,7 +635,7 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@polkadot/networks@^5.5.1":
+"@polkadot/networks@5.5.2", "@polkadot/networks@^5.5.1":
   version "5.5.2"
   resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.5.2.tgz#7a1be26fbb44512084f4575c2f2c876e007b79a5"
   integrity sha512-KDoqUulR0r0uv8H7iKC4X/+YUcrqrIe0ACeidvCfTcu4iiAnWXwbS9ifv/qj+eWTI+FXMSRFDSCvyYXKz4Ic2A==
@@ -692,7 +692,7 @@
     "@types/bn.js" "^4.11.6"
     bn.js "^4.11.9"
 
-"@polkadot/util-crypto@5.5.1", "@polkadot/util-crypto@^5.4.4", "@polkadot/util-crypto@^5.5.1":
+"@polkadot/util-crypto@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-5.5.1.tgz#3b9afe44e1fd3db1985e3796184184260706ed53"
   integrity sha512-0eAv9YnpOfDaiyItEgqizOrMqy7i/BDUDMuMoIg9/HjjTRGFXW7htzYRnNwxh6yCRH5MNoz05JPlzCZTqyg7Rw==
@@ -713,7 +713,28 @@
     tweetnacl "^1.0.3"
     xxhashjs "^0.2.2"
 
-"@polkadot/util@5.5.1", "@polkadot/util@^5.5.1":
+"@polkadot/util-crypto@^5.4.4", "@polkadot/util-crypto@^5.5.1":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-5.5.2.tgz#b1ff3be3a98dc5eced42ef636f3e50f977aa330d"
+  integrity sha512-9QaOTSQ9THysdntwtIRRvu2YE9m6XgMA3KEb0/4s/t37+9/BVVAZOSZE7xXAEDnS2slxE7DDCn4yu1LBMt5sVA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@polkadot/networks" "5.5.2"
+    "@polkadot/util" "5.5.2"
+    "@polkadot/wasm-crypto" "^3.2.2"
+    "@polkadot/x-randomvalues" "5.5.2"
+    base-x "^3.0.8"
+    blakejs "^1.1.0"
+    bn.js "^4.11.9"
+    create-hash "^1.2.0"
+    elliptic "^6.5.3"
+    hash.js "^1.1.7"
+    js-sha3 "^0.8.0"
+    scryptsy "^2.1.0"
+    tweetnacl "^1.0.3"
+    xxhashjs "^0.2.2"
+
+"@polkadot/util@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-5.5.1.tgz#4d082f5d99a1e3a4f7a8081ebcf87b40a58219d8"
   integrity sha512-XcnJTh4lLvVD452pNOSWT5wgvjYWFItCjU5/Mf5yasV64gFTBz0242vHAu+RMMCDpj62tIaBrdHPtCzrFtsvQA==
@@ -721,6 +742,19 @@
     "@babel/runtime" "^7.12.5"
     "@polkadot/x-textdecoder" "5.5.1"
     "@polkadot/x-textencoder" "5.5.1"
+    "@types/bn.js" "^4.11.6"
+    bn.js "^4.11.9"
+    camelcase "^5.3.1"
+    ip-regex "^4.3.0"
+
+"@polkadot/util@5.5.2", "@polkadot/util@^5.5.1":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-5.5.2.tgz#4d47dfd76c9105d8244f089a2fc09b32fbaf8202"
+  integrity sha512-S7KLG5x42C7Hc5Jue8aLfbjE/Q9HNoBvwq35Hf3aCduvzX2jqxK1tvYGQ4bKIjoh5uUfVz14nt12jKLpkz15iA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@polkadot/x-textdecoder" "5.5.2"
+    "@polkadot/x-textencoder" "5.5.2"
     "@types/bn.js" "^4.11.6"
     bn.js "^4.11.9"
     camelcase "^5.3.1"
@@ -768,6 +802,15 @@
     "@types/node-fetch" "^2.5.8"
     node-fetch "^2.6.1"
 
+"@polkadot/x-global@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/x-global/-/x-global-5.5.2.tgz#9161e873bcdaeea335ff83160b7896ef505ebae9"
+  integrity sha512-xRQgptrthkHDy80KKtM/oHnwqJuXGs+V+GeolSUkXYSfe7vJNocN8qTsh0nO8eI6gaZgDaEXH7PrvyUmEzDsgA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@types/node-fetch" "^2.5.8"
+    node-fetch "^2.6.1"
+
 "@polkadot/x-randomvalues@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/x-randomvalues/-/x-randomvalues-5.5.1.tgz#97b4b539125a4747588a3272215a33c469690426"
@@ -775,6 +818,14 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@polkadot/x-global" "5.5.1"
+
+"@polkadot/x-randomvalues@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/x-randomvalues/-/x-randomvalues-5.5.2.tgz#7cf50e4a8f75bc79d7c848be22e93936de070dec"
+  integrity sha512-Jpt3VRSMQV6LeiGO5XxSoE2LS/+bgjV64IgjaZqrW9ynQYMDrryihgc5+D8qoOIIJPJhE4aLe58Tunkh0fI6cg==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@polkadot/x-global" "5.5.2"
 
 "@polkadot/x-rxjs@^5.5.1":
   version "5.5.1"
@@ -792,6 +843,14 @@
     "@babel/runtime" "^7.12.5"
     "@polkadot/x-global" "5.5.1"
 
+"@polkadot/x-textdecoder@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/x-textdecoder/-/x-textdecoder-5.5.2.tgz#f63d0dd1866193f18a87ac8a3427acb64fd16e28"
+  integrity sha512-P9E75ERv2rq1f1GPJI7CVBceeVqf3VsufnaISqloM0EYP1xj7OsaBOs+iXCNTj1T+TRZNK5Z8I68+Y0x/Lp/qQ==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@polkadot/x-global" "5.5.2"
+
 "@polkadot/x-textencoder@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/x-textencoder/-/x-textencoder-5.5.1.tgz#52762e4d187f9dc370dc28cc904f41d17b21648e"
@@ -799,6 +858,14 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@polkadot/x-global" "5.5.1"
+
+"@polkadot/x-textencoder@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/x-textencoder/-/x-textencoder-5.5.2.tgz#d4a41b40186b8e2b364f91c624c2529ae3d4fc89"
+  integrity sha512-VgIjJ3tkkcOZkLizcbsDq9hqi74y9Sj37MHi5F1E/KrPbm+yqBY4uDAUQmTFY3g5kEYyi2yAch/qpXZhnELmrw==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@polkadot/x-global" "5.5.2"
 
 "@polkadot/x-ws@^5.5.1":
   version "5.5.1"
