@@ -169,6 +169,8 @@ export class BlocksService extends AbstractService {
 			parentParentHash
 		);
 
+		// Metadata used when the specVersion and specName do not match the
+		// runtimes specs.
 		const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -237,10 +239,10 @@ export class BlocksService extends AbstractService {
 
 				/**
 				 * RESOURCES
-				 * This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass.normal.baseExtrinsic
+				 * This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass[weightInfoClass].baseExtrinsic
 				 * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
-				 * TODO https://github.com/paritytech/substrate-api-sidecar/issues/393 .
-				 * TODO once https://github.com/polkadot-js/api/issues/2365 is resolved we can use that instead.
+				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
+				 * https://github.com/polkadot-js/api/issues/2365
 				 */
 				let extrinsicBaseWeight;
 				if (
@@ -249,7 +251,6 @@ export class BlocksService extends AbstractService {
 				) {
 					// We are in a runtime that does **not** match the decorated metadata in the api,
 					// so we must fetch the correct metadata, decorate it and pull out the constant
-
 					const decorated = expandMetadata(api.registry, metadata);
 
 					extrinsicBaseWeight =
@@ -509,18 +510,6 @@ export class BlocksService extends AbstractService {
 				}
 			);
 
-			// The block where the runtime is deployed falsely proclaims it would
-			// be already using the new runtime. This workaround therefore uses the
-			// parent of the parent in order to determine the correct runtime under which
-			// this block was produced.
-			// let parentParentHash: Hash;
-			// if (block.header.number.toNumber() > 1) {
-			// 	parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-			// 		.parentHash;
-			// } else {
-			// 	parentParentHash = parentHash;
-			// }
-
 			const [version, multiplier] = await Promise.all([
 				api.rpc.state.getRuntimeVersion(parentParentHash),
 				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
@@ -547,12 +536,16 @@ export class BlocksService extends AbstractService {
 		};
 	}
 
-	// This is used if we are only in a runtime that does not match the
-	// decorated metadata in the api
-	// The block where the runtime is deployed falsely proclaims it would
-	// be already using the new runtime. This workaround therefore uses the
-	// parent of the parent in order to determine the correct runtime under which
-	// this block was produced.
+	/**
+	 * The block where the runtime is deployed falsely proclaims it would
+	 * be already using the new runtime. This workaround therefore uses the
+	 * parent of the parent in order to determine the correct runtime under which
+	 * this block was produced.
+	 *
+	 * @param api ApiPromise to use for rpc call
+	 * @param parentHash Used to identify the runtime in a block
+	 * @param block Used to make sure we dont
+	 */
 	private async getParentParentHash(
 		api: ApiPromise,
 		parentHash: Hash,
