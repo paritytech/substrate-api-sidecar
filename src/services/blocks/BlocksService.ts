@@ -157,22 +157,17 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const { calcFee, specName, specVersion } = await this.createCalcFee(
+		const parentParentHash: Hash = await this.getParentParentHash(
 			api,
 			parentHash,
 			block
 		);
 
-		// Repeated code from createCalcFee
-		// This is used if we are only is a runtime that does not match the
-		// decorated metadata in the api
-		let parentParentHash: Hash;
-		if (block.header.number.toNumber() > 1) {
-			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-				.parentHash;
-		} else {
-			parentParentHash = parentHash;
-		}
+		const { calcFee, specName, specVersion } = await this.createCalcFee(
+			api,
+			parentHash,
+			parentParentHash
+		);
 
 		const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
@@ -477,7 +472,7 @@ export class BlocksService extends AbstractService {
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		block: Block
+		parentParentHash: Hash
 	) {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -518,13 +513,13 @@ export class BlocksService extends AbstractService {
 			// be already using the new runtime. This workaround therefore uses the
 			// parent of the parent in order to determine the correct runtime under which
 			// this block was produced.
-			let parentParentHash: Hash;
-			if (block.header.number.toNumber() > 1) {
-				parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-					.parentHash;
-			} else {
-				parentParentHash = parentHash;
-			}
+			// let parentParentHash: Hash;
+			// if (block.header.number.toNumber() > 1) {
+			// 	parentParentHash = (await api.rpc.chain.getHeader(parentHash))
+			// 		.parentHash;
+			// } else {
+			// 	parentParentHash = parentHash;
+			// }
 
 			const [version, multiplier] = await Promise.all([
 				api.rpc.state.getRuntimeVersion(parentParentHash),
@@ -550,6 +545,28 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 		};
+	}
+
+	// This is used if we are only in a runtime that does not match the
+	// decorated metadata in the api
+	// The block where the runtime is deployed falsely proclaims it would
+	// be already using the new runtime. This workaround therefore uses the
+	// parent of the parent in order to determine the correct runtime under which
+	// this block was produced.
+	private async getParentParentHash(
+		api: ApiPromise,
+		parentHash: Hash,
+		block: Block
+	): Promise<Hash> {
+		let parentParentHash: Hash;
+		if (block.header.number.toNumber() > 1) {
+			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
+				.parentHash;
+		} else {
+			parentParentHash = parentHash;
+		}
+
+		return parentParentHash;
 	}
 
 	/**
