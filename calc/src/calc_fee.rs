@@ -142,7 +142,12 @@ impl CalcFee {
         Some(calc)
     }
 
-    pub fn calc_fee(&self, weight: Weight, len: u32, extrinsic_base_weight: Weight,) -> String {
+    pub fn calc_fee(
+        &self, 
+        weight: Weight, 
+        len: u32, 
+        extrinsic_base_weight: Weight,
+    ) -> String {
         let unadjusted_len_fee = self.per_byte_fee.saturating_mul(len.into());
         let unadjusted_weight_fee = weight_to_fee(&weight, &self.polynomial);
         let base_fee = weight_to_fee(&extrinsic_base_weight, &self.polynomial);
@@ -160,13 +165,14 @@ impl CalcFee {
 
         info!(
             "calc_fee: ({}, {}) -> len_fee: {} weight_fee: {} adjustable_fee: {} \
-			adjusted_fee: {} result: {}",
+			adjusted_fee: {} base_fee: {} result: {}",
             weight,
             len,
             unadjusted_len_fee,
             unadjusted_weight_fee,
             adjustable_fee,
             adjusted_fee,
+            base_fee,
             result
         );
 
