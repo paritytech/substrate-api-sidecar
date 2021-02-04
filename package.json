@@ -39,7 +39,7 @@
     "@polkadot/api": "^3.6.4",
     "@polkadot/apps-config": "^0.77.1",
     "@polkadot/util-crypto": "^5.4.4",
-    "@substrate/calc": "file:./calc/pkg",
+    "@substrate/calc": "^0.2.0",
     "confmgr": "^1.0.6",
     "express": "^4.17.1",
     "express-winston": "^4.0.5",
