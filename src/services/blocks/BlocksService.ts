@@ -22,6 +22,7 @@ import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
 	IBlock,
+	ICalcFee,
 	IExtrinsic,
 	IExtrinsicIndex,
 	ISanitizedCall,
@@ -157,21 +158,13 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const parentParentHash: Hash = await this.getParentParentHash(
-			api,
-			parentHash,
-			block
-		);
-
-		const { calcFee, specName, specVersion } = await this.createCalcFee(
-			api,
-			parentHash,
-			parentParentHash
-		);
-
-		// Metadata used when the specVersion and specName do not match the
-		// runtimes specs.
-		const metadata = await api.rpc.state.getMetadata(parentParentHash);
+		const {
+			calcFee,
+			specName,
+			specVersion,
+			decorated,
+			runtimeDoesNotMatch,
+		} = await this.createCalcFee(api, parentHash, block);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -243,13 +236,15 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
 				let extrinsicBaseWeight;
-				if (
-					specName !== api.runtimeVersion.specName.toString() ||
-					specVersion !== api.runtimeVersion.specVersion.toNumber()
-				) {
-					// We are in a runtime that does **not** match the decorated metadata in the api,
-					// so we must fetch the correct metadata, decorate it and pull out the constant
-					const decorated = expandMetadata(api.registry, metadata);
+				if (runtimeDoesNotMatch) {
+					if (!decorated) {
+						extrinsics[idx].info = {
+							error:
+								'Failure retrieving necessary decorated metadata',
+						};
+
+						continue;
+					}
 
 					extrinsicBaseWeight =
 						((decorated.consts.system
@@ -471,14 +466,14 @@ export class BlocksService extends AbstractService {
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		parentParentHash: Hash
-	) {
+		block: Block
+	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
-		let calcFee, specName, specVersion;
+		let calcFee, specName, specVersion, decorated, runtimeDoesNotMatch;
 		if (
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
@@ -508,10 +503,28 @@ export class BlocksService extends AbstractService {
 				}
 			);
 
+			const parentParentHash: Hash = await this.getParentParentHash(
+				api,
+				parentHash,
+				block
+			);
+
 			const [version, multiplier] = await Promise.all([
 				api.rpc.state.getRuntimeVersion(parentParentHash),
 				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
 			]);
+
+			runtimeDoesNotMatch =
+				specName !== api.runtimeVersion.specName.toString() ||
+				specVersion !== api.runtimeVersion.specVersion.toNumber();
+
+			if (runtimeDoesNotMatch) {
+				const metadata = await api.rpc.state.getMetadata(
+					parentParentHash
+				);
+
+				decorated = expandMetadata(api.registry, metadata);
+			}
 
 			[specName, specVersion] = [
 				version.specName.toString(),
@@ -531,6 +544,8 @@ export class BlocksService extends AbstractService {
 			calcFee,
 			specName,
 			specVersion,
+			decorated,
+			runtimeDoesNotMatch,
 		};
 	}
 
