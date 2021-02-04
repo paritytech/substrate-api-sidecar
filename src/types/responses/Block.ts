@@ -40,6 +40,6 @@ export interface ICalcFee {
 		| undefined;
 	specName: string | number;
 	specVersion: string | number;
-	decorated: DecoratedMeta | undefined;
-	runtimeDoesNotMatch: boolean | undefined;
+	decorated?: DecoratedMeta;
+	runtimeDoesNotMatch?: boolean;
 }
