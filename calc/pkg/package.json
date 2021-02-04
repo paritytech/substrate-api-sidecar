@@ -1,5 +1,5 @@
 {
-  "name": "calc",
+  "name": "@substrate/calc",
   "collaborators": [
     "Parity Technologies <admin@parity.io>"
   ],
@@ -13,10 +13,10 @@
   "files": [
     "calc_bg.wasm",
     "calc.js",
+    "calc_bg.js",
     "calc.d.ts"
   ],
-  "module": "calc.js",
+  "main": "calc.js",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar/tree/master/calc#readme",
-  "types": "calc.d.ts",
-  "sideEffects": false
+  "types": "calc.d.ts"
 }

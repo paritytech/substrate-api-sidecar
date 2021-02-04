@@ -846,7 +846,7 @@
     loglevel-plugin-prefix "^0.8.4"
 
 "@substrate/calc@file:./calc/pkg":
-  version "0.1.4"
+  version "0.2.0"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
