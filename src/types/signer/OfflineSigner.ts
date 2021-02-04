@@ -5,7 +5,6 @@ import { blake2AsHex } from '@polkadot/util-crypto';
 import { Signature, encode } from './Signature';
 
 export class OfflineSigner implements Signer {
-
 	private result: SignerResult;
 	private signature?: Signature;
 
@@ -13,8 +12,8 @@ export class OfflineSigner implements Signer {
 		this.signRaw = this.signRaw.bind(this);
 		this.signature = signature;
 		this.result = {
-			signature: "",
-			id: 0
+			signature: '',
+			id: 0,
 		}
 	}
 
@@ -43,7 +42,7 @@ export class OfflineSigner implements Signer {
 					id: 0
 				}
 				resolve({
-					signature: "0x0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+					signature: '0x0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
 					id: -1
 				});
 			}

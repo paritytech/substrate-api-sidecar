@@ -6,11 +6,6 @@ export interface Signature {
     value: string;
 }
 
-export interface Era {
-	current: string;
-	period: number;
-}
-
 export interface SignatureOptions {
     blockHash?: Uint8Array | string;
     era?: IExtrinsicEra | number;
@@ -20,7 +15,7 @@ export interface SignatureOptions {
 }
 
 export interface SignedPayload extends Signature {
-	options: SignatureOptions;
+    options: SignatureOptions;
 }
 
 export function deserialize(signerOptions: SignatureOptions): Partial<SignerOptions> {
