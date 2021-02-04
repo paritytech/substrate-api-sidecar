@@ -10,7 +10,6 @@ export interface SignatureOptions {
     blockHash?: Uint8Array | string;
     era?: IExtrinsicEra | number;
     nonce?: AnyNumber | Codec;
-    signer?: Signer;
     tip?: AnyNumber;
 }
 
