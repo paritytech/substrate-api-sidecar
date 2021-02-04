@@ -514,6 +514,11 @@ export class BlocksService extends AbstractService {
 				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
 			]);
 
+			[specName, specVersion] = [
+				version.specName.toString(),
+				version.specVersion.toNumber(),
+			];
+
 			runtimeDoesNotMatch =
 				specName !== api.runtimeVersion.specName.toString() ||
 				specVersion !== api.runtimeVersion.specVersion.toNumber();
@@ -525,11 +530,6 @@ export class BlocksService extends AbstractService {
 
 				decorated = expandMetadata(api.registry, metadata);
 			}
-
-			[specName, specVersion] = [
-				version.specName.toString(),
-				version.specVersion.toNumber(),
-			];
 
 			calcFee = CalcFee.from_params(
 				coefficients,
