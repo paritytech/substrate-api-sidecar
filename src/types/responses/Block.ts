@@ -2,6 +2,8 @@ import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber, Hash } from '@polkadot/types/interfaces';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { Codec } from '@polkadot/types/types';
+import { CalcFee } from '@substrate/calc';
+import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
 
 import { IExtrinsic, ISanitizedEvent } from '.';
 
@@ -27,4 +29,13 @@ interface ILog {
 	type: string;
 	index: number;
 	value: Codec;
+}
+
+export interface ICalcFee {
+	calcFee: {
+		calc_fee: () => null;
+	} | CalcFee | undefined;
+	specName: string | number;
+	specVersion: string | number;
+	decorated: DecoratedMeta | undefined;
 }
