@@ -238,7 +238,6 @@ export class BlocksService extends AbstractService {
 				}
 
 				/**
-				 * RESOURCES
 				 * This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass[weightInfoClass].baseExtrinsic
 				 * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
 				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
