@@ -48,7 +48,7 @@ export class TransactionSendOfflineService extends AbstractService {
             const { cause, stack } = extractCauseAndStack(err);
 
             throw {
-                error: 'Unable to send-offline transaction',
+                error: 'Unable to create transaction',
                 cause,
                 stack,
             };
@@ -91,7 +91,7 @@ export class TransactionSendOfflineService extends AbstractService {
             const { cause, stack } = extractCauseAndStack(err);
 
             throw {
-                error: 'Unable to send-offline transaction',
+                error: 'Unable to sign request',
                 cause,
                 stack,
             };

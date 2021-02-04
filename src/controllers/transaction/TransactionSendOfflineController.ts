@@ -6,7 +6,7 @@ import { IPostRequestHandler, ISendOffline } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
- * Dry run an transaction.
+ * Offline transaction builder.
  *
  * Returns:
  * - `phase`: The current phase in the workflow.
