@@ -230,7 +230,6 @@ export class BlocksService extends AbstractService {
 				// The Dispatch class used to key into `blockWeights.perClass`
 				// We set default to be normal.
 				let weightInfoClass = 'normal';
-
 				if (weightInfo.class.isMandatory) {
 					weightInfoClass = 'mandatory';
 				} else if (weightInfo.class.isOperational) {
