@@ -121,7 +121,7 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				('0xParentParentHash' as unknown) as Hash
+				mockBlock789629
 			);
 
 			expect(
@@ -134,7 +134,7 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				('0xParentParentHash' as unknown) as Hash
+				mockBlock789629
 			);
 
 			expect(
