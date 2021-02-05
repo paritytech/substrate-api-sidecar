@@ -18,7 +18,7 @@ import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
-import { BadRequest, InternalServerError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 import {
 	IBlock,
@@ -164,6 +164,7 @@ export class BlocksService extends AbstractService {
 			specVersion,
 			decorated,
 			runtimeDoesNotMatch,
+			isPartialFeeNull,
 		} = await this.createCalcFee(api, parentHash, block);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -263,20 +264,16 @@ export class BlocksService extends AbstractService {
 						] as WeightPerClass).baseExtrinsic;
 				}
 
-				if (!extrinsicBaseWeight) {
-					throw new InternalServerError(
-						'`extrinsicBaseWeight` is not defined when it was expected to be defined. File an issue at https://github.com/paritytech/substrate-api-sidecar/issues'
-					);
-				}
-
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
-				const partialFee = calcFee.calc_fee(
-					BigInt(weight.toString()),
-					len,
-					extrinsicBaseWeight.toBigInt()
-				);
+				const partialFee = !isPartialFeeNull
+					? calcFee.calc_fee(
+							BigInt(weight.toString()),
+							len,
+							extrinsicBaseWeight.toBigInt()
+					  )
+					: null;
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 					weight,
@@ -474,6 +471,7 @@ export class BlocksService extends AbstractService {
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
 		let calcFee, specName, specVersion, decorated, runtimeDoesNotMatch;
+		let isPartialFeeNull = false;
 		if (
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
@@ -483,6 +481,8 @@ export class BlocksService extends AbstractService {
 			// We do not have the necessary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.
 			calcFee = { calc_fee: () => null };
+
+			isPartialFeeNull = true;
 
 			const version = await api.rpc.state.getRuntimeVersion(parentHash);
 			[specVersion, specName] = [
@@ -546,6 +546,7 @@ export class BlocksService extends AbstractService {
 			specVersion,
 			decorated,
 			runtimeDoesNotMatch,
+			isPartialFeeNull,
 		};
 	}
 

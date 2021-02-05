@@ -42,4 +42,5 @@ export interface ICalcFee {
 	specVersion: string | number;
 	decorated?: DecoratedMeta;
 	runtimeDoesNotMatch?: boolean;
+	isPartialFeeNull: boolean;
 }
