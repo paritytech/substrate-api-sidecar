@@ -385,35 +385,3 @@ export const mockApi = ({
 		},
 	},
 } as unknown) as ApiPromise;
-
-export const mockApiCreateCalcFeeEdgeCase = ({
-	registry: polkadotRegistry,
-	consts: {
-		transactionPayment: {
-			transactionByteFee: undefined,
-			weightToFee: [
-				{
-					coeffFrac: polkadotRegistry.createType('Perbill', 80000000),
-					coeffInteger: polkadotRegistry.createType('Balance', 0),
-					degree: polkadotRegistry.createType('u8', 1),
-					negative: false,
-				},
-			],
-		},
-		system: {
-			extrinsicBaseWeight: polkadotRegistry.createType('u64', 125000000),
-		},
-	},
-	query: {
-		transactionPayment: {
-			nextFeeMultiplier: { at: nextFeeMultiplierAt },
-		},
-	},
-	rpc: {
-		state: {
-			getRuntimeVersion,
-			getMetadata,
-			getStorage,
-		},
-	},
-} as unknown) as ApiPromise;
