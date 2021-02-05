@@ -16,6 +16,7 @@ import {
 	blockHash789629,
 	getBlock,
 	mockApi,
+	mockApiCreateCalcFeeEdgeCase,
 	mockBlock789629,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
@@ -140,6 +141,16 @@ describe('BlocksService', () => {
 			expect(
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
+		});
+
+		it('returns a null `partialFee` when perByte is undefined', async () => {
+			const { isPartialFeeNull } = await blocksService['createCalcFee'](
+				mockApiCreateCalcFeeEdgeCase,
+				('0xParentHash' as unknown) as Hash,
+				mockBlock789629
+			);
+
+			expect(isPartialFeeNull).toBe(true);
 		});
 	});
 
