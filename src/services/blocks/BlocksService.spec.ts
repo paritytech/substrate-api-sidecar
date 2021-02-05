@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { ApiPromise } from '@polkadot/api';
+import { AugmentedConst } from '@polkadot/api/types/consts';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
-import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
+import {
+	BalanceOf,
+	BlockHash,
+	Hash,
+	SignedBlock,
+} from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -12,11 +18,11 @@ import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../test-helpers/registries';
+import { IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
 	getBlock,
 	mockApi,
-	mockApiCreateCalcFeeEdgeCase,
 	mockBlock789629,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
@@ -32,6 +38,13 @@ import { BlocksService } from './BlocksService';
 type GetBlock = RpcPromiseResult<
 	(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>
 >;
+
+/**
+ * Interface for the reponse in `fetchBlock` test suite
+ */
+interface ResponseObj {
+	extrinsics: IExtrinsic[];
+}
 
 /**
  * BlockService mock
@@ -114,6 +127,44 @@ describe('BlocksService', () => {
 
 			expect(block.finalized).toEqual(undefined);
 		});
+
+		it('Return an error with a null calcFee when perByte is undefined', async () => {
+			mockApi.consts.transactionPayment.transactionByteFee = (undefined as unknown) as BalanceOf &
+				AugmentedConst<'promise'>;
+
+			const configuredBlocksService = new BlocksService(mockApi);
+
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+			};
+
+			const response = sanitizeNumbers(
+				await configuredBlocksService.fetchBlock(
+					blockHash789629,
+					options
+				)
+			);
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const responseObj: ResponseObj = JSON.parse(
+				JSON.stringify(response)
+			);
+
+			// Revert mockApi back to its original setting that was changed above.
+			mockApi.consts.transactionPayment.transactionByteFee = polkadotRegistry.createType(
+				'Balance',
+				1000000
+			) as BalanceOf & AugmentedConst<'promise'>;
+
+			expect(responseObj.extrinsics[3].info).toEqual({
+				error: 'Fee calculation not supported for 16#polkadot',
+			});
+		});
 	});
 
 	describe('createCalcFee & calc_fee', () => {
@@ -141,16 +192,6 @@ describe('BlocksService', () => {
 			expect(
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
-		});
-
-		it('returns a null `partialFee` when perByte is undefined', async () => {
-			const { isPartialFeeNull } = await blocksService['createCalcFee'](
-				mockApiCreateCalcFeeEdgeCase,
-				('0xParentHash' as unknown) as Hash,
-				mockBlock789629
-			);
-
-			expect(isPartialFeeNull).toBe(true);
 		});
 	});
 
