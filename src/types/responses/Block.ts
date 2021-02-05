@@ -32,15 +32,9 @@ interface ILog {
 }
 
 export interface ICalcFee {
-	calcFee:
-		| {
-				calc_fee: () => null;
-		  }
-		| CalcFee
-		| undefined;
+	calcFee: null | CalcFee | undefined;
 	specName: string | number;
 	specVersion: string | number;
 	decorated?: DecoratedMeta;
 	runtimeDoesNotMatch?: boolean;
-	isPartialFeeNull: boolean;
 }
