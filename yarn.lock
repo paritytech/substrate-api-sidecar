@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@acala-network/type-definitions@^0.6.2-7":
-  version "0.6.2-12"
-  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-12.tgz#b86b8946608335a77916a01bb434b25c2ab6667f"
-  integrity sha512-HTYuj1mAfsJWB+Gho5EwapQiMdqfeDmDobUrHUXnmDABcbd5VPYs4FLhRQSpVULOIiCiV80TvKwdsK6Xk6IF+A==
+"@acala-network/type-definitions@^0.6.2-12":
+  version "0.6.2-13"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-13.tgz#522183d7596f52876b1674d98d0bef4ce546e7ee"
+  integrity sha512-JQEymRXeCuCUy90f5zMg5ziyS3i5jBNpO9hxStHRYo88OuSl3cJNRwmy7nx4Bphs3+6af2bBTyCzFIP1b5874Q==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.8.2-9"
 
@@ -246,10 +246,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.12.5":
-  version "7.12.5"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
-  integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
+"@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5":
+  version "7.12.13"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.13.tgz#0a21452352b02542db0ffb928ac2d3ca7cb6d66d"
+  integrity sha512-8+3UMPBrjFa/6TtKi/7sehPKqfAm4g6K+YQjyyFOLUTxzOngcRZTlAVY8sc2CORJYqdHQY8gRPHmn+qo15rCBw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -592,17 +592,17 @@
     bn.js "^4.11.9"
     eventemitter3 "^4.0.7"
 
-"@polkadot/apps-config@^0.78.1":
-  version "0.78.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.78.1.tgz#61f31d12d3cc6c1c10c4a92261fd5339b575431b"
-  integrity sha512-cyTJTBiKJI0kbFqv/86ksRkvcnElSrS1KFRK5npi/+vFWFPSEw5R6QxV6e7qwpzAxGMajy3faxvip9IIjrvwWw==
+"@polkadot/apps-config@^0.79.1":
+  version "0.79.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.79.1.tgz#103e0133fbcb8c261b674003d83c1e0514764b35"
+  integrity sha512-M40fd6T4rSrC8dkmH88ctwu0Ytk6vo6Sull0CPwwRFYOiVkW1qU43FDeNkwlKHhLVFap92BnJdF+AB4J1Kjz6w==
   dependencies:
-    "@acala-network/type-definitions" "^0.6.2-7"
+    "@acala-network/type-definitions" "^0.6.2-12"
     "@babel/runtime" "^7.12.5"
     "@edgeware/node-types" "^3.3.1"
     "@interlay/polkabtc-types" "^0.3.4"
     "@laminar/type-definitions" "^0.2.0-beta.143"
-    "@polkadot/networks" "^5.5.1"
+    "@polkadot/networks" "^5.6.1"
     "@sora-substrate/type-definitions" "^0.3.7"
     "@subsocial/types" "^0.4.29"
     moonbeam-types-bundle "^1.1.4"
@@ -628,12 +628,19 @@
     "@polkadot/util-crypto" "^5.5.2"
     bn.js "^4.11.9"
 
-"@polkadot/networks@5.5.2", "@polkadot/networks@^5.5.1", "@polkadot/networks@^5.5.2":
+"@polkadot/networks@5.5.2":
   version "5.5.2"
   resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.5.2.tgz#7a1be26fbb44512084f4575c2f2c876e007b79a5"
   integrity sha512-KDoqUulR0r0uv8H7iKC4X/+YUcrqrIe0ACeidvCfTcu4iiAnWXwbS9ifv/qj+eWTI+FXMSRFDSCvyYXKz4Ic2A==
   dependencies:
     "@babel/runtime" "^7.12.5"
+
+"@polkadot/networks@^5.5.2", "@polkadot/networks@^5.6.1":
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.6.2.tgz#acc62fb581adaa606908207fc8d0585112e513d1"
+  integrity sha512-DI70uSFLUmiVhn8LvoXSfMIbI2/+ikVQydD567QtIsH9uDF2VE4XtdSvykCv5Em3WKs1Wlu1/ylPukKk+2ZEhw==
+  dependencies:
+    "@babel/runtime" "^7.12.13"
 
 "@polkadot/rpc-core@3.7.3":
   version "3.7.3"
