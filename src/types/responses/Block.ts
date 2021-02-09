@@ -32,7 +32,7 @@ interface ILog {
 }
 
 export interface ICalcFee {
-	calcFee: null | CalcFee | undefined;
+	calcFee?: null | CalcFee;
 	specName: string | number;
 	specVersion: string | number;
 	decorated?: DecoratedMeta;
