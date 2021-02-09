@@ -12,15 +12,17 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	WeightPerClass,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
-import { BadRequest, InternalServerError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 import {
 	IBlock,
+	ICalcFee,
 	IExtrinsic,
 	IExtrinsicIndex,
 	ISanitizedCall,
@@ -156,11 +158,13 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const { calcFee, specName, specVersion } = await this.createCalcFee(
-			api,
-			parentHash,
-			block
-		);
+		const {
+			calcFee,
+			specName,
+			specVersion,
+			decorated,
+			runtimeDoesNotMatch,
+		} = await this.createCalcFee(api, parentHash, block);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -216,12 +220,56 @@ export class BlocksService extends AbstractService {
 					continue;
 				}
 
+				// The Dispatch class used to key into `blockWeights.perClass`
+				// We set default to be normal.
+				let weightInfoClass = 'normal';
+				if (weightInfo.class.isMandatory) {
+					weightInfoClass = 'mandatory';
+				} else if (weightInfo.class.isOperational) {
+					weightInfoClass = 'operational';
+				}
+
+				/**
+				 * `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass[weightInfoClass].baseExtrinsic
+				 * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
+				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
+				 * https://github.com/polkadot-js/api/issues/2365
+				 */
+				let extrinsicBaseWeight;
+				if (runtimeDoesNotMatch) {
+					if (!decorated) {
+						extrinsics[idx].info = {
+							error:
+								'Failure retrieving necessary decorated metadata',
+						};
+
+						continue;
+					}
+
+					extrinsicBaseWeight =
+						((decorated.consts.system
+							?.extrinsicBaseWeight as unknown) as AbstractInt) ||
+						(((decorated.consts.system
+							?.blockWeights as unknown) as BlockWeights)
+							.perClass[weightInfoClass] as WeightPerClass)
+							.baseExtrinsic;
+				} else {
+					// We are querying a runtime that matches the decorated metadata in the api
+					extrinsicBaseWeight =
+						(api.consts.system
+							?.extrinsicBaseWeight as AbstractInt) ||
+						(api.consts.system.blockWeights.perClass[
+							weightInfoClass
+						] as WeightPerClass).baseExtrinsic;
+				}
+
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
 
 				const partialFee = calcFee.calc_fee(
 					BigInt(weight.toString()),
-					len
+					len,
+					extrinsicBaseWeight.toBigInt()
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
@@ -413,13 +461,13 @@ export class BlocksService extends AbstractService {
 		api: ApiPromise,
 		parentHash: Hash,
 		block: Block
-	) {
+	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
-		let calcFee, specName, specVersion;
+		let calcFee, specName, specVersion, decorated, runtimeDoesNotMatch;
 		if (
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
@@ -428,7 +476,7 @@ export class BlocksService extends AbstractService {
 		) {
 			// We do not have the necessary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.
-			calcFee = { calc_fee: () => null };
+			calcFee = null;
 
 			const version = await api.rpc.state.getRuntimeVersion(parentHash);
 			[specVersion, specName] = [
@@ -449,17 +497,11 @@ export class BlocksService extends AbstractService {
 				}
 			);
 
-			// The block where the runtime is deployed falsely proclaims it would
-			// be already using the new runtime. This workaround therefore uses the
-			// parent of the parent in order to determine the correct runtime under which
-			// this block was produced.
-			let parentParentHash: Hash;
-			if (block.header.number.toNumber() > 1) {
-				parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-					.parentHash;
-			} else {
-				parentParentHash = parentHash;
-			}
+			const parentParentHash: Hash = await this.getParentParentHash(
+				api,
+				parentHash,
+				block
+			);
 
 			const [version, multiplier] = await Promise.all([
 				api.rpc.state.getRuntimeVersion(parentParentHash),
@@ -471,45 +513,20 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
-			// This `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass.normal.baseExtrinsic
-			// in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
-			// TODO https://github.com/paritytech/substrate-api-sidecar/issues/393 .
-			// TODO once https://github.com/polkadot-js/api/issues/2365 is resolved we can use that instead.
-			let extrinsicBaseWeight;
-			if (
+			runtimeDoesNotMatch =
 				specName !== api.runtimeVersion.specName.toString() ||
-				specVersion !== api.runtimeVersion.specVersion.toNumber()
-			) {
-				// We are in a runtime that does **not** match the decorated metadata in the api,
-				// so we must fetch the correct metadata, decorate it and pull out the constant
+				specVersion !== api.runtimeVersion.specVersion.toNumber();
+
+			if (runtimeDoesNotMatch) {
 				const metadata = await api.rpc.state.getMetadata(
 					parentParentHash
 				);
-				const decorated = expandMetadata(api.registry, metadata);
 
-				extrinsicBaseWeight =
-					((decorated.consts.system
-						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
-					((decorated.consts.system
-						?.blockWeights as unknown) as BlockWeights).perClass
-						?.normal?.baseExtrinsic;
-			} else {
-				// We are querying a runtime that matches the decorated metadata in the api
-				extrinsicBaseWeight =
-					(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
-					api.consts.system.blockWeights.perClass?.normal
-						?.baseExtrinsic;
-			}
-
-			if (!extrinsicBaseWeight) {
-				throw new InternalServerError(
-					'`extrinsicBaseWeight` is not defined when it was expected to be defined. File an issue at https://github.com/paritytech/substrate-api-sidecar/issues'
-				);
+				decorated = expandMetadata(api.registry, metadata);
 			}
 
 			calcFee = CalcFee.from_params(
 				coefficients,
-				extrinsicBaseWeight.toBigInt(),
 				multiplier.toString(10),
 				perByte.toString(10),
 				specName,
@@ -521,7 +538,35 @@ export class BlocksService extends AbstractService {
 			calcFee,
 			specName,
 			specVersion,
+			decorated,
+			runtimeDoesNotMatch,
 		};
+	}
+
+	/**
+	 * The block where the runtime is deployed falsely proclaims it would
+	 * be already using the new runtime. This workaround therefore uses the
+	 * parent of the parent in order to determine the correct runtime under which
+	 * this block was produced.
+	 *
+	 * @param api ApiPromise to use for rpc call
+	 * @param parentHash Used to identify the runtime in a block
+	 * @param block Used to make sure we dont
+	 */
+	private async getParentParentHash(
+		api: ApiPromise,
+		parentHash: Hash,
+		block: Block
+	): Promise<Hash> {
+		let parentParentHash: Hash;
+		if (block.header.number.toNumber() > 1) {
+			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
+				.parentHash;
+		} else {
+			parentParentHash = parentHash;
+		}
+
+		return parentParentHash;
 	}
 
 	/**

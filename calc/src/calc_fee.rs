@@ -83,7 +83,6 @@ pub struct CalcFee {
     polynomial: Vec<Coefficient>,
     multiplier: Multiplier,
     per_byte_fee: Balance,
-    base_fee: Balance,
     adjust_len_fee: bool,
 }
 
@@ -91,7 +90,6 @@ pub struct CalcFee {
 impl CalcFee {
     pub fn from_params(
         polynomial: &JsValue,
-        extrinsic_base_weight: Weight,
         multiplier: &str,
         per_byte_fee: &str,
         spec_name: &str,
@@ -99,8 +97,8 @@ impl CalcFee {
     ) -> Option<CalcFee> {
         debug::setup();
         info!(
-            "CalcFee::from_params({:#?}, {}, {}, {}, {}, {})",
-            polynomial, extrinsic_base_weight, multiplier, per_byte_fee, spec_name, spec_version
+            "CalcFee::from_params({:#?}, {}, {}, {}, {})",
+            polynomial, multiplier, per_byte_fee, spec_name, spec_version
         );
 
         let polynomial: Vec<Coefficient> = {
@@ -126,7 +124,6 @@ impl CalcFee {
         };
         let multiplier = Multiplier::new(multiplier, spec_name, spec_version)?;
         let per_byte_fee = Balance::from_str(per_byte_fee).unwrap();
-        let base_fee = weight_to_fee(&extrinsic_base_weight, &polynomial);
         let adjust_len_fee = if let Multiplier::V2(_) = &multiplier {
             false
         } else {
@@ -136,7 +133,6 @@ impl CalcFee {
             polynomial,
             multiplier,
             per_byte_fee,
-            base_fee,
             adjust_len_fee,
         };
         info!(
@@ -146,9 +142,15 @@ impl CalcFee {
         Some(calc)
     }
 
-    pub fn calc_fee(&self, weight: Weight, len: u32) -> String {
+    pub fn calc_fee(
+        &self, 
+        weight: Weight, 
+        len: u32, 
+        extrinsic_base_weight: Weight,
+    ) -> String {
         let unadjusted_len_fee = self.per_byte_fee.saturating_mul(len.into());
         let unadjusted_weight_fee = weight_to_fee(&weight, &self.polynomial);
+        let base_fee = weight_to_fee(&extrinsic_base_weight, &self.polynomial);
 
         let (len_fee, adjustable_fee) = if self.adjust_len_fee {
             (0, unadjusted_len_fee.saturating_add(unadjusted_weight_fee))
@@ -157,20 +159,20 @@ impl CalcFee {
         };
         let adjusted_fee = self.multiplier.calc(adjustable_fee);
 
-        let result = self
-            .base_fee
+        let result = base_fee
             .saturating_add(len_fee)
             .saturating_add(adjusted_fee);
 
         info!(
             "calc_fee: ({}, {}) -> len_fee: {} weight_fee: {} adjustable_fee: {} \
-			adjusted_fee: {} result: {}",
+			adjusted_fee: {} base_fee: {} result: {}",
             weight,
             len,
             unadjusted_len_fee,
             unadjusted_weight_fee,
             adjustable_fee,
             adjusted_fee,
+            base_fee,
             result
         );
 
