@@ -49,7 +49,7 @@ async function main() {
 			: apps.typesChain,
 		typesSpec: TYPES_SPEC
 			? (require(TYPES_SPEC) as Record<string, RegistryTypes>)
-			: apps.typesSpec,
+			: undefined,
 		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
 		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
