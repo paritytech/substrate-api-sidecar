@@ -629,7 +629,7 @@ describe('sanitizeNumbers', () => {
 
 		describe('Result', () => {
 			const ResultConstructor = Result.with({
-				Error: 'Text',
+				Err: 'Text',
 				Ok: 'u128',
 			});
 			const message = kusamaRegistry.createType('Text', 'message');
@@ -652,10 +652,10 @@ describe('sanitizeNumbers', () => {
 			// });
 			it('converts Error(u128)', () => {
 				const error = new ResultConstructor(kusamaRegistry, {
-					Error: maxU128,
+					Err: maxU128,
 				});
 				expect(sanitizeNumbers(error)).toStrictEqual({
-					Error: MAX_U128,
+					Err: MAX_U128,
 				});
 			});
 
@@ -667,10 +667,10 @@ describe('sanitizeNumbers', () => {
 			// });
 			it('handles Error(Text)', () => {
 				const error = new ResultConstructor(kusamaRegistry, {
-					Error: message,
+					Err: message,
 				});
 				expect(sanitizeNumbers(error)).toStrictEqual({
-					Error: message.toString(),
+					Err: message.toString(),
 				});
 			});
 
@@ -697,7 +697,7 @@ describe('sanitizeNumbers', () => {
 			// 	expect(sanitizeNumbers(ok)).toBe(message.toString());
 			// });
 			it('handles Ok(Text)', () => {
-				const R = Result.with({ Error: 'Text', Ok: 'Text' });
+				const R = Result.with({ Err: 'Text', Ok: 'Text' });
 				const ok = new R(kusamaRegistry, {
 					Ok: message,
 				});
