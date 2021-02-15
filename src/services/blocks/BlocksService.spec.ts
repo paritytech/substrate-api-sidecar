@@ -145,6 +145,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				operations: false,
 			};
 
 			const response = sanitizeNumbers(
