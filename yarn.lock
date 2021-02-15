@@ -592,18 +592,18 @@
     bn.js "^4.11.9"
     eventemitter3 "^4.0.7"
 
-"@polkadot/apps-config@^0.79.1":
-  version "0.79.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.79.1.tgz#103e0133fbcb8c261b674003d83c1e0514764b35"
-  integrity sha512-M40fd6T4rSrC8dkmH88ctwu0Ytk6vo6Sull0CPwwRFYOiVkW1qU43FDeNkwlKHhLVFap92BnJdF+AB4J1Kjz6w==
+"@polkadot/apps-config@^0.80.1":
+  version "0.80.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.80.1.tgz#0e9736dc59f2735e6681abcd6459d543d040c00f"
+  integrity sha512-x1ShrJKq2iu7o8i5tEuKI7z9Fj+Iqp9uQIZO3J4iQNjjV0KqLl61wJbSCZNw0r+EmtMnF5eVAtBNYJEm9QOUOw==
   dependencies:
     "@acala-network/type-definitions" "^0.6.2-12"
     "@babel/runtime" "^7.12.5"
     "@edgeware/node-types" "^3.3.1"
     "@interlay/polkabtc-types" "^0.3.4"
     "@laminar/type-definitions" "^0.2.0-beta.143"
-    "@polkadot/networks" "^5.6.1"
-    "@sora-substrate/type-definitions" "^0.3.7"
+    "@polkadot/networks" "^5.6.3-2"
+    "@sora-substrate/type-definitions" "^0.4.1"
     "@subsocial/types" "^0.4.29"
     moonbeam-types-bundle "^1.1.4"
 
@@ -632,6 +632,13 @@
   version "5.6.2"
   resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.6.2.tgz#acc62fb581adaa606908207fc8d0585112e513d1"
   integrity sha512-DI70uSFLUmiVhn8LvoXSfMIbI2/+ikVQydD567QtIsH9uDF2VE4XtdSvykCv5Em3WKs1Wlu1/ylPukKk+2ZEhw==
+  dependencies:
+    "@babel/runtime" "^7.12.13"
+
+"@polkadot/networks@^5.6.3-2":
+  version "5.6.3-2"
+  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.6.3-2.tgz#d3246642c7ec599fcbfb7fd1384c10171133b742"
+  integrity sha512-hYgHCjWiBoso1eD/t4lHyLtDoo1cBQ/3hcsdMeQfiMCPhatGxHuXezG+gQ+Px8/BcR/oU9q6OxADDn70RiGmsg==
   dependencies:
     "@babel/runtime" "^7.12.13"
 
@@ -834,10 +841,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sora-substrate/type-definitions@^0.3.7":
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.3.9.tgz#4fdda2121b56e91aa9c969c0dcb2e19ba064b080"
-  integrity sha512-/tjyuuZgOzlXMqKnI7lejVBXhM/016KrMnayl4IYYDBD+lVnzpd8bYmqqOBc7W4Y9WbO/sM34Lqhvc1gx+cAIw==
+"@sora-substrate/type-definitions@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.4.1.tgz#7b826cd238c8e35d4d221c64b6973213ceddf671"
+  integrity sha512-kR1p3RvLpwYFoRArARM9Den6gTzo/EBQmGv2/STfRD/LyGhuKBHCZr05ETxYhFX041KPW0Nfoq3rT6tRotnaLw==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.6.0-beta.26"
 
