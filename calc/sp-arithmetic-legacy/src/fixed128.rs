@@ -17,8 +17,7 @@
 use codec::{Decode, Encode};
 use primitive_types::U256;
 use crate::{
-	traits::{Bounded, Saturating, UniqueSaturatedInto, SaturatedConversion},
-	PerThing, Perquintill,
+	traits::{Bounded, Saturating, UniqueSaturatedInto, SaturatedConversion}, Perquintill,
 };
 use sp_std::{
 	convert::{Into, TryFrom, TryInto},
@@ -336,14 +335,6 @@ impl fmt::Debug for Fixed128 {
 	#[cfg(not(feature = "std"))]
 	fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result {
 		Ok(())
-	}
-}
-
-impl<P: PerThing> From<P> for Fixed128 {
-	fn from(val: P) -> Self {
-		let accuracy = P::ACCURACY.saturated_into().max(1) as i128;
-		let value = val.deconstruct().saturated_into() as i128;
-		Fixed128::from_rational(value, NonZeroI128::new(accuracy).unwrap())
 	}
 }
 
