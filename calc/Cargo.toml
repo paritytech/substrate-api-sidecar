@@ -9,6 +9,9 @@ repository = "git+https://github.com/paritytech/substrate-api-sidecar.git"
 description = "Off-chain calculations for @substrate/api-sidecar."
 homepage = "https://github.com/paritytech/substrate-api-sidecar/tree/master/calc#readme"
 
+[workspace]
+members = [".", "sp-arithmetic-legacy"]
+
 [lib]
 crate-type = ["cdylib"]
 
@@ -29,8 +32,7 @@ default_features = false
 
 [dependencies.sp-arithmetic-legacy]
 package = "sp-arithmetic"
-git = "https://github.com/paritytech/substrate"
-rev = "ba4eec2d8b10df59a5a26a484ce109d2f73a81fe"
+path = "./sp-arithmetic-legacy"
 default_features = false
 
 [profile.release]
