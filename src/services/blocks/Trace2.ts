@@ -222,13 +222,9 @@ export class Trace2 {
 						.join('');
 					const hex = `0x${scale}`;
 					extrinsicIndex = this.registry.createType('u32', hex);
-					console.log(indexEncoded);
-					console.log(scale);
-					console.log();
 				} else {
 					extrinsicIndex = this.registry.createType('u32', 0);
 				}
-				console.log('index', extrinsicIndex.toString(10));
 				acc.set(cur.parent_id, extrinsicIndex.toBn());
 
 				return acc;
