@@ -56,16 +56,6 @@ export class Trace2 {
 		private registry: Registry
 	) {
 		this.keyNames = this.getKeyNames();
-		try {
-			this.annotatedToSysemAccount(
-				(undefined as unknown) as EventWithPhase
-			);
-		} catch {
-			// this is just here to make compiler happy
-		}
-
-		this.systemAccountEventByAddress([]);
-		this.getOperations(new Map());
 	}
 
 	operationsAndGrouping(): {
@@ -269,7 +259,7 @@ export class Trace2 {
 	 * Map of span's `id` to the the span in format `SpanWithChildren`
 	 * @returns
 	 */
-	private getSpansById(): Map<number, SpanWithChildren> {
+	getSpansById(): Map<number, SpanWithChildren> {
 		const spansById = this.traceBlock.spans
 			.map((s) => {
 				const { key } = s.values.string_values;
