@@ -1,6 +1,11 @@
 name: Build and Publish container for new releases
 
 on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - 3x8_optimize_buildah
   release:
     types:
       - published
