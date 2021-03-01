@@ -274,7 +274,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.12.1", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.7", "@babel/runtime@^7.13.8", "@babel/runtime@^7.9.6":
+"@babel/runtime@^7.12.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.7", "@babel/runtime@^7.13.8", "@babel/runtime@^7.9.6":
   version "7.13.8"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.13.8.tgz#cc886a85c072df1de23670dc1aa59fc116c4017c"
   integrity sha512-CwQljpw6qSayc0fRG1soxHAKs1CnQMOChm4mlQP6My0kf9upVGizj/KhlTTgyUnETmHpcUXjaluNAkteRFuafg==
@@ -353,7 +353,7 @@
   dependencies:
     "@darwinia/types-known" "^1.1.0-alpha.1"
 
-"@edgeware/node-types@^3.3.1":
+"@edgeware/node-types@^3.3.2":
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.3.2.tgz#cf29666457f4af8f45138cf7e67807861fb034fd"
   integrity sha512-t6qBYHc3PYihxAp8NL0UIj6Md0a+Gr5asVMHrtVk5mgNLE+fC4XUI4jJLefexYUse1AxAMemiUKIT+BxUP8LDg==
@@ -374,10 +374,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@interlay/polkabtc-types@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@interlay/polkabtc-types/-/polkabtc-types-0.3.4.tgz#256d1c75e62775469c0a7a05f3a847d8f84d53ed"
-  integrity sha512-WMvDwhdYo+Q835EnZYhdunNUkfjBa8+WfkPqU09059XEVbXQWiy19X5EFU10gOtLu1wtK26EC8Y8LljTfMYrJw==
+"@interlay/polkabtc-types@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@interlay/polkabtc-types/-/polkabtc-types-0.5.2.tgz#403ec1ecb5edddafc4a957b1f20439894d112563"
+  integrity sha512-Tc397SZSVfo6cvh+Rv9HxZdcymZoHXyNyX5LwnCgsqE04bfjrsn2uocOH6V8KHimffOn5MMmYE4i6zc11ntAoA==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -566,10 +566,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@laminar/type-definitions@^0.2.0-beta.143":
-  version "0.2.0-beta.144"
-  resolved "https://registry.yarnpkg.com/@laminar/type-definitions/-/type-definitions-0.2.0-beta.144.tgz#dfecf48d49594d9334f12e3bb6316a88fb065c14"
-  integrity sha512-9A8IEmB3GQdmc8SjjxlOb0XoJ0p7TQKl2BKL607zl9V2m2LIe/EuKbOkUIvSUGfWZIcmVGOdDYcn3L0iV2hMQw==
+"@laminar/type-definitions@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@laminar/type-definitions/-/type-definitions-0.3.1.tgz#e1b62ab353245f9b3454cb5d909a329f66aaac8f"
+  integrity sha512-QWC2qtvbPIxal+gMfUocZmwK0UsD7Sb0RUm4Hallkp+OXXL+3uBLwztYDLS5LtocOn0tfR//sgpnfsEIEb71Lw==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.8.2-9"
 
@@ -637,20 +637,21 @@
     bn.js "^4.11.9"
     eventemitter3 "^4.0.7"
 
-"@polkadot/apps-config@^0.81.1":
-  version "0.81.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.81.1.tgz#1c6acdeae78fe0891c043216f0bdfecdc57b14dc"
-  integrity sha512-SXwF/XfU7BozCwdh4xpfnQiIsXGCzbwkoQjuuPRzhtdiZUkL1z66OhhQ4V9sGFKgcHFO/FPtORdhqfa8kASNgg==
+"@polkadot/apps-config@^0.82.1":
+  version "0.82.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/apps-config/-/apps-config-0.82.1.tgz#bd701c595335d6ce39cb45a822a143519af1180c"
+  integrity sha512-m3rWx3CKHULCTjs9ttNkmS0vV38KfUCoh/fOWBsSKQttNyzmNQaZDDalOWbslhjxxTZ4om/LsWlOpExfNhMUIA==
   dependencies:
     "@acala-network/type-definitions" "^0.6.2-12"
-    "@babel/runtime" "^7.12.5"
+    "@babel/runtime" "^7.13.8"
     "@darwinia/types" "^1.1.0-alpha.1"
-    "@edgeware/node-types" "^3.3.1"
-    "@interlay/polkabtc-types" "^0.3.4"
-    "@laminar/type-definitions" "^0.2.0-beta.143"
-    "@polkadot/networks" "^5.7.1"
-    "@sora-substrate/type-definitions" "^0.4.1"
-    "@subsocial/types" "^0.4.29"
+    "@edgeware/node-types" "^3.3.2"
+    "@interlay/polkabtc-types" "^0.5.2"
+    "@laminar/type-definitions" "^0.3.1"
+    "@polkadot/networks" "^5.9.2"
+    "@snowfork/snowbridge-types" "^0.2.3"
+    "@sora-substrate/type-definitions" "^0.4.8"
+    "@subsocial/types" "^0.4.33-w3f-grant2"
     moonbeam-types-bundle "1.1.6"
 
 "@polkadot/keyring@^5.9.2":
@@ -692,13 +693,6 @@
   integrity sha512-JQyXJDJTZKQtn8y3HBHWDhiBfijhpiXjVEhY+fKvFcQ82TaKmzhnipYX0EdBoopZbuxpn/BJy6Y1Y/3y85EC+g==
   dependencies:
     "@babel/runtime" "^7.13.8"
-
-"@polkadot/networks@^5.7.1":
-  version "5.7.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-5.7.1.tgz#550636c43cae310b32ce3d0009683b9a35f1910f"
-  integrity sha512-yGfU4nU+Yh0Rx19ti8hCIaBHXx+ZTL9cj2C2nlv1vjc7LXJZfLqON1SyrtgAfPuwMv0bZWNFReDHZZgd4sjgfQ==
-  dependencies:
-    "@babel/runtime" "^7.12.13"
 
 "@polkadot/rpc-core@3.11.1":
   version "3.11.1"
@@ -950,17 +944,22 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sora-substrate/type-definitions@^0.4.1":
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.4.6.tgz#55bbffb1e5cd14824e3bc3d1b68ffa1e37d8700d"
-  integrity sha512-TfKQrtg58LaVbEH8yTDTmBXW6h5mumyJBag+cwg75grwVT7le8Dj6/9YCj2cWR7SgdeBYFMHhxAY960+bt4CnQ==
+"@snowfork/snowbridge-types@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@snowfork/snowbridge-types/-/snowbridge-types-0.2.3.tgz#f562d4acb9aa75217c6183abc140daa8030723fb"
+  integrity sha512-utxjBiUhtUY/O9dDsnABP6NwF9i4z71/Ywa7cFjohO/8xFxabjRppvE2QLwOIOuBp6OBsvNPtXAaUSUAsrOYRA==
+
+"@sora-substrate/type-definitions@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@sora-substrate/type-definitions/-/type-definitions-0.4.8.tgz#4b8b697f209a83e1d16a9fd71b5c3603e178ec68"
+  integrity sha512-7HMOz6ZZtoczh89bnpbwrYFgdtM8s7oONcNzrOscG8iVyv+KYt85GAA6HexsgGz4FfJxidf53fvicMxNK4iB0Q==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.6.0-beta.26"
 
-"@subsocial/types@^0.4.29":
-  version "0.4.33"
-  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.33.tgz#5d5078886af0315f64a4ef567a9b10c118b1623f"
-  integrity sha512-y7LTeorOtztDFTs0gyGyKEqfsGEnzuNKhTR3POFjp2IB72TSft0lEOfCJI65Wgqg6JwgfiE1InAYUlQaYJTR5Q==
+"@subsocial/types@^0.4.33-w3f-grant2":
+  version "0.4.33-w3f-grant2"
+  resolved "https://registry.yarnpkg.com/@subsocial/types/-/types-0.4.33-w3f-grant2.tgz#92d132139f88f7ca2e8eb9c91de4a070c3f5794d"
+  integrity sha512-ieyL8MENwZIA5RsaABoMKtMbC3sPIUALbPXLZKhg9DNxeffx8sg54Rb3Ozx0JhVKVXDE7jXUP/MhM7yS5fMY+g==
   dependencies:
     "@subsocial/utils" "^0.4.33"
     cids "^0.7.1"
