@@ -22,5 +22,8 @@
     "style-loader": "^0.23.1",
     "swagger-ui": "^3.20.7",
     "yaml-loader": "^0.5.0"
+  },
+  "resolutions": {
+    "prismjs": "^1.23.0"
   }
 }
