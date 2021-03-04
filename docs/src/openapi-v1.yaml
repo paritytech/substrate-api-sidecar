@@ -1117,7 +1117,7 @@ components:
           type: string
           description: The block's hash.
           format: hex
-        height:
+        number:
           type: string
           description: The block's height.
           format: unsignedInteger
