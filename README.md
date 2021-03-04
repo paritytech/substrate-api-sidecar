@@ -230,6 +230,8 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Docker
 
+With each release, the maintainers publish a docker image to dockerhub at [parity/substrate-api-sidecar](https://hub.docker.com/r/parity/substrate-api-sidecar/tags?page=1&ordering=last_updated)
+
 ### Pull the latest release
 
 ```bash
