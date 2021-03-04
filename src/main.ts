@@ -36,7 +36,7 @@ async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
-	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0x01e0f6f63cddbfaaac47c34632ed72f5e76eeaab8eab96e1ce1bb1fe047ef8d5"]}' http://localhost:9933/
+	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0xb246acf1adea1f801ce15c77a5fa7d8f2eb8fed466978bcee172cc02cf64e264"]}' http://localhost:9933/
 	const rpc = {
 		state: {
 			traceBlock: {
@@ -46,6 +46,12 @@ async function main() {
 						name: 'at',
 						type: 'BlockHash',
 						isOptional: true,
+						isHistoric: true,
+					},
+					{
+						name: 'targets',
+						type: 'Text',
+						isOptionsal: true,
 						isHistoric: true,
 					},
 				],

@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+// import { Option } from '@polkadot/types';
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { Registry } from '@polkadot/types/types';
 import * as BN from 'bn.js';
@@ -135,11 +136,11 @@ export class Trace2 {
 						.concat(primary.id)
 						.filter((id) => extrinsicIndexBySpanId.has(id))
 						.map((id) => extrinsicIndexBySpanId.get(id));
-					if (maybeExtrinsicIndex.length !== 1) {
-						throw new Error(
-							'Expect exactly one extrinsic index per apply extrinsic span grouping'
-						);
-					}
+					// if (maybeExtrinsicIndex.length !== 1) {
+					// 	throw new Error(
+					// 		'Expect exactly one extrinsic index per apply extrinsic span grouping'
+					// 	);
+					// }
 
 					phase = Phase.ApplyExtrinsic;
 					extrinsicIndex = maybeExtrinsicIndex[0];
@@ -186,33 +187,35 @@ export class Trace2 {
 		return phaseInfoGather;
 	}
 
-	private extrinsicIndexBySpanId(): Map<number, BN> {
+	extrinsicIndexBySpanId(): Map<number, BN> {
 		return this.getAnnotatedEvents()
 			.filter((e) => {
 				return (
 					// Note: there are many read and writes of extrinsic_index per extrinsic so take care
 					// when modifying this logic
 					(e.storagePath as SpecialKeyInfo).special ===
-						':extrinsic_index' &&
+					':extrinsic_index'
+					// &&
 					// I assume this second part will always be true but here for clarity
-					e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
-					// super important we only do `get`, `set` ops are prep for next extrinsic
-					e.values.string_values.message == 'get'
+					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
+					// // super important we only do `get`, `set` ops are prep for next extrinsic
+					// e.values.string_values.message == 'Get'
 				);
 			})
 			.reduce((acc, cur) => {
-				const indexEncoded = cur.values.string_values.res;
+				const indexEncoded = cur.values.string_values.result;
 				let extrinsicIndex;
-				if (indexEncoded?.slice(0, 5) === 'Some(') {
+				if (indexEncoded?.slice(0, 2) === '01') {
 					const len = indexEncoded.length;
 					const scale = indexEncoded
-						.slice(5, len - 1)
+						.slice(2, len)
 						.match(/.{1,2}/g)
 						?.reverse()
 						.join('');
 					const hex = `0x${scale}`;
 					extrinsicIndex = this.registry.createType('u32', hex);
 				} else {
+					// TODO this can probably be remove, we can just create with `0x` when this is None
 					extrinsicIndex = this.registry.createType('u32', 0);
 				}
 				acc.set(cur.parent_id, extrinsicIndex.toBn());
@@ -319,7 +322,7 @@ export class Trace2 {
 	 * @param events
 	 * @returns
 	 */
-	private systemAccountEventByAddress(
+	systemAccountEventByAddress(
 		events: EventWithPhase[]
 	): Map<string, EventWithAccountInfo[]> {
 		return events
@@ -367,35 +370,19 @@ export class Trace2 {
 		const addressRaw = event.values.string_values.key?.slice(96) as string;
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
-		const method = event?.values?.string_values?.message;
-		const accountInfoEncoded =
-			method === 'clear'
-				? 'account-cleared' // likely dusted
-				: (event?.values?.string_values?.res as string);
-
+		const accountInfoEncoded = event?.values?.string_values?.result;
 		let accountInfo;
 		try {
-			if (method === 'clear') {
-				// Account was likely dusted. For now lets just assume we are ok with the account balance
-				// being zero. In the future this can have richer information
-				accountInfo = this.registry.createType('AccountInfo');
-			} else if (accountInfoEncoded.includes('None')) {
-				accountInfo = this.registry.createType('AccountInfo');
-			} else if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
-				const len = accountInfoEncoded.length;
-				const scale = accountInfoEncoded.slice(5, len - 1);
-
+			if (typeof accountInfoEncoded === 'string') {
 				accountInfo = (this.registry.createType(
 					'AccountInfo',
-					`0x${scale}`
+					`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
 				) as unknown) as AccountInfo;
 			} else {
-				accountInfo = (this.registry.createType(
-					'AccountInfo',
-					`0x${accountInfoEncoded}`
-				) as unknown) as AccountInfo;
+				accountInfo = this.registry.createType('AccountInfo');
 			}
 		} catch {
+			// TODO this catch is no longer neccesary
 			throw new Error('Expect there to always be some AccountInfo');
 		}
 

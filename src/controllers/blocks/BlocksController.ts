@@ -144,6 +144,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 		const operationsArg = operations === 'true';
+		console.log('operations: ', operations);
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
