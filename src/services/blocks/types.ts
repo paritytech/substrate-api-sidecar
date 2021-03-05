@@ -179,16 +179,11 @@ export interface PhaseId {
 	applyExtrinsicIndex: BN;
 }
 
-interface TransitionOperationId {
-	operationIndex: number;
+export interface Transition {
 	phase: PhaseId;
 	parentSpanId?: ParentSpanId; // should be the same as parentSpanId for the associated event
 	primarySpanId: ParentSpanId;
 	eventIndex: number;
-}
-
-export interface Transition {
-	id: Omit<TransitionOperationId, 'operationIndex'>;
 	address: Address;
 	storage: StorageResourceId;
 	amount: {
@@ -197,6 +192,6 @@ export interface Transition {
 	};
 }
 
-export interface Operation extends Omit<Transition, 'id'> {
-	id: TransitionOperationId;
+export interface Operation extends Transition {
+	operationIndex: number;
 }

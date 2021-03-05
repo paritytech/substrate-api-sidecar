@@ -71,7 +71,7 @@ export class Trace2 {
 			operations.push(...g.operations);
 		});
 
-		operations.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+		operations.sort((a, b) => a.eventIndex - b.eventIndex);
 
 		return {
 			operations,
@@ -136,11 +136,11 @@ export class Trace2 {
 						.concat(primary.id)
 						.filter((id) => extrinsicIndexBySpanId.has(id))
 						.map((id) => extrinsicIndexBySpanId.get(id));
-					// if (maybeExtrinsicIndex.length !== 1) {
-					// 	throw new Error(
-					// 		'Expect exactly one extrinsic index per apply extrinsic span grouping'
-					// 	);
-					// }
+					if (maybeExtrinsicIndex.length !== 1) {
+						throw new Error(
+							'Expect exactly one extrinsic index per apply extrinsic span grouping'
+						);
+					}
 
 					phase = Phase.ApplyExtrinsic;
 					extrinsicIndex = maybeExtrinsicIndex[0];
@@ -194,22 +194,20 @@ export class Trace2 {
 					// Note: there are many read and writes of extrinsic_index per extrinsic so take care
 					// when modifying this logic
 					(e.storagePath as SpecialKeyInfo).special ===
-					':extrinsic_index'
-					// &&
+						':extrinsic_index' &&
 					// I assume this second part will always be true but here for clarity
 					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
 					// // super important we only do `get`, `set` ops are prep for next extrinsic
-					// e.values.string_values.message == 'Get'
+					e.values.string_values.method == 'Get'
 				);
 			})
 			.reduce((acc, cur) => {
-				const indexEncoded = cur.values.string_values.result;
+				const indexEncodedOption = cur.values.string_values.result;
 				let extrinsicIndex;
-				if (indexEncoded?.slice(0, 2) === '01') {
-					const len = indexEncoded.length;
-					const scale = indexEncoded
-						.slice(2, len)
-						.match(/.{1,2}/g)
+				if (typeof indexEncodedOption == 'string') {
+					const scale = indexEncodedOption
+						.slice(2) // Slice of leading option bits beacus they cause trouble
+						.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
 						?.reverse()
 						.join('');
 					const hex = `0x${scale}`;
@@ -345,10 +343,10 @@ export class Trace2 {
 	}
 
 	/**
-	 * Convert an `EventAnnotated` to a `EventWithAccountInfo`. Will throw if event
+	 * Convert an `EventWithPhase` to a `EventWithAccountInfo`. Will throw if event
 	 * does not have system::account storagePath
 	 *
-	 * @param e EventAnnotated
+	 * @param event EventAnnotated
 	 */
 	private annotatedToSysemAccount(
 		event: EventWithPhase
@@ -366,8 +364,8 @@ export class Trace2 {
 		}
 
 		// key = h(system) + h(account) + h(address) + address
-		// Remove the storage key + account hash
-		const addressRaw = event.values.string_values.key?.slice(96) as string;
+		// Since this is a transparent key with the address at the end we can pull out the address from the key.
+		const addressRaw = event.values.string_values.key?.slice(96) as string; // Remove the storage key + account hash
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
 		const accountInfoEncoded = event?.values?.string_values?.result;
@@ -379,11 +377,15 @@ export class Trace2 {
 					`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
 				) as unknown) as AccountInfo;
 			} else {
-				accountInfo = this.registry.createType('AccountInfo');
+				throw Error(
+					'Expect accountInfoEncoded to always be a string in system::Account event'
+				);
 			}
 		} catch {
 			// TODO this catch is no longer neccesary
-			throw new Error('Expect there to always be some AccountInfo');
+			throw new Error(
+				'Expect there to always be Option<AccountInfo> in system::Account event'
+			);
 		}
 
 		return { ...event, accountInfo, address };
@@ -460,12 +462,10 @@ export class Trace2 {
 				const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
 
 				const baseInfo = {
-					id: {
-						phase: e.phase,
-						parentSpanId: e.parentSpanId,
-						primarySpanId: e.primarySpanId,
-						eventIndex: e.eventIndex,
-					},
+					phase: e.phase,
+					parentSpanId: e.parentSpanId,
+					primarySpanId: e.primarySpanId,
+					eventIndex: e.eventIndex,
 					address: e.address,
 				};
 				const currency = {
@@ -538,15 +538,12 @@ export class Trace2 {
 		const sorted = [...ts.values()]
 			.flat()
 			// // TODO should actually already be sorted // maybe can add a test here
-			.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+			.sort((a, b) => a.eventIndex - b.eventIndex);
 
 		return sorted.map((t, index) => {
 			return {
 				...t,
-				id: {
-					...t.id,
-					operationIndex: index, // TODO these need to relative to all ops?
-				},
+				operationIndex: index, // TODO these need to relative to all ops?
 			} as Operation;
 		});
 	}
