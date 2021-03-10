@@ -10,7 +10,7 @@ import { AbstractArray } from '@polkadot/types/codec/AbstractArray';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { Json } from '@polkadot/types/codec/Json';
 import { CodecMap } from '@polkadot/types/codec/Map';
-import { isObject } from '@polkadot/util';
+import { isObject, stringCamelCase } from '@polkadot/util';
 import * as BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -68,7 +68,11 @@ function sanitizeCodec(value: Codec): AnyJson {
 			return value.toJSON();
 		}
 
-		return { [value.type]: sanitizeNumbers(value.value) };
+		return {
+			// Replicating camelCassing introduced in https://github.com/polkadot-js/api/pull/3024
+			// Specifically see: https://github.com/polkadot-js/api/blob/516fbd4a90652841d4e81636e74ca472e2dc5621/packages/types/src/codec/Enum.ts#L346
+			[stringCamelCase(value.type)]: sanitizeNumbers(value.value),
+		};
 	}
 
 	if (value instanceof BTreeSet) {

@@ -9,7 +9,7 @@
   "specName": "polkadot",
   "specVersion": "16",
   "chainType": {
-    "Live": null
+    "live": null
   },
   "properties": {
     "ss58Format": "0",
