@@ -34,7 +34,6 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		const controller = controllerOption.unwrap();
-		console.log('controller: ', controller.toJSON());
 
 		const [
 			stakingLedgerOption,
