@@ -303,7 +303,7 @@ describe('sanitizeNumbers', () => {
 					'0x0102030405060708091011121314151617181920212223242526272829303132',
 			});
 			expect(sanitizeNumbers(data)).toStrictEqual({
-				Keccak256:
+				keccak256:
 					'0x0102030405060708091011121314151617181920212223242526272829303132',
 			});
 		});
@@ -570,8 +570,8 @@ describe('sanitizeNumbers', () => {
 			);
 
 			expect(sanitizeNumbers(test)).toStrictEqual({
-				B: {
-					D: MAX_U64,
+				b: {
+					d: MAX_U64,
 				},
 			});
 		});
@@ -641,7 +641,7 @@ describe('sanitizeNumbers', () => {
 			// });
 			it('handles Ok()', () => {
 				const ok = kusamaRegistry.createType('DispatchResult');
-				expect(sanitizeNumbers(ok)).toStrictEqual({ Ok: [] });
+				expect(sanitizeNumbers(ok)).toStrictEqual({ ok: [] });
 			});
 
 			// it('converts Error(u128)', () => {
@@ -655,7 +655,7 @@ describe('sanitizeNumbers', () => {
 					Err: maxU128,
 				});
 				expect(sanitizeNumbers(error)).toStrictEqual({
-					Err: MAX_U128,
+					err: MAX_U128,
 				});
 			});
 
@@ -667,10 +667,10 @@ describe('sanitizeNumbers', () => {
 			// });
 			it('handles Error(Text)', () => {
 				const error = new ResultConstructor(kusamaRegistry, {
-					Err: message,
+					err: message,
 				});
 				expect(sanitizeNumbers(error)).toStrictEqual({
-					Err: message.toString(),
+					err: message.toString(),
 				});
 			});
 
@@ -686,7 +686,7 @@ describe('sanitizeNumbers', () => {
 					ok: maxU128,
 				});
 
-				expect(sanitizeNumbers(ok)).toStrictEqual({ Ok: MAX_U128 });
+				expect(sanitizeNumbers(ok)).toStrictEqual({ ok: MAX_U128 });
 			});
 
 			// it('handles Ok(Text)', () => {
@@ -699,10 +699,10 @@ describe('sanitizeNumbers', () => {
 			it('handles Ok(Text)', () => {
 				const R = Result.with({ Err: 'Text', Ok: 'Text' });
 				const ok = new R(kusamaRegistry, {
-					Ok: message,
+					ok: message,
 				});
 				expect(sanitizeNumbers(ok)).toStrictEqual({
-					Ok: message.toString(),
+					ok: message.toString(),
 				});
 			});
 		});
@@ -924,12 +924,12 @@ describe('sanitizeNumbers', () => {
 						],
 						index: '0x0000',
 					},
-					phase: { ApplyExtrinsic: '0' },
+					phase: { applyExtrinsic: '0' },
 					topics: [],
 				},
 				{
 					event: { data: null, index: '0x0000' },
-					phase: { ApplyExtrinsic: '0' },
+					phase: { applyExtrinsic: '0' },
 					topics: [],
 				},
 			]);
@@ -951,7 +951,7 @@ describe('sanitizeNumbers', () => {
 				'0x6502'
 			);
 			expect(sanitizeNumbers(extrinsicEra)).toStrictEqual({
-				MortalEra: ['64', '38'],
+				mortalEra: ['64', '38'],
 			});
 		});
 
@@ -1170,10 +1170,10 @@ describe('sanitizeNumbers', () => {
 			const open = kusamaRegistry.createType('ElectionStatus', {
 				open: 420420,
 			});
-			expect(sanitizeNumbers(open)).toStrictEqual({ Open: '420420' });
+			expect(sanitizeNumbers(open)).toStrictEqual({ open: '420420' });
 
 			const close = kusamaRegistry.createType('ElectionStatus', 'close');
-			expect(sanitizeNumbers(close)).toStrictEqual({ Close: null });
+			expect(sanitizeNumbers(close)).toStrictEqual({ close: null });
 		});
 	});
 

@@ -11,7 +11,7 @@
     "name": "ReferendumInfoOf",
     "modifier": "Optional",
     "type": {
-      "Map": {
+      "map": {
         "hasher": "Twox64Concat",
         "key": "ReferendumIndex",
         "value": "ReferendumInfo",

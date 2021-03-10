@@ -10,7 +10,7 @@
       "name": "PublicPropCount",
       "modifier": "Default",
       "type": {
-        "Plain": "PropIndex"
+        "plain": "PropIndex"
       },
       "fallback": "0x00000000",
       "documentation": " The number of (public) proposals that have been made so far."
@@ -19,7 +19,7 @@
       "name": "PublicProps",
       "modifier": "Default",
       "type": {
-        "Plain": "Vec<(PropIndex,Hash,AccountId)>"
+        "plain": "Vec<(PropIndex,Hash,AccountId)>"
       },
       "fallback": "0x00",
       "documentation": " The public proposals. Unsorted. The second item is the proposal's hash."
@@ -28,7 +28,7 @@
       "name": "DepositOf",
       "modifier": "Optional",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Twox64Concat",
           "key": "PropIndex",
           "value": "(Vec<AccountId>,BalanceOf)",
@@ -42,7 +42,7 @@
       "name": "Preimages",
       "modifier": "Optional",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Identity",
           "key": "Hash",
           "value": "PreimageStatus",
@@ -56,7 +56,7 @@
       "name": "ReferendumCount",
       "modifier": "Default",
       "type": {
-        "Plain": "ReferendumIndex"
+        "plain": "ReferendumIndex"
       },
       "fallback": "0x00000000",
       "documentation": " The next free referendum index, aka the number of referenda started so far."
@@ -65,7 +65,7 @@
       "name": "LowestUnbaked",
       "modifier": "Default",
       "type": {
-        "Plain": "ReferendumIndex"
+        "plain": "ReferendumIndex"
       },
       "fallback": "0x00000000",
       "documentation": " The lowest referendum index representing an unbaked referendum. Equal to\n `ReferendumCount` if there isn't a unbaked referendum."
@@ -74,7 +74,7 @@
       "name": "ReferendumInfoOf",
       "modifier": "Optional",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Twox64Concat",
           "key": "ReferendumIndex",
           "value": "ReferendumInfo",
@@ -88,7 +88,7 @@
       "name": "VotingOf",
       "modifier": "Default",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Twox64Concat",
           "key": "AccountId",
           "value": "Voting",
@@ -102,7 +102,7 @@
       "name": "Locks",
       "modifier": "Optional",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Twox64Concat",
           "key": "AccountId",
           "value": "BlockNumber",
@@ -116,7 +116,7 @@
       "name": "LastTabledWasExternal",
       "modifier": "Default",
       "type": {
-        "Plain": "bool"
+        "plain": "bool"
       },
       "fallback": "0x00",
       "documentation": " True if the last referendum tabled was submitted externally. False if it was a public\n proposal."
@@ -125,7 +125,7 @@
       "name": "NextExternal",
       "modifier": "Optional",
       "type": {
-        "Plain": "(Hash,VoteThreshold)"
+        "plain": "(Hash,VoteThreshold)"
       },
       "fallback": "0x00",
       "documentation": " The referendum to be tabled whenever it would be valid to table an external proposal.\n This happens when a referendum needs to be tabled and one of two conditions are met:\n - `LastTabledWasExternal` is `false`; or\n - `PublicProps` is empty."
@@ -134,7 +134,7 @@
       "name": "Blacklist",
       "modifier": "Optional",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Identity",
           "key": "Hash",
           "value": "(BlockNumber,Vec<AccountId>)",
@@ -148,7 +148,7 @@
       "name": "Cancellations",
       "modifier": "Default",
       "type": {
-        "Map": {
+        "map": {
           "hasher": "Identity",
           "key": "Hash",
           "value": "bool",
@@ -162,7 +162,7 @@
       "name": "StorageVersion",
       "modifier": "Optional",
       "type": {
-        "Plain": "Releases"
+        "plain": "Releases"
       },
       "fallback": "0x00",
       "documentation": " Storage version of the pallet.\n\n New networks start with last version."
