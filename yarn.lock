@@ -3,9 +3,9 @@
 
 
 "@acala-network/type-definitions@^0.6.2-21":
-  version "0.6.2-21"
-  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-21.tgz#eacb82feb308d08c9dc0017dbfbca556aa3099c0"
-  integrity sha512-i3OHre65SK8ZEaoCkO2NCJUMl972JvbR6Bxr2sn8CPRqOnfD6cZU73e59DO5bb95TB1iiKLLrcfLN1LVixdRvQ==
+  version "0.6.2-23"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-0.6.2-23.tgz#e7acb379e71d369afeded25a5b30f337907cd98d"
+  integrity sha512-z9NG2clh4xBrS4cpz5JKTJV+GWIc/be/5kzzQeUQUVq4W8lze2w5v5szeNG4Ufg6bjKvDwqwBmcJGRpvX8+7ZA==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.8.2-11"
 
@@ -346,10 +346,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@darwinia/types-known@^1.1.0-alpha.1":
-  version "1.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@darwinia/types-known/-/types-known-1.1.0-alpha.1.tgz#59f23eb76c58aa3de2351e6223dd6de05a5034b7"
-  integrity sha512-VengpQMs8j2FSnf0K7VxaJRzwbKVH/Xv+9MXuafk5IpSSBwwyEwrWUz5rotZx5+UyW2JJDWxsDsezFbu7MacSA==
+"@darwinia/types-known@^1.1.0-alpha.2":
+  version "1.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@darwinia/types-known/-/types-known-1.1.0-alpha.2.tgz#fad7aa6ffaec97dc3dae1fe2e49af4df504663e3"
+  integrity sha512-qOjdjhEW3G+C7Ym2lSjQlH4nT4Mov0M4pqayrOSOV72QGWSILWJoPV1HoM3BBo8A5G8ctnMUaUlYpBBST5kIzg==
   dependencies:
     "@babel/runtime" "^7.9.6"
     "@polkadot/types" "3.6.4"
@@ -357,11 +357,11 @@
     bn.js "^5.1.2"
 
 "@darwinia/types@^1.1.0-alpha.1":
-  version "1.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@darwinia/types/-/types-1.1.0-alpha.1.tgz#50ac6f4073592c9eb9547f5fbfde96df9abc83db"
-  integrity sha512-EmZC+5+TGkF61RdNWEqNMn9e0U+I6QBDhURtFzojl+ysQmFF4Mt9Lo4qU1lTKrKb6zmJD/CjsbDNxK//nMB0qw==
+  version "1.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@darwinia/types/-/types-1.1.0-alpha.2.tgz#b9698b968e72d0ef0eb9e9aed9b9edebd3f9cd00"
+  integrity sha512-22qOcxMSNWfpHoqARYeb8Lf9dqpWTvFrHG9c3OcgMoZDZTs6hSSai4HyyQxMdB1EwpvIlW9XaSkpnaRrpfHkCQ==
   dependencies:
-    "@darwinia/types-known" "^1.1.0-alpha.1"
+    "@darwinia/types-known" "^1.1.0-alpha.2"
 
 "@edgeware/node-types@^3.3.2":
   version "3.3.2"
@@ -384,9 +384,9 @@
     strip-json-comments "^3.1.1"
 
 "@interlay/polkabtc-types@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@interlay/polkabtc-types/-/polkabtc-types-0.5.2.tgz#403ec1ecb5edddafc4a957b1f20439894d112563"
-  integrity sha512-Tc397SZSVfo6cvh+Rv9HxZdcymZoHXyNyX5LwnCgsqE04bfjrsn2uocOH6V8KHimffOn5MMmYE4i6zc11ntAoA==
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@interlay/polkabtc-types/-/polkabtc-types-0.5.3.tgz#6fafb4b4375d8c82157b749da7c778c847c7702e"
+  integrity sha512-ugaCZTMgFzcsNiMPAwtSwNktdszd4iYwBCZjQCIUvfVjiZOg1796PstMJve1YqQrIZCNyi2Ab5ZgFKskKY/Eyg==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -1943,9 +1943,9 @@ camelcase@^6.0.0:
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
 caniuse-lite@^1.0.30001181:
-  version "1.0.30001197"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001197.tgz#47ad15b977d2f32b3ec2fe2b087e0c50443771db"
-  integrity sha512-8aE+sqBqtXz4G8g35Eg/XEaFr2N7rd/VQ6eABGBmNtcB8cN6qNJhMi6oSFy4UWWZgqgL3filHT8Nha4meu3tsw==
+  version "1.0.30001198"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001198.tgz#ed2d9b5f060322ba2efa42afdc56dee3255473f4"
+  integrity sha512-r5GGgESqOPZzwvdLVER374FpQu2WluCF1Z2DSiFJ89KSmGjT0LVKjgv4NcAqHmGWF9ihNpqRI9KXO9Ex4sKsgA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4759,9 +4759,9 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   integrity sha1-2TPOuSBdgr3PSIb2dCvcK03qFG0=
 
 map-obj@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-4.1.0.tgz#b91221b542734b9f14256c0132c897c5d7256fd5"
-  integrity sha512-glc9y00wgtwcDmp7GaE/0b0OnxpNJsVf3ael/An6Fe2Q51LLwN1er6sdomLRzz5h0+yMpiYLhWYF5R7HeqVd4g==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-4.2.0.tgz#0e8bc823e2aaca8a0942567d12ed14f389eec153"
+  integrity sha512-NAq0fCmZYGz9UFEQyndp7sisrow4GroyGeKluyKC/chuITZsPyOyC1UJZPJlVFImhXdROIP5xqouRLThT3BbpQ==
 
 map-stream@~0.1.0:
   version "0.1.0"
