@@ -69,7 +69,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		}
 
 		return {
-			// Replicating camelCassing introduced in https://github.com/polkadot-js/api/pull/3024
+			// Replicating camelCaseing introduced in https://github.com/polkadot-js/api/pull/3024
 			// Specifically see: https://github.com/polkadot-js/api/blob/516fbd4a90652841d4e81636e74ca472e2dc5621/packages/types/src/codec/Enum.ts#L346
 			[stringCamelCase(value.type)]: sanitizeNumbers(value.value),
 		};
