@@ -1,9 +1,15 @@
 name: Build and Publish container for new releases
 
 on:
-  release:
-    types:
-      - published
+  # release:
+  #   types:
+  #     - published
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -17,7 +23,7 @@ jobs:
       uses:                       redhat-actions/buildah-build@v2.2
       with:
         image:                    substrate-api-sidecar
-        tags:                     ${{ github.event.release.tag_name }}, latest
+        tags:                     ${{ github.event.release.tag_name }} latest
         dockerfiles: |
           ./Dockerfile
         build-args: |
@@ -31,7 +37,7 @@ jobs:
       with:
         registry:                 docker.io/parity
         image:                    substrate-api-sidecar
-        tags:                     ${{ github.event.release.tag_name }}, latest
+        tags:                     ${{ github.event.release.tag_name }} latest
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 
