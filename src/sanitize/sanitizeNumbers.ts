@@ -12,8 +12,8 @@ import { Json } from '@polkadot/types/codec/Json';
 import { CodecMap } from '@polkadot/types/codec/Map';
 import { isObject } from '@polkadot/util';
 import * as BN from 'bn.js';
-import { InternalServerError } from 'http-errors';
 
+// import { InternalServerError } from 'http-errors';
 import {
 	AnyJson,
 	Codec,
@@ -182,20 +182,25 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
 	const jsonMap: AnyJson = {};
 
+	console.log(map);
+
 	map.forEach((value: unknown, key: unknown) => {
 		const nonCodecKey = sanitizeNumbers(key);
+		console.log(nonCodecKey);
 		if (
 			!(
 				typeof nonCodecKey === 'string' ||
 				typeof nonCodecKey === 'number'
 			)
 		) {
-			throw new InternalServerError(
-				'Unexpected non-string and non-number key while sanitizing a Map-like type'
-			);
+			return map;
+			// throw new InternalServerError(
+			// 	'Unexpected non-string and non-number key while sanitizing a Map-like type'
+			// );
 		}
 
 		jsonMap[nonCodecKey] = sanitizeNumbers(value);
+		return;
 	});
 
 	return jsonMap;
