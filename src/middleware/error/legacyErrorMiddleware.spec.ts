@@ -1,5 +1,5 @@
 import { BadRequest, InternalServerError } from 'http-errors';
-import * as HttpErrorConstructor from 'http-errors';
+import HttpErrorConstructor from 'http-errors';
 
 import { legacyErrorMiddleware } from './legacyErrorMiddleware';
 import {

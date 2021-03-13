@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 

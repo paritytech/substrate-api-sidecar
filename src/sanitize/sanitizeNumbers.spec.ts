@@ -27,7 +27,7 @@ import {
 } from '@polkadot/types';
 import { CodecDate } from '@polkadot/types/codec/Date';
 import { UInt } from '@polkadot/types/codec/UInt';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 
 import {
 	MAX_I8,

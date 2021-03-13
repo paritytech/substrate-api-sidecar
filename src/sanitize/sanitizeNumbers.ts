@@ -11,7 +11,7 @@ import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { Json } from '@polkadot/types/codec/Json';
 import { CodecMap } from '@polkadot/types/codec/Map';
 import { isObject, stringCamelCase } from '@polkadot/util';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
 import {

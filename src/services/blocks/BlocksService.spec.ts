@@ -26,10 +26,10 @@ import {
 	mockBlock789629,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
-import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import block789629 from '../test-helpers/mock/data/block789629.json';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
-import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
-import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
+import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
+import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**

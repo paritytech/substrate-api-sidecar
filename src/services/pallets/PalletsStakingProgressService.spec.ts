@@ -10,7 +10,7 @@ import {
 	erasStartSessionIndexAt,
 	mockApi,
 } from '../test-helpers/mock';
-import * as palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
+import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
 /**

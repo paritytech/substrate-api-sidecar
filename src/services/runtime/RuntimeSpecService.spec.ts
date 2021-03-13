@@ -1,6 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, mockApi } from '../test-helpers/mock';
-import * as response from '../test-helpers/responses/runtime/spec.json';
+import response from '../test-helpers/responses/runtime/spec.json';
 import { RuntimeSpecService } from './RuntimeSpecService';
 
 const runtimeSpecService = new RuntimeSpecService(mockApi);

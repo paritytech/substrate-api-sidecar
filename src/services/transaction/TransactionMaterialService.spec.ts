@@ -1,6 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, mockApi } from '../test-helpers/mock';
-import * as response789629 from '../test-helpers/responses/transaction/material789629.json';
+import response789629 from '../test-helpers/responses/transaction/material789629.json';
 import { TransactionMaterialService } from './TransactionMaterialService';
 
 const transactionMaterialService = new TransactionMaterialService(mockApi);
