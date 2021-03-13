@@ -1,3 +1,1 @@
-module.exports = {
-	"plugins": ["@babel/plugin-transform-modules-commonjs"]
-}
+module.exports = require('@substrate/dev/config/babel')
