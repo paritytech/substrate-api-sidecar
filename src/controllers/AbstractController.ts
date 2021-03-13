@@ -116,10 +116,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 			// Not a block hash, must be a block height
 			try {
-				blockNumber = this.parseNumberOrThrow(
-					blockId,
-					'Invalid block number'
-				);
+				blockNumber = this.parseNumberOrThrow(blockId, 'Invalid block number');
 			} catch (err) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` +
@@ -134,13 +131,11 @@ export default abstract class AbstractController<T extends AbstractService> {
 				throw err;
 			}
 
-			const { number } = await this.api.rpc.chain
-				.getHeader()
-				.catch(() => {
-					throw new InternalServerError(
-						'Failed while trying to get the latest header.'
-					);
-				});
+			const { number } = await this.api.rpc.chain.getHeader().catch(() => {
+				throw new InternalServerError(
+					'Failed while trying to get the latest header.'
+				);
+			});
 			if (blockNumber && number.toNumber() < blockNumber) {
 				throw new BadRequest(
 					`Specified block number is larger than the current largest block. ` +
@@ -153,9 +148,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 				throw err;
 			}
 
-			throw new InternalServerError(
-				`Cannot get block hash for ${blockId}.`
-			);
+			throw new InternalServerError(`Cannot get block hash for ${blockId}.`);
 		}
 	}
 

@@ -188,12 +188,7 @@ function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
 
 	map.forEach((value: unknown, key: unknown) => {
 		const nonCodecKey = sanitizeNumbers(key);
-		if (
-			!(
-				typeof nonCodecKey === 'string' ||
-				typeof nonCodecKey === 'number'
-			)
-		) {
+		if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
 			throw new InternalServerError(
 				'Unexpected non-string and non-number key while sanitizing a Map-like type'
 			);

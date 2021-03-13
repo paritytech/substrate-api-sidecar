@@ -17,10 +17,7 @@ const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 );
 
 describe('legacyErrorMiddleware', () => {
-	legacyErrorMiddlewareCallsNextWithErr(
-		'Error',
-		new Error('This is an error')
-	);
+	legacyErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
 	legacyErrorMiddlewareCallsNextWithErr(
 		'BadRequest',

@@ -18,9 +18,7 @@ describe('TransactionSubmitService', () => {
 	describe('submitTransaction', () => {
 		it('works with a valid a transaction', async () => {
 			return expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferValid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferValid)
 			).resolves.toStrictEqual({
 				hash: polkadotRegistry.createType('Hash'),
 			});
@@ -39,9 +37,7 @@ describe('TransactionSubmitService', () => {
 			};
 
 			await expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferInvalid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferInvalid)
 			).rejects.toStrictEqual(failParseResponse);
 
 			(mockApi as any).tx = tx;
@@ -58,9 +54,7 @@ describe('TransactionSubmitService', () => {
 				});
 
 			await expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferValid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferValid)
 			).rejects.toStrictEqual(nodeRejectResponse);
 
 			(mockApi.rpc.author as any).submitExtrinsic = submitExtrinsic;

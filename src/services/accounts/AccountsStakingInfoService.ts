@@ -28,9 +28,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		};
 
 		if (controllerOption.isNone) {
-			throw new BadRequest(
-				`The address ${stash} is not a stash address.`
-			);
+			throw new BadRequest(`The address ${stash} is not a stash address.`);
 		}
 
 		const controller = controllerOption.unwrap();

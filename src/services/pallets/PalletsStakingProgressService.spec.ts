@@ -61,9 +61,7 @@ describe('PalletStakingProgressService', () => {
 					blockHash789629
 				)
 			).rejects.toStrictEqual(
-				new InternalServerError(
-					'ActiveEra is None when Some was expected.'
-				)
+				new InternalServerError('ActiveEra is None when Some was expected.')
 			);
 
 			(mockApi.query.staking.activeEra as any).at = activeEraAt;

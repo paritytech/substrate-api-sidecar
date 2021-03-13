@@ -9,9 +9,7 @@ describe('RuntimeCodeService', () => {
 	describe('fetchCode', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
-				sanitizeNumbers(
-					await runtimeCodeService.fetchCode(blockHash789629)
-				)
+				sanitizeNumbers(await runtimeCodeService.fetchCode(blockHash789629))
 			).toStrictEqual(codeResponse);
 		});
 	});

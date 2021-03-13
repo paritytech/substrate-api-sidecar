@@ -183,14 +183,12 @@ export class BlocksService extends AbstractService {
 				const completedEvent = xtEvents.find(
 					({ method }) =>
 						isFrameMethod(method) &&
-						(method.method === Event.success ||
-							method.method === Event.failure)
+						(method.method === Event.success || method.method === Event.failure)
 				);
 
 				if (!completedEvent) {
 					extrinsics[idx].info = {
-						error:
-							'Unable to find success or failure event for extrinsic',
+						error: 'Unable to find success or failure event for extrinsic',
 					};
 
 					continue;
@@ -239,8 +237,7 @@ export class BlocksService extends AbstractService {
 				if (runtimeDoesNotMatch) {
 					if (!decorated) {
 						extrinsics[idx].info = {
-							error:
-								'Failure retrieving necessary decorated metadata',
+							error: 'Failure retrieving necessary decorated metadata',
 						};
 
 						continue;
@@ -250,14 +247,13 @@ export class BlocksService extends AbstractService {
 						((decorated.consts.system
 							?.extrinsicBaseWeight as unknown) as AbstractInt) ||
 						(((decorated.consts.system
-							?.blockWeights as unknown) as BlockWeights)
-							.perClass[weightInfoClass] as WeightPerClass)
-							.baseExtrinsic;
+							?.blockWeights as unknown) as BlockWeights).perClass[
+							weightInfoClass
+						] as WeightPerClass).baseExtrinsic;
 				} else {
 					// We are querying a runtime that matches the decorated metadata in the api
 					extrinsicBaseWeight =
-						(api.consts.system
-							?.extrinsicBaseWeight as AbstractInt) ||
+						(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
 						(api.consts.system.blockWeights.perClass[
 							weightInfoClass
 						] as WeightPerClass).baseExtrinsic;
@@ -337,14 +333,7 @@ export class BlocksService extends AbstractService {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 
 		return block.extrinsics.map((extrinsic) => {
-			const {
-				method,
-				nonce,
-				signature,
-				signer,
-				isSigned,
-				tip,
-			} = extrinsic;
+			const { method, nonce, signature, signer, isSigned, tip } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 			const call = block.registry.createType('Call', method);
 
@@ -426,8 +415,7 @@ export class BlocksService extends AbstractService {
 						for (const data of sanitizedData) {
 							if (extrinsic.signature && isPaysFee(data)) {
 								extrinsic.paysFee =
-									data.paysFee === true ||
-									data.paysFee === 'Yes';
+									data.paysFee === true || data.paysFee === 'Yes';
 
 								break;
 							}
@@ -471,8 +459,7 @@ export class BlocksService extends AbstractService {
 		if (
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
-			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !==
-				'function'
+			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !== 'function'
 		) {
 			// We do not have the necessary materials to build calcFee, so we just give a dummy function
 			// that aligns with the expected API of calcFee.
@@ -518,9 +505,7 @@ export class BlocksService extends AbstractService {
 				specVersion !== api.runtimeVersion.specVersion.toNumber();
 
 			if (runtimeDoesNotMatch) {
-				const metadata = await api.rpc.state.getMetadata(
-					parentParentHash
-				);
+				const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
 				decorated = expandMetadata(api.registry, metadata);
 			}
@@ -560,8 +545,7 @@ export class BlocksService extends AbstractService {
 	): Promise<Hash> {
 		let parentParentHash: Hash;
 		if (block.header.number.toNumber() > 1) {
-			parentParentHash = (await api.rpc.chain.getHeader(parentHash))
-				.parentHash;
+			parentParentHash = (await api.rpc.chain.getHeader(parentHash)).parentHash;
 		} else {
 			parentParentHash = parentHash;
 		}
@@ -629,30 +613,15 @@ export class BlocksService extends AbstractService {
 				const argument = callArgs.get(paramName);
 
 				if (Array.isArray(argument)) {
-					newArgs[paramName] = this.parseArrayGenericCalls(
-						argument,
-						registry
-					);
+					newArgs[paramName] = this.parseArrayGenericCalls(argument, registry);
 				} else if (argument instanceof GenericCall) {
-					newArgs[paramName] = this.parseGenericCall(
-						argument,
-						registry
-					);
-				} else if (
-					paramName === 'call' &&
-					argument?.toRawType() === 'Bytes'
-				) {
+					newArgs[paramName] = this.parseGenericCall(argument, registry);
+				} else if (paramName === 'call' && argument?.toRawType() === 'Bytes') {
 					// multiSig.asMulti.args.call is an OpaqueCall (Vec<u8>) that we
 					// serialize to a polkadot-js Call and parse so it is not a hex blob.
 					try {
-						const call = registry.createType(
-							'Call',
-							argument.toHex()
-						);
-						newArgs[paramName] = this.parseGenericCall(
-							call,
-							registry
-						);
+						const call = registry.createType('Call', argument.toHex());
+						newArgs[paramName] = this.parseGenericCall(call, registry);
 					} catch {
 						newArgs[paramName] = argument;
 					}
@@ -683,9 +652,7 @@ export class BlocksService extends AbstractService {
 			const [engine, data] = pitem.asPreRuntime;
 			return engine.extractAuthor(data, sessionValidators);
 		} else {
-			const [citem] = digest.logs.filter(
-				({ type }) => type === 'Consensus'
-			);
+			const [citem] = digest.logs.filter(({ type }) => type === 'Consensus');
 			// extract author from the consensus (substrate 1.0, digest)
 			if (citem) {
 				const [engine, data] = citem.asConsensus;
@@ -748,9 +715,7 @@ export class BlocksService extends AbstractService {
 			// The blockId url param is an integer
 
 			// Returns the header of the most recently finalized block
-			const finalizedHeadBlock = await api.rpc.chain.getHeader(
-				finalizedHead
-			);
+			const finalizedHeadBlock = await api.rpc.chain.getHeader(finalizedHead);
 
 			// Retreive the finalized head blockNumber
 			const finalizedHeadBlockNumber = finalizedHeadBlock?.number;

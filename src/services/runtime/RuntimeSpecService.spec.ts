@@ -9,9 +9,7 @@ describe('RuntimeSpecService', () => {
 	describe('fetchSpec', () => {
 		it('works when ApiPromise works', async () => {
 			expect(
-				sanitizeNumbers(
-					await runtimeSpecService.fetchSpec(blockHash789629)
-				)
+				sanitizeNumbers(await runtimeSpecService.fetchSpec(blockHash789629))
 			).toStrictEqual(response);
 		});
 	});
