@@ -9,8 +9,8 @@ import {
 	mockApi,
 	queryInfoBalancesTransfer,
 } from '../test-helpers/mock';
-import * as invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
-import * as validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
+import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
+import validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(

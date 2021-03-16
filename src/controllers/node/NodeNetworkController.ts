@@ -49,9 +49,6 @@ export default class NodeNetworkController extends AbstractController<NodeNetwor
 		_req,
 		res
 	): Promise<void> => {
-		NodeNetworkController.sanitizedSend(
-			res,
-			await this.service.fetchNetwork()
-		);
+		NodeNetworkController.sanitizedSend(res, await this.service.fetchNetwork());
 	};
 }

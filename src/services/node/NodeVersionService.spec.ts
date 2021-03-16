@@ -1,6 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { mockApi } from '../test-helpers/mock';
-import * as nodeVersionResponse from '../test-helpers/responses/node/version.json';
+import nodeVersionResponse from '../test-helpers/responses/node/version.json';
 import { NodeVersionService } from '.';
 
 const nodeVersionService = new NodeVersionService(mockApi);

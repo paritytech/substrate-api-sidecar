@@ -1,8 +1,8 @@
 import { sanitizeNumbers } from '../../sanitize';
 import { blockHash789629, mockApi } from '../test-helpers/mock';
-import * as fetchStorageRes from '../test-helpers/responses/pallets/fetchStorage789629.json';
-import * as fetchStorageIdsOnlyRes from '../test-helpers/responses/pallets/fetchStorageIdsOnly789629.json';
-import * as fetchStorageItemRes from '../test-helpers/responses/pallets/fetchStorageItem789629.json';
+import fetchStorageRes from '../test-helpers/responses/pallets/fetchStorage789629.json';
+import fetchStorageIdsOnlyRes from '../test-helpers/responses/pallets/fetchStorageIdsOnly789629.json';
+import fetchStorageItemRes from '../test-helpers/responses/pallets/fetchStorageItem789629.json';
 import { PalletsStorageService } from './PalletsStorageService';
 
 /**

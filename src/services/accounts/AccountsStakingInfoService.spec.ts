@@ -12,7 +12,7 @@ import {
 	testAddress,
 	testAddressController,
 } from '../test-helpers/mock';
-import * as response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
+import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);

@@ -1,6 +1,6 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { mockApi } from '../test-helpers/mock';
-import * as nodeNetworkResponse from '../test-helpers/responses/node/network.json';
+import nodeNetworkResponse from '../test-helpers/responses/node/network.json';
 import { NodeNetworkService } from '.';
 
 const nodeNetworkService = new NodeNetworkService(mockApi);

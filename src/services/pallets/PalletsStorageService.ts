@@ -41,10 +41,7 @@ export class PalletsStorageService extends AbstractService {
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the storage item not existing are that `findStorageItemMeta` will throw.
-		const storageItemMeta = this.findStorageItemMeta(
-			palletMeta,
-			storageItemId
-		);
+		const storageItemMeta = this.findStorageItemMeta(palletMeta, storageItemId);
 
 		let normalizedStorageItemMeta;
 		if (metadata) {
@@ -90,9 +87,7 @@ export class PalletsStorageService extends AbstractService {
 		} else {
 			items = palletMeta.storage
 				.unwrap()
-				.items.map((itemMeta) =>
-					this.normalizeStorageItemMeta(itemMeta)
-				);
+				.items.map((itemMeta) => this.normalizeStorageItemMeta(itemMeta));
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);

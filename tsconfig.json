@@ -1,27 +1,10 @@
 {
+  "extends": "@substrate/dev/config/tsconfig.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmitOnError": false,
-    "noErrorTruncation": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
     "outDir": "build",
-    "pretty": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es2017",
-    "skipLibCheck": true
+    "resolveJsonModule": true,
   },
   "typeRoots": [
     "./node_modules/@types"

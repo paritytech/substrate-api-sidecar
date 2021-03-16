@@ -14,11 +14,7 @@ import AbstractController from '../AbstractController';
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/node/transaction-pool',
-			new NodeTransactionPoolService(api)
-		);
+		super(api, '/node/transaction-pool', new NodeTransactionPoolService(api));
 		this.initRoutes();
 	}
 

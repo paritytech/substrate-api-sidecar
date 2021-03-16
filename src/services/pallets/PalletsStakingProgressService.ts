@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 

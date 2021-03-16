@@ -26,10 +26,10 @@ import {
 	mockBlock789629,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
-import * as block789629 from '../test-helpers/mock/data/block789629.json';
+import block789629 from '../test-helpers/mock/data/block789629.json';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
-import * as block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
-import * as blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
+import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
+import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
 /**
@@ -120,10 +120,7 @@ describe('BlocksService', () => {
 				omitFinalizedTag: true,
 			};
 
-			const block = await blocksService.fetchBlock(
-				blockHash789629,
-				options
-			);
+			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(block.finalized).toEqual(undefined);
 		});
@@ -144,16 +141,11 @@ describe('BlocksService', () => {
 			};
 
 			const response = sanitizeNumbers(
-				await configuredBlocksService.fetchBlock(
-					blockHash789629,
-					options
-				)
+				await configuredBlocksService.fetchBlock(blockHash789629, options)
 			);
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const responseObj: ResponseObj = JSON.parse(
-				JSON.stringify(response)
-			);
+			const responseObj: ResponseObj = JSON.parse(JSON.stringify(response));
 
 			// Revert mockApi back to its original setting that was changed above.
 			mockApi.consts.transactionPayment.transactionByteFee = polkadotRegistry.createType(
@@ -176,9 +168,9 @@ describe('BlocksService', () => {
 				mockBlock789629
 			);
 
-			expect(
-				calcFee?.calc_fee(BigInt(399480000), 534, BigInt(125000000))
-			).toBe('544000000');
+			expect(calcFee?.calc_fee(BigInt(399480000), 534, BigInt(125000000))).toBe(
+				'544000000'
+			);
 		});
 
 		it('calculates partialFee for utility.batch in polkadot block 789629', async () => {
@@ -226,10 +218,7 @@ describe('BlocksService', () => {
 		it('parses a simple balances.transfer', () => {
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](
-						transfer,
-						mockBlock789629.registry
-					)
+					blocksService['parseGenericCall'](transfer, mockBlock789629.registry)
 				)
 			).toBe(JSON.stringify(transferOutput));
 		});
@@ -263,10 +252,7 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](
-						batch4,
-						mockBlock789629.registry
-					)
+					blocksService['parseGenericCall'](batch4, mockBlock789629.registry)
 				)
 			).toBe(
 				JSON.stringify({
@@ -284,9 +270,7 @@ describe('BlocksService', () => {
 													{
 														...baseBatch,
 														args: {
-															calls: [
-																transferOutput,
-															],
+															calls: [transferOutput],
 														},
 													},
 													transferOutput,
@@ -330,8 +314,7 @@ describe('BlocksService', () => {
 							method: 'proxy',
 						},
 						args: {
-							real:
-								'5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
+							real: '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
 							force_proxy_type: 'Any',
 							call: transferOutput,
 						},
@@ -341,10 +324,7 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](
-						batch,
-						mockBlock789629.registry
-					)
+					blocksService['parseGenericCall'](batch, mockBlock789629.registry)
 				)
 			).toEqual(
 				JSON.stringify({
@@ -427,10 +407,7 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
-			const block = await blocksService.fetchBlock(
-				blockHash789629,
-				options
-			);
+			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			/**
 			 * The `extrinsicIndex` (second param) is being tested for a non-zero
@@ -444,16 +421,11 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
-			const block = await blocksService.fetchBlock(
-				blockHash789629,
-				options
-			);
+			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(() => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);
-			}).toThrow(
-				new BadRequest('Requested `extrinsicIndex` does not exist')
-			);
+			}).toThrow(new BadRequest('Requested `extrinsicIndex` does not exist'));
 		});
 
 		it('Throw an error when param `extrinsicIndex` is less than 0', () => {
