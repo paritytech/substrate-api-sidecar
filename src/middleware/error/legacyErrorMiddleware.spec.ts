@@ -1,5 +1,5 @@
 import { BadRequest, InternalServerError } from 'http-errors';
-import * as HttpErrorConstructor from 'http-errors';
+import HttpErrorConstructor from 'http-errors';
 
 import { legacyErrorMiddleware } from './legacyErrorMiddleware';
 import {
@@ -17,10 +17,7 @@ const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 );
 
 describe('legacyErrorMiddleware', () => {
-	legacyErrorMiddlewareCallsNextWithErr(
-		'Error',
-		new Error('This is an error')
-	);
+	legacyErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
 	legacyErrorMiddlewareCallsNextWithErr(
 		'BadRequest',

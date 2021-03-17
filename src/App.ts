@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import {
 	Application,
 	ErrorRequestHandler,
@@ -7,7 +7,7 @@ import {
 	Response,
 } from 'express';
 
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 import AbstractController from './controllers/AbstractController';
 import { AbstractService } from './services/AbstractService';
 import { IRegisteredRoutes, IRouteInfo } from './types/util';

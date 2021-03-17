@@ -36,11 +36,7 @@ import AbstractController from '../AbstractController';
  */
 export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/transaction/material',
-			new TransactionMaterialService(api)
-		);
+		super(api, '/transaction/material', new TransactionMaterialService(api));
 		this.initRoutes();
 	}
 

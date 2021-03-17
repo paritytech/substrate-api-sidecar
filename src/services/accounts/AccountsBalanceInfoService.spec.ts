@@ -5,7 +5,7 @@ import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, mockApi, testAddress } from '../test-helpers/mock';
-import * as accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
+import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
 const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);

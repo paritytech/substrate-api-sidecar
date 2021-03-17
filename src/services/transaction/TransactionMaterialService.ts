@@ -38,13 +38,7 @@ export class TransactionMaterialService extends AbstractService {
 			};
 		}
 
-		const [
-			header,
-			metadata,
-			genesisHash,
-			name,
-			version,
-		] = await Promise.all([
+		const [header, metadata, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.state.getMetadata(hash),
 			api.rpc.chain.getBlockHash(0),

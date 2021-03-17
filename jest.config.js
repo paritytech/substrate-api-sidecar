@@ -1,4 +1,6 @@
+const base = require('@substrate/dev/config/jest')
+
 module.exports = {
-	preset: 'ts-jest',
-	testPathIgnorePatterns: ['/build/', '/node_modules/', '/docs/']
+	...base,
+	testPathIgnorePatterns: ['/build/', '/node_modules/', '/docs/'],
 };

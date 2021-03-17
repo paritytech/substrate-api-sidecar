@@ -1,5 +1,5 @@
 import { BadRequest, InternalServerError } from 'http-errors';
-import * as HttpErrorConstructor from 'http-errors';
+import HttpErrorConstructor from 'http-errors';
 
 import { internalErrorMiddleware } from './internalErrorMiddleware';
 import { callsNextWithSentHeaders, catchesErrWithResponse } from './testTools';

@@ -29,9 +29,6 @@ export default class NodeVersionController extends AbstractController<NodeVersio
 	 * @param res Express Response
 	 */
 	getNodeVersion: RequestHandler = async (_req, res): Promise<void> => {
-		NodeVersionController.sanitizedSend(
-			res,
-			await this.service.fetchVersion()
-		);
+		NodeVersionController.sanitizedSend(res, await this.service.fetchVersion());
 	};
 }

@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import * as HttpErrorConstructor from 'http-errors';
+import HttpErrorConstructor from 'http-errors';
 import { InternalServerError } from 'http-errors';
 
 import { Log } from '../../logging/Log';

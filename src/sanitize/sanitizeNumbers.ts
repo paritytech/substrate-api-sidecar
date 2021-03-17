@@ -10,8 +10,9 @@ import { AbstractArray } from '@polkadot/types/codec/AbstractArray';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { Json } from '@polkadot/types/codec/Json';
 import { CodecMap } from '@polkadot/types/codec/Map';
-import { isObject } from '@polkadot/util';
-import * as BN from 'bn.js';
+import { isObject, stringCamelCase } from '@polkadot/util';
+import BN from 'bn.js';
+import { InternalServerError } from 'http-errors';
 
 // import { InternalServerError } from 'http-errors';
 import {
@@ -68,7 +69,11 @@ function sanitizeCodec(value: Codec): AnyJson {
 			return value.toJSON();
 		}
 
-		return { [value.type]: sanitizeNumbers(value.value) };
+		return {
+			// Replicating camelCaseing introduced in https://github.com/polkadot-js/api/pull/3024
+			// Specifically see: https://github.com/polkadot-js/api/blob/516fbd4a90652841d4e81636e74ca472e2dc5621/packages/types/src/codec/Enum.ts#L346
+			[stringCamelCase(value.type)]: sanitizeNumbers(value.value),
+		};
 	}
 
 	if (value instanceof BTreeSet) {
@@ -186,17 +191,10 @@ function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
 
 	map.forEach((value: unknown, key: unknown) => {
 		const nonCodecKey = sanitizeNumbers(key);
-		console.log(nonCodecKey);
-		if (
-			!(
-				typeof nonCodecKey === 'string' ||
-				typeof nonCodecKey === 'number'
-			)
-		) {
-			return map;
-			// throw new InternalServerError(
-			// 	'Unexpected non-string and non-number key while sanitizing a Map-like type'
-			// );
+		if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
+			throw new InternalServerError(
+				'Unexpected non-string and non-number key while sanitizing a Map-like type'
+			);
 		}
 
 		jsonMap[nonCodecKey] = sanitizeNumbers(value);
