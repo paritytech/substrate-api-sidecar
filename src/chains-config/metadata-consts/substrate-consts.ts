@@ -1,7 +1,7 @@
 /**
  * All Runtimes before v27
  */
-export const extrinsicBaseWeight: number = 125000000;
+export const extrinsicBaseWeight = 125000000;
 
 /**
  * Runtimes after v26
