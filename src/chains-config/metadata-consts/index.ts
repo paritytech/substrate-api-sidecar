@@ -33,7 +33,7 @@ const generateBlockWeightObject = (
  */
 export const getBlockWeight = (
 	specName: string
-): Record<string, BlockWeightDefinitions> => {
+): Record<string, BlockWeightDefinitions> | Object => {
 	switch (specName) {
 		case 'polkadot':
 			return Object.freeze(generateBlockWeightObject(polkadotDefinitions));
