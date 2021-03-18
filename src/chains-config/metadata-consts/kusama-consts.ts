@@ -25,6 +25,6 @@ export const kusamaDefinitions: Definition[] = [
 	{
 		runtimes: [2027, 2028, 2029],
 		chain: 'kusama',
-		extrinsicBaseWeight: blockWeights,
+		blockWeights,
 	},
 ];

@@ -31,6 +31,6 @@ export const polkadotDefinitions: Definition[] = [
 	{
 		runtimes: [27, 28],
 		chain: 'polkadot',
-		extrinsicBaseWeight: blockWeights,
+		blockWeights,
 	},
 ];
