@@ -36,9 +36,9 @@ export const getBlockWeight = (
 ): Record<string, Definition> => {
 	switch (specName) {
 		case 'polkadot':
-			return Object.freeze(generateBlockWeightObject(polkadotDefinitions));
+			return generateBlockWeightObject(polkadotDefinitions);
 		case 'kusama':
-			return Object.freeze(generateBlockWeightObject(kusamaDefinitions));
+			return generateBlockWeightObject(kusamaDefinitions);
 		default:
 			return {};
 	}
