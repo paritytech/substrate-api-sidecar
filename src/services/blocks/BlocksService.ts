@@ -20,6 +20,7 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
+import { getBlockWeight } from '../../chains-config/metadata-consts/index';
 import {
 	IBlock,
 	ICalcFee,
@@ -163,7 +164,6 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 			decorated,
-			runtimeDoesNotMatch,
 		} = await this.createCalcFee(api, parentHash, block);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -173,7 +173,7 @@ export class BlocksService extends AbstractService {
 
 			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
-					error: `Fee calculation not supported for ${specName}#${specVersion}`,
+					error: `Fee calculation not supported for ${specVersion}#${specName}`,
 				};
 				continue;
 			}
@@ -234,15 +234,25 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
 				let extrinsicBaseWeight;
-				if (runtimeDoesNotMatch) {
-					if (!decorated) {
-						extrinsics[idx].info = {
-							error: 'Failure retrieving necessary decorated metadata',
-						};
+				if (!decorated) {
+					/**
+					 * We enter this conditional when createCalcFee returns an undefined
+					 * decorated. That is because the condition in createCalcFee noticed
+					 * the specName is either polkadot, or kusama which are both hardcoded
+					 * for increased performance
+					 */
+					const weightData = getBlockWeight(specName);
 
-						continue;
-					}
-
+					extrinsicBaseWeight =
+						weightData[specVersion].extrinsicBaseWeight ||
+						weightData[specVersion].blockWeights?.perClass[weightInfoClass]
+							.baseExtrinsic;
+				} else if (decorated) {
+					/**
+					 * When decorated exists, it means it is either alive in the cache,
+					 * or was just expanded using expandMetadata. It also means we are
+					 * in a chain that is not Polkadot or Kusama.
+					 */
 					extrinsicBaseWeight =
 						((decorated.consts.system
 							?.extrinsicBaseWeight as unknown) as AbstractInt) ||
@@ -251,12 +261,26 @@ export class BlocksService extends AbstractService {
 							weightInfoClass
 						] as WeightPerClass).baseExtrinsic;
 				} else {
-					// We are querying a runtime that matches the decorated metadata in the api
+					// We are querying a runtime that matches the metadata in the api
 					extrinsicBaseWeight =
 						(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
 						(api.consts.system.blockWeights.perClass[
 							weightInfoClass
 						] as WeightPerClass).baseExtrinsic;
+				}
+
+				if (extrinsicBaseWeight === undefined) {
+					extrinsics[idx].info = {
+						error: 'Error occured while finding the extrinsicBaseWeight',
+					};
+					continue;
+				}
+
+				let calcFeeExBaseWeight;
+				if (typeof extrinsicBaseWeight !== 'number') {
+					calcFeeExBaseWeight = extrinsicBaseWeight.toBigInt();
+				} else {
+					calcFeeExBaseWeight = BigInt(extrinsicBaseWeight);
 				}
 
 				const len = block.extrinsics[idx].encodedLength;
@@ -265,7 +289,7 @@ export class BlocksService extends AbstractService {
 				const partialFee = calcFee.calc_fee(
 					BigInt(weight.toString()),
 					len,
-					extrinsicBaseWeight.toBigInt()
+					calcFeeExBaseWeight
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
@@ -455,6 +479,12 @@ export class BlocksService extends AbstractService {
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
+		/**
+		 * Chains where extrinsicBaseweight data is hardcoded in Sidecar
+		 * to avoid using expandMetadata to grab it
+		 */
+		const hardcodedChains = ['polkadot', 'kusama'];
+
 		let calcFee, specName, specVersion, decorated, runtimeDoesNotMatch;
 		if (
 			perByte === undefined ||
@@ -466,7 +496,7 @@ export class BlocksService extends AbstractService {
 			calcFee = null;
 
 			const version = await api.rpc.state.getRuntimeVersion(parentHash);
-			[specVersion, specName] = [
+			[specName, specVersion] = [
 				version.specName.toString(),
 				version.specVersion.toNumber(),
 			];
@@ -500,11 +530,13 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
+			const hardcodedChainIncluded = hardcodedChains.includes(specName);
+
 			runtimeDoesNotMatch =
 				specName !== api.runtimeVersion.specName.toString() ||
 				specVersion !== api.runtimeVersion.specVersion.toNumber();
 
-			if (runtimeDoesNotMatch) {
+			if (!hardcodedChainIncluded && runtimeDoesNotMatch) {
 				const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
 				decorated = expandMetadata(api.registry, metadata);
@@ -524,7 +556,6 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 			decorated,
-			runtimeDoesNotMatch,
 		};
 	}
 
