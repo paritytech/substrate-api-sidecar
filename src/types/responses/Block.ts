@@ -33,8 +33,7 @@ interface ILog {
 
 export interface ICalcFee {
 	calcFee?: null | CalcFee;
-	specName: string | number;
-	specVersion: string | number;
+	specName: string;
+	specVersion: number;
 	decorated?: DecoratedMeta;
-	runtimeDoesNotMatch?: boolean;
 }
