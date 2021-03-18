@@ -29,7 +29,7 @@ interface PerClassDefinitions {
 	mandatory: PerClassTypes;
 }
 
-export interface BlockWeightDefinitions {
+interface BlockWeightDefinitions {
 	baseBlock: number;
 	maxBlock: number;
 	perClass: PerClassDefinitions;

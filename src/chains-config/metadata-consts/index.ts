@@ -1,4 +1,4 @@
-import { BlockWeightDefinitions, Definition } from '../../types/chains-config';
+import { Definition } from '../../types/chains-config';
 import { kusamaDefinitions } from './kusama-consts';
 import { polkadotDefinitions } from './polkadot-consts';
 
@@ -10,7 +10,7 @@ import { polkadotDefinitions } from './polkadot-consts';
  */
 const generateBlockWeightObject = (
 	definitions: Definition[]
-): Record<string, BlockWeightDefinitions> => {
+): Record<string, Definition> => {
 	const blockWeightObject = {};
 
 	for (let i = 0; i < definitions.length; i++) {
@@ -18,7 +18,7 @@ const generateBlockWeightObject = (
 
 		for (let p = 0; p < runtimes.length; p++) {
 			const version: number = runtimes[p];
-			blockWeightObject[version] = definitions[i].extrinsicBaseWeight;
+			blockWeightObject[version] = definitions[i];
 		}
 	}
 
@@ -33,7 +33,7 @@ const generateBlockWeightObject = (
  */
 export const getBlockWeight = (
 	specName: string
-): Record<string, BlockWeightDefinitions> | Object => {
+): Record<string, Definition> => {
 	switch (specName) {
 		case 'polkadot':
 			return Object.freeze(generateBlockWeightObject(polkadotDefinitions));
