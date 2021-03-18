@@ -8,9 +8,13 @@ export interface Definition {
 	 */
 	chain: string;
 	/**
-	 * Depends on if the runtime >= v27 or runtime < v27
+	 * Runtime < v27
 	 */
-	extrinsicBaseWeight: BlockWeightDefinitions | number;
+	extrinsicBaseWeight?: number;
+	/**
+	 * Runtime >= 27
+	 */
+	blockWeights?: BlockWeightDefinitions;
 }
 
 interface PerClassTypes {
@@ -23,14 +27,8 @@ interface PerClassTypes {
 	reserved: number | null;
 }
 
-interface PerClassDefinitions {
-	normal: PerClassTypes;
-	operational: PerClassTypes;
-	mandatory: PerClassTypes;
-}
-
 interface BlockWeightDefinitions {
 	baseBlock: number;
 	maxBlock: number;
-	perClass: PerClassDefinitions;
+	perClass: Record<string, PerClassTypes>;
 }
