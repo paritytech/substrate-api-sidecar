@@ -59,7 +59,7 @@ enum Event {
 }
 
 /**
- *
+ * Object pointer to BlocksController to access the cache
  */
 interface That {
 	cache: CacheType;
