@@ -21,6 +21,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
+import { CacheType } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -57,11 +58,19 @@ enum Event {
 	failure = 'ExtrinsicFailed',
 }
 
+/**
+ *
+ */
+interface That {
+	cache: CacheType;
+}
+
 export class BlocksService extends AbstractService {
 	/**
 	 * Fetch a block augmented with derived values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
+	 * @param this Points to the BlocksController instance to have access to public cache methods
 	 */
 	async fetchBlock(
 		hash: BlockHash,
@@ -71,7 +80,8 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-		}: FetchBlockOptions
+		}: FetchBlockOptions,
+		that?: That
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -164,7 +174,7 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 			decorated,
-		} = await this.createCalcFee(api, parentHash, block);
+		} = await this.createCalcFee(api, parentHash, block, that);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -468,11 +478,13 @@ export class BlocksService extends AbstractService {
 	 * @param api ApiPromise
 	 * @param parentHash Hash of the parent block
 	 * @param block Block which the extrinsic is from
+	 * @param block
 	 */
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		block: Block
+		block: Block,
+		that?: That
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -539,7 +551,30 @@ export class BlocksService extends AbstractService {
 			if (!hardcodedChainIncluded && runtimeDoesNotMatch) {
 				const metadata = await api.rpc.state.getMetadata(parentParentHash);
 
-				decorated = expandMetadata(api.registry, metadata);
+				/**
+				 * Sanity check for the type compiler
+				 */
+				if (that !== undefined) {
+					/**
+					 * Check runtime associated with the cached decorated metadata
+					 * and compare it to the current specVersion
+					 */
+					if (that.cache.runtimeVersion === specVersion) {
+						decorated = that.cache.decorated;
+					} else {
+						// Decorate current metadata to read baseweight used in calcFee
+						decorated = expandMetadata(api.registry, metadata);
+
+						// Object to be cached and persisted in BlocksController
+						const cacheObject = {
+							runtimeVersion: specVersion,
+							decorated,
+						};
+
+						// Calls the cache setter
+						that.cache = { ...cacheObject };
+					}
+				}
 			}
 
 			calcFee = CalcFee.from_params(

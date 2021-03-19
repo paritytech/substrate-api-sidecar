@@ -1,3 +1,5 @@
+import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
+
 import { controllers } from '../../controllers';
 
 /**
@@ -24,4 +26,12 @@ export interface ControllerConfig {
 		 */
 		finalizes: boolean;
 	};
+}
+
+/**
+ * Used in BlocksService, to persists decorated metadata to avoid expensive calls
+ */
+export interface CacheType {
+	decorated?: DecoratedMeta;
+	runtimeVersion?: number;
 }
