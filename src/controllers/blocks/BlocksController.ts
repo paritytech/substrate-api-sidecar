@@ -86,12 +86,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	}
 
 	public get cache(): CacheType {
-		console.log('hit it get');
 		return this._cache;
 	}
 
 	public set cache(cacheObject: CacheType) {
-		console.log('hit it set');
 		this._cache = { ...cacheObject };
 	}
 
