@@ -22,6 +22,7 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
+import packageJSON from '../package.json';
 import App from './App';
 import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
@@ -35,6 +36,8 @@ const { config } = SidecarConfig;
 async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
+
+	logger.info(`Version: ${packageJSON.version}`);
 
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
