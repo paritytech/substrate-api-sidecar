@@ -1,7 +1,9 @@
-import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
+// import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
+
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+import { WeightPerClass } from '@polkadot/types/interfaces';
 
 import { controllers } from '../../controllers';
-
 /**
  * Controller mounting configuration as an object where the keys are the
  * controller class names and the values are booleans indicating whether or not
@@ -31,7 +33,27 @@ export interface ControllerConfig {
 /**
  * Used in BlocksService, to persists decorated metadata to avoid expensive calls
  */
+// export interface CacheType {
+// 	decorated?: DecoratedMeta;
+// 	runtimeVersion?: number;
+// }
+
 export interface CacheType {
-	decorated?: DecoratedMeta;
+	decorated?: CacheDecorated;
 	runtimeVersion?: number;
+}
+
+export interface CacheDecorated {
+	consts: {
+		system: {
+			extrinsicBaseWeight?: AbstractInt;
+			blockWeights?: {
+				perClass: {
+					normal: WeightPerClass;
+					mandatory: WeightPerClass;
+					operational: WeightPerClass;
+				};
+			};
+		};
+	};
 }

@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { expandMetadata } from '@polkadot/metadata/decorate';
+import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
 import { Compact, GenericCall, Struct } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -550,7 +551,6 @@ export class BlocksService extends AbstractService {
 
 			if (!hardcodedChainIncluded && runtimeDoesNotMatch) {
 				const metadata = await api.rpc.state.getMetadata(parentParentHash);
-
 				/**
 				 * Sanity check for the type compiler
 				 */
@@ -565,14 +565,13 @@ export class BlocksService extends AbstractService {
 						// Decorate current metadata to read baseweight used in calcFee
 						decorated = expandMetadata(api.registry, metadata);
 
-						// Object to be cached and persisted in BlocksController
-						const cacheObject = {
-							runtimeVersion: specVersion,
+						const cachedObject = this.extractWeightFromDecorated(
 							decorated,
-						};
+							specVersion
+						);
 
 						// Calls the cache setter
-						that.cache = { ...cacheObject };
+						that.cache = { ...cachedObject };
 					}
 				}
 			}
@@ -592,6 +591,41 @@ export class BlocksService extends AbstractService {
 			specVersion,
 			decorated,
 		};
+	}
+
+	private extractWeightFromDecorated(
+		decorated: DecoratedMeta,
+		runtimeVersion: number
+	): CacheType {
+		const extractedWeight = {
+			decorated: {
+				consts: {
+					system: {},
+				},
+			},
+			runtimeVersion,
+		};
+
+		// Check if extrinsicBaseWeight exists
+		const decoratedExtrinsicBaseWeight =
+			decorated.consts.system?.extrinsicBaseWeight;
+
+		// Check if BlockWeights exists
+		const decoratedBlockWeights = decorated.consts.system?.blockWeights;
+
+		if (decoratedExtrinsicBaseWeight) {
+			extractedWeight.decorated.consts.system[
+				'extrinsicBaseWeight'
+			] = decoratedExtrinsicBaseWeight;
+		} else if (decoratedBlockWeights) {
+			const blockWeights = (decoratedBlockWeights as unknown) as BlockWeights;
+
+			extractedWeight.decorated.consts.system['blockWeights'] = {
+				perClass: { ...blockWeights.perClass },
+			};
+		}
+
+		return extractedWeight;
 	}
 
 	/**
