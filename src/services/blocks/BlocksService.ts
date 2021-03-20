@@ -593,6 +593,14 @@ export class BlocksService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Extracts necessary `extrinsicBaseWeight` or `blockWeights` data from
+	 * the decorated metadata in order to cache memory efficiently.
+	 *
+	 * @param decorated Decorated meta data to be parsed
+	 * @param runtimeVersion spec version of the blocks runtime
+	 * @returns
+	 */
 	private extractWeightFromDecorated(
 		decorated: DecoratedMeta,
 		runtimeVersion: number

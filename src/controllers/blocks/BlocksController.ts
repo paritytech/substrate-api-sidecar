@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
-import { CacheType } from 'src/types/chains-config';
 
+// import { CacheType } from 'src/types/chains-config';
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -71,11 +71,9 @@ interface ControllerOptions {
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
 export default class BlocksController extends AbstractController<BlocksService> {
-	public _cache: CacheType;
 	constructor(api: ApiPromise, private readonly options: ControllerOptions) {
 		super(api, '/blocks', new BlocksService(api));
 		this.initRoutes();
-		this._cache = {};
 	}
 
 	protected initRoutes(): void {
@@ -83,14 +81,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
 		]);
-	}
-
-	public get cache(): CacheType {
-		return this._cache;
-	}
-
-	public set cache(cacheObject: CacheType) {
-		this._cache = { ...cacheObject };
 	}
 
 	/**
