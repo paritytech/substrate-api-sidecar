@@ -2,7 +2,6 @@ import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 
-// import { CacheType } from 'src/types/chains-config';
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
