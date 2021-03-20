@@ -42,7 +42,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			omitFinalizedTag: true,
 		};
 
-		const block = await this.service.fetchBlock(hash, options);
+		const block = await this.service.fetchBlock(hash, options, this);
 
 		/**
 		 * Verify our param `extrinsicIndex` is an integer represented as a string
