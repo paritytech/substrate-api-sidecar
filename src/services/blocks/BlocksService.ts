@@ -82,7 +82,7 @@ export class BlocksService extends AbstractService {
 			queryFinalizedHead,
 			omitFinalizedTag,
 		}: FetchBlockOptions,
-		that?: That
+		that: That
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -485,7 +485,7 @@ export class BlocksService extends AbstractService {
 		api: ApiPromise,
 		parentHash: Hash,
 		block: Block,
-		that?: That
+		that: That
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -498,7 +498,7 @@ export class BlocksService extends AbstractService {
 		 */
 		const hardcodedChains = ['polkadot', 'kusama'];
 
-		let calcFee, specName, specVersion, decorated, runtimeDoesNotMatch;
+		let calcFee, specName, specVersion, decorated;
 		if (
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
@@ -545,34 +545,26 @@ export class BlocksService extends AbstractService {
 
 			const hardcodedChainIncluded = hardcodedChains.includes(specName);
 
-			runtimeDoesNotMatch =
-				specName !== api.runtimeVersion.specName.toString() ||
-				specVersion !== api.runtimeVersion.specVersion.toNumber();
-
-			if (!hardcodedChainIncluded && runtimeDoesNotMatch) {
+			if (!hardcodedChainIncluded) {
 				const metadata = await api.rpc.state.getMetadata(parentParentHash);
+
 				/**
-				 * Sanity check for the type compiler
+				 * Check runtime associated with the cached decorated metadata
+				 * and compare it to the current specVersion
 				 */
-				if (that !== undefined) {
-					/**
-					 * Check runtime associated with the cached decorated metadata
-					 * and compare it to the current specVersion
-					 */
-					if (that.cache.runtimeVersion === specVersion) {
-						decorated = that.cache.decorated;
-					} else {
-						// Decorate current metadata to read baseweight used in calcFee
-						decorated = expandMetadata(api.registry, metadata);
+				if (that.cache.runtimeVersion === specVersion) {
+					decorated = that.cache.decorated;
+				} else {
+					// Decorate current metadata to read baseweight used in calcFee
+					decorated = expandMetadata(api.registry, metadata);
 
-						const cachedObject = this.extractWeightFromDecorated(
-							decorated,
-							specVersion
-						);
+					const cachedObject = this.extractWeightFromDecorated(
+						decorated,
+						specVersion
+					);
 
-						// Calls the cache setter
-						that.cache = { ...cachedObject };
-					}
+					// Calls the cache setter
+					that.cache = { ...cachedObject };
 				}
 			}
 
