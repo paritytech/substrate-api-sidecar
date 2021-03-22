@@ -88,7 +88,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (electionLookAhead.eq(new BN(0))) {
 			// no offchain solutions accepted
 			toggle = null;
-		} else if (eraElectionStatus.isClose) {
+		} else if ((eraElectionStatus as { isClose?: boolean }).isClose) {
 			// election window is yet to open
 			toggle = nextCurrentEra.sub(electionLookAhead);
 		} else {
@@ -190,7 +190,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		hash: BlockHash
 	): Promise<BN> {
 		if (api.consts.staking.electionLookahead) {
-			return api.consts.staking.electionLookahead;
+			return (api.consts.staking.electionLookahead as unknown) as BN;
 		}
 
 		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
