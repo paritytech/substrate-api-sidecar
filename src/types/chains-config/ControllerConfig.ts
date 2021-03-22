@@ -54,7 +54,7 @@ export interface CacheDecorated {
 }
 
 /**
- * Object pointer to AbstractController that allows access to the cache. 
+ * Object pointer to AbstractController that allows access to the cache.
  */
 export interface That {
 	cache: CacheType;
