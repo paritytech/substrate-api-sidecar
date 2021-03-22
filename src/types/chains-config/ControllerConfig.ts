@@ -31,13 +31,8 @@ export interface ControllerConfig {
 }
 
 /**
- * Used in BlocksService, to persists decorated metadata to avoid expensive calls
+ * Used in BlocksService, to persist decorated metadata to avoid expensive calls
  */
-// export interface CacheType {
-// 	decorated?: DecoratedMeta;
-// 	runtimeVersion?: number;
-// }
-
 export interface CacheType {
 	decorated?: CacheDecorated;
 	runtimeVersion?: number;
@@ -56,4 +51,11 @@ export interface CacheDecorated {
 			};
 		};
 	};
+}
+
+/**
+ * Object pointer to AbstractController that allows access to the cache. 
+ */
+export interface That {
+	cache: CacheType;
 }

@@ -22,7 +22,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
-import { CacheType } from '../../types/chains-config';
+import { CacheType, That } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -57,13 +57,6 @@ interface FetchBlockOptions {
 enum Event {
 	success = 'ExtrinsicSuccess',
 	failure = 'ExtrinsicFailed',
-}
-
-/**
- * Object pointer to BlocksController to access the cache
- */
-interface That {
-	cache: CacheType;
 }
 
 export class BlocksService extends AbstractService {
