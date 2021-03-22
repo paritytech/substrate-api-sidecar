@@ -26,7 +26,7 @@ const generateBlockWeightObject = (
 };
 
 /**
- * Returns a set of runtime pointing to their blockWeightDefinitions specific to
+ * Returns a set of runtimes pointing to their blockWeightDefinitions specific to
  * a chain
  *
  * @param specName specName from the metadata of the current block being fetched
