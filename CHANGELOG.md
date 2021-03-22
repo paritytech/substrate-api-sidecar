@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes 
 
 * **types** Update @polkadot/api to get latest substrate types for `Extender{Header, SignedBlock}`, and updated metadata
-* **types** Update @polkadot/apps-config to get latest substrate types for `Extender{Header, SignedBlock}`, and updated metadata
+* **types** Update @polkadot/apps-config to get latest chain specific types
 
 ### Packaging
 
