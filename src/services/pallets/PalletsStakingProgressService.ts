@@ -115,7 +115,7 @@ export class PalletsStakingProgressService extends AbstractService {
 			electionStatus: {
 				status: eraElectionStatus
 					? eraElectionStatus.toJSON()
-					: 'Not Applicable for this runtime',
+					: 'Deprecated! See docs',
 				toggleEstimate: toggle?.toString(10) ?? null,
 			},
 			idealValidatorCount: validatorCount.toString(10),
