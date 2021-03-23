@@ -33,7 +33,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		/**
 		 * Polkadot runtimes v0.8.30 and above do not support eraElectionStatus, so we check
 		 * to see if eraElectionStatus is mounted to the api, and if were running on a
-		 * runtime less than v30 it will return a successful result. If it doesn't
+		 * runtime less than v0.8.30 it will return a successful result. If it doesn't
 		 * we do nothing and let `eraElectionStatus` stay undefined.
 		 */
 		if (api.query.staking.eraElectionStatus) {
