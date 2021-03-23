@@ -111,12 +111,12 @@ export class PalletsStakingProgressService extends AbstractService {
 		return {
 			...baseResponse,
 			nextActiveEraEstimate: nextActiveEra.toString(10),
-			electionStatus: {
-				status: eraElectionStatus
-					? eraElectionStatus.toJSON()
-					: 'Deprecated! See docs',
-				toggleEstimate: toggle?.toString(10) ?? null,
-			},
+			electionStatus: eraElectionStatus
+				? {
+						status: eraElectionStatus.toJSON(),
+						toggleEstimate: toggle?.toString(10) ?? null,
+				  }
+				: 'Deprecated, see docs',
 			idealValidatorCount: validatorCount.toString(10),
 			validatorSet: validators.map((accountId) => accountId.toString()),
 		};
