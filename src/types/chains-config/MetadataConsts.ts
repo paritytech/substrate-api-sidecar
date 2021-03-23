@@ -1,12 +1,8 @@
-export interface Definition {
+export interface MetadataConstDefinition {
 	/**
 	 * Runtimes that include their specific definition of extrinsicBaseWeight
 	 */
-	runtimes: number[];
-	/**
-	 * The type of specName associated with this Definition
-	 */
-	chain: string;
+	runtimeVersions: number[];
 	/**
 	 * Runtime < v27
 	 */
@@ -19,16 +15,8 @@ export interface Definition {
 
 interface PerClassTypes {
 	baseExtrinsic: number;
-	/**
-	 * Can be represented as a number or hex value
-	 */
-	maxExtrinsic: number | string;
-	maxTotal: number | null;
-	reserved: number | null;
 }
 
 interface BlockWeightDefinitions {
-	baseBlock: number;
-	maxBlock: number;
 	perClass: Record<string, PerClassTypes>;
 }

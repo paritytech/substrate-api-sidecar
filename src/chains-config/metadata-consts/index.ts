@@ -1,6 +1,6 @@
-import { Definition } from '../../types/chains-config';
-import { kusamaDefinitions } from './kusama-consts';
-import { polkadotDefinitions } from './polkadot-consts';
+import { MetadataConstDefinition } from '../../types/chains-config';
+import { kusamaDefinitions } from './kusamaConsts';
+import { polkadotDefinitions } from './polkadotConsts';
 
 /**
  * Creates an object that orders each runtime to their appropriate data
@@ -9,16 +9,14 @@ import { polkadotDefinitions } from './polkadot-consts';
  * and their extrinsicBaseWeight metadata
  */
 const generateBlockWeightObject = (
-	definitions: Definition[]
-): Record<string, Definition> => {
+	definitions: MetadataConstDefinition[]
+): Record<string, MetadataConstDefinition> => {
 	const blockWeightObject = {};
 
-	for (let i = 0; i < definitions.length; i++) {
-		const runtimes: number[] = definitions[i].runtimes;
-
-		for (let p = 0; p < runtimes.length; p++) {
-			const version: number = runtimes[p];
-			blockWeightObject[version] = definitions[i];
+	for (const def of definitions) {
+		const runtimeVersions: number[] = def.runtimeVersions;
+		for (const version of runtimeVersions) {
+			blockWeightObject[version] = def;
 		}
 	}
 
@@ -33,7 +31,7 @@ const generateBlockWeightObject = (
  */
 export const getBlockWeight = (
 	specName: string
-): Record<string, Definition> => {
+): Record<string, MetadataConstDefinition> => {
 	switch (specName) {
 		case 'polkadot':
 			return generateBlockWeightObject(polkadotDefinitions);
