@@ -122,7 +122,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, options, this)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 
@@ -157,7 +157,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, options, this)
+			await this.service.fetchBlock(hash, options)
 		);
 	};
 }

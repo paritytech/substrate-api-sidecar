@@ -22,7 +22,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
-import { CacheType, That } from '../../types/chains-config';
+import { CacheType } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -60,6 +60,19 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
+	private _cache: CacheType;
+	constructor(api: ApiPromise) {
+		super(api);
+		this._cache = {};
+	}
+
+	private get cache() {
+		return this._cache;
+	}
+
+	private set cache(cacheObject: CacheType) {
+		this._cache = { ...cacheObject };
+	}
 	/**
 	 * Fetch a block augmented with derived values.
 	 *
@@ -74,8 +87,7 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-		}: FetchBlockOptions,
-		that: That
+		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -168,7 +180,7 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 			decorated,
-		} = await this.createCalcFee(api, parentHash, block, that);
+		} = await this.createCalcFee(api, parentHash, block);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -477,8 +489,7 @@ export class BlocksService extends AbstractService {
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		block: Block,
-		that: That
+		block: Block
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -545,8 +556,8 @@ export class BlocksService extends AbstractService {
 				 * Check runtime associated with the cached decorated metadata
 				 * and compare it to the current specVersion
 				 */
-				if (that.cache.runtimeVersion === specVersion) {
-					decorated = that.cache.decorated;
+				if (this.cache.runtimeVersion === specVersion) {
+					decorated = this.cache.decorated;
 				} else {
 					// Decorate current metadata to read baseweight used in calcFee
 					decorated = expandMetadata(api.registry, metadata);
@@ -557,7 +568,7 @@ export class BlocksService extends AbstractService {
 					);
 
 					// Calls the cache setter
-					that.cache = { ...cachedObject };
+					this.cache = { ...cachedObject };
 				}
 			}
 

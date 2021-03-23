@@ -5,7 +5,6 @@ import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
 import { AbstractService } from 'src/services/AbstractService';
-import { CacheType } from 'src/types/chains-config';
 import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
@@ -27,14 +26,11 @@ type SidecarRequestHandler =
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
-	public _cache: CacheType;
 	constructor(
 		protected api: ApiPromise,
 		private _path: string,
 		protected service: T
-	) {
-		this._cache = {};
-	}
+	) {}
 
 	get path(): string {
 		return this._path;
@@ -42,14 +38,6 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 	get router(): Router {
 		return this._router;
-	}
-
-	public get cache(): CacheType {
-		return this._cache;
-	}
-
-	public set cache(cacheObject: CacheType) {
-		this._cache = { ...cacheObject };
 	}
 
 	/**
