@@ -20,16 +20,26 @@ export class PalletsStakingProgressService extends AbstractService {
 		const [
 			validatorCount,
 			forceEra,
-			eraElectionStatus,
 			validators,
 			{ number },
 		] = await Promise.all([
 			api.query.staking.validatorCount.at(hash),
 			api.query.staking.forceEra.at(hash),
-			api.query.staking.eraElectionStatus.at(hash),
 			api.query.session.validators.at(hash),
 			api.rpc.chain.getHeader(hash),
 		]);
+
+		let eraElectionStatus;
+		try {
+			eraElectionStatus = await api.query.staking.eraElectionStatus.at(hash);
+		} catch {
+			/**
+			 * Runtime v30 and above do not support eraElectionStatus, so use
+			 * a `try` to retrieve the eraElectionStatus, and if were running on a
+			 * runtime less than v30 it will return a successful result. If it doesn't
+			 * we do nothing and let the undefined `eraElectionStatus` dictate the below logic.
+			 */
+		}
 
 		const {
 			eraLength,
@@ -88,7 +98,10 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (electionLookAhead.eq(new BN(0))) {
 			// no offchain solutions accepted
 			toggle = null;
-		} else if ((eraElectionStatus as { isClose?: boolean }).isClose) {
+		} else if (
+			eraElectionStatus &&
+			(eraElectionStatus as { isClose?: boolean }).isClose
+		) {
 			// election window is yet to open
 			toggle = nextCurrentEra.sub(electionLookAhead);
 		} else {
@@ -100,7 +113,9 @@ export class PalletsStakingProgressService extends AbstractService {
 			...baseResponse,
 			nextActiveEraEstimate: nextActiveEra.toString(10),
 			electionStatus: {
-				status: eraElectionStatus.toJSON(),
+				status: eraElectionStatus
+					? eraElectionStatus.toJSON()
+					: 'Not Applicable for this runtime',
 				toggleEstimate: toggle?.toString(10) ?? null,
 			},
 			idealValidatorCount: validatorCount.toString(10),
