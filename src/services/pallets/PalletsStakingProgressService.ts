@@ -30,15 +30,14 @@ export class PalletsStakingProgressService extends AbstractService {
 		]);
 
 		let eraElectionStatus;
-		try {
+		/**
+		 * Runtime v30 and above do not support eraElectionStatus, so we check
+		 * to see if eraElectionStatus is mounted to the api, and if were running on a
+		 * runtime less than v30 it will return a successful result. If it doesn't
+		 * we do nothing and let `eraElectionStatus` stay undefined.
+		 */
+		if (api.query.staking.eraElectionStatus) {
 			eraElectionStatus = await api.query.staking.eraElectionStatus.at(hash);
-		} catch {
-			/**
-			 * Runtime v30 and above do not support eraElectionStatus, so use
-			 * a `try` to retrieve the eraElectionStatus, and if were running on a
-			 * runtime less than v30 it will return a successful result. If it doesn't
-			 * we do nothing and let the undefined `eraElectionStatus` dictate the below logic.
-			 */
 		}
 
 		const {
