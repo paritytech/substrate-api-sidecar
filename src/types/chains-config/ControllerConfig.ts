@@ -31,7 +31,7 @@ export interface ControllerConfig {
 /**
  * Used in BlocksService, to persist decorated metadata to avoid expensive calls
  */
-export interface CacheType {
+export interface MetaConstsCache {
 	decorated?: CacheDecorated;
 	runtimeVersion?: number;
 }

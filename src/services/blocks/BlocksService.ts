@@ -22,7 +22,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
-import { CacheType } from '../../types/chains-config';
+import { MetaConstsCache } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -60,7 +60,7 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
-	private _cache: CacheType;
+	private _cache: MetaConstsCache;
 	constructor(api: ApiPromise) {
 		super(api);
 		this._cache = {};
@@ -70,7 +70,7 @@ export class BlocksService extends AbstractService {
 		return this._cache;
 	}
 
-	private set cache(cacheObject: CacheType) {
+	private set cache(cacheObject: MetaConstsCache) {
 		this._cache = { ...cacheObject };
 	}
 	/**
@@ -599,7 +599,7 @@ export class BlocksService extends AbstractService {
 	private extractWeightFromDecorated(
 		decorated: DecoratedMeta,
 		runtimeVersion: number
-	): CacheType {
+	): MetaConstsCache {
 		const extractedWeight = {
 			decorated: {
 				consts: {
