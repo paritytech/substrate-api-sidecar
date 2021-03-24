@@ -1,5 +1,3 @@
-// import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
-
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { WeightPerClass } from '@polkadot/types/interfaces';
 

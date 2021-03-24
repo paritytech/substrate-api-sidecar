@@ -292,11 +292,11 @@ export class BlocksService extends AbstractService {
 					continue;
 				}
 
-				let calcFeeExBaseWeight;
+				let calcFeeBaseWeight;
 				if (typeof extrinsicBaseWeight !== 'number') {
-					calcFeeExBaseWeight = extrinsicBaseWeight.toBigInt();
+					calcFeeBaseWeight = extrinsicBaseWeight.toBigInt();
 				} else {
-					calcFeeExBaseWeight = BigInt(extrinsicBaseWeight);
+					calcFeeBaseWeight = BigInt(extrinsicBaseWeight);
 				}
 
 				const len = block.extrinsics[idx].encodedLength;
@@ -305,7 +305,7 @@ export class BlocksService extends AbstractService {
 				const partialFee = calcFee.calc_fee(
 					BigInt(weight.toString()),
 					len,
-					calcFeeExBaseWeight
+					calcFeeBaseWeight
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
@@ -484,7 +484,6 @@ export class BlocksService extends AbstractService {
 	 * @param api ApiPromise
 	 * @param parentHash Hash of the parent block
 	 * @param block Block which the extrinsic is from
-	 * @param block
 	 */
 	private async createCalcFee(
 		api: ApiPromise,
