@@ -1,3 +1,5 @@
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+
 export interface MetadataConstDefinition extends MetadataWeightDefinition {
 	/**
 	 * Runtimes that include their specific definition of extrinsicBaseWeight
@@ -10,7 +12,7 @@ export interface MetadataWeightDefinition {
 	 * Polkadot runtime versions before v0.8.27
 	 * Kusama runtime versions before v2027
 	 */
-	extrinsicBaseWeight?: number;
+	extrinsicBaseWeight?: number | AbstractInt;
 	/**
 	 * Polkadot runtime versions after v0.8.26
 	 * Kusama runtime versions after v2026
@@ -18,10 +20,12 @@ export interface MetadataWeightDefinition {
 	blockWeights?: BlockWeightDefinitions;
 }
 
-interface PerClassTypes {
+export interface PerClassTypes {
 	baseExtrinsic: number;
 }
 
+type PerClassStrings = 'normal' | 'operational' | 'mandatory';
+
 interface BlockWeightDefinitions {
-	perClass: Record<string, PerClassTypes>;
+	perClass: Record<PerClassStrings, PerClassTypes>;
 }

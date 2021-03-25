@@ -1,11 +1,9 @@
-import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
 import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber, Hash } from '@polkadot/types/interfaces';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { Codec } from '@polkadot/types/types';
 import { CalcFee } from '@substrate/calc';
 
-import { CacheDecorated } from '../chains-config/index';
 import { IExtrinsic, ISanitizedEvent } from '.';
 
 export interface IBlock {
@@ -36,5 +34,4 @@ export interface ICalcFee {
 	calcFee?: null | CalcFee;
 	specName: string;
 	specVersion: number;
-	decorated?: DecoratedMeta | CacheDecorated;
 }

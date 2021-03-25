@@ -186,43 +186,6 @@ describe('BlocksService', () => {
 			).toBe('1257000075');
 		});
 
-		/**
-		 * Decorated should return undefined when on a polkadot or kusama
-		 * chain because the values are hardcoded to increase performance
-		 */
-		it('Should return undefined `decorated` for polkadot chain', async () => {
-			const { decorated } = await blocksService['createCalcFee'](
-				mockApi,
-				('0xParentHash' as unknown) as Hash,
-				mockBlock789629
-			);
-
-			expect(decorated).toBe(undefined);
-		});
-
-		/**
-		 * Test decorated value against non polkadot kusama chain
-		 */
-		it('Should return a truthy decorated when running on a Non-Polkadot-Kusama chain', async () => {
-			(mockApi.runtimeVersion
-				.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
-
-			const { decorated } = await blocksService['createCalcFee'](
-				mockApi,
-				('0xParentHash' as unknown) as Hash,
-				mockBlock789629
-			);
-
-			/**
-			 * This checks to make sure decorated is not undefined as a return value
-			 * when the chain is Non-polkadot-kusama
-			 */
-			expect(decorated).toBeTruthy();
-
-			(mockApi.runtimeVersion
-				.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
-		});
-
 		it('Should fill the cache with decorated and runtimeVersion data when running on a Non-Polkadot-Kusama chain', async () => {
 			// (mockApi.runtimeVersion
 			// 	.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
