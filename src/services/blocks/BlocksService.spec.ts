@@ -3,6 +3,7 @@ import { ApiPromise } from '@polkadot/api';
 import { AugmentedConst } from '@polkadot/api/types/consts';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { GenericCall } from '@polkadot/types/generic';
 import {
 	BalanceOf,
@@ -185,49 +186,61 @@ describe('BlocksService', () => {
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
 		});
+	});
 
-		it('Should fill the cache with decorated and runtimeVersion data when running on a Non-Polkadot-Kusama chain', async () => {
-			// (mockApi.runtimeVersion
-			// 	.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
-			// await blocksService['createCalcFee'](
-			// 	mockApi,
-			// 	('0xParentHash' as unknown) as Hash,
-			// 	mockBlock789629
-			// );
-			// /**
-			//  * This checks to make sure the cache is updated.
-			//  */
-			// expect(that.cache.decorated).toBeTruthy();
-			// /**
-			//  * Check runtimeVersion. Westend's actual version might be different
-			//  * but because we are checking just createCalcFee we just need to make
-			//  * sure it stores the mockApi block's default runtime.
-			//  */
-			// expect(that.cache.runtimeVersion).toBe(16);
-			// (mockApi.runtimeVersion
-			// 	.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
+	describe('BlocksService.getDecorateAndExtractWeight', () => {
+		const baseWeight = (125000000 as unknown) as AbstractInt;
+
+		it('Should extract extrinsicBaseWeight correctly when were in a non-polkadot the chain and the runtime is the same as the api', async () => {
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 16, 'westend');
+
+			expect(
+				BigInt(
+					baseWeightObject['16'].decorated.consts.system.extrinsicBaseWeight
+				)
+			).toBe(BigInt(baseWeight));
 		});
 
-		it('Should cache the correct block runtime when different from the api runtime', async () => {
+		it('Should extract extrinsicBaseWeight correctly when the block runtimeVersion matches the api', async () => {
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 16, 'polkadot');
+
+			expect(
+				BigInt(
+					baseWeightObject['16'].decorated.consts.system.extrinsicBaseWeight
+				)
+			).toBe(BigInt(baseWeight));
+		});
+
+		it('Should extract extrinsicBaseWeight correctly using expandMetadata when runtimes do not match ', async () => {
 			/**
-			 * The mockApi take runtimeVersion is shared between the api and block
-			 * so updating the mockApi runtimeVersion will update the version to be cached
-			 * from the block.
+			 * The default mockApi is runtimeVersion is 16 so we are testing it against 20
 			 */
-			// (mockApi.runtimeVersion
-			// 	.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
-			// (mockApi.runtimeVersion
-			// 	.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
-			// await blocksService['createCalcFee'](
-			// 	mockApi,
-			// 	('0xParentHash' as unknown) as Hash,
-			// 	mockBlock789629
-			// );
-			// expect(that.cache.runtimeVersion).toBe(20);
-			// (mockApi.runtimeVersion
-			// 	.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
-			// (mockApi.runtimeVersion
-			// 	.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 20, 'westend');
+
+			expect(
+				BigInt(
+					baseWeightObject['20'].decorated.consts.system.extrinsicBaseWeight
+				)
+			).toBe(BigInt(baseWeight));
+		});
+
+		it('Should extract blockWeights correctly', async () => {
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 28, 'polkadot');
+
+			expect(
+				BigInt(
+					baseWeightObject['28'].decorated.consts.system.blockWeights?.perClass
+						.normal.baseExtrinsic
+				)
+			).toBe(BigInt(baseWeight));
 		});
 	});
 
