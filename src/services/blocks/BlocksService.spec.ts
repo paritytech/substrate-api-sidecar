@@ -158,6 +158,21 @@ describe('BlocksService', () => {
 				error: 'Fee calculation not supported for 16#polkadot',
 			});
 		});
+
+		it('Stores necessary runtime weight data inside of the cache', async () => {
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+			};
+
+			await blocksService.fetchBlock(blockHash789629, options);
+
+			expect(blocksService['cache']['16']).toBeTruthy();
+		});
 	});
 
 	describe('createCalcFee & calc_fee', () => {
