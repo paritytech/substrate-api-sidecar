@@ -20,7 +20,7 @@ export interface MetadataWeightDefinition {
 	blockWeights?: BlockWeightDefinitions;
 }
 
-export interface PerClassTypes {
+interface PerClassTypes {
 	baseExtrinsic: number;
 }
 

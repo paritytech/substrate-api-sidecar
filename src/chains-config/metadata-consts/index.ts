@@ -8,6 +8,10 @@ import { polkadotDefinitions } from './polkadotConsts';
 /**
  * Creates an object that orders each runtime to their appropriate weight data.
  *
+ * Each runtime imports their own data which is called Definitions here. Definitions
+ * are arrays that store objects which group a set of runtimes version connected
+ * to their classification of extrinsic weight data.
+ *
  * Example return object:
  * {
  * 	   ...

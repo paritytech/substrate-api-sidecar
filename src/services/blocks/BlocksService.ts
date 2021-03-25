@@ -12,6 +12,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	Weight,
 	WeightPerClass,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
@@ -247,7 +248,7 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
-				const extrinsicBaseWeight =
+				const extrinsicBaseWeight: AbstractInt | Weight =
 					((this.cache[specVersion].decorated.consts.system
 						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
 					(((this.cache[specVersion].decorated.consts.system
@@ -496,6 +497,10 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
+			/**
+			 * Checks to see if the cache already has our runtime version key
+			 * cached, and if so there is no need to extract any weight.
+			 */
 			if (!this.cache[specVersion]) {
 				const toBeCachedMetadataWeights = await this.getDecorateAndExtractWeight(
 					api,
@@ -504,6 +509,7 @@ export class BlocksService extends AbstractService {
 					specName
 				);
 
+				// Call the this.cache setter and update it.
 				this.cache = { ...toBeCachedMetadataWeights };
 			}
 
@@ -524,6 +530,10 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
+	 * `getDecorateAndExtractWeight` is responsible for returning a object
+	 * with a key that represents the runtimeVersion of the fetched block with a value
+	 * that points to the weight data needed to calculate fees. This object will then
+	 * get set into our local cache.
 	 *
 	 * @param blockHash The parentParentHash used to retreive the metadata
 	 * @param api Used if the runtime matches the api and to also decorate the metadata
@@ -546,17 +556,17 @@ export class BlocksService extends AbstractService {
 			},
 		};
 
+		// Set the runtime version key to `decoratedKeyValues`.
 		extractedWeight[specVersion] = decoratedKeyValues;
 
-		const doesCacheThisChain: boolean =
-			specName === 'polkadot' || specName === 'kusama';
+		const doesCacheThisChain = specName === 'polkadot' || specName === 'kusama';
 
 		const doesRuntimeMatchApi =
 			specVersion === api.runtimeVersion.specVersion.toNumber();
 
 		if (doesRuntimeMatchApi) {
 			/**
-			 * If the runtime version matches the api's runtime version
+			 * If the blocks runtime version matches the api's runtime version
 			 * we pull the weight directly from the api.
 			 */
 			if (api.consts.system?.extrinsicBaseWeight) {
@@ -571,6 +581,8 @@ export class BlocksService extends AbstractService {
 		} else if (doesCacheThisChain) {
 			/**
 			 * Retrieve the base weight data associated with either polkadot or kusama.
+			 * These values are stored in the chains-config and are updated as runtimes
+			 * are added to the chain.
 			 */
 			const cachedChainWeightsSAS = getBlockWeight(specName);
 			const cachedVersion = cachedChainWeightsSAS[specVersion];
@@ -586,7 +598,8 @@ export class BlocksService extends AbstractService {
 			}
 		} else {
 			/**
-			 * Decorate the metadata by expanding it.
+			 * When the weight isn't stored in our cache already, isn't stored in the api,
+			 * or the chain isnt polkadot or kusama we decorate the metadata by expanding it.
 			 */
 			const metadata = await api.rpc.state.getMetadata(blockHash);
 			const decorated = expandMetadata(api.registry, metadata);

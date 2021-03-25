@@ -1,3 +1,5 @@
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+
 /**
  * WEIGHT NOTES (POLKADOT | KUSAMA)
  * @constant extrinsicBaseWeight
@@ -15,7 +17,7 @@
  * Polkadot runtime versions before v0.8.27
  * Kusama runtime versions before v2027
  */
-export const extrinsicBaseWeight = 125000000;
+export const extrinsicBaseWeight = (125000000 as unknown) as AbstractInt;
 
 /**
  * Polkadot runtime versions after v0.8.26
