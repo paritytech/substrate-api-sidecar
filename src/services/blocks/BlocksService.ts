@@ -60,18 +60,18 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
-	private _cache: MetaConstsCache;
+	private _metaConstsCache: MetaConstsCache;
 	constructor(api: ApiPromise) {
 		super(api);
-		this._cache = {};
+		this._metaConstsCache = {};
 	}
 
-	private get cache() {
-		return this._cache;
+	private get metaConstsCache() {
+		return this._metaConstsCache;
 	}
 
-	private set cache(cacheObject: MetaConstsCache) {
-		this._cache = { ...cacheObject };
+	private set metaConstsCache(cacheObject: MetaConstsCache) {
+		this._metaConstsCache = { ...cacheObject };
 	}
 	/**
 	 * Fetch a block augmented with derived values.
@@ -249,9 +249,9 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
 				const extrinsicBaseWeight: AbstractInt | Weight =
-					((this.cache[specVersion].decorated.consts.system
+					((this.metaConstsCache[specVersion].decorated.consts.system
 						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
-					(((this.cache[specVersion].decorated.consts.system
+					(((this.metaConstsCache[specVersion].decorated.consts.system
 						?.blockWeights as unknown) as BlockWeights)?.perClass[
 						weightInfoClass
 					] as WeightPerClass).baseExtrinsic;
@@ -501,7 +501,7 @@ export class BlocksService extends AbstractService {
 			 * Checks to see if the cache already has our runtime version key
 			 * cached, and if so there is no need to extract any weight.
 			 */
-			if (!this.cache[specVersion]) {
+			if (!this.metaConstsCache[specVersion]) {
 				const toBeCachedMetadataWeights = await this.getDecorateAndExtractWeight(
 					api,
 					parentParentHash,
@@ -509,8 +509,8 @@ export class BlocksService extends AbstractService {
 					specName
 				);
 
-				// Call the this.cache setter and update it.
-				this.cache = { ...toBeCachedMetadataWeights };
+				// Call the this.metaConstsCache setter and update it.
+				this.metaConstsCache = { ...toBeCachedMetadataWeights };
 			}
 
 			calcFee = CalcFee.from_params(

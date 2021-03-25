@@ -171,7 +171,7 @@ describe('BlocksService', () => {
 
 			await blocksService.fetchBlock(blockHash789629, options);
 
-			expect(blocksService['cache']['16']).toBeTruthy();
+			expect(blocksService['metaConstsCache']['16']).toBeTruthy();
 		});
 	});
 
