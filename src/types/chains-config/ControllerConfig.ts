@@ -2,7 +2,6 @@ import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { WeightPerClass } from '@polkadot/types/interfaces';
 
 import { controllers } from '../../controllers';
-import { PerClassTypes } from './';
 /**
  * Controller mounting configuration as an object where the keys are the
  * controller class names and the values are booleans indicating whether or not
@@ -29,28 +28,22 @@ export interface ControllerConfig {
 	};
 }
 
-export interface PreMetaConstsCache {
-	decorated: CacheDecorated;
-	runtimeVersion: number;
-}
-
 /**
  * Used in BlocksService, to persist decorated metadata to avoid expensive calls
  */
-export interface MetaConstsCache {
-	decorated?: CacheDecorated;
-	runtimeVersion?: number;
-}
+export type MetaConstsCache = Record<string, CacheDecorated>;
 
 export interface CacheDecorated {
-	consts: {
-		system: {
-			extrinsicBaseWeight?: AbstractInt | number;
-			blockWeights?: {
-				perClass: {
-					normal: WeightPerClass | PerClassTypes;
-					mandatory: WeightPerClass | PerClassTypes;
-					operational: WeightPerClass | PerClassTypes;
+	decorated: {
+		consts: {
+			system: {
+				extrinsicBaseWeight?: AbstractInt;
+				blockWeights?: {
+					perClass: {
+						normal: WeightPerClass;
+						mandatory: WeightPerClass;
+						operational: WeightPerClass;
+					};
 				};
 			};
 		};

@@ -21,7 +21,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
-import { MetaConstsCache, PreMetaConstsCache } from '../../types/chains-config';
+import { MetaConstsCache } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -247,31 +247,13 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
-
-				const runtimeDoesNotMatch =
-					specVersion !== api.runtimeVersion.specVersion.toNumber();
-
-				let extrinsicBaseWeight;
-				if (
-					this.cache[specVersion] &&
-					this.cache.decorated &&
-					runtimeDoesNotMatch
-				) {
-					extrinsicBaseWeight =
-						((this.cache.decorated.consts.system
-							?.extrinsicBaseWeight as unknown) as AbstractInt) ||
-						(((this.cache.decorated.consts.system
-							?.blockWeights as unknown) as BlockWeights).perClass[
-							weightInfoClass
-						] as WeightPerClass).baseExtrinsic;
-				} else {
-					// We are querying a runtime that matches the metadata in the api
-					extrinsicBaseWeight =
-						(api.consts.system?.extrinsicBaseWeight as AbstractInt) ||
-						(api.consts.system.blockWeights.perClass[
-							weightInfoClass
-						] as WeightPerClass).baseExtrinsic;
-				}
+				const extrinsicBaseWeight =
+					((this.cache[specVersion].decorated.consts.system
+						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
+					(((this.cache[specVersion].decorated.consts.system
+						?.blockWeights as unknown) as BlockWeights)?.perClass[
+						weightInfoClass
+					] as WeightPerClass).baseExtrinsic;
 
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
@@ -279,7 +261,7 @@ export class BlocksService extends AbstractService {
 				const partialFee = calcFee.calc_fee(
 					BigInt(weight.toString()),
 					len,
-					extrinsicBaseWeight.toBigInt()
+					BigInt(extrinsicBaseWeight)
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
@@ -514,8 +496,7 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
-			console.log(this.cache.runtimeVersion !== specVersion);
-			if (this.cache.runtimeVersion !== specVersion) {
+			if (!this.cache[specVersion]) {
 				const toBeCachedMetadataWeights = await this.getDecorateAndExtractWeight(
 					api,
 					parentParentHash,
@@ -544,30 +525,50 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 *
-	 * @param blockHash
-	 * @param api
-	 * @param specVersion
-	 * @param specName
+	 * @param blockHash The parentParentHash used to retreive the metadata
+	 * @param api Used if the runtime matches the api and to also decorate the metadata
+	 * @param specVersion Used to set the runtime in the cache
+	 * @param specName Used to check the chain were connected to and see if its polkadot or kusama
 	 */
 	private async getDecorateAndExtractWeight(
 		api: ApiPromise,
 		blockHash: Hash,
 		specVersion: number,
 		specName: string
-	): Promise<PreMetaConstsCache> {
-		const extractedWeight: PreMetaConstsCache = {
+	): Promise<MetaConstsCache> {
+		const extractedWeight: MetaConstsCache = {};
+
+		const decoratedKeyValues = {
 			decorated: {
 				consts: {
 					system: {},
 				},
 			},
-			runtimeVersion: specVersion,
 		};
+
+		extractedWeight[specVersion] = decoratedKeyValues;
 
 		const doesCacheThisChain: boolean =
 			specName === 'polkadot' || specName === 'kusama';
 
-		if (doesCacheThisChain) {
+		const doesRuntimeMatchApi =
+			specVersion === api.runtimeVersion.specVersion.toNumber();
+
+		if (doesRuntimeMatchApi) {
+			/**
+			 * If the runtime version matches the api's runtime version
+			 * we pull the weight directly from the api.
+			 */
+			if (api.consts.system?.extrinsicBaseWeight) {
+				extractedWeight[specVersion].decorated.consts.system[
+					'extrinsicBaseWeight'
+				] = (api.consts.system?.extrinsicBaseWeight as unknown) as AbstractInt;
+			} else {
+				extractedWeight[specVersion].decorated.consts.system[
+					'blockWeights'
+				] = (api.consts.system.blockWeights as unknown) as BlockWeights;
+			}
+		} else if (doesCacheThisChain) {
 			/**
 			 * Retrieve the base weight data associated with either polkadot or kusama.
 			 */
@@ -575,29 +576,30 @@ export class BlocksService extends AbstractService {
 			const cachedVersion = cachedChainWeightsSAS[specVersion];
 
 			if (cachedVersion.extrinsicBaseWeight) {
-				extractedWeight.decorated.consts.system[
+				extractedWeight[specVersion].decorated.consts.system[
 					'extrinsicBaseWeight'
 				] = (cachedVersion.extrinsicBaseWeight as unknown) as AbstractInt;
 			} else {
-				extractedWeight.decorated.consts.system[
+				extractedWeight[specVersion].decorated.consts.system[
 					'blockWeights'
 				] = (cachedVersion.blockWeights as unknown) as BlockWeights;
 			}
 		} else {
 			/**
-			 * Decorate the metadata
+			 * Decorate the metadata by expanding it.
 			 */
 			const metadata = await api.rpc.state.getMetadata(blockHash);
 			const decorated = expandMetadata(api.registry, metadata);
 
 			if (decorated.consts.system.extrinsicBaseWeight) {
-				extractedWeight.decorated.consts.system[
+				extractedWeight[specVersion].decorated.consts.system[
 					'extrinsicBaseWeight'
 				] = (decorated.consts.system
 					.extrinsicBaseWeight as unknown) as AbstractInt;
 			} else {
-				extractedWeight.decorated.consts.system['blockWeights'] = (decorated
-					.consts.system.blockWeights as unknown) as BlockWeights;
+				extractedWeight[specVersion].decorated.consts.system[
+					'blockWeights'
+				] = (decorated.consts.system.blockWeights as unknown) as BlockWeights;
 			}
 		}
 
