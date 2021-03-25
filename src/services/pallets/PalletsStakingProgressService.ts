@@ -97,10 +97,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (electionLookAhead.eq(new BN(0))) {
 			// no offchain solutions accepted
 			toggle = null;
-		} else if (
-			eraElectionStatus &&
-			(eraElectionStatus as { isClose?: boolean }).isClose
-		) {
+		} else if ((eraElectionStatus as { isClose?: boolean })?.isClose) {
 			// election window is yet to open
 			toggle = nextCurrentEra.sub(electionLookAhead);
 		} else {
