@@ -26,5 +26,6 @@ export const mandalaControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
+		minCalcFeeRuntime: null,
 	},
 };

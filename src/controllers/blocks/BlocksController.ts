@@ -71,7 +71,7 @@ interface ControllerOptions {
  */
 export default class BlocksController extends AbstractController<BlocksService> {
 	constructor(api: ApiPromise, private readonly options: ControllerOptions) {
-		super(api, '/blocks', new BlocksService(api));
+		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime));
 		this.initRoutes();
 	}
 

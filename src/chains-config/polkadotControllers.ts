@@ -1,7 +1,7 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * Controllers that Sidecar will always default to.
+ * Polkadot configuration for Sidecar.
  */
 export const defaultControllers: ControllerConfig = {
 	controllers: {
@@ -26,6 +26,6 @@ export const defaultControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 0,
 	},
 };

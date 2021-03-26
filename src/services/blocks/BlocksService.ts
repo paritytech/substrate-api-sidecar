@@ -12,19 +12,17 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
-	Weight,
-	WeightPerClass,
+	// Weight,
+	// WeightPerClass,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
-import { BadRequest } from 'http-errors';
+import { BadRequest, InternalServerError } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
-import { minimumCalcFeeVersions } from '../../chains-config/metadata-consts/substrateConsts';
-import { SidecarConfig } from '../../SidecarConfig';
-import { MetaConstsCache } from '../../types/chains-config';
+import { ExtBaseWeightEntry, MetaConstsCache, PerClassEntry } from '../../types/chains-config';
 import {
 	IBlock,
 	ICalcFee,
@@ -63,9 +61,11 @@ enum Event {
 
 export class BlocksService extends AbstractService {
 	private _metaConstsCache: MetaConstsCache;
-	constructor(api: ApiPromise) {
+	private minCalcFeeRuntime: null | number;
+	constructor(api: ApiPromise, minCalcFeeRuntime: null | number) {
 		super(api);
 		this._metaConstsCache = {};
+		this.minCalcFeeRuntime = minCalcFeeRuntime;
 	}
 
 	private get metaConstsCache() {
@@ -238,7 +238,7 @@ export class BlocksService extends AbstractService {
 
 				// The Dispatch class used to key into `blockWeights.perClass`
 				// We set default to be normal.
-				let weightInfoClass = 'normal';
+				let weightInfoClass: keyof PerClassEntry = 'normal';
 				if (weightInfo.class.isMandatory) {
 					weightInfoClass = 'mandatory';
 				} else if (weightInfo.class.isOperational) {
@@ -251,13 +251,14 @@ export class BlocksService extends AbstractService {
 				 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
 				 * https://github.com/polkadot-js/api/issues/2365
 				 */
-				const extrinsicBaseWeight: AbstractInt | Weight =
-					((this.metaConstsCache[specVersion].decorated.consts.system
-						?.extrinsicBaseWeight as unknown) as AbstractInt) ||
-					(((this.metaConstsCache[specVersion].decorated.consts.system
-						?.blockWeights as unknown) as BlockWeights)?.perClass[
-						weightInfoClass
-					] as WeightPerClass).baseExtrinsic;
+				const extrinsicBaseWeight: BigInt | undefined =
+					(this.metaConstsCache[specVersion] as ExtBaseWeightEntry)?.extrinsicBaseWeight ||
+					(this.metaConstsCache[specVersion] as PerClassEntry)?.perClass[weightInfoClass]?
+						.baseExtrinsic;
+
+				if (extrinsicBaseWeight === undefined) {
+					throw new InternalServerError('Could not find extrinsicBaseWeight');
+				}
 
 				const len = block.extrinsics[idx].encodedLength;
 				const weight = weightInfo.weight;
@@ -265,7 +266,7 @@ export class BlocksService extends AbstractService {
 				const partialFee = calcFee.calc_fee(
 					BigInt(weight.toString()),
 					len,
-					BigInt(extrinsicBaseWeight)
+					extrinsicBaseWeight
 				);
 
 				extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
@@ -451,95 +452,55 @@ export class BlocksService extends AbstractService {
 		block: Block
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
-		const extrinsicBaseWeightExists =
-			api.consts.system.extrinsicBaseWeight ||
-			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 
-		let calcFee, specName, specVersion;
-		if (
-			perByte === undefined ||
-			extrinsicBaseWeightExists === undefined ||
-			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !== 'function'
-		) {
-			// We do not have the necessary materials to build calcFee, so we just give a dummy function
-			// that aligns with the expected API of calcFee.
-			calcFee = null;
+		const coefficients = api.consts.transactionPayment.weightToFee.map((c) => {
+			return {
+				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
+				// to BigInt or string.
+				coeffInteger: c.coeffInteger.toString(10),
+				coeffFrac: c.coeffFrac.toNumber(),
+				degree: c.degree.toNumber(),
+				negative: c.negative,
+			};
+		});
 
-			const version = await api.rpc.state.getRuntimeVersion(parentHash);
-			[specName, specVersion] = [
-				version.specName.toString(),
-				version.specVersion.toNumber(),
-			];
-		} else {
-			const coefficients = api.consts.transactionPayment.weightToFee.map(
-				(c) => {
-					return {
-						// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
-						// to BigInt or string.
-						coeffInteger: c.coeffInteger.toString(10),
-						coeffFrac: c.coeffFrac.toNumber(),
-						degree: c.degree.toNumber(),
-						negative: c.negative,
-					};
-				}
-			);
+		const parentParentHash: Hash = await this.getParentParentHash(
+			api,
+			parentHash,
+			block
+		);
 
-			const parentParentHash: Hash = await this.getParentParentHash(
+		const [version, multiplier] = await Promise.all([
+			api.rpc.state.getRuntimeVersion(parentParentHash),
+			api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
+		]);
+
+		const specName = version.specName.toString();
+		const specVersion = version.specVersion.toNumber();
+
+		/**
+		 * Checks to see if the cache already has our runtime version key
+		 * cached, and if so there is no need to extract any weight.
+		 */
+		if (!this.metaConstsCache[specVersion]) {
+			const toBeCachedMetadataWeights = await this.getDecorateAndExtractWeight(
 				api,
-				parentHash,
-				block
+				parentParentHash,
+				specVersion,
+				specName
 			);
 
-			const [version, multiplier] = await Promise.all([
-				api.rpc.state.getRuntimeVersion(parentParentHash),
-				api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
-			]);
-
-			[specName, specVersion] = [
-				version.specName.toString(),
-				version.specVersion.toNumber(),
-			];
-
-			const shouldCalcFee = this.shouldCalcFee(specVersion, specName);
-
-			/**
-			 * Checks to see if we need to calculate fee based off of the given
-			 * specVersion, and the minimum versioned required.
-			 */
-			if (!shouldCalcFee) {
-				calcFee = null;
-
-				return {
-					calcFee,
-					specName,
-					specVersion,
-				};
-			}
-
-			/**
-			 * Checks to see if the cache already has our runtime version key
-			 * cached, and if so there is no need to extract any weight.
-			 */
-			if (!this.metaConstsCache[specVersion]) {
-				const toBeCachedMetadataWeights = await this.getDecorateAndExtractWeight(
-					api,
-					parentParentHash,
-					specVersion,
-					specName
-				);
-
-				// Call the this.metaConstsCache setter and update it.
-				this.metaConstsCache = { ...toBeCachedMetadataWeights };
-			}
-
-			calcFee = CalcFee.from_params(
-				coefficients,
-				multiplier.toString(10),
-				perByte.toString(10),
-				specName,
-				specVersion
-			);
+			// Call the this.metaConstsCache setter and update it.
+			this.metaConstsCache = { ...toBeCachedMetadataWeights };
 		}
+
+		const calcFee = CalcFee.from_params(
+			coefficients,
+			multiplier.toString(10),
+			perByte.toString(10),
+			specName,
+			specVersion
+		);
 
 		return {
 			calcFee,
@@ -548,34 +509,13 @@ export class BlocksService extends AbstractService {
 		};
 	}
 
-	/**
-	 * This sanity check is used to make sure we are not going to calculate the
-	 * fee for a block that does not have or require any extrinsicBaseWeight data
-	 * based on their runtime.
-	 *
-	 * There are 3 chains where their minimum runtime version for calculating
-	 * fee's are expected ie: 'polkadot', 'kusama', and 'westend'. This is stored
-	 * in '~chains-config/metadata-consts/substrateConsts.ts'.
-	 *
-	 * If we are in a chain that is not known, the user may export SAS_SUBSTRATE_MIN_CALC_FEE_VERSION
-	 * in order to make sure it doesnt calculate fees for any version below that number.
-	 *
-	 * @param specVersion runtime version
-	 * @param specName chain name
-	 */
-	private shouldCalcFee(specVersion: number, specName: string): boolean {
-		const minConfigVersion =
-			SidecarConfig.config.SUBSTRATE.MIN_CALC_FEE_VERSION || 0;
-
-		if (!minimumCalcFeeVersions[specName]) {
-			/**
-			 * If we are in a chain that is not polkadot, kusama, or westend
-			 */
-			return specVersion >= minConfigVersion;
-		} else {
-			return specVersion >= minimumCalcFeeVersions[specName];
-		}
-	}
+	// REVIEW NOTE
+	// Wether or not fee calculations is done should come from the config for the chain (I expanded
+	// the scope of the controller config to also include this). I don't think we should give end users
+	// this configuration option; a pr should be made on behalf on the chain maintainers to keep the
+	// controllerConfig (or future equivalent) up to date
+	// private shouldCalcFee(specVersion: number): boolean {
+	// }
 
 	/**
 	 * `getDecorateAndExtractWeight` is responsible for returning a object

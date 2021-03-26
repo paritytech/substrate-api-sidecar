@@ -35,7 +35,8 @@ const generateBlockWeightObject = (
 		for (const version of runtimeVersions) {
 			const weightType: string = def.extrinsicBaseWeight
 				? 'extrinsicBaseWeight'
-				: `blockWeights`;
+				: 'blockWeights';
+
 			blockWeightObject[version] = {} as MetadataConstDefinition;
 			blockWeightObject[version][weightType] =
 				def.blockWeights || def.extrinsicBaseWeight;

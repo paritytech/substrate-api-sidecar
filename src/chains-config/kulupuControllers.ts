@@ -23,5 +23,6 @@ export const kulupuControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: false,
+		minCalcFeeRuntime: null,
 	},
 };
