@@ -456,7 +456,7 @@ export class BlocksService extends AbstractService {
 		const extrinsicBaseWeightExists =
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
-		
+
 		let calcFee, specName, specVersion;
 		if (
 			!shouldCalcFee ||
@@ -536,13 +536,14 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * @param
-	 * @param block  
+	 * This sanity check is used to make sure we are not going to calculate the
+	 * fee for a block that does not have or require any extrinsicBaseWeight data
+	 * based on their runtime
+	 *
+	 * @param block Used to grab the extrinsics and check if they are signed
+	 * @param extrinsics Used to check if a fee needs to be payed
 	 */
-	private shouldCalcFee(
-		block: Block,
-		extrinsics: IExtrinsic[]
-	): boolean {
+	private shouldCalcFee(block: Block, extrinsics: IExtrinsic[]): boolean {
 		for (let i = 0; i < block.extrinsics.length; i++) {
 			if (extrinsics[i].paysFee || block.extrinsics[i].isSigned) {
 				return true;
