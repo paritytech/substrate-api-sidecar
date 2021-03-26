@@ -29,7 +29,7 @@ export interface ControllerConfig {
 }
 
 /**
- * Used in BlocksService, to persist decorated metadata to avoid expensive calls
+ * Cache for specific runtime version metadata constants.
  */
 export type MetaConstsCache = Record<string, CacheDecorated>;
 
