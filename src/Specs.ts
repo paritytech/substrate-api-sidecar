@@ -81,6 +81,19 @@ export class Specs {
 			})
 		);
 
+		// MIN_CALC_FEE_VERSION
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.MIN_CALC_FEE_VERSION,
+				'Minimum runtime version to calculate fees for extrinsics in the current node',
+				{
+					default: 0,
+					mandatory: false,
+				}
+			)
+		);
+
 		// TYPES_BUNDLE
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,

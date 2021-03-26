@@ -23,6 +23,7 @@ import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
 import { minimumCalcFeeVersions } from '../../chains-config/metadata-consts/substrateConsts';
+import { SidecarConfig } from '../../SidecarConfig';
 import { MetaConstsCache } from '../../types/chains-config';
 import {
 	IBlock,
@@ -550,13 +551,30 @@ export class BlocksService extends AbstractService {
 	/**
 	 * This sanity check is used to make sure we are not going to calculate the
 	 * fee for a block that does not have or require any extrinsicBaseWeight data
-	 * based on their runtime
+	 * based on their runtime.
+	 *
+	 * There are 3 chains where their minimum runtime version for calculating
+	 * fee's are expected ie: 'polkadot', 'kusama', and 'westend'. This is stored
+	 * in '~chains-config/metadata-consts/substrateConsts.ts'.
+	 *
+	 * If we are in a chain that is not known, the user may export SAS_SUBSTRATE_MIN_CALC_FEE_VERSION
+	 * in order to make sure it doesnt calculate fees for any version below that number.
 	 *
 	 * @param specVersion runtime version
 	 * @param specName chain name
 	 */
 	private shouldCalcFee(specVersion: number, specName: string): boolean {
-		return specVersion >= minimumCalcFeeVersions[specName];
+		const minConfigVersion =
+			SidecarConfig.config.SUBSTRATE.MIN_CALC_FEE_VERSION || 0;
+
+		if (!minimumCalcFeeVersions[specName]) {
+			/**
+			 * If we are in a chain that is not polkadot, kusama, or westend
+			 */
+			return specVersion >= minConfigVersion;
+		} else {
+			return specVersion >= minimumCalcFeeVersions[specName];
+		}
 	}
 
 	/**

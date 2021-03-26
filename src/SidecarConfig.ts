@@ -42,6 +42,10 @@ export class SidecarConfig {
 			},
 			SUBSTRATE: {
 				WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
+				MIN_CALC_FEE_VERSION: config.Get(
+					MODULES.SUBSTRATE,
+					CONFIG.MIN_CALC_FEE_VERSION
+				) as number,
 				TYPES_BUNDLE: config.Get(
 					MODULES.SUBSTRATE,
 					CONFIG.TYPES_BUNDLE
