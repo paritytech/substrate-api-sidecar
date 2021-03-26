@@ -5,9 +5,17 @@ import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
+interface ControllerOptions {
+	minCalcFeeRuntime: null | number;
+}
+
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise) {
-		super(api, '/blocks/:blockId/extrinsics', new BlocksService(api));
+	constructor(api: ApiPromise, options: ControllerOptions) {
+		super(
+			api,
+			'/blocks/:blockId/extrinsics',
+			new BlocksService(api, options.minCalcFeeRuntime)
+		);
 		this.initRoutes();
 	}
 

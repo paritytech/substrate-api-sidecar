@@ -1,11 +1,8 @@
-export interface MetadataConsts extends MetadataWeight {
+export interface MetadataConsts {
 	/**
 	 * Runtimes that include their specific definition of extrinsicBaseWeight
 	 */
 	runtimeVersions: number[];
-}
-
-export interface MetadataWeight {
 	/**
 	 * Polkadot runtime versions before v27
 	 * Kusama runtime versions before v2027
@@ -41,7 +38,7 @@ export interface ExtBaseWeightEntry {
  * Kusama runtime versions after v2026
  */
 export interface PerClassEntry {
-	perClass: PerClassEntry;
+	perClass: IPerClass;
 }
 
 export interface IPerClass {

@@ -55,7 +55,7 @@ interface ResponseObj {
 /**
  * BlockService mock
  */
-const blocksService = new BlocksService(mockApi);
+const blocksService = new BlocksService(mockApi, 0);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
@@ -144,7 +144,7 @@ describe('BlocksService', () => {
 			mockApi.consts.transactionPayment.transactionByteFee = (undefined as unknown) as BalanceOf &
 				AugmentedConst<'promise'>;
 
-			const configuredBlocksService = new BlocksService(mockApi);
+			const configuredBlocksService = new BlocksService(mockApi, 0);
 
 			// fetchBlock options
 			const options = {
