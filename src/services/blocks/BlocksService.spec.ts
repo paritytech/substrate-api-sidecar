@@ -16,8 +16,13 @@ import { BadRequest } from 'http-errors';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
 import {
+	polkadotMetadata,
+	polkadotMetadataV29,
+} from '../../test-helpers/metadata/metadata';
+import {
 	kusamaRegistry,
 	polkadotRegistry,
+	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { IExtrinsic } from '../../types/responses/';
 import {
@@ -54,6 +59,15 @@ const blocksService = new BlocksService(mockApi);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
+		// fetchBlock options for the cache tests
+		const cacheFetchBlockOptions = {
+			eventDocs: true,
+			extrinsicDocs: true,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+		};
+
 		it('works when ApiPromise works (block 789629)', async () => {
 			// fetchBlock options
 			const options = {
@@ -160,18 +174,27 @@ describe('BlocksService', () => {
 		});
 
 		it('Stores necessary runtime weight data inside of the cache', async () => {
-			// fetchBlock options
-			const options = {
-				eventDocs: true,
-				extrinsicDocs: true,
-				checkFinalized: false,
-				queryFinalizedHead: false,
-				omitFinalizedTag: false,
-			};
-
-			await blocksService.fetchBlock(blockHash789629, options);
+			await blocksService.fetchBlock(blockHash789629, cacheFetchBlockOptions);
 
 			expect(blocksService['metaConstsCache']['16']).toBeTruthy();
+		});
+
+		it('Stores multiple runtimes baseWeight data in the `BlocksService` cache', async () => {
+			// Saves first runtime in the cache
+			await blocksService.fetchBlock(blockHash789629, cacheFetchBlockOptions);
+
+			// Set the runtime to a different version
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
+
+			// Saves the second runtime in the cache
+			await blocksService.fetchBlock(blockHash789629, cacheFetchBlockOptions);
+
+			expect(Object.keys(blocksService['metaConstsCache']).length).toBe(2);
+
+			// Reset the specVersion to default 16
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
 		});
 	});
 
@@ -208,7 +231,7 @@ describe('BlocksService', () => {
 	describe('BlocksService.getDecorateAndExtractWeight', () => {
 		const baseWeight = (125000000 as unknown) as AbstractInt;
 
-		it('Should extract extrinsicBaseWeight correctly when were in a non-polkadot the chain and the runtime is the same as the api', async () => {
+		it('Should extract `extrinsicBaseWeight` correctly when were in a non-polkadot-kusama the chain and the runtime version is the same as the api', async () => {
 			const baseWeightObject = await blocksService[
 				'getDecorateAndExtractWeight'
 			](mockApi, ('0xParentHash' as unknown) as Hash, 16, 'westend');
@@ -220,7 +243,10 @@ describe('BlocksService', () => {
 			).toBe(BigInt(baseWeight));
 		});
 
-		it('Should extract extrinsicBaseWeight correctly when the block runtimeVersion matches the api', async () => {
+		it('Should extract `extrinsicBaseWeight` correctly when were in a polkadot the chain and the runtime version doesnt match the api', async () => {
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
+
 			const baseWeightObject = await blocksService[
 				'getDecorateAndExtractWeight'
 			](mockApi, ('0xParentHash' as unknown) as Hash, 16, 'polkadot');
@@ -230,11 +256,15 @@ describe('BlocksService', () => {
 					baseWeightObject['16'].decorated.consts.system.extrinsicBaseWeight
 				)
 			).toBe(BigInt(baseWeight));
+
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
 		});
 
-		it('Should extract extrinsicBaseWeight correctly using expandMetadata when runtimes do not match ', async () => {
+		it('Should extract `extrinsicBaseWeight` correctly using `expandMetadata` when runtimes do not match ', async () => {
 			/**
 			 * The default mockApi is runtimeVersion is 16 so we are testing it against 20
+			 * This Test makes sure we decorate the metadata and capture it correctly
 			 */
 			const baseWeightObject = await blocksService[
 				'getDecorateAndExtractWeight'
@@ -247,7 +277,7 @@ describe('BlocksService', () => {
 			).toBe(BigInt(baseWeight));
 		});
 
-		it('Should extract blockWeights correctly', async () => {
+		it('Should extract `blockWeights` correctly when connected to a polkadot chain', async () => {
 			const baseWeightObject = await blocksService[
 				'getDecorateAndExtractWeight'
 			](mockApi, ('0xParentHash' as unknown) as Hash, 28, 'polkadot');
@@ -258,6 +288,72 @@ describe('BlocksService', () => {
 						.normal.baseExtrinsic
 				)
 			).toBe(BigInt(baseWeight));
+		});
+
+		it('Should extract `blockWeights` correctly when were in a non-polkadot-kusaama chain and the block runtimeVersion doesnt match the api', async () => {
+			/**
+			 * This test focuses on making sure 'getDecorateAndExtractWeight' retrieves
+			 * the proper blockWeights from the decorated metadata. In order for this to happen
+			 * runtime v29 from polkadot is used. I pass in 'westend' as the specName to make sure we hit
+			 * the condition.
+			 */
+			const changeMetadataToV29 = () =>
+				Promise.resolve().then(() => polkadotMetadataV29);
+			const revertedMetadata = () =>
+				Promise.resolve().then(() => polkadotMetadata);
+
+			(mockApi.registry as unknown) = polkadotRegistryV29;
+			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
+
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 29, 'westend');
+
+			expect(
+				BigInt(
+					baseWeightObject['29'].decorated.consts.system.blockWeights?.perClass
+						.normal.baseExtrinsic
+				)
+			).toBe(BigInt(baseWeight));
+
+			(mockApi.registry as unknown) = polkadotMetadata;
+			(mockApi.rpc.state.getMetadata as unknown) = revertedMetadata;
+		});
+
+		it('Should extract `blockWeights` correctly when the runtimeVersion matches the api', async () => {
+			const blockWeightsObject = {
+				perClass: {
+					normal: {
+						baseExtrinsic: 125000000,
+					},
+				},
+			};
+
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 29);
+			(mockApi.consts.system.extrinsicBaseWeight as unknown) = undefined;
+			(mockApi.consts.system['blockWeights'] as unknown) = blockWeightsObject;
+
+			const baseWeightObject = await blocksService[
+				'getDecorateAndExtractWeight'
+			](mockApi, ('0xParentHash' as unknown) as Hash, 29, 'westend');
+
+			expect(
+				BigInt(
+					baseWeightObject['29'].decorated.consts.system.blockWeights?.perClass
+						.normal.baseExtrinsic
+				)
+			).toBe(BigInt(baseWeight));
+
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
+			(mockApi.consts.system
+				.extrinsicBaseWeight as unknown) = polkadotRegistry.createType(
+				'u64',
+				125000000
+			);
+			(mockApi.consts.system.blockWeights.perClass.normal
+				.baseExtrinsic as unknown) = undefined;
 		});
 	});
 
