@@ -181,7 +181,8 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				mockBlock789629
+				mockBlock789629,
+				true
 			);
 
 			expect(calcFee?.calc_fee(BigInt(399480000), 534, BigInt(125000000))).toBe(
@@ -194,7 +195,8 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				mockBlock789629
+				mockBlock789629,
+				true
 			);
 
 			expect(

@@ -176,10 +176,13 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
+		const shouldCalcFee = this.shouldCalcFee(block, extrinsics);
+
 		const { calcFee, specName, specVersion } = await this.createCalcFee(
 			api,
 			parentHash,
-			block
+			block,
+			shouldCalcFee
 		);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -446,15 +449,17 @@ export class BlocksService extends AbstractService {
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		block: Block
+		block: Block,
+		shouldCalcFee: boolean
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
-
+		
 		let calcFee, specName, specVersion;
 		if (
+			!shouldCalcFee ||
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !== 'function'
@@ -528,6 +533,22 @@ export class BlocksService extends AbstractService {
 			specName,
 			specVersion,
 		};
+	}
+
+	/**
+	 * @param
+	 * @param block  
+	 */
+	private shouldCalcFee(
+		block: Block,
+		extrinsics: IExtrinsic[]
+	): boolean {
+		for (let i = 0; i < block.extrinsics.length; i++) {
+			if (extrinsics[i].paysFee || block.extrinsics[i].isSigned) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
