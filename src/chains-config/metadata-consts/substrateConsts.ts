@@ -11,6 +11,8 @@
  * directly to `./polkadotConsts`, and `./kusamaConsts` files.
  */
 
+import { IPerClass } from 'src/types/chains-config';
+
 /**
  * Polkadot runtime versions before v0.8.27
  * Kusama runtime versions before v2027
@@ -31,7 +33,7 @@ export const extrinsicBaseWeight = BigInt(125000000);
  * Polkadot runtime versions after v0.8.26
  * Kusama runtime versions after v2026
  */
-export const perClass = {
+export const perClass: IPerClass = {
 	normal: {
 		// REVIEW NOTE, these should be stored as the value needed when they are used. No sense
 		// in having to just do the conversion later on N times when we could just start out with

@@ -8,6 +8,7 @@ import AbstractController from '../AbstractController';
 
 interface ControllerOptions {
 	finalizes: boolean;
+	minCalcFeeRuntime: null | number;
 }
 
 /**

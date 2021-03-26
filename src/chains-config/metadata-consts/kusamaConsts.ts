@@ -1,7 +1,7 @@
-import { MetadataConstDefinition } from '../../types/chains-config';
-import { blockWeights, extrinsicBaseWeight } from './substrateConsts';
+import { MetadataConsts } from '../../types/chains-config';
+import { extrinsicBaseWeight, perClass } from './substrateConsts';
 
-export const kusamaDefinitions: MetadataConstDefinition[] = [
+export const kusamaDefinitions: MetadataConsts[] = [
 	{
 		runtimeVersions: [
 			1062,
@@ -23,6 +23,6 @@ export const kusamaDefinitions: MetadataConstDefinition[] = [
 	},
 	{
 		runtimeVersions: [2027, 2028, 2029],
-		blockWeights,
+		perClass,
 	},
 ];
