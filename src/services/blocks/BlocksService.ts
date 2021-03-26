@@ -22,6 +22,7 @@ import { CalcFee } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
+import { minimumCalcFeeVersions } from '../../chains-config/metadata-consts/substrateConsts';
 import { MetaConstsCache } from '../../types/chains-config';
 import {
 	IBlock,
@@ -176,13 +177,10 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const shouldCalcFee = this.shouldCalcFee(block, extrinsics);
-
 		const { calcFee, specName, specVersion } = await this.createCalcFee(
 			api,
 			parentHash,
-			block,
-			shouldCalcFee
+			block
 		);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -449,8 +447,7 @@ export class BlocksService extends AbstractService {
 	private async createCalcFee(
 		api: ApiPromise,
 		parentHash: Hash,
-		block: Block,
-		shouldCalcFee: boolean
+		block: Block
 	): Promise<ICalcFee> {
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -459,7 +456,6 @@ export class BlocksService extends AbstractService {
 
 		let calcFee, specName, specVersion;
 		if (
-			!shouldCalcFee ||
 			perByte === undefined ||
 			extrinsicBaseWeightExists === undefined ||
 			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !== 'function'
@@ -503,6 +499,22 @@ export class BlocksService extends AbstractService {
 				version.specVersion.toNumber(),
 			];
 
+			const shouldCalcFee = this.shouldCalcFee(specVersion, specName);
+
+			/**
+			 * Checks to see if we need to calculate fee based off of the given
+			 * specVersion, and the minimum versioned required.
+			 */
+			if (!shouldCalcFee) {
+				calcFee = null;
+
+				return {
+					calcFee,
+					specName,
+					specVersion,
+				};
+			}
+
 			/**
 			 * Checks to see if the cache already has our runtime version key
 			 * cached, and if so there is no need to extract any weight.
@@ -540,16 +552,11 @@ export class BlocksService extends AbstractService {
 	 * fee for a block that does not have or require any extrinsicBaseWeight data
 	 * based on their runtime
 	 *
-	 * @param block Used to grab the extrinsics and check if they are signed
-	 * @param extrinsics Used to check if a fee needs to be payed
+	 * @param specVersion runtime version
+	 * @param specName chain name
 	 */
-	private shouldCalcFee(block: Block, extrinsics: IExtrinsic[]): boolean {
-		for (let i = 0; i < block.extrinsics.length; i++) {
-			if (extrinsics[i].paysFee || block.extrinsics[i].isSigned) {
-				return true;
-			}
-		}
-		return false;
+	private shouldCalcFee(specVersion: number, specName: string): boolean {
+		return specVersion >= minimumCalcFeeVersions[specName];
 	}
 
 	/**

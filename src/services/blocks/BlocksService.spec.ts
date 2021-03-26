@@ -204,8 +204,7 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				mockBlock789629,
-				true
+				mockBlock789629
 			);
 
 			expect(calcFee?.calc_fee(BigInt(399480000), 534, BigInt(125000000))).toBe(
@@ -218,13 +217,32 @@ describe('BlocksService', () => {
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
-				mockBlock789629,
-				true
+				mockBlock789629
 			);
 
 			expect(
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
+		});
+
+		it('Should return a null calcFee when the runtime version is less than the minimum required version', async () => {
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 4);
+			(mockApi.runtimeVersion
+				.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
+
+			const { calcFee } = await blocksService['createCalcFee'](
+				mockApi,
+				('0xParentHash' as unknown) as Hash,
+				mockBlock789629
+			);
+
+			expect(calcFee).toBe(null);
+
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
+			(mockApi.runtimeVersion
+				.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
 		});
 	});
 

@@ -36,3 +36,9 @@ export const blockWeights = {
 		},
 	},
 };
+
+export const minimumCalcFeeVersions = {
+	polkadot: 0,
+	kusama: 1062,
+	westend: 6,
+};
