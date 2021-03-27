@@ -1,20 +1,22 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import { BlockWeightStore } from 'src/types/chains-config';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 interface ControllerOptions {
+	blockWeightStore: BlockWeightStore;
 	minCalcFeeRuntime: null | number;
 }
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, options: ControllerOptions) {
+	constructor(api: ApiPromise, opts: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
-			new BlocksService(api, options.minCalcFeeRuntime)
+			new BlocksService(api, opts.minCalcFeeRuntime, opts.blockWeightStore)
 		);
 		this.initRoutes();
 	}

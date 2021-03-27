@@ -19,7 +19,6 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { getBlockWeight } from '../../chains-config/metadata-consts/index';
 import {
 	BlockWeightStore,
 	ExtBaseWeightValue,
@@ -64,15 +63,12 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
-	private blockWeightStore: BlockWeightStore;
-	private minCalcFeeRuntime: null | number;
-	constructor(api: ApiPromise, minCalcFeeRuntime: null | number) {
+	constructor(
+		api: ApiPromise,
+		private minCalcFeeRuntime: null | number,
+		private blockWeightStore: BlockWeightStore = {}
+	) {
 		super(api);
-		this.blockWeightStore =
-			minCalcFeeRuntime !== null
-				? getBlockWeight(api.runtimeChain.toString())
-				: {};
-		this.minCalcFeeRuntime = minCalcFeeRuntime;
 	}
 
 	/**

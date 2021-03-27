@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Kusama configuration for Sidecar.
@@ -27,5 +28,6 @@ export const kusamaControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1062,
+		blockWeightStore: getBlockWeight('kusama'),
 	},
 };

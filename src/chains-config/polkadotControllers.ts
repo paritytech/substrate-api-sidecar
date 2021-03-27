@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Polkadot configuration for Sidecar.
@@ -27,5 +28,6 @@ export const polkadotControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
+		blockWeightStore: getBlockWeight('polkadot'),
 	},
 };

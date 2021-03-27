@@ -27,5 +27,6 @@ export const westendControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 6,
+		blockWeightStore: {},
 	},
 };

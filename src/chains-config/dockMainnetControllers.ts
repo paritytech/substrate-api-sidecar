@@ -27,5 +27,6 @@ export const dockMainnetControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
+		blockWeightStore: {},
 	},
 };
