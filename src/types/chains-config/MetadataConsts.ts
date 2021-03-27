@@ -18,6 +18,8 @@ export interface MetadataConsts {
 // REVIEW NOTE
 // I think organizing this type as a union will give better errors from tsc.
 // Additionally, I preffer having it as minimally nested for now for simplicity.
+// I think we should keep things as simple as possible for now and if we need to
+// add stuff we can do it in the future.
 /**
  * Block weight store value types.
  */

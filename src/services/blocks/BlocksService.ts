@@ -22,10 +22,10 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import { getBlockWeight } from '../../chains-config/metadata-consts/index';
 import {
 	BlockWeightStore,
-	ExtBaseWeightEntry,
+	ExtBaseWeightValue,
 	IPerClass,
-	MetaWeightDefVal,
-	PerClassEntry,
+	PerClassValue,
+	WeightValue,
 } from '../../types/chains-config';
 import {
 	IBlock,
@@ -267,18 +267,18 @@ export class BlocksService extends AbstractService {
 				 */
 				let extrinsicBaseWeight;
 				if (
-					(this.blockWeightStore[specVersion] as ExtBaseWeightEntry)
+					(this.blockWeightStore[specVersion] as ExtBaseWeightValue)
 						.extrinsicBaseWeight
 				) {
 					extrinsicBaseWeight = (this.blockWeightStore[
 						specVersion
-					] as ExtBaseWeightEntry).extrinsicBaseWeight;
+					] as ExtBaseWeightValue).extrinsicBaseWeight;
 				} else if (
-					(this.blockWeightStore[specVersion] as PerClassEntry).perClass
+					(this.blockWeightStore[specVersion] as PerClassValue).perClass
 				) {
 					extrinsicBaseWeight = (this.blockWeightStore[
 						specVersion
-					] as PerClassEntry)?.perClass[weightInfoClass]?.baseExtrinsic;
+					] as PerClassValue)?.perClass[weightInfoClass]?.baseExtrinsic;
 				}
 
 				if (!extrinsicBaseWeight) {
@@ -550,7 +550,7 @@ export class BlocksService extends AbstractService {
 	private async getWeight(
 		api: ApiPromise,
 		blockHash: BlockHash
-	): Promise<MetaWeightDefVal> {
+	): Promise<WeightValue> {
 		const metadata = await api.rpc.state.getMetadata(blockHash);
 		const {
 			consts: { system },
