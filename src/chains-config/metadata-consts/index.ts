@@ -1,4 +1,9 @@
-import { BlockWeightStore, MetadataConsts } from '../../types/chains-config';
+import {
+	BlockWeightStore,
+	ExtBaseWeightValue,
+	MetadataConsts,
+	PerClassValue,
+} from '../../types/chains-config';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 
@@ -33,10 +38,10 @@ export function generateBlockWeightStore(
 			blockWeightObject[version] = {};
 
 			if (def.extrinsicBaseWeight) {
-				blockWeightObject[version]['extrinsicBaseWeight'] =
+				(blockWeightObject[version] as ExtBaseWeightValue).extrinsicBaseWeight =
 					def.extrinsicBaseWeight;
 			} else if (def.perClass) {
-				blockWeightObject[version]['perClass'] = def.perClass;
+				(blockWeightObject[version] as PerClassValue).perClass = def.perClass;
 			} else {
 				throw new Error(
 					'No Valid weight type found while generating block weight store'
@@ -54,7 +59,7 @@ export function generateBlockWeightStore(
  *
  * @param specName specName from the metadata of the current block being fetched
  */
-export const getBlockWeight = (specName: string): BlockWeightStore => {
+export function getBlockWeight(specName: string): BlockWeightStore {
 	switch (specName) {
 		case 'polkadot':
 			return generateBlockWeightStore(polkadotDefinitions);
@@ -63,4 +68,4 @@ export const getBlockWeight = (specName: string): BlockWeightStore => {
 		default:
 			return {};
 	}
-};
+}

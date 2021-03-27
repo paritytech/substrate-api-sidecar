@@ -267,8 +267,9 @@ export class BlocksService extends AbstractService {
 				 */
 				let extrinsicBaseWeight;
 				if (
+					// 0n is a falsy value so we need to check if undefined
 					(this.blockWeightStore[specVersion] as ExtBaseWeightValue)
-						.extrinsicBaseWeight
+						.extrinsicBaseWeight !== undefined
 				) {
 					extrinsicBaseWeight = (this.blockWeightStore[
 						specVersion
@@ -510,6 +511,7 @@ export class BlocksService extends AbstractService {
 				specName,
 			};
 		}
+
 		// Now that we know the exact runtime supports fee calcs, make sure we have
 		// the weights in the store
 		this.blockWeightStore[specVersion] ||= await this.getWeight(
@@ -556,7 +558,7 @@ export class BlocksService extends AbstractService {
 			consts: { system },
 		} = expandMetadata(api.registry, metadata);
 
-		let weightEntry;
+		let weightValue;
 		if (((system.blockWeights as unknown) as BlockWeights)?.perClass) {
 			const {
 				normal,
@@ -564,25 +566,21 @@ export class BlocksService extends AbstractService {
 				mandatory,
 			} = ((system.blockWeights as unknown) as BlockWeights)?.perClass;
 
-			const normalBigInt = normal.baseExtrinsic.toBigInt();
-			const operationalBigInt = operational.baseExtrinsic.toBigInt();
-			const mandatoryBigInt = mandatory.baseExtrinsic.toBigInt();
-
 			const perClass = {
 				normal: {
-					baseExtrinsic: normalBigInt,
+					baseExtrinsic: normal.baseExtrinsic.toBigInt(),
 				},
 				operational: {
-					baseExtrinsic: operationalBigInt,
+					baseExtrinsic: operational.baseExtrinsic.toBigInt(),
 				},
 				mandatory: {
-					baseExtrinsic: mandatoryBigInt,
+					baseExtrinsic: mandatory.baseExtrinsic.toBigInt(),
 				},
 			};
 
-			weightEntry = { perClass: perClass };
+			weightValue = { perClass };
 		} else if (system.extrinsicBaseWeight) {
-			weightEntry = {
+			weightValue = {
 				extrinsicBaseWeight: ((system.extrinsicBaseWeight as unknown) as AbstractInt).toBigInt(),
 			};
 		} else {
@@ -591,7 +589,7 @@ export class BlocksService extends AbstractService {
 			);
 		}
 
-		return weightEntry;
+		return weightValue;
 	}
 
 	/**
