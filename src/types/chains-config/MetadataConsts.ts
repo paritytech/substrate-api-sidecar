@@ -37,7 +37,7 @@ export interface ExtBaseWeightValue {
  * Polkadot runtime versions after v26
  * Kusama runtime versions after v2026
  *
- * Block weight store value type for perClass.
+ * Block weight store value type for blockweights.perClass.
  */
 export interface PerClassValue {
 	perClass: IPerClass;
