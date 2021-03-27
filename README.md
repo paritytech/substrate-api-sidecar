@@ -180,10 +180,6 @@ and then set the enviroment variable to point to your definitions:
 export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 ```
 
-### Calculating Fee's Config
-
-- `SAS_SUBSTRATE_MIN_CALC_FEE_VERSION`: For chains that are not 'Polkadot', 'Kusama', or 'Westend', if you    choose to opt out or have previous runtimes that do not require calculating fee's you may specify a minimum version. Every runtime under that minimum version will not calculate any fees. This is used for the `/blocks` endpoint.  
-
 ### Logging
 
 -   `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`

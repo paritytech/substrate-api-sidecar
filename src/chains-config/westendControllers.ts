@@ -1,9 +1,9 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * Kusama configuration for Sidecar.
+ * Westend configuration for Sidecar.
  */
-export const kusamaControllers: ControllerConfig = {
+export const westendControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
@@ -26,6 +26,6 @@ export const kusamaControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 1062,
+		minCalcFeeRuntime: 6,
 	},
 };

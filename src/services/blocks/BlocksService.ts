@@ -24,6 +24,7 @@ import {
 	BlockWeightStore,
 	ExtBaseWeightEntry,
 	IPerClass,
+	MetaWeightDefVal,
 	PerClassEntry,
 } from '../../types/chains-config';
 import {
@@ -63,7 +64,7 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
-	blockWeightStore: BlockWeightStore;
+	private blockWeightStore: BlockWeightStore;
 	private minCalcFeeRuntime: null | number;
 	constructor(api: ApiPromise, minCalcFeeRuntime: null | number) {
 		super(api);
@@ -178,15 +179,16 @@ export class BlocksService extends AbstractService {
 
 		let calcFee, specName, specVersion;
 		if (this.minCalcFeeRuntime === null) {
-			// Don't bother with trying to create calcFee for a runtime that is not supported
+			// Don't bother with trying to create calcFee for a runtime where fee calcs are not supported
 			specVersion = -1;
 			specName = 'ERROR';
 			calcFee = undefined;
 		} else {
-			const res = await this.createCalcFee(api, parentHash, block);
-			calcFee = res.calcFee;
-			specName = res.specName;
-			specVersion = res.specVersion;
+			// This runtime supports fee calc
+			const createCalcFee = await this.createCalcFee(api, parentHash, block);
+			calcFee = createCalcFee.calcFee;
+			specName = createCalcFee.specName;
+			specVersion = createCalcFee.specVersion;
 		}
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -196,7 +198,7 @@ export class BlocksService extends AbstractService {
 
 			if (this.minCalcFeeRuntime === null) {
 				extrinsics[idx].info = {
-					message: `Fee calculation not supported for this network`,
+					error: `Fee calculation not supported for this network`,
 				};
 				continue;
 			}
@@ -495,59 +497,25 @@ export class BlocksService extends AbstractService {
 
 		const [version, multiplier] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(parentParentHash),
-			api.query.transactionPayment.nextFeeMultiplier.at(parentHash),
+			api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash),
 		]);
 
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 
-		/**
-		 * Checks to see if the cache already has our runtime version key
-		 * cached, and if so there is no need to extract any weight.
-		 */
-		if (!(specVersion in this.blockWeightStore)) {
-			const metadata = await api.rpc.state.getMetadata(parentHash);
-			const {
-				consts: { system },
-			} = expandMetadata(api.registry, metadata);
-
-			let w;
-			if (((system.blockWeights as unknown) as BlockWeights)?.perClass) {
-				const {
-					normal,
-					operational,
-					mandatory,
-				} = ((system.blockWeights as unknown) as BlockWeights)?.perClass;
-
-				const normalBigInt = normal.baseExtrinsic.toBigInt();
-				const operationalBigInt = operational.baseExtrinsic.toBigInt();
-				const mandatoryBigInt = mandatory.baseExtrinsic.toBigInt();
-
-				const perClass = {
-					normal: {
-						baseExtrinsic: normalBigInt,
-					},
-					operational: {
-						baseExtrinsic: operationalBigInt,
-					},
-					mandatory: {
-						baseExtrinsic: mandatoryBigInt,
-					},
-				};
-
-				w = { perClass: perClass };
-			} else if (system.extrinsicBaseWeight) {
-				w = {
-					extrinsicBaseWeight: ((system.extrinsicBaseWeight as unknown) as AbstractInt).toBigInt(),
-				};
-			} else {
-				throw new InternalServerError(
-					'Could not find a extrinsic base weight in metadata'
-				);
-			}
-
-			this.blockWeightStore[specVersion] = w;
+		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
+			// This particular runtime version is not supported with fee calcs
+			return {
+				specVersion,
+				specName,
+			};
 		}
+		// Now that we know the exact runtime supports fee calcs, make sure we have
+		// the weights in the store
+		this.blockWeightStore[specVersion] ||= await this.getWeight(
+			api,
+			parentHash
+		);
 
 		const calcFee = CalcFee.from_params(
 			coefficients,
@@ -572,95 +540,59 @@ export class BlocksService extends AbstractService {
 	// private shouldCalcFee(specVersion: number): boolean {
 	// }
 
-	// /**
-	//  * `getDecorateAndExtractWeight` is responsible for returning a object
-	//  * with a key that represents the runtimeVersion of the fetched block with a value
-	//  * that points to the weight data needed to calculate fees. This object will then
-	//  * get set into our local cache.
-	//  *
-	//  * @param blockHash The parentParentHash used to retreive the metadata
-	//  * @param api Used if the runtime matches the api and to also decorate the metadata
-	//  * @param specVersion Used to set the runtime in the cache
-	//  * @param specName Used to check the chain were connected to and see if its polkadot or kusama
-	//  */
-	// private async getDecorateAndExtractWeight(
-	// 	api: ApiPromise,
-	// 	blockHash: Hash,
-	// 	specVersion: number,
-	// 	specName: string
-	// ): Promise<MetaConstsCache> {
-	// 	const extractedWeight: MetaConstsCache = {};
+	/**
+	 *	Get a formatted blockweight store value for the runtime corresponding to the given block hash.
+	 *
+	 * @param api ApiPromise
+	 * @param blockHash Hash of a block in the runtime to get the extrinsic base weight(s) for
+	 * @returns formatted block weight store entry
+	 */
+	private async getWeight(
+		api: ApiPromise,
+		blockHash: BlockHash
+	): Promise<MetaWeightDefVal> {
+		const metadata = await api.rpc.state.getMetadata(blockHash);
+		const {
+			consts: { system },
+		} = expandMetadata(api.registry, metadata);
 
-	// 	const decoratedKeyValues = {
-	// 		decorated: {
-	// 			consts: {
-	// 				system: {},
-	// 			},
-	// 		},
-	// 	};
+		let weightEntry;
+		if (((system.blockWeights as unknown) as BlockWeights)?.perClass) {
+			const {
+				normal,
+				operational,
+				mandatory,
+			} = ((system.blockWeights as unknown) as BlockWeights)?.perClass;
 
-	// 	// Set the runtime version key to `decoratedKeyValues`.
-	// 	extractedWeight[specVersion] = decoratedKeyValues;
+			const normalBigInt = normal.baseExtrinsic.toBigInt();
+			const operationalBigInt = operational.baseExtrinsic.toBigInt();
+			const mandatoryBigInt = mandatory.baseExtrinsic.toBigInt();
 
-	// 	const doesCacheThisChain = specName === 'polkadot' || specName === 'kusama';
+			const perClass = {
+				normal: {
+					baseExtrinsic: normalBigInt,
+				},
+				operational: {
+					baseExtrinsic: operationalBigInt,
+				},
+				mandatory: {
+					baseExtrinsic: mandatoryBigInt,
+				},
+			};
 
-	// 	const doesRuntimeMatchApi =
-	// 		specVersion === api.runtimeVersion.specVersion.toNumber();
+			weightEntry = { perClass: perClass };
+		} else if (system.extrinsicBaseWeight) {
+			weightEntry = {
+				extrinsicBaseWeight: ((system.extrinsicBaseWeight as unknown) as AbstractInt).toBigInt(),
+			};
+		} else {
+			throw new InternalServerError(
+				'Could not find a extrinsic base weight in metadata'
+			);
+		}
 
-	// 	if (doesRuntimeMatchApi) {
-	// 		/**
-	// 		 * If the blocks runtime version matches the api's runtime version
-	// 		 * we pull the weight directly from the api.
-	// 		 */
-	// 		if (api.consts.system?.extrinsicBaseWeight) {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'extrinsicBaseWeight'
-	// 			] = (api.consts.system?.extrinsicBaseWeight as unknown) as AbstractInt;
-	// 		} else {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'blockWeights'
-	// 			] = (api.consts.system.blockWeights as unknown) as BlockWeights;
-	// 		}
-	// 	} else if (doesCacheThisChain) {
-	// 		/**
-	// 		 * Retrieve the base weight data associated with either polkadot or kusama.
-	// 		 * These values are stored in the chains-config and are updated as runtimes
-	// 		 * are added to the chain.
-	// 		 */
-	// 		const cachedChainWeightsSAS = getBlockWeight(specName);
-	// 		const cachedVersion = cachedChainWeightsSAS[specVersion];
-
-	// 		if (cachedVersion.extrinsicBaseWeight) {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'extrinsicBaseWeight'
-	// 			] = (cachedVersion.extrinsicBaseWeight as unknown) as AbstractInt;
-	// 		} else {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'blockWeights'
-	// 			] = (cachedVersion.blockWeights as unknown) as BlockWeights;
-	// 		}
-	// 	} else {
-	// 		/**
-	// 		 * When the weight isn't stored in our cache already, isn't stored in the api,
-	// 		 * or the chain isnt polkadot or kusama we decorate the metadata by expanding it.
-	// 		 */
-	// 		const metadata = await api.rpc.state.getMetadata(blockHash);
-	// 		const decorated = expandMetadata(api.registry, metadata);
-
-	// 		if (decorated.consts.system.extrinsicBaseWeight) {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'extrinsicBaseWeight'
-	// 			] = (decorated.consts.system
-	// 				.extrinsicBaseWeight as unknown) as AbstractInt;
-	// 		} else {
-	// 			extractedWeight[specVersion].decorated.consts.system[
-	// 				'blockWeights'
-	// 			] = (decorated.consts.system.blockWeights as unknown) as BlockWeights;
-	// 		}
-	// 	}
-
-	// 	return extractedWeight;
-	// }
+		return weightEntry;
+	}
 
 	/**
 	 * The block where the runtime is deployed falsely proclaims it would

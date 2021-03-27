@@ -3,7 +3,7 @@ import { ControllerConfig } from '../types/chains-config';
 /**
  * Polkadot configuration for Sidecar.
  */
-export const defaultControllers: ControllerConfig = {
+export const polkadotControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
