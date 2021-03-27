@@ -37,11 +37,14 @@ export function generateBlockWeightStore(
 		for (const version of runtimeVersions) {
 			blockWeightObject[version] = {};
 
-			if (def.extrinsicBaseWeight) {
-				(blockWeightObject[version] as ExtBaseWeightValue).extrinsicBaseWeight =
-					def.extrinsicBaseWeight;
-			} else if (def.perClass) {
-				(blockWeightObject[version] as PerClassValue).perClass = def.perClass;
+			if ((def as ExtBaseWeightValue).extrinsicBaseWeight) {
+				(blockWeightObject[
+					version
+				] as ExtBaseWeightValue).extrinsicBaseWeight = (def as ExtBaseWeightValue).extrinsicBaseWeight;
+			} else if ((def as PerClassValue).perClass) {
+				(blockWeightObject[
+					version
+				] as PerClassValue).perClass = (def as PerClassValue).perClass;
 			} else {
 				throw new Error(
 					'No Valid weight type found while generating block weight store'

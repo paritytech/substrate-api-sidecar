@@ -1,18 +1,12 @@
-export interface MetadataConsts {
+export type MetadataConsts =
+	| (PerClassValue & RuntimeVersions)
+	| (ExtBaseWeightValue & RuntimeVersions);
+
+interface RuntimeVersions {
 	/**
 	 * Runtimes that include their specific definition of extrinsicBaseWeight
 	 */
 	runtimeVersions: number[];
-	/**
-	 * Polkadot runtime versions before v27
-	 * Kusama runtime versions before v2027
-	 */
-	extrinsicBaseWeight?: BigInt;
-	/**
-	 * Polkadot runtime versions after v26
-	 * Kusama runtime versions after v2026
-	 */
-	perClass?: IPerClass;
 }
 
 // REVIEW NOTE
