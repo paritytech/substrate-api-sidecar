@@ -1,31 +1,47 @@
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+export type MetadataConsts =
+	| (PerClassValue & RuntimeVersions)
+	| (ExtBaseWeightValue & RuntimeVersions);
 
-export interface MetadataConstDefinition extends MetadataWeightDefinition {
+interface RuntimeVersions {
 	/**
 	 * Runtimes that include their specific definition of extrinsicBaseWeight
 	 */
 	runtimeVersions: number[];
 }
 
-export interface MetadataWeightDefinition {
-	/**
-	 * Polkadot runtime versions before v0.8.27
-	 * Kusama runtime versions before v2027
-	 */
-	extrinsicBaseWeight?: number | AbstractInt;
-	/**
-	 * Polkadot runtime versions after v0.8.26
-	 * Kusama runtime versions after v2026
-	 */
-	blockWeights?: BlockWeightDefinitions;
+/**
+ * Block weight store value types.
+ */
+export type WeightValue = ExtBaseWeightValue | PerClassValue;
+
+/**
+ * Polkadot runtime versions before v27
+ * Kusama runtime versions before v2027
+ *
+ * Block weight store value type for extrinsicBaseWeight.
+ */
+export interface ExtBaseWeightValue {
+	extrinsicBaseWeight?: BigInt;
 }
 
-interface PerClassTypes {
-	baseExtrinsic: number;
+/**
+ * Polkadot runtime versions after v26
+ * Kusama runtime versions after v2026
+ *
+ * Block weight store value type for blockweights.perClass.
+ */
+export interface PerClassValue {
+	perClass: IPerClass;
 }
 
-type PerClassStrings = 'normal' | 'operational' | 'mandatory';
-
-interface BlockWeightDefinitions {
-	perClass: Record<PerClassStrings, PerClassTypes>;
+export interface IPerClass {
+	normal: IWeightPerClass;
+	mandatory: IWeightPerClass;
+	operational: IWeightPerClass;
 }
+
+export interface IWeightPerClass {
+	baseExtrinsic: BigInt;
+}
+
+export type BlockWeightStore = Record<number, WeightValue>;

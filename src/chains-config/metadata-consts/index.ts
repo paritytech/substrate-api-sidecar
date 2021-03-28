@@ -1,6 +1,8 @@
 import {
-	MetadataConstDefinition,
-	MetadataWeightDefinition,
+	BlockWeightStore,
+	ExtBaseWeightValue,
+	MetadataConsts,
+	PerClassValue,
 } from '../../types/chains-config';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
@@ -25,25 +27,34 @@ import { polkadotDefinitions } from './polkadotConsts';
  * @param definitions An array of objects that group data based on runtimes
  * and their extrinsicBaseWeight metadata
  */
-const generateBlockWeightObject = (
-	chainDefinitions: MetadataConstDefinition[]
-): Record<string, MetadataWeightDefinition> => {
-	const blockWeightObject: Record<string, MetadataWeightDefinition> = {};
+export function generateBlockWeightStore(
+	chainDefinitions: MetadataConsts[]
+): BlockWeightStore {
+	const blockWeightObject: BlockWeightStore = {};
 
 	for (const def of chainDefinitions) {
-		const runtimeVersions: number[] = def.runtimeVersions;
+		const runtimeVersions = def.runtimeVersions;
 		for (const version of runtimeVersions) {
-			const weightType: string = def.extrinsicBaseWeight
-				? 'extrinsicBaseWeight'
-				: `blockWeights`;
-			blockWeightObject[version] = {} as MetadataConstDefinition;
-			blockWeightObject[version][weightType] =
-				def.blockWeights || def.extrinsicBaseWeight;
+			blockWeightObject[version] = {};
+
+			if ((def as ExtBaseWeightValue).extrinsicBaseWeight) {
+				(blockWeightObject[
+					version
+				] as ExtBaseWeightValue).extrinsicBaseWeight = (def as ExtBaseWeightValue).extrinsicBaseWeight;
+			} else if ((def as PerClassValue).perClass) {
+				(blockWeightObject[
+					version
+				] as PerClassValue).perClass = (def as PerClassValue).perClass;
+			} else {
+				throw new Error(
+					'No Valid weight type found while generating block weight store'
+				);
+			}
 		}
 	}
 
 	return blockWeightObject;
-};
+}
 
 /**
  * Returns a set of runtimes pointing to their blockWeightDefinitions specific to
@@ -51,15 +62,13 @@ const generateBlockWeightObject = (
  *
  * @param specName specName from the metadata of the current block being fetched
  */
-export const getBlockWeight = (
-	specName: string
-): Record<string, MetadataWeightDefinition> => {
+export function getBlockWeight(specName: string): BlockWeightStore {
 	switch (specName) {
 		case 'polkadot':
-			return generateBlockWeightObject(polkadotDefinitions);
+			return generateBlockWeightStore(polkadotDefinitions);
 		case 'kusama':
-			return generateBlockWeightObject(kusamaDefinitions);
+			return generateBlockWeightStore(kusamaDefinitions);
 		default:
 			return {};
 	}
-};
+}

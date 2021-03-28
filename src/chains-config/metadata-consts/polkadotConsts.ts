@@ -1,7 +1,7 @@
-import { MetadataConstDefinition } from '../../types/chains-config';
-import { blockWeights, extrinsicBaseWeight } from './substrateConsts';
+import { MetadataConsts } from '../../types/chains-config';
+import { extrinsicBaseWeight, perClass } from './substrateConsts';
 
-export const polkadotDefinitions: MetadataConstDefinition[] = [
+export const polkadotDefinitions: MetadataConsts[] = [
 	{
 		runtimeVersions: [
 			0,
@@ -29,6 +29,6 @@ export const polkadotDefinitions: MetadataConstDefinition[] = [
 	},
 	{
 		runtimeVersions: [27, 28, 29],
-		blockWeights,
+		perClass,
 	},
 ];

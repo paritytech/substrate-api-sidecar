@@ -27,5 +27,7 @@ export const defaultControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
+		minCalcFeeRuntime: null,
+		blockWeightStore: {},
 	},
 };

@@ -8,7 +8,6 @@ export interface ISidecarConfig {
 }
 
 interface ISidecarConfigSubstrate {
-	MIN_CALC_FEE_VERSION: number;
 	WS_URL: string;
 	TYPES_BUNDLE: string;
 	TYPES_CHAIN: string;

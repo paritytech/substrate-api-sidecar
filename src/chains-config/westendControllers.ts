@@ -1,9 +1,9 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * Controllers for mandala, acala's test network.
+ * Westend configuration for Sidecar.
  */
-export const mandalaControllers: ControllerConfig = {
+export const westendControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
@@ -26,7 +26,7 @@ export const mandalaControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 6,
 		blockWeightStore: {},
 	},
 };

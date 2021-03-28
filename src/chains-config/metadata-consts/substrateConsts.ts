@@ -1,5 +1,3 @@
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-
 /**
  * WEIGHT NOTES (POLKADOT | KUSAMA)
  * @constant extrinsicBaseWeight
@@ -13,32 +11,26 @@ import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
  * directly to `./polkadotConsts`, and `./kusamaConsts` files.
  */
 
+import { IPerClass } from 'src/types/chains-config';
+
 /**
  * Polkadot runtime versions before v0.8.27
  * Kusama runtime versions before v2027
  */
-export const extrinsicBaseWeight = (125000000 as unknown) as AbstractInt;
+export const extrinsicBaseWeight = BigInt(125000000);
 
 /**
  * Polkadot runtime versions after v0.8.26
  * Kusama runtime versions after v2026
  */
-export const blockWeights = {
-	perClass: {
-		normal: {
-			baseExtrinsic: 125000000,
-		},
-		operational: {
-			baseExtrinsic: 1,
-		},
-		mandatory: {
-			baseExtrinsic: 512000000000001,
-		},
+export const perClass: IPerClass = {
+	normal: {
+		baseExtrinsic: BigInt(125000000),
 	},
-};
-
-export const minimumCalcFeeVersions = {
-	polkadot: 0,
-	kusama: 1062,
-	westend: 6,
+	operational: {
+		baseExtrinsic: BigInt(1),
+	},
+	mandatory: {
+		baseExtrinsic: BigInt(512000000000001),
+	},
 };

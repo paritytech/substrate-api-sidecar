@@ -1,7 +1,5 @@
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-import { WeightPerClass } from '@polkadot/types/interfaces';
-
 import { controllers } from '../../controllers';
+import { BlockWeightStore } from './MetadataConsts';
 /**
  * Controller mounting configuration as an object where the keys are the
  * controller class names and the values are booleans indicating whether or not
@@ -25,27 +23,7 @@ export interface ControllerConfig {
 		 * Wether or not the chain finalizes blocks
 		 */
 		finalizes: boolean;
-	};
-}
-
-/**
- * Cache for specific runtime version metadata constants.
- */
-export type MetaConstsCache = Record<string, CacheDecorated>;
-
-export interface CacheDecorated {
-	decorated: {
-		consts: {
-			system: {
-				extrinsicBaseWeight?: AbstractInt;
-				blockWeights?: {
-					perClass: {
-						normal: WeightPerClass;
-						mandatory: WeightPerClass;
-						operational: WeightPerClass;
-					};
-				};
-			};
-		};
+		minCalcFeeRuntime: null | number;
+		blockWeightStore: BlockWeightStore;
 	};
 }

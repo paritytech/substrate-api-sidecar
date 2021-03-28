@@ -14,10 +14,15 @@ import { BadRequest } from 'http-errors';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
 import {
+	polkadotMetadata,
+	polkadotMetadataV29,
+} from '../../test-helpers/metadata/metadata';
+import {
 	kusamaRegistry,
 	polkadotRegistry,
-	polkadotRegistryV29
+	polkadotRegistryV29,
 } from '../../test-helpers/registries';
+import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
@@ -31,8 +36,6 @@ import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
-import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
-import { polkadotMetadata, polkadotMetadataV29 } from '../../test-helpers/metadata/metadata';
 
 /**
  * For type casting mock getBlock functions so tsc does not complain
@@ -188,8 +191,10 @@ describe('BlocksService', () => {
 			).toBe('1257000075');
 		});
 		it('Should store a new runtime specific extrinsicBaseWeight when it doesnt exist', async () => {
-			(mockApi.runtimeVersion.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
-			(mockApi.runtimeVersion.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
+			(mockApi.runtimeVersion
+				.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
 
 			await blocksService['createCalcFee'](
 				mockApi,
@@ -198,9 +203,11 @@ describe('BlocksService', () => {
 			);
 
 			expect(blocksService['blockWeightStore'][20]).toBeTruthy();
-			
-			(mockApi.runtimeVersion.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
-			(mockApi.runtimeVersion.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
+
+			(mockApi.runtimeVersion
+				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
+			(mockApi.runtimeVersion
+				.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
 		});
 	});
 
@@ -211,13 +218,12 @@ describe('BlocksService', () => {
 		);
 
 		it('Should return correct `extrinsicBaseWeight`', async () => {
-			const weightValue = await blocksService['getWeight'](
-				mockApi,
-				blockHash
-			);
+			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
-			expect(((weightValue as unknown) as ExtBaseWeightValue).extrinsicBaseWeight).toBe(BigInt(125000000));
-		}); 
+			expect(
+				((weightValue as unknown) as ExtBaseWeightValue).extrinsicBaseWeight
+			).toBe(BigInt(125000000));
+		});
 
 		it('Should return correct `blockWeights`', async () => {
 			const changeMetadataToV29 = () =>
@@ -228,14 +234,20 @@ describe('BlocksService', () => {
 			(mockApi.registry as unknown) = polkadotRegistryV29;
 			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
 
-			const weightValue = await blocksService['getWeight'](
-				mockApi,
-				blockHash
-			);
+			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
-			expect(((weightValue as unknown) as PerClassValue).perClass.normal.baseExtrinsic).toBe(BigInt(125000000));
-			expect(((weightValue as unknown) as PerClassValue).perClass.operational.baseExtrinsic).toBe(BigInt(1));
-			expect(((weightValue as unknown) as PerClassValue).perClass.mandatory.baseExtrinsic).toBe(BigInt(512000000000001));
+			expect(
+				((weightValue as unknown) as PerClassValue).perClass.normal
+					.baseExtrinsic
+			).toBe(BigInt(125000000));
+			expect(
+				((weightValue as unknown) as PerClassValue).perClass.operational
+					.baseExtrinsic
+			).toBe(BigInt(1));
+			expect(
+				((weightValue as unknown) as PerClassValue).perClass.mandatory
+					.baseExtrinsic
+			).toBe(BigInt(512000000000001));
 
 			(mockApi.registry as unknown) = polkadotRegistry;
 			(mockApi.rpc.state.getMetadata as unknown) = revertedMetadata;
