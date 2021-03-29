@@ -88,7 +88,7 @@ export class BlocksService extends AbstractService {
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
-		console.log('block store', this.blockWeightStore);
+
 		let block, events, finalizedHead, sessionValidators;
 		if (typeof api.query.session?.validators?.at === 'function') {
 			[
