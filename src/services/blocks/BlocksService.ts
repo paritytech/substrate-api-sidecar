@@ -264,7 +264,7 @@ export class BlocksService extends AbstractService {
 				 */
 				let extrinsicBaseWeight;
 				if (
-					// 0n is a falsy value so we need to check if undefined
+					// 0 is a falsy value so we need to check if undefined
 					(this.blockWeightStore[specVersion] as ExtBaseWeightValue)
 						.extrinsicBaseWeight !== undefined
 				) {
