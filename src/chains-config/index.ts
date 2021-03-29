@@ -8,9 +8,15 @@ import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockTestnetControllers } from './dockTestnetControllers';
 import { kulupuControllers } from './kulupuControllers';
+import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
+import { polkadotControllers } from './polkadotControllers';
+import { westendControllers } from './westendControllers';
 
 const specToControllerMap = {
+	westend: westendControllers,
+	polkadot: polkadotControllers,
+	kusama: kusamaControllers,
 	kulupu: kulupuControllers,
 	mandala: mandalaControllers,
 	'dock-testnet': dockTestnetControllers,

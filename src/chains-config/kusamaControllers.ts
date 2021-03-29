@@ -1,9 +1,10 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
- * Controllers for mandala, acala's test network.
+ * Kusama configuration for Sidecar.
  */
-export const mandalaControllers: ControllerConfig = {
+export const kusamaControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
@@ -26,7 +27,7 @@ export const mandalaControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
-		blockWeightStore: {},
+		minCalcFeeRuntime: 1062,
+		blockWeightStore: getBlockWeight('kusama'),
 	},
 };

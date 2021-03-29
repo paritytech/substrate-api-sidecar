@@ -178,7 +178,7 @@ and then set the enviroment variable to point to your definitions:
 
 ```bash
 export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
-```
+``` 
 
 ### Logging
 
