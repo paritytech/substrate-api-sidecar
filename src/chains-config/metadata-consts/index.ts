@@ -18,11 +18,11 @@ import { westendDefinitions } from './westendConsts';
  * Example return object:
  * {
  * 	   ...
- *     '24': { extrinsicBaseWeight: 125000000 },
- *     '25': { extrinsicBaseWeight: 125000000 },
- *     '26': { extrinsicBaseWeight: 125000000 },
- *     '27': { blockWeights: { perClass: [Object] } },
- *     '28': { blockWeights: { perClass: [Object] } }
+ *     24: { extrinsicBaseWeight: 125000000 },
+ *     25: { extrinsicBaseWeight: 125000000 },
+ *     26: { extrinsicBaseWeight: 125000000 },
+ *     27: { blockWeights: { perClass: [Object] } },
+ *     28: { blockWeights: { perClass: [Object] } }
  *     ...
  * }
  * @param definitions An array of objects that group data based on runtimes
