@@ -14,13 +14,13 @@
 import { IPerClass } from 'src/types/chains-config';
 
 /**
- * Polkadot runtime versions before v0.8.27
+ * Polkadot runtime versions before v27
  * Kusama runtime versions before v2027
  */
 export const extrinsicBaseWeight = BigInt(125000000);
 
 /**
- * Polkadot runtime versions after v0.8.26
+ * Polkadot runtime versions after v26
  * Kusama runtime versions after v2026
  */
 export const perClass: IPerClass = {

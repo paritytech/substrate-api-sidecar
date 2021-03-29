@@ -473,8 +473,6 @@ export class BlocksService extends AbstractService {
 		parentHash: Hash,
 		block: Block
 	): Promise<ICalcFee> {
-		const perByte = api.consts.transactionPayment?.transactionByteFee;
-
 		const coefficients = api.consts.transactionPayment.weightToFee.map((c) => {
 			return {
 				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
@@ -500,11 +498,19 @@ export class BlocksService extends AbstractService {
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
 
+		const perByte = api.consts.transactionPayment?.transactionByteFee;
+		const extrinsicBaseWeightExists =
+			api.consts.system.extrinsicBaseWeight ||
+			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
+
 		if (
+			!perByte ||
+			!extrinsicBaseWeightExists ||
 			(this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) ||
-			!perByte
+			typeof api.query.transactionPayment?.nextFeeMultiplier?.at !== 'function'
 		) {
-			// This particular runtime version is not supported with fee calcs
+			// This particular runtime version is not supported with fee calcs or
+			// does not have the necessay materials to build calcFee
 			return {
 				specVersion,
 				specName,
