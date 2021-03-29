@@ -20,16 +20,25 @@ export class PalletsStakingProgressService extends AbstractService {
 		const [
 			validatorCount,
 			forceEra,
-			eraElectionStatus,
 			validators,
 			{ number },
 		] = await Promise.all([
 			api.query.staking.validatorCount.at(hash),
 			api.query.staking.forceEra.at(hash),
-			api.query.staking.eraElectionStatus.at(hash),
 			api.query.session.validators.at(hash),
 			api.rpc.chain.getHeader(hash),
 		]);
+
+		let eraElectionStatus;
+		/**
+		 * Polkadot runtimes v0.8.30 and above do not support eraElectionStatus, so we check
+		 * to see if eraElectionStatus is mounted to the api, and if were running on a
+		 * runtime less than v0.8.30 it will return a successful result. If it doesn't
+		 * we do nothing and let `eraElectionStatus` stay undefined.
+		 */
+		if (api.query.staking.eraElectionStatus) {
+			eraElectionStatus = await api.query.staking.eraElectionStatus.at(hash);
+		}
 
 		const {
 			eraLength,
@@ -88,7 +97,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (electionLookAhead.eq(new BN(0))) {
 			// no offchain solutions accepted
 			toggle = null;
-		} else if ((eraElectionStatus as { isClose?: boolean }).isClose) {
+		} else if ((eraElectionStatus as { isClose?: boolean })?.isClose) {
 			// election window is yet to open
 			toggle = nextCurrentEra.sub(electionLookAhead);
 		} else {
@@ -99,10 +108,12 @@ export class PalletsStakingProgressService extends AbstractService {
 		return {
 			...baseResponse,
 			nextActiveEraEstimate: nextActiveEra.toString(10),
-			electionStatus: {
-				status: eraElectionStatus.toJSON(),
-				toggleEstimate: toggle?.toString(10) ?? null,
-			},
+			electionStatus: eraElectionStatus
+				? {
+						status: eraElectionStatus.toJSON(),
+						toggleEstimate: toggle?.toString(10) ?? null,
+				  }
+				: 'Deprecated, see docs',
 			idealValidatorCount: validatorCount.toString(10),
 			validatorSet: validators.map((accountId) => accountId.toString()),
 		};

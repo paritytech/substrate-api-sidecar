@@ -1309,6 +1309,8 @@ components:
         status:
           type: object
           description: >-
+            [Deprecated](Works for polkadot runtimes before v0.8.30).   
+            
             Era election status: either `Close: null` or `Open: <BlockNumber>`.
             A status of `Close` indicates that the submission window for solutions
             from off-chain Phragmen is not open. A status of `Open` indicates that the
