@@ -1,5 +1,6 @@
 /**
  * WEIGHT NOTES (POLKADOT | KUSAMA)
+ *
  * @constant extrinsicBaseWeight
  * @constant blockWeights
  *

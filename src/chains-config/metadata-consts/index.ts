@@ -9,11 +9,11 @@ import { polkadotDefinitions } from './polkadotConsts';
 import { westendDefinitions } from './westendConsts';
 
 /**
- * Creates an object that orders each runtime to their appropriate weight data.
+ * Creates an object that maps each runtime to their appropriate weight data.
  *
- * Each runtime imports their own data which is called Definitions here. Definitions
- * are arrays that store objects which group a set of runtimes version connected
- * to their classification of extrinsic weight data.
+ * Each runtime imports their own `chainDefinitions`. `chainDefinitions`
+ * are arrays that store objects which group a set of runtimes version and associated
+ * extrinsic weight data.
  *
  * Example return object:
  * {
@@ -25,25 +25,26 @@ import { westendDefinitions } from './westendConsts';
  *     28: { blockWeights: { perClass: [Object] } }
  *     ...
  * }
- * @param definitions An array of objects that group data based on runtimes
+ *
+ * @param chainDefinitions An array of objects that group data based on runtimes
  * and their extrinsicBaseWeight metadata
  */
 export function generateBlockWeightStore(
 	chainDefinitions: MetadataConsts[]
 ): BlockWeightStore {
-	const blockWeightObject: BlockWeightStore = {};
+	const blockWeightStore: BlockWeightStore = {};
 
 	for (const def of chainDefinitions) {
 		const runtimeVersions = def.runtimeVersions;
 		for (const version of runtimeVersions) {
-			blockWeightObject[version] = {};
+			blockWeightStore[version] = {};
 
 			if ((def as ExtBaseWeightValue).extrinsicBaseWeight) {
-				(blockWeightObject[
+				(blockWeightStore[
 					version
 				] as ExtBaseWeightValue).extrinsicBaseWeight = (def as ExtBaseWeightValue).extrinsicBaseWeight;
 			} else if ((def as PerClassValue).perClass) {
-				(blockWeightObject[
+				(blockWeightStore[
 					version
 				] as PerClassValue).perClass = (def as PerClassValue).perClass;
 			} else {
@@ -54,7 +55,7 @@ export function generateBlockWeightStore(
 		}
 	}
 
-	return blockWeightObject;
+	return blockWeightStore;
 }
 
 /**

@@ -190,19 +190,23 @@ describe('BlocksService', () => {
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
 		});
+
 		it('Should store a new runtime specific extrinsicBaseWeight when it doesnt exist', async () => {
+			// Instantiate a blocks service where we explicitly know the block store is empty.
+			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0);
+
 			(mockApi.runtimeVersion
 				.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
 			(mockApi.runtimeVersion
 				.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
 
-			await blocksService['createCalcFee'](
+			await blocksServiceEmptyBlockStore['createCalcFee'](
 				mockApi,
 				('0xParentHash' as unknown) as Hash,
 				mockBlock789629
 			);
 
-			expect(blocksService['blockWeightStore'][20]).toBeTruthy();
+			expect(blocksServiceEmptyBlockStore['blockWeightStore'][20]).toBeTruthy();
 
 			(mockApi.runtimeVersion
 				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);

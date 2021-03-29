@@ -1,5 +1,5 @@
 import { controllers } from '../../controllers';
-import { Option } from '../util';
+import { IOption } from '../util';
 import { BlockWeightStore } from './MetadataConsts';
 
 /**
@@ -25,7 +25,7 @@ export interface ControllerConfig {
 		 * Wether or not the chain finalizes blocks
 		 */
 		finalizes: boolean;
-		minCalcFeeRuntime: Option<number>;
+		minCalcFeeRuntime: IOption<number>;
 		blockWeightStore: BlockWeightStore;
 	};
 }

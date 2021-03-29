@@ -26,7 +26,7 @@ export const kusamaMetadata = new Metadata(
 );
 
 /**
- * Metadata of polkadotRegistry (v28)
+ * Metadata of polkadotRegistry (v29)
  */
 export const polkadotMetadataV29 = new Metadata(
 	polkadotRegistryV29,
