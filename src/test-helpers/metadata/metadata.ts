@@ -6,15 +6,15 @@ import {
 	polkadotRegistry,
 	polkadotRegistryV29,
 } from '../registries/polkadotRegistry';
-import { polkadotV16MetadataRpc } from './polkadotV16Metadata';
-import { polkadotV29MetadataRpc } from './polkadotV29Metadata';
+import { polkadotMetadataRpcV16 } from './polkadotV16Metadata';
+import { polkadotMetadataRpcV29 } from './polkadotV29Metadata';
 
 /**
  * Metadata of the polkadotRegistry (v16).
  */
 export const polkadotMetadata = new Metadata(
 	polkadotRegistry,
-	polkadotV16MetadataRpc
+	polkadotMetadataRpcV16
 );
 
 /**
@@ -30,5 +30,5 @@ export const kusamaMetadata = new Metadata(
  */
 export const polkadotMetadataV29 = new Metadata(
 	polkadotRegistryV29,
-	polkadotV29MetadataRpc
+	polkadotMetadataRpcV29
 );
