@@ -1,5 +1,7 @@
 import { controllers } from '../../controllers';
+import { Option } from '../util';
 import { BlockWeightStore } from './MetadataConsts';
+
 /**
  * Controller mounting configuration as an object where the keys are the
  * controller class names and the values are booleans indicating whether or not
@@ -23,7 +25,7 @@ export interface ControllerConfig {
 		 * Wether or not the chain finalizes blocks
 		 */
 		finalizes: boolean;
-		minCalcFeeRuntime: null | number;
+		minCalcFeeRuntime: Option<number>;
 		blockWeightStore: BlockWeightStore;
 	};
 }

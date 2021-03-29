@@ -35,6 +35,7 @@ import {
 	ISanitizedEvent,
 	isFrameMethod,
 } from '../../types/responses';
+import { Option } from '../../types/util';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
@@ -65,7 +66,7 @@ enum Event {
 export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
-		private minCalcFeeRuntime: null | number,
+		private minCalcFeeRuntime: Option<number>,
 		private blockWeightStore: BlockWeightStore = {}
 	) {
 		super(api);
