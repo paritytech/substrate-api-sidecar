@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Westend configuration for Sidecar.
@@ -27,6 +28,6 @@ export const westendControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 6,
-		blockWeightStore: {},
+		blockWeightStore: getBlockWeight('westend'),
 	},
 };

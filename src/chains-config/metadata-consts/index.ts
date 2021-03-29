@@ -6,6 +6,7 @@ import {
 } from '../../types/chains-config';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
+import { westendDefinitions } from './westendConsts';
 
 /**
  * Creates an object that orders each runtime to their appropriate weight data.
@@ -68,6 +69,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(polkadotDefinitions);
 		case 'kusama':
 			return generateBlockWeightStore(kusamaDefinitions);
+		case 'westend':
+			return generateBlockWeightStore(westendDefinitions);
 		default:
 			return {};
 	}
