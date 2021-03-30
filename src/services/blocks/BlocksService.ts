@@ -469,17 +469,6 @@ export class BlocksService extends AbstractService {
 		parentHash: Hash,
 		block: Block
 	): Promise<ICalcFee> {
-		const coefficients = api.consts.transactionPayment.weightToFee.map((c) => {
-			return {
-				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
-				// to BigInt or string.
-				coeffInteger: c.coeffInteger.toString(10),
-				coeffFrac: c.coeffFrac.toNumber(),
-				degree: c.degree.toNumber(),
-				negative: c.negative,
-			};
-		});
-
 		const parentParentHash: Hash = await this.getParentParentHash(
 			api,
 			parentHash,
@@ -498,12 +487,14 @@ export class BlocksService extends AbstractService {
 		const extrinsicBaseWeightExists =
 			api.consts.system.extrinsicBaseWeight ||
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
+		const { weightToFee } = api.consts.transactionPayment;
 
 		if (
 			!perByte ||
 			!extrinsicBaseWeightExists ||
 			(this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) ||
-			!multiplier
+			!multiplier ||
+			!weightToFee
 		) {
 			// This particular runtime version is not supported with fee calcs or
 			// does not have the necessay materials to build calcFee
@@ -512,6 +503,17 @@ export class BlocksService extends AbstractService {
 				specName,
 			};
 		}
+
+		const coefficients = weightToFee.map((c) => {
+			return {
+				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
+				// to BigInt or string.
+				coeffInteger: c.coeffInteger.toString(10),
+				coeffFrac: c.coeffFrac.toNumber(),
+				degree: c.degree.toNumber(),
+				negative: c.negative,
+			};
+		});
 
 		// Now that we know the exact runtime supports fee calcs, make sure we have
 		// the weights in the store
