@@ -10,10 +10,11 @@ import { AbstractArray } from '@polkadot/types/codec/AbstractArray';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { Json } from '@polkadot/types/codec/Json';
 import { CodecMap } from '@polkadot/types/codec/Map';
-import { isObject } from '@polkadot/util';
-import * as BN from 'bn.js';
-import { InternalServerError } from 'http-errors';
+import { isObject, stringCamelCase } from '@polkadot/util';
+import BN from 'bn.js';
 
+// import { InternalServerError } from 'http-errors'
+// import { InternalServerError } from 'http-errors';
 import {
 	AnyJson,
 	Codec,
@@ -68,7 +69,11 @@ function sanitizeCodec(value: Codec): AnyJson {
 			return value.toJSON();
 		}
 
-		return { [value.type]: sanitizeNumbers(value.value) };
+		return {
+			// Replicating camelCaseing introduced in https://github.com/polkadot-js/api/pull/3024
+			// Specifically see: https://github.com/polkadot-js/api/blob/516fbd4a90652841d4e81636e74ca472e2dc5621/packages/types/src/codec/Enum.ts#L346
+			[stringCamelCase(value.type)]: sanitizeNumbers(value.value),
+		};
 	}
 
 	if (value instanceof BTreeSet) {
@@ -180,23 +185,21 @@ export function sanitizeNumbers(data: unknown): AnyJson {
  * @param map Map | CodecMap
  */
 function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
-	const jsonMap: AnyJson = {};
+	// const jsonMap: AnyJson = {};
 
-	map.forEach((value: unknown, key: unknown) => {
-		const nonCodecKey = sanitizeNumbers(key);
-		if (
-			!(
-				typeof nonCodecKey === 'string' ||
-				typeof nonCodecKey === 'number'
-			)
-		) {
-			throw new InternalServerError(
-				'Unexpected non-string and non-number key while sanitizing a Map-like type'
-			);
-		}
+	return (map as unknown) as AnyJson;
 
-		jsonMap[nonCodecKey] = sanitizeNumbers(value);
-	});
+	// map.forEach((value: unknown, key: unknown) => {
+	// 	const nonCodecKey = sanitizeNumbers(key);
+	// 	if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
+	// 		throw new InternalServerError(
+	// 			'Unexpected non-string and non-number key while sanitizing a Map-like type'
+	// 		);
+	// 	}
 
-	return jsonMap;
+	// 	jsonMap[nonCodecKey] = sanitizeNumbers(value);
+	// 	return;
+	// });
+
+	// return jsonMap;
 }

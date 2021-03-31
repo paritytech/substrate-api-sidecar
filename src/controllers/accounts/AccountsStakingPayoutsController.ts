@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
@@ -73,9 +73,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 
-		this.safeMountAsyncGetHandlers([
-			['', this.getStakingPayoutsByAccountId],
-		]);
+		this.safeMountAsyncGetHandlers([['', this.getStakingPayoutsByAccountId]]);
 	}
 
 	/**
@@ -108,20 +106,14 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	};
 
 	private async getEraAndHash(era?: number) {
-		const [
-			hash,
-			activeEraOption,
-			currentEraMaybeOption,
-		] = await Promise.all([
+		const [hash, activeEraOption, currentEraMaybeOption] = await Promise.all([
 			this.api.rpc.chain.getFinalizedHead(),
 			this.api.query.staking.activeEra(),
 			this.api.query.staking.currentEra(),
 		]);
 
 		if (activeEraOption.isNone) {
-			throw new InternalServerError(
-				'ActiveEra is None when Some was expected'
-			);
+			throw new InternalServerError('ActiveEra is None when Some was expected');
 		}
 		const activeEra = activeEraOption.unwrap().index.toNumber();
 
@@ -146,9 +138,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
 				`The specified era (${era}) is too large. ` +
-					`Largest era payout info is available for is ${
-						activeEra - 1
-					}`
+					`Largest era payout info is available for is ${activeEra - 1}`
 			);
 		}
 

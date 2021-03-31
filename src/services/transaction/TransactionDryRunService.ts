@@ -31,9 +31,7 @@ export class TransactionDryRunService extends AbstractService {
 				const { asError } = applyExtrinsicResult;
 				dryRunResult = {
 					resultType: TransactionResultType.TransactionValidityError,
-					result: asError.isInvalid
-						? asError.asInvalid
-						: asError.asUnknown,
+					result: asError.isInvalid ? asError.asInvalid : asError.asUnknown,
 					validityErrorType: asError.isInvalid
 						? ValidityErrorType.Invalid
 						: ValidityErrorType.Unknown,

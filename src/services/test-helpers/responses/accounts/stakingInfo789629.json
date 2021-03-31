@@ -4,7 +4,9 @@
     "height": "789629"
   },
   "controller": "1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE",
-  "rewardDestination": "Controller",
+  "rewardDestination": {
+    "controller": null
+  },
   "numSlashingSpans": "0",
   "staking": {
     "stash": "1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE",

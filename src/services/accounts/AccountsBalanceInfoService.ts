@@ -42,12 +42,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 			// Assume we are using ORML token pallet
 			let locksAny, accountDataAny;
 			try {
-				[
-					header,
-					locksAny,
-					accountDataAny,
-					accountInfo,
-				] = await Promise.all([
+				[header, locksAny, accountDataAny, accountInfo] = await Promise.all([
 					api.rpc.chain.getHeader(hash),
 					api.query.tokens.locks.at(hash, address, { Token: token }),
 					api.query.tokens.accounts.at(hash, address, {

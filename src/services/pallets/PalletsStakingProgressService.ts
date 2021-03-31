@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
@@ -88,7 +88,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (electionLookAhead.eq(new BN(0))) {
 			// no offchain solutions accepted
 			toggle = null;
-		} else if (eraElectionStatus.isClose) {
+		} else if ((eraElectionStatus as { isClose?: boolean }).isClose) {
 			// election window is yet to open
 			toggle = nextCurrentEra.sub(electionLookAhead);
 		} else {
@@ -190,7 +190,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		hash: BlockHash
 	): Promise<BN> {
 		if (api.consts.staking.electionLookahead) {
-			return api.consts.staking.electionLookahead;
+			return (api.consts.staking.electionLookahead as unknown) as BN;
 		}
 
 		const { specName } = await api.rpc.state.getRuntimeVersion(hash);

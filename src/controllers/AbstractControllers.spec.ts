@@ -97,8 +97,7 @@ describe('AbstractController', () => {
 
 		it('handles a successful async callback appropriately', async () => {
 			const next = jest.fn();
-			const success = () =>
-				Promise.resolve().then(() => 'Great success!');
+			const success = () => Promise.resolve().then(() => 'Great success!');
 
 			await expect(
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -125,9 +124,7 @@ describe('AbstractController', () => {
 			expect(hex64char.length).toBe(64);
 			expect(hex64char).toMatch(/^0x[a-fA-F0-9]+$/); // check that chars are valid for a hex string
 
-			await expect(
-				controller['getHashForBlock'](hex64char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex64char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex64char}. ` +
 						`Hex string block IDs must be 32-bytes (66-characters) in length.`
@@ -140,9 +137,7 @@ describe('AbstractController', () => {
 			expect(hex30char.length).toBe(30);
 			expect(hex30char).toMatch(/^0x[a-fA-F0-9]+$/);
 
-			await expect(
-				controller['getHashForBlock'](hex30char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex30char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex30char}. ` +
 						`Hex string block IDs must be 32-bytes (66-characters) in length.`
@@ -155,9 +150,7 @@ describe('AbstractController', () => {
 			expect(hex29char.length).toBe(29);
 			expect(hex29char).toMatch(/^0x[a-fA-F0-9]+$/);
 
-			await expect(
-				controller['getHashForBlock'](hex29char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex29char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex29char}. ` +
 						`Hex string block IDs must be a valid hex string ` +
@@ -172,9 +165,7 @@ describe('AbstractController', () => {
 			expect(hex68char.length).toBe(68);
 			expect(hex68char).toMatch(/^0x[a-fA-F0-9]+$/);
 
-			await expect(
-				controller['getHashForBlock'](hex68char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex68char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex68char}. ` +
 						`Hex string block IDs must be 32-bytes (66-characters) in length.`
@@ -188,9 +179,7 @@ describe('AbstractController', () => {
 			expect(hex67char.length).toBe(67);
 			expect(hex67char).toMatch(/^0x[a-fA-F0-9]+$/);
 
-			await expect(
-				controller['getHashForBlock'](hex67char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex67char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex67char}. ` +
 						`Hex string block IDs must be a valid hex string ` +
@@ -223,9 +212,7 @@ describe('AbstractController', () => {
 			expect(hex66char).not.toMatch(/^0x[a-fA-F0-9]+$/);
 			expect(hex66char.length).toBe(66);
 
-			await expect(
-				controller['getHashForBlock'](hex66char)
-			).rejects.toEqual(
+			await expect(controller['getHashForBlock'](hex66char)).rejects.toEqual(
 				new BadRequest(
 					`Cannot get block hash for ${hex66char}. ` +
 						`Hex string block IDs must be a valid hex string ` +
@@ -235,9 +222,7 @@ describe('AbstractController', () => {
 		});
 
 		it('throws BadRequest on non-hex and non-numbers', async () => {
-			await expect(
-				controller['getHashForBlock']('abc')
-			).rejects.toStrictEqual(
+			await expect(controller['getHashForBlock']('abc')).rejects.toStrictEqual(
 				new BadRequest(
 					`Cannot get block hash for ${'abc'}. ` +
 						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`
@@ -251,9 +236,7 @@ describe('AbstractController', () => {
 			expect(valid).toMatch(/^0x[a-fA-F0-9]+$/);
 			expect(valid.length).toBe(66);
 
-			await expect(
-				controller['getHashForBlock'](valid)
-			).resolves.toStrictEqual(
+			await expect(controller['getHashForBlock'](valid)).resolves.toStrictEqual(
 				kusamaRegistry.createType(
 					'BlockHash',
 					'0xd6243cce33272e9fc51a9c83c2ee80e795a73ac03cf1d9b03f1d880852c1b724'
@@ -262,9 +245,7 @@ describe('AbstractController', () => {
 		});
 
 		it('creates a BlockHash for an integer less than the current block height', async () => {
-			await expect(
-				controller['getHashForBlock']('99')
-			).resolves.toStrictEqual(
+			await expect(controller['getHashForBlock']('99')).resolves.toStrictEqual(
 				kusamaRegistry.createType(
 					'BlockHash',
 					'0xd6243cce33272e9fc51a9c83c2ee80e795a73ac03cf1d9b03f1d880852c1b724'
@@ -278,16 +259,10 @@ describe('AbstractController', () => {
 					throw 'dummy getHeader error';
 				});
 
-			const mock = new MockController(
-				api as ApiPromise,
-				'/mock',
-				MockService
-			);
+			const mock = new MockController(api as ApiPromise, '/mock', MockService);
 			// We only try api.rpc.chain.getHeader when the block number is too high
 			await expect(mock['getHashForBlock']('101')).rejects.toEqual(
-				new InternalServerError(
-					'Failed while trying to get the latest header.'
-				)
+				new InternalServerError('Failed while trying to get the latest header.')
 			);
 
 			api.rpc.chain.getHeader = promiseHeader;
@@ -299,11 +274,7 @@ describe('AbstractController', () => {
 					throw 'dummy getBlockHash error';
 				});
 
-			const mock = new MockController(
-				api as ApiPromise,
-				'/mock',
-				MockService
-			);
+			const mock = new MockController(api as ApiPromise, '/mock', MockService);
 			await expect(mock['getHashForBlock']('99')).rejects.toEqual(
 				new InternalServerError(`Cannot get block hash for ${'99'}.`)
 			);
@@ -320,11 +291,7 @@ describe('AbstractController', () => {
 			expect(valid).toMatch(/^0x[a-fA-F0-9]+$/);
 			expect(valid.length).toBe(66);
 			expect(api.createType).toThrow('dummy createType error');
-			const mock = new MockController(
-				api as ApiPromise,
-				'/mock',
-				MockService
-			);
+			const mock = new MockController(api as ApiPromise, '/mock', MockService);
 
 			await expect(mock['getHashForBlock'](valid)).rejects.toEqual(
 				new InternalServerError(`Cannot get block hash for ${valid}.`)

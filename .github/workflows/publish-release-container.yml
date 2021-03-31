@@ -9,40 +9,29 @@ jobs:
   build:
     name:                         Build and push image
     runs-on:                      ubuntu-latest
-    strategy:
-      matrix:
-        # this matrix runs the jobs twice, in parallel. This is due to
-        # both buildah actions can't manage more than one image tag.
-        tag:
-          - latest
-          - ${{ github.event.release.tag_name }}
-    env:
-      REGISTRY:                   docker.io/parity
-      IMAGE_NAME:                 substrate-api-sidecar
-      VERSION:                    ${{ github.event.release.tag_name }}
-
     steps:
+
     - uses:                       actions/checkout@v2
 
-    - name:                       Build Image tagged ${{ matrix.tag }}
-      uses:                       redhat-actions/buildah-build@v1
+    - name:                       Build Image
+      uses:                       redhat-actions/buildah-build@v2.2
       with:
-        image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ matrix.tag }}
+        image:                    substrate-api-sidecar
+        tags:                     ${{ github.event.release.tag_name }} latest
         dockerfiles: |
           ./Dockerfile
         build-args: |
-          VERSION=${{ env.VERSION }}
+          VERSION=${{ github.event.release.tag_name }}
           VCS_REF=${{ github.ref }}
           BUILD_DATE=${{ github.event.release.published_at }}
 
-    - name:                       Push image tagged ${{ matrix.tag }} to docker.io
+    - name:                       Push image to docker.io
       id:                         push-to-dockerhub
-      uses:                       redhat-actions/push-to-registry@v1
+      uses:                       redhat-actions/push-to-registry@v2.1.1
       with:
-        registry:                 ${{ env.REGISTRY }}
-        image:                    ${{ env.IMAGE_NAME }}
-        tag:                      ${{ matrix.tag }}
+        registry:                 docker.io/parity
+        image:                    substrate-api-sidecar
+        tags:                     ${{ github.event.release.tag_name }} latest
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
 

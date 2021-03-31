@@ -6,7 +6,7 @@ import {
 	mockApi,
 	pendingExtrinsics,
 } from '../test-helpers/mock';
-import * as transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
+import transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
 import { NodeTransactionPoolService } from '.';
 
 const nodeTranstionPoolService = new NodeTransactionPoolService(mockApi);

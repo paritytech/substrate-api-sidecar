@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+// import { Option } from '@polkadot/types';
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { Registry } from '@polkadot/types/types';
 import * as BN from 'bn.js';
@@ -70,7 +71,7 @@ export class Trace2 {
 			operations.push(...g.operations);
 		});
 
-		operations.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+		operations.sort((a, b) => a.eventIndex - b.eventIndex);
 
 		return {
 			operations,
@@ -186,7 +187,7 @@ export class Trace2 {
 		return phaseInfoGather;
 	}
 
-	private extrinsicIndexBySpanId(): Map<number, BN> {
+	extrinsicIndexBySpanId(): Map<number, BN> {
 		return this.getAnnotatedEvents()
 			.filter((e) => {
 				return (
@@ -195,24 +196,24 @@ export class Trace2 {
 					(e.storagePath as SpecialKeyInfo).special ===
 						':extrinsic_index' &&
 					// I assume this second part will always be true but here for clarity
-					e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
-					// super important we only do `get`, `set` ops are prep for next extrinsic
-					e.values.string_values.message == 'get'
+					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
+					// // super important we only do `get`, `set` ops are prep for next extrinsic
+					e.values.string_values.method == 'Get'
 				);
 			})
 			.reduce((acc, cur) => {
-				const indexEncoded = cur.values.string_values.res;
+				const indexEncodedOption = cur.values.string_values.result;
 				let extrinsicIndex;
-				if (indexEncoded?.slice(0, 5) === 'Some(') {
-					const len = indexEncoded.length;
-					const scale = indexEncoded
-						.slice(5, len - 1)
-						.match(/.{1,2}/g)
+				if (typeof indexEncodedOption == 'string') {
+					const scale = indexEncodedOption
+						.slice(2) // Slice of leading option bits beacus they cause trouble
+						.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
 						?.reverse()
 						.join('');
 					const hex = `0x${scale}`;
 					extrinsicIndex = this.registry.createType('u32', hex);
 				} else {
+					// TODO this can probably be remove, we can just create with `0x` when this is None
 					extrinsicIndex = this.registry.createType('u32', 0);
 				}
 				acc.set(cur.parent_id, extrinsicIndex.toBn());
@@ -319,7 +320,7 @@ export class Trace2 {
 	 * @param events
 	 * @returns
 	 */
-	private systemAccountEventByAddress(
+	systemAccountEventByAddress(
 		events: EventWithPhase[]
 	): Map<string, EventWithAccountInfo[]> {
 		return events
@@ -342,10 +343,10 @@ export class Trace2 {
 	}
 
 	/**
-	 * Convert an `EventAnnotated` to a `EventWithAccountInfo`. Will throw if event
+	 * Convert an `EventWithPhase` to a `EventWithAccountInfo`. Will throw if event
 	 * does not have system::account storagePath
 	 *
-	 * @param e EventAnnotated
+	 * @param event EventAnnotated
 	 */
 	private annotatedToSysemAccount(
 		event: EventWithPhase
@@ -363,40 +364,28 @@ export class Trace2 {
 		}
 
 		// key = h(system) + h(account) + h(address) + address
-		// Remove the storage key + account hash
-		const addressRaw = event.values.string_values.key?.slice(96) as string;
+		// Since this is a transparent key with the address at the end we can pull out the address from the key.
+		const addressRaw = event.values.string_values.key?.slice(96) as string; // Remove the storage key + account hash
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
-		const method = event?.values?.string_values?.message;
-		const accountInfoEncoded =
-			method === 'clear'
-				? 'account-cleared' // likely dusted
-				: (event?.values?.string_values?.res as string);
-
+		const accountInfoEncoded = event?.values?.string_values?.result;
 		let accountInfo;
 		try {
-			if (method === 'clear') {
-				// Account was likely dusted. For now lets just assume we are ok with the account balance
-				// being zero. In the future this can have richer information
-				accountInfo = this.registry.createType('AccountInfo');
-			} else if (accountInfoEncoded.includes('None')) {
-				accountInfo = this.registry.createType('AccountInfo');
-			} else if (accountInfoEncoded?.slice(0, 5) === 'Some(') {
-				const len = accountInfoEncoded.length;
-				const scale = accountInfoEncoded.slice(5, len - 1);
-
+			if (typeof accountInfoEncoded === 'string') {
 				accountInfo = (this.registry.createType(
 					'AccountInfo',
-					`0x${scale}`
+					`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
 				) as unknown) as AccountInfo;
 			} else {
-				accountInfo = (this.registry.createType(
-					'AccountInfo',
-					`0x${accountInfoEncoded}`
-				) as unknown) as AccountInfo;
+				throw Error(
+					'Expect accountInfoEncoded to always be a string in system::Account event'
+				);
 			}
 		} catch {
-			throw new Error('Expect there to always be some AccountInfo');
+			// TODO this catch is no longer neccesary
+			throw new Error(
+				'Expect there to always be Option<AccountInfo> in system::Account event'
+			);
 		}
 
 		return { ...event, accountInfo, address };
@@ -473,12 +462,10 @@ export class Trace2 {
 				const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
 
 				const baseInfo = {
-					id: {
-						phase: e.phase,
-						parentSpanId: e.parentSpanId,
-						primarySpanId: e.primarySpanId,
-						eventIndex: e.eventIndex,
-					},
+					phase: e.phase,
+					parentSpanId: e.parentSpanId,
+					primarySpanId: e.primarySpanId,
+					eventIndex: e.eventIndex,
 					address: e.address,
 				};
 				const currency = {
@@ -551,15 +538,12 @@ export class Trace2 {
 		const sorted = [...ts.values()]
 			.flat()
 			// // TODO should actually already be sorted // maybe can add a test here
-			.sort((a, b) => a.id.eventIndex - b.id.eventIndex);
+			.sort((a, b) => a.eventIndex - b.eventIndex);
 
 		return sorted.map((t, index) => {
 			return {
 				...t,
-				id: {
-					...t.id,
-					operationIndex: index, // TODO these need to relative to all ops?
-				},
+				operationIndex: index, // TODO these need to relative to all ops?
 			} as Operation;
 		});
 	}

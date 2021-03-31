@@ -1,6 +1,6 @@
 import { polkadotRegistry } from '../../../test-helpers/registries';
-import * as block789629 from './data/block789629.json';
-import * as block789629Fork from './data/blocks789629Fork.json';
+import block789629 from './data/block789629.json';
+import block789629Fork from './data/blocks789629Fork.json';
 
 /**
  * Mock for polkadot block #789629.

@@ -8,8 +8,8 @@ import {
 	submitExtrinsic,
 	tx,
 } from '../test-helpers/mock';
-import * as failParseResponse from '../test-helpers/responses/transaction/submitFailParse.json';
-import * as nodeRejectResponse from '../test-helpers/responses/transaction/submitNodeReject.json';
+import failParseResponse from '../test-helpers/responses/transaction/submitFailParse.json';
+import nodeRejectResponse from '../test-helpers/responses/transaction/submitNodeReject.json';
 import { TransactionSubmitService } from './TransactionSubmitService';
 
 const transactionSubmitService = new TransactionSubmitService(mockApi);
@@ -18,9 +18,7 @@ describe('TransactionSubmitService', () => {
 	describe('submitTransaction', () => {
 		it('works with a valid a transaction', async () => {
 			return expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferValid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferValid)
 			).resolves.toStrictEqual({
 				hash: polkadotRegistry.createType('Hash'),
 			});
@@ -39,9 +37,7 @@ describe('TransactionSubmitService', () => {
 			};
 
 			await expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferInvalid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferInvalid)
 			).rejects.toStrictEqual(failParseResponse);
 
 			(mockApi as any).tx = tx;
@@ -58,9 +54,7 @@ describe('TransactionSubmitService', () => {
 				});
 
 			await expect(
-				transactionSubmitService.submitTransaction(
-					balancesTransferValid
-				)
+				transactionSubmitService.submitTransaction(balancesTransferValid)
 			).rejects.toStrictEqual(nodeRejectResponse);
 
 			(mockApi.rpc.author as any).submitExtrinsic = submitExtrinsic;

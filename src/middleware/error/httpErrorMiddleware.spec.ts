@@ -1,4 +1,4 @@
-import * as HttpErrorConstructor from 'http-errors';
+import HttpErrorConstructor from 'http-errors';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { httpErrorMiddleware } from './httpErrorMiddleware';

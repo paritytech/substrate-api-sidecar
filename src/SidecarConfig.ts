@@ -50,23 +50,14 @@ export class SidecarConfig {
 					MODULES.SUBSTRATE,
 					CONFIG.TYPES_CHAIN
 				) as string,
-				TYPES_SPEC: config.Get(
-					MODULES.SUBSTRATE,
-					CONFIG.TYPES_SPEC
-				) as string,
+				TYPES_SPEC: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_SPEC) as string,
 				TYPES: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES) as string,
 			},
 			LOG: {
 				LEVEL: config.Get(MODULES.LOG, CONFIG.LEVEL) as string,
 				JSON: config.Get(MODULES.LOG, CONFIG.JSON) as boolean,
-				FILTER_RPC: config.Get(
-					MODULES.LOG,
-					CONFIG.FILTER_RPC
-				) as boolean,
-				STRIP_ANSI: config.Get(
-					MODULES.LOG,
-					CONFIG.STRIP_ANSI
-				) as boolean,
+				FILTER_RPC: config.Get(MODULES.LOG, CONFIG.FILTER_RPC) as boolean,
+				STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
 			},
 		};
 
