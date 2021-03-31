@@ -25,3 +25,7 @@ export interface IAddressParam extends ParamsDictionary {
 export interface IAddressNumberParams extends IAddressParam {
 	number: string;
 }
+
+export interface IParaIdParam extends ParamsDictionary {
+	paraId: string;
+}
