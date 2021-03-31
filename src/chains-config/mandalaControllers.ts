@@ -23,6 +23,7 @@ export const mandalaControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: true,
 		PalletsStorage: true,
+		Paras: true,
 	},
 	options: {
 		finalizes: true,
