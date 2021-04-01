@@ -14,6 +14,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/:paraId/lease-info', this.getLeaseInfo],
+			['/auctions/current', this.getAuctionsCurrent],
 		]);
 	}
 
@@ -30,6 +31,18 @@ export default class ParasController extends AbstractController<ParasService> {
 		ParasController.sanitizedSend(
 			res,
 			await this.service.leaseInfo(hash, paraIdArg)
+		);
+	};
+
+	private getAuctionsCurrent: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.auctionsCurrent(hash)
 		);
 	};
 }

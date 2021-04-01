@@ -13,7 +13,6 @@ export class ParasService extends AbstractService {
 		]);
 		const leasesTyped = leasesAt as Vec<Option<Tuple>>;
 		const blockNumber = number.unwrap();
-
 		const at = {
 			hash,
 			height: blockNumber.toString(10),
@@ -42,8 +41,8 @@ export class ParasService extends AbstractService {
 				const lease = leaseOpt.unwrap();
 				return {
 					leasePeriodIndex,
-					deposit: lease[1] as AbstractInt,
 					account: lease[0] as AccountId,
+					deposit: lease[1] as AbstractInt,
 				};
 			}
 
@@ -56,6 +55,54 @@ export class ParasService extends AbstractService {
 		});
 
 		return { at, leases };
+	}
+
+	async auctionsCurrent(hash: BlockHash): Promise<any> {
+		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
+			this.api.query.auctions.auctionInfo.at(hash),
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.auctions.auctionCounter.at(hash),
+		]);
+		const auctionInfoOptTyped = auctionInfoOpt as Option<Vec<AbstractInt>>;
+		const auctionCounterTyped = auctionCounter as AbstractInt;
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		const endingPeriod = this.api.consts.auctions.endingPeriod as AbstractInt;
+
+		let leasePeriodIndex: null | AbstractInt, beginEnd, finishEnd, progress;
+		if (auctionInfoOptTyped.isSome) {
+			[leasePeriodIndex, beginEnd] = auctionInfoOptTyped.unwrap();
+			finishEnd = beginEnd.add(endingPeriod);
+			progress = beginEnd.gt(number.unwrap())
+				? 'Ongoing'
+				: finishEnd.gt(number.unwrap())
+				? 'Ending'
+				: 'None'; // Not sure if we ever hit this scenario
+		} else {
+			leasePeriodIndex = null;
+			beginEnd = null;
+			finishEnd = null;
+			progress = null;
+		}
+
+		const leasePeriods = leasePeriodIndex
+			? new Array(4)
+					.fill(0)
+					.map((_, i) => i + (leasePeriodIndex as AbstractInt).toNumber())
+			: null;
+
+		return {
+			at,
+			leasePeriodIndex,
+			beginEnd,
+			finishEnd,
+			progress,
+			auctionIndex: auctionCounterTyped,
+			leasePeriods,
+		};
 	}
 
 	// NOTE can delete this when you fork
