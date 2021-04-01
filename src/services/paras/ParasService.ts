@@ -63,6 +63,10 @@ export class ParasService extends AbstractService {
 			this.api.rpc.chain.getHeader(hash),
 			this.api.query.auctions.auctionCounter.at(hash),
 		]);
+		const winningOpt = await this.api.query.auctions.winning.at(
+			hash,
+			number.toNumber() - 1
+		);
 		const auctionInfoOptTyped = auctionInfoOpt as Option<Vec<AbstractInt>>;
 		const auctionCounterTyped = auctionCounter as AbstractInt;
 		const at = {
@@ -72,7 +76,11 @@ export class ParasService extends AbstractService {
 
 		const endingPeriod = this.api.consts.auctions.endingPeriod as AbstractInt;
 
-		let leasePeriodIndex: null | AbstractInt, beginEnd, finishEnd, progress;
+		let leasePeriodIndex: null | AbstractInt,
+			beginEnd,
+			finishEnd,
+			progress,
+			winning;
 		if (auctionInfoOptTyped.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOptTyped.unwrap();
 			finishEnd = beginEnd.add(endingPeriod);
@@ -81,11 +89,15 @@ export class ParasService extends AbstractService {
 				: finishEnd.gt(number.unwrap())
 				? 'Ending'
 				: 'None'; // Not sure if we ever hit this scenario
+			winning = (winningOpt as Option<any>).isSome // not sure if this query is working
+				? (winningOpt as Option<any>).unwrap()
+				: null;
 		} else {
 			leasePeriodIndex = null;
 			beginEnd = null;
 			finishEnd = null;
 			progress = null;
+			winning = null;
 		}
 
 		const leasePeriods = leasePeriodIndex
@@ -102,6 +114,7 @@ export class ParasService extends AbstractService {
 			progress,
 			auctionIndex: auctionCounterTyped,
 			leasePeriods,
+			winning,
 		};
 	}
 
