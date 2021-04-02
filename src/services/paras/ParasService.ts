@@ -123,8 +123,6 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 * @TODO Should sanitizeAndSend also Deal with bigint numbers?!
-	 *
 	 * @param hash
 	 * @param includeFundInfo
 	 * @returns
