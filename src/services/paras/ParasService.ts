@@ -18,7 +18,7 @@ import { AbstractService } from '../AbstractService';
  */
 interface IEntries {
 	paraId: number;
-	fundInfo: FundInfo | {};
+	fundInfo: Option<FundInfo> | {};
 }
 
 interface ICrowdloansInfoResponse {
