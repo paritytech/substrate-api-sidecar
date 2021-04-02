@@ -68,19 +68,29 @@ export class ParasService extends AbstractService {
 	): Promise<ICrowdloansResponse> {
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 
-		const entries: IEntries[] = (
-			await this.api.query.crowdloan.funds.entries()
-		).map((k) => {
-			const paraId = (k[0].args[0] as ParaId).toNumber();
-			const funds: Option<FundInfo> | {} = includeFundInfo
-				? (k[1] as Option<FundInfo>)
-				: {};
-
-			return {
-				paraId,
-				fundInfo: funds,
-			};
-		});
+		let entries: IEntries[];
+		if (includeFundInfo) {
+			entries = (
+				await this.api.query.crowdloan.funds.entries()
+			).map((k) => {
+				const paraId = (k[0].args[0] as ParaId);
+				const funds: Option<FundInfo> = (k[1] as Option<FundInfo>)
+	
+				return {
+					paraId,
+					fundInfo: funds,
+				};
+			});
+		} else {
+			entries = (
+				await this.api.query.crowdloan.funds.keys<[ParaId]>()
+			).map(({ args: [paraId] }) => {
+				return {
+					paraId: paraId,
+					fundInfo: undefined,
+				};
+			})
+		}
 
 		const at = {
 			hash,

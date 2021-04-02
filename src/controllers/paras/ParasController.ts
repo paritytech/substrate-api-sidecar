@@ -40,7 +40,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const includeFundInfo = fundInfo === 'false' ? false : true;
+		const includeFundInfo = fundInfo === 'true' ? true : false;
 
 		ParasController.sanitizedSend(
 			res,

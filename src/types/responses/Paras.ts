@@ -1,11 +1,11 @@
 import { Option } from '@polkadot/types/codec';
-import { FundInfo } from '@polkadot/types/interfaces';
+import { FundInfo, ParaId } from '@polkadot/types/interfaces';
 
 import { IAt } from './';
 
 export interface IEntries {
-	paraId: number;
-	fundInfo: Option<FundInfo> | {};
+    paraId: ParaId;
+	fundInfo?: Option<FundInfo>;
 }
 
 export interface ICrowdloansInfoResponse {
