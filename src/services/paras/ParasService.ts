@@ -6,7 +6,6 @@ import {
 	FundInfo,
 	ParaId,
 } from '@polkadot/types/interfaces';
-import { AnyJson } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -19,31 +18,17 @@ import { AbstractService } from '../AbstractService';
  */
 interface IEntries {
 	paraId: number;
-	fundInfo: IFundInfo | {};
+	fundInfo: FundInfo | {};
 }
 
 interface ICrowdloansInfoResponse {
 	at: IAt;
-	fundInfo: IFundInfo;
+	fundInfo: Option<FundInfo>;
 }
 
 interface ICrowdloansResponse {
 	at: IAt;
 	funds: IEntries[];
-}
-
-interface IFundInfo {
-	retiring: boolean;
-	depositor: string;
-	verifier: string;
-	deposit: number;
-	raised: number;
-	end: number;
-	cap: string; // BigInt!
-	lastContribution: AnyJson;
-	firstSlot: number;
-	lastSlot: number;
-	trieIndex: number;
 }
 
 export class ParasService extends AbstractService {
@@ -124,7 +109,7 @@ export class ParasService extends AbstractService {
 			);
 		}
 
-		const fundInfo = this.parseFundInfo(funds as Option<FundInfo>);
+		const fundInfo = funds as Option<FundInfo>;
 
 		const at = {
 			hash,
@@ -167,8 +152,8 @@ export class ParasService extends AbstractService {
 			await this.api.query.crowdloan.funds.entries()
 		).map((k) => {
 			const paraId = (k[0].args[0] as ParaId).toNumber();
-			const funds: FundInfo | {} = includeFundInfo
-				? this.parseFundInfo(k[1] as Option<FundInfo>)
+			const funds: Option<FundInfo> | {} = includeFundInfo
+				? k[1] as Option<FundInfo>
 				: {};
 
 			return {
@@ -185,24 +170,6 @@ export class ParasService extends AbstractService {
 		return {
 			at,
 			funds: entries,
-		};
-	}
-
-	private parseFundInfo(entry: Option<FundInfo>): IFundInfo {
-		const unwrapEntry = entry.unwrap();
-
-		return {
-			retiring: unwrapEntry.retiring.isTrue ? true : false,
-			depositor: unwrapEntry.depositor.toString(),
-			verifier: unwrapEntry.verifier.toString(),
-			deposit: unwrapEntry.deposit.toNumber(),
-			raised: unwrapEntry.raised.toNumber(),
-			end: unwrapEntry.end.toNumber(),
-			cap: unwrapEntry.cap.toString(), // This is a really large number TODO find the right type to deal with this
-			lastContribution: unwrapEntry.lastContribution.toJSON(),
-			firstSlot: unwrapEntry.firstSlot.toNumber(),
-			lastSlot: unwrapEntry.lastSlot.toNumber(),
-			trieIndex: unwrapEntry.trieIndex.toNumber(),
 		};
 	}
 
