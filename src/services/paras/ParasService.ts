@@ -68,10 +68,6 @@ export class ParasService extends AbstractService {
 	): Promise<ICrowdloansResponse> {
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 
-		/**
-		 * @TODO
-		 * see if we want to filter any items.
-		 */
 		const entries: IEntries[] = (
 			await this.api.query.crowdloan.funds.entries()
 		).map((k) => {
