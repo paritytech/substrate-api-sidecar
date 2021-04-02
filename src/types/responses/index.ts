@@ -15,6 +15,7 @@ export * from './Pallet';
 export * from './PalletStakingProgress';
 export * from './PalletStorage';
 export * from './PalletStorageItem';
+export * from './Paras';
 export * from './Payout';
 export * from './RuntimeSpec';
 export * from './SanitizedArgs';
