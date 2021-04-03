@@ -26,8 +26,8 @@ export type AuctionPhase = 'PreEnding' | 'Ending';
 
 export class ParasService extends AbstractService {
 	/**
-	 * @param hash
-	 * @param paraId
+	 * @param hash `BlockHash` to make call at
+	 * @param paraId ID of para to get crowdloan info for
 	 * @returns crowdloan information for paradId
 	 */
 	async crowdloansInfo(
@@ -71,8 +71,8 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 * @param hash
-	 * @param includeFundInfo
+	 * @param hash `BlockHash` to make call at
+	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 * @returns list of all crowdloans
 	 */
 	async crowdloans(
@@ -113,6 +113,12 @@ export class ParasService extends AbstractService {
 		};
 	}
 
+	/**
+	 * @param hash `BlockHash` to make call at
+	 * @param paraId ID of para to get lease info of
+	 * @returns current and future lease info as well as lifecycle information for
+	 * a given `paraId`
+	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<any> {
 		const [leases, { number }, paraLifeCycle] = await Promise.all([
 			this.api.query.slots.leases.at<
@@ -175,6 +181,12 @@ export class ParasService extends AbstractService {
 		};
 	}
 
+	/**
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @returns information on the current auction. Most fields will be null if
+	 * if there is no ongoing auction.
+	 */
 	async auctionsCurrent(hash: BlockHash): Promise<any> {
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
 			this.api.query.auctions.auctionInfo.at<Option<Vec<AbstractInt>>>(hash),
@@ -227,12 +239,21 @@ export class ParasService extends AbstractService {
 			beginEnd,
 			finishEnd,
 			phase,
+			// If there is no current auction, this will be the index of the previous auction
 			auctionIndex: auctionCounter,
 			leasePeriods,
 			winning,
 		};
 	}
 
+	/**
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @param includeCurrentLeaseHolders wether or not to include the paraIds of
+	 * all the curent lease holders. Not including is likely faster and reduces
+	 * response size.
+	 * @returns general information about the current lease period
+	 */
 	async leasesCurrent(
 		hash: BlockHash,
 		includeCurrentLeaseHolders: boolean
@@ -271,6 +292,11 @@ export class ParasService extends AbstractService {
 		};
 	}
 
+	/**
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @returns all the current registered paraIds and their lifecycle status
+	 */
 	async paras(hash: BlockHash): Promise<any> {
 		const [{ number }, paraLifecycles] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
