@@ -5,7 +5,9 @@ import {
 	BalanceOf,
 	BlockHash,
 	FundInfo,
+	ParaGenesisArgs,
 	ParaId,
+	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
@@ -112,11 +114,12 @@ export class ParasService extends AbstractService {
 	}
 
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<any> {
-		const [leases, { number }] = await Promise.all([
+		const [leases, { number }, paraLifeCycle] = await Promise.all([
 			this.api.query.slots.leases.at<
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
 			>(hash, paraId),
 			this.api.rpc.chain.getHeader(hash),
+			this.api.query.paras.paraLifecycles.at<ParaLifecycle>(hash, paraId),
 		]);
 		const blockNumber = number.unwrap();
 
@@ -125,39 +128,49 @@ export class ParasService extends AbstractService {
 			height: blockNumber.toString(10),
 		};
 
-		if (!leases.length) {
-			return {
-				at,
-				leases: [],
-				message: `No current or future leases found for para with ID ${paraId} `,
-			};
-		}
+		let leasesFormatted;
+		if (leases.length) {
+			const currentLeasePeriodIndex = this.currentLeasePeriodIndex(
+				blockNumber
+			).toNumber();
 
-		const currentLeasePeriodIndex = this.currentLeasePeriodIndex(
-			blockNumber
-		).toNumber();
+			leasesFormatted = leases.map((leaseOpt, idx) => {
+				const leasePeriodIndex = currentLeasePeriodIndex + idx;
 
-		const leasesFormatted = leases.map((leaseOpt, idx) => {
-			const leasePeriodIndex = currentLeasePeriodIndex + idx;
+				if (leaseOpt.isSome) {
+					const lease = leaseOpt.unwrap();
+					return {
+						leasePeriodIndex,
+						account: lease[0],
+						deposit: lease[1],
+					};
+				}
 
-			if (leaseOpt.isSome) {
-				const lease = leaseOpt.unwrap();
 				return {
 					leasePeriodIndex,
-					account: lease[0],
-					deposit: lease[1],
+					deposit: null,
+					account: null,
 				};
-			}
+			});
+		} else {
+			leasesFormatted = null;
+		}
 
-			return {
-				leasePeriodIndex,
-				deposit: null,
-				account: null,
-			};
-		});
+		let onboardingAs;
+		if (paraLifeCycle.isOnboarding) {
+			const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
+				hash,
+				paraId
+			);
+			onboardingAs = paraGenesisArgs.parachain.isTrue
+				? 'parachain'
+				: 'parathread';
+		}
 
 		return {
 			at,
+			paraLifeCycle,
+			onboardingAs,
 			leases: leasesFormatted,
 		};
 	}
@@ -255,6 +268,41 @@ export class ParasService extends AbstractService {
 			leasePeriodIndex,
 			endOfLeasePeriod,
 			currentLeaseHolders,
+		};
+	}
+
+	async paras(hash: BlockHash): Promise<any> {
+		const [{ number }, paraLifecycles] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle>(hash),
+		]);
+
+		const parasPromises = paraLifecycles.map(async ([k, paraLifeCycle]) => {
+			const paraId = k.args[0];
+			let onboardingAs;
+			if (paraLifeCycle.isOnboarding) {
+				const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
+					hash,
+					paraId
+				);
+				onboardingAs = paraGenesisArgs.parachain.isTrue
+					? 'parachain'
+					: 'parathread';
+			}
+
+			return {
+				paraId,
+				paraLifeCycle,
+				onboardingAs,
+			};
+		});
+
+		return {
+			at: {
+				hash,
+				height: number.unwrap().toString(10),
+			},
+			paras: await Promise.all(parasPromises),
 		};
 	}
 
