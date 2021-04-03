@@ -13,6 +13,7 @@ export default class ParasController extends AbstractController<ParasService> {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			['/', this.getParas],
 			['/crowdloans', this.getCrowdloans],
 			['/:paraId/crowdloan-info', this.getCrowdloanInfo],
 			['/:paraId/lease-info', this.getLeaseInfo],
@@ -20,6 +21,14 @@ export default class ParasController extends AbstractController<ParasService> {
 			['/auctions/current', this.getAuctionsCurrent],
 		]);
 	}
+
+	private getParas: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+		ParasController.sanitizedSend(res, await this.service.paras(hash));
+	};
 
 	private getCrowdloanInfo: RequestHandler<IParaIdParam> = async (
 		{ params: { paraId }, query: { at } },
