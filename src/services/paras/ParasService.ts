@@ -45,7 +45,7 @@ export class ParasService extends AbstractService {
 			);
 		}
 
-		let fundInfo, leasePeriods;
+		let fundInfo, leasePeriods, retirementEnd;
 		if (fund.isSome) {
 			fundInfo = fund.unwrap();
 			const firstSlot = fundInfo.firstSlot.toNumber();
@@ -54,6 +54,9 @@ export class ParasService extends AbstractService {
 			leasePeriods = Array(leasePeriodCount)
 				.fill(0)
 				.map((_, i) => i + firstSlot);
+			retirementEnd = fundInfo.end.add(
+				this.api.consts.crowdloan.retirementPeriod as AbstractInt
+			);
 		} else {
 			fundInfo = null;
 		}
@@ -67,6 +70,7 @@ export class ParasService extends AbstractService {
 			at,
 			fundInfo,
 			leasePeriods,
+			retirementEnd,
 		};
 	}
 
@@ -182,7 +186,6 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 *
 	 * @param hash `BlockHash` to make call at
 	 * @returns information on the current auction. Most fields will be null if
 	 * if there is no ongoing auction.
@@ -247,7 +250,6 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param includeCurrentLeaseHolders wether or not to include the paraIds of
 	 * all the curent lease holders. Not including is likely faster and reduces
@@ -293,7 +295,6 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 *
 	 * @param hash `BlockHash` to make call at
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
