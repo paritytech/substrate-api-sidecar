@@ -1,34 +1,116 @@
 import { Option, Vec } from '@polkadot/types/codec';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-import { AccountId, BalanceOf, BlockHash } from '@polkadot/types/interfaces';
+import {
+	AccountId,
+	BalanceOf,
+	BlockHash,
+	FundInfo,
+	ParaId,
+	WinningData,
+} from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
 import BN from 'bn.js';
+import { InternalServerError } from 'http-errors';
 
+import {
+	ICrowdloansInfoResponse,
+	ICrowdloansResponse,
+	IEntries,
+} from '../../types/responses';
 import { IOption, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
-// TODO moves types to there own file
-type AuctionProgress = 'Ongoing' | 'Ending' | 'None';
-type WinningDataValue = Option<ITuple<[AccountId, AbstractInt, BalanceOf]>>;
-/**
- * [WinningDataValue; 10]
- */
-type WiningData = ITuple<
-	[
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue,
-		WinningDataValue
-	]
->;
+export type AuctionPhase = 'PreEnding' | 'Ending';
 
 export class ParasService extends AbstractService {
+	/**
+	 * @param hash
+	 * @param paraId
+	 * @returns crowdloan information for paradId
+	 */
+	async crowdloansInfo(
+		hash: BlockHash,
+		paraId: number
+	): Promise<ICrowdloansInfoResponse> {
+		const [fund, { number }] = await Promise.all([
+			this.api.query.crowdloan.funds.at<Option<FundInfo>>(hash, paraId),
+			this.api.rpc.chain.getHeader(hash),
+		]);
+
+		if (!fund) {
+			throw new InternalServerError(
+				`Could not find funds info at para id: ${paraId}`
+			);
+		}
+
+		let fundInfo, leasePeriods;
+		if (fund.isSome) {
+			fundInfo = fund.unwrap();
+			const firstSlot = fundInfo.firstSlot.toNumber();
+			// number of lease periods this crowdloan covers
+			const leasePeriodCount = fundInfo.lastSlot.toNumber() - firstSlot + 1;
+			leasePeriods = Array(leasePeriodCount)
+				.fill(0)
+				.map((_, i) => i + firstSlot);
+		} else {
+			fundInfo = null;
+		}
+
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		return {
+			at,
+			fundInfo,
+			leasePeriods,
+		};
+	}
+
+	/**
+	 * @param hash
+	 * @param includeFundInfo
+	 * @returns list of all crowdloans
+	 */
+	async crowdloans(
+		hash: BlockHash,
+		includeFundInfo: boolean
+	): Promise<ICrowdloansResponse> {
+		const [{ number }, funds] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>>(hash),
+		]);
+
+		let entries: IEntries[];
+		if (includeFundInfo) {
+			entries = funds.map(([keys, fundInfo]) => {
+				return {
+					paraId: keys.args[0] as ParaId,
+					fundInfo,
+				};
+			});
+		} else {
+			entries = (await this.api.query.crowdloan.funds.keys<[ParaId]>()).map(
+				({ args: [paraId] }) => {
+					return {
+						paraId,
+					};
+				}
+			);
+		}
+
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		return {
+			at,
+			funds: entries,
+		};
+	}
+
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<any> {
 		const [leases, { number }] = await Promise.all([
 			this.api.query.slots.leases.at<
@@ -47,19 +129,14 @@ export class ParasService extends AbstractService {
 			return {
 				at,
 				leases: [],
-				message: `Para with ID {paraId} no longer exists or never has existed`,
+				message: `No current or future leases found for para with ID ${paraId} `,
 			};
 		}
 
-		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
-
-		// Caluclate current lease period index
 		const currentLeasePeriodIndex = this.currentLeasePeriodIndex(
-			blockNumber,
-			leasePeriod
-		);
+			blockNumber
+		).toNumber();
 
-		// const leases = leasesTyped.map((leaseOpt, idx) => {
 		const leasesFormatted = leases.map((leaseOpt, idx) => {
 			const leasePeriodIndex = currentLeasePeriodIndex + idx;
 
@@ -74,13 +151,15 @@ export class ParasService extends AbstractService {
 
 			return {
 				leasePeriodIndex,
-				// TODO: should these be omitted completely or have them as null?
 				deposit: null,
 				account: null,
 			};
 		});
 
-		return { at, leases: leasesFormatted };
+		return {
+			at,
+			leases: leasesFormatted,
+		};
 	}
 
 	async auctionsCurrent(hash: BlockHash): Promise<any> {
@@ -90,23 +169,19 @@ export class ParasService extends AbstractService {
 			this.api.query.auctions.auctionCounter.at<AbstractInt>(hash),
 		]);
 		const blockNumber = number.unwrap();
-		const at = {
-			hash,
-			height: blockNumber.toString(10),
-		};
 
 		const endingPeriod = this.api.consts.auctions.endingPeriod as AbstractInt;
 
 		let leasePeriodIndex: IOption<AbstractInt>,
 			beginEnd: IOption<AbstractInt>,
 			finishEnd: IOption<BN>,
-			progress: IOption<AuctionProgress>,
+			phase: IOption<AuctionPhase>,
 			winning;
 		if (auctionInfoOpt.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
 			const endingOffset = this.endingOffset(blockNumber, beginEnd);
 			if (endingOffset) {
-				winning = await this.api.query.auctions.winning.at<Option<WiningData>>(
+				winning = await this.api.query.auctions.winning.at<Option<WinningData>>(
 					hash,
 					endingOffset
 				);
@@ -115,40 +190,84 @@ export class ParasService extends AbstractService {
 			}
 
 			finishEnd = beginEnd.add(endingPeriod);
-			progress = beginEnd.gt(blockNumber)
-				? 'Ongoing'
-				: finishEnd.gt(blockNumber)
-				? 'Ending'
-				: 'None'; // Not sure if we ever hit this scenario
+			phase = beginEnd.gt(blockNumber) ? 'PreEnding' : 'Ending';
 		} else {
 			leasePeriodIndex = null;
 			beginEnd = null;
 			finishEnd = null;
-			progress = null;
+			phase = null;
 			winning = null;
 		}
 
-		const leasePeriods =
-			leasePeriodIndex instanceof AbstractInt
-				? new Array(4)
-						.fill(0)
-						.map((_, i) => i + (leasePeriodIndex as BN).toNumber())
-				: null;
+		const leasePeriods = isSome(leasePeriodIndex)
+			? Array(4)
+					.fill(0)
+					.map((_, i) => i + (leasePeriodIndex as BN).toNumber())
+			: null;
 
 		return {
-			at,
+			at: {
+				hash,
+				height: blockNumber.toString(10),
+			},
 			leasePeriodIndex,
 			beginEnd,
 			finishEnd,
-			progress,
+			phase,
 			auctionIndex: auctionCounter,
 			leasePeriods,
 			winning,
 		};
 	}
 
-	private currentLeasePeriodIndex(blockHeight: BN, leasePeriod: BN): number {
-		return blockHeight.div(leasePeriod).toNumber();
+	async leasesCurrent(
+		hash: BlockHash,
+		includeCurrentLeaseHolders: boolean
+	): Promise<any> {
+		let blockNumber, currentLeaseHolders;
+		if (!includeCurrentLeaseHolders) {
+			const { number } = await this.api.rpc.chain.getHeader(hash);
+			blockNumber = number.unwrap();
+		} else {
+			const [{ number }, leaseEntries] = await Promise.all([
+				this.api.rpc.chain.getHeader(hash),
+				this.api.query.slots.leases.entriesAt<
+					Vec<Option<ITuple<[AccountId, BalanceOf]>>>
+				>(hash),
+			]);
+
+			blockNumber = number.unwrap();
+
+			currentLeaseHolders = leaseEntries
+				.filter(([_k, leases]) => leases[0].isSome)
+				.map(([key, _l]) => key.args[0]);
+		}
+
+		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		const leasePeriodIndex = this.currentLeasePeriodIndex(blockNumber);
+		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
+
+		return {
+			at: {
+				hash,
+				height: blockNumber.toString(10),
+			},
+			leasePeriodIndex,
+			endOfLeasePeriod,
+			currentLeaseHolders,
+		};
+	}
+
+	/**
+	 * Calculate the current lease period index.
+	 *
+	 * @param blockHeight current blockheight
+	 * @param leasePeriod duration of lease period
+	 * @returns current lease period index
+	 */
+	private currentLeasePeriodIndex(now: BN): BN {
+		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		return now.div(leasePeriod);
 	}
 
 	/**

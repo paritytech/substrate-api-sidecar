@@ -2,7 +2,7 @@
 export type IOption<T> = T | null;
 
 /**
- * Check if an `IOption` is `T`.
+ * Check if a `IOption` is `T`.
  *
  * @param option api-sidecar TS option type, conceptually mimics Rust option
  */
