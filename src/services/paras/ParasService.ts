@@ -50,7 +50,7 @@ export class ParasService extends AbstractService {
 			);
 		}
 
-		let fundInfo, leasePeriods, retirementEnd;
+		let fundInfo, leasePeriods;
 		if (fund.isSome) {
 			fundInfo = fund.unwrap();
 			const firstSlot = fundInfo.firstSlot.toNumber();
@@ -59,9 +59,6 @@ export class ParasService extends AbstractService {
 			leasePeriods = Array(leasePeriodCount)
 				.fill(0)
 				.map((_, i) => i + firstSlot);
-			retirementEnd = fundInfo.end.add(
-				this.api.consts.crowdloan.retirementPeriod as AbstractInt
-			);
 		} else {
 			fundInfo = null;
 		}
@@ -77,7 +74,6 @@ export class ParasService extends AbstractService {
 			// TOOD would it make snese to merge the below derived info into `fundInfo`
 			// or put them under another key like `fundInfoDerive`?
 			leasePeriods,
-			retirementEnd,
 		};
 	}
 

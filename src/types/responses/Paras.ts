@@ -39,10 +39,6 @@ export interface ICrowdloansInfo {
 	 * Lease period indexes that the crowdloan applys to.
 	 */
 	leasePeriods?: number[];
-	/**
-	 * End of the the funds retirement period. After this the funds are lost.
-	 */
-	retirementEnd?: BN;
 }
 
 export interface ICrowdloans {
