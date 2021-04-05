@@ -21,6 +21,8 @@ import {
 	ICrowdloansInfo,
 	IFund,
 	ILeaseInfo,
+	ILeasesCurrent,
+	IParas,
 	ParaType,
 } from '../../types/responses';
 import { IOption, isSome } from '../../types/util';
@@ -221,7 +223,7 @@ export class ParasService extends AbstractService {
 			}
 
 			finishEnd = beginEnd.add(endingPeriod);
-			phase = beginEnd.gt(blockNumber) ? 'PreEnding' : 'Ending';
+			phase = beginEnd.gt(blockNumber) ? 'preEnding' : 'ending';
 		} else {
 			leasePeriodIndex = null;
 			beginEnd = null;
@@ -261,7 +263,7 @@ export class ParasService extends AbstractService {
 	async leasesCurrent(
 		hash: BlockHash,
 		includeCurrentLeaseHolders: boolean
-	): Promise<any> {
+	): Promise<ILeasesCurrent> {
 		let blockNumber, currentLeaseHolders;
 		if (!includeCurrentLeaseHolders) {
 			const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -270,7 +272,8 @@ export class ParasService extends AbstractService {
 			const [{ number }, leaseEntries] = await Promise.all([
 				this.api.rpc.chain.getHeader(hash),
 				this.api.query.slots.leases.entriesAt<
-					Vec<Option<ITuple<[AccountId, BalanceOf]>>>
+					Vec<Option<ITuple<[AccountId, BalanceOf]>>>,
+					[ParaId]
 				>(hash),
 			]);
 
@@ -300,15 +303,17 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
-	async paras(hash: BlockHash): Promise<any> {
+	async paras(hash: BlockHash): Promise<IParas> {
 		const [{ number }, paraLifecycles] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle>(hash),
+			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle, [ParaId]>(
+				hash
+			),
 		]);
 
 		const parasPromises = paraLifecycles.map(async ([k, paraLifeCycle]) => {
 			const paraId = k.args[0];
-			let onboardingAs;
+			let onboardingAs: ParaType | undefined;
 			if (paraLifeCycle.isOnboarding) {
 				const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
 					hash,

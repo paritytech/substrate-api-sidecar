@@ -13,7 +13,7 @@ import BN from 'bn.js';
 import { IOption } from '../util';
 import { IAt } from './';
 
-export type AuctionPhase = 'PreEnding' | 'Ending';
+export type AuctionPhase = 'preEnding' | 'ending';
 
 export type ParaType = 'parachain' | 'parathread';
 
@@ -47,6 +47,9 @@ export interface ICrowdloansInfo {
 
 export interface ICrowdloans {
 	at: IAt;
+	/**
+	 * List of all crowdloans.
+	 */
 	funds: IFund[];
 }
 
@@ -112,4 +115,41 @@ export interface IAuctionsCurrent {
 	 * `Ending` phase.
 	 */
 	winning: IOption<Option<WinningData>>;
+}
+
+export interface ILeasesCurrent {
+	at: IAt;
+	/**
+	 * The current lease period.
+	 */
+	leasePeriodIndex: BN;
+	/**
+	 * Last block of the current lease period.
+	 */
+	endOfLeasePeriod: BN;
+	/**
+	 * ParaIds of current lease holders.
+	 */
+	currentLeaseHolders?: ParaId[];
+}
+
+export interface IPara {
+	/**
+	 * ParaId
+	 */
+	paraId: ParaId;
+	/**
+	 * Lifecycle stage of the para.
+	 */
+	paraLifeCycle: ParaLifecycle;
+	/**
+	 * If the para is in the `onboarding` lifecycle stage, this will indicate if
+	 * the para is onboarding as a parachain or a parathread.
+	 */
+	onboardingAs?: ParaType;
+}
+
+export interface IParas {
+	at: IAt;
+	paras: IPara[];
 }
