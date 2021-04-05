@@ -1,11 +1,23 @@
 import { Option } from '@polkadot/types/codec';
-import { FundInfo, ParaId } from '@polkadot/types/interfaces';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+import {
+	AccountId,
+	BalanceOf,
+	FundInfo,
+	ParaId,
+	ParaLifecycle,
+	WinningData,
+} from '@polkadot/types/interfaces';
 import BN from 'bn.js';
 
 import { IOption } from '../util';
 import { IAt } from './';
 
-export interface IEntries {
+export type AuctionPhase = 'PreEnding' | 'Ending';
+
+export type ParaType = 'parachain' | 'parathread';
+
+export interface IFund {
 	/**
 	 * Id of the para that has a crowloan.
 	 */
@@ -17,7 +29,7 @@ export interface IEntries {
 	fundInfo?: Option<FundInfo>;
 }
 
-export interface ICrowdloansInfoResponse {
+export interface ICrowdloansInfo {
 	at: IAt;
 	/**
 	 * `FundInfo` describing the crowdloan, or null if none could be found.
@@ -33,7 +45,71 @@ export interface ICrowdloansInfoResponse {
 	retirementEnd?: BN;
 }
 
-export interface ICrowdloansResponse {
+export interface ICrowdloans {
 	at: IAt;
-	funds: IEntries[];
+	funds: IFund[];
+}
+
+export interface LeaseFormatted {
+	/**
+	 * Lease period. (Represents a ~6 month period that a parachain holds a lease for.)
+	 */
+	leasePeriodIndex: number;
+	/**
+	 * Amount held on deposit for parachain
+	 */
+	deposit: IOption<BalanceOf>;
+	/**
+	 * Account responsible for the lease.
+	 */
+	account: IOption<AccountId>;
+}
+
+export interface ILeaseInfo {
+	at: IAt;
+	/**
+	 * Lifecycle of the para (i.e Onboarding, Parathread, Offboarding etc)
+	 */
+	paraLifeCycle: ParaLifecycle;
+	/**
+	 * If the para is in the onboarding phase, this will say if it is onboarding as
+	 * a `parachain` or a `parathread`.
+	 */
+	onboardingAs?: ParaType;
+	/**
+	 * List of current and upcoming leases this para has.
+	 */
+	leases: IOption<LeaseFormatted[]>;
+}
+
+export interface IAuctionsCurrent {
+	at: IAt;
+	/**
+	 * Fist block of the auction ending phase.
+	 */
+	beginEnd: IOption<AbstractInt>;
+	/**
+	 * Last block of the auction ending phase.
+	 */
+	finishEnd: IOption<BN>;
+	/**
+	 * Phase of auction. One of `PreEnding` or `Ending`. The `Ending` phase is where
+	 * an eventual winner is chosen retroactively by randomly choosing a block number
+	 * in the `Ending` phase and using the `winning` bids.
+	 */
+	phase: IOption<AuctionPhase>;
+	/**
+	 * Auction number. If there is no current auction this will be the number of
+	 * the previous auction.
+	 */
+	auctionIndex: AbstractInt;
+	/**
+	 * Lease period indexs that may be bid on in this auction.
+	 */
+	leasePeriods: IOption<number[]>;
+	/**
+	 * Winning bids at this current block height. Is only not `null` during the
+	 * `Ending` phase.
+	 */
+	winning: IOption<Option<WinningData>>;
 }

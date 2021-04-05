@@ -15,14 +15,16 @@ import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
 import {
-	ICrowdloansInfoResponse,
-	ICrowdloansResponse,
-	IEntries,
+	AuctionPhase,
+	IAuctionsCurrent,
+	ICrowdloans,
+	ICrowdloansInfo,
+	IFund,
+	ILeaseInfo,
+	ParaType,
 } from '../../types/responses';
 import { IOption, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-
-export type AuctionPhase = 'PreEnding' | 'Ending';
 
 export class ParasService extends AbstractService {
 	/**
@@ -33,7 +35,7 @@ export class ParasService extends AbstractService {
 	async crowdloansInfo(
 		hash: BlockHash,
 		paraId: number
-	): Promise<ICrowdloansInfoResponse> {
+	): Promise<ICrowdloansInfo> {
 		const [fund, { number }] = await Promise.all([
 			this.api.query.crowdloan.funds.at<Option<FundInfo>>(hash, paraId),
 			this.api.rpc.chain.getHeader(hash),
@@ -82,13 +84,13 @@ export class ParasService extends AbstractService {
 	async crowdloans(
 		hash: BlockHash,
 		includeFundInfo: boolean
-	): Promise<ICrowdloansResponse> {
+	): Promise<ICrowdloans> {
 		const [{ number }, funds] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
 			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>>(hash),
 		]);
 
-		let entries: IEntries[];
+		let entries: IFund[];
 		if (includeFundInfo) {
 			entries = funds.map(([keys, fundInfo]) => {
 				return {
@@ -123,7 +125,7 @@ export class ParasService extends AbstractService {
 	 * @returns current and future lease info as well as lifecycle information for
 	 * a given `paraId`
 	 */
-	async leaseInfo(hash: BlockHash, paraId: number): Promise<any> {
+	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
 		const [leases, { number }, paraLifeCycle] = await Promise.all([
 			this.api.query.slots.leases.at<
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
@@ -156,6 +158,7 @@ export class ParasService extends AbstractService {
 					};
 				}
 
+				// TODO REVIEW DISCUSSION should we just omit this case?
 				return {
 					leasePeriodIndex,
 					deposit: null,
@@ -166,7 +169,7 @@ export class ParasService extends AbstractService {
 			leasesFormatted = null;
 		}
 
-		let onboardingAs;
+		let onboardingAs: ParaType | undefined;
 		if (paraLifeCycle.isOnboarding) {
 			const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
 				hash,
@@ -190,7 +193,7 @@ export class ParasService extends AbstractService {
 	 * @returns information on the current auction. Most fields will be null if
 	 * if there is no ongoing auction.
 	 */
-	async auctionsCurrent(hash: BlockHash): Promise<any> {
+	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
 			this.api.query.auctions.auctionInfo.at<Option<Vec<AbstractInt>>>(hash),
 			this.api.rpc.chain.getHeader(hash),
@@ -238,7 +241,6 @@ export class ParasService extends AbstractService {
 				hash,
 				height: blockNumber.toString(10),
 			},
-			leasePeriodIndex,
 			beginEnd,
 			finishEnd,
 			phase,
