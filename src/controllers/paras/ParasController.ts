@@ -1,6 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { RequestHandler } from 'express';
-import { IParaIdParam } from 'src/types/requests';
 
 import { ParasService } from '../../services';
 import AbstractController from '../AbstractController';
