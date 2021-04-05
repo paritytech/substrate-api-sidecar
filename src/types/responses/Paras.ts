@@ -61,11 +61,11 @@ export interface LeaseFormatted {
 	/**
 	 * Amount held on deposit for parachain
 	 */
-	deposit: IOption<BalanceOf>;
+	deposit: BalanceOf;
 	/**
 	 * Account responsible for the lease.
 	 */
-	account: IOption<AccountId>;
+	account: AccountId;
 }
 
 export interface ILeaseInfo {

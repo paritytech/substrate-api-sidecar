@@ -23,6 +23,7 @@ import {
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
+	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
 import { IOption, isSome } from '../../types/util';
@@ -73,6 +74,8 @@ export class ParasService extends AbstractService {
 		return {
 			at,
 			fundInfo,
+			// TOOD would it make snese to merge the below derived info into `fundInfo`
+			// or put them under another key like `fundInfoDerive`?
 			leasePeriods,
 			retirementEnd,
 		};
@@ -89,14 +92,16 @@ export class ParasService extends AbstractService {
 	): Promise<ICrowdloans> {
 		const [{ number }, funds] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>>(hash),
+			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>, [ParaId]>(
+				hash
+			),
 		]);
 
 		let entries: IFund[];
 		if (includeFundInfo) {
 			entries = funds.map(([keys, fundInfo]) => {
 				return {
-					paraId: keys.args[0] as ParaId,
+					paraId: keys.args[0],
 					fundInfo,
 				};
 			});
@@ -148,25 +153,19 @@ export class ParasService extends AbstractService {
 				blockNumber
 			).toNumber();
 
-			leasesFormatted = leases.map((leaseOpt, idx) => {
-				const leasePeriodIndex = currentLeasePeriodIndex + idx;
-
-				if (leaseOpt.isSome) {
-					const lease = leaseOpt.unwrap();
-					return {
+			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
+				if (curLeaseOpt.isSome) {
+					const leasePeriodIndex = currentLeasePeriodIndex + idx;
+					const lease = curLeaseOpt.unwrap();
+					acc.push({
 						leasePeriodIndex,
 						account: lease[0],
 						deposit: lease[1],
-					};
+					});
 				}
 
-				// TODO REVIEW DISCUSSION should we just omit this case?
-				return {
-					leasePeriodIndex,
-					deposit: null,
-					account: null,
-				};
-			});
+				return acc;
+			}, [] as LeaseFormatted[]);
 		} else {
 			leasesFormatted = null;
 		}
