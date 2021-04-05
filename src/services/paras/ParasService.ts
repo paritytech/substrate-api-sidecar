@@ -31,9 +31,10 @@ import { AbstractService } from '../AbstractService';
 
 export class ParasService extends AbstractService {
 	/**
+	 * Get crowdloan information for a `paraId`.
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param paraId ID of para to get crowdloan info for
-	 * @returns crowdloan information for paradId
 	 */
 	async crowdloansInfo(
 		hash: BlockHash,
@@ -78,9 +79,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * List all available crowdloans.
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
-	 * @returns list of all crowdloans
 	 */
 	async crowdloans(
 		hash: BlockHash,
@@ -123,10 +125,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * Get current and future lease info + lifecycle stage for a given `paraId`.
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param paraId ID of para to get lease info of
-	 * @returns current and future lease info as well as lifecycle information for
-	 * a given `paraId`
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
 		const [leases, { number }, paraLifeCycle] = await Promise.all([
@@ -186,9 +188,11 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * Get the status of the current auction.
+	 *
+	 * Note: most fields will be null if there is no ongoing auction.
+	 *
 	 * @param hash `BlockHash` to make call at
-	 * @returns information on the current auction. Most fields will be null if
-	 * if there is no ongoing auction.
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
@@ -249,11 +253,12 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * Get general information about the current lease period.
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param includeCurrentLeaseHolders wether or not to include the paraIds of
 	 * all the curent lease holders. Not including is likely faster and reduces
 	 * response size.
-	 * @returns general information about the current lease period
 	 */
 	async leasesCurrent(
 		hash: BlockHash,
@@ -295,6 +300,8 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * List all registered paras (parathreads & parachains).
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
@@ -340,7 +347,6 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param blockHeight current blockheight
 	 * @param leasePeriod duration of lease period
-	 * @returns current lease period index
 	 */
 	private currentLeasePeriodIndex(now: BN): BN {
 		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
@@ -354,7 +360,6 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param now current block number
 	 * @param startEnd block number of the start of the auctions ending period
-	 * @returns offset or null
 	 */
 	private endingOffset(
 		now: AbstractInt,
