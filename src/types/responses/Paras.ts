@@ -151,5 +151,8 @@ export interface IPara {
 
 export interface IParas {
 	at: IAt;
+	/**
+	 * All registered paras.
+	 */
 	paras: IPara[];
 }
