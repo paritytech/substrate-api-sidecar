@@ -19,12 +19,12 @@ export type ParaType = 'parachain' | 'parathread';
 
 export interface IFund {
 	/**
-	 * Id of the para that has a crowloan.
+	 * Id of the parachain or parathread that has a crowdloan.
 	 */
 	paraId: ParaId;
 	/**
 	 * `FundInfo` for the para's crowdloan. Use query param `fundInfo=true` to include the `FundInfo`.
-	 * Inclusion may make query take longer.
+	 * Inclusion may make the query take longer.
 	 */
 	fundInfo?: Option<FundInfo>;
 }
@@ -103,7 +103,7 @@ export interface IAuctionsCurrent {
 	 */
 	auctionIndex: AbstractInt;
 	/**
-	 * Lease period indexs that may be bid on in this auction.
+	 * Lease period indexes that may be bid on in this auction.
 	 */
 	leasePeriods: IOption<number[]>;
 	/**
@@ -131,7 +131,7 @@ export interface ILeasesCurrent {
 
 export interface IPara {
 	/**
-	 * ParaId
+	 * Id of a parachain or parathread
 	 */
 	paraId: ParaId;
 	/**
