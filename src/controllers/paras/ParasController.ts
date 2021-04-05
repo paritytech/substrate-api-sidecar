@@ -13,12 +13,24 @@ export default class ParasController extends AbstractController<ParasService> {
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			['/', this.getParas],
 			['/crowdloans', this.getCrowdloans],
-			['/:paraId/crowdloans-info', this.getCrowdloansInfo],
+			['/:paraId/crowdloan-info', this.getCrowdloanInfo],
+			['/:paraId/lease-info', this.getLeaseInfo],
+			['/leases/current', this.getLeasesCurrent],
+			['/auctions/current', this.getAuctionsCurrent],
 		]);
 	}
 
-	private getCrowdloansInfo: RequestHandler<IParaIdParam> = async (
+	private getParas: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+		ParasController.sanitizedSend(res, await this.service.paras(hash));
+	};
+
+	private getCrowdloanInfo: RequestHandler<IParaIdParam> = async (
 		{ params: { paraId }, query: { at } },
 		res
 	): Promise<void> => {
@@ -45,6 +57,48 @@ export default class ParasController extends AbstractController<ParasService> {
 		ParasController.sanitizedSend(
 			res,
 			await this.service.crowdloans(hash, includeFundInfo)
+		);
+	};
+
+	private getLeaseInfo: RequestHandler<IParaIdParam> = async (
+		{ params: { paraId }, query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+		const paraIdArg = this.parseNumberOrThrow(
+			paraId,
+			'paraId must be an integer'
+		);
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.leaseInfo(hash, paraIdArg)
+		);
+	};
+
+	private getLeasesCurrent: RequestHandler = async (
+		{ query: { at, currentLeaseHolders } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+		const includeCurrentLeaseHolders =
+			currentLeaseHolders === 'false' ? false : true;
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.leasesCurrent(hash, includeCurrentLeaseHolders)
+		);
+	};
+
+	private getAuctionsCurrent: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.auctionsCurrent(hash)
 		);
 	};
 }

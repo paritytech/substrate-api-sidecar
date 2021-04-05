@@ -1,41 +1,69 @@
-import { Option } from '@polkadot/types/codec';
-import { BlockHash, FundInfo, ParaId } from '@polkadot/types/interfaces';
+import { Option, Vec } from '@polkadot/types/codec';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+import {
+	AccountId,
+	BalanceOf,
+	BlockHash,
+	FundInfo,
+	ParaGenesisArgs,
+	ParaId,
+	ParaLifecycle,
+	WinningData,
+} from '@polkadot/types/interfaces';
+import { ITuple } from '@polkadot/types/types';
+import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
 import {
-	ICrowdloansInfoResponse,
-	ICrowdloansResponse,
-	IEntries,
+	AuctionPhase,
+	IAuctionsCurrent,
+	ICrowdloans,
+	ICrowdloansInfo,
+	IFund,
+	ILeaseInfo,
+	ILeasesCurrent,
+	IParas,
+	LeaseFormatted,
+	ParaType,
 } from '../../types/responses';
+import { IOption, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 export class ParasService extends AbstractService {
 	/**
-	 * @param hash
-	 * @param paraId
-	 * @returns
-	 * {
-	 *   "at": {},
-	 *   "paraId": number,
-	 *   "fundInfo": {...}
-	 * }
+	 * Get crowdloan information for a `paraId`.
+	 *
+         *  `/:paraId/crowdloan-info` Service function to retrieve crowdloan information for a specific paraId.
+	 * @param hash `BlockHash` to make call at
+	 * @param paraId ID of para to get crowdloan info for
 	 */
 	async crowdloansInfo(
 		hash: BlockHash,
 		paraId: number
-	): Promise<ICrowdloansInfoResponse> {
-		const [funds, { number }] = await Promise.all([
-			this.api.query.crowdloan.funds.at(hash, paraId),
+	): Promise<ICrowdloansInfo> {
+		const [fund, { number }] = await Promise.all([
+			this.api.query.crowdloan.funds.at<Option<FundInfo>>(hash, paraId),
 			this.api.rpc.chain.getHeader(hash),
 		]);
 
-		if (!funds) {
+		if (!fund) {
 			throw new InternalServerError(
-				`Could not find funds info at parathread id: ${paraId}`
+				`Could not find funds info at para id: ${paraId}`
 			);
 		}
 
-		const fundInfo = funds as Option<FundInfo>;
+		let fundInfo, leasePeriods;
+		if (fund.isSome) {
+			fundInfo = fund.unwrap();
+			const firstSlot = fundInfo.firstSlot.toNumber();
+			// number of lease periods this crowdloan covers
+			const leasePeriodCount = fundInfo.lastSlot.toNumber() - firstSlot + 1;
+			leasePeriods = Array(leasePeriodCount)
+				.fill(0)
+				.map((_, i) => i + firstSlot);
+		} else {
+			fundInfo = null;
+		}
 
 		const at = {
 			hash,
@@ -45,51 +73,45 @@ export class ParasService extends AbstractService {
 		return {
 			at,
 			fundInfo,
+			// TOOD would it make snese to merge the below derived info into `fundInfo`
+			// or put them under another key like `fundInfoDerive`?
+			leasePeriods,
 		};
 	}
 
 	/**
-	 * @param hash
-	 * @param includeFundInfo
-	 * @returns
-	 * {
-	 *   "at": {}
-	 *   "funds": [
-	 *     {
-	 *       "paraId": number,
-	 *       "fundInfo": {}
-	 *     }
-	 *   ]
-	 * }
+	 * List all available crowdloans.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
 	async crowdloans(
 		hash: BlockHash,
 		includeFundInfo: boolean
-	): Promise<ICrowdloansResponse> {
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+	): Promise<ICrowdloans> {
+		const [{ number }, funds] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>, [ParaId]>(
+				hash
+			),
+		]);
 
-		let entries: IEntries[];
+		let entries: IFund[];
 		if (includeFundInfo) {
-			entries = (
-				await this.api.query.crowdloan.funds.entries()
-			).map((k) => {
-				const paraId = (k[0].args[0] as ParaId);
-				const funds: Option<FundInfo> = (k[1] as Option<FundInfo>)
-	
+			entries = funds.map(([keys, fundInfo]) => {
 				return {
-					paraId,
-					fundInfo: funds,
+					paraId: keys.args[0],
+					fundInfo,
 				};
 			});
 		} else {
-			entries = (
-				await this.api.query.crowdloan.funds.keys<[ParaId]>()
-			).map(({ args: [paraId] }) => {
-				return {
-					paraId: paraId,
-					fundInfo: undefined,
-				};
-			})
+			entries = (await this.api.query.crowdloan.funds.keys<[ParaId]>()).map(
+				({ args: [paraId] }) => {
+					return {
+						paraId,
+					};
+				}
+			);
 		}
 
 		const at = {
@@ -101,5 +123,259 @@ export class ParasService extends AbstractService {
 			at,
 			funds: entries,
 		};
+	}
+
+	/**
+	 * Get current and future lease info + lifecycle stage for a given `paraId`.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @param paraId ID of para to get lease info of
+	 */
+	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
+		const [leases, { number }, paraLifeCycle] = await Promise.all([
+			this.api.query.slots.leases.at<
+				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
+			>(hash, paraId),
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.paras.paraLifecycles.at<ParaLifecycle>(hash, paraId),
+		]);
+		const blockNumber = number.unwrap();
+
+		const at = {
+			hash,
+			height: blockNumber.toString(10),
+		};
+
+		let leasesFormatted;
+		if (leases.length) {
+			const currentLeasePeriodIndex = this.currentLeasePeriodIndex(
+				blockNumber
+			).toNumber();
+
+			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
+				if (curLeaseOpt.isSome) {
+					const leasePeriodIndex = currentLeasePeriodIndex + idx;
+					const lease = curLeaseOpt.unwrap();
+					acc.push({
+						leasePeriodIndex,
+						account: lease[0],
+						deposit: lease[1],
+					});
+				}
+
+				return acc;
+			}, [] as LeaseFormatted[]);
+		} else {
+			leasesFormatted = null;
+		}
+
+		let onboardingAs: ParaType | undefined;
+		if (paraLifeCycle.isOnboarding) {
+			const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
+				hash,
+				paraId
+			);
+			onboardingAs = paraGenesisArgs.parachain.isTrue
+				? 'parachain'
+				: 'parathread';
+		}
+
+		return {
+			at,
+			paraLifeCycle,
+			onboardingAs,
+			leases: leasesFormatted,
+		};
+	}
+
+	/**
+	 * Get the status of the current auction.
+	 *
+	 * Note: most fields will be null if there is no ongoing auction.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
+	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
+		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
+			this.api.query.auctions.auctionInfo.at<Option<Vec<AbstractInt>>>(hash),
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.auctions.auctionCounter.at<AbstractInt>(hash),
+		]);
+		const blockNumber = number.unwrap();
+
+		const endingPeriod = this.api.consts.auctions.endingPeriod as AbstractInt;
+
+		let leasePeriodIndex: IOption<AbstractInt>,
+			beginEnd: IOption<AbstractInt>,
+			finishEnd: IOption<BN>,
+			phase: IOption<AuctionPhase>,
+			winning;
+		if (auctionInfoOpt.isSome) {
+			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
+			const endingOffset = this.endingOffset(blockNumber, beginEnd);
+			if (endingOffset) {
+				winning = await this.api.query.auctions.winning.at<Option<WinningData>>(
+					hash,
+					endingOffset
+				);
+			} else {
+				winning = null;
+			}
+
+			finishEnd = beginEnd.add(endingPeriod);
+			phase = beginEnd.gt(blockNumber) ? 'preEnding' : 'ending';
+		} else {
+			leasePeriodIndex = null;
+			beginEnd = null;
+			finishEnd = null;
+			phase = null;
+			winning = null;
+		}
+
+		const leasePeriods = isSome(leasePeriodIndex)
+			? Array(4)
+					.fill(0)
+					.map((_, i) => i + (leasePeriodIndex as BN).toNumber())
+			: null;
+
+		return {
+			at: {
+				hash,
+				height: blockNumber.toString(10),
+			},
+			beginEnd,
+			finishEnd,
+			phase,
+			// If there is no current auction, this will be the index of the previous auction
+			auctionIndex: auctionCounter,
+			leasePeriods,
+			winning,
+		};
+	}
+
+	/**
+	 * Get general information about the current lease period.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @param includeCurrentLeaseHolders wether or not to include the paraIds of
+	 * all the curent lease holders. Not including is likely faster and reduces
+	 * response size.
+	 */
+	async leasesCurrent(
+		hash: BlockHash,
+		includeCurrentLeaseHolders: boolean
+	): Promise<ILeasesCurrent> {
+		let blockNumber, currentLeaseHolders;
+		if (!includeCurrentLeaseHolders) {
+			const { number } = await this.api.rpc.chain.getHeader(hash);
+			blockNumber = number.unwrap();
+		} else {
+			const [{ number }, leaseEntries] = await Promise.all([
+				this.api.rpc.chain.getHeader(hash),
+				this.api.query.slots.leases.entriesAt<
+					Vec<Option<ITuple<[AccountId, BalanceOf]>>>,
+					[ParaId]
+				>(hash),
+			]);
+
+			blockNumber = number.unwrap();
+
+			currentLeaseHolders = leaseEntries
+				.filter(([_k, leases]) => leases[0].isSome)
+				.map(([key, _l]) => key.args[0]);
+		}
+
+		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		const leasePeriodIndex = this.currentLeasePeriodIndex(blockNumber);
+		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
+
+		return {
+			at: {
+				hash,
+				height: blockNumber.toString(10),
+			},
+			leasePeriodIndex,
+			endOfLeasePeriod,
+			currentLeaseHolders,
+		};
+	}
+
+	/**
+	 * List all registered paras (parathreads & parachains).
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @returns all the current registered paraIds and their lifecycle status
+	 */
+	async paras(hash: BlockHash): Promise<IParas> {
+		const [{ number }, paraLifecycles] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle, [ParaId]>(
+				hash
+			),
+		]);
+
+		const parasPromises = paraLifecycles.map(async ([k, paraLifeCycle]) => {
+			const paraId = k.args[0];
+			let onboardingAs: ParaType | undefined;
+			if (paraLifeCycle.isOnboarding) {
+				const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
+					hash,
+					paraId
+				);
+				onboardingAs = paraGenesisArgs.parachain.isTrue
+					? 'parachain'
+					: 'parathread';
+			}
+
+			return {
+				paraId,
+				paraLifeCycle,
+				onboardingAs,
+			};
+		});
+
+		return {
+			at: {
+				hash,
+				height: number.unwrap().toString(10),
+			},
+			paras: await Promise.all(parasPromises),
+		};
+	}
+
+	/**
+	 * Calculate the current lease period index.
+	 *
+	 * @param blockHeight current blockheight
+	 * @param leasePeriod duration of lease period
+	 */
+	private currentLeasePeriodIndex(now: BN): BN {
+		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		return now.div(leasePeriod);
+	}
+
+	/**
+	 * The offset into the ending samples of the auction.
+	 *
+	 * Mimics `Auctioneer::is_ending` impl in polkadot's `runtime::common::auctions`.
+	 *
+	 * @param now current block number
+	 * @param startEnd block number of the start of the auctions ending period
+	 */
+	private endingOffset(
+		now: AbstractInt,
+		begginEnd: IOption<AbstractInt>
+	): IOption<BN> {
+		if (!isSome(begginEnd)) {
+			return null;
+		}
+
+		const afterEarlyEnd = now.sub(begginEnd);
+		if (afterEarlyEnd.lten(0)) {
+			return null;
+		}
+
+		const sampleLength = this.api.consts.auctions.sampleLength as AbstractInt;
+		return afterEarlyEnd.div(sampleLength);
 	}
 }
