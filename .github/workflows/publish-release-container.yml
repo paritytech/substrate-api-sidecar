@@ -14,6 +14,7 @@ jobs:
     - uses:                       actions/checkout@v2
 
     - name: Workaround rootless build
+    # temporary workaround for https://github.com/redhat-actions/buildah-build/issues/45
       run: |
         sudo apt-get install fuse-overlayfs
         mkdir -vp ~/.config/containers
