@@ -13,7 +13,7 @@ function createRococoRegistry(): TypeRegistry {
 
 	registry.register(getSpecTypes(registry, 'Rococo', 'rococo', 228));
 
-    registry.setMetadata(new Metadata(registry, rococoMetadataV228));
+	registry.setMetadata(new Metadata(registry, rococoMetadataV228));
 
 	return registry;
 }

@@ -10,7 +10,7 @@ import { rococoMetadataV228 } from './metadata/rococoMetadata';
 
 export function createApiWithAugmentations(): ApiPromise {
 	const registry = new TypeRegistry();
-    const metadata = new Metadata(registry, rococoMetadataV228);
+	const metadata = new Metadata(registry, rococoMetadataV228);
 
 	registry.setMetadata(metadata);
 
