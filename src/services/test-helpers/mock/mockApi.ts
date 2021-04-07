@@ -13,8 +13,15 @@ import {
 	StakingLedger,
 } from '@polkadot/types/interfaces';
 
+import {
+	createApiWithAugmentations,
+	CrowdloanFactory,
+} from '../../../test-helpers/crowdloanFactory';
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
-import { polkadotRegistry } from '../../../test-helpers/registries';
+import {
+	polkadotRegistry,
+	rococoRegistry,
+} from '../../../test-helpers/registries';
 import {
 	balancesTransferValid,
 	blockHash789629,
@@ -276,6 +283,57 @@ const referendumInfoOfAt = () =>
 		polkadotRegistry.createType('ReferendumInfo');
 	});
 
+// pulled from the rococo parathread 230
+const funds = {
+	retiring: rococoRegistry.createType('bool', false),
+	depositor: rococoRegistry.createType(
+		'AccountId',
+		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
+	),
+	verifier: null,
+	deposit: rococoRegistry.createType('Balance', 100000000000000),
+	raised: rococoRegistry.createType('Balance', 627500000000000),
+	end: rococoRegistry.createType('BlockNumber', 200000),
+	cap: rococoRegistry.createType(
+		'Balance',
+		'0x0000000000000000016345785d8a0000'
+	),
+	lastContribution: rococoRegistry.createType('LastContribution', {
+		preEnding: 6,
+	}),
+	firstSlot: rococoRegistry.createType('LeasePeriod', 13),
+	lastSlot: rococoRegistry.createType('LeasePeriod', 16),
+	trieIndex: rococoRegistry.createType('TrieIndex', 60),
+};
+
+const api = createApiWithAugmentations();
+const crowdloanFactory = new CrowdloanFactory(api);
+
+const paraId1 = crowdloanFactory.storageKey(199);
+const paraId2 = crowdloanFactory.storageKey(200);
+
+const fundsEntries = () =>
+	Promise.resolve().then(() => {
+		const optionFundInfo = rococoRegistry.createType('Option<FundInfo>', funds);
+
+		const entries = [
+			[paraId1, optionFundInfo],
+			[paraId2, optionFundInfo],
+		];
+
+		return entries;
+	});
+
+const fundsAt = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('Option<FundInfo>', funds);
+	});
+
+const fundsKeys = () =>
+	Promise.resolve().then(() => {
+		return [paraId1, paraId2];
+	});
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -294,6 +352,13 @@ export const mockApi = ({
 		},
 		balances: {
 			locks: { at: locksAt },
+		},
+		crowdloan: {
+			funds: {
+				entriesAt: fundsEntries,
+				keys: fundsKeys,
+				at: fundsAt,
+			},
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
