@@ -33,7 +33,6 @@ export class ParasService extends AbstractService {
 	/**
 	 * Get crowdloan information for a `paraId`.
 	 *
-         *  `/:paraId/crowdloan-info` Service function to retrieve crowdloan information for a specific paraId.
 	 * @param hash `BlockHash` to make call at
 	 * @param paraId ID of para to get crowdloan info for
 	 */
