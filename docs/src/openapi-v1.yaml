@@ -799,6 +799,7 @@ paths:
         required: false
         schema:
           type: boolean
+          default: true
       responses:
         "200":
           description: successful operation
@@ -806,6 +807,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeasesCurrent'
+  /experimental/paras/auctions/current:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental subject to breaking change] Get the status of the current
+        auction.
+      description: |
+        Returns an overview of the current of the current auction. There is only
+        one auction at a time. If there is no auction most fields will be `null`.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime version information at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasAuctionsCurrent'
 components:
   schemas:
     BalanceLock:
@@ -1757,6 +1784,8 @@ components:
     ParasLeasesCurrent:
       type: object
       properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
         leasePeriodIndex:
           type: string
           format: unsignedInteger
@@ -1771,6 +1800,54 @@ components:
             type: string
             format: unsignedInteger
           description: List of `paraId`s that currently hold a lease.
+    ParasAuctionsCurrent:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        beginEnd:
+          type: string
+          format: unisgnedInteger or $null
+          description: |
+            Fist block of the auction ending phase. `null` if no ongoing auction.
+        finishEnd:
+          type: string
+          format: unisgnedInteger or $null
+          description: |
+            Last block of the auction ending phase. `null` if no ongoing auction.
+        phase:
+          type: string
+          enum:
+          - opening
+          - ending
+          description: |
+            Wether the auction is in the `opening` or `ending` phase. The 
+            `ending` phase is where the eventual winners are retroactively 
+            picked from. `null` if no ongoing auction.
+        auctionIndex:
+          type: string
+          format: unsignedInteger
+          description: | 
+            Auction number. If there is no current auction this will be the number
+            of the previous auction.
+        leasePeriods:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+          description: |
+            Lease period indexes that may be bid on in this auction. `null` if no
+            ongoing auction.
+        winning:
+          type: array
+          items:
+            type: string
+          description: |
+            Array of tuples where each tuple includes `AccountId`, `ParaId`
+            `Balance`. The `Balance` is the bid per lease index made by
+            `AccountId` on behalf of `ParaId`. The index of each tuple represents
+            the `SlotRange` the bid is for. Please read polkadot docs for more
+            details. `null` if no ongoing auction or not in the `ending` phase.
   requestBodies:
     Transaction:
       content:
