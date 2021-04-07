@@ -78,5 +78,21 @@ describe('ParasService', () => {
 
 	describe('ParasService.leasesCurrent', () => {});
 
-	describe('ParasService.paras', () => {});
+	describe('ParasService.paras', () => {
+        it('Should return correct ParaLifecycles response', async () => {
+            const { at, paras } = await parasService['paras'](
+                blockHash789629
+            );
+
+            expect(at.hash.toString()).toBe(expectedHash);
+            expect(at.height).toBe(expectedHeight);
+            expect(paras.length).toBe(2);
+            expect(paras[0]['paraId']?.toNumber()).toStrictEqual(199);
+            expect(paras[1]['paraId']?.toNumber()).toStrictEqual(200);
+            expect(paras[0]['onboardingAs']).toBe('parachain');
+            expect(paras[1]['onboardingAs']).toBeFalsy();
+            expect(paras[0]['paraLifeCycle'].toString()).toBe('Onboarding')
+            expect(paras[1]['paraLifeCycle'].toString()).toBe('Parathread')
+        });
+    });
 });

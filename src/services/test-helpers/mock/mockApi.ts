@@ -334,6 +334,31 @@ const fundsKeys = () =>
 		return [paraId1, paraId2];
 	});
 
+const paraLifeCycleOne = {
+	onboarding: true,
+	parachain: true,
+}
+
+const paraLifeCycleTwo = {
+	parathread: true,
+	parachain: false,
+}
+
+const parasEntries = () => 
+	Promise.resolve().then(() => {
+		const entries = [
+			[paraId1, rococoRegistry.createType('ParaLifecycle', paraLifeCycleOne)],
+			[paraId2, rococoRegistry.createType('ParaLifecycle', paraLifeCycleTwo)],
+		];
+
+		return entries
+	});
+
+const parasGenesisArgsAt = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('ParaGenesisArgs', { parachain: true })
+	})
+	
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -359,6 +384,14 @@ export const mockApi = ({
 				keys: fundsKeys,
 				at: fundsAt,
 			},
+		},
+		paras: {
+			paraLifecycles: {
+				entriesAt: parasEntries
+			},
+			paraGenesisArgs: {
+				at: parasGenesisArgsAt
+			}
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
