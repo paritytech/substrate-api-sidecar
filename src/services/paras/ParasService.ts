@@ -223,7 +223,7 @@ export class ParasService extends AbstractService {
 				  )
 				: await this.api.query.auctions.winning.at<Option<WinningData>>(
 						hash,
-						// when we are not in the ending phase of the auction all winning bids stored at 0
+						// when we are not in the ending phase of the auction winning bids are stored at 0
 						0
 				  );
 
