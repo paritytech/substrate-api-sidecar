@@ -12,7 +12,7 @@ import BN from 'bn.js';
 import { IOption } from '../util';
 import { IAt } from './';
 
-export type AuctionPhase = 'opening' | 'ending';
+export type AuctionPhase = 'starting' | 'ending';
 
 export type ParaType = 'parachain' | 'parathread';
 
