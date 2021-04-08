@@ -89,15 +89,21 @@ export interface IWinningData {
 	amount: BalanceOf;
 }
 
-export type ISlotSet =
+/**
+ * Union of different length lease sets.
+ */
+export type ILeaseSet =
 	| [number]
 	| [number, number]
 	| [number, number, number]
 	| [number, number, number, number];
 
-export interface IWinningDataWithSlotRange {
+/**
+ * Bid and correspond set of leases.
+ */
+export interface IWinningDataWithLeaseSet {
 	bid: IOption<IWinningData>;
-	leaseSet: ISlotSet;
+	leaseSet: ILeaseSet;
 }
 
 export interface IAuctionsCurrent {
@@ -129,7 +135,7 @@ export interface IAuctionsCurrent {
 	 * Winning bids at this current block height. Is only not `null` during the
 	 * `Ending` phase.
 	 */
-	winning: IOption<IWinningDataWithSlotRange[]>;
+	winning: IOption<IWinningDataWithLeaseSet[]>;
 }
 
 export interface ILeasesCurrent {

@@ -22,8 +22,8 @@ import {
 	IFund,
 	ILeaseInfo,
 	ILeasesCurrent,
+	ILeaseSet,
 	IParas,
-	ISlotSet,
 	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
@@ -415,16 +415,16 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param leasePeriodIndex
 	 */
-	private static enumerateLeaseSets(leasePeriodIndex: BN): ISlotSet[] {
+	private static enumerateLeaseSets(leasePeriodIndex: BN): ILeaseSet[] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
-		const ranges: ISlotSet[] = [];
+		const ranges: ILeaseSet[] = [];
 		for (let start = 0; start < 4; start += 1) {
 			for (let end = start; end < 4; end += 1) {
 				const slotRange = [];
 				for (let i = start; i <= end; i += 1) {
 					slotRange.push(i + leasePeriodIndexNumber);
 				}
-				ranges.push(slotRange as ISlotSet);
+				ranges.push(slotRange as ILeaseSet);
 			}
 		}
 
