@@ -6,7 +6,6 @@ import {
 	FundInfo,
 	ParaId,
 	ParaLifecycle,
-	WinningData,
 } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
 
@@ -69,7 +68,7 @@ export interface ILeaseInfo {
 	/**
 	 * Lifecycle of the para (i.e Onboarding, Parathread, Offboarding etc)
 	 */
-	paraLifeCycle: ParaLifecycle;
+	paraLifeCycle: Option<ParaLifecycle>;
 	/**
 	 * If the para is in the onboarding phase, this will say if it is onboarding as
 	 * a `parachain` or a `parathread`.
@@ -79,6 +78,32 @@ export interface ILeaseInfo {
 	 * List of current and upcoming leases this para has.
 	 */
 	leases: IOption<LeaseFormatted[]>;
+}
+
+/**
+ * `auctions::WinningData` expressed as an object.
+ */
+export interface IWinningData {
+	accountId: AccountId;
+	paraId: ParaId;
+	amount: BalanceOf;
+}
+
+/**
+ * Union of different length lease sets.
+ */
+export type ILeaseSet =
+	| [number]
+	| [number, number]
+	| [number, number, number]
+	| [number, number, number, number];
+
+/**
+ * Bid and correspond set of leases.
+ */
+export interface IWinningDataWithLeaseSet {
+	bid: IOption<IWinningData>;
+	leaseSet: ILeaseSet;
 }
 
 export interface IAuctionsCurrent {
@@ -110,7 +135,7 @@ export interface IAuctionsCurrent {
 	 * Winning bids at this current block height. Is only not `null` during the
 	 * `Ending` phase.
 	 */
-	winning: IOption<Option<WinningData>>;
+	winning: IOption<IWinningDataWithLeaseSet[]>;
 }
 
 export interface ILeasesCurrent {
