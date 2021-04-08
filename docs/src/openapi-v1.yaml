@@ -1800,6 +1800,29 @@ components:
             type: string
             format: unsignedInteger
           description: List of `paraId`s that currently hold a lease.
+    WinningData:
+      type: object
+      properties:
+        bid:
+          type: object
+          properties:
+            accountId:
+              type: string
+            paraId:
+              type: string
+              format: unsignedInteger
+            amount:
+              type: string
+              format: unsignedInteger
+        leaseSet:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+      description: |
+        A currently win bid and the set of lease periods the bid is for. The
+        `amount` of the bid is per lease period. The `bid` property will be `null`
+        if no bid has been made for the corresponding `SlotRange`.
     ParasAuctionsCurrent:
       type: object
       properties:
@@ -1841,13 +1864,7 @@ components:
         winning:
           type: array
           items:
-            type: string
-          description: |
-            Array of tuples where each tuple includes `AccountId`, `ParaId`
-            `Balance`. The `Balance` is the bid per lease index made by
-            `AccountId` on behalf of `ParaId`. The index of each tuple represents
-            the `SlotRange` the bid is for. Please read polkadot docs for more
-            details. `null` if no ongoing auction or not in the `ending` phase.
+            $ref: '#/components/schemas/WinningData'
   requestBodies:
     Transaction:
       content:
