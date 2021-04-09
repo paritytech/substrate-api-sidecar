@@ -1932,12 +1932,14 @@ components:
           type: string
           format: unisgnedInteger or $null
           description: |
-            Fist block of the auction ending phase. `null` if no ongoing auction.
+            Fist block of the auction ending phase. `null` if there is no ongoing
+            auction.
         finishEnd:
           type: string
           format: unisgnedInteger or $null
           description: |
-            Last block of the auction ending phase. `null` if no ongoing auction.
+            Last block of the auction ending phase. `null` if there is no ongoing
+            auction.
         phase:
           type: string
           enum:
@@ -1946,7 +1948,7 @@ components:
           description: |
             Whether the auction is in the `opening` or `ending` phase. The
             `ending` phase is where the eventual winners are retroactively
-            picked from. `null` if no ongoing auction.
+            picked from. `null` if there is no ongoing auction.
         auctionIndex:
           type: string
           format: unsignedInteger
@@ -1959,8 +1961,8 @@ components:
             type: string
             format: unsignedInteger
           description: |
-            Lease period indexes that may be bid on in this auction. `null` if no
-            ongoing auction.
+            Lease period indexes that may be bid on in this auction. `null` if
+            there is no ongoing auction.
         winning:
           type: array
           items:
