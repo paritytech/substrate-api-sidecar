@@ -249,7 +249,7 @@ export class ParasService extends AbstractService {
 			}
 
 			finishEnd = beginEnd.add(endingPeriod);
-			phase = beginEnd.gt(blockNumber) ? 'preEnding' : 'ending';
+			phase = beginEnd.gt(blockNumber) ? 'starting' : 'ending';
 		} else {
 			leasePeriodIndex = null;
 			beginEnd = null;

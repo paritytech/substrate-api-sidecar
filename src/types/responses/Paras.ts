@@ -12,7 +12,7 @@ import BN from 'bn.js';
 import { IOption } from '../util';
 import { IAt } from './';
 
-export type AuctionPhase = 'preEnding' | 'ending';
+export type AuctionPhase = 'starting' | 'ending';
 
 export type ParaType = 'parachain' | 'parathread';
 
@@ -117,7 +117,7 @@ export interface IAuctionsCurrent {
 	 */
 	finishEnd: IOption<BN>;
 	/**
-	 * Phase of auction. One of `PreEnding` or `Ending`. The `Ending` phase is where
+	 * Phase of auction. One of `opening` or `ending`. The `ending` phase is where
 	 * an eventual winner is chosen retroactively by randomly choosing a block number
 	 * in the `Ending` phase and using the `winning` bids.
 	 */
