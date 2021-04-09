@@ -22,6 +22,7 @@ import {
 	IFund,
 	ILeaseInfo,
 	ILeasesCurrent,
+	ILeaseSet,
 	IParas,
 	LeaseFormatted,
 	ParaType,
@@ -33,7 +34,6 @@ export class ParasService extends AbstractService {
 	/**
 	 * Get crowdloan information for a `paraId`.
 	 *
-	 * `/:paraId/crowdloan-info` Service function to retrieve crowdloan information for a specific paraId.
 	 * @param hash `BlockHash` to make call at
 	 * @param paraId ID of para to get crowdloan info for
 	 */
@@ -73,8 +73,6 @@ export class ParasService extends AbstractService {
 		return {
 			at,
 			fundInfo,
-			// TOOD would it make snese to merge the below derived info into `fundInfo`
-			// or put them under another key like `fundInfoDerive`?
 			leasePeriods,
 		};
 	}
@@ -132,12 +130,15 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
-		const [leases, { number }, paraLifeCycle] = await Promise.all([
+		const [leases, { number }, paraLifeCycleOpt] = await Promise.all([
 			this.api.query.slots.leases.at<
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
 			>(hash, paraId),
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.paras.paraLifecycles.at<ParaLifecycle>(hash, paraId),
+			this.api.query.paras.paraLifecycles.at<Option<ParaLifecycle>>(
+				hash,
+				paraId
+			),
 		]);
 		const blockNumber = number.unwrap();
 
@@ -170,19 +171,21 @@ export class ParasService extends AbstractService {
 		}
 
 		let onboardingAs: ParaType | undefined;
-		if (paraLifeCycle.isOnboarding) {
-			const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
-				hash,
-				paraId
-			);
-			onboardingAs = paraGenesisArgs.parachain.isTrue
-				? 'parachain'
-				: 'parathread';
+		if (paraLifeCycleOpt.isSome && paraLifeCycleOpt.unwrap().isOnboarding) {
+			const paraGenesisArgs = await this.api.query.paras.upcomingParasGenesis.at<
+				Option<ParaGenesisArgs>
+			>(hash, paraId);
+
+			if (paraGenesisArgs.isSome) {
+				onboardingAs = paraGenesisArgs.unwrap().parachain.isTrue
+					? 'parachain'
+					: 'parathread';
+			}
 		}
 
 		return {
 			at,
-			paraLifeCycle,
+			paraLifeCycle: paraLifeCycleOpt,
 			onboardingAs,
 			leases: leasesFormatted,
 		};
@@ -213,11 +216,34 @@ export class ParasService extends AbstractService {
 		if (auctionInfoOpt.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
 			const endingOffset = this.endingOffset(blockNumber, beginEnd);
-			if (endingOffset) {
-				winning = await this.api.query.auctions.winning.at<Option<WinningData>>(
-					hash,
-					endingOffset
-				);
+			const winningOpt = endingOffset
+				? await this.api.query.auctions.winning.at<Option<WinningData>>(
+						hash,
+						endingOffset
+				  )
+				: await this.api.query.auctions.winning.at<Option<WinningData>>(
+						hash,
+						// when we are not in the ending phase of the auction winning bids are stored at 0
+						0
+				  );
+
+			if (winningOpt.isSome) {
+				const ranges = ParasService.enumerateLeaseSets(leasePeriodIndex);
+
+				// zip the winning bids together with their slot range
+				winning = winningOpt.unwrap().map((bid, idx) => {
+					const leaseSet = ranges[idx];
+
+					let result;
+					if (bid.isSome) {
+						const [accountId, paraId, amount] = bid.unwrap();
+						result = { bid: { accountId, paraId, amount }, leaseSet };
+					} else {
+						result = { bid: null, leaseSet };
+					}
+
+					return result;
+				});
 			} else {
 				winning = null;
 			}
@@ -355,9 +381,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 * The offset into the ending samples of the auction.
-	 *
-	 * Mimics `Auctioneer::is_ending` impl in polkadot's `runtime::common::auctions`.
+	 * The offset into the ending samples of the auction. When we are not in the
+	 * ending phase of the auction we can use 0 as the offset, but we do not return
+	 * that here in order to closely mimic `Auctioneer::is_ending` impl in
+	 * polkadot's `runtime::common::auctions`.
 	 *
 	 * @param now current block number
 	 * @param startEnd block number of the start of the auctions ending period
@@ -375,7 +402,32 @@ export class ParasService extends AbstractService {
 			return null;
 		}
 
-		const sampleLength = this.api.consts.auctions.sampleLength as AbstractInt;
+		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
+		// need a fallback of 1
+		const sampleLength =
+			(this.api.consts.auctions.sampleLength as AbstractInt) || new BN(1);
 		return afterEarlyEnd.div(sampleLength);
+	}
+
+	/**
+	 * Enumerate in order all the lease sets (SlotRange expressed as a set of
+	 * lease periods) that an `auctions::winning` array covers.
+	 *
+	 * @param leasePeriodIndex
+	 */
+	private static enumerateLeaseSets(leasePeriodIndex: BN): ILeaseSet[] {
+		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
+		const ranges: ILeaseSet[] = [];
+		for (let start = 0; start < 4; start += 1) {
+			for (let end = start; end < 4; end += 1) {
+				const slotRange = [];
+				for (let i = start; i <= end; i += 1) {
+					slotRange.push(i + leasePeriodIndexNumber);
+				}
+				ranges.push(slotRange as ILeaseSet);
+			}
+		}
+
+		return ranges;
 	}
 }
