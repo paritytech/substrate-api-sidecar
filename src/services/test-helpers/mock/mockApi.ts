@@ -395,19 +395,19 @@ const parasLifecyclesAt = () =>
 /**
  * Used for parachain leases
  */
-const tupleOne = new Tuple(
+const leasesTupleOne = new Tuple(
 	api.registry,
 	['AccountId', 'BalanceOf'],
 	[accountIdOne, balanceOfOne]
 );
-const tupleTwo = new Tuple(
+const leasesTupleTwo = new Tuple(
 	api.registry,
 	['AccountId', 'BalanceOf'],
 	[accountIdTwo, balanceOfTwo]
 );
-const optionOne = typeFactory.optionOf(tupleOne);
-const optionTwo = typeFactory.optionOf(tupleTwo);
-const vectorLeases = typeFactory.vecOf([optionOne, optionTwo]);
+const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
+const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
+const vectorLeases = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
 	Promise.resolve().then(() => {
@@ -462,10 +462,10 @@ const auctionsWinningsAt = () =>
 			['AccountId', 'ParaId', 'BalanceOf'],
 			[accountIdTwo, paraId2, balanceOfTwo]
 		);
-		const optionOne = typeFactory.optionOf(tupleOne);
-		const optionTwo = typeFactory.optionOf(tupleTwo);
+		const parasOptionsOne = typeFactory.optionOf(tupleOne);
+		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
 
-		const vectorWinnings = typeFactory.vecOf([optionOne, optionTwo]);
+		const vectorWinnings = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
 		const optionWinnings = typeFactory.optionOf(vectorWinnings);
 
 		return optionWinnings;
