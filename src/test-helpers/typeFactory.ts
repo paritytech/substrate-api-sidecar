@@ -1,9 +1,10 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Metadata } from '@polkadot/metadata';
 import { Option, TypeRegistry } from '@polkadot/types';
-import { StorageKey, Vec, Tuple } from '@polkadot/types';
+import { StorageKey, Tuple, Vec } from '@polkadot/types';
 import { ParaId } from '@polkadot/types/interfaces';
-import { Registry, Constructor, Codec } from '@polkadot/types/types';
+import { Codec, Constructor, Registry } from '@polkadot/types/types';
+
 import { rococoMetadataV228 } from './metadata/rococoMetadata';
 
 export function createApiWithAugmentations(): ApiPromise {
@@ -41,20 +42,30 @@ export class TypeFactory {
 	};
 
 	public optionOf = <T extends Codec>(value: T): Option<T> => {
-		return new Option<T>(this.#registry, value.constructor as Constructor<T>, value);
+		return new Option<T>(
+			this.#registry,
+			value.constructor as Constructor<T>,
+			value
+		);
 	};
 
 	public vecOf = <T extends Codec>(items: T[]): Vec<T> => {
-		const vector = new Vec<T>(this.#registry, items[0].constructor as Constructor<T>);
-		
-		vector.push(...items)
+		const vector = new Vec<T>(
+			this.#registry,
+			items[0].constructor as Constructor<T>
+		);
+
+		vector.push(...items);
 
 		return vector;
 	};
 
-	public tupleOf = <T extends Codec>(value: T[], types: Constructor[]): Tuple => {
-		return new Tuple(this.#registry, types , value)
-	}
+	public tupleOf = <T extends Codec>(
+		value: T[],
+		types: Constructor[]
+	): Tuple => {
+		return new Tuple(this.#registry, types, value);
+	};
 
 	public paraIndex = (index: number): ParaId =>
 		this.#registry.createType('ParaId', index);

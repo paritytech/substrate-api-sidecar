@@ -27,7 +27,7 @@ describe('ParasService', () => {
 		lastSlot: 16,
 		trieIndex: 60,
 	};
-    
+
 	describe('ParasService.crowdloansInfo', () => {
 		it('Should return correct crowdloans info', async () => {
 			const { at, fundInfo, leasePeriods } = await parasService[
@@ -80,14 +80,18 @@ describe('ParasService', () => {
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
-			expect(leases).toBeTruthy()
+			expect(leases).toBeTruthy();
 			expect(leases?.length).toBe(2);
 			expect(paraLifeCycle.toString()).toBe('Onboarding');
 			expect(onboardingAs).toBe('parachain');
 
 			if (leases) {
-				expect(leases[0].account.toString()).toBe('5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N');
-				expect(leases[1].account.toString()).toBe('5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ');
+				expect(leases[0].account.toString()).toBe(
+					'5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N'
+				);
+				expect(leases[1].account.toString()).toBe(
+					'5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ'
+				);
 				expect(leases[0].deposit.toNumber()).toBe(1000000);
 				expect(leases[1].deposit.toNumber()).toBe(2000000);
 				expect(leases[0].leasePeriodIndex).toBe(39);
@@ -96,45 +100,52 @@ describe('ParasService', () => {
 		});
 
 		it('Should return a null leases when length is equal to 0', async () => {
-			const emptyLeasesAt = () => 
+			const emptyLeasesAt = () =>
 				Promise.resolve().then(() => {
-					return []
+					return [];
 				});
 
 			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
 
-			const { at, leases } = await parasService[
-				'leaseInfo'
-			](blockHash789629, paraId);
+			const { at, leases } = await parasService['leaseInfo'](
+				blockHash789629,
+				paraId
+			);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
 			expect(leases).toBeNull();
 
 			(mockApi.query.slots.leases.at as unknown) = slotsLeasesAt;
-		})
+		});
 	});
 
 	describe('ParasService.leasesCurrent', () => {
 		it('Should return the correct entries for leasesCurrent', async () => {
-			const { at, leasePeriodIndex, endOfLeasePeriod, currentLeaseHolders } = await parasService[
-				'leasesCurrent'
-			](blockHash789629, true);
+			const {
+				at,
+				leasePeriodIndex,
+				endOfLeasePeriod,
+				currentLeaseHolders,
+			} = await parasService['leasesCurrent'](blockHash789629, true);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
-			expect(leasePeriodIndex.toNumber()).toBe(39)
-			expect(endOfLeasePeriod.toNumber()).toBe(800000)
-			if(currentLeaseHolders) {
+			expect(leasePeriodIndex.toNumber()).toBe(39);
+			expect(endOfLeasePeriod.toNumber()).toBe(800000);
+			if (currentLeaseHolders) {
 				expect(currentLeaseHolders[0].toNumber()).toBe(199);
 				expect(currentLeaseHolders[1].toNumber()).toBe(200);
 			}
-		})
+		});
 
 		it('Should return the correct response exlcuding currentLeaseHolders', async () => {
-			const { at, leasePeriodIndex, endOfLeasePeriod, currentLeaseHolders } = await parasService[
-				'leasesCurrent'
-			](blockHash789629, false);
+			const {
+				at,
+				leasePeriodIndex,
+				endOfLeasePeriod,
+				currentLeaseHolders,
+			} = await parasService['leasesCurrent'](blockHash789629, false);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -157,6 +168,15 @@ describe('ParasService', () => {
 			expect(paras[1]['onboardingAs']).toBeFalsy();
 			expect(paras[0]['paraLifeCycle'].toString()).toBe('Onboarding');
 			expect(paras[1]['paraLifeCycle'].toString()).toBe('Parathread');
+		});
+	});
+
+	describe('ParasService.auctionsCurrent', () => {
+		it('Should return to correct data during an ongoing auction', async () => {
+			const { at } =  await parasService['auctionsCurrent'](blockHash789629);
+
+			expect(at.hash.toString()).toBe(expectedHash);
+			expect(at.height).toBe(expectedHeight);
 		});
 	});
 });
