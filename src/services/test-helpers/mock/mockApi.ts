@@ -35,6 +35,9 @@ import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { validators789629Hex } from './data/validators789629Hex';
 
+const api = createApiWithAugmentations();
+const typeFactory = new TypeFactory(api);
+
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<EventRecord>', events789629)
@@ -286,7 +289,11 @@ const referendumInfoOfAt = () =>
 		polkadotRegistry.createType('ReferendumInfo');
 	});
 
-// pulled from the rococo parathread 230
+/**
+ * ParasService specific constants
+ * The below types and constants use the rococo registry in order to properly
+ * test the ParasService properly accurately
+ */
 const funds = {
 	retiring: rococoRegistry.createType('bool', false),
 	depositor: rococoRegistry.createType(
@@ -309,12 +316,6 @@ const funds = {
 	trieIndex: rococoRegistry.createType('TrieIndex', 60),
 };
 
-const api = createApiWithAugmentations();
-const typeFactory = new TypeFactory(api);
-
-/**
- * ParasService specific constants
- */
 const paraLifeCycleObjectOne = {
 	onboarding: true,
 	parachain: true,
