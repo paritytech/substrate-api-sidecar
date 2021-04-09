@@ -26,7 +26,7 @@ export const dockTestnetControllers: ControllerConfig = {
 	},
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 1,
 		blockWeightStore: {},
 	},
 };
