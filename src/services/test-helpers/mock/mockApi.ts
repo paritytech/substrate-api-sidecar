@@ -380,7 +380,7 @@ const parasGenesisArgsAt = () =>
 		return rococoRegistry.createType('ParaGenesisArgs', { parachain: true });
 	});
 
-const upcomingParasGenesis = () =>
+const upcomingParasGenesisAt = () =>
 	Promise.resolve().then(() => {
 		return rococoRegistry.createType('Option<ParaGenesisArgs>', {
 			parachain: true,
@@ -517,7 +517,7 @@ export const mockApi = ({
 				at: parasGenesisArgsAt,
 			},
 			upcomingParasGenesis: {
-				at: upcomingParasGenesis,
+				at: upcomingParasGenesisAt,
 			},
 		},
 		session: {
