@@ -1,10 +1,11 @@
-// import { AnyJson } from '@polkadot/types/types';
-// import { Option } from '@polkadot/types/codec';
-// import { FundInfo } from '@polkadot/types/interfaces'
-
-import { blockHash789629, mockApi, slotsLeasesAt } from '../test-helpers/mock';
+import {
+	auctionsInfoAt,
+	blockHash789629,
+	mockApi,
+	nullAuctionsInfoAt,
+	slotsLeasesAt,
+} from '../test-helpers/mock';
 import { ParasService } from './ParasService';
-// import { rococoRegistry } from '../../test-helpers/registries';
 
 const parasService = new ParasService(mockApi);
 
@@ -173,10 +174,61 @@ describe('ParasService', () => {
 
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return to correct data during an ongoing auction', async () => {
-			// const { at } =  await parasService['auctionsCurrent'](blockHash789629);
+			const {
+				at,
+				beginEnd,
+				finishEnd,
+				phase,
+				auctionIndex,
+				leasePeriods,
+				winning,
+			} = await parasService['auctionsCurrent'](blockHash789629);
 
-			// expect(at.hash.toString()).toBe(expectedHash);
-			// expect(at.height).toBe(expectedHeight);
+			expect(at.hash.toString()).toBe(expectedHash);
+			expect(at.height).toBe(expectedHeight);
+			expect(auctionIndex.toNumber()).toBe(4);
+			expect(beginEnd?.toNumber()).toBe(39);
+			expect(finishEnd?.toNumber()).toBe(20039);
+			expect(phase?.toString()).toBe('ending');
+			expect(leasePeriods?.length).toBeGreaterThan(0);
+
+			if (winning) {
+				expect(winning[0].bid?.accountId.toString()).toBe(
+					'5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N'
+				);
+				expect(winning[1].bid?.accountId.toString()).toBe(
+					'5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ'
+				);
+				expect(winning[0].bid?.amount.toNumber()).toBe(1000000);
+				expect(winning[0].bid?.paraId.toNumber()).toBe(199);
+				expect(winning[0].leaseSet.length).toBeGreaterThan(0);
+				expect(winning[1].bid?.amount.toNumber()).toBe(2000000);
+				expect(winning[1].bid?.paraId.toNumber()).toBe(200);
+				expect(winning[1].leaseSet.length).toBeGreaterThan(0);
+			}
+		});
+
+		it('Should return the correct null values when auctionInfo is not of type Option', async () => {
+			(mockApi.query.auctions.auctionInfo.at as unknown) = nullAuctionsInfoAt;
+
+			const {
+				at,
+				beginEnd,
+				finishEnd,
+				phase,
+				leasePeriods,
+				winning,
+			} = await parasService['auctionsCurrent'](blockHash789629);
+
+			expect(at.hash.toString()).toBe(expectedHash);
+			expect(at.height).toBe(expectedHeight);
+			expect(beginEnd).toBeNull();
+			expect(finishEnd).toBeNull();
+			expect(phase).toBeNull();
+			expect(leasePeriods).toBeNull();
+			expect(winning).toBeNull();
+
+			(mockApi.query.auctions.auctionInfo.at as unknown) = auctionsInfoAt;
 		});
 	});
 });
