@@ -382,9 +382,14 @@ const parasGenesisArgsAt = () =>
 		return rococoRegistry.createType('ParaGenesisArgs', { parachain: true });
 	});
 
+const upcomingParasGenesis = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('Option<ParaGenesisArgs>', { parachain: true });
+	});
+
 const parasLifecyclesAt = () =>
 	Promise.resolve().then(() => {
-		return paraLifecycleOne;
+		return typeFactory.optionOf(paraLifecycleOne);
 	});
 
 const tupleOne = new Tuple(
@@ -416,7 +421,7 @@ const slotsLeasesEntriesAt = () =>
 
 const auctionsInfoAt = () => 
 	Promise.resolve().then(() => {
-		
+
 	})
 
 const auctionCounterAt = () => 
@@ -475,6 +480,9 @@ export const mockApi = ({
 			paraGenesisArgs: {
 				at: parasGenesisArgsAt,
 			},
+			upcomingParasGenesis: {
+				at: upcomingParasGenesis
+			}
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
