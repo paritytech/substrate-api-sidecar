@@ -815,8 +815,8 @@ paths:
         [Experimental subject to breaking change] Get the status of the current
         auction.
       description: |
-        Returns an overview of the current of the current auction. There is only
-        one auction at a time. If there is no auction most fields will be `null`.
+        Returns an overview of the current of auction. There is only one auction
+        at a time. If there is no auction most fields will be `null`.
       parameters:
       - name: at
         in: query
@@ -853,7 +853,7 @@ paths:
           format: unsignedInteger or $hex
       - name: fundInfo
         in: query
-        description: Wehther or not to include the `fundInfo` of each crowdlaon
+        description: Whether or not to include the `fundInfo` of each crowdloan.
         required: false
         schema:
           type: boolean
@@ -865,7 +865,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasCrowdloans'
-                
   /experimental/paras/{paraId}/crowdloan-info:
     get:
       tags:
@@ -878,7 +877,7 @@ paths:
       parameters:
       - name: paraId
         in: path
-        description: paraId to query crowdloan information of.
+        description: paraId to query the crowdloan information of.
         required: true
         schema:
           type: number
@@ -903,14 +902,14 @@ paths:
       - paras
       summary: |
         [Experimental subject to breaking change] Get current and future lease
-        info + lifecycle stage for a given `paraId.
+        info as well as the lifecycle stage for a given `paraId`.
       description: |
         Returns a list of leases that belong to the `paraId` as well as the
         `paraId`'s current lifecycle stage.
       parameters:
       - name: paraId
         in: path
-        description: paraId to query crowdloan information of.
+        description: paraId to query the crowdloan information of.
         required: true
         schema:
           type: number
@@ -1491,8 +1490,8 @@ components:
         status:
           type: object
           description: >-
-            [Deprecated](Works for polkadot runtimes before v0.8.30).   
-            
+            [Deprecated](Works for polkadot runtimes before v0.8.30).
+
             Era election status: either `Close: null` or `Open: <BlockNumber>`.
             A status of `Close` indicates that the submission window for solutions
             from off-chain Phragmen is not open. A status of `Open` indicates that the
@@ -1921,7 +1920,7 @@ components:
             type: string
             format: unsignedInteger
       description: |
-        A currently win bid and the set of lease periods the bid is for. The
+        A currently winning bid and the set of lease periods the bid is for. The
         `amount` of the bid is per lease period. The `bid` property will be `null`
         if no bid has been made for the corresponding `SlotRange`.
     ParasAuctionsCurrent:
@@ -1945,13 +1944,13 @@ components:
           - opening
           - ending
           description: |
-            Wether the auction is in the `opening` or `ending` phase. The 
-            `ending` phase is where the eventual winners are retroactively 
+            Whether the auction is in the `opening` or `ending` phase. The
+            `ending` phase is where the eventual winners are retroactively
             picked from. `null` if no ongoing auction.
         auctionIndex:
           type: string
           format: unsignedInteger
-          description: | 
+          description: |
             Auction number. If there is no current auction this will be the number
             of the previous auction.
         leasePeriods:
@@ -1973,7 +1972,7 @@ components:
           type: string
         verifier:
           type: string
-        deposit: 
+        deposit:
           type: string
           format: unsignedInteger
         raised:
@@ -2015,8 +2014,8 @@ components:
               fundInfo:
                 $ref: '#/components/schemas/FundInfo'
           description: |
-            List of paras that have crowdloans. Note `fundInfo` is only included when query
-            param `fundInfo=true`.
+            List of paras that have crowdloans. Note `fundInfo` is only included
+            when query param `fundInfo=true`.
     ParasCrowdloanInfo:
       type: object
       properties:
@@ -2044,7 +2043,7 @@ components:
           items:
             type: object
             properties:
-              leasePeriodIndex: 
+              leasePeriodIndex:
                 type: string
                 format: unsignedInteger
               account:
@@ -2053,7 +2052,7 @@ components:
                 type: string
                 format: unsignedInteger
           description: |
-            List of lease periods for which the `paraId` holds a lease along with 
+            List of lease periods for which the `paraId` holds a lease along with
             the deposit held and the associated `accountId`.
   requestBodies:
     Transaction:
