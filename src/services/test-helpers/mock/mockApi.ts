@@ -395,15 +395,13 @@ const parasLifecyclesAt = () =>
 /**
  * Used for parachain leases
  */
-const leasesTupleOne = new Tuple(
-	api.registry,
-	['AccountId', 'BalanceOf'],
-	[accountIdOne, balanceOfOne]
+const leasesTupleOne = typeFactory.tupleOf(
+	[accountIdOne, balanceOfOne],
+	['AccountId', 'BalanceOf']
 );
-const leasesTupleTwo = new Tuple(
-	api.registry,
-	['AccountId', 'BalanceOf'],
-	[accountIdTwo, balanceOfTwo]
+const leasesTupleTwo = typeFactory.tupleOf(
+	[accountIdTwo, balanceOfTwo],
+	['AccountId', 'BalanceOf']
 );
 const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
 const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
@@ -452,20 +450,21 @@ const auctionsWinningsAt = () =>
 	Promise.resolve().then(() => {
 		const paraId1 = rococoRegistry.createType('ParaId', 199);
 		const paraId2 = rococoRegistry.createType('ParaId', 200);
-		const tupleOne = new Tuple(
-			api.registry,
-			['AccountId', 'ParaId', 'BalanceOf'],
-			[accountIdOne, paraId1, balanceOfOne]
+		const tupleOne = typeFactory.tupleOf(
+			[accountIdOne, paraId1, balanceOfOne],
+			['AccountId', 'ParaId', 'BalanceOf']
 		);
-		const tupleTwo = new Tuple(
-			api.registry,
-			['AccountId', 'ParaId', 'BalanceOf'],
-			[accountIdTwo, paraId2, balanceOfTwo]
+		const tupleTwo = typeFactory.tupleOf(
+			[accountIdTwo, paraId2, balanceOfTwo],
+			['AccountId', 'ParaId', 'BalanceOf']
 		);
 		const parasOptionsOne = typeFactory.optionOf(tupleOne);
 		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
 
-		const vectorWinnings = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
+		const vectorWinnings = typeFactory.vecOf([
+			parasOptionsOne,
+			parasOptionsTwo,
+		]);
 		const optionWinnings = typeFactory.optionOf(vectorWinnings);
 
 		return optionWinnings;

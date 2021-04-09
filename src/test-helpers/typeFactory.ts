@@ -3,7 +3,12 @@ import { Metadata } from '@polkadot/metadata';
 import { Option, TypeRegistry } from '@polkadot/types';
 import { StorageKey, Tuple, Vec } from '@polkadot/types';
 import { ParaId } from '@polkadot/types/interfaces';
-import { Codec, Constructor, Registry } from '@polkadot/types/types';
+import {
+	Codec,
+	Constructor,
+	InterfaceTypes,
+	Registry,
+} from '@polkadot/types/types';
 
 import { rococoMetadataV228 } from './metadata/rococoMetadata';
 
@@ -62,7 +67,7 @@ export class TypeFactory {
 
 	public tupleOf = <T extends Codec>(
 		value: T[],
-		types: Constructor[]
+		types: (Constructor | keyof InterfaceTypes)[]
 	): Tuple => {
 		return new Tuple(this.#registry, types, value);
 	};
