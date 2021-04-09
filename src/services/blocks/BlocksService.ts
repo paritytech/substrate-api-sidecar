@@ -89,7 +89,7 @@ export class BlocksService extends AbstractService {
 				height: block.header.number.unwrap().toString(10),
 				indexs: trace2.extrinsicIndexBySpanId(),
 				block: traceBlock,
-				// ...trace2.operationsAndGrouping(),
+				...trace2.operationsAndGrouping(),
 				// eventsByParent: trace2.traceInfoWithPhase(),
 				// traceBlock: traceBlock,
 			};
