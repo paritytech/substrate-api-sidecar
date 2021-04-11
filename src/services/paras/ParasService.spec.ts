@@ -44,7 +44,7 @@ describe('ParasService', () => {
 
 	describe('ParasService.crowdloans', () => {
 		it('Should return correct crowdloans response', async () => {
-			const { at, funds } = await parasService['crowdloans'](
+			const { at, funds } = await parasService.crowdloans(
 				blockHash789629,
 				true
 			);
@@ -59,7 +59,7 @@ describe('ParasService', () => {
 		});
 
 		it('Should return a undefined fundInfo when includeFundInfo is false', async () => {
-			const { at, funds } = await parasService['crowdloans'](
+			const { at, funds } = await parasService.crowdloans(
 				blockHash789629,
 				false
 			);
@@ -75,9 +75,12 @@ describe('ParasService', () => {
 
 	describe('ParasService.leaseInfo', () => {
 		it('Should return the correct leasing information', async () => {
-			const { at, paraLifeCycle, onboardingAs, leases } = await parasService[
-				'leaseInfo'
-			](blockHash789629, paraId);
+			const {
+				at,
+				paraLifeCycle,
+				onboardingAs,
+				leases,
+			} = await parasService.leaseInfo(blockHash789629, paraId);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -108,7 +111,7 @@ describe('ParasService', () => {
 
 			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
 
-			const { at, leases } = await parasService['leaseInfo'](
+			const { at, leases } = await parasService.leaseInfo(
 				blockHash789629,
 				paraId
 			);
@@ -128,7 +131,7 @@ describe('ParasService', () => {
 				leasePeriodIndex,
 				endOfLeasePeriod,
 				currentLeaseHolders,
-			} = await parasService['leasesCurrent'](blockHash789629, true);
+			} = await parasService.leasesCurrent(blockHash789629, true);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -146,7 +149,7 @@ describe('ParasService', () => {
 				leasePeriodIndex,
 				endOfLeasePeriod,
 				currentLeaseHolders,
-			} = await parasService['leasesCurrent'](blockHash789629, false);
+			} = await parasService.leasesCurrent(blockHash789629, false);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -158,7 +161,7 @@ describe('ParasService', () => {
 
 	describe('ParasService.paras', () => {
 		it('Should return correct ParaLifecycles response', async () => {
-			const { at, paras } = await parasService['paras'](blockHash789629);
+			const { at, paras } = await parasService.paras(blockHash789629);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -182,7 +185,7 @@ describe('ParasService', () => {
 				auctionIndex,
 				leasePeriods,
 				winning,
-			} = await parasService['auctionsCurrent'](blockHash789629);
+			} = await parasService.auctionsCurrent(blockHash789629);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
@@ -218,7 +221,7 @@ describe('ParasService', () => {
 				phase,
 				leasePeriods,
 				winning,
-			} = await parasService['auctionsCurrent'](blockHash789629);
+			} = await parasService.auctionsCurrent(blockHash789629);
 
 			expect(at.hash.toString()).toBe(expectedHash);
 			expect(at.height).toBe(expectedHeight);
