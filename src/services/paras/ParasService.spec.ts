@@ -1,3 +1,4 @@
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
 	auctionsInfoAt,
 	blockHash789629,
@@ -10,115 +11,122 @@ import { ParasService } from './ParasService';
 const parasService = new ParasService(mockApi);
 
 describe('ParasService', () => {
-	const expectedHash =
-		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578';
-	const expectedHeight = '789629';
 	const paraId = 199;
 
-	const expectedFunds = {
+	const expectedAt = {
+		hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+		height: '789629',
+	};
+
+	const expectedFund = {
 		retiring: false,
 		depositor: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 		verifier: null,
-		deposit: 100000000000000,
-		raised: 627500000000000,
-		end: 200000,
-		cap: '0x0000000000000000016345785d8a0000',
-		lastContribution: { preEnding: 6 },
-		firstSlot: 13,
-		lastSlot: 16,
-		trieIndex: 60,
+		deposit: '100000000000000',
+		raised: '627500000000000',
+		end: '200000',
+		cap: '100000000000000000',
+		lastContribution: { preEnding: '6' },
+		firstSlot: '13',
+		lastSlot: '16',
+		trieIndex: '60',
 	};
 
 	describe('ParasService.crowdloansInfo', () => {
 		it('Should return correct crowdloans info', async () => {
-			const { at, fundInfo, leasePeriods } = await parasService[
-				'crowdloansInfo'
-			](blockHash789629, paraId);
+			const expectedResponse = {
+				at: expectedAt,
+				fundInfo: expectedFund,
+				leasePeriods: ['13', '14', '15', '16'],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(fundInfo?.toJSON()).toStrictEqual(expectedFunds);
-			expect(leasePeriods).toStrictEqual([13, 14, 15, 16]);
+			const response = await parasService.crowdloansInfo(
+				blockHash789629,
+				paraId
+			);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 	});
 
 	describe('ParasService.crowdloans', () => {
 		it('Should return correct crowdloans response', async () => {
-			const { at, funds } = await parasService.crowdloans(
-				blockHash789629,
-				true
-			);
+			const expectedResponse = {
+				at: expectedAt,
+				funds: [
+					{
+						fundInfo: expectedFund,
+						paraId: '199',
+					},
+					{
+						fundInfo: expectedFund,
+						paraId: '200',
+					},
+				],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(funds.length).toBe(2);
-			expect(funds[0]['fundInfo']?.toJSON()).toStrictEqual(expectedFunds);
-			expect(funds[1]['fundInfo']?.toJSON()).toStrictEqual(expectedFunds);
-			expect(funds[0]['paraId']?.toNumber()).toStrictEqual(199);
-			expect(funds[1]['paraId']?.toNumber()).toStrictEqual(200);
+			const response = await parasService.crowdloans(blockHash789629, true);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
 		it('Should return a undefined fundInfo when includeFundInfo is false', async () => {
-			const { at, funds } = await parasService.crowdloans(
-				blockHash789629,
-				false
-			);
+			const expectedResponse = {
+				at: expectedAt,
+				funds: [
+					{
+						paraId: '199',
+					},
+					{
+						paraId: '200',
+					},
+				],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(funds.length).toBe(2);
-			expect(funds[0]['fundInfo']?.toJSON()).toStrictEqual(undefined);
-			expect(funds[0]['paraId']?.toNumber()).toStrictEqual(199);
-			expect(funds[1]['paraId']?.toNumber()).toStrictEqual(200);
+			const response = await parasService.crowdloans(blockHash789629, false);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 	});
 
 	describe('ParasService.leaseInfo', () => {
 		it('Should return the correct leasing information', async () => {
-			const {
-				at,
-				paraLifeCycle,
-				onboardingAs,
-				leases,
-			} = await parasService.leaseInfo(blockHash789629, paraId);
+			const expectedResponse = {
+				at: expectedAt,
+				leases: [
+					{
+						account: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
+						deposit: '1000000',
+					},
+					{
+						account: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
+						deposit: '2000000',
+					},
+				],
+				paraLifeCycle: 'Onboarding',
+				onboardingAs: 'parachain',
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(leases).toBeTruthy();
-			expect(leases?.length).toBe(2);
-			expect(paraLifeCycle.toString()).toBe('Onboarding');
-			expect(onboardingAs).toBe('parachain');
+			const response = await parasService.leaseInfo(blockHash789629, paraId);
 
-			if (leases) {
-				expect(leases[0].account.toString()).toBe(
-					'5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N'
-				);
-				expect(leases[1].account.toString()).toBe(
-					'5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ'
-				);
-				expect(leases[0].deposit.toNumber()).toBe(1000000);
-				expect(leases[1].deposit.toNumber()).toBe(2000000);
-				expect(leases[0].leasePeriodIndex).toBe(39);
-				expect(leases[1].leasePeriodIndex).toBe(40);
-			}
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
 		it('Should return a null leases when length is equal to 0', async () => {
-			const emptyLeasesAt = () =>
-				Promise.resolve().then(() => {
-					return [];
-				});
+			const emptyLeasesAt = () => Promise.resolve().then(() => []);
 
 			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
 
-			const { at, leases } = await parasService.leaseInfo(
-				blockHash789629,
-				paraId
-			);
+			const expectedResponse = {
+				at: expectedAt,
+				leases: null,
+				paraLifeCycle: 'Onboarding',
+				onboardingAs: 'parachain',
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(leases).toBeNull();
+			const response = await parasService.leaseInfo(blockHash789629, paraId);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
 			(mockApi.query.slots.leases.at as unknown) = slotsLeasesAt;
 		});
@@ -126,110 +134,106 @@ describe('ParasService', () => {
 
 	describe('ParasService.leasesCurrent', () => {
 		it('Should return the correct entries for leasesCurrent', async () => {
-			const {
-				at,
-				leasePeriodIndex,
-				endOfLeasePeriod,
-				currentLeaseHolders,
-			} = await parasService.leasesCurrent(blockHash789629, true);
+			const expectedResponse = {
+				at: expectedAt,
+				leasePeriodIndex: '39',
+				endOfLeasePeriod: '800000',
+				currentLeaseHolders: ['199', '200'],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(leasePeriodIndex.toNumber()).toBe(39);
-			expect(endOfLeasePeriod.toNumber()).toBe(800000);
-			if (currentLeaseHolders) {
-				expect(currentLeaseHolders[0].toNumber()).toBe(199);
-				expect(currentLeaseHolders[1].toNumber()).toBe(200);
-			}
+			const response = await parasService.leasesCurrent(blockHash789629, true);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
 		it('Should return the correct response exlcuding currentLeaseHolders', async () => {
-			const {
-				at,
-				leasePeriodIndex,
-				endOfLeasePeriod,
-				currentLeaseHolders,
-			} = await parasService.leasesCurrent(blockHash789629, false);
+			const expectedResponse = {
+				at: expectedAt,
+				leasePeriodIndex: '39',
+				endOfLeasePeriod: '800000',
+				currentLeaseHolders: undefined,
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(leasePeriodIndex.toNumber()).toBe(39);
-			expect(endOfLeasePeriod.toNumber()).toBe(800000);
-			expect(currentLeaseHolders).toBeUndefined();
+			const response = await parasService.leasesCurrent(blockHash789629, false);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 	});
 
 	describe('ParasService.paras', () => {
 		it('Should return correct ParaLifecycles response', async () => {
-			const { at, paras } = await parasService.paras(blockHash789629);
+			const expectedResponse = {
+				at: expectedAt,
+				paras: [
+					{
+						paraId: '199',
+						paraLifeCycle: 'Onboarding',
+						onboardingAs: 'parachain',
+					},
+					{
+						paraId: '200',
+						paraLifeCycle: 'Parathread',
+						onboardingAs: undefined,
+					},
+				],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(paras.length).toBe(2);
-			expect(paras[0]['paraId']?.toNumber()).toStrictEqual(199);
-			expect(paras[1]['paraId']?.toNumber()).toStrictEqual(200);
-			expect(paras[0]['onboardingAs']).toBe('parachain');
-			expect(paras[1]['onboardingAs']).toBeFalsy();
-			expect(paras[0]['paraLifeCycle'].toString()).toBe('Onboarding');
-			expect(paras[1]['paraLifeCycle'].toString()).toBe('Parathread');
+			const response = await parasService.paras(blockHash789629);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 	});
 
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return to correct data during an ongoing auction', async () => {
-			const {
-				at,
-				beginEnd,
-				finishEnd,
-				phase,
-				auctionIndex,
-				leasePeriods,
-				winning,
-			} = await parasService.auctionsCurrent(blockHash789629);
+			const expectedResponse = {
+				at: expectedAt,
+				beginEnd: '39',
+				finishEnd: '20039',
+				phase: 'ending',
+				auctionIndex: '4',
+				leasePeriods: ['1000', '1001', '1002', '1003'],
+				winning: [
+					{
+						bid: {
+							accountId: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
+							amount: '1000000',
+							paraId: '199',
+						},
+						leaseSet: ['1000'],
+					},
+					{
+						bid: {
+							accountId: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
+							amount: '2000000',
+							paraId: '200',
+						},
+						leaseSet: ['1000', '1001'],
+					},
+				],
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(auctionIndex.toNumber()).toBe(4);
-			expect(beginEnd?.toNumber()).toBe(39);
-			expect(finishEnd?.toNumber()).toBe(20039);
-			expect(phase?.toString()).toBe('ending');
-			expect(leasePeriods?.length).toBeGreaterThan(0);
+			const response = await parasService.auctionsCurrent(blockHash789629);
 
-			if (winning) {
-				expect(winning[0].bid?.accountId.toString()).toBe(
-					'5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N'
-				);
-				expect(winning[1].bid?.accountId.toString()).toBe(
-					'5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ'
-				);
-				expect(winning[0].bid?.amount.toNumber()).toBe(1000000);
-				expect(winning[0].bid?.paraId.toNumber()).toBe(199);
-				expect(winning[0].leaseSet.length).toBeGreaterThan(0);
-				expect(winning[1].bid?.amount.toNumber()).toBe(2000000);
-				expect(winning[1].bid?.paraId.toNumber()).toBe(200);
-				expect(winning[1].leaseSet.length).toBeGreaterThan(0);
-			}
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
 		it('Should return the correct null values when auctionInfo is not of type Option', async () => {
 			(mockApi.query.auctions.auctionInfo.at as unknown) = nullAuctionsInfoAt;
 
-			const {
-				at,
-				beginEnd,
-				finishEnd,
-				phase,
-				leasePeriods,
-				winning,
-			} = await parasService.auctionsCurrent(blockHash789629);
+			const expectedResponse = {
+				at: expectedAt,
+				beginEnd: null,
+				finishEnd: null,
+				phase: null,
+				auctionIndex: '4',
+				leasePeriods: null,
+				winning: null,
+			};
 
-			expect(at.hash.toString()).toBe(expectedHash);
-			expect(at.height).toBe(expectedHeight);
-			expect(beginEnd).toBeNull();
-			expect(finishEnd).toBeNull();
-			expect(phase).toBeNull();
-			expect(leasePeriods).toBeNull();
-			expect(winning).toBeNull();
+			const response = await parasService.auctionsCurrent(blockHash789629);
+
+			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
 			(mockApi.query.auctions.auctionInfo.at as unknown) = auctionsInfoAt;
 		});
