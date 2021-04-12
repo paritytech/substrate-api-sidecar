@@ -1,10 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
-import { Vec } from '@polkadot/types';
+import { Tuple, Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
+import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
 	ActiveEraInfo,
 	Block,
+	BlockNumber,
 	EraIndex,
 	Extrinsic,
 	Hash,
@@ -12,9 +14,18 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types';
+import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
-import { polkadotRegistry } from '../../../test-helpers/registries';
+import {
+	polkadotRegistry,
+	rococoRegistry,
+} from '../../../test-helpers/registries';
+import {
+	createApiWithAugmentations,
+	TypeFactory,
+} from '../../../test-helpers/typeFactory';
 import {
 	balancesTransferValid,
 	blockHash789629,
@@ -24,6 +35,9 @@ import {
 import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { validators789629Hex } from './data/validators789629Hex';
+
+const api = createApiWithAugmentations();
+const typeFactory = new TypeFactory(api);
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -277,6 +291,198 @@ const referendumInfoOfAt = () =>
 	});
 
 /**
+ * ParasService specific constants
+ * The below types and constants use the rococo registry in order to properly
+ * test the ParasService properly accurately
+ */
+const funds = {
+	depositor: rococoRegistry.createType(
+		'AccountId',
+		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
+	),
+	verifier: null,
+	deposit: rococoRegistry.createType('Balance', 100000000000000),
+	raised: rococoRegistry.createType('Balance', 627500000000000),
+	end: rococoRegistry.createType('BlockNumber', 200000),
+	cap: rococoRegistry.createType(
+		'Balance',
+		'0x0000000000000000016345785d8a0000'
+	),
+	lastContribution: rococoRegistry.createType('LastContribution', {
+		preEnding: 6,
+	}),
+	firstSlot: rococoRegistry.createType('LeasePeriod', 13),
+	lastSlot: rococoRegistry.createType('LeasePeriod', 16),
+	trieIndex: rococoRegistry.createType('TrieIndex', 60),
+};
+
+const paraLifeCycleObjectOne = {
+	onboarding: true,
+	parachain: true,
+};
+const paraLifeCycleObjectTwo = {
+	parathread: true,
+	parachain: false,
+};
+const paraId1 = typeFactory.storageKey(199);
+const paraId2 = typeFactory.storageKey(200);
+const paraLifecycleOne = rococoRegistry.createType(
+	'ParaLifecycle',
+	paraLifeCycleObjectOne
+);
+const paraLifecycleTwo = rococoRegistry.createType(
+	'ParaLifecycle',
+	paraLifeCycleObjectTwo
+);
+const accountIdOne = rococoRegistry.createType(
+	'AccountId',
+	'1TYrFCWxwHA5bhiXf6uLvPfG6eEvrzzL7uiPK3Yc6yHLUqc'
+);
+const accountIdTwo = rococoRegistry.createType(
+	'AccountId',
+	'13NXiLYYzVEjXxU3eaZNcrjEX9vPyVDNNpURCzK8Bj9BiCWH'
+);
+const balanceOfOne = rococoRegistry.createType('BalanceOf', 1000000);
+const balanceOfTwo = rococoRegistry.createType('BalanceOf', 2000000);
+
+const fundsEntries = () =>
+	Promise.resolve().then(() => {
+		const optionFundInfo = rococoRegistry.createType('Option<FundInfo>', funds);
+
+		const entries = [
+			[paraId1, optionFundInfo],
+			[paraId2, optionFundInfo],
+		];
+
+		return entries;
+	});
+
+const fundsAt = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('Option<FundInfo>', funds);
+	});
+
+const fundsKeys = () =>
+	Promise.resolve().then(() => {
+		return [paraId1, paraId2];
+	});
+
+const parasLifecyclesEntriesAt = () =>
+	Promise.resolve().then(() => {
+		return [
+			[paraId1, paraLifecycleOne],
+			[paraId2, paraLifecycleTwo],
+		];
+	});
+
+const parasGenesisArgsAt = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('ParaGenesisArgs', { parachain: true });
+	});
+
+const upcomingParasGenesisAt = () =>
+	Promise.resolve().then(() => {
+		return rococoRegistry.createType('Option<ParaGenesisArgs>', {
+			parachain: true,
+		});
+	});
+
+const parasLifecyclesAt = () =>
+	Promise.resolve().then(() => {
+		return typeFactory.optionOf(paraLifecycleOne);
+	});
+
+/**
+ * Used for parachain leases
+ */
+const leasesTupleOne = typeFactory.tupleOf(
+	[accountIdOne, balanceOfOne],
+	['AccountId', 'BalanceOf']
+);
+const leasesTupleTwo = typeFactory.tupleOf(
+	[accountIdTwo, balanceOfTwo],
+	['AccountId', 'BalanceOf']
+);
+const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
+const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
+const vectorLeases = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
+
+export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
+	Promise.resolve().then(() => {
+		return vectorLeases;
+	});
+
+const slotsLeasesEntriesAt = () =>
+	Promise.resolve().then(() => {
+		return [
+			[paraId1, vectorLeases],
+			[paraId2, vectorLeases],
+		];
+	});
+
+/**
+ * Used for parachain Auctions
+ */
+export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
+	Promise.resolve().then(() => {
+		const beingEnd = rococoRegistry.createType('BlockNumber', 1000);
+		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
+		const vectorAuctions = typeFactory.vecOf([beingEnd, leasePeriodIndex]);
+		const optionAuctions = typeFactory.optionOf(vectorAuctions);
+
+		return optionAuctions;
+	});
+
+export const noneAuctionsInfoAt = (): Promise<Option<Codec>> =>
+	Promise.resolve().then(() => {
+		const noneOption = typeFactory.emptyOption('Null');
+
+		return noneOption;
+	});
+
+const auctionCounterAt = () =>
+	Promise.resolve().then(() => {
+		const counter = new BN(4) as AbstractInt;
+
+		return counter;
+	});
+
+const auctionsWinningsAt = () =>
+	Promise.resolve().then(() => {
+		const paraId1 = rococoRegistry.createType('ParaId', 199);
+		const paraId2 = rococoRegistry.createType('ParaId', 200);
+		const tupleOne = typeFactory.tupleOf(
+			[accountIdOne, paraId1, balanceOfOne],
+			['AccountId', 'ParaId', 'BalanceOf']
+		);
+		const tupleTwo = typeFactory.tupleOf(
+			[accountIdTwo, paraId2, balanceOfTwo],
+			['AccountId', 'ParaId', 'BalanceOf']
+		);
+		const parasOptionsOne = typeFactory.optionOf(tupleOne);
+		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
+
+		// Instead of using emptyOption here we use optionOf since we need the 
+		// winning data options to consist of tuples. This will also help satisfy the 10
+		// options we need for a LEASE_PERIODS_PER_SLOT_FALLBACK of 4. 
+		const emptyTuple = typeFactory.tupleOf([], []);
+		const emptyOption = typeFactory.optionOf(emptyTuple);
+		const mockWinningOptions = new Array(8).fill(
+			emptyOption
+		) as Option<Tuple>[];
+
+		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
+		const vectorWinnings = typeFactory.vecOf([
+			parasOptionsOne,
+			parasOptionsTwo,
+			...mockWinningOptions,
+		]);
+		const optionWinnings = typeFactory.optionOf(vectorWinnings);
+
+		return optionWinnings;
+	});
+
+/**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
  */
@@ -287,6 +493,17 @@ export const mockApi = ({
 	tx,
 	runtimeMetadata: polkadotMetadata,
 	query: {
+		auctions: {
+			auctionInfo: {
+				at: auctionsInfoAt,
+			},
+			auctionCounter: {
+				at: auctionCounterAt,
+			},
+			winning: {
+				at: auctionsWinningsAt,
+			},
+		},
 		babe: {
 			currentSlot: { at: currentSlotAt },
 			epochIndex: { at: epochIndexAt },
@@ -295,9 +512,34 @@ export const mockApi = ({
 		balances: {
 			locks: { at: locksAt },
 		},
+		crowdloan: {
+			funds: {
+				entriesAt: fundsEntries,
+				keys: fundsKeys,
+				at: fundsAt,
+			},
+		},
+		paras: {
+			paraLifecycles: {
+				entriesAt: parasLifecyclesEntriesAt,
+				at: parasLifecyclesAt,
+			},
+			paraGenesisArgs: {
+				at: parasGenesisArgsAt,
+			},
+			upcomingParasGenesis: {
+				at: upcomingParasGenesisAt,
+			},
+		},
 		session: {
 			currentIndex: { at: currentIndexAt },
 			validators: { at: validatorsAt },
+		},
+		slots: {
+			leases: {
+				entriesAt: slotsLeasesEntriesAt,
+				at: slotsLeasesAt,
+			},
 		},
 		staking: {
 			validatorCount: { at: validatorCountAt },
@@ -326,6 +568,11 @@ export const mockApi = ({
 		},
 	},
 	consts: {
+		auctions: {
+			endingPeriod: new BN(20000),
+			sampleLength: new BN(2),
+			leasePeriodsPerSlot: undefined,
+		},
 		babe: {
 			epochDuration: polkadotRegistry.createType('u64', 2400),
 		},
@@ -339,6 +586,9 @@ export const mockApi = ({
 					negative: false,
 				},
 			],
+		},
+		slots: {
+			leasePeriod: new BN(20000),
 		},
 		staking: {
 			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
