@@ -19,6 +19,6 @@ function createRococoRegistry(): TypeRegistry {
 }
 
 /**
- * Kusama v228 TypeRegistry.
+ * Rococo v228 TypeRegistry.
  */
 export const rococoRegistry = createRococoRegistry();
