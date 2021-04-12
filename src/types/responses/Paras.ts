@@ -90,20 +90,11 @@ export interface IWinningData {
 }
 
 /**
- * Union of different length lease sets.
- */
-export type ILeaseSet =
-	| [number]
-	| [number, number]
-	| [number, number, number]
-	| [number, number, number, number];
-
-/**
  * Bid and correspond set of leases.
  */
 export interface IWinningDataWithLeaseSet {
 	bid: IOption<IWinningData>;
-	leaseSet: ILeaseSet;
+	leaseSet: number[];
 }
 
 export interface IAuctionsCurrent {

@@ -1,10 +1,10 @@
 import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
 	BalanceOf,
 	BlockHash,
+	BlockNumber,
 	FundInfo,
 	ParaGenesisArgs,
 	ParaId,
@@ -23,7 +23,6 @@ import {
 	IFund,
 	ILeaseInfo,
 	ILeasesCurrent,
-	ILeaseSet,
 	IParas,
 	LeaseFormatted,
 	ParaType,
@@ -205,16 +204,16 @@ export class ParasService extends AbstractService {
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
-			this.api.query.auctions.auctionInfo.at<Option<Vec<AbstractInt>>>(hash),
+			this.api.query.auctions.auctionInfo.at<Option<Vec<BlockNumber>>>(hash),
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.auctions.auctionCounter.at<AbstractInt>(hash),
+			this.api.query.auctions.auctionCounter.at<BlockNumber>(hash),
 		]);
 		const blockNumber = number.unwrap();
 
-		const endingPeriod = this.api.consts.auctions.endingPeriod as AbstractInt;
+		const endingPeriod = this.api.consts.auctions.endingPeriod as BlockNumber;
 
-		let leasePeriodIndex: IOption<AbstractInt>,
-			beginEnd: IOption<AbstractInt>,
+		let leasePeriodIndex: IOption<BlockNumber>,
+			beginEnd: IOption<BlockNumber>,
 			finishEnd: IOption<BN>,
 			phase: IOption<AuctionPhase>,
 			winning;
@@ -319,7 +318,7 @@ export class ParasService extends AbstractService {
 				.map(([key, _l]) => key.args[0]);
 		}
 
-		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
 		const leasePeriodIndex = this.currentLeasePeriodIndex(blockNumber);
 		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
 
@@ -384,7 +383,7 @@ export class ParasService extends AbstractService {
 	 * @param leasePeriod duration of lease period
 	 */
 	private currentLeasePeriodIndex(now: BN): BN {
-		const leasePeriod = this.api.consts.slots.leasePeriod as AbstractInt;
+		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
 		return now.div(leasePeriod);
 	}
 
@@ -397,10 +396,7 @@ export class ParasService extends AbstractService {
 	 * @param now current block number
 	 * @param startEnd block number of the start of the auctions ending period
 	 */
-	private endingOffset(
-		now: AbstractInt,
-		begginEnd: IOption<AbstractInt>
-	): IOption<BN> {
+	private endingOffset(now: BN, begginEnd: IOption<BN>): IOption<BN> {
 		if (!isSome(begginEnd)) {
 			return null;
 		}
@@ -413,7 +409,7 @@ export class ParasService extends AbstractService {
 		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
 		// need a fallback of 1
 		const sampleLength =
-			(this.api.consts.auctions.sampleLength as AbstractInt) || new BN(1);
+			(this.api.consts.auctions.sampleLength as BlockNumber) || new BN(1);
 		return afterEarlyEnd.div(sampleLength);
 	}
 
@@ -423,20 +419,20 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param leasePeriodIndex
 	 */
-	private enumerateLeaseSets(leasePeriodIndex: BN): ILeaseSet[] {
+	private enumerateLeaseSets(leasePeriodIndex: BN): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
 		const lPPS =
 			(this.api.consts.auctions.leasePeriodsPerSlot as u32).toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 
-		const ranges: ILeaseSet[] = [];
+		const ranges: number[][] = [];
 		for (let start = 0; start < lPPS; start += 1) {
 			for (let end = start; end < lPPS; end += 1) {
 				const slotRange = [];
 				for (let i = start; i <= end; i += 1) {
 					slotRange.push(i + leasePeriodIndexNumber);
 				}
-				ranges.push(slotRange as ILeaseSet);
+				ranges.push(slotRange);
 			}
 		}
 
