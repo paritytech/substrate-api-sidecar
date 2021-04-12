@@ -191,7 +191,8 @@ describe('ParasService', () => {
 				leasePeriodIndex
 			);
 			// Remove the first two entries with splice because we have them in the expectedResponse
-			const emptyOptions = leaseIndexArray
+			// Because LEASE_PERIODS_PER_SLOT_FALLBACK is 4 we need 10 slots for winning
+			const additionalWinningOptions = leaseIndexArray
 				.splice(2, leaseIndexArray.length - 2)
 				.map((k) => {
 					return { bid: {}, leaseSet: sanitizeNumbers(k) };
@@ -221,7 +222,7 @@ describe('ParasService', () => {
 						},
 						leaseSet: ['1000', '1001'],
 					},
-					...emptyOptions,
+					...additionalWinningOptions,
 				],
 			};
 
