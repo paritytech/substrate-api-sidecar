@@ -31,7 +31,7 @@ import { IOption, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 // This was the orgiginal value in the rococo test net. Once the exposed metadata
-// consts makes its way into `rococo-v1`
+// consts makes its way into `rococo-v1` this can be taken out.
 const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
 export class ParasService extends AbstractService {
