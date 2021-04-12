@@ -19,7 +19,6 @@ describe('ParasService', () => {
 	};
 
 	const expectedFund = {
-		retiring: false,
 		depositor: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 		verifier: null,
 		deposit: '100000000000000',
@@ -173,7 +172,6 @@ describe('ParasService', () => {
 					{
 						paraId: '200',
 						paraLifeCycle: 'Parathread',
-						onboardingAs: undefined,
 					},
 				],
 			};

@@ -294,7 +294,6 @@ const referendumInfoOfAt = () =>
  * test the ParasService properly accurately
  */
 const funds = {
-	retiring: rococoRegistry.createType('bool', false),
 	depositor: rococoRegistry.createType(
 		'AccountId',
 		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
