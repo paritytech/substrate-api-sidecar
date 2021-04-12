@@ -471,7 +471,7 @@ const auctionsWinningsAt = () =>
 			emptyOption
 		) as Option<Tuple>[];
 
-		// Total of 36 winning object, 2 for testing, 34 for mock
+		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
 		const vectorWinnings = typeFactory.vecOf([
 			parasOptionsOne,
 			parasOptionsTwo,
