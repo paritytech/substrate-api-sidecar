@@ -1,3 +1,5 @@
+import BN from 'bn.js';
+
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
 	auctionsInfoAt,
@@ -184,6 +186,17 @@ describe('ParasService', () => {
 
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return to correct data during an ongoing auction', async () => {
+			const leasePeriodIndex = new BN(1000);
+			const leaseIndexArray = parasService['enumerateLeaseSets'](
+				leasePeriodIndex
+			);
+			// Remove the first two entries with splice because we have them in the expectedResponse
+			const emptyOptions = leaseIndexArray
+				.splice(2, leaseIndexArray.length - 2)
+				.map((k) => {
+					return { bid: {}, leaseSet: sanitizeNumbers(k) };
+				});
+
 			const expectedResponse = {
 				at: expectedAt,
 				beginEnd: '39',
@@ -208,6 +221,7 @@ describe('ParasService', () => {
 						},
 						leaseSet: ['1000', '1001'],
 					},
+					...emptyOptions,
 				],
 			};
 

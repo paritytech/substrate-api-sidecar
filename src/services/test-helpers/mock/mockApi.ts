@@ -6,6 +6,7 @@ import {
 	AccountId,
 	ActiveEraInfo,
 	Block,
+	BlockNumber,
 	EraIndex,
 	Extrinsic,
 	Hash,
@@ -422,10 +423,10 @@ const slotsLeasesEntriesAt = () =>
 /**
  * Used for parachain Auctions
  */
-export const auctionsInfoAt = (): Promise<Option<Vec<AbstractInt>>> =>
+export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
-		const beingEnd = new BN(1000) as AbstractInt;
-		const leasePeriodIndex = new BN(39) as AbstractInt;
+		const beingEnd = rococoRegistry.createType('BlockNumber', 1000);
+		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
 		const vectorAuctions = typeFactory.vecOf([beingEnd, leasePeriodIndex]);
 		const optionAuctions = typeFactory.optionOf(vectorAuctions);
 
@@ -461,9 +462,17 @@ const auctionsWinningsAt = () =>
 		const parasOptionsOne = typeFactory.optionOf(tupleOne);
 		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
 
+		const emptyTuple = typeFactory.tupleOf([], []);
+		const emptyOption = typeFactory.optionOf(emptyTuple);
+		const mockWinningOptions = new Array(8).fill(
+			emptyOption
+		) as Option<Tuple>[];
+
+		// Total of 36 winning object, 2 for testing, 34 for mock
 		const vectorWinnings = typeFactory.vecOf([
 			parasOptionsOne,
 			parasOptionsTwo,
+			...mockWinningOptions,
 		]);
 		const optionWinnings = typeFactory.optionOf(vectorWinnings);
 
@@ -559,6 +568,7 @@ export const mockApi = ({
 		auctions: {
 			endingPeriod: new BN(20000),
 			sampleLength: new BN(2),
+			leasePeriodsPerSlot: undefined,
 		},
 		babe: {
 			epochDuration: polkadotRegistry.createType('u64', 2400),
