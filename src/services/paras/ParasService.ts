@@ -263,7 +263,7 @@ export class ParasService extends AbstractService {
 		}
 
 		const leasePeriodsPerSlot =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32).toNumber() ||
+			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 		const leasePeriods = isSome(leasePeriodIndex)
 			? Array(leasePeriodsPerSlot)
@@ -422,7 +422,7 @@ export class ParasService extends AbstractService {
 	private enumerateLeaseSets(leasePeriodIndex: BN): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
 		const lPPS =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32).toNumber() ||
+			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 
 		const ranges: number[][] = [];
