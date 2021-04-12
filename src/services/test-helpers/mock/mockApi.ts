@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { Tuple, Vec } from '@polkadot/types';
+import { Null, Tuple, Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -423,20 +423,22 @@ const slotsLeasesEntriesAt = () =>
 /**
  * Used for parachain Auctions
  */
-const beingEnd = new BN(1000) as AbstractInt;
-const leasePeriodIndex = new BN(39) as AbstractInt;
-const vectorAuctions = typeFactory.vecOf([beingEnd, leasePeriodIndex]);
-
 export const auctionsInfoAt = (): Promise<Option<Vec<AbstractInt>>> =>
 	Promise.resolve().then(() => {
+		const beingEnd = new BN(1000) as AbstractInt;
+		const leasePeriodIndex = new BN(39) as AbstractInt;
+		const vectorAuctions = typeFactory.vecOf([beingEnd, leasePeriodIndex]);
 		const optionAuctions = typeFactory.optionOf(vectorAuctions);
 
 		return optionAuctions;
 	});
 
-export const nullAuctionsInfoAt = (): Promise<Vec<AbstractInt>> =>
+export const nullAuctionsInfoAt = (): Promise<Option<Null>> =>
 	Promise.resolve().then(() => {
-		return vectorAuctions;
+		const nullPrimitive = typeFactory.nullOf();
+		const nullOption = typeFactory.optionOf(nullPrimitive);
+
+		return nullOption;
 	});
 
 const auctionCounterAt = () =>
