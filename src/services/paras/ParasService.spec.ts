@@ -3,7 +3,7 @@ import {
 	auctionsInfoAt,
 	blockHash789629,
 	mockApi,
-	nullAuctionsInfoAt,
+	noneAuctionsInfoAt,
 	slotsLeasesAt,
 } from '../test-helpers/mock';
 import { ParasService } from './ParasService';
@@ -217,7 +217,7 @@ describe('ParasService', () => {
 		});
 
 		it('Should return the correct null values when auctionInfo is `None`', async () => {
-			(mockApi.query.auctions.auctionInfo.at as unknown) = nullAuctionsInfoAt;
+			(mockApi.query.auctions.auctionInfo.at as unknown) = noneAuctionsInfoAt;
 
 			const expectedResponse = {
 				at: expectedAt,

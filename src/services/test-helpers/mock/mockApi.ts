@@ -432,11 +432,11 @@ export const auctionsInfoAt = (): Promise<Option<Vec<AbstractInt>>> =>
 		return optionAuctions;
 	});
 
-export const nullAuctionsInfoAt = (): Promise<Option<Codec>> =>
+export const noneAuctionsInfoAt = (): Promise<Option<Codec>> =>
 	Promise.resolve().then(() => {
-		const nullOption = typeFactory.emptyOption('Null');
+		const noneOption = typeFactory.emptyOption('Null');
 
-		return nullOption;
+		return noneOption;
 	});
 
 const auctionCounterAt = () =>
