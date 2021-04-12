@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { Null, Tuple, Vec } from '@polkadot/types';
+import { Tuple, Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -13,6 +13,7 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
@@ -431,10 +432,9 @@ export const auctionsInfoAt = (): Promise<Option<Vec<AbstractInt>>> =>
 		return optionAuctions;
 	});
 
-export const nullAuctionsInfoAt = (): Promise<Option<Null>> =>
+export const nullAuctionsInfoAt = (): Promise<Option<Codec>> =>
 	Promise.resolve().then(() => {
-		const nullPrimitive = typeFactory.nullOf();
-		const nullOption = typeFactory.optionOf(nullPrimitive);
+		const nullOption = typeFactory.emptyOption('Null');
 
 		return nullOption;
 	});

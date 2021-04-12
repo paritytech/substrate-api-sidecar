@@ -216,7 +216,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return the correct null values when auctionInfo is not of type Option', async () => {
+		it('Should return the correct null values when auctionInfo is `None`', async () => {
 			(mockApi.query.auctions.auctionInfo.at as unknown) = nullAuctionsInfoAt;
 
 			const expectedResponse = {

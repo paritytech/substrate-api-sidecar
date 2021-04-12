@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Metadata } from '@polkadot/metadata';
 import { Option, TypeRegistry } from '@polkadot/types';
-import { Null, StorageKey, Tuple, Vec } from '@polkadot/types';
+import { StorageKey, Tuple, Vec } from '@polkadot/types';
 import { ParaId } from '@polkadot/types/interfaces';
 import {
 	Codec,
@@ -46,10 +46,6 @@ export class TypeFactory {
 		return key.setMeta(this.#api.query.crowdloan.funds.creator.meta);
 	};
 
-	public nullOf = (): Null => {
-		return new Null(this.#registry);
-	};
-
 	public optionOf = <T extends Codec>(value: T): Option<T> => {
 		return new Option<T>(
 			this.#registry,
@@ -75,6 +71,10 @@ export class TypeFactory {
 	): Tuple => {
 		return new Tuple(this.#registry, types, value);
 	};
+
+	public emptyOption = <T extends Codec>(
+		typeName: keyof InterfaceTypes
+	): Option<T> => new Option<T>(this.#registry, typeName);
 
 	public paraIndex = (index: number): ParaId =>
 		this.#registry.createType('ParaId', index);
