@@ -1,3 +1,4 @@
+import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -29,6 +30,10 @@ import {
 } from '../../types/responses';
 import { IOption, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
+
+// This was the orgiginal value in the rococo test net. Once the exposed metadata
+// consts makes its way into `rococo-v1`
+const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
 export class ParasService extends AbstractService {
 	/**
@@ -228,7 +233,7 @@ export class ParasService extends AbstractService {
 				  );
 
 			if (winningOpt.isSome) {
-				const ranges = ParasService.enumerateLeaseSets(leasePeriodIndex);
+				const ranges = this.enumerateLeaseSets(leasePeriodIndex);
 
 				// zip the winning bids together with their slot range
 				winning = winningOpt.unwrap().map((bid, idx) => {
@@ -258,8 +263,11 @@ export class ParasService extends AbstractService {
 			winning = null;
 		}
 
+		const leasePeriodsPerSlot =
+			(this.api.consts.auctions.leasePeriodsPerSlot as u32).toNumber() ||
+			LEASE_PERIODS_PER_SLOT_FALLBACK;
 		const leasePeriods = isSome(leasePeriodIndex)
-			? Array(4)
+			? Array(leasePeriodsPerSlot)
 					.fill(0)
 					.map((_, i) => i + (leasePeriodIndex as BN).toNumber())
 			: null;
@@ -415,11 +423,15 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param leasePeriodIndex
 	 */
-	private static enumerateLeaseSets(leasePeriodIndex: BN): ILeaseSet[] {
+	private enumerateLeaseSets(leasePeriodIndex: BN): ILeaseSet[] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
+		const lPPS =
+			(this.api.consts.auctions.leasePeriodsPerSlot as u32).toNumber() ||
+			LEASE_PERIODS_PER_SLOT_FALLBACK;
+
 		const ranges: ILeaseSet[] = [];
-		for (let start = 0; start < 4; start += 1) {
-			for (let end = start; end < 4; end += 1) {
+		for (let start = 0; start < lPPS; start += 1) {
+			for (let end = start; end < lPPS; end += 1) {
 				const slotRange = [];
 				for (let i = start; i <= end; i += 1) {
 					slotRange.push(i + leasePeriodIndexNumber);
