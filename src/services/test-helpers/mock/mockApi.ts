@@ -13,7 +13,6 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
-// import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
