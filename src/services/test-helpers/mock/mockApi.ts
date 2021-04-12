@@ -462,9 +462,9 @@ const auctionsWinningsAt = () =>
 		const parasOptionsOne = typeFactory.optionOf(tupleOne);
 		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
 
-		// Instead of using emptyOption here we use optionOf since we need the 
+		// Instead of using emptyOption here we use optionOf since we need the
 		// winning data options to consist of tuples. This will also help satisfy the 10
-		// options we need for a LEASE_PERIODS_PER_SLOT_FALLBACK of 4. 
+		// options we need for a LEASE_PERIODS_PER_SLOT_FALLBACK of 4.
 		const emptyTuple = typeFactory.tupleOf([], []);
 		const emptyOption = typeFactory.optionOf(emptyTuple);
 		const mockWinningOptions = new Array(8).fill(
