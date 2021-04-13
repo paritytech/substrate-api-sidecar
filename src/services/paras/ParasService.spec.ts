@@ -4,6 +4,7 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
 	auctionsInfoAt,
 	blockHash789629,
+	emptyVectorLeases,
 	mockApi,
 	noneAuctionsInfoAt,
 	slotsLeasesAt,
@@ -71,7 +72,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return an undefined `fundInfo` when `includeFundInfo` is false', async () => {
+		it('Should not include `fundInfo` when `includeFundInfo` is false', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				funds: [
@@ -113,8 +114,9 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return a null `leases` when its length is equal to 0', async () => {
-			const emptyLeasesAt = () => Promise.resolve().then(() => []);
+		it('Should have `null` `leases` when its length is equal to 0', async () => {
+			const emptyLeasesAt = () =>
+				Promise.resolve().then(() => emptyVectorLeases);
 
 			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
 
@@ -134,7 +136,7 @@ describe('ParasService', () => {
 	});
 
 	describe('ParasService.leasesCurrent', () => {
-		it('Should return the correct entries for leasesCurrent', async () => {
+		it('Should return the correct entries for `leasesCurrent`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				leasePeriodIndex: '39',
@@ -190,12 +192,12 @@ describe('ParasService', () => {
 			const leaseIndexArray = parasService['enumerateLeaseSets'](
 				leasePeriodIndex
 			);
-			// Remove the first two entries with splice because we have them in the expectedResponse
-			// Because LEASE_PERIODS_PER_SLOT_FALLBACK is 4 we need 10 slots for winning
+			// Remove the first two entries with splice because we have them in the expectedResponse.
+			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
 			const additionalWinningOptions = leaseIndexArray
 				.splice(2, leaseIndexArray.length - 2)
 				.map((k) => {
-					return { bid: {}, leaseSet: sanitizeNumbers(k) };
+					return { bid: null, leaseSet: sanitizeNumbers(k) };
 				});
 
 			const expectedResponse = {

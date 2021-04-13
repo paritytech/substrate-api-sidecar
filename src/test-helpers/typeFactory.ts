@@ -37,7 +37,7 @@ export class TypeFactory {
 		this.#registry = this.#api.registry;
 	}
 
-	public storageKey = (index: number): StorageKey => {
+	storageKey = (index: number): StorageKey => {
 		const key = new StorageKey(
 			this.#registry,
 			this.#api.query.crowdloan.funds.key(this.paraIndex(index))
@@ -46,7 +46,7 @@ export class TypeFactory {
 		return key.setMeta(this.#api.query.crowdloan.funds.creator.meta);
 	};
 
-	public optionOf = <T extends Codec>(value: T): Option<T> => {
+	optionOf = <T extends Codec>(value: T): Option<T> => {
 		return new Option<T>(
 			this.#registry,
 			value.constructor as Constructor<T>,
@@ -54,7 +54,7 @@ export class TypeFactory {
 		);
 	};
 
-	public vecOf = <T extends Codec>(items: T[]): Vec<T> => {
+	vecOf = <T extends Codec>(items: T[]): Vec<T> => {
 		const vector = new Vec<T>(
 			this.#registry,
 			items[0].constructor as Constructor<T>
@@ -65,17 +65,13 @@ export class TypeFactory {
 		return vector;
 	};
 
-	public tupleOf = <T extends Codec>(
+	tupleOf = <T extends Codec>(
 		value: T[],
 		types: (Constructor | keyof InterfaceTypes)[]
 	): Tuple => {
 		return new Tuple(this.#registry, types, value);
 	};
 
-	public emptyOption = <T extends Codec>(
-		typeName: keyof InterfaceTypes
-	): Option<T> => new Option<T>(this.#registry, typeName);
-
-	public paraIndex = (index: number): ParaId =>
+	private paraIndex = (index: number): ParaId =>
 		this.#registry.createType('ParaId', index);
 }
