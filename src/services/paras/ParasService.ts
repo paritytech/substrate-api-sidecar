@@ -314,7 +314,7 @@ export class ParasService extends AbstractService {
 			blockNumber = number.unwrap();
 
 			currentLeaseHolders = leaseEntries
-				.filter(([_k, leases]) => leases[0].isSome)
+				.filter(([key, _l]) => !!key)
 				.map(([key, _l]) => key.args[0]);
 		}
 

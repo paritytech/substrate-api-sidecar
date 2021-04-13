@@ -405,18 +405,17 @@ const leasesTupleTwo = typeFactory.tupleOf(
 );
 const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
 const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
-const vectorLeases = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
 	Promise.resolve().then(() => {
-		return vectorLeases;
+		return typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
 	});
 
 const slotsLeasesEntriesAt = () =>
 	Promise.resolve().then(() => {
 		return [
-			[paraId1, vectorLeases],
-			[paraId2, vectorLeases],
+			typeFactory.vecOf([paraId1, parasOptionsOne]),
+			typeFactory.vecOf([paraId2, parasOptionsTwo]),
 		];
 	});
 
