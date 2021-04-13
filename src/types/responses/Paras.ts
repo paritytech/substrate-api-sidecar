@@ -50,11 +50,11 @@ export interface ICrowdloans {
 
 export interface LeaseFormatted {
 	/**
-	 * Lease period. (Represents a ~6 month period that a parachain holds a lease for.)
+	 * Lease period.
 	 */
 	leasePeriodIndex: number;
 	/**
-	 * Amount held on deposit for parachain
+	 * Amount held on deposit for the lease period.
 	 */
 	deposit: BalanceOf;
 	/**
@@ -66,12 +66,12 @@ export interface LeaseFormatted {
 export interface ILeaseInfo {
 	at: IAt;
 	/**
-	 * Lifecycle of the para (i.e Onboarding, Parathread, Offboarding etc)
+	 * Lifecycle of the para (i.e Onboarding, Parathread, Offboarding etc).
 	 */
 	paraLifeCycle: Option<ParaLifecycle>;
 	/**
 	 * If the para is in the onboarding phase, this will say if it is onboarding as
-	 * a `parachain` or a `parathread`.
+	 * a `parachain` or a `parathread`; otherwise it this field is not included in the response.
 	 */
 	onboardingAs?: ParaType;
 	/**
