@@ -34,7 +34,7 @@ describe('ParasService', () => {
 	};
 
 	describe('ParasService.crowdloansInfo', () => {
-		it('Should return correct crowdloans info', async () => {
+		it('Should return correct crowdloans info for a queried `paraId`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				fundInfo: expectedFund,
@@ -71,7 +71,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return a undefined fundInfo when includeFundInfo is false', async () => {
+		it('Should return an undefined `fundInfo` when `includeFundInfo` is false', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				funds: [
@@ -91,7 +91,7 @@ describe('ParasService', () => {
 	});
 
 	describe('ParasService.leaseInfo', () => {
-		it('Should return the correct leasing information', async () => {
+		it('Should return the correct leasing information for a queried `paraId`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				leases: [
@@ -113,7 +113,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return a null leases when length is equal to 0', async () => {
+		it('Should return a null `leases` when its length is equal to 0', async () => {
 			const emptyLeasesAt = () => Promise.resolve().then(() => []);
 
 			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
@@ -147,7 +147,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return the correct response exlcuding currentLeaseHolders', async () => {
+		it('Should return the correct response excluding `currentLeaseHolders`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
 				leasePeriodIndex: '39',
@@ -185,7 +185,7 @@ describe('ParasService', () => {
 	});
 
 	describe('ParasService.auctionsCurrent', () => {
-		it('Should return to correct data during an ongoing auction', async () => {
+		it('Should return the correct data during an ongoing auction', async () => {
 			const leasePeriodIndex = new BN(1000);
 			const leaseIndexArray = parasService['enumerateLeaseSets'](
 				leasePeriodIndex
@@ -231,7 +231,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		it('Should return the correct null values when auctionInfo is `None`', async () => {
+		it('Should return the correct null values when `auctionInfo` is `None`', async () => {
 			(mockApi.query.auctions.auctionInfo.at as unknown) = noneAuctionsInfoAt;
 
 			const expectedResponse = {

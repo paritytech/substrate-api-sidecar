@@ -293,7 +293,7 @@ const referendumInfoOfAt = () =>
 /**
  * ParasService specific constants
  * The below types and constants use the rococo registry in order to properly
- * test the ParasService properly accurately
+ * test the ParasService with accurate metadata
  */
 const funds = {
 	depositor: rococoRegistry.createType(

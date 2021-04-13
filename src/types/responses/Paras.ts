@@ -90,7 +90,7 @@ export interface IWinningData {
 }
 
 /**
- * Bid and correspond set of leases.
+ * Bid and its corresponding set of leases.
  */
 export interface IWinningDataWithLeaseSet {
 	bid: IOption<IWinningData>;
