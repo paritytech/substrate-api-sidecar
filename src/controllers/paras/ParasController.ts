@@ -1,8 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { IParaIdParam } from 'src/types/requests';
 
 import { ParasService } from '../../services';
+import { IParaIdParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ParasController extends AbstractController<ParasService> {
@@ -27,6 +27,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
+
 		ParasController.sanitizedSend(res, await this.service.paras(hash));
 	};
 
@@ -51,8 +52,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-
-		const includeFundInfo = fundInfo === 'true' ? true : false;
+		const includeFundInfo = fundInfo === 'true';
 
 		ParasController.sanitizedSend(
 			res,
@@ -81,8 +81,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		const includeCurrentLeaseHolders =
-			currentLeaseHolders === 'false' ? false : true;
+		const includeCurrentLeaseHolders = currentLeaseHolders !== 'false';
 
 		ParasController.sanitizedSend(
 			res,

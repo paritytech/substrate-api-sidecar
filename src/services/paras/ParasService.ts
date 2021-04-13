@@ -234,7 +234,7 @@ export class ParasService extends AbstractService {
 			if (winningOpt.isSome) {
 				const ranges = this.enumerateLeaseSets(leasePeriodIndex);
 
-				// zip the winning bids together with their slot range
+				// zip the winning bids together with their enumerated `SlotRange` (aka `leaseSet`)
 				winning = winningOpt.unwrap().map((bid, idx) => {
 					const leaseSet = ranges[idx];
 
@@ -394,14 +394,14 @@ export class ParasService extends AbstractService {
 	 * polkadot's `runtime::common::auctions`.
 	 *
 	 * @param now current block number
-	 * @param startEnd block number of the start of the auctions ending period
+	 * @param beginEnd block number of the start of the auction's ending period
 	 */
-	private endingOffset(now: BN, begginEnd: IOption<BN>): IOption<BN> {
-		if (!isSome(begginEnd)) {
+	private endingOffset(now: BN, beginEnd: IOption<BN>): IOption<BN> {
+		if (!isSome(beginEnd)) {
 			return null;
 		}
 
-		const afterEarlyEnd = now.sub(begginEnd);
+		const afterEarlyEnd = now.sub(beginEnd);
 		if (afterEarlyEnd.lten(0)) {
 			return null;
 		}
