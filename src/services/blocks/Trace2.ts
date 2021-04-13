@@ -81,9 +81,7 @@ export class Trace2 {
 
 	traceInfoWithPhaseAndOperations(): PhaseTraceInfoWithOps[] {
 		return this.traceInfoWithPhase().map((tiwp) => {
-			const accountInfoEvents = this.systemAccountEventByAddress(
-				tiwp.events
-			);
+			const accountInfoEvents = this.systemAccountEventByAddress(tiwp.events);
 
 			return {
 				...tiwp,
@@ -102,8 +100,7 @@ export class Trace2 {
 		// find execute block span
 		const execute_block_span = [...spansById.values()].find(
 			({ name, target }) =>
-				SPANS.executeBlock.name === name &&
-				SPANS.executeBlock.target === target
+				SPANS.executeBlock.name === name && SPANS.executeBlock.target === target
 		);
 		if (!execute_block_span) {
 			throw new Error('execute_block_span could not be found');
@@ -193,8 +190,7 @@ export class Trace2 {
 				return (
 					// Note: there are many read and writes of extrinsic_index per extrinsic so take care
 					// when modifying this logic
-					(e.storagePath as SpecialKeyInfo).special ===
-						':extrinsic_index' &&
+					(e.storagePath as SpecialKeyInfo).special === ':extrinsic_index' &&
 					// I assume this second part will always be true but here for clarity
 					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
 					// // super important we only do `get`, `set` ops are prep for next extrinsic
@@ -348,9 +344,7 @@ export class Trace2 {
 	 *
 	 * @param event EventAnnotated
 	 */
-	private annotatedToSysemAccount(
-		event: EventWithPhase
-	): EventWithAccountInfo {
+	private annotatedToSysemAccount(event: EventWithPhase): EventWithAccountInfo {
 		const { storagePath } = event;
 		if (
 			!(
@@ -358,9 +352,7 @@ export class Trace2 {
 				(storagePath as PalletKeyInfo).item == 'account'
 			)
 		) {
-			throw new Error(
-				'Event did not have system::account path as expected'
-			);
+			throw new Error('Event did not have system::account path as expected');
 		}
 
 		// key = h(system) + h(account) + h(address) + address
@@ -435,8 +427,7 @@ export class Trace2 {
 
 	private getStoragePathFromKey(key?: string): KeyInfo {
 		return (
-			((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) ||
-			EMPTY_KEY_INFO
+			((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) || EMPTY_KEY_INFO
 		);
 	}
 

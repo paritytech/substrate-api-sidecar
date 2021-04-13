@@ -87,9 +87,10 @@ export class BlocksService extends AbstractService {
 			const trace2 = new Trace2(this.api, traceBlock, block.registry);
 			return {
 				height: block.header.number.unwrap().toString(10),
-				indexs: trace2.extrinsicIndexBySpanId(),
+				// indexs: trace2.extrinsicIndexBySpanId(),
 				block: traceBlock,
-				...trace2.operationsAndGrouping(),
+				// ...trace2.operationsAndGrouping(),
+				operations: trace2.operationsAndGrouping().operations,
 				// eventsByParent: trace2.traceInfoWithPhase(),
 				// traceBlock: traceBlock,
 			};
