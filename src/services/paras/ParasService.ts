@@ -134,7 +134,7 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
-		const [leases, { number }, paraLifeCycleOpt] = await Promise.all([
+		const [leases, { number }, paraLifecycleOpt] = await Promise.all([
 			this.api.query.slots.leases.at<
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
 			>(hash, paraId),
@@ -175,7 +175,7 @@ export class ParasService extends AbstractService {
 		}
 
 		let onboardingAs: ParaType | undefined;
-		if (paraLifeCycleOpt.isSome && paraLifeCycleOpt.unwrap().isOnboarding) {
+		if (paraLifecycleOpt.isSome && paraLifecycleOpt.unwrap().isOnboarding) {
 			const paraGenesisArgs = await this.api.query.paras.upcomingParasGenesis.at<
 				Option<ParaGenesisArgs>
 			>(hash, paraId);
@@ -189,7 +189,7 @@ export class ParasService extends AbstractService {
 
 		return {
 			at,
-			paraLifeCycle: paraLifeCycleOpt,
+			paraLifecycle: paraLifecycleOpt,
 			onboardingAs,
 			leases: leasesFormatted,
 		};
@@ -347,10 +347,10 @@ export class ParasService extends AbstractService {
 			),
 		]);
 
-		const parasPromises = paraLifecycles.map(async ([k, paraLifeCycle]) => {
+		const parasPromises = paraLifecycles.map(async ([k, paraLifecycle]) => {
 			const paraId = k.args[0];
 			let onboardingAs: ParaType | undefined;
-			if (paraLifeCycle.isOnboarding) {
+			if (paraLifecycle.isOnboarding) {
 				const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
 					hash,
 					paraId
@@ -362,7 +362,7 @@ export class ParasService extends AbstractService {
 
 			return {
 				paraId,
-				paraLifeCycle,
+				paraLifecycle,
 				onboardingAs,
 			};
 		});

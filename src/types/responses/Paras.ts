@@ -68,7 +68,7 @@ export interface ILeaseInfo {
 	/**
 	 * Lifecycle of the para (i.e Onboarding, Parathread, Offboarding etc).
 	 */
-	paraLifeCycle: Option<ParaLifecycle>;
+	paraLifecycle: Option<ParaLifecycle>;
 	/**
 	 * If the para is in the onboarding phase, this will say if it is onboarding as
 	 * a `parachain` or a `parathread`; otherwise it this field is not included in the response.
@@ -153,7 +153,7 @@ export interface IPara {
 	/**
 	 * Lifecycle stage of the para.
 	 */
-	paraLifeCycle: ParaLifecycle;
+	paraLifecycle: ParaLifecycle;
 	/**
 	 * If the para is in the `onboarding` lifecycle stage, this will indicate if
 	 * the para is onboarding as a parachain or a parathread.

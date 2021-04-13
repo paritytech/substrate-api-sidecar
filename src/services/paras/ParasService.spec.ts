@@ -104,7 +104,7 @@ describe('ParasService', () => {
 						deposit: '2000000',
 					},
 				],
-				paraLifeCycle: 'Onboarding',
+				paraLifecycle: 'Onboarding',
 				onboardingAs: 'parachain',
 			};
 
@@ -121,7 +121,7 @@ describe('ParasService', () => {
 			const expectedResponse = {
 				at: expectedAt,
 				leases: null,
-				paraLifeCycle: 'Onboarding',
+				paraLifecycle: 'Onboarding',
 				onboardingAs: 'parachain',
 			};
 
@@ -168,12 +168,12 @@ describe('ParasService', () => {
 				paras: [
 					{
 						paraId: '199',
-						paraLifeCycle: 'Onboarding',
+						paraLifecycle: 'Onboarding',
 						onboardingAs: 'parachain',
 					},
 					{
 						paraId: '200',
-						paraLifeCycle: 'Parathread',
+						paraLifecycle: 'Parathread',
 					},
 				],
 			};

@@ -316,11 +316,11 @@ const funds = {
 	trieIndex: rococoRegistry.createType('TrieIndex', 60),
 };
 
-const paraLifeCycleObjectOne = {
+const paraLifecycleObjectOne = {
 	onboarding: true,
 	parachain: true,
 };
-const paraLifeCycleObjectTwo = {
+const paraLifecycleObjectTwo = {
 	parathread: true,
 	parachain: false,
 };
@@ -328,11 +328,11 @@ const paraId1 = typeFactory.storageKey(199);
 const paraId2 = typeFactory.storageKey(200);
 const paraLifecycleOne = rococoRegistry.createType(
 	'ParaLifecycle',
-	paraLifeCycleObjectOne
+	paraLifecycleObjectOne
 );
 const paraLifecycleTwo = rococoRegistry.createType(
 	'ParaLifecycle',
-	paraLifeCycleObjectTwo
+	paraLifecycleObjectTwo
 );
 const accountIdOne = rococoRegistry.createType(
 	'AccountId',
