@@ -59,9 +59,8 @@ export class TypeFactory {
 	}
 
 	/**
-	 *
 	 * @param index
-	 * The id to assign the key as.
+	 * The id to assign the key to.
 	 * @param indexType
 	 * The InterfaceType that will be used to create the index into its new appropriate index type
 	 * @param storageEntry
