@@ -37,9 +37,6 @@ import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { validators789629Hex } from './data/validators789629Hex';
 
-const rococoApi = createApiWithAugmentations(rococoMetadataV228);
-const rococoTypeFactory = new TypeFactory(rococoApi);
-
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<EventRecord>', events789629)
@@ -296,6 +293,8 @@ const referendumInfoOfAt = () =>
  * The below types and constants use the rococo registry in order to properly
  * test the ParasService with accurate metadata
  */
+const rococoApi = createApiWithAugmentations(rococoMetadataV228);
+const rococoTypeFactory = new TypeFactory(rococoApi);
 
 /**
  * Used for parachain crowdloans
