@@ -26,7 +26,7 @@ type GenericStorageEntryFunction = (
  * @param metaData Metadata to be associated with the api augmentation
  */
 export function createApiWithAugmentations(
-	metaData: string | Uint8Array | undefined
+	metaData?: string | Uint8Array
 ): ApiPromise {
 	const registry = new TypeRegistry();
 	const metadata = new Metadata(registry, metaData);
