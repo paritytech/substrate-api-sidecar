@@ -1,20 +1,35 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { StorageEntryBase } from '@polkadot/api/types/storage';
 import { Metadata } from '@polkadot/metadata';
-import { Option, TypeRegistry } from '@polkadot/types';
-import { StorageKey, Tuple, Vec } from '@polkadot/types';
-import { ParaId } from '@polkadot/types/interfaces';
+import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
 	Codec,
+	CodecArg,
 	Constructor,
 	InterfaceTypes,
 	Registry,
 } from '@polkadot/types/types';
+import { Observable } from '@polkadot/x-rxjs';
 
-import { rococoMetadataV228 } from './metadata/rococoMetadata';
+/**
+ * Necessary Type to fulfill StorageEntryBase regarding storage keys
+ */
+type GenericStorageEntryFunction = (
+	arg1?: CodecArg,
+	arg2?: CodecArg
+) => Observable<Codec>;
 
-export function createApiWithAugmentations(): ApiPromise {
+/**
+ * Used to create an augmented api for a specific chains metadata. This allows
+ * for flexible testing.
+ *
+ * @param metaData Metadata to be associated with the api augmentation
+ */
+export function createApiWithAugmentations(
+	metaData: string | Uint8Array | undefined
+): ApiPromise {
 	const registry = new TypeRegistry();
-	const metadata = new Metadata(registry, rococoMetadataV228);
+	const metadata = new Metadata(registry, metaData);
 
 	registry.setMetadata(metadata);
 
@@ -28,6 +43,12 @@ export function createApiWithAugmentations(): ApiPromise {
 	return api;
 }
 
+/**
+ * This Factory facilitates a use for creating types when the registries `createType` method
+ * does not suffice.
+ *
+ * Ex: <Vec<Option<Tuple<[AccountId, BalanceOf]>>>>
+ */
 export class TypeFactory {
 	readonly #api: ApiPromise;
 	readonly #registry: Registry;
@@ -37,13 +58,30 @@ export class TypeFactory {
 		this.#registry = this.#api.registry;
 	}
 
-	storageKey = (index: number): StorageKey => {
-		const key = new StorageKey(
-			this.#registry,
-			this.#api.query.crowdloan.funds.key(this.paraIndex(index))
-		);
+	/**
+	 *
+	 * @param index
+	 * The id to assign the key as.
+	 * @param indexType
+	 * The InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param storageEntry
+	 * Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
+	 * Contains necessary key value pairs to retrieve specific information from a query
+	 * such as `at`, `entriesAt`, `entries` etc..
+	 *
+	 * Some Parameter Examples:
+	 * 1. this.api.query.crowdloans.funds
+	 * 2. this.api.query.slots.leases
+	 */
+	storageKey = (
+		index: number,
+		indexType: keyof InterfaceTypes,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey => {
+		const id = this.#registry.createType(indexType, index);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
-		return key.setMeta(this.#api.query.crowdloan.funds.creator.meta);
+		return key.setMeta(storageEntry.creator.meta);
 	};
 
 	optionOf = <T extends Codec>(value: T): Option<T> => {
@@ -71,7 +109,4 @@ export class TypeFactory {
 	): Tuple => {
 		return new Tuple(this.#registry, types, value);
 	};
-
-	private paraIndex = (index: number): ParaId =>
-		this.#registry.createType('ParaId', index);
 }
