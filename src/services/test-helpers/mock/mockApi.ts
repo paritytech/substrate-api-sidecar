@@ -406,7 +406,6 @@ const leasesTupleTwo = typeFactory.tupleOf(
 const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
 const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
 const vectorLeases = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
-export const emptyVectorLeases = rococoRegistry.createType('Vec<Raw>', []);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
 	Promise.resolve().then(() => {
@@ -435,7 +434,11 @@ export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	});
 
 export const noneAuctionsInfoAt = (): Promise<Option<Codec>> =>
-	Promise.resolve().then(() => rococoRegistry.createType('Option<Raw>', null));
+	Promise.resolve().then(() => {
+		const noneOption = typeFactory.emptyOption('Null');
+
+		return noneOption;
+	});
 
 const auctionCounterAt = () =>
 	Promise.resolve().then(() => {
@@ -459,9 +462,13 @@ const auctionsWinningsAt = () =>
 		const parasOptionsOne = typeFactory.optionOf(tupleOne);
 		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
 
-		// No bids for the remaining slot ranges
+		// Instead of using emptyOption here we use optionOf since we need the
+		// winning data options to consist of tuples. This will also help satisfy the 10
+		// options we need for a LEASE_PERIODS_PER_SLOT_FALLBACK of 4.
+		const emptyTuple = typeFactory.tupleOf([], []);
+		const emptyOption = typeFactory.optionOf(emptyTuple);
 		const mockWinningOptions = new Array(8).fill(
-			rococoRegistry.createType('Option<Raw>', null) // This is just `Option::None`
+			emptyOption
 		) as Option<Tuple>[];
 
 		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
