@@ -85,6 +85,7 @@ export class BlocksService extends AbstractService {
 			// @ts-ignore
 			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
 			const trace2 = new Trace2(this.api, traceBlock, block.registry);
+			console.log(trace2);
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// indexs: trace2.extrinsicIndexBySpanId(),

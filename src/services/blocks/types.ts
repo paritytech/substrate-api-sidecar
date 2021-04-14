@@ -21,18 +21,22 @@ export interface U64Values {
 	ext_id: string;
 }
 
-export interface Values {
-	i64_values: I64Values;
+// export interface Values {
+// 	i64_values: I64Values;
+// 	string_values: StringValues;
+// 	u64_values: U64Values;
+// 	bool_values: BoolValues;
+// }
+
+export interface Data {
 	string_values: StringValues;
-	u64_values: U64Values;
-	bool_values: BoolValues;
 }
 
 export interface TraceEvent {
 	name: string;
 	parent_id: number;
 	target: string;
-	values: Values;
+	data: Data;
 }
 
 export interface EventAnnotated extends TraceEvent {
@@ -69,14 +73,14 @@ export interface TraceSpan {
 	];
 	parent_id: number;
 	target: string;
-	values: Values;
+	data: Data;
 }
 
 /**
  * Span with direct descendants
  */
 export interface SpanWithChildren extends TraceSpan {
-	storagePath: KeyInfo;
+	// storagePath: KeyInfo;
 	/**
 	 * Id of the child spans.
 	 */

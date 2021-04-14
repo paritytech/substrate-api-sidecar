@@ -109,7 +109,7 @@ export class Trace2 {
 		// This is broken up into its own variable because it may be good for debugging
 		const phaseInfoGather = [...spansById.values()]
 			.filter((span) => span.parent_id === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
-			.sort((a, b) => a.entered[0].nanos - b.entered[0].nanos) // TODO double check nanos is the correct thing to sort on
+			// .sort((a, b) => a.entered[0].nanos - b.entered[0].nanos) // TODO double check nanos is the correct thing to sort on
 			.map((primary) => {
 				// Based on primary spans gather all there descendant info
 				const secondarySpanIds = this.findDescendants(primary.id);
@@ -194,11 +194,11 @@ export class Trace2 {
 					// I assume this second part will always be true but here for clarity
 					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
 					// // super important we only do `get`, `set` ops are prep for next extrinsic
-					e.values.string_values.method == 'Get'
+					e.data.string_values.method == 'Get'
 				);
 			})
 			.reduce((acc, cur) => {
-				const indexEncodedOption = cur.values.string_values.result;
+				const indexEncodedOption = cur.data.string_values.result;
 				let extrinsicIndex;
 				if (typeof indexEncodedOption == 'string') {
 					const scale = indexEncodedOption
@@ -259,10 +259,11 @@ export class Trace2 {
 	getSpansById(): Map<number, SpanWithChildren> {
 		const spansById = this.traceBlock.spans
 			.map((s) => {
-				const { key } = s.values.string_values;
-				const storagePath = this.getStoragePathFromKey(key);
+				// const { key } = s.data.string_values;
+				// const storagePath = this.getStoragePathFromKey(key);
 
-				return { ...s, storagePath, children: [] };
+				return { ...s, children: [] };
+				// return { ...s, storagePath, children: [] };
 			})
 			.reduce((acc, cur) => {
 				acc.set(cur.id, cur);
@@ -286,7 +287,7 @@ export class Trace2 {
 	getAnnotatedEvents(): EventAnnotated[] {
 		return this.traceBlock.events
 			.map((e) => {
-				const { key } = e.values.string_values;
+				const { key } = e.data.string_values;
 				const keyPrefix = key?.slice(0, 64);
 				const storagePath = this.getStoragePathFromKey(keyPrefix);
 
@@ -357,10 +358,10 @@ export class Trace2 {
 
 		// key = h(system) + h(account) + h(address) + address
 		// Since this is a transparent key with the address at the end we can pull out the address from the key.
-		const addressRaw = event.values.string_values.key?.slice(96) as string; // Remove the storage key + account hash
+		const addressRaw = event.data.string_values.key?.slice(96) as string; // Remove the storage key + account hash
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
-		const accountInfoEncoded = event?.values?.string_values?.result;
+		const accountInfoEncoded = event?.data?.string_values?.result;
 		let accountInfo;
 		try {
 			if (typeof accountInfoEncoded === 'string') {
