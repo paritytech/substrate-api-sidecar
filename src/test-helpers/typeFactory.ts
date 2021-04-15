@@ -21,7 +21,7 @@ type GenericStorageEntryFunction = (
 
 /**
  * Creates an augmented api with a specific chains metadata. This allows
- * for flexible testing.
+ * for flexible type creation, which can be useful for testing.
  *
  * @param metaData Metadata to be associated with the api augmentation
  */
