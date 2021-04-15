@@ -1,33 +1,55 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { StorageEntryBase } from '@polkadot/api/types/storage';
 import { Metadata } from '@polkadot/metadata';
-import { Option, TypeRegistry } from '@polkadot/types';
-import { StorageKey, Tuple, Vec } from '@polkadot/types';
-import { ParaId } from '@polkadot/types/interfaces';
+import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
 	Codec,
+	CodecArg,
 	Constructor,
 	InterfaceTypes,
 	Registry,
 } from '@polkadot/types/types';
+import { Observable } from '@polkadot/x-rxjs';
 
-import { rococoMetadataV228 } from './metadata/rococoMetadata';
+/**
+ * Type to fulfill StorageEntryBase regarding storage keys
+ */
+type GenericStorageEntryFunction = (
+	arg1?: CodecArg,
+	arg2?: CodecArg
+) => Observable<Codec>;
 
-export function createApiWithAugmentations(): ApiPromise {
+/**
+ * Creates an augmented api with a specific chains metadata. This allows
+ * for flexible type creation, which can be useful for testing.
+ *
+ * @param metadata Metadata to be associated with the api augmentation
+ */
+export function createApiWithAugmentations(
+	metadata?: string | Uint8Array
+): ApiPromise {
 	const registry = new TypeRegistry();
-	const metadata = new Metadata(registry, rococoMetadataV228);
+	const expandedMetadata = new Metadata(registry, metadata);
 
-	registry.setMetadata(metadata);
+	registry.setMetadata(expandedMetadata);
 
 	const api = new ApiPromise({
 		provider: new WsProvider('ws://', false),
 		registry,
 	});
 
-	api.injectMetadata(metadata, true);
+	api.injectMetadata(expandedMetadata, true);
 
 	return api;
 }
 
+/**
+ * Factory for creating polkadot-js `Codec` types. Useful for creating
+ * complex types that `createType` cannot accommodate (i.e. creating complex
+ * mock data for testing).
+ *
+ * Ex: <Vec<Option<Tuple<[AccountId, BalanceOf]>>>>
+ */
 export class TypeFactory {
 	readonly #api: ApiPromise;
 	readonly #registry: Registry;
@@ -37,24 +59,37 @@ export class TypeFactory {
 		this.#registry = this.#api.registry;
 	}
 
-	storageKey = (index: number): StorageKey => {
-		const key = new StorageKey(
-			this.#registry,
-			this.#api.query.crowdloan.funds.key(this.paraIndex(index))
-		);
+	/**
+	 * @param index The id to assign the key to.
+	 * @param indexType The InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
+	 * Contains necessary key value pairs to retrieve specific information from a query
+	 * such as `at`, `entriesAt`, `entries` etc..
+	 *
+	 * Some Parameter Examples:
+	 * 1. apiPromise.query.crowdloans.funds
+	 * 2. apiPromise.query.slots.leases
+	 */
+	storageKey(
+		index: number,
+		indexType: keyof InterfaceTypes,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const id = this.#registry.createType(indexType, index);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
-		return key.setMeta(this.#api.query.crowdloan.funds.creator.meta);
-	};
+		return key.setMeta(storageEntry.creator.meta);
+	}
 
-	optionOf = <T extends Codec>(value: T): Option<T> => {
+	optionOf<T extends Codec>(value: T): Option<T> {
 		return new Option<T>(
 			this.#registry,
 			value.constructor as Constructor<T>,
 			value
 		);
-	};
+	}
 
-	vecOf = <T extends Codec>(items: T[]): Vec<T> => {
+	vecOf<T extends Codec>(items: T[]): Vec<T> {
 		const vector = new Vec<T>(
 			this.#registry,
 			items[0].constructor as Constructor<T>
@@ -63,15 +98,12 @@ export class TypeFactory {
 		vector.push(...items);
 
 		return vector;
-	};
+	}
 
-	tupleOf = <T extends Codec>(
+	tupleOf<T extends Codec>(
 		value: T[],
 		types: (Constructor | keyof InterfaceTypes)[]
-	): Tuple => {
+	): Tuple {
 		return new Tuple(this.#registry, types, value);
-	};
-
-	private paraIndex = (index: number): ParaId =>
-		this.#registry.createType('ParaId', index);
+	}
 }

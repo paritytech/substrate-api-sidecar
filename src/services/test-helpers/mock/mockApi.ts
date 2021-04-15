@@ -17,6 +17,7 @@ import {
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 
+import { rococoMetadataV228 } from '../../..//test-helpers/metadata/rococoMetadata';
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import {
 	polkadotRegistry,
@@ -35,9 +36,6 @@ import {
 import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { validators789629Hex } from './data/validators789629Hex';
-
-const api = createApiWithAugmentations();
-const typeFactory = new TypeFactory(api);
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -295,6 +293,12 @@ const referendumInfoOfAt = () =>
  * The below types and constants use the rococo registry in order to properly
  * test the ParasService with accurate metadata
  */
+const rococoApi = createApiWithAugmentations(rococoMetadataV228);
+const rococoTypeFactory = new TypeFactory(rococoApi);
+
+/**
+ * Used for parachain crowdloans
+ */
 const funds = {
 	depositor: rococoRegistry.createType(
 		'AccountId',
@@ -324,8 +328,16 @@ const paraLifecycleObjectTwo = {
 	parathread: true,
 	parachain: false,
 };
-const paraId1 = typeFactory.storageKey(199);
-const paraId2 = typeFactory.storageKey(200);
+const crowdloanParaId1 = rococoTypeFactory.storageKey(
+	199,
+	'ParaId',
+	rococoApi.query.crowdloan.funds
+);
+const crowdloanParaId2 = rococoTypeFactory.storageKey(
+	200,
+	'ParaId',
+	rococoApi.query.crowdloan.funds
+);
 const paraLifecycleOne = rococoRegistry.createType(
 	'ParaLifecycle',
 	paraLifecycleObjectOne
@@ -350,8 +362,8 @@ const fundsEntries = () =>
 		const optionFundInfo = rococoRegistry.createType('Option<FundInfo>', funds);
 
 		const entries = [
-			[paraId1, optionFundInfo],
-			[paraId2, optionFundInfo],
+			[crowdloanParaId1, optionFundInfo],
+			[crowdloanParaId2, optionFundInfo],
 		];
 
 		return entries;
@@ -364,14 +376,28 @@ const fundsAt = () =>
 
 const fundsKeys = () =>
 	Promise.resolve().then(() => {
-		return [paraId1, paraId2];
+		return [crowdloanParaId1, crowdloanParaId2];
 	});
+
+/**
+ * Used for parachain paras
+ */
+const paraLifeCycleParaId1 = rococoTypeFactory.storageKey(
+	199,
+	'ParaId',
+	rococoApi.query.paras.paraLifecycles
+);
+const paraLifeCycleParaId2 = rococoTypeFactory.storageKey(
+	200,
+	'ParaId',
+	rococoApi.query.paras.paraLifecycles
+);
 
 const parasLifecyclesEntriesAt = () =>
 	Promise.resolve().then(() => {
 		return [
-			[paraId1, paraLifecycleOne],
-			[paraId2, paraLifecycleTwo],
+			[paraLifeCycleParaId1, paraLifecycleOne],
+			[paraLifeCycleParaId2, paraLifecycleTwo],
 		];
 	});
 
@@ -389,23 +415,36 @@ const upcomingParasGenesisAt = () =>
 
 const parasLifecyclesAt = () =>
 	Promise.resolve().then(() => {
-		return typeFactory.optionOf(paraLifecycleOne);
+		return rococoTypeFactory.optionOf(paraLifecycleOne);
 	});
 
 /**
  * Used for parachain leases
  */
-const leasesTupleOne = typeFactory.tupleOf(
+const leasesParaId1 = rococoTypeFactory.storageKey(
+	199,
+	'ParaId',
+	rococoApi.query.slots.leases
+);
+const leasesParaId2 = rococoTypeFactory.storageKey(
+	200,
+	'ParaId',
+	rococoApi.query.slots.leases
+);
+const leasesTupleOne = rococoTypeFactory.tupleOf(
 	[accountIdOne, balanceOfOne],
 	['AccountId', 'BalanceOf']
 );
-const leasesTupleTwo = typeFactory.tupleOf(
+const leasesTupleTwo = rococoTypeFactory.tupleOf(
 	[accountIdTwo, balanceOfTwo],
 	['AccountId', 'BalanceOf']
 );
-const parasOptionsOne = typeFactory.optionOf(leasesTupleOne);
-const parasOptionsTwo = typeFactory.optionOf(leasesTupleTwo);
-const vectorLeases = typeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
+const parasOptionsOne = rococoTypeFactory.optionOf(leasesTupleOne);
+const parasOptionsTwo = rococoTypeFactory.optionOf(leasesTupleTwo);
+const vectorLeases = rococoTypeFactory.vecOf([
+	parasOptionsOne,
+	parasOptionsTwo,
+]);
 export const emptyVectorLeases = rococoRegistry.createType('Vec<Raw>', []);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
@@ -416,8 +455,8 @@ export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
 const slotsLeasesEntriesAt = () =>
 	Promise.resolve().then(() => {
 		return [
-			[paraId1, vectorLeases],
-			[paraId2, vectorLeases],
+			[leasesParaId1, vectorLeases],
+			[leasesParaId2, vectorLeases],
 		];
 	});
 
@@ -428,8 +467,11 @@ export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
 		const beingEnd = rococoRegistry.createType('BlockNumber', 1000);
 		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
-		const vectorAuctions = typeFactory.vecOf([beingEnd, leasePeriodIndex]);
-		const optionAuctions = typeFactory.optionOf(vectorAuctions);
+		const vectorAuctions = rococoTypeFactory.vecOf([
+			beingEnd,
+			leasePeriodIndex,
+		]);
+		const optionAuctions = rococoTypeFactory.optionOf(vectorAuctions);
 
 		return optionAuctions;
 	});
@@ -448,16 +490,16 @@ const auctionsWinningsAt = () =>
 	Promise.resolve().then(() => {
 		const paraId1 = rococoRegistry.createType('ParaId', 199);
 		const paraId2 = rococoRegistry.createType('ParaId', 200);
-		const tupleOne = typeFactory.tupleOf(
+		const tupleOne = rococoTypeFactory.tupleOf(
 			[accountIdOne, paraId1, balanceOfOne],
 			['AccountId', 'ParaId', 'BalanceOf']
 		);
-		const tupleTwo = typeFactory.tupleOf(
+		const tupleTwo = rococoTypeFactory.tupleOf(
 			[accountIdTwo, paraId2, balanceOfTwo],
 			['AccountId', 'ParaId', 'BalanceOf']
 		);
-		const parasOptionsOne = typeFactory.optionOf(tupleOne);
-		const parasOptionsTwo = typeFactory.optionOf(tupleTwo);
+		const parasOptionsOne = rococoTypeFactory.optionOf(tupleOne);
+		const parasOptionsTwo = rococoTypeFactory.optionOf(tupleTwo);
 
 		// No bids for the remaining slot ranges
 		const mockWinningOptions = new Array(8).fill(
@@ -465,12 +507,12 @@ const auctionsWinningsAt = () =>
 		) as Option<Tuple>[];
 
 		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
-		const vectorWinnings = typeFactory.vecOf([
+		const vectorWinnings = rococoTypeFactory.vecOf([
 			parasOptionsOne,
 			parasOptionsTwo,
 			...mockWinningOptions,
 		]);
-		const optionWinnings = typeFactory.optionOf(vectorWinnings);
+		const optionWinnings = rococoTypeFactory.optionOf(vectorWinnings);
 
 		return optionWinnings;
 	});
