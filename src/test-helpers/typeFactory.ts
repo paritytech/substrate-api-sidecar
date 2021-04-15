@@ -23,7 +23,7 @@ type GenericStorageEntryFunction = (
  * Creates an augmented api with a specific chains metadata. This allows
  * for flexible type creation, which can be useful for testing.
  *
- * @param metaData Metadata to be associated with the api augmentation
+ * @param metadata Metadata to be associated with the api augmentation
  */
 export function createApiWithAugmentations(
 	metaData?: string | Uint8Array
