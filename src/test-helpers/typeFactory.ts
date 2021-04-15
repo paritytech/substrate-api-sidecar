@@ -38,7 +38,7 @@ export function createApiWithAugmentations(
 		registry,
 	});
 
-	api.injectMetadata(metadata, true);
+	api.injectMetadata(expandedMetadata, true);
 
 	return api;
 }
@@ -60,12 +60,9 @@ export class TypeFactory {
 	}
 
 	/**
-	 * @param index
-	 * The id to assign the key to.
-	 * @param indexType
-	 * The InterfaceType that will be used to create the index into its new appropriate index type
-	 * @param storageEntry
-	 * Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
+	 * @param index The id to assign the key to.
+	 * @param indexType The InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
 	 * Contains necessary key value pairs to retrieve specific information from a query
 	 * such as `at`, `entriesAt`, `entries` etc..
 	 *
@@ -73,26 +70,26 @@ export class TypeFactory {
 	 * 1. apiPromise.query.crowdloans.funds
 	 * 2. apiPromise.query.slots.leases
 	 */
-	storageKey = (
+	storageKey(
 		index: number,
 		indexType: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
-	): StorageKey => {
+	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
 		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
 		return key.setMeta(storageEntry.creator.meta);
-	};
+	}
 
-	optionOf = <T extends Codec>(value: T): Option<T> => {
+	optionOf<T extends Codec>(value: T): Option<T> {
 		return new Option<T>(
 			this.#registry,
 			value.constructor as Constructor<T>,
 			value
 		);
-	};
+	}
 
-	vecOf = <T extends Codec>(items: T[]): Vec<T> => {
+	vecOf<T extends Codec>(items: T[]): Vec<T> {
 		const vector = new Vec<T>(
 			this.#registry,
 			items[0].constructor as Constructor<T>
@@ -101,12 +98,12 @@ export class TypeFactory {
 		vector.push(...items);
 
 		return vector;
-	};
+	}
 
-	tupleOf = <T extends Codec>(
+	tupleOf<T extends Codec>(
 		value: T[],
 		types: (Constructor | keyof InterfaceTypes)[]
-	): Tuple => {
+	): Tuple {
 		return new Tuple(this.#registry, types, value);
-	};
+	}
 }
