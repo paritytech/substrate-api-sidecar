@@ -5,6 +5,7 @@ import { Registry } from '@polkadot/types/types';
 import * as BN from 'bn.js';
 
 import {
+	BlockTrace,
 	EventAnnotated,
 	EventWithAccountInfo,
 	EventWithPhase,
@@ -16,7 +17,6 @@ import {
 	PhaseTraceInfoWithOps,
 	SpanWithChildren,
 	SpecialKeyInfo,
-	TraceBlock,
 	Transition,
 } from './types';
 
@@ -53,7 +53,7 @@ export class Trace2 {
 	private keyNames;
 	constructor(
 		private api: ApiPromise,
-		private traceBlock: TraceBlock,
+		private traceBlock: BlockTrace,
 		private registry: Registry
 	) {
 		this.keyNames = this.getKeyNames();
@@ -108,8 +108,9 @@ export class Trace2 {
 
 		// This is broken up into its own variable because it may be good for debugging
 		const phaseInfoGather = [...spansById.values()]
-			.filter((span) => span.parent_id === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
+			.filter((span) => span.parentId === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
 			// .sort((a, b) => a.entered[0].nanos - b.entered[0].nanos) // TODO double check nanos is the correct thing to sort on
+			.sort((a, b) => a.id - b.id) // TODO double check nanos is the correct thing to sort on
 			.map((primary) => {
 				// Based on primary spans gather all there descendant info
 				const secondarySpanIds = this.findDescendants(primary.id);
@@ -194,11 +195,11 @@ export class Trace2 {
 					// I assume this second part will always be true but here for clarity
 					// e.parentSpanId?.name === SPANS.applyExtrinsic.name &&
 					// // super important we only do `get`, `set` ops are prep for next extrinsic
-					e.data.string_values.method == 'Get'
+					e.data.stringValues.method == 'Get'
 				);
 			})
 			.reduce((acc, cur) => {
-				const indexEncodedOption = cur.data.string_values.result;
+				const indexEncodedOption = cur.data.stringValues.result;
 				let extrinsicIndex;
 				if (typeof indexEncodedOption == 'string') {
 					const scale = indexEncodedOption
@@ -212,7 +213,7 @@ export class Trace2 {
 					// TODO this can probably be remove, we can just create with `0x` when this is None
 					extrinsicIndex = this.registry.createType('u32', 0);
 				}
-				acc.set(cur.parent_id, extrinsicIndex.toBn());
+				acc.set(cur.parentId, extrinsicIndex.toBn());
 
 				return acc;
 			}, new Map<number, BN>());
@@ -220,10 +221,10 @@ export class Trace2 {
 
 	private eventsByParentId(): Map<number, EventAnnotated[]> {
 		return this.getAnnotatedEvents().reduce((acc, cur) => {
-			if (!acc.has(cur.parent_id)) {
-				acc.set(cur.parent_id, [cur]);
+			if (!acc.has(cur.parentId)) {
+				acc.set(cur.parentId, [cur]);
 			} else {
-				acc.get(cur.parent_id)?.push(cur);
+				acc.get(cur.parentId)?.push(cur);
 			}
 
 			return acc;
@@ -271,14 +272,14 @@ export class Trace2 {
 			}, new Map<number, SpanWithChildren>());
 
 		[...spansById.values()].forEach((span) => {
-			if (!span.parent_id) {
+			if (!span.parentId) {
 				return;
 			}
-			if (!spansById.has(span.parent_id)) {
+			if (!spansById.has(span.parentId)) {
 				throw new Error('Spans Parens should exist in spansById');
 			}
 			// Warning: in place mutation
-			spansById.get(span.parent_id)?.children.push(span.id);
+			spansById.get(span.parentId)?.children.push(span.id);
 		});
 
 		return spansById;
@@ -287,14 +288,14 @@ export class Trace2 {
 	getAnnotatedEvents(): EventAnnotated[] {
 		return this.traceBlock.events
 			.map((e) => {
-				const { key } = e.data.string_values;
+				const { key } = e.data.stringValues;
 				const keyPrefix = key?.slice(0, 64);
 				const storagePath = this.getStoragePathFromKey(keyPrefix);
 
 				return { ...e, storagePath };
 			})
 			.map((e) => {
-				const p = this.getSpansById().get(e.parent_id);
+				const p = this.getSpansById().get(e.parentId);
 				const parentSpanId = p && {
 					name: p.name,
 					target: p.target,
@@ -358,10 +359,10 @@ export class Trace2 {
 
 		// key = h(system) + h(account) + h(address) + address
 		// Since this is a transparent key with the address at the end we can pull out the address from the key.
-		const addressRaw = event.data.string_values.key?.slice(96) as string; // Remove the storage key + account hash
+		const addressRaw = event.data.stringValues.key?.slice(96) as string; // Remove the storage key + account hash
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
-		const accountInfoEncoded = event?.data?.string_values?.result;
+		const accountInfoEncoded = event?.data?.stringValues?.result;
 		let accountInfo;
 		try {
 			if (typeof accountInfoEncoded === 'string') {

@@ -32,7 +32,7 @@ import {
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 import { Trace2 } from './Trace2';
-import { TraceBlock } from './types';
+import { BlockTrace, isBlockTrace } from './types';
 
 /**
  * Types for fetchBlock's options
@@ -83,15 +83,27 @@ export class BlocksService extends AbstractService {
 		if (operations) {
 			const { block } = await api.rpc.chain.getBlock(hash);
 			// @ts-ignore
-			const traceBlock: TraceBlock = await api.rpc.state.traceBlock(hash);
-			const trace2 = new Trace2(this.api, traceBlock, block.registry);
-			console.log(trace2);
+			const traceResp: BlockTraceResponse = await api.rpc.state.traceBlock(
+				hash
+				// 'pallet,frame,state',
+				// '3a65787472696e7369635f696e646578'
+				// ''
+			);
+			if (!isBlockTrace(traceResp.blockTrace)) {
+				return traceResp;
+			}
+			const trace2 = new Trace2(
+				this.api,
+				traceResp.blockTrace as BlockTrace,
+				block.registry
+			);
+			// console.log(trace2);
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// indexs: trace2.extrinsicIndexBySpanId(),
-				block: traceBlock,
-				// ...trace2.operationsAndGrouping(),
-				operations: trace2.operationsAndGrouping().operations,
+				// block: traceBlock,
+				...trace2.operationsAndGrouping(),
+				// operations: trace2.operationsAndGrouping().operations,
 				// eventsByParent: trace2.traceInfoWithPhase(),
 				// traceBlock: traceBlock,
 			};

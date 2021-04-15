@@ -52,7 +52,13 @@ async function main() {
 					{
 						name: 'targets',
 						type: 'Text',
-						isOptionsal: true,
+						isOptional: true,
+						isHistoric: true,
+					},
+					{
+						name: 'storage_keys',
+						type: 'Text',
+						isOptional: true,
 						isHistoric: true,
 					},
 				],

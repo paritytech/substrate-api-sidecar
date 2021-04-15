@@ -18,7 +18,7 @@ export interface StringValues {
 
 export interface U64Values {
 	[i: string]: unknown;
-	ext_id: string;
+	extId: string;
 }
 
 // export interface Values {
@@ -29,12 +29,12 @@ export interface U64Values {
 // }
 
 export interface Data {
-	string_values: StringValues;
+	stringValues: StringValues;
 }
 
 export interface TraceEvent {
 	name: string;
-	parent_id: number;
+	parentId: number;
 	target: string;
 	data: Data;
 }
@@ -57,21 +57,21 @@ export interface EventWithAccountInfo extends EventWithPhase {
 
 export interface TraceSpan {
 	id: number;
-	line: number;
+	// line: number;
 	name: string;
-	exited: [
-		{
-			nanos: number;
-			secs: number;
-		}
-	];
-	entered: [
-		{
-			nanos: number;
-			secs: number;
-		}
-	];
-	parent_id: number;
+	// exited: [
+	// 	{
+	// 		nanos: number;
+	// 		secs: number;
+	// 	}
+	// ];
+	// entered: [
+	// 	{
+	// 		nanos: number;
+	// 		secs: number;
+	// 	}
+	// ];
+	parentId: number;
 	target: string;
 	data: Data;
 }
@@ -87,12 +87,29 @@ export interface SpanWithChildren extends TraceSpan {
 	children: number[];
 }
 
-export interface TraceBlock {
-	block_hash: string;
-	tracing_targets: string;
+export interface BlockTrace {
+	blockHash: string;
+	tracingTargets: string;
 	events: TraceEvent[];
 	spans: TraceSpan[];
 }
+
+export function isBlockTrace(thing: unknown): thing is BlockTrace {
+	return (
+		typeof (thing as BlockTrace)?.blockHash === 'string' &&
+		typeof (thing as BlockTrace)?.tracingTargets === 'string' &&
+		Array.isArray((thing as BlockTrace)?.events) &&
+		Array.isArray((thing as BlockTrace)?.spans)
+	);
+}
+
+export interface TraceError {
+	error: string;
+}
+
+export type BlockTraceResponse =
+	| { traceError: TraceError }
+	| { blockTrace: BlockTrace };
 
 export interface PalletKeyInfo {
 	module: string;
