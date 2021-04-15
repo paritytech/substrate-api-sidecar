@@ -29,7 +29,7 @@ export function createApiWithAugmentations(
 	metadata?: string | Uint8Array
 ): ApiPromise {
 	const registry = new TypeRegistry();
-	const metadata = new Metadata(registry, metaData);
+	const expandedMetadata = new Metadata(registry, metadata);
 
 	registry.setMetadata(metadata);
 
