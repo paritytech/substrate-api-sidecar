@@ -70,8 +70,8 @@ export class TypeFactory {
 	 * such as `at`, `entriesAt`, `entries` etc..
 	 *
 	 * Some Parameter Examples:
-	 * 1. this.api.query.crowdloans.funds
-	 * 2. this.api.query.slots.leases
+	 * 1. apiPromise.query.crowdloans.funds
+	 * 2. apiPromise.query.slots.leases
 	 */
 	storageKey = (
 		index: number,
