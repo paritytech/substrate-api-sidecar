@@ -31,7 +31,7 @@ export function createApiWithAugmentations(
 	const registry = new TypeRegistry();
 	const expandedMetadata = new Metadata(registry, metadata);
 
-	registry.setMetadata(metadata);
+	registry.setMetadata(expandedMetadata);
 
 	const api = new ApiPromise({
 		provider: new WsProvider('ws://', false),
