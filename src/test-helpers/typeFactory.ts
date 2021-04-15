@@ -12,7 +12,7 @@ import {
 import { Observable } from '@polkadot/x-rxjs';
 
 /**
- * Necessary Type to fulfill StorageEntryBase regarding storage keys
+ * Type to fulfill StorageEntryBase regarding storage keys
  */
 type GenericStorageEntryFunction = (
 	arg1?: CodecArg,
