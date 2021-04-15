@@ -20,7 +20,7 @@ type GenericStorageEntryFunction = (
 ) => Observable<Codec>;
 
 /**
- * Used to create an augmented api for a specific chains metadata. This allows
+ * Creates an augmented api with a specific chains metadata. This allows
  * for flexible testing.
  *
  * @param metaData Metadata to be associated with the api augmentation
