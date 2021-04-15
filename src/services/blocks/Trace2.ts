@@ -71,7 +71,15 @@ export class Trace2 {
 			operations.push(...g.operations);
 		});
 
+		const check = [...operations];
+
 		operations.sort((a, b) => a.eventIndex - b.eventIndex);
+
+		if (check.toLocaleString() === operations.toString()) {
+			console.log('Trace: Operartions where already in correct order');
+		} else {
+			console.error('Trace: Operations where not in correct order');
+		}
 
 		return {
 			operations,
@@ -124,7 +132,10 @@ export class Trace2 {
 					span && secondarySpans.push(span);
 				});
 
+				console.log('Secondary spans: ', secondarySpans);
+
 				// Figure out the phase and potentially the extrinsic index
+				// TODO get phase from an events parent span
 				let phase: Phase, extrinsicIndex: BN | undefined;
 				if (
 					primary.name === SPANS.applyExtrinsic.name &&
@@ -142,9 +153,9 @@ export class Trace2 {
 
 					phase = Phase.ApplyExtrinsic;
 					extrinsicIndex = maybeExtrinsicIndex[0];
-				} else if (primary.name === SPANS.onInitialize.name) {
+				} else if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 					phase = Phase.OnInitialze;
-				} else if (primary.name === SPANS.onFinalize.name) {
+				} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
 					phase = Phase.OnFinalize;
 				} else {
 					phase = Phase.Other;
