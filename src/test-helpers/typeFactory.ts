@@ -44,8 +44,9 @@ export function createApiWithAugmentations(
 }
 
 /**
- * This Factory facilitates a use for creating types when the registries `createType` method
- * does not suffice.
+ * Factory for creating polkadot-js `Codec` types. Useful for creating
+ * complex types that `createType` cannot accommodate (i.e. creating complex
+ * mock data for testing).
  *
  * Ex: <Vec<Option<Tuple<[AccountId, BalanceOf]>>>>
  */
