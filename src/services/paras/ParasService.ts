@@ -130,7 +130,7 @@ export class ParasService extends AbstractService {
 	/**
 	 * Get current and future lease info + lifecycle stage for a given `paraId`.
 	 *
-	 * @param hash `BlockHash` to make call at
+	 * @param hash Get lease info at this `BlockHash`
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
