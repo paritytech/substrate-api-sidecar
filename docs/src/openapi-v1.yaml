@@ -18,6 +18,7 @@ tags:
   description: pallets employed in the runtime
 - name: runtime
 - name: transaction
+- name: paras
 paths:
   /accounts/{accountId}/balance-info:
     get:
@@ -747,6 +748,179 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /experimental/paras:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] List all registered paras
+        (parathreads & parachains).
+      description: Returns all registered parachains and parathreads with lifecycle info.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve paras list at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paras'
+  /experimental/paras/leases/current:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] Get general information about
+        the current lease period.
+      description: |
+        Returns an overview of the current lease period, including lease holders.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve current lease period info at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: currentLeaseHolders
+        in: query
+        description: |
+          Wether or not to include the `currentLeaseHolders` property. Inclusion
+          of the property will likely result in a larger payload and increased
+          response time.
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasLeasesCurrent'
+  /experimental/paras/auctions/current:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] Get the status of the current
+        auction.
+      description: |
+        Returns an overview of the current of auction. There is only one auction
+        at a time. If there is no auction most fields will be `null`.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve auction progress at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasAuctionsCurrent'
+  /experimental/paras/crowdloans:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] List all stored crowdloans.
+      description: |
+        Returns a list of all the crowdloans and their associated paraIds.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of paraIds that have crowdloans at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasCrowdloans'
+  /experimental/paras/{paraId}/crowdloan-info:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] Get crowdloan information for a
+        `paraId`.
+      description: |
+        Returns crowdloan's `fundInfo` and the set of `leasePeriods` the crowdloan`
+        covers.
+      parameters:
+      - name: paraId
+        in: path
+        description: paraId to query the crowdloan information of.
+        required: true
+        schema:
+          type: number
+      - name: at
+        in: query
+        description: Block at which to retrieve info at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasCrowdloanInfo'
+  /experimental/paras/{paraId}/lease-info:
+    get:
+      tags:
+      - paras
+      summary: |
+        [Experimental - subject to breaking change.] Get current and future leases
+        as well as the lifecycle stage for a given `paraId`.
+      description: |
+        Returns a list of leases that belong to the `paraId` as well as the
+        `paraId`'s current lifecycle stage.
+      parameters:
+      - name: paraId
+        in: path
+        description: paraId to query the crowdloan information of.
+        required: true
+        schema:
+          type: number
+      - name: at
+        in: query
+        description: Block at which to retrieve para's leases at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasLeaseInfo'
 components:
   schemas:
     BalanceLock:
@@ -1309,8 +1483,8 @@ components:
         status:
           type: object
           description: >-
-            [Deprecated](Works for polkadot runtimes before v0.8.30).   
-            
+            [Deprecated](Works for polkadot runtimes before v0.8.30).
+
             Era election status: either `Close: null` or `Open: <BlockNumber>`.
             A status of `Close` indicates that the submission window for solutions
             from off-chain Phragmen is not open. A status of `Open` indicates that the
@@ -1659,6 +1833,221 @@ components:
           items:
             $ref: '#/components/schemas/PalletStorageItemMetadata'
           description: Array containing metadata for each storage entry of the pallet.
+    ParaLifecycle:
+      type: string
+      enum:
+      - onboarding
+      - parathread
+      - parachain
+      - upgradingParathread
+      - downgradingParachain
+      - offboardingParathread
+      - offboardingParachain
+      description: |
+        The possible states of a para, to take into account delayed lifecycle
+        changes.
+    OnboardingAs:
+      type: string
+      enum:
+      - parachain
+      - parathread
+      description: |
+        This property only shows up when `paraLifecycle=onboarding`. It
+        describes if a particular para is onboarding as a `parachain` or a
+        `parathread`.
+    Para:
+      type: object
+      properties:
+        paraId:
+          type: string
+          format: unsignedInteger
+        paraLifecycle:
+          $ref: '#/components/schemas/ParaLifecycle'
+        onboardingAs:
+          $ref: '#/components/schemas/OnboardingAs'
+    Paras:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        paras:
+          type: array
+          items:
+            $ref: '#/components/schemas/Para'
+    ParasLeasesCurrent:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        leasePeriodIndex:
+          type: string
+          format: unsignedInteger
+          description: Current lease period index.
+        endOfLeasePeriod:
+          type: string
+          format: unsignedInteger
+          description: Last block (number) of the current lease period.
+        currentLeaseHolders:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+          description: List of `paraId`s that currently hold a lease.
+    WinningData:
+      type: object
+      properties:
+        bid:
+          type: object
+          properties:
+            accountId:
+              type: string
+            paraId:
+              type: string
+              format: unsignedInteger
+            amount:
+              type: string
+              format: unsignedInteger
+        leaseSet:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+      description: |
+        A currently winning bid and the set of lease periods the bid is for. The
+        `amount` of the bid is per lease period. The `bid` property will be `null`
+        if no bid has been made for the corresponding `leaseSet`.
+    ParasAuctionsCurrent:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        beginEnd:
+          type: string
+          format: unisgnedInteger or $null
+          description: |
+            Fist block (number) of the auction ending phase. `null` if there is no ongoing
+            auction.
+        finishEnd:
+          type: string
+          format: unisgnedInteger or $null
+          description: |
+            Last block (number) of the auction ending phase. `null` if there is no ongoing
+            auction.
+        phase:
+          type: string
+          enum:
+          - opening
+          - ending
+          description: |
+            Whether the auction is in the `opening` or `ending` phase. The
+            `ending` phase is where the eventual winners are retroactively
+            picked from. `null` if there is no ongoing auction.
+        auctionIndex:
+          type: string
+          format: unsignedInteger
+          description: |
+            The auction number. If there is no current auction this will be the number
+            of the previous auction.
+        leasePeriods:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+          description: |
+            Lease period indexes that may be bid on in this auction. `null` if
+            there is no ongoing auction.
+        winning:
+          type: array
+          items:
+            $ref: '#/components/schemas/WinningData'
+    FundInfo:
+      type: object
+      properties:
+        depositor:
+          type: string
+        verifier:
+          type: string
+        deposit:
+          type: string
+          format: unsignedInteger
+        raised:
+          type: string
+          format: unsignedInteger
+        end:
+          type: string
+          format: unsignedInteger
+        cap:
+          type: string
+          format: unsignedInteger
+        lastConstribution:
+          type: string
+          enum:
+          - preEnding
+          - ending
+        firstSlot:
+          type: string
+          format: unsignedInteger
+        lastSlot:
+          type: string
+          format: unsignedInteger
+        trieIndex:
+          type: string
+          format: unsignedInteger
+    ParasCrowdloans:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        funds:
+          type: array
+          items:
+            type: object
+            properties:
+              paraId:
+                type: string
+                format: unsignedInteger
+              fundInfo:
+                $ref: '#/components/schemas/FundInfo'
+          description: |
+            List of paras that have crowdloans.
+    ParasCrowdloanInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        fundInfo:
+          $ref: '#/components/schemas/FundInfo'
+        leasePeriods:
+          type: array
+          items:
+            type: string
+            format: unsignedInteger
+          description: Lease periods the crowdloan can bid on.
+    ParasLeaseInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        paraLifecycle:
+          $ref: '#/components/schemas/ParaLifecycle'
+        onboardingAs:
+          $ref: '#/components/schemas/OnboardingAs'
+        leases:
+          type: array
+          items:
+            type: object
+            properties:
+              leasePeriodIndex:
+                type: string
+                format: unsignedInteger
+              account:
+                type: string
+              deposit:
+                type: string
+                format: unsignedInteger
+          description: |
+            List of lease periods for which the `paraId` holds a lease along with
+            the deposit held and the associated `accountId`.
   requestBodies:
     Transaction:
       content:

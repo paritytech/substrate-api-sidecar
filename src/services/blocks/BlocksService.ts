@@ -21,9 +21,9 @@ import { BadRequest, InternalServerError } from 'http-errors';
 
 import {
 	BlockWeightStore,
-	ExtBaseWeightValue,
 	IPerClass,
-	PerClassValue,
+	isExtBaseWeightValue,
+	isPerClassValue,
 	WeightValue,
 } from '../../types/chains-config';
 import {
@@ -261,21 +261,14 @@ export class BlocksService extends AbstractService {
 			 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
 			 * https://github.com/polkadot-js/api/issues/2365
 			 */
+			// This makes the compiler happy for below type guards
+			const weightStored = this.blockWeightStore[specVersion];
 			let extrinsicBaseWeight;
-			if (
-				// 0 is a falsy value so we need to check if undefined
-				(this.blockWeightStore[specVersion] as ExtBaseWeightValue)
-					.extrinsicBaseWeight !== undefined
-			) {
-				extrinsicBaseWeight = (this.blockWeightStore[
-					specVersion
-				] as ExtBaseWeightValue).extrinsicBaseWeight;
-			} else if (
-				(this.blockWeightStore[specVersion] as PerClassValue).perClass
-			) {
-				extrinsicBaseWeight = (this.blockWeightStore[
-					specVersion
-				] as PerClassValue)?.perClass[weightInfoClass]?.baseExtrinsic;
+			if (isExtBaseWeightValue(weightStored)) {
+				extrinsicBaseWeight = weightStored.extrinsicBaseWeight;
+			} else if (isPerClassValue(weightStored)) {
+				extrinsicBaseWeight =
+					weightStored.perClass[weightInfoClass]?.baseExtrinsic;
 			}
 
 			if (!extrinsicBaseWeight) {

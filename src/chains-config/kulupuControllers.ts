@@ -20,6 +20,7 @@ export const kulupuControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
+		Paras: false,
 	},
 	options: {
 		finalizes: false,

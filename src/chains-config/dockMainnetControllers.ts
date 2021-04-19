@@ -24,6 +24,7 @@ export const dockMainnetControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
+		Paras: false,
 	},
 	options: {
 		finalizes: true,

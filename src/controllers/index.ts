@@ -7,6 +7,7 @@ import {
 import { Blocks, BlocksExtrinsics } from './blocks';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import { PalletsStakingProgress, PalletsStorage } from './pallets';
+import { Paras } from './paras';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import {
 	TransactionDryRun,
@@ -37,4 +38,5 @@ export const controllers = {
 	TransactionFeeEstimate,
 	TransactionMaterial,
 	TransactionSubmit,
+	Paras,
 };

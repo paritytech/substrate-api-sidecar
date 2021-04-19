@@ -24,6 +24,12 @@ export interface ExtBaseWeightValue {
 	extrinsicBaseWeight?: BigInt;
 }
 
+export function isExtBaseWeightValue(
+	thing: unknown
+): thing is ExtBaseWeightValue {
+	return typeof (thing as ExtBaseWeightValue)?.extrinsicBaseWeight === 'bigint';
+}
+
 /**
  * Polkadot runtime versions after v26
  * Kusama runtime versions after v2026
@@ -32,6 +38,17 @@ export interface ExtBaseWeightValue {
  */
 export interface PerClassValue {
 	perClass: IPerClass;
+}
+
+export function isPerClassValue(thing: unknown): thing is PerClassValue {
+	return (
+		typeof (thing as PerClassValue)?.perClass?.normal.baseExtrinsic ===
+			'bigint' &&
+		typeof (thing as PerClassValue)?.perClass?.operational.baseExtrinsic ===
+			'bigint' &&
+		typeof (thing as PerClassValue)?.perClass?.mandatory.baseExtrinsic ===
+			'bigint'
+	);
 }
 
 export interface IPerClass {

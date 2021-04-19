@@ -1,6 +1,8 @@
 import {
 	BlockWeightStore,
 	ExtBaseWeightValue,
+	isExtBaseWeightValue,
+	isPerClassValue,
 	MetadataConsts,
 	PerClassValue,
 } from '../../types/chains-config';
@@ -40,14 +42,11 @@ export function generateBlockWeightStore(
 		for (const version of runtimeVersions) {
 			blockWeightStore[version] = {};
 
-			if ((def as ExtBaseWeightValue).extrinsicBaseWeight) {
-				(blockWeightStore[
-					version
-				] as ExtBaseWeightValue).extrinsicBaseWeight = (def as ExtBaseWeightValue).extrinsicBaseWeight;
-			} else if ((def as PerClassValue).perClass) {
-				(blockWeightStore[
-					version
-				] as PerClassValue).perClass = (def as PerClassValue).perClass;
+			if (isExtBaseWeightValue(def)) {
+				(blockWeightStore[version] as ExtBaseWeightValue).extrinsicBaseWeight =
+					def.extrinsicBaseWeight;
+			} else if (isPerClassValue(def)) {
+				(blockWeightStore[version] as PerClassValue).perClass = def.perClass;
 			} else {
 				throw new Error(
 					'No Valid weight type found while generating block weight store'
