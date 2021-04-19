@@ -85,7 +85,7 @@ export class BlocksService extends AbstractService {
 			// @ts-ignore
 			const traceResp: BlockTraceResponse = await api.rpc.state.traceBlock(
 				hash
-				// 'pallet,frame,state',
+				// 'pallet,frame,state'
 				// '3a65787472696e7369635f696e646578'
 				// ''
 			);
@@ -101,9 +101,9 @@ export class BlocksService extends AbstractService {
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// indexs: trace2.extrinsicIndexBySpanId(),
-				// block: traceBlock,
-				...trace2.operationsAndGrouping(),
-				// operations: trace2.operationsAndGrouping().operations,
+				block: traceResp.blockTrace,
+				// ...trace2.operationsAndGrouping(),
+				operations: trace2.operationsAndGrouping().operations,
 				// eventsByParent: trace2.traceInfoWithPhase(),
 				// traceBlock: traceBlock,
 			};

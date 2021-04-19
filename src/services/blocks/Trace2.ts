@@ -132,8 +132,6 @@ export class Trace2 {
 					span && secondarySpans.push(span);
 				});
 
-				console.log('Secondary spans: ', secondarySpans);
-
 				// Figure out the phase and potentially the extrinsic index
 				// TODO get phase from an events parent span
 				let phase: Phase, extrinsicIndex: BN | undefined;
@@ -144,11 +142,16 @@ export class Trace2 {
 					const maybeExtrinsicIndex = secondarySpanIds
 						.concat(primary.id)
 						.filter((id) => extrinsicIndexBySpanId.has(id))
-						.map((id) => extrinsicIndexBySpanId.get(id));
-					if (maybeExtrinsicIndex.length !== 1) {
-						throw new Error(
-							'Expect exactly one extrinsic index per apply extrinsic span grouping'
-						);
+						.map((id) => extrinsicIndexBySpanId.get(id) as BN);
+
+					if (maybeExtrinsicIndex.length > 1) {
+						for (const [i, extIdx] of maybeExtrinsicIndex.entries()) {
+							if (i > 0 && !maybeExtrinsicIndex[i]?.eq(extIdx)) {
+								throw new Error(
+									'Expect extrinsic to only be applied at a single index.'
+								);
+							}
+						}
 					}
 
 					phase = Phase.ApplyExtrinsic;
