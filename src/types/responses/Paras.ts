@@ -123,8 +123,8 @@ export interface IAuctionsCurrent {
 	 */
 	leasePeriods: IOption<number[]>;
 	/**
-	 * Winning bids at this current block height. Is only not `null` during the
-	 * `Ending` phase.
+	 * Winning bids at this current block height. Is `null` if there is no current
+	 * auction OR there are no bids for the current auction.
 	 */
 	winning: IOption<IWinningDataWithLeaseSet[]>;
 }
