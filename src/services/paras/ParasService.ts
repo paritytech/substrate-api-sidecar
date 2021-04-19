@@ -33,6 +33,8 @@ import { AbstractService } from '../AbstractService';
 // consts makes its way into `rococo-v1` this can be taken out.
 const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
+const SAMPLE_LENGTH_FALLBACK = new BN(1);
+
 export class ParasService extends AbstractService {
 	/**
 	 * Get crowdloan information for a `paraId`.
@@ -390,15 +392,42 @@ export class ParasService extends AbstractService {
 		}
 
 		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
-		// need a fallback of 1
+		// need a fallback
 		const sampleLength =
-			(this.api.consts.auctions.sampleLength as BlockNumber) || new BN(1);
+			(this.api.consts.auctions.sampleLength as BlockNumber) ||
+			SAMPLE_LENGTH_FALLBACK;
 		return afterEarlyEnd.div(sampleLength);
 	}
 
 	/**
 	 * Enumerate in order all the lease sets (SlotRange expressed as a set of
 	 * lease periods) that an `auctions::winning` array covers.
+	 *
+	 * Below is an example of function behavior with
+	 * input:
+	 * 	`leasePeriodsPerSlot`: 3, `leasePeriodIndexNumber`: 0.
+	 * output:
+	 * 	`[[0], [0, 1], [0, 1, 2], [1], [1, 2], [2]]`
+	 *
+	 * The third inner loop builds the sub arrays that represent the SlotRange variant.
+	 * You can think of the outer two loops as creating the start and the end of the range,
+	 * then the inner most loop iterates through that start and end to build it for us.
+	 * If we have 3 lease periods per slot (`lPPS`), the outer loop start at 0 and the 2nd
+	 * inner loop builds increasing ranges starting from 0:
+	 * `[0], [0, 1], [0, 1, 2]`
+	 *
+	 * Once we have built our 0 starting ranges we then increment the outermost loop and
+	 * start building our 1 starting ranges:
+	 * `[1], [1, 2]`
+	 *
+	 * And finally we increment the outer most loop to 2, building our 2 starting ranges
+	 * `[2]`
+	 *
+	 * Put all those ranges together in the order they where produced and we get:
+	 * `[[0], [0, 1], [0, 1, 2], [1], [1, 2], [2]]`
+	 *
+	 * So now we have an array, where each index corresponds to the same `SlotRange` that
+	 * would be at that index in the `auctions::winning` array.
 	 *
 	 * @param leasePeriodIndex
 	 */
