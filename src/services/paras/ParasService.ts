@@ -20,14 +20,13 @@ import {
 	IAuctionsCurrent,
 	ICrowdloans,
 	ICrowdloansInfo,
-	IFund,
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
 	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
-import { IOption, isSome } from '../../types/util';
+import { IOption, isNull, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
 // This was the orgiginal value in the rococo test net. Once the exposed metadata
@@ -87,10 +86,7 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
-	async crowdloans(
-		hash: BlockHash,
-		includeFundInfo: boolean
-	): Promise<ICrowdloans> {
+	async crowdloans(hash: BlockHash): Promise<ICrowdloans> {
 		const [{ number }, funds] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
 			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>, [ParaId]>(
@@ -98,32 +94,19 @@ export class ParasService extends AbstractService {
 			),
 		]);
 
-		let entries: IFund[];
-		if (includeFundInfo) {
-			entries = funds.map(([keys, fundInfo]) => {
-				return {
-					paraId: keys.args[0],
-					fundInfo,
-				};
-			});
-		} else {
-			entries = (await this.api.query.crowdloan.funds.keys<[ParaId]>()).map(
-				({ args: [paraId] }) => {
-					return {
-						paraId,
-					};
-				}
-			);
-		}
-
-		const at = {
-			hash,
-			height: number.unwrap().toString(10),
-		};
+		const fundsByParaId = funds.map(([keys, fundInfo]) => {
+			return {
+				paraId: keys.args[0],
+				fundInfo,
+			};
+		});
 
 		return {
-			at,
-			funds: entries,
+			at: {
+				hash,
+				height: number.unwrap().toString(10),
+			},
+			funds: fundsByParaId,
 		};
 	}
 
@@ -153,7 +136,7 @@ export class ParasService extends AbstractService {
 
 		let leasesFormatted;
 		if (leases.length) {
-			const currentLeasePeriodIndex = this.currentLeasePeriodIndex(
+			const currentLeasePeriodIndex = this.leasePeriodIndexAt(
 				blockNumber
 			).toNumber();
 
@@ -319,7 +302,7 @@ export class ParasService extends AbstractService {
 		}
 
 		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
-		const leasePeriodIndex = this.currentLeasePeriodIndex(blockNumber);
+		const leasePeriodIndex = this.leasePeriodIndexAt(blockNumber);
 		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
 
 		return {
@@ -382,7 +365,7 @@ export class ParasService extends AbstractService {
 	 * @param blockHeight current blockheight
 	 * @param leasePeriod duration of lease period
 	 */
-	private currentLeasePeriodIndex(now: BN): BN {
+	private leasePeriodIndexAt(now: BN): BN {
 		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
 		return now.div(leasePeriod);
 	}
@@ -397,7 +380,7 @@ export class ParasService extends AbstractService {
 	 * @param beginEnd block number of the start of the auction's ending period
 	 */
 	private endingOffset(now: BN, beginEnd: IOption<BN>): IOption<BN> {
-		if (!isSome(beginEnd)) {
+		if (isNull(beginEnd)) {
 			return null;
 		}
 

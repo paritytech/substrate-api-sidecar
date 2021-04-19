@@ -25,7 +25,7 @@ export interface IFund {
 	 * `FundInfo` for the para's crowdloan. Use query param `fundInfo=true` to include the `FundInfo`.
 	 * Inclusion may make the query take longer.
 	 */
-	fundInfo?: Option<FundInfo>;
+	fundInfo: Option<FundInfo>;
 }
 
 export interface ICrowdloansInfo {

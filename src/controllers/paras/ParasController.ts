@@ -48,16 +48,12 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getCrowdloans: RequestHandler = async (
-		{ query: { at, fundInfo } },
+		{ query: { at } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		const includeFundInfo = fundInfo === 'true';
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.crowdloans(hash, includeFundInfo)
-		);
+		ParasController.sanitizedSend(res, await this.service.crowdloans(hash));
 	};
 
 	private getLeaseInfo: RequestHandler<IParaIdParam> = async (

@@ -67,25 +67,7 @@ describe('ParasService', () => {
 				],
 			};
 
-			const response = await parasService.crowdloans(blockHash789629, true);
-
-			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
-		});
-
-		it('Should not include `fundInfo` when `includeFundInfo` is false', async () => {
-			const expectedResponse = {
-				at: expectedAt,
-				funds: [
-					{
-						paraId: '199',
-					},
-					{
-						paraId: '200',
-					},
-				],
-			};
-
-			const response = await parasService.crowdloans(blockHash789629, false);
+			const response = await parasService.crowdloans(blockHash789629);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
