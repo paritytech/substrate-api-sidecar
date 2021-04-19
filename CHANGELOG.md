@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.7](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.6...v4.0.7) (2021-04-19)
+
+
+### Bug Fixes
+
+* Update @polkadot/api to get the corrected Kusama/Polkadot runtime 30 session key definitions
+
+* Update @polkadot/apps-config to get latest chain specific upgrades
+
+* Update @polkadot/util-crypto in order to align ss58 registry with upstream Substrate
+
+### Packaging
+
+* **build** Update @substrate/dev to get the latest and updated dependencies. 
+
 ## [4.0.6](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.5...v4.0.6) (2021-04-12)
 
 
