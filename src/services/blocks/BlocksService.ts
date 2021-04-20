@@ -84,8 +84,9 @@ export class BlocksService extends AbstractService {
 			const { block } = await api.rpc.chain.getBlock(hash);
 			// @ts-ignore
 			const traceResp: BlockTraceResponse = await api.rpc.state.traceBlock(
-				hash
-				// 'pallet,frame,state'
+				hash,
+				'pallet,frame,state_get_put',
+				'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9'
 				// '3a65787472696e7369635f696e646578'
 				// ''
 			);
@@ -97,13 +98,13 @@ export class BlocksService extends AbstractService {
 				traceResp.blockTrace as BlockTrace,
 				block.registry
 			);
-			// console.log(trace2);
+			console.log(trace2);
 			return {
 				height: block.header.number.unwrap().toString(10),
 				// indexs: trace2.extrinsicIndexBySpanId(),
-				block: traceResp.blockTrace,
-				// ...trace2.operationsAndGrouping(),
-				operations: trace2.operationsAndGrouping().operations,
+				// block: traceResp.blockTrace,
+				...trace2.operationsAndGrouping(),
+				// operations: trace2.operationsAndGrouping().operations,
 				// eventsByParent: trace2.traceInfoWithPhase(),
 				// traceBlock: traceBlock,
 			};
