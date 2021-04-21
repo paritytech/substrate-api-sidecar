@@ -79,6 +79,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.safeMountAsyncGetHandlers([
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
+			['/head/traces', this.getLatestBlockTraces],
+			['/:number/traces', this.getBlockTraces],
+			['/:number/traces/operations', this.getBlockOperations],
+			['/head/traces/operations', this.getLatestBlockOperations],
 		]);
 	}
 
@@ -89,12 +93,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, operations } },
+		{ query: { eventDocs, extrinsicDocs, finalized } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const operationsArg = operations === 'true';
 
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!this.options.finalizes) {
@@ -118,7 +121,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			operations: operationsArg,
 		};
 
 		BlocksController.sanitizedSend(
@@ -134,7 +136,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, operations } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -143,8 +145,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const operationsArg = operations === 'true';
-		console.log('operations: ', operations);
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
@@ -155,7 +155,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			operations: operationsArg,
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
@@ -163,5 +162,41 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			res,
 			await this.service.fetchBlock(hash, options)
 		);
+	};
+
+	private getLatestBlockTraces: RequestHandler = async (
+		_req,
+		res
+	): Promise<void> => {
+		const hash = await this.api.rpc.chain.getFinalizedHead();
+
+		BlocksController.sanitizedSend(res, await this.service.traces(hash));
+	};
+
+	private getBlockTraces: RequestHandler = async (
+		{ params: { number } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashForBlock(number);
+
+		BlocksController.sanitizedSend(res, await this.service.traces(hash));
+	};
+
+	private getLatestBlockOperations: RequestHandler = async (
+		_req,
+		res
+	): Promise<void> => {
+		const hash = await this.api.rpc.chain.getFinalizedHead();
+
+		BlocksController.sanitizedSend(res, await this.service.operations(hash));
+	};
+
+	private getBlockOperations: RequestHandler = async (
+		{ params: { number } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashForBlock(number);
+
+		BlocksController.sanitizedSend(res, await this.service.operations(hash));
 	};
 }

@@ -31,8 +31,13 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { Trace2 } from './Trace2';
-import { BlockTrace, isBlockTrace } from './types';
+import { Trace } from './Trace';
+import { isBlockTrace } from './types';
+
+const DEFAULT_TARGETS = 'pallet,frame,state_get_put';
+// :extrinsic_index & frame_system::Account
+const DEFAULT_KEYS =
+	'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
 
 /**
  * Types for fetchBlock's options
@@ -48,7 +53,6 @@ interface FetchBlockOptions {
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
-	operations: boolean;
 }
 
 /**
@@ -60,6 +64,64 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
+	/**
+	 * Get the state traces for a block.
+	 *
+	 * @param hash `BlockHash` to get traces at.
+	 */
+	async traces(hash: BlockHash): Promise<any> {
+		const [{ number }, traceResponse] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			// @ts-ignore
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+		]);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (!isBlockTrace(traceResponse.blockTrace)) {
+			throw new BadRequest(`Error: ${JSON.stringify(traceResponse)}`);
+		}
+
+		return {
+			at: {
+				hash,
+				number,
+			},
+			traces: traceResponse.blockTrace,
+		};
+	}
+
+	/**
+	 * Get the balance changing operations induced by a block.
+	 *
+	 * @param hash `BlockHash` to get balance transfer operations at.
+	 */
+	async operations(hash: BlockHash): Promise<any> {
+		const [header, traceResponse] = await Promise.all([
+			this.api.rpc.chain.getHeader(hash),
+			// @ts-ignore
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+		]);
+
+		const trace = new Trace(
+			this.api,
+			traceResponse.blockTrace,
+			header.registry
+		);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (!isBlockTrace(traceResponse.blockTrace)) {
+			throw new BadRequest(`Error: ${JSON.stringify(traceResponse)}`);
+		}
+
+		return {
+			at: {
+				hash,
+				number: header.number,
+			},
+			...trace.operationsAndGrouping(),
+		};
+	}
+
 	/**
 	 * Fetch a block augmented with derived values.
 	 *
@@ -73,42 +135,13 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			operations,
 		}: FetchBlockOptions
 	): // ): Promise<IBlock | TraceTestTwo | TraceTestOne> {
 	Promise<any> {
 		const { api } = this;
 
 		let block, events, finalizedHead, sessionValidators;
-		if (operations) {
-			const { block } = await api.rpc.chain.getBlock(hash);
-			// @ts-ignore
-			const traceResp: BlockTraceResponse = await api.rpc.state.traceBlock(
-				hash,
-				'pallet,frame,state_get_put',
-				'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9'
-				// '3a65787472696e7369635f696e646578'
-				// ''
-			);
-			if (!isBlockTrace(traceResp.blockTrace)) {
-				return traceResp;
-			}
-			const trace2 = new Trace2(
-				this.api,
-				traceResp.blockTrace as BlockTrace,
-				block.registry
-			);
-			console.log(trace2);
-			return {
-				height: block.header.number.unwrap().toString(10),
-				// indexs: trace2.extrinsicIndexBySpanId(),
-				// block: traceResp.blockTrace,
-				...trace2.operationsAndGrouping(),
-				// operations: trace2.operationsAndGrouping().operations,
-				// eventsByParent: trace2.traceInfoWithPhase(),
-				// traceBlock: traceBlock,
-			};
-		} else if (typeof api.query.session?.validators?.at === 'function') {
+		if (typeof api.query.session?.validators?.at === 'function') {
 			[
 				{ block },
 				events,
