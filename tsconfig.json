@@ -1,5 +1,5 @@
 {
-  "extends": "@substrate/dev/config/tsconfig.json",
+  "extends": "./node_modules/@substrate/dev/config/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
