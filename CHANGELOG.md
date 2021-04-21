@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [4.0.7](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.6...v4.0.7) (2021-04-19)
+## [4.0.8](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.7...v4.0.8) (2021-04-21)
+
+
+### Experimental Feature 
+
+* **PLO endpoints** Add a set of endpoint's in order to query information regarding parachains and parathreads. This is currently purely experimental, and any and all feedback is welcome. Expect changes as the polkadot ecosystem continues to develop their parachain's module. ([#509](https://github.com/paritytech/substrate-api-sidecar/pull/509))([1fa4f94](https://github.com/paritytech/substrate-api-sidecar/commit/1fa4f94e5a635256f06392b71d5d75e80533351f))
+
+* All routes are prefixed with `/experimental/paras`
+
+    * `/`
+    * `/crowdloans`
+    * `/:paraId/crowdloan-info`
+    * `/:paraId/lease-info`
+    * `/leases/current`
+    * `/auctions/current`
+
+    Please see the docs [here](https://paritytech.github.io/substrate-api-sidecar/dist/) for more information
 
 
 ### Bug Fixes
