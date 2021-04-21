@@ -9,8 +9,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **PLO endpoints** Adds a set of endpoint's in order to query information regarding parachains, parathreads, and the parachain lease offering (PLO) system. These endpoints are marked as experimental because we may break their APIs without bumping this service's major version. Expect changes as polkadot's PLO system develops. ([#509](https://github.com/paritytech/substrate-api-sidecar/pull/509))([1fa4f94](https://github.com/paritytech/substrate-api-sidecar/commit/1fa4f94e5a635256f06392b71d5d75e80533351f))
 
-* All routes are prefixed with `/experimental/paras`
-
     * `/experimental/paras/`
     * `/experimental/paras/crowdloans`
     * `/experimental/paras/:paraId/crowdloan-info`
