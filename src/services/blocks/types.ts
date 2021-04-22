@@ -1,32 +1,12 @@
 import { AccountInfo, Address } from '@polkadot/types/interfaces';
-import * as BN from 'bn.js';
-
-export interface BoolValues {
-	[i: string]: unknown;
-}
-
-export interface I64Values {
-	[i: string]: unknown;
-}
+import BN from 'bn.js';
 
 export interface StringValues {
 	key?: string;
-	method?: 'Put' | 'Get'; // TODO there are more variants here to enumerate
+	method?: 'Put' | 'Get';
 	result?: string;
 	[i: string]: unknown;
 }
-
-export interface U64Values {
-	[i: string]: unknown;
-	extId: string;
-}
-
-// export interface Values {
-// 	i64_values: I64Values;
-// 	string_values: StringValues;
-// 	u64_values: U64Values;
-// 	bool_values: BoolValues;
-// }
 
 export interface Data {
 	stringValues: StringValues;
@@ -57,20 +37,7 @@ export interface EventWithAccountInfo extends EventWithPhase {
 
 export interface TraceSpan {
 	id: number;
-	// line: number;
 	name: string;
-	// exited: [
-	// 	{
-	// 		nanos: number;
-	// 		secs: number;
-	// 	}
-	// ];
-	// entered: [
-	// 	{
-	// 		nanos: number;
-	// 		secs: number;
-	// 	}
-	// ];
 	parentId: number;
 	target: string;
 	data: Data;
@@ -80,7 +47,6 @@ export interface TraceSpan {
  * Span with direct descendants
  */
 export interface SpanWithChildren extends TraceSpan {
-	// storagePath: KeyInfo;
 	/**
 	 * Id of the child spans.
 	 */

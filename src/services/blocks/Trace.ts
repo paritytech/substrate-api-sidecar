@@ -324,6 +324,7 @@ export class Trace {
 					const events =
 						primarySpanEvents
 							?.concat(secondarySpanEvents)
+							// add test to see if these are sorted
 							.sort((a, b) => a.eventIndex - b.eventIndex) || [];
 
 					const eventsWithPhaseInfo = events.map((e) => {
