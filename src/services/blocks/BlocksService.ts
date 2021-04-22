@@ -118,7 +118,7 @@ export class BlocksService extends AbstractService {
 				hash,
 				number: header.number,
 			},
-			...trace.operationsAndGrouping(),
+			...trace.operationsAndActionGroupings(),
 		};
 	}
 

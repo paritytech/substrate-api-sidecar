@@ -139,17 +139,18 @@ export interface StorageResourceId {
 }
 
 export enum Phase {
-	OnInitialze = 'on_initialize',
-	ApplyExtrinsic = 'apply_extrinsic',
-	OnFinalize = 'on_finalize',
-	Other = 'Other',
+	OnInitialze = 'onInitialize',
+	ApplyExtrinsic = 'applyExtrinsic',
+	OnFinalize = 'onFinalize',
 }
+
+export type PhaseOther = Phase | string;
 
 /**
  * TODO this should be renamed `ActionGroup`
  * Gather info for a data associated with one primary span in a block execution phase.
  */
-export interface PhaseTraceInfoGather {
+export interface ActionGroup {
 	/**
 	 * If this is apply_extrinsic, this will have the extrinsic index.
 	 */
@@ -157,15 +158,14 @@ export interface PhaseTraceInfoGather {
 	/**
 	 * Phase in block execution
 	 */
-	phase: Phase;
+	phase: PhaseOther;
 	/**
 	 * Careful, need to make sure we only have one primary span (e.g. apply_extrinsic)
 	 */
 	primarySpan: SpanWithChildren;
 	/**
-	 * For extrinsic execution this will be the actual extrinsic.
-	 *
-	 * I think this should only be one span but for now we will track multiple
+	 * For extrinsic execution this will the actual extrinsic + any nested calls.
+	 * For onInitialize/onFinalize
 	 */
 	secondarySpans: SpanWithChildren[];
 	/**
@@ -177,11 +177,7 @@ export interface PhaseTraceInfoGather {
 /**
  * Complete trace info for on_initialize / on_finalize
  */
-export interface PhaseTraceInfoWithOps extends PhaseTraceInfoGather {
-	/**
-	 * Only account info events. These are used for operations
-	 */
-	accountInfoEvents: Map<string, EventWithAccountInfo[]>;
+export interface ActionGroupWithOps extends ActionGroup {
 	// Operations, either will have phase or extrinsic index
 	operations: Operation[];
 }
@@ -197,11 +193,11 @@ export interface StorageResourceId {
 }
 
 export interface PhaseId {
-	variant: Phase;
+	variant: PhaseOther;
 	applyExtrinsicIndex: BN;
 }
 
-export interface Transition {
+export interface Operation {
 	phase: PhaseId;
 	parentSpanId?: ParentSpanId; // should be the same as parentSpanId for the associated event
 	primarySpanId: ParentSpanId;
@@ -212,8 +208,4 @@ export interface Transition {
 		value: BN;
 		currency: CurrencyId;
 	};
-}
-
-export interface Operation extends Transition {
-	operationIndex: number;
 }
