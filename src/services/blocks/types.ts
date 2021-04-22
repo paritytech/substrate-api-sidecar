@@ -146,6 +146,7 @@ export enum Phase {
 }
 
 /**
+ * TODO this should be renamed `ActionGroup`
  * Gather info for a data associated with one primary span in a block execution phase.
  */
 export interface PhaseTraceInfoGather {

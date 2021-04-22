@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { Registry } from '@polkadot/types/types';
 import BN from 'bn.js';
+import { InternalServerError } from 'http-errors';
 
 import {
 	BlockTrace,
@@ -16,6 +17,7 @@ import {
 	PhaseTraceInfoWithOps,
 	SpanWithChildren,
 	SpecialKeyInfo,
+	TraceSpan,
 	Transition,
 } from './types';
 
@@ -45,17 +47,143 @@ const SPANS = {
 	},
 };
 
+// TODO In the future this will need a more chain specific solution that creates
+// keys directly from expanded metadata.
+/**
+ * Get all the storage key names.
+ *
+ * @param api ApiPromise
+ */
+function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
+	const moduleKeys = Object.keys(api.query).reduce((acc, mod) => {
+		Object.keys(api.query[mod]).forEach((item) => {
+			const queryObj = api.query[mod][item];
+			let key;
+			try {
+				// Slice off '0x' prefix
+				key = queryObj.key().slice(2);
+			} catch {
+				key = queryObj.keyPrefix().slice(2);
+			}
+
+			acc[key] = {
+				module: mod,
+				item,
+			};
+		});
+
+		return acc;
+	}, {} as Record<string, KeyInfo>);
+
+	const wellKnownKeys = {
+		'3a636f6465': {
+			special: ':code',
+		},
+		'3a686561707061676573': {
+			special: ':heappages',
+		},
+		'3a65787472696e7369635f696e646578': {
+			special: ':extrinsic_index',
+		},
+		'3a6368616e6765735f74726965': {
+			special: ':changes_trie',
+		},
+		'3a6368696c645f73746f726167653a': {
+			special: ':child_storage:',
+		},
+	};
+
+	return { ...moduleKeys, ...wellKnownKeys };
+}
+
+/**
+ * Create a Map of span's `id` to the the span in format `SpanWithChildren`,
+ * filling out each spans children as we go along
+ *
+ * @param spans spans to create a id => span mapping of.
+ */
+function getSpansById(spans: TraceSpan[]): Map<number, SpanWithChildren> {
+	const spansById = spans.reduce((acc, cur) => {
+		const spanWithChildren = { ...cur, children: [] };
+		acc.set(cur.id, spanWithChildren);
+		return acc;
+	}, new Map<number, SpanWithChildren>());
+
+	// Go through each span, and add its Id to the `children` array of its
+	// parent span, creating tree of spans starting with `execute_block` span as
+	// the root.
+	[...spansById.values()].forEach((span) => {
+		if (!span.parentId) {
+			return;
+		}
+		if (!spansById.has(span.parentId)) {
+			throw new Error('Spans Parens should exist in spansById');
+		}
+
+		// Warning: in place mutation
+		spansById.get(span.parentId)?.children.push(span.id);
+	});
+
+	return spansById;
+}
+
+/**
+ * Find the Ids of al the descendant spans of `root`
+ *
+ * @param root span which we want all the descendants of
+ * @param spansById map of span id => span with children
+ */
+function findDescendants(
+	root: number,
+	spansById: Map<number, SpanWithChildren>
+): number[] {
+	// Note: traversal order doesn't matter here
+	const stack = spansById.get(root)?.children;
+	if (!stack) {
+		return [];
+	}
+
+	const descendants = [];
+	while (stack.length) {
+		const curId = stack.pop();
+		if (!curId) {
+			break;
+		}
+
+		descendants.push(curId);
+
+		const curSpanChildren = spansById.get(curId)?.children;
+		curSpanChildren && stack.push(...curSpanChildren);
+	}
+
+	return descendants;
+}
+
+function getEventsByParentId(
+	annotatedEvents: EventAnnotated[]
+): Map<number, EventAnnotated[]> {
+	return annotatedEvents.reduce((acc, cur) => {
+		if (!acc.has(cur.parentId)) {
+			acc.set(cur.parentId, [cur]);
+		} else {
+			acc.get(cur.parentId)?.push(cur);
+		}
+
+		return acc;
+	}, new Map<number, EventAnnotated[]>());
+}
+
 export class Trace {
 	/**
 	 * Known storage keys.
 	 */
 	private keyNames;
 	constructor(
-		private api: ApiPromise,
+		api: ApiPromise,
 		private traceBlock: BlockTrace,
 		private registry: Registry
 	) {
-		this.keyNames = this.getKeyNames();
+		this.keyNames = getKeyNames(api);
 	}
 
 	operationsAndGrouping(): {
@@ -69,7 +197,6 @@ export class Trace {
 			// Flattening
 			operations.push(...g.operations);
 		});
-
 
 		return {
 			operations,
@@ -90,106 +217,118 @@ export class Trace {
 	}
 
 	traceInfoWithPhase(): PhaseTraceInfoGather[] {
-		const eventsByParentId = this.eventsByParentId();
-
-		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId();
-
-		const spansById = this.getSpansById();
+		const spansById = getSpansById(this.traceBlock.spans);
+		const annotatedEvents = this.getAnnotatedEvents(spansById);
+		const eventsByParentId = getEventsByParentId(annotatedEvents);
+		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId(annotatedEvents);
 		// find execute block span
 		const execute_block_span = [...spansById.values()].find(
 			({ name, target }) =>
 				SPANS.executeBlock.name === name && SPANS.executeBlock.target === target
 		);
 		if (!execute_block_span) {
-			throw new Error('execute_block_span could not be found');
+			throw new InternalServerError('execute_block span could not be found');
 		}
 
-		// This is broken up into its own variable because it may be good for debugging
-		const phaseInfoGather = [...spansById.values()]
-			.filter((span) => span.parentId === execute_block_span.id) // Gather primary spans spans with parentId == execute_block
-			.sort((a, b) => a.id - b.id) // TODO double check nanos is the correct thing to sort on
-			.map((primary) => {
-				// Based on primary spans gather all there descendant info
-				const secondarySpanIds = this.findDescendants(primary.id);
-				const secondarySpanEvents: EventAnnotated[] = [];
-				const secondarySpans: SpanWithChildren[] = [];
-				secondarySpanIds.forEach((id) => {
-					const events = eventsByParentId.get(id);
-					const span = spansById.get(id);
-
-					events && secondarySpanEvents.push(...events);
-					span && secondarySpans.push(span);
-				});
-
-				// Figure out the phase and potentially the extrinsic index
-				// TODO get phase from an events parent span
-				let phase: Phase, extrinsicIndex: BN | undefined;
-				if (
-					primary.name === SPANS.applyExtrinsic.name &&
-					primary.target === SPANS.applyExtrinsic.target // this might be unnescary
-				) {
-					const maybeExtrinsicIndex = secondarySpanIds
-						.concat(primary.id)
-						.filter((id) => extrinsicIndexBySpanId.has(id))
-						.map((id) => extrinsicIndexBySpanId.get(id) as BN);
-
-					if (maybeExtrinsicIndex.length > 1) {
-						for (const [i, extIdx] of maybeExtrinsicIndex.entries()) {
-							if (i > 0 && !maybeExtrinsicIndex[i]?.eq(extIdx)) {
-								throw new Error(
-									'Expect extrinsic to only be applied at a single index.'
-								);
-							}
-						}
+		return (
+			[...spansById.values()] // TODO this would probably be faster as a for-of loop
+				.reduce((acc, primary) => {
+					// Only use primary spans (spans where parentId === execute_block)
+					if (!(primary.parentId === execute_block_span.id)) {
+						return acc;
 					}
 
-					phase = Phase.ApplyExtrinsic;
-					extrinsicIndex = maybeExtrinsicIndex[0];
-				} else if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
-					phase = Phase.OnInitialze;
-				} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
-					phase = Phase.OnFinalize;
-				} else {
-					phase = Phase.Other;
-				}
+					const secondarySpanIds = findDescendants(primary.id, spansById);
+					const secondarySpanEvents: EventAnnotated[] = [];
+					const secondarySpans: SpanWithChildren[] = [];
+					secondarySpanIds.forEach((id) => {
+						const events = eventsByParentId.get(id);
+						const span = spansById.get(id);
 
-				// TODO this logic shouldn't be here
-				const primarySpanEvents = eventsByParentId.get(primary.id);
-				const events =
-					primarySpanEvents
-						?.concat(secondarySpanEvents)
-						.sort((a, b) => a.eventIndex - b.eventIndex) || [];
+						events && secondarySpanEvents.push(...events);
+						span && secondarySpans.push(span);
+					});
 
-				const eventsWithPhaseInfo = events.map((e) => {
-					return {
-						...e,
-						phase: {
-							variant: phase,
-							applyExtrinsicIndex: extrinsicIndex as BN,
-						},
-						primarySpanId: {
-							id: primary.id,
-							name: primary.name,
-							target: primary.target,
-						},
-					};
-				});
+					// Figure out the phase and potentially the extrinsic index
+					// TODO get phase from an events parent span
+					let phase: Phase, extrinsicIndex: BN | undefined;
+					if (primary.name === SPANS.applyExtrinsic.name) {
+						// Add the primary spanId so we can check it for primary span
+						const maybeExtrinsicIndex = secondarySpanIds
+							.concat(primary.id)
+							.reduce((acc, id) => {
+								if (!extrinsicIndexBySpanId.has(id)) {
+									return acc;
+								}
 
-				// Get a primary span, and all associated descendant spans and events
-				return {
-					extrinsicIndex,
-					phase,
-					primarySpan: primary,
-					secondarySpans,
-					events: eventsWithPhaseInfo,
-				};
-			});
+								acc.push(extrinsicIndexBySpanId.get(id) as BN);
+								return acc;
+							}, [] as BN[]);
 
-		return phaseInfoGather;
+						if (maybeExtrinsicIndex.length > 1) {
+							for (const [i, extIdx] of maybeExtrinsicIndex.entries()) {
+								if (i > 0 && !maybeExtrinsicIndex[i]?.eq(extIdx)) {
+									throw new Error(
+										'Expect extrinsic to only be applied at a single index.'
+									);
+								}
+							}
+						}
+
+						phase = Phase.ApplyExtrinsic;
+						extrinsicIndex = maybeExtrinsicIndex[0];
+					} else if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
+						// onFinalize and onInitialize should always be the only secondary spans
+						// in there action grouping
+						phase = Phase.OnInitialze;
+					} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
+						phase = Phase.OnFinalize;
+					} else {
+						phase = Phase.Other;
+					}
+
+					// TODO this logic shouldn't be here
+					const primarySpanEvents = eventsByParentId.get(primary.id);
+					const events =
+						primarySpanEvents
+							?.concat(secondarySpanEvents)
+							.sort((a, b) => a.eventIndex - b.eventIndex) || [];
+
+					const eventsWithPhaseInfo = events.map((e) => {
+						return {
+							...e,
+							phase: {
+								variant: phase,
+								applyExtrinsicIndex: extrinsicIndex as BN,
+							},
+							primarySpanId: {
+								id: primary.id,
+								name: primary.name,
+								target: primary.target,
+							},
+						};
+					});
+
+					// Get a primary span, and all associated descendant spans and events
+					acc.push({
+						extrinsicIndex,
+						phase,
+						primarySpan: primary,
+						secondarySpans,
+						events: eventsWithPhaseInfo,
+					});
+
+					return acc;
+				}, [] as PhaseTraceInfoGather[])
+				// Ensure they are in order so we know that operations from each action
+				// grouping can later be lined up
+				// TODO double check if this sort is neccesary
+				.sort((a, b) => a.primarySpan.id - b.primarySpan.id)
+		);
 	}
 
-	extrinsicIndexBySpanId(): Map<number, BN> {
-		return this.getAnnotatedEvents()
+	extrinsicIndexBySpanId(annotateEvents: EventAnnotated[]): Map<number, BN> {
+		return annotateEvents
 			.filter((e) => {
 				return (
 					// Note: there are many read and writes of extrinsic_index per extrinsic so take care
@@ -222,125 +361,59 @@ export class Trace {
 			}, new Map<number, BN>());
 	}
 
-	private eventsByParentId(): Map<number, EventAnnotated[]> {
-		return this.getAnnotatedEvents().reduce((acc, cur) => {
-			if (!acc.has(cur.parentId)) {
-				acc.set(cur.parentId, [cur]);
-			} else {
-				acc.get(cur.parentId)?.push(cur);
-			}
+	getAnnotatedEvents(
+		spansById: Map<number, SpanWithChildren>
+	): EventAnnotated[] {
+		return this.traceBlock.events.map((e, idx) => {
+			const { key } = e.data.stringValues;
+			const keyPrefix = key?.slice(0, 64);
+			const storagePath = this.getStoragePathFromKey(keyPrefix);
 
-			return acc;
-		}, new Map<number, EventAnnotated[]>());
-	}
+			const p = spansById.get(e.parentId);
+			const parentSpanId = p && {
+				name: p.name,
+				target: p.target,
+				id: p.id,
+			};
 
-	private findDescendants(root: number): number[] {
-		// Note: traversal order doesn't matter here
-		const stack = this.getSpansById().get(root)?.children;
-		if (!stack) {
-			return [];
-		}
-
-		const descendants = [];
-		while (stack.length) {
-			const curId = stack.pop();
-			if (!curId) {
-				break;
-			}
-
-			descendants.push(curId);
-			const curSpanChildren = this.getSpansById().get(curId)?.children;
-			curSpanChildren && stack.push(...curSpanChildren);
-		}
-
-		return descendants;
-	}
-
-	/**
-	 * Map of span's `id` to the the span in format `SpanWithChildren`
-	 * @returns
-	 */
-	getSpansById(): Map<number, SpanWithChildren> {
-		const spansById = this.traceBlock.spans
-			.map((s) => {
-				// const { key } = s.data.string_values;
-				// const storagePath = this.getStoragePathFromKey(key);
-
-				return { ...s, children: [] };
-				// return { ...s, storagePath, children: [] };
-			})
-			.reduce((acc, cur) => {
-				acc.set(cur.id, cur);
-				return acc;
-			}, new Map<number, SpanWithChildren>());
-
-		[...spansById.values()].forEach((span) => {
-			if (!span.parentId) {
-				return;
-			}
-			if (!spansById.has(span.parentId)) {
-				throw new Error('Spans Parens should exist in spansById');
-			}
-			// Warning: in place mutation
-			spansById.get(span.parentId)?.children.push(span.id);
+			return { ...e, storagePath, parentSpanId, eventIndex: idx };
 		});
-
-		return spansById;
-	}
-
-	getAnnotatedEvents(): EventAnnotated[] {
-		return this.traceBlock.events
-			.map((e) => {
-				const { key } = e.data.stringValues;
-				const keyPrefix = key?.slice(0, 64);
-				const storagePath = this.getStoragePathFromKey(keyPrefix);
-
-				return { ...e, storagePath };
-			})
-			.map((e) => {
-				const p = this.getSpansById().get(e.parentId);
-				const parentSpanId = p && {
-					name: p.name,
-					target: p.target,
-					id: p.id,
-				};
-
-				return { ...e, parentSpanId };
-			})
-			.map((e, idx) => {
-				return {
-					...e,
-					eventIndex: idx,
-				};
-			});
 	}
 
 	/**
-	 * Assume passed in events are already sorted
+	 * Create a mapping adress => Account events for that address based on an
+	 * array of all the events.
 	 *
-	 * @param events
+	 * Note: Assume passed in events are already sorted.
+	 *
+	 * @param events events with phase info
 	 * @returns
 	 */
 	systemAccountEventByAddress(
 		events: EventWithPhase[]
 	): Map<string, EventWithAccountInfo[]> {
-		return events
-			.filter(
-				({ storagePath }) =>
-					(storagePath as PalletKeyInfo).module == 'system' &&
-					(storagePath as PalletKeyInfo).item == 'account'
-			)
-			.map((event) => this.annotatedToSysemAccount(event))
-			.reduce((acc, cur) => {
-				const addr = cur.address.toString();
-				if (!acc.has(addr)) {
-					acc.set(addr, []);
-				}
-
-				acc.get(addr)?.push(cur);
-
+		return events.reduce((acc, cur) => {
+			if (
+				!(
+					(cur.storagePath as PalletKeyInfo).module == 'system' &&
+					(cur.storagePath as PalletKeyInfo).item == 'account'
+				)
+			) {
+				// filter out non system::account events
 				return acc;
-			}, new Map<string, EventWithAccountInfo[]>());
+			}
+			// Add account info to the event.
+			const curAsAccount = this.annotatedToSysemAccount(cur);
+
+			const address = curAsAccount.address.toString();
+			if (!acc.has(address)) {
+				acc.set(address, []);
+			}
+
+			acc.get(address)?.push(curAsAccount);
+
+			return acc;
+		}, new Map<string, EventWithAccountInfo[]>()); // TODO: does this need to be a map?
 	}
 
 	/**
@@ -367,21 +440,14 @@ export class Trace {
 
 		const accountInfoEncoded = event?.data?.stringValues?.result;
 		let accountInfo;
-		try {
-			if (typeof accountInfoEncoded === 'string') {
-				accountInfo = (this.registry.createType(
-					'AccountInfo',
-					`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
-				) as unknown) as AccountInfo;
-			} else {
-				throw Error(
-					'Expect accountInfoEncoded to always be a string in system::Account event'
-				);
-			}
-		} catch {
-			// TODO this catch is no longer neccesary
-			throw new Error(
-				'Expect there to always be Option<AccountInfo> in system::Account event'
+		if (typeof accountInfoEncoded === 'string') {
+			accountInfo = (this.registry.createType(
+				'AccountInfo',
+				`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
+			) as unknown) as AccountInfo;
+		} else {
+			throw Error(
+				'Expect accountInfoEncoded to always be a string in system::Account event'
 			);
 		}
 
@@ -389,46 +455,6 @@ export class Trace {
 	}
 
 	// Util-ish methods
-	private getKeyNames() {
-		const result = {};
-		Object.keys(this.api.query).forEach((mod) => {
-			Object.keys(this.api.query[mod]).forEach((item) => {
-				const queryObj = this.api.query[mod][item];
-				let key;
-				try {
-					// Slice off '0x' prefix
-					key = queryObj.key().slice(2);
-				} catch {
-					key = queryObj.keyPrefix().slice(2);
-				}
-
-				result[key] = {
-					module: mod,
-					item,
-				};
-			});
-		});
-
-		const wellKnownKeys = {
-			'3a636f6465': {
-				special: ':code',
-			},
-			'3a686561707061676573': {
-				special: ':heappages',
-			},
-			'3a65787472696e7369635f696e646578': {
-				special: ':extrinsic_index',
-			},
-			'3a6368616e6765735f74726965': {
-				special: ':changes_trie',
-			},
-			'3a6368696c645f73746f726167653a': {
-				special: ':child_storage:',
-			},
-		};
-
-		return { ...result, ...wellKnownKeys };
-	}
 
 	private getStoragePathFromKey(key?: string): KeyInfo {
 		return (

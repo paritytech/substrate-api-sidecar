@@ -34,7 +34,7 @@ import { AbstractService } from '../AbstractService';
 import { Trace } from './Trace';
 import { isBlockTrace } from './types';
 
-const DEFAULT_TARGETS = 'pallet,frame,state_get_put';
+const DEFAULT_TARGETS = 'pallet,frame,state';
 // :extrinsic_index & frame_system::Account
 const DEFAULT_KEYS =
 	'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
@@ -136,8 +136,7 @@ export class BlocksService extends AbstractService {
 			queryFinalizedHead,
 			omitFinalizedTag,
 		}: FetchBlockOptions
-	): // ): Promise<IBlock | TraceTestTwo | TraceTestOne> {
-	Promise<any> {
+	): Promise<IBlock> {
 		const { api } = this;
 
 		let block, events, finalizedHead, sessionValidators;
