@@ -301,11 +301,13 @@ export class Trace {
 						// This likely an action grouping for a pallet hook or some initial
 						// block execution checks.
 						// In this case we assume there is only one secondary span
-						if (secondarySpans.length > 1) {
-							throw new InternalServerError(
-								'Expect non appyly extrinsic action groupings to have 1 or less secondary spans'
-							);
-						}
+
+						// TODO
+						// if (secondarySpans.length > 1) {
+						// 	throw new InternalServerError(
+						// 		'Expect non appyly extrinsic action groupings to have 1 or less secondary spans'
+						// 	);
+						// }
 
 						if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 							phase = Phase.OnInitialze;
