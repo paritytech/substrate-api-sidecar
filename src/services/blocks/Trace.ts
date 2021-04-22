@@ -360,6 +360,9 @@ export class Trace {
 		);
 	}
 
+	// TODO:
+	// Maybe we can create this when creating something else, like annotated events?
+	// Could avoid unncescary for-loops
 	extrinsicIndexBySpanId(annotateEvents: EventAnnotated[]): Map<number, BN> {
 		return annotateEvents.reduce((acc, cur) => {
 			if (
