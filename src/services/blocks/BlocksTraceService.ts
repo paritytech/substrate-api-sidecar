@@ -55,7 +55,7 @@ export class BlocksTraceService extends AbstractService {
 	 */
 	async operations(hash: BlockHash): Promise<any> {
 		const [{ block }, traceResponse] = await Promise.all([
-			// Note: this should be getHeader, but the type registry on get block is the only
+			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types
 			this.api.rpc.chain.getBlock(hash),
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -84,7 +84,7 @@ export class BlocksTraceService extends AbstractService {
 					hash,
 					number: block.header.number,
 				},
-				...trace.operationsAndActionGroupings(),
+				...trace.operationsAndActions(),
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);

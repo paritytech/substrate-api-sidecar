@@ -225,26 +225,26 @@ export class Trace {
 		this.keyNames = getKeyNames(api);
 	}
 
-	operationsAndActionGroupings(): {
-		actionGroupings: ActionGroupWithOps[];
+	operationsAndActions(): {
+		actionGroups: ActionGroupWithOps[];
 		operations: Operation[];
 	} {
 		const operations: Operation[] = [];
-		const actionGroupings = this.traceInfoWithPhase().map((tiwp) => {
-			const accountInfoEvents = this.systemAccountEventByAddress(tiwp.events);
+		const actionGroups = this.traceInfoWithPhase().map((action) => {
+			const accountInfoEvents = this.systemAccountEventByAddress(action.events);
 			const ops = this.getOperations(accountInfoEvents);
 
 			operations.push(...ops);
 
 			return {
-				...tiwp,
+				...action,
 				accountInfoEvents,
 				operations: ops,
 			};
 		});
 
 		return {
-			actionGroupings,
+			actionGroups,
 			operations,
 		};
 	}
@@ -289,7 +289,7 @@ export class Trace {
 
 					let phase: Phase | string, extrinsicIndex: BN | undefined;
 					if (primary.name === SPANS.applyExtrinsic.name) {
-						// This is an action grouping for an extrinsic application
+						// This is an action group for an extrinsic application
 						extrinsicIndex = getExtrinsicIndex(
 							// Pass in all the relevant spanIds of this action group
 							secondarySpanIds.concat(primary.id),
@@ -298,35 +298,31 @@ export class Trace {
 
 						phase = Phase.ApplyExtrinsic;
 					} else {
-						// This likely an action grouping for a pallet hook or some initial
+						// This likely an action group for a pallet hook or some initial
 						// block execution checks.
-						// In this case we assume there is only one secondary span
 
-						// TODO
-						// if (secondarySpans.length > 1) {
-						// 	throw new InternalServerError(
-						// 		'Expect non appyly extrinsic action groupings to have 1 or less secondary spans'
-						// 	);
-						// }
+						// TODO can we make an assumption about how many secondary spans there are?
+						// i.e. is it safe to always use the first span to check the phase?
 
 						if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 							phase = Phase.OnInitialze;
 						} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
 							phase = Phase.OnFinalize;
 						} else {
+							// If this is not a documented phase, it likely has to do with execution initialization
+							// or finalization.
 							phase =
 								(secondarySpans[0] &&
+									// Use camelCase for consistency
 									stringCamelCase(secondarySpans[0]?.name)) ||
 								stringCamelCase(primary.name);
 						}
 					}
 
-					// TODO this logic shouldn't be here
 					const primarySpanEvents = eventsByParentId.get(primary.id);
 					const events =
 						primarySpanEvents
 							?.concat(secondarySpanEvents)
-							// add test to see if these are sorted
 							.sort((a, b) => a.eventIndex - b.eventIndex) || [];
 
 					const eventsWithPhaseInfo = events.map((e) => {
@@ -334,7 +330,7 @@ export class Trace {
 							...e,
 							phase: {
 								variant: phase,
-								applyExtrinsicIndex: extrinsicIndex as BN,
+								applyExtrinsicIndex: extrinsicIndex,
 							},
 							primarySpanId: {
 								id: primary.id,
@@ -356,8 +352,8 @@ export class Trace {
 					return acc;
 				}, [] as ActionGroup[])
 				// Ensure they are in order so we know that operations from each action
-				// grouping can later be lined up
-				// TODO double check if this sort is neccesary
+				// group can later be lined up. Assuming we don't sort spans upstream
+				// this sort is absolutely neccesary.
 				.sort((a, b) => a.primarySpan.id - b.primarySpan.id)
 		);
 	}
@@ -391,7 +387,7 @@ export class Trace {
 				.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
 				?.reverse()
 				.join('');
-			const hex = `0x${scale}`;
+			const hex = `0x${scale || ''}`;
 
 			acc.set(cur.parentId, this.registry.createType('u32', hex).toBn());
 
@@ -399,10 +395,40 @@ export class Trace {
 		}, new Map<number, BN>());
 	}
 
+	extractIndex(event: EventAnnotated): IOption<BN> {
+		if (
+			!(
+				(event.storagePath as SpecialKeyInfo).special === ':extrinsic_index' &&
+				event.data.stringValues.method == 'Get'
+			)
+		) {
+			// Note: there are many read and writes of extrinsic_index per extrinsic so take care
+			// when modifying this logic
+			// Note: we only consider `Get`, `Put` ops are prep for next extrinsic
+			return null;
+		}
+
+		const indexEncodedOption = event.data.stringValues.result;
+		if (!(typeof indexEncodedOption == 'string')) {
+			throw new InternalServerError(
+				'Expected there to be an encoded extrinsic index for extrinsic index event'
+			);
+		}
+
+		const scale = indexEncodedOption
+			.slice(2) // Slice of leading option bits beacus they cause trouble
+			.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
+			?.reverse()
+			.join('');
+		const hex = `0x${scale || ''}`;
+
+		return this.registry.createType('u32', hex).toBn();
+	}
+
 	getAnnotatedEvents(
 		spansById: Map<number, SpanWithChildren>
 	): EventAnnotated[] {
-		return this.traceBlock.events.map((e, idx) => {
+		const annotatedEvents = this.traceBlock.events.map((e, idx) => {
 			const { key } = e.data.stringValues;
 			const keyPrefix = key?.slice(0, 64);
 			const storagePath = this.getStoragePathFromKey(keyPrefix);
@@ -414,8 +440,12 @@ export class Trace {
 				id: p.id,
 			};
 
-			return { ...e, storagePath, parentSpanId, eventIndex: idx };
+			const annotated = { ...e, storagePath, parentSpanId, eventIndex: idx };
+
+			return annotated;
 		});
+
+		return annotatedEvents;
 	}
 
 	/**

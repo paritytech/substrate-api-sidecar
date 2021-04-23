@@ -132,7 +132,6 @@ export enum Phase {
 export type PhaseOther = Phase | string;
 
 /**
- * TODO this should be renamed `ActionGroup`
  * Gather info for a data associated with one primary span in a block execution phase.
  */
 export interface ActionGroup {
@@ -179,7 +178,7 @@ export interface StorageResourceId {
 
 export interface PhaseId {
 	variant: PhaseOther;
-	applyExtrinsicIndex: BN;
+	applyExtrinsicIndex?: BN;
 }
 
 export interface Operation {
