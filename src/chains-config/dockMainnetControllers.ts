@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for Dock's mainnet.
@@ -23,8 +24,11 @@ export const dockMainnetControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
+		Paras: false,
 	},
 	options: {
 		finalizes: true,
+		minCalcFeeRuntime: 1,
+		blockWeightStore: getBlockWeight('dock-main-runtime'),
 	},
 };

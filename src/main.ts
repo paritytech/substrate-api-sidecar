@@ -37,6 +37,8 @@ async function main() {
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
+	logger.info(`Version: ${packageJSON.version}`);
+
 	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0xb246acf1adea1f801ce15c77a5fa7d8f2eb8fed466978bcee172cc02cf64e264"]}' http://localhost:9933/
 	const rpc = {
 		state: {

@@ -10,9 +10,11 @@ export interface IPalletStakingProgress {
 	nextActiveEraEstimate?: AnyJson;
 	nextSessionEstimate: string | null;
 	unappliedSlashes: AnyJson[] | null;
-	electionStatus?: {
-		status: AnyJson;
-		toggleEstimate: string | null;
-	};
+	electionStatus?:
+		| {
+				status: AnyJson;
+				toggleEstimate: string | null;
+		  }
+		| string;
 	validatorSet?: string[] | null;
 }

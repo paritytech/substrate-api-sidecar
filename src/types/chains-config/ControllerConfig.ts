@@ -1,4 +1,6 @@
 import { controllers } from '../../controllers';
+import { IOption } from '../util';
+import { BlockWeightStore } from './MetadataConsts';
 
 /**
  * Controller mounting configuration as an object where the keys are the
@@ -23,5 +25,7 @@ export interface ControllerConfig {
 		 * Wether or not the chain finalizes blocks
 		 */
 		finalizes: boolean;
+		minCalcFeeRuntime: IOption<number>;
+		blockWeightStore: BlockWeightStore;
 	};
 }

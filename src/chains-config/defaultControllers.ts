@@ -24,8 +24,11 @@ export const defaultControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: true,
 		PalletsStorage: true,
+		Paras: true,
 	},
 	options: {
 		finalizes: true,
+		minCalcFeeRuntime: null,
+		blockWeightStore: {},
 	},
 };

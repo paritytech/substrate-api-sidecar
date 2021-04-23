@@ -23,8 +23,11 @@ export const dockTestnetControllers: ControllerConfig = {
 		TransactionSubmit: true,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
+		Paras: false,
 	},
 	options: {
 		finalizes: true,
+		minCalcFeeRuntime: 1,
+		blockWeightStore: {},
 	},
 };

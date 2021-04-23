@@ -1,4 +1,3 @@
-import { DecoratedMeta } from '@polkadot/metadata/decorate/types';
 import { Compact } from '@polkadot/types';
 import { BlockHash, BlockNumber, Hash } from '@polkadot/types/interfaces';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
@@ -33,8 +32,6 @@ interface ILog {
 
 export interface ICalcFee {
 	calcFee?: null | CalcFee;
-	specName: string | number;
-	specVersion: string | number;
-	decorated?: DecoratedMeta;
-	runtimeDoesNotMatch?: boolean;
+	specName: string;
+	specVersion: number;
 }
