@@ -101,7 +101,14 @@ export interface CurrencyId {
 export interface StorageResourceId {
 	pallet: string;
 	item: string;
-	field?: string;
+	/**
+	 * field1 is nested in item.
+	 */
+	field1: string;
+	/**
+	 * field2 is nested in field1
+	 */
+	field2: string;
 }
 
 export enum Phase {

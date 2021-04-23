@@ -96,17 +96,15 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` to get balance transfer operations at.
 	 */
 	async operations(hash: BlockHash): Promise<any> {
-		const [header, traceResponse] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
+		const [{ block }, traceResponse] = await Promise.all([
+			// Note: this should be getHeader, but the type registry on get block is the only
+			// one that actually has the historical types
+			this.api.rpc.chain.getBlock(hash),
 			// @ts-ignore
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
-		const trace = new Trace(
-			this.api,
-			traceResponse.blockTrace,
-			header.registry
-		);
+		const trace = new Trace(this.api, traceResponse.blockTrace, block.registry);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		if (!isBlockTrace(traceResponse.blockTrace)) {
@@ -116,7 +114,7 @@ export class BlocksService extends AbstractService {
 		return {
 			at: {
 				hash,
-				number: header.number,
+				number: block.header.number,
 			},
 			...trace.operationsAndActionGroupings(),
 		};

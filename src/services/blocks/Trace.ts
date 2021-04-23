@@ -542,6 +542,7 @@ export class Trace {
 					const systemAccountData = {
 						pallet: 'system',
 						item: 'Account',
+						field1: 'data',
 					};
 
 					if (!free.eqn(0)) {
@@ -549,7 +550,7 @@ export class Trace {
 							...baseInfo,
 							storage: {
 								...systemAccountData,
-								field: 'data.free',
+								field2: 'free',
 							},
 							amount: {
 								value: free,
@@ -562,7 +563,7 @@ export class Trace {
 							...baseInfo,
 							storage: {
 								...systemAccountData,
-								field: 'data.reserved',
+								field2: 'reserved',
 							},
 							amount: {
 								value: reserved,
@@ -575,7 +576,7 @@ export class Trace {
 							...baseInfo,
 							storage: {
 								...systemAccountData,
-								field: 'data.miscFrozen',
+								field2: 'miscFrozen',
 							},
 							amount: {
 								value: miscFrozen,
@@ -588,7 +589,7 @@ export class Trace {
 							...baseInfo,
 							storage: {
 								...systemAccountData,
-								field: 'data.feeFrozen',
+								field2: 'feeFrozen',
 							},
 							amount: {
 								value: feeFrozen,
