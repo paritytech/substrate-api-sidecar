@@ -60,17 +60,29 @@ export interface BlockTrace {
 	spans: TraceSpan[];
 }
 
-export function isBlockTrace(thing: unknown): thing is BlockTrace {
+export function isBlockTrace(
+	thing: unknown
+): thing is { blockTrace: BlockTrace } {
 	return (
-		typeof (thing as BlockTrace)?.blockHash === 'string' &&
-		typeof (thing as BlockTrace)?.tracingTargets === 'string' &&
-		Array.isArray((thing as BlockTrace)?.events) &&
-		Array.isArray((thing as BlockTrace)?.spans)
+		typeof (thing as { blockTrace: BlockTrace })?.blockTrace.blockHash ===
+			'string' &&
+		typeof (thing as { blockTrace: BlockTrace })?.blockTrace.tracingTargets ===
+			'string' &&
+		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace.events) &&
+		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace.spans)
 	);
 }
 
 export interface TraceError {
 	error: string;
+}
+
+export function isTraceError(
+	thing: unknown
+): thing is { traceError: TraceError } {
+	return (
+		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
+	);
 }
 
 export type BlockTraceResponse =

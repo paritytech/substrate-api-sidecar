@@ -125,7 +125,6 @@ describe('BlocksService', () => {
 
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
-			// @ts-ignore
 			expect(block.finalized).toEqual(undefined);
 		});
 

@@ -31,13 +31,6 @@ import {
 } from '../../types/responses';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-import { Trace } from './Trace';
-import { isBlockTrace } from './types';
-
-const DEFAULT_TARGETS = 'pallet,frame,state';
-// :extrinsic_index & frame_system::Account
-const DEFAULT_KEYS =
-	'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
 
 /**
  * Types for fetchBlock's options
@@ -64,62 +57,6 @@ enum Event {
 }
 
 export class BlocksService extends AbstractService {
-	/**
-	 * Get the state traces for a block.
-	 *
-	 * @param hash `BlockHash` to get traces at.
-	 */
-	async traces(hash: BlockHash): Promise<any> {
-		const [{ number }, traceResponse] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
-			// @ts-ignore
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
-		]);
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (!isBlockTrace(traceResponse.blockTrace)) {
-			throw new BadRequest(`Error: ${JSON.stringify(traceResponse)}`);
-		}
-
-		return {
-			at: {
-				hash,
-				number,
-			},
-			traces: traceResponse.blockTrace,
-		};
-	}
-
-	/**
-	 * Get the balance changing operations induced by a block.
-	 *
-	 * @param hash `BlockHash` to get balance transfer operations at.
-	 */
-	async operations(hash: BlockHash): Promise<any> {
-		const [{ block }, traceResponse] = await Promise.all([
-			// Note: this should be getHeader, but the type registry on get block is the only
-			// one that actually has the historical types
-			this.api.rpc.chain.getBlock(hash),
-			// @ts-ignore
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
-		]);
-
-		const trace = new Trace(this.api, traceResponse.blockTrace, block.registry);
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (!isBlockTrace(traceResponse.blockTrace)) {
-			throw new BadRequest(`Error: ${JSON.stringify(traceResponse)}`);
-		}
-
-		return {
-			at: {
-				hash,
-				number: block.header.number,
-			},
-			...trace.operationsAndActionGroupings(),
-		};
-	}
-
 	/**
 	 * Fetch a block augmented with derived values.
 	 *

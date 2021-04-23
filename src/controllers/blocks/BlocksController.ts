@@ -79,10 +79,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.safeMountAsyncGetHandlers([
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
-			['/head/traces', this.getLatestBlockTraces],
-			['/:number/traces', this.getBlockTraces],
-			['/:number/traces/operations', this.getBlockOperations],
-			['/head/traces/operations', this.getLatestBlockOperations],
 		]);
 	}
 
@@ -162,41 +158,5 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			res,
 			await this.service.fetchBlock(hash, options)
 		);
-	};
-
-	private getLatestBlockTraces: RequestHandler = async (
-		_req,
-		res
-	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		BlocksController.sanitizedSend(res, await this.service.traces(hash));
-	};
-
-	private getBlockTraces: RequestHandler = async (
-		{ params: { number } },
-		res
-	): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
-
-		BlocksController.sanitizedSend(res, await this.service.traces(hash));
-	};
-
-	private getLatestBlockOperations: RequestHandler = async (
-		_req,
-		res
-	): Promise<void> => {
-		const hash = await this.api.rpc.chain.getFinalizedHead();
-
-		BlocksController.sanitizedSend(res, await this.service.operations(hash));
-	};
-
-	private getBlockOperations: RequestHandler = async (
-		{ params: { number } },
-		res
-	): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
-
-		BlocksController.sanitizedSend(res, await this.service.operations(hash));
 	};
 }
