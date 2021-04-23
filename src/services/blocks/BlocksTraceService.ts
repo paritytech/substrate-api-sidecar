@@ -2,8 +2,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
 import { AbstractService } from '../AbstractService';
-import { Trace } from './Trace';
-import { BlockTraceResponse, isBlockTrace, isTraceError } from './types';
+import { BlockTraceResponse, isBlockTrace, isTraceError, Trace } from './trace';
 
 const DEFAULT_TARGETS = 'pallet,frame,state';
 // :extrinsic_index & frame_system::Account

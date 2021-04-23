@@ -5,16 +5,17 @@ import { stringCamelCase } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
+import { IOption, isSome } from '../../../types/util';
 import {
 	ActionGroup,
 	ActionGroupWithOps,
 	BlockTrace,
-	EventAnnotated,
-	EventWithAccountInfo,
-	EventWithPhase,
 	KeyInfo,
 	Operation,
+	PAccountEvent,
+	PActionEvent,
 	PalletKeyInfo,
+	PEvent,
 	Phase,
 	SpanWithChildren,
 	SpecialKeyInfo,
@@ -50,7 +51,7 @@ const SPANS = {
 // TODO In the future this will need a more chain specific solution that creates
 // keys directly from expanded metadata.
 /**
- * Get all the storage key names.
+ * Get all the storage key names based on the ones built into `api`.
  *
  * @param api ApiPromise
  */
@@ -96,6 +97,7 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
 	return { ...moduleKeys, ...wellKnownKeys };
 }
 
+// O(2n)
 /**
  * Create a Map of span's `id` to the the span in format `SpanWithChildren`,
  * filling out each spans children as we go along
@@ -103,6 +105,7 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
  * @param spans spans to create a id => span mapping of.
  */
 function getSpansById(spans: TraceSpan[]): Map<number, SpanWithChildren> {
+	// Create a map so we can look up spans in constant time.
 	const spansById = spans.reduce((acc, cur) => {
 		const spanWithChildren = { ...cur, children: [] };
 		acc.set(cur.id, spanWithChildren);
@@ -112,21 +115,22 @@ function getSpansById(spans: TraceSpan[]): Map<number, SpanWithChildren> {
 	// Go through each span, and add its Id to the `children` array of its
 	// parent span, creating tree of spans starting with `execute_block` span as
 	// the root.
-	[...spansById.values()].forEach((span) => {
+	for (const span of spans) {
 		if (!span.parentId) {
-			return;
-		}
-		if (!spansById.has(span.parentId)) {
-			throw new Error('Spans Parens should exist in spansById');
+			continue;
 		}
 
-		// Warning: in place mutation
+		if (!spansById.has(span.parentId)) {
+			throw new Error('Expected spans parent to exist in spansById');
+		}
+
 		spansById.get(span.parentId)?.children.push(span.id);
-	});
+	}
 
 	return spansById;
 }
 
+// O(spans)
 /**
  * Find the Ids of al the descendant spans of `root`
  *
@@ -159,10 +163,15 @@ function findDescendants(
 	return descendants;
 }
 
-function getEventsByParentId(
-	annotatedEvents: EventAnnotated[]
-): Map<number, EventAnnotated[]> {
-	return annotatedEvents.reduce((acc, cur) => {
+// O(events)
+/**
+ * Map events by their parent span Id.
+ *
+ * @param events parsed events.
+ * @returns Mapping of spanId => events[].
+ */
+function getEventsByParentId(events: PEvent[]): Map<number, PEvent[]> {
+	return events.reduce((acc, cur) => {
 		if (!acc.has(cur.parentId)) {
 			acc.set(cur.parentId, [cur]);
 		} else {
@@ -170,10 +179,18 @@ function getEventsByParentId(
 		}
 
 		return acc;
-	}, new Map<number, EventAnnotated[]>());
+	}, new Map<number, PEvent[]>());
 }
 
-function getExtrinsicIndex(
+// O(spanIds)
+/**
+ * Extract extrinsic index from all :extrinsic_index storage item read events.
+ *
+ * @param spanIds List of spanIds to check for extrinsicIndex
+ * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
+ * @returns
+ */
+function extractExtrinsicIndex(
 	spanIds: number[],
 	extrinsicIndexBySpanId: Map<number, BN>
 ): BN {
@@ -230,15 +247,15 @@ export class Trace {
 		operations: Operation[];
 	} {
 		const operations: Operation[] = [];
-		const actionGroups = this.traceInfoWithPhase().map((action) => {
-			const accountInfoEvents = this.systemAccountEventByAddress(action.events);
-			const ops = this.getOperations(accountInfoEvents);
+		const actionGroups = this.actions().map((action) => {
+			const accountEvents = this.accountEventsByAddress(action.events);
+			const ops = this.getOperations(accountEvents);
 
 			operations.push(...ops);
 
 			return {
 				...action,
-				accountInfoEvents,
+				accountEvents,
 				operations: ops,
 			};
 		});
@@ -249,11 +266,10 @@ export class Trace {
 		};
 	}
 
-	traceInfoWithPhase(): ActionGroup[] {
+	private actions(): ActionGroup[] {
 		const spansById = getSpansById(this.traceBlock.spans);
-		const annotatedEvents = this.getAnnotatedEvents(spansById);
-		const eventsByParentId = getEventsByParentId(annotatedEvents);
-		const extrinsicIndexBySpanId = this.extrinsicIndexBySpanId(annotatedEvents);
+		const { events, extrinsicIndexBySpanId } = this.parseEvents(spansById);
+		const eventsByParentId = getEventsByParentId(events);
 		const spansWithChildren = [...spansById.values()];
 		// find execute block span
 		const executeBlockSpan = spansWithChildren.find(
@@ -277,7 +293,7 @@ export class Trace {
 					// creating Operations. Spans are usefult for attributing events to a
 					// hook or extrinsic.
 					const secondarySpanIds = findDescendants(primary.id, spansById);
-					const secondarySpanEvents: EventAnnotated[] = [];
+					const secondarySpanEvents: PEvent[] = [];
 					const secondarySpans: SpanWithChildren[] = [];
 					secondarySpanIds.forEach((id) => {
 						const events = eventsByParentId.get(id);
@@ -290,7 +306,7 @@ export class Trace {
 					let phase: Phase | string, extrinsicIndex: BN | undefined;
 					if (primary.name === SPANS.applyExtrinsic.name) {
 						// This is an action group for an extrinsic application
-						extrinsicIndex = getExtrinsicIndex(
+						extrinsicIndex = extractExtrinsicIndex(
 							// Pass in all the relevant spanIds of this action group
 							secondarySpanIds.concat(primary.id),
 							extrinsicIndexBySpanId
@@ -358,47 +374,10 @@ export class Trace {
 		);
 	}
 
-	// TODO:
-	// Maybe we can create this when creating something else, like annotated events?
-	// Could avoid unncescary for-loops
-	extrinsicIndexBySpanId(annotateEvents: EventAnnotated[]): Map<number, BN> {
-		return annotateEvents.reduce((acc, cur) => {
-			if (
-				!(
-					(cur.storagePath as SpecialKeyInfo).special === ':extrinsic_index' &&
-					cur.data.stringValues.method == 'Get'
-				)
-			) {
-				// Note: there are many read and writes of extrinsic_index per extrinsic so take care
-				// when modifying this logic
-				// Note: we only consider `Get`, `Put` ops are prep for next extrinsic
-				return acc;
-			}
-
-			const indexEncodedOption = cur.data.stringValues.result;
-			if (!(typeof indexEncodedOption == 'string')) {
-				throw new InternalServerError(
-					'Expected there to be an encoded extrinsic index for extrinsic index event'
-				);
-			}
-
-			const scale = indexEncodedOption
-				.slice(2) // Slice of leading option bits beacus they cause trouble
-				.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
-				?.reverse()
-				.join('');
-			const hex = `0x${scale || ''}`;
-
-			acc.set(cur.parentId, this.registry.createType('u32', hex).toBn());
-
-			return acc;
-		}, new Map<number, BN>());
-	}
-
-	extractIndex(event: EventAnnotated): IOption<BN> {
+	private extractIndex(event: PEvent): IOption<BN> {
 		if (
 			!(
-				(event.storagePath as SpecialKeyInfo).special === ':extrinsic_index' &&
+				(event.storagePath as SpecialKeyInfo)?.special === ':extrinsic_index' &&
 				event.data.stringValues.method == 'Get'
 			)
 		) {
@@ -425,10 +404,12 @@ export class Trace {
 		return this.registry.createType('u32', hex).toBn();
 	}
 
-	getAnnotatedEvents(
+	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
-	): EventAnnotated[] {
-		const annotatedEvents = this.traceBlock.events.map((e, idx) => {
+	): { events: PEvent[]; extrinsicIndexBySpanId: Map<number, BN> } {
+		const extrinsicIndexBySpanId = new Map<number, BN>();
+
+		const events = this.traceBlock.events.map((e, idx) => {
 			const { key } = e.data.stringValues;
 			const keyPrefix = key?.slice(0, 64);
 			const storagePath = this.getStoragePathFromKey(keyPrefix);
@@ -441,11 +422,15 @@ export class Trace {
 			};
 
 			const annotated = { ...e, storagePath, parentSpanId, eventIndex: idx };
+			const extrinsicIndex = this.extractIndex(annotated);
+			if (isSome(extrinsicIndex)) {
+				extrinsicIndexBySpanId.set(annotated.parentId, extrinsicIndex);
+			}
 
 			return annotated;
 		});
 
-		return annotatedEvents;
+		return { events, extrinsicIndexBySpanId };
 	}
 
 	/**
@@ -460,9 +445,7 @@ export class Trace {
 	 * @param events events with phase info
 	 * @returns
 	 */
-	systemAccountEventByAddress(
-		events: EventWithPhase[]
-	): Map<string, EventWithAccountInfo[]> {
+	accountEventsByAddress(events: PActionEvent[]): Map<string, PAccountEvent[]> {
 		return events.reduce((acc, cur) => {
 			if (
 				!(
@@ -474,7 +457,7 @@ export class Trace {
 				return acc;
 			}
 
-			const asAccount = this.annotatedToSysemAccount(cur);
+			const asAccount = this.toAccountEvent(cur);
 			const address = asAccount.address.toString();
 
 			if (!acc.has(address)) {
@@ -484,7 +467,7 @@ export class Trace {
 			}
 
 			return acc;
-		}, new Map<string, EventWithAccountInfo[]>());
+		}, new Map<string, PAccountEvent[]>());
 	}
 
 	/**
@@ -493,7 +476,7 @@ export class Trace {
 	 *
 	 * @param event EventAnnotated
 	 */
-	private annotatedToSysemAccount(event: EventWithPhase): EventWithAccountInfo {
+	private toAccountEvent(event: PActionEvent): PAccountEvent {
 		const { storagePath } = event;
 		if (
 			!(
@@ -505,8 +488,8 @@ export class Trace {
 		}
 
 		// key = h(system) + h(account) + h(address) + address
-		// Since this is a transparent key with the address at the end we can pull out the address from the key.
-		// here we slice off the storage key + account hash
+		// Since this is a transparent key with the address at the end we can pull out
+		// the address from the key. Here we slice off the storage key + account hash.
 		const addressRaw = event.data.stringValues.key?.slice(96);
 		if (!(typeof addressRaw === 'string')) {
 			throw new InternalServerError(
@@ -523,7 +506,7 @@ export class Trace {
 		}
 		const accountInfo = (this.registry.createType(
 			'AccountInfo',
-			`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte - need to check why this is neccesary
+			`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte
 		) as unknown) as AccountInfo;
 
 		return { ...event, accountInfo, address };
@@ -538,7 +521,7 @@ export class Trace {
 	}
 
 	private getOperations(
-		accountEventsByAddress: Map<string, EventWithAccountInfo[]>
+		accountEventsByAddress: Map<string, PAccountEvent[]>
 	): Operation[] {
 		return [...accountEventsByAddress.entries()].reduce(
 			(acc, [_address, events]) => {

@@ -19,18 +19,28 @@ export interface TraceEvent {
 	data: Data;
 }
 
-export interface EventAnnotated extends TraceEvent {
+/**
+ * Parsed event.
+ */
+export interface PEvent extends TraceEvent {
 	storagePath: KeyInfo;
 	parentSpanId?: ParentSpanId;
 	eventIndex: number;
 }
 
-export interface EventWithPhase extends EventAnnotated {
+/**
+ * Parsed event with info about the action group it belongs to.
+ */
+export interface PActionEvent extends PEvent {
 	phase: PhaseId;
 	primarySpanId: ParentSpanId;
 }
 
-export interface EventWithAccountInfo extends EventWithPhase {
+/**
+ * Parsed event of a `Get` from the `AccountInfo` storage item. Has info about
+ * the action group it belongs to and the decoded `AccountInfo` storage item.
+ */
+export interface PAccountEvent extends PActionEvent {
 	accountInfo: AccountInfo;
 	address: Address;
 }
@@ -155,7 +165,7 @@ export interface ActionGroup {
 	/**
 	 * Events from the primary span
 	 */
-	events: EventWithPhase[];
+	events: PActionEvent[];
 }
 
 /**
@@ -178,12 +188,12 @@ export interface StorageResourceId {
 
 export interface PhaseId {
 	variant: PhaseOther;
-	applyExtrinsicIndex?: BN;
+	extrinsicIndex?: BN;
 }
 
 export interface Operation {
 	phase: PhaseId;
-	parentSpanId?: ParentSpanId; // should be the same as parentSpanId for the associated event
+	parentSpanId?: ParentSpanId;
 	primarySpanId: ParentSpanId;
 	eventIndex: number;
 	address: Address;
