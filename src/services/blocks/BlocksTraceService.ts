@@ -83,7 +83,7 @@ export class BlocksTraceService extends AbstractService {
 					hash,
 					number: block.header.number,
 				},
-				...trace.operationsAndActions(),
+				operations: trace.actionsAndOps().operations,
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);

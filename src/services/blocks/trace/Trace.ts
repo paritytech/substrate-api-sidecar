@@ -184,7 +184,7 @@ function getEventsByParentId(events: PEvent[]): Map<number, PEvent[]> {
 
 // O(spanIds)
 /**
- * Extract extrinsic index from all :extrinsic_index storage item read events.
+ * Extract extrinsic indexes from all :extrinsic_index storage item read events.
  *
  * @param spanIds List of spanIds to check for extrinsicIndex
  * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
@@ -223,6 +223,11 @@ function extractExtrinsicIndex(
 	return extrinsicIndex[0];
 }
 
+/**
+ * Assumptions:
+ * - Spans do not start in sorted order.
+ * - Events start in sorted order.
+ */
 export class Trace {
 	/**
 	 * Known storage keys.
@@ -242,31 +247,12 @@ export class Trace {
 		this.keyNames = getKeyNames(api);
 	}
 
-	operationsAndActions(): {
-		actionGroups: ActionGroupWithOps[];
-		operations: Operation[];
-	} {
-		const operations: Operation[] = [];
-		const actionGroups = this.actions().map((action) => {
-			const accountEvents = this.accountEventsByAddress(action.events);
-			const ops = this.getOperations(accountEvents);
-
-			operations.push(...ops);
-
-			return {
-				...action,
-				accountEvents,
-				operations: ops,
-			};
-		});
-
-		return {
-			actionGroups,
-			operations,
-		};
-	}
-
-	private actions(): ActionGroup[] {
+	/**
+	 * Derive the action groups and operations from the block trace.
+	 *
+	 * @returns the action groups and opertions
+	 */
+	actionsAndOps(): { actions: ActionGroup[]; operations: Operation[] } {
 		const spansById = getSpansById(this.traceBlock.spans);
 		const { events, extrinsicIndexBySpanId } = this.parseEvents(spansById);
 		const eventsByParentId = getEventsByParentId(events);
@@ -280,98 +266,99 @@ export class Trace {
 			throw new InternalServerError('execute_block span could not be found');
 		}
 
-		return (
-			spansWithChildren
-				.reduce((acc, primary) => {
-					if (!(primary.parentId === executeBlockSpan.id)) {
-						// Only use primary spans (spans where parentId === execute_block)
-						// All other spans are either the executeBlockSpan or descendant of a primary span.
-						return acc;
-					}
+		const operations: Operation[] = [];
+		const actions: ActionGroup[] = [];
+		for (const primary of spansWithChildren.sort((a, b) => a.id - b.id)) {
+			if (!(primary.parentId === executeBlockSpan.id)) {
+				// Only use primary spans (spans where parentId === execute_block). All other
+				// spans are either the executeBlockSpan or descendant of a primary span.
+				continue;
+			}
 
-					// Gather the secondary spans and there events. Events are useful for
-					// creating Operations. Spans are usefult for attributing events to a
-					// hook or extrinsic.
-					const secondarySpanIds = findDescendants(primary.id, spansById);
-					const secondarySpanEvents: PEvent[] = [];
-					const secondarySpans: SpanWithChildren[] = [];
-					secondarySpanIds.forEach((id) => {
-						const events = eventsByParentId.get(id);
-						const span = spansById.get(id);
+			// Gather the secondary spans and there events. Events are useful for
+			// creating Operations. Spans are usefult for attributing events to a
+			// hook or extrinsic.
+			const secondarySpansIds = findDescendants(primary.id, spansById);
+			const secondarySpansEvents: PEvent[] = [];
+			const secondarySpans: SpanWithChildren[] = [];
+			secondarySpansIds.forEach((id) => {
+				const events = eventsByParentId.get(id);
+				const span = spansById.get(id);
 
-						events && secondarySpanEvents.push(...events);
-						span && secondarySpans.push(span);
-					});
+				events && secondarySpansEvents.push(...events);
+				span && secondarySpans.push(span);
+			});
 
-					let phase: Phase | string, extrinsicIndex: BN | undefined;
-					if (primary.name === SPANS.applyExtrinsic.name) {
-						// This is an action group for an extrinsic application
-						extrinsicIndex = extractExtrinsicIndex(
-							// Pass in all the relevant spanIds of this action group
-							secondarySpanIds.concat(primary.id),
-							extrinsicIndexBySpanId
-						);
+			let phase: Phase | string, extrinsicIndex: BN | undefined;
+			if (primary.name === SPANS.applyExtrinsic.name) {
+				// This is an action group for an extrinsic application
+				extrinsicIndex = extractExtrinsicIndex(
+					// Pass in all the relevant spanIds of this action group
+					secondarySpansIds.concat(primary.id),
+					extrinsicIndexBySpanId
+				);
 
-						phase = Phase.ApplyExtrinsic;
-					} else {
-						// This likely an action group for a pallet hook or some initial
-						// block execution checks.
+				phase = Phase.ApplyExtrinsic;
+			} else {
+				// This likely an action group for a pallet hook or some initial
+				// block execution checks.
 
-						// TODO can we make an assumption about how many secondary spans there are?
-						// i.e. is it safe to always use the first span to check the phase?
+				// TODO can we make an assumption about how many secondary spans there are?
+				// i.e. is it safe to always use the first span to check the phase?
 
-						if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
-							phase = Phase.OnInitialze;
-						} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
-							phase = Phase.OnFinalize;
-						} else {
-							// If this is not a documented phase, it likely has to do with execution initialization
-							// or finalization.
-							phase =
-								(secondarySpans[0] &&
-									// Use camelCase for consistency
-									stringCamelCase(secondarySpans[0]?.name)) ||
-								stringCamelCase(primary.name);
-						}
-					}
+				if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
+					phase = Phase.OnInitialze;
+				} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
+					phase = Phase.OnFinalize;
+				} else {
+					// If this is not a documented phase, it likely has to do with execution initialization
+					// or finalization.
+					phase =
+						(secondarySpans[0] &&
+							// Use camelCase for consistency
+							stringCamelCase(secondarySpans[0]?.name)) ||
+						stringCamelCase(primary.name);
+				}
+			}
 
-					const primarySpanEvents = eventsByParentId.get(primary.id);
-					const events =
-						primarySpanEvents
-							?.concat(secondarySpanEvents)
-							.sort((a, b) => a.eventIndex - b.eventIndex) || [];
+			const primarySpanEvents = eventsByParentId.get(primary.id);
+			const events =
+				primarySpanEvents
+					?.concat(secondarySpansEvents)
+					.sort((a, b) => a.eventIndex - b.eventIndex) || [];
 
-					const eventsWithPhaseInfo = events.map((e) => {
-						return {
-							...e,
-							phase: {
-								variant: phase,
-								applyExtrinsicIndex: extrinsicIndex,
-							},
-							primarySpanId: {
-								id: primary.id,
-								name: primary.name,
-								target: primary.target,
-							},
-						};
-					});
+			const eventsWithPhaseInfo = events.map((e) => {
+				return {
+					...e,
+					phase: {
+						variant: phase,
+						applyExtrinsicIndex: extrinsicIndex,
+					},
+					primarySpanId: {
+						id: primary.id,
+						name: primary.name,
+						target: primary.target,
+					},
+				};
+			});
 
-					// Get a primary span, and all associated descendant spans and events
-					acc.push({
-						extrinsicIndex,
-						phase,
-						primarySpan: primary,
-						secondarySpans,
-						events: eventsWithPhaseInfo,
-					});
+			operations.push(
+				...this.deriveOperations(
+					this.accountEventsByAddress(eventsWithPhaseInfo)
+				)
+			);
 
-					return acc;
-				}, [] as ActionGroup[])
-				// Ensure they are in order so we know that operations from each action
-				// group can later be lined up. Assuming we don't sort spans upstream
-				// this sort is absolutely neccesary.
-				.sort((a, b) => a.primarySpan.id - b.primarySpan.id)
-		);
+			// Get a primary span, and all associated descendant spans and events
+			actions.push({
+				extrinsicIndex,
+				phase,
+				primarySpan: primary,
+				secondarySpans,
+				events: eventsWithPhaseInfo,
+			});
+		}
+
+		return { actions, operations };
 	}
 
 	private extractIndex(event: PEvent): IOption<BN> {
@@ -396,7 +383,7 @@ export class Trace {
 
 		const scale = indexEncodedOption
 			.slice(2) // Slice of leading option bits beacus they cause trouble
-			.match(/.{1,2}/g) // reverse the order of the bytes for correct endian-ness
+			.match(/.{1,2}/g) // Reverse the order of the bytes for correct endian-ness
 			?.reverse()
 			.join('');
 		const hex = `0x${scale || ''}`;
@@ -512,109 +499,111 @@ export class Trace {
 		return { ...event, accountInfo, address };
 	}
 
-	// Util-ish methods
+	private deriveOperations(
+		accountEventsByAddress: Map<string, PAccountEvent[]>
+	): Operation[] {
+		const ops = [];
+		for (const events of accountEventsByAddress.values()) {
+			for (const [i, e] of events.entries()) {
+				if (i === 0) {
+					// Skip the first event; we always compare previous event <=> current event.
+					continue;
+				}
 
+				const prev = events[i - 1].accountInfo.data;
+				const cur = e.accountInfo.data;
+
+				const free = cur.free.sub(prev.free);
+				const reserved = cur.reserved.sub(prev.reserved);
+				const miscFrozen = cur.miscFrozen.sub(prev.miscFrozen);
+				const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
+
+				// Information that will go into any operation we create.
+				const baseInfo = {
+					phase: e.phase,
+					parentSpanId: e.parentSpanId,
+					primarySpanId: e.primarySpanId,
+					eventIndex: e.eventIndex,
+					address: e.address,
+				};
+				const currency = {
+					// For now we assume everything is always in the same token
+					symbol: this.registry.chainTokens[0],
+				};
+				// Base information for all `storage` values
+				const systemAccountData = {
+					pallet: 'system',
+					item: 'Account',
+					field1: 'data',
+				};
+
+				if (!free.eqn(0)) {
+					ops.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field2: 'free',
+						},
+						amount: {
+							value: free,
+							currency,
+						},
+					});
+				}
+				if (!reserved.eqn(0)) {
+					ops.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field2: 'reserved',
+						},
+						amount: {
+							value: reserved,
+							currency,
+						},
+					});
+				}
+				if (!miscFrozen.eqn(0)) {
+					ops.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field2: 'miscFrozen',
+						},
+						amount: {
+							value: miscFrozen,
+							currency,
+						},
+					});
+				}
+				if (!feeFrozen.eqn(0)) {
+					ops.push({
+						...baseInfo,
+						storage: {
+							...systemAccountData,
+							field2: 'feeFrozen',
+						},
+						amount: {
+							value: feeFrozen,
+							currency,
+						},
+					});
+				}
+			}
+		}
+
+		return ops;
+	}
+
+	/**
+	 *Extract the storage item name based on the key prefix.
+	 *
+	 * @param key hex encoded storage key
+	 * @returns KeyInfo
+	 */
 	private getStoragePathFromKey(key?: string): KeyInfo {
 		return (
 			((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) || EMPTY_KEY_INFO
-		);
-	}
-
-	private getOperations(
-		accountEventsByAddress: Map<string, PAccountEvent[]>
-	): Operation[] {
-		return [...accountEventsByAddress.entries()].reduce(
-			(acc, [_address, events]) => {
-				for (const [i, e] of events.entries()) {
-					// Create transistions for `_address`
-					if (i === 0) {
-						// Skip the first event; we always compare previous event <=> current event.
-						continue;
-					}
-
-					const prev = events[i - 1].accountInfo.data;
-					const cur = e.accountInfo.data;
-
-					const free = cur.free.sub(prev.free);
-					const reserved = cur.reserved.sub(prev.reserved);
-					const miscFrozen = cur.miscFrozen.sub(prev.miscFrozen);
-					const feeFrozen = cur.feeFrozen.sub(prev.feeFrozen);
-
-					// Information that will go into any operation we create.
-					const baseInfo = {
-						phase: e.phase,
-						parentSpanId: e.parentSpanId,
-						primarySpanId: e.primarySpanId,
-						eventIndex: e.eventIndex,
-						address: e.address,
-					};
-					const currency = {
-						// For now we assume everything is always in the sam token
-						symbol: this.registry.chainTokens[0],
-					};
-					const systemAccountData = {
-						pallet: 'system',
-						item: 'Account',
-						field1: 'data',
-					};
-
-					if (!free.eqn(0)) {
-						acc.push({
-							...baseInfo,
-							storage: {
-								...systemAccountData,
-								field2: 'free',
-							},
-							amount: {
-								value: free,
-								currency,
-							},
-						});
-					}
-					if (!reserved.eqn(0)) {
-						acc.push({
-							...baseInfo,
-							storage: {
-								...systemAccountData,
-								field2: 'reserved',
-							},
-							amount: {
-								value: reserved,
-								currency,
-							},
-						});
-					}
-					if (!miscFrozen.eqn(0)) {
-						acc.push({
-							...baseInfo,
-							storage: {
-								...systemAccountData,
-								field2: 'miscFrozen',
-							},
-							amount: {
-								value: miscFrozen,
-								currency,
-							},
-						});
-					}
-					if (!feeFrozen.eqn(0)) {
-						acc.push({
-							...baseInfo,
-							storage: {
-								...systemAccountData,
-								field2: 'feeFrozen',
-							},
-							amount: {
-								value: feeFrozen,
-								currency,
-							},
-						});
-					}
-				}
-
-				return acc;
-			},
-			[] as Operation[]
 		);
 	}
 }
