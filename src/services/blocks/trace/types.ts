@@ -168,14 +168,6 @@ export interface ActionGroup {
 	events: PActionEvent[];
 }
 
-/**
- * Complete trace info for on_initialize / on_finalize
- */
-export interface ActionGroupWithOps extends ActionGroup {
-	// Operations, either will have phase or extrinsic index
-	operations: Operation[];
-}
-
 export interface CurrencyId {
 	symbol: string;
 }

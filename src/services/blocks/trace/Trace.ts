@@ -8,7 +8,6 @@ import { InternalServerError } from 'http-errors';
 import { IOption, isSome } from '../../../types/util';
 import {
 	ActionGroup,
-	ActionGroupWithOps,
 	BlockTrace,
 	KeyInfo,
 	Operation,
@@ -104,13 +103,36 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
  *
  * @param spans spans to create a id => span mapping of.
  */
-function getSpansById(spans: TraceSpan[]): Map<number, SpanWithChildren> {
-	// Create a map so we can look up spans in constant time.
-	const spansById = spans.reduce((acc, cur) => {
-		const spanWithChildren = { ...cur, children: [] };
-		acc.set(cur.id, spanWithChildren);
-		return acc;
-	}, new Map<number, SpanWithChildren>());
+function parseSpans(
+	spans: TraceSpan[]
+): {
+	spansById: Map<number, SpanWithChildren>;
+	parsedSpans: SpanWithChildren[];
+	executeBlockSpanId: number;
+} {
+	// IMPORTANT for downstream logic: Make sure spans are sorted.
+	spans.sort((a, b) => a.id - b.id);
+
+	const spansById = new Map<number, SpanWithChildren>();
+	const parsedSpans = [];
+	let executeBlockSpanId;
+	for (const span of spans) {
+		const spanWithChildren = { ...span, children: [] };
+
+		if (
+			span.name === SPANS.executeBlock.name &&
+			span.target === SPANS.executeBlock.target
+		) {
+			executeBlockSpanId = span.id;
+		}
+
+		parsedSpans.push(spanWithChildren);
+		spansById.set(span.id, spanWithChildren);
+	}
+
+	if (executeBlockSpanId === undefined) {
+		throw new InternalServerError('execute_block span could not be found');
+	}
 
 	// Go through each span, and add its Id to the `children` array of its
 	// parent span, creating tree of spans starting with `execute_block` span as
@@ -127,7 +149,7 @@ function getSpansById(spans: TraceSpan[]): Map<number, SpanWithChildren> {
 		spansById.get(span.parentId)?.children.push(span.id);
 	}
 
-	return spansById;
+	return { spansById, parsedSpans, executeBlockSpanId };
 }
 
 // O(spans)
@@ -161,25 +183,6 @@ function findDescendants(
 	}
 
 	return descendants;
-}
-
-// O(events)
-/**
- * Map events by their parent span Id.
- *
- * @param events parsed events.
- * @returns Mapping of spanId => events[].
- */
-function getEventsByParentId(events: PEvent[]): Map<number, PEvent[]> {
-	return events.reduce((acc, cur) => {
-		if (!acc.has(cur.parentId)) {
-			acc.set(cur.parentId, [cur]);
-		} else {
-			acc.get(cur.parentId)?.push(cur);
-		}
-
-		return acc;
-	}, new Map<number, PEvent[]>());
 }
 
 // O(spanIds)
@@ -253,23 +256,17 @@ export class Trace {
 	 * @returns the action groups and opertions
 	 */
 	actionsAndOps(): { actions: ActionGroup[]; operations: Operation[] } {
-		const spansById = getSpansById(this.traceBlock.spans);
-		const { events, extrinsicIndexBySpanId } = this.parseEvents(spansById);
-		const eventsByParentId = getEventsByParentId(events);
-		const spansWithChildren = [...spansById.values()];
-		// find execute block span
-		const executeBlockSpan = spansWithChildren.find(
-			({ name, target }) =>
-				SPANS.executeBlock.name === name && SPANS.executeBlock.target === target
+		const { spansById, parsedSpans: spans, executeBlockSpanId } = parseSpans(
+			this.traceBlock.spans
 		);
-		if (!executeBlockSpan) {
-			throw new InternalServerError('execute_block span could not be found');
-		}
+		const { eventsByParentId, extrinsicIndexBySpanId } = this.parseEvents(
+			spansById
+		);
 
 		const operations: Operation[] = [];
 		const actions: ActionGroup[] = [];
-		for (const primary of spansWithChildren.sort((a, b) => a.id - b.id)) {
-			if (!(primary.parentId === executeBlockSpan.id)) {
+		for (const primary of spans) {
+			if (!(primary.parentId === executeBlockSpanId)) {
 				// Only use primary spans (spans where parentId === execute_block). All other
 				// spans are either the executeBlockSpan or descendant of a primary span.
 				continue;
@@ -313,17 +310,15 @@ export class Trace {
 				} else {
 					// If this is not a documented phase, it likely has to do with execution initialization
 					// or finalization.
-					phase =
-						(secondarySpans[0] &&
-							// Use camelCase for consistency
-							stringCamelCase(secondarySpans[0]?.name)) ||
+					phase = // Use camelCase for consistency
+						(secondarySpans[0] && stringCamelCase(secondarySpans[0]?.name)) ||
 						stringCamelCase(primary.name);
 				}
 			}
 
-			const primarySpanEvents = eventsByParentId.get(primary.id);
 			const events =
-				primarySpanEvents
+				eventsByParentId
+					.get(primary.id)
 					?.concat(secondarySpansEvents)
 					.sort((a, b) => a.eventIndex - b.eventIndex) || [];
 
@@ -393,31 +388,40 @@ export class Trace {
 
 	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
-	): { events: PEvent[]; extrinsicIndexBySpanId: Map<number, BN> } {
+	): {
+		eventsByParentId: Map<number, PEvent[]>;
+		extrinsicIndexBySpanId: Map<number, BN>;
+	} {
 		const extrinsicIndexBySpanId = new Map<number, BN>();
+		const eventsByParentId = new Map<number, PEvent[]>();
 
-		const events = this.traceBlock.events.map((e, idx) => {
-			const { key } = e.data.stringValues;
+		for (const [idx, event] of this.traceBlock.events.entries()) {
+			const { key } = event.data.stringValues;
 			const keyPrefix = key?.slice(0, 64);
 			const storagePath = this.getStoragePathFromKey(keyPrefix);
 
-			const p = spansById.get(e.parentId);
+			const p = spansById.get(event.parentId);
 			const parentSpanId = p && {
 				name: p.name,
 				target: p.target,
 				id: p.id,
 			};
 
-			const annotated = { ...e, storagePath, parentSpanId, eventIndex: idx };
-			const extrinsicIndex = this.extractIndex(annotated);
-			if (isSome(extrinsicIndex)) {
-				extrinsicIndexBySpanId.set(annotated.parentId, extrinsicIndex);
+			const parsed = { ...event, storagePath, parentSpanId, eventIndex: idx };
+
+			if (!eventsByParentId.has(parsed.parentId)) {
+				eventsByParentId.set(parsed.parentId, [parsed]);
+			} else {
+				eventsByParentId.get(parsed.parentId)?.push(parsed);
 			}
 
-			return annotated;
-		});
+			const extrinsicIndex = this.extractIndex(parsed);
+			if (isSome(extrinsicIndex)) {
+				extrinsicIndexBySpanId.set(parsed.parentId, extrinsicIndex);
+			}
+		}
 
-		return { events, extrinsicIndexBySpanId };
+		return { eventsByParentId, extrinsicIndexBySpanId };
 	}
 
 	/**
