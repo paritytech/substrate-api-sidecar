@@ -143,7 +143,9 @@ function parseSpans(
 		}
 
 		if (!spansById.has(span.parentId)) {
-			throw new Error('Expected spans parent to exist in spansById');
+			throw new InternalServerError(
+				'Expected spans parent to exist in spansById'
+			);
 		}
 
 		spansById.get(span.parentId)?.children.push(span.id);
@@ -216,7 +218,7 @@ function extractExtrinsicIndex(
 		// If there are multiple reads we need to check that they are all the same
 		for (const [i, extIdx] of extrinsicIndex.entries()) {
 			if (i > 0 && !extrinsicIndex[i]?.eq(extIdx)) {
-				throw new Error(
+				throw new InternalServerError(
 					'Expect extrinsic to only be applied at a single index.'
 				);
 			}
@@ -302,6 +304,7 @@ export class Trace {
 
 				// TODO can we make an assumption about how many secondary spans there are?
 				// i.e. is it safe to always use the first span to check the phase?
+				console.log(`[DEBUG] secondarySpans.length ${secondarySpans.length}`);
 
 				if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 					phase = Phase.OnInitialze;
@@ -356,7 +359,14 @@ export class Trace {
 		return { actions, operations };
 	}
 
-	private extractIndex(event: PEvent): IOption<BN> {
+	/**
+	 * Extract an extrinsic index from an `:extrinsic_index` Get event. If it is
+	 * different event return `null`
+	 *
+	 * @param event a parsed event
+	 * @returns extrinsic index as a BN if an `:extrinsic_index` event is passed in.
+	 */
+	private maybeExtractIndex(event: PEvent): IOption<BN> {
 		if (
 			!(
 				(event.storagePath as SpecialKeyInfo)?.special === ':extrinsic_index' &&
@@ -386,6 +396,11 @@ export class Trace {
 		return this.registry.createType('u32', hex).toBn();
 	}
 
+	/**
+	 * 
+	 * @param spansById 
+	 * @returns 
+	 */
 	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
 	): {
@@ -415,9 +430,9 @@ export class Trace {
 				eventsByParentId.get(parsed.parentId)?.push(parsed);
 			}
 
-			const extrinsicIndex = this.extractIndex(parsed);
-			if (isSome(extrinsicIndex)) {
-				extrinsicIndexBySpanId.set(parsed.parentId, extrinsicIndex);
+			const extrinsicIndexOpt = this.maybeExtractIndex(parsed);
+			if (isSome(extrinsicIndexOpt)) {
+				extrinsicIndexBySpanId.set(parsed.parentId, extrinsicIndexOpt);
 			}
 		}
 
@@ -475,7 +490,9 @@ export class Trace {
 				(storagePath as PalletKeyInfo).item == 'account'
 			)
 		) {
-			throw new Error('Event did not have system::account path as expected');
+			throw new InternalServerError(
+				'Event did not have system::account path as expected'
+			);
 		}
 
 		// key = h(system) + h(account) + h(address) + address
@@ -491,7 +508,7 @@ export class Trace {
 
 		const accountInfoEncoded = event?.data?.stringValues?.result;
 		if (!(typeof accountInfoEncoded === 'string')) {
-			throw Error(
+			throw new InternalServerError(
 				'Expect accountInfoEncoded to always be a string in system::Account event'
 			);
 		}
