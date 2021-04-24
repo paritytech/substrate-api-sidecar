@@ -8,7 +8,7 @@ export const kusamaControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
-		BlocksTrace: false,
+		BlocksTrace: true,
 		AccountsStakingPayouts: true,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,

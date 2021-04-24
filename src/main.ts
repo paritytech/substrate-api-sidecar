@@ -104,8 +104,6 @@ async function main() {
 	// 	},
 	// };
 
-	logger.info(`Version: ${packageJSON.version}`);
-
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({

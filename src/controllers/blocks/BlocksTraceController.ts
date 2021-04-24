@@ -7,16 +7,16 @@ import BlocksController from './BlocksController';
 
 export default class BlocksTraceController extends AbstractController<BlocksTraceService> {
 	constructor(api: ApiPromise) {
-		super(api, '/blocks', new BlocksTraceService(api));
+		super(api, '/experimental/blocks', new BlocksTraceService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['exprimental/head/traces', this.getLatestBlockTraces],
-			['experimental/:number/traces', this.getBlockTraces],
-			['experimental/:number/traces/operations', this.getBlockOperations],
-			['experimental/head/traces/operations', this.getLatestBlockOperations],
+			['/head/traces', this.getLatestBlockTraces],
+			['/:number/traces', this.getBlockTraces],
+			['/:number/traces/operations', this.getBlockOperations],
+			['/head/traces/operations', this.getLatestBlockOperations],
 		]);
 	}
 

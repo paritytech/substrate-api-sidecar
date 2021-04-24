@@ -304,7 +304,6 @@ export class Trace {
 
 				// TODO can we make an assumption about how many secondary spans there are?
 				// i.e. is it safe to always use the first span to check the phase?
-				console.log(`[DEBUG] secondarySpans.length ${secondarySpans.length}`);
 
 				if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 					phase = Phase.OnInitialze;
@@ -397,9 +396,10 @@ export class Trace {
 	}
 
 	/**
-	 * 
-	 * @param spansById 
-	 * @returns 
+	 * Parse events.
+	 *
+	 * @param spansById
+	 * @returns
 	 */
 	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
