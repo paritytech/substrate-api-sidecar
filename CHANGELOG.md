@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.9](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.8...v4.0.9) (2021-04-26)
+
+
+### Bug Fixes
+
+* Update @polkadot/api to get the latest substrate specific upgrades.
+
+* Update @polkadot/apps-config to get latest chain specific upgrades.
+
 ## [4.0.8](https://github.com/paritytech/substrate-api-sidecar/compare/v4.0.7...v4.0.8) (2021-04-21)
 
 
