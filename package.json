@@ -17,7 +17,7 @@
     "url": "git+https://github.com/paritytech/substrate-api-sidecar.git"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "bugs": {
     "url": "https://github.com/paritytech/substrate-api-sidecar/issues"
