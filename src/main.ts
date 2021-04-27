@@ -69,41 +69,6 @@ async function main() {
 		},
 	};
 
-	// Note: These are not working - currently just using `Json` type
-	// const _types = {
-	// 	Duration: {
-	// 		secs: 'u64',
-	// 		nanos: 'u32',
-	// 	},
-	// 	Event: {
-	// 		name: 'Text',
-	// 		values: 'Values',
-	// 		parentId: 'Option<u64>',
-	// 	},
-	// 	Span: {
-	// 		id: 'u64',
-	// 		parentId: 'Option<u64>',
-	// 		name: 'Text',
-	// 		target: 'Text',
-	// 		line: 'u32',
-	// 		overallTime: 'Duration',
-	// 		values: 'Values',
-	// 	},
-	// 	Values: {
-	// 		boolValues: 'HashMap<Text, bool>',
-	// 		i64Values: 'HashMap<Text, i64>',
-	// 		u64Values: 'HashMap<Text, u64>',
-	// 		stringValues: 'HashMap<Text, Text>',
-	// 	},
-	// 	BlockTrace: {
-	// 		blockHash: `Text`,
-	// 		parentHash: `Text`,
-	// 		tracingTargets: `String`,
-	// 		spans: 'Vec<Span>',
-	// 		events: 'Vec<Event>',
-	// 	},
-	// };
-
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
