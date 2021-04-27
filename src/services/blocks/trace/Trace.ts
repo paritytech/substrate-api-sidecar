@@ -315,23 +315,19 @@ export class Trace {
 
 				phase = Phase.ApplyExtrinsic;
 			} else {
-				// This likely an action group for a pallet hook or some initial
-				// block execution checks.
+				// This is likely an action group for a pallet hook or some initial/final
+				// block execution checks (i.e one of `initBlock`, `initialChecks`,
+				// `onFinalize`, or `finalChecks`).
+				// Note: `onInitialize` spans belong to the `initBlock` action group, so
+				// we give that action group the phase `onInitialize`.
 
-				// TODO can we make an assumption about how many secondary spans there are?
-				// i.e. is it safe to always use the first span to check the phase?
-				// TODO better explain some example of a primary span and secondary spans
-				if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
-					phase = Phase.OnInitialze;
-				} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
-					phase = Phase.OnFinalize;
-				} else {
-					// If this is not a documented phase, it likely has to do with execution initialization
-					// or finalization.
-					phase = // Use camelCase for consistency
-						(secondarySpans[0] && stringCamelCase(secondarySpans[0]?.name)) ||
-						stringCamelCase(primary.name);
-				}
+				phase = secondarySpans[0]
+					? // This case catches `onInitialize` spans since they are the secondary
+					  // spans of `initBlock`
+					  stringCamelCase(secondarySpans[0]?.name)
+					: // This case catches `onFinalize` since `onFinalize` spans are
+					  // identified by the priamry spans name.
+					  stringCamelCase(primary.name);
 			}
 
 			const events =
@@ -345,7 +341,7 @@ export class Trace {
 					...e,
 					phase: {
 						variant: phase,
-						applyExtrinsicIndex: extrinsicIndex,
+						extrinsicIndex: extrinsicIndex,
 					},
 					primarySpanId: {
 						id: primary.id,

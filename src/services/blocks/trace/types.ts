@@ -135,8 +135,10 @@ export interface StorageResourceId {
 
 export enum Phase {
 	OnInitialze = 'onInitialize',
+	InitialChecks = 'initialChecks',
 	ApplyExtrinsic = 'applyExtrinsic',
 	OnFinalize = 'onFinalize',
+	FinalChecks = 'finalChecks',
 }
 
 export type PhaseOther = Phase | string;
@@ -163,6 +165,8 @@ export interface ActionGroup {
 	 * Descendant spans of a primary span.
 	 *
 	 * For extrinsic application this will the actual extrinsic + any nested calls.
+	 *
+	 * For hooks this will be something be the `onInitialize`/`onFinalize` span.
 	 */
 	secondarySpans: SpanWithChildren[];
 	/**
