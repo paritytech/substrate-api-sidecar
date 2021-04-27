@@ -972,7 +972,7 @@ paths:
       - trace
       summary: |
         [Experimental - subject to breaking change.] Get the operations from the
-        specified block.
+        latest finalized block.
       description: | 
         Returns the operations from the most recently finalize block. Operations
         represent one side of a balance change. For example if Alice transfers 
