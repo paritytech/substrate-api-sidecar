@@ -2280,7 +2280,7 @@ components:
             field2:
               type: string
               description: |
-                A field of the struct described by field1 (i.e 
+                A field of the struct described by field1 (i.e
                 `system::Account::get(address).data.free`)
         amount:
           $ref: '#/components/schemas/OperationAmount'
