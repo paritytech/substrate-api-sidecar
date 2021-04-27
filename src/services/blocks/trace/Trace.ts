@@ -16,6 +16,7 @@ import {
 	PalletKeyInfo,
 	PEvent,
 	Phase,
+	PhaseOther,
 	SpanWithChildren,
 	SpecialKeyInfo,
 	TraceSpan,
@@ -47,7 +48,7 @@ const SPANS = {
 	},
 };
 
-// TODO In the future this will need a more chain specific solution that creates
+// In the future this will need a more chain specific solution that creates
 // keys directly from expanded metadata.
 /**
  * Get all the storage key names based on the ones built into `api`.
@@ -96,12 +97,12 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
 	return { ...moduleKeys, ...wellKnownKeys };
 }
 
-// O(2n)
 /**
- * Create a Map of span's `id` to the the span in format `SpanWithChildren`,
- * filling out each spans children as we go along
+ * Parses spans by
+ * 1) creating a Map of span's `id` to the the span with its children
+ * 2) creating an array with the same spans
  *
- * @param spans spans to create a id => span mapping of.
+ * @param spans spans to parse
  */
 function parseSpans(
 	spans: TraceSpan[]
@@ -154,9 +155,8 @@ function parseSpans(
 	return { spansById, parsedSpans, executeBlockSpanId };
 }
 
-// O(spans)
 /**
- * Find the Ids of al the descendant spans of `root`
+ * Find the Ids of al the descendant spans of `root`.
  *
  * @param root span which we want all the descendants of
  * @param spansById map of span id => span with children
@@ -187,13 +187,11 @@ function findDescendants(
 	return descendants;
 }
 
-// O(spanIds)
 /**
- * Extract extrinsic indexes from all :extrinsic_index storage item read events.
+ * Extract extrinsic indexes from all `:extrinsic_index` storage item read events.
  *
- * @param spanIds List of spanIds to check for extrinsicIndex
+ * @param spanIds List of spanIds for an apply extrinsic action group
  * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
- * @returns
  */
 function extractExtrinsicIndex(
 	spanIds: number[],
@@ -211,11 +209,15 @@ function extractExtrinsicIndex(
 	}, [] as BN[]);
 
 	if (extrinsicIndex.length === 0) {
+		// Since we assume the `spanIds` are for span from an apply extrinsic action group,
+		// we assume there is always an `:extrinsic_index` event
 		throw new InternalServerError('Expected at least one extrinsic index');
 	}
 
 	if (extrinsicIndex.length > 1) {
-		// If there are multiple reads we need to check that they are all the same
+		// If there are multiple reads we check that they are all the same. If they
+		// are this program has some incorrect assumptions and this error should
+		// be reported to the maintainers.
 		for (const [i, extIdx] of extrinsicIndex.entries()) {
 			if (i > 0 && !extrinsicIndex[i]?.eq(extIdx)) {
 				throw new InternalServerError(
@@ -229,6 +231,8 @@ function extractExtrinsicIndex(
 }
 
 /**
+ * Class for processing traces from the `state_traceBlock` RPC endpoint.
+ *
  * Assumptions:
  * - Spans do not start in sorted order.
  * - Events start in sorted order.
@@ -240,7 +244,13 @@ export class Trace {
 	private keyNames;
 	constructor(
 		api: ApiPromise,
+		/**
+		 * `state_traceBlock` RPC response `result`.
+		 */
 		private traceBlock: BlockTrace,
+		/**
+		 * Type registry corresponding to the exact runtime the traces are from.
+		 */
 		private registry: Registry
 	) {
 		if (!traceBlock.spans.length) {
@@ -267,6 +277,7 @@ export class Trace {
 
 		const operations: Operation[] = [];
 		const actions: ActionGroup[] = [];
+		// Create a list of action groups (`actions`) and a list of all `Operations`.
 		for (const primary of spans) {
 			if (!(primary.parentId === executeBlockSpanId)) {
 				// Only use primary spans (spans where parentId === execute_block). All other
@@ -274,9 +285,11 @@ export class Trace {
 				continue;
 			}
 
-			// Gather the secondary spans and there events. Events are useful for
-			// creating Operations. Spans are usefult for attributing events to a
+			// Gather the secondary spans and their events. Events are useful for
+			// creating Operations. Spans are useful for attributing events to a
 			// hook or extrinsic.
+			// Keep in mind events are storage Get/Put events. The spans are used to
+			// attribute events to some action in the block execution pipeline.
 			const secondarySpansIds = findDescendants(primary.id, spansById);
 			const secondarySpansEvents: PEvent[] = [];
 			const secondarySpans: SpanWithChildren[] = [];
@@ -288,7 +301,7 @@ export class Trace {
 				span && secondarySpans.push(span);
 			});
 
-			let phase: Phase | string, extrinsicIndex: BN | undefined;
+			let phase: PhaseOther, extrinsicIndex: BN | undefined;
 			if (primary.name === SPANS.applyExtrinsic.name) {
 				// This is an action group for an extrinsic application
 				extrinsicIndex = extractExtrinsicIndex(
@@ -304,7 +317,7 @@ export class Trace {
 
 				// TODO can we make an assumption about how many secondary spans there are?
 				// i.e. is it safe to always use the first span to check the phase?
-
+				// TODO better explain some example of a primary span and secondary spans
 				if (secondarySpans[0]?.name === SPANS.onInitialize.name) {
 					phase = Phase.OnInitialze;
 				} else if (secondarySpans[0]?.name === SPANS.onFinalize.name) {
@@ -345,7 +358,8 @@ export class Trace {
 				)
 			);
 
-			// Get a primary span, and all associated descendant spans and events
+			// Primary span, and all associated descendant spans and events
+			// representing an action group.
 			actions.push({
 				extrinsicIndex,
 				phase,
@@ -359,11 +373,10 @@ export class Trace {
 	}
 
 	/**
-	 * Extract an extrinsic index from an `:extrinsic_index` Get event. If it is
-	 * different event return `null`
+	 * Extract an extrinsic index from an `:extrinsic_index` event. If it is not an
+	 * `:extrinsic_index` event returns `null`.
 	 *
 	 * @param event a parsed event
-	 * @returns extrinsic index as a BN if an `:extrinsic_index` event is passed in.
 	 */
 	private maybeExtractIndex(event: PEvent): IOption<BN> {
 		if (
@@ -372,9 +385,9 @@ export class Trace {
 				event.data.stringValues.method == 'Get'
 			)
 		) {
-			// Note: there are many read and writes of extrinsic_index per extrinsic so take care
-			// when modifying this logic
-			// Note: we only consider `Get`, `Put` ops are prep for next extrinsic
+			// Note: there are many read and writes of `:extrinsic_index` per extrinsic
+			// so take care when modifying this logic.
+			// Note: we only consider `Get` ops; `Put` ops are prep for next extrinsic.
 			return null;
 		}
 
@@ -386,7 +399,7 @@ export class Trace {
 		}
 
 		const scale = indexEncodedOption
-			.slice(2) // Slice of leading option bits beacus they cause trouble
+			.slice(2) // Slice of leading `Option` bits beacuse they cause trouble
 			.match(/.{1,2}/g) // Reverse the order of the bytes for correct endian-ness
 			?.reverse()
 			.join('');
@@ -396,10 +409,14 @@ export class Trace {
 	}
 
 	/**
-	 * Parse events.
+	 * Parse events by
+	 * 1) Adding parent span info, event index and the storage item name to each event.
+	 * Also adds the extrinsic index as an integer if there is an `:extrinsic_index` event.
+	 * 2) Create a map of span id => array of children events
+	 * 3) Create a map of span id => to extrinisic index
 	 *
-	 * @param spansById
-	 * @returns
+	 * @param spansById map of span id => to span with its children for all spans
+	 * from tracing the block.
 	 */
 	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
@@ -443,10 +460,11 @@ export class Trace {
 	 * Create a mapping adress => Account events for that address based on an
 	 * array of all the events.
 	 *
-	 * This mapping is useful because we create operations based on consequetive
-	 * reads/writes to a single accounts balance data.
+	 * This mapping is useful because we create operations based on consecutive
+	 * gets/puts to a single accounts balance data. So later on we can just take all
+	 * the account events from a single address and create `Operation`s from those.
 	 *
-	 * Note: Assume passed in events are already sorted.
+	 * Note: Assumes passed in events are already sorted.
 	 *
 	 * @param events events with phase info
 	 * @returns
@@ -477,10 +495,12 @@ export class Trace {
 	}
 
 	/**
-	 * Convert an `EventWithPhase` to a `EventWithAccountInfo`. Will throw if event
-	 * does not have system::account storagePath
+	 * Convert an `PActionEvent` to a `PAccountEvent` by adding the decoded `accountInfo`
+	 * and `address`.
 	 *
-	 * @param event EventAnnotated
+	 * Notes: will throw if event does not have system::account storagePath.
+	 *
+	 * @param event PActionEvent
 	 */
 	private toAccountEvent(event: PActionEvent): PAccountEvent {
 		const { storagePath } = event;
@@ -495,7 +515,8 @@ export class Trace {
 			);
 		}
 
-		// key = h(system) + h(account) + h(address) + address
+		// storage key = h(system) + h(account) + h(address) + address
+		//								^^^^^^^^^^^^^^^^^^^^storage item prefix
 		// Since this is a transparent key with the address at the end we can pull out
 		// the address from the key. Here we slice off the storage key + account hash.
 		const addressRaw = event.data.stringValues.key?.slice(96);
@@ -514,12 +535,22 @@ export class Trace {
 		}
 		const accountInfo = (this.registry.createType(
 			'AccountInfo',
-			`0x${accountInfoEncoded.slice(2)}` // cutting off the Option byte
+			`0x${accountInfoEncoded.slice(2)}` // Slice off the leading Option byte
 		) as unknown) as AccountInfo;
 
 		return { ...event, accountInfo, address };
 	}
 
+	/**
+	 * Derive `Operation`s based on consecutive Get/Put events to an addresses `accountInfo`
+	 * storage item.
+	 *
+	 * `Operation`s are created by checking for deltas in each field of `accountInfo` based
+	 * on the previous event vs the current event.
+	 *
+	 * @param accountEventsByAddress map of address => events of that addresses `accountInfo`
+	 * events.
+	 */
 	private deriveOperations(
 		accountEventsByAddress: Map<string, PAccountEvent[]>
 	): Operation[] {
@@ -531,7 +562,9 @@ export class Trace {
 					continue;
 				}
 
+				// Previous accountInfo.data
 				const prev = events[i - 1].accountInfo.data;
+				// Current accountInfo.data
 				const cur = e.accountInfo.data;
 
 				const free = cur.free.sub(prev.free);
@@ -617,7 +650,7 @@ export class Trace {
 	}
 
 	/**
-	 *Extract the storage item name based on the key prefix.
+	 * Extract the storage item name based on the key prefix.
 	 *
 	 * @param key hex encoded storage key
 	 * @returns KeyInfo
