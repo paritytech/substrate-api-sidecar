@@ -236,6 +236,9 @@ function extractExtrinsicIndex(
  * Assumptions:
  * - Spans do not start in sorted order.
  * - Events start in sorted order.
+ *
+ * For a conceptual overview on traces from block excution and `Operation` construction
+ * consult [this diagram.](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
  */
 export class Trace {
 	/**

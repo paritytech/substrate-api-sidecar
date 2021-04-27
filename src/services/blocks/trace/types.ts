@@ -142,7 +142,7 @@ export enum Phase {
 export type PhaseOther = Phase | string;
 
 /**
- * Gather info for a data associated with one primary span in a block execution phase.
+ * Information on an action group.
  */
 export interface ActionGroup {
 	/**
@@ -154,16 +154,19 @@ export interface ActionGroup {
 	 */
 	phase: PhaseOther;
 	/**
-	 * Careful, need to make sure we only have one primary span (e.g. apply_extrinsic)
+	 * Primary span is a direct descendant `executeBlock` span. Secondary spans are
+	 * a descendants of the primary span. (Secondary spans can be a descendant of
+	 * arbitrary depth.)
 	 */
 	primarySpan: SpanWithChildren;
 	/**
-	 * For extrinsic execution this will the actual extrinsic + any nested calls.
-	 * For onInitialize/onFinalize
+	 * Descendant spans of a primary span.
+	 *
+	 * For extrinsic application this will the actual extrinsic + any nested calls.
 	 */
 	secondarySpans: SpanWithChildren[];
 	/**
-	 * Events from the primary span
+	 * Events from the primary  and secondary spans.
 	 */
 	events: PActionEvent[];
 }
@@ -187,6 +190,9 @@ export interface Operation {
 	phase: PhaseId;
 	parentSpanId?: ParentSpanId;
 	primarySpanId: ParentSpanId;
+	/**
+	 * Index of the underlying trace event.
+	 */
 	eventIndex: number;
 	address: Address;
 	storage: StorageResourceId;
