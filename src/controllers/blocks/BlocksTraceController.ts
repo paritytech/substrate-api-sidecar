@@ -39,20 +39,28 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 	};
 
 	private getLatestBlockOperations: RequestHandler = async (
-		_req,
+		{ query: { actions } },
 		res
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
+		const includeActions = actions === 'true';
 
-		BlocksController.sanitizedSend(res, await this.service.operations(hash));
+		BlocksController.sanitizedSend(
+			res,
+			await this.service.operations(hash, includeActions)
+		);
 	};
 
 	private getBlockOperations: RequestHandler = async (
-		{ params: { number } },
+		{ params: { number }, query: { actions } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
+		const includeActions = actions === 'true';
 
-		BlocksController.sanitizedSend(res, await this.service.operations(hash));
+		BlocksController.sanitizedSend(
+			res,
+			await this.service.operations(hash, includeActions)
+		);
 	};
 }

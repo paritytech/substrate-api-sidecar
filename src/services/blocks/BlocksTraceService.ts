@@ -54,8 +54,12 @@ export class BlocksTraceService extends AbstractService {
 	 * Get the balance changing operations induced by a block.
 	 *
 	 * @param hash `BlockHash` to get balance transfer operations at.
+	 * @param includeActions wether or not to include `actions` field in the reponse.
 	 */
-	async operations(hash: BlockHash): Promise<BlocksTraceOperations> {
+	async operations(
+		hash: BlockHash,
+		includeActions: boolean
+	): Promise<BlocksTraceOperations> {
 		const [{ block }, traceResponse] = await Promise.all([
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types
@@ -81,12 +85,15 @@ export class BlocksTraceService extends AbstractService {
 				block.registry
 			);
 
+			const { operations, actions } = trace.actionsAndOps();
+
 			return {
 				at: {
 					hash,
 					height: block.header.number.unwrap().toString(10),
 				},
-				operations: trace.actionsAndOps().operations,
+				operations,
+				actions: includeActions ? actions : undefined,
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);
