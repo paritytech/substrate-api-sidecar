@@ -5,7 +5,7 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@acala-network/type-definitions@npm:^0.7.2-4":
+"@acala-network/type-definitions@npm:^0.7.3":
   version: 0.7.3
   resolution: "@acala-network/type-definitions@npm:0.7.3"
   dependencies:
@@ -387,7 +387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.13.17, @babel/runtime@npm:^7.13.9, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.13.17, @babel/runtime@npm:^7.13.9, @babel/runtime@npm:^7.9.6":
   version: 7.13.17
   resolution: "@babel/runtime@npm:7.13.17"
   dependencies:
@@ -452,12 +452,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crustio/type-definitions@npm:0.0.5":
-  version: 0.0.5
-  resolution: "@crustio/type-definitions@npm:0.0.5"
+"@crustio/type-definitions@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@crustio/type-definitions@npm:0.0.6"
   dependencies:
     "@open-web3/orml-type-definitions": ^0.8.2-9
-  checksum: 849813ac540f3a406555b99dd2a3439c279810275ca28881e8efd95604cce5800bb49644d5ccb0318aecb48f2f7cb4cf0b362198186edbf0d49816882e24414c
+  checksum: c4fb92fc469c4357247067d6502e9c405832e50f01ef591ed1f1c3600d397b29b0c4bfe39e280ac301b95ac99f80d6b9c9b2e103af0a9121cdfb3d1dd1c90894
   languageName: node
   linkType: hard
 
@@ -472,24 +472,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@darwinia/types-known@npm:^1.1.0-alpha.9":
-  version: 1.1.0-alpha.9
-  resolution: "@darwinia/types-known@npm:1.1.0-alpha.9"
+"@darwinia/types-known@npm:^1.1.0-alpha.10":
+  version: 1.1.0-alpha.10
+  resolution: "@darwinia/types-known@npm:1.1.0-alpha.10"
   dependencies:
     "@babel/runtime": ^7.9.6
     "@polkadot/types": 4.0.4-5
     "@polkadot/util": 6.0.5
     bn.js: ^5.1.2
-  checksum: 3e35205b377278466a18ec8ffc09090437f6526c420b801e9aa0e36f226131d05498c797002a5f414d0440ca91c46372cee453d30e595d6a38dd4a0f34ba7374
+  checksum: e805dc660cce9edfc1ab68ad1fcf1ed7f407da629da353029aa39f942957909530b75a01afa38e890c6e24b561782e29d0f069c77118e3a824fd5020dbe74bb5
   languageName: node
   linkType: hard
 
-"@darwinia/types@npm:^1.1.0-alpha.7":
-  version: 1.1.0-alpha.9
-  resolution: "@darwinia/types@npm:1.1.0-alpha.9"
+"@darwinia/types@npm:^1.1.0-alpha.9":
+  version: 1.1.0-alpha.10
+  resolution: "@darwinia/types@npm:1.1.0-alpha.10"
   dependencies:
-    "@darwinia/types-known": ^1.1.0-alpha.9
-  checksum: 9eecfa7aa01294f143452fd2a6b8ec7aa4caec87b528b339331156994f4cd16997623e945d08cdb9c322f174912581ae81ee01e12abe9ea2d2d3608ee6914503
+    "@darwinia/types-known": ^1.1.0-alpha.10
+  checksum: 69d2abb2bd23e560655de0476611d1729e13114cc2d169ba1b5dff98c525603122e33b682d9dbd13a3afbfade54389d1f791df064b0efca7bc9ffc2f0322c35e
   languageName: node
   linkType: hard
 
@@ -746,6 +746,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kiltprotocol/type-definitions@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@kiltprotocol/type-definitions@npm:0.1.3"
+  checksum: 095d2b614bc757b8478654d0bc4e1fea61c28816580919ea9e520c794b8ed94ee54262de3f984354b0b7bdf8961bc80c2c055e81da8560f56256c015bb955251
+  languageName: node
+  linkType: hard
+
 "@laminar/type-definitions@npm:^0.3.1":
   version: 0.3.1
   resolution: "@laminar/type-definitions@npm:0.3.1"
@@ -806,6 +813,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@phala/typedefs@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@phala/typedefs@npm:0.1.0"
+  checksum: b3a06ee2aae63d7fcc1027d893b3f7ed82883990aef71b48eaf71deed08f58fe2f612cde915e27ef081d25eac9322e9f6a569723d5883c4c59fe6a4ffa1d61c8
+  languageName: node
+  linkType: hard
+
 "@polkadot/api-derive@npm:4.7.2":
   version: 4.7.2
   resolution: "@polkadot/api-derive@npm:4.7.2"
@@ -822,7 +836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api@npm:4.7.2, @polkadot/api@npm:^4.6.2":
+"@polkadot/api@npm:4.7.2, @polkadot/api@npm:^4.7.1":
   version: 4.7.2
   resolution: "@polkadot/api@npm:4.7.2"
   dependencies:
@@ -843,25 +857,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/apps-config@npm:^0.88.1":
-  version: 0.88.1
-  resolution: "@polkadot/apps-config@npm:0.88.1"
+"@polkadot/apps-config@npm:^0.89.1":
+  version: 0.89.1
+  resolution: "@polkadot/apps-config@npm:0.89.1"
   dependencies:
-    "@acala-network/type-definitions": ^0.7.2-4
-    "@babel/runtime": ^7.13.10
-    "@crustio/type-definitions": 0.0.5
-    "@darwinia/types": ^1.1.0-alpha.7
+    "@acala-network/type-definitions": ^0.7.3
+    "@babel/runtime": ^7.13.17
+    "@crustio/type-definitions": 0.0.6
+    "@darwinia/types": ^1.1.0-alpha.9
     "@edgeware/node-types": ^3.3.4
     "@equilab/definitions": 1.0.3
     "@interlay/polkabtc-types": ^0.6.2
+    "@kiltprotocol/type-definitions": ^0.1.3
     "@laminar/type-definitions": ^0.3.1
-    "@polkadot/networks": ^6.2.1
+    "@phala/typedefs": 0.1.0
+    "@polkadot/networks": ^6.3.1
     "@snowfork/snowbridge-types": ^0.2.3
-    "@sora-substrate/type-definitions": ^0.8.0
-    "@subsocial/types": ^0.4.36
+    "@sora-substrate/type-definitions": ^0.8.9
+    "@subsocial/types": ^0.5.0-substrate2.0
     "@zeitgeistpm/type-defs": ^0.1.36
     moonbeam-types-bundle: 1.1.12
-  checksum: 9e829b52a38158ec5df7a50f0657e8d7aae677607b8d08343d07e0d8be826845b51449357f914a4f9739e986c60cfe501b51a1db1e667b495b0b842613635e7a
+  checksum: 38cf8c07019c8859404c45e629083abb9c0464060c3e98317b3cfa0c9657022b7d91c568a3e5a47a252024f13c32ba9568a0ab127b10042ae84b7376c33b0623
   languageName: node
   linkType: hard
 
@@ -907,7 +923,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/networks@npm:6.3.1, @polkadot/networks@npm:^6.0.5, @polkadot/networks@npm:^6.2.1, @polkadot/networks@npm:^6.3.1":
+"@polkadot/networks@npm:6.3.1, @polkadot/networks@npm:^6.0.5, @polkadot/networks@npm:^6.3.1":
   version: 6.3.1
   resolution: "@polkadot/networks@npm:6.3.1"
   dependencies:
@@ -1003,7 +1019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:6.3.1, @polkadot/util-crypto@npm:^6.0.5, @polkadot/util-crypto@npm:^6.2.1, @polkadot/util-crypto@npm:^6.3.1":
+"@polkadot/util-crypto@npm:6.3.1, @polkadot/util-crypto@npm:^6.0.5, @polkadot/util-crypto@npm:^6.3.1":
   version: 6.3.1
   resolution: "@polkadot/util-crypto@npm:6.3.1"
   dependencies:
@@ -1242,7 +1258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sora-substrate/type-definitions@npm:^0.8.0":
+"@sora-substrate/type-definitions@npm:^0.8.9":
   version: 0.8.12
   resolution: "@sora-substrate/type-definitions@npm:0.8.12"
   dependencies:
@@ -1251,17 +1267,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subsocial/types@npm:^0.4.36":
-  version: 0.4.36
-  resolution: "@subsocial/types@npm:0.4.36"
+"@subsocial/types@npm:^0.5.0-substrate2.0":
+  version: 0.5.0-substrate2.0
+  resolution: "@subsocial/types@npm:0.5.0-substrate2.0"
   dependencies:
-    "@subsocial/utils": ^0.4.33
+    "@subsocial/utils": ^0.4.39
     cids: ^0.7.1
-  checksum: 73a0dbc5adc83dd13c89d693a7e37e32d2c305bf31525647777f79e69fd89cb0e71f4a3db656698baa42ee65fa9cc7e0714588790a69ec35603c6551c2e555fb
+  checksum: bd69c131bd155437f78951f73ed896248ed27c66c57ad03a5821bb2769d69f13fee33ac2809610e264143772213626a042ffafbc5910a66f2b52550f9695c3dd
   languageName: node
   linkType: hard
 
-"@subsocial/utils@npm:^0.4.33":
+"@subsocial/utils@npm:^0.4.39":
   version: 0.4.39
   resolution: "@subsocial/utils@npm:0.4.39"
   dependencies:
@@ -1283,9 +1299,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
-    "@polkadot/api": ^4.6.2
-    "@polkadot/apps-config": ^0.88.1
-    "@polkadot/util-crypto": ^6.2.1
+    "@polkadot/api": ^4.7.1
+    "@polkadot/apps-config": ^0.89.1
+    "@polkadot/util-crypto": ^6.3.1
     "@substrate/calc": ^0.2.0
     "@substrate/dev": ^0.5.2
     "@types/express": ^4.17.11

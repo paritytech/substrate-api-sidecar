@@ -27,7 +27,7 @@ learn more.
 
 ## Prerequisites
 
-This service requires Node version 12 or higher.
+This service requires Node version 14 or higher.
 
 ## Table of contents
 
