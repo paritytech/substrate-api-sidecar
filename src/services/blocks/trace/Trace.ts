@@ -457,6 +457,8 @@ export class Trace {
 
 			const extrinsicIndexOpt = this.maybeExtractIndex(parsed);
 			if (isSome(extrinsicIndexOpt)) {
+				// Its ok to overwrite here, we just want thee last `:extrinsic_index` `Get`
+				// in this span.
 				extrinsicIndexBySpanId.set(parsed.parentId, extrinsicIndexOpt);
 			}
 		}
@@ -526,7 +528,8 @@ export class Trace {
 		// storage key = h(system) + h(account) + h(address) + address
 		//								^^^^^^^^^^^^^^^^^^^^storage item prefix
 		// Since this is a transparent key with the address at the end we can pull out
-		// the address from the key. Here we slice off the storage key + account hash.
+		// the address from the key. Here we slice off the storage key + account hash
+		// (which is equal to 96 bytes).
 		const addressRaw = event.data.stringValues.key?.slice(96);
 		if (!(typeof addressRaw === 'string')) {
 			throw new InternalServerError(

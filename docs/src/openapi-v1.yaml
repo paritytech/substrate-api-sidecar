@@ -929,10 +929,10 @@ paths:
       summary: |
         [Experimental - subject to breaking change.] Get traces for the most
         recently finalized block.
-      description: | 
+      description: |
         Returns traces (spans and events) of the most recently finalize block from
         RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
-        merged) for conceptual info. 
+        merged) for conceptual info.
       responses:
         "200":
           description: successful operation

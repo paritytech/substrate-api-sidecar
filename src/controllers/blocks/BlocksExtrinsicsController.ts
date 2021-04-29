@@ -54,7 +54,6 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			checkFinalized: true,
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
-			operations: false,
 		};
 
 		const block = await this.service.fetchBlock(hash, options);
