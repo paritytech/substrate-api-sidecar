@@ -121,6 +121,8 @@ function parseSpans(
 	const spansById = new Map<number, SpanWithChildren>();
 	const parsedSpans = [];
 	let executeBlockSpanId;
+	// This loop does 3 things: 1) build `spansById` 2) build `parseSpans` 3) finds
+	// `executeBlockSpanId`
 	for (const span of spans) {
 		const spanWithChildren = { ...span, children: [] };
 
@@ -144,8 +146,8 @@ function parseSpans(
 		throw new InternalServerError('execute_block span could not be found');
 	}
 
-	// Go through each span, and add its Id to the `children` array of its
-	// parent span, creating a tree of spans starting with `execute_block` span as
+	// Go through each span, and add its `id` to the `children` array of its
+	// parent span, creating a tree of spans starting with `executeBlock` span as
 	// the root.
 	for (const span of spans) {
 		if (!span.parentId) {
@@ -165,7 +167,7 @@ function parseSpans(
 }
 
 /**
- * Find the Ids of all the descendant spans of `root`.
+ * Find the Ids of all the spans which are descendant of span `root`.
  *
  * @param root span which we want all the descendants of
  * @param spansById map of span id => span with children
