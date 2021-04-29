@@ -326,7 +326,7 @@ $ yarn npm publish
 
 ```bash
 git tag v5.0.1
-git push origin --tags
+git push origin v5.0.1
 ```
 
 2. Go to tags on github, inside of the repo, and click the three dots to the far right and select the option to create a release. 
