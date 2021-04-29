@@ -112,6 +112,10 @@ function parseSpans(
 	executeBlockSpanId: number;
 } {
 	// IMPORTANT for downstream logic: Make sure spans are sorted.
+	// If this gets taken out, then **all** `Operation`s will need to be sorted on
+	// `eventIndex` to ensure integrity in there ordering. (Ordering integrity
+	// is not strictly neccesary for MVP balance reconciliation, but operating
+	// under the assumption it may be neccesary for closer audits.)
 	spans.sort((a, b) => a.id - b.id);
 
 	const spansById = new Map<number, SpanWithChildren>();
@@ -124,6 +128,11 @@ function parseSpans(
 			span.name === SPANS.executeBlock.name &&
 			span.target === SPANS.executeBlock.target
 		) {
+			if (executeBlockSpanId !== undefined) {
+				throw new InternalServerError(
+					'More than 1 execute block span found when only 1 was expected'
+				);
+			}
 			executeBlockSpanId = span.id;
 		}
 

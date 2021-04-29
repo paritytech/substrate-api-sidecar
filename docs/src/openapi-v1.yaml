@@ -947,10 +947,10 @@ paths:
       summary: |
         [Experimental - subject to breaking change.] Get traces for the most
         recently finalized block.
-      description: | 
-        Returns traces (spans and events) of the bloc block from
+      description: |
+        Returns traces (spans and events) of the specified block from
         RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
-        merged) for conceptual info. 
+        merged) for conceptual info.
       parameters:
       - name: blockId
         in: path
@@ -972,25 +972,33 @@ paths:
       - trace
       summary: |
         [Experimental - subject to breaking change.] Get the operations from the
-        latest finalized block.
-      description: | 
-        Returns the operations from the most recently finalize block. Operations
-        represent one side of a balance change. For example if Alice transfers 
-        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100. 
-        
-        Given account A and A's balance at block k0 (Ak0), if we sum all the 
-        operations for A from block k1 through kn against Ak0, we will end up 
-        with A's balance at block kn (Akn). Thus operations can be used to audit
+        most recently finalized block.
+      description: |
+        Returns the operations from the most recently finalized block. Operations
+        represent one side of a balance change. For example if Alice transfers
+        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100.
+
+        Given account A and A's balance at block k0 (Ak0), if we sum all the
+        operations for A from block k1 through kn against Ak0, we will end up
+        with A's balance at block kn (Akn). Thus, operations can be used to audit
         that balances change as expected.
-        
-        This is useful for substrate based chains because the advanced businiess
-        logic can make it difficult to ensure auditable balance reconciliation 
-        based purely on events. Instead of using events one can use the 
+
+        This is useful for Substrate based chains because the advanced business
+        logic can make it difficult to ensure auditable balance reconciliation
+        based purely on events. Instead of using events one can use the
         operations given from this endpoint.
-        
-        Note - each Operation corresponds to a delta of a single field of the 
+
+        Note - each operation corresponds to a delta of a single field of the
         `system::AccountData` storage item (i.e `free`, `reserved`, `misc_frozen`
-        and `fee_frozen`)
+        and `fee_frozen`).
+        Note - operations are assigned a block execution phase (and extrinsic index
+        for those in the apply extrinsic phase) based on an "action group". For
+        example all the operations for 1 extrinsic will be in the same action group.
+        The action groups can optionally be fetched with the `action` query param
+        for closer auditing.
+
+        To learn more about operation and action group creation please consult
+        [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
       parameters:
       - name: actions
         in: query
@@ -1013,24 +1021,32 @@ paths:
       summary: |
         [Experimental - subject to breaking change.] Get the operations from the
         specified block.
-      description: | 
-        Returns the operations from the specified block. Operations
-        represent one side of a balance change. For example if Alice transfers 
-        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100. 
-        
-        Given account A and A's balance at block k0 (Ak0), if we sum all the 
-        operations for A from block k1 through kn against Ak0, we will end up 
-        with A's balance at block kn (Akn). Thus operations can be used to audit
+      description: |
+        Returns the operations from the most recently finalized block. Operations
+        represent one side of a balance change. For example if Alice transfers
+        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100.
+
+        Given account A and A's balance at block k0 (Ak0), if we sum all the
+        operations for A from block k1 through kn against Ak0, we will end up
+        with A's balance at block kn (Akn). Thus, operations can be used to audit
         that balances change as expected.
-        
-        This is useful for substrate based chains because the advanced businiess
-        logic can make it difficult to ensure auditable balance reconciliation 
-        based purely on events. Instead of using events one can use the 
+
+        This is useful for Substrate based chains because the advanced business
+        logic can make it difficult to ensure auditable balance reconciliation
+        based purely on events. Instead of using events one can use the
         operations given from this endpoint.
-        
-        Note - each Operation corresponds to a delta of a single field of the 
+
+        Note - each operation corresponds to a delta of a single field of the
         `system::AccountData` storage item (i.e `free`, `reserved`, `misc_frozen`
-        and `fee_frozen`)
+        and `fee_frozen`).
+        Note - operations are assigned a block execution phase (and extrinsic index
+        for those in the apply extrinsic phase) based on an "action group". For
+        example all the operations for 1 extrinsic will be in the same action group.
+        The action groups can optionally be fetched with the `action` query param
+        for closer auditing.
+
+        To learn more about operation and action group creation please consult
+        [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
       parameters:
       - name: blockId
         in: path
@@ -2180,6 +2196,49 @@ components:
           description: |
             List of lease periods for which the `paraId` holds a lease along with
             the deposit held and the associated `accountId`.
+    TraceSpan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: unsignedInteger
+        name:
+          type: string
+        parentId:
+          type: string
+          format: unsignedInteger
+        target:
+            type: string
+        wasm:
+          type: boolean
+    TraceEventDataStringValues:
+      type: object
+      properties:
+        key:
+          type: string
+          format: hex
+          description: The complete storage key for the entry.
+        method:
+          type: string
+          description: Normally one of Put or Get.
+        result:
+          type: string
+          format: hex
+          description: Hex scale encoded storage value.
+      description: Note these exact values will only be present for storage events.
+    TraceEvent:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+              stringValues:
+                $ref: '#/components/schemas/TraceEventDataStringValues'
+        parentId:
+          type: string
+          format: unsignedInteger
+        target:
+          type: string
     BlocksTrace:
       type: object
       properties:
@@ -2189,17 +2248,14 @@ components:
           type: string
         events:
           type: array
-          items: 
-            type: object
-            description: Event is compromised of data, parentId, and target.
+          items:
+            $ref: '#/components/schemas/TraceEvent'
         parentHash:
           type: string
         spans:
           type: array
           items:
-            type: object
-            description: |
-              Span is compromised of id, name, parentId, target, and wasm.
+            $ref: '#/components/schemas/TraceSpan'
         storageKeys:
           type: string
           description: Hex encoded storage keys used to filter events.
@@ -2209,7 +2265,7 @@ components:
     SpanId:
       type: object
       properties:
-        name: 
+        name:
           type: string
         target:
           type: string
@@ -2245,9 +2301,9 @@ components:
         extrinsicIndex:
           type: string
           format: unsignedInteger
-          description: | 
-            If phase variant is `applyExtrinsic` this will be the index of 
-            the extrinsic.
+          description: |
+            If phase variant is `applyExtrinsic` this will be the index of
+            the extrinsic. Otherwise this field will not be present.
     Operation:
       type: object
       properties:
