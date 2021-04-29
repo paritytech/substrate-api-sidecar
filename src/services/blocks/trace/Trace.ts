@@ -170,7 +170,7 @@ function parseSpans(
  * Find the Ids of all the spans which are descendant of span `root`.
  *
  * @param root span which we want all the descendants of
- * @param spansById map of span id => span with children
+ * @param spansById map of span id => `SpanWithChildren`
  */
 function findDescendants(
 	root: number,
