@@ -275,7 +275,7 @@ Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](C
 All the commits in this repo follow the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#summary). When merging a PR, make sure 1/ to
 use squash merge and 2/ that the title of the PR follows the Conventional Commits spec.
 
-### Preparation
+### Step 1 - Preparation
 
 1. Checkout a branch `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
 
