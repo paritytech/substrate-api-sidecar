@@ -277,7 +277,7 @@ use squash merge and 2/ that the title of the PR follows the Conventional Commit
 
 ### Preparation
 
-1. Checkout a branch `name-v5-0-1`. When deciding what version will be released it is important to look over the past commits since the last release and the updated dependencies release notes in step 2 to see if this will be a major, minor, or patch release. If you have any questions feel free to ask the maintainers.
+1. Checkout a branch `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
 
 2. Ensure we have the latest polkadot-js dependencies
 
