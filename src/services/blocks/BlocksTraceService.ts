@@ -54,7 +54,7 @@ export class BlocksTraceService extends AbstractService {
 	 * Get the balance changing operations induced by a block.
 	 *
 	 * @param hash `BlockHash` to get balance transfer operations at.
-	 * @param includeActions wether or not to include `actions` field in the reponse.
+	 * @param includeActions whether or not to include `actions` field in the response.
 	 */
 	async operations(
 		hash: BlockHash,

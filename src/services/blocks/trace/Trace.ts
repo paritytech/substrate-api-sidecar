@@ -145,7 +145,7 @@ function parseSpans(
 	}
 
 	// Go through each span, and add its Id to the `children` array of its
-	// parent span, creating tree of spans starting with `execute_block` span as
+	// parent span, creating a tree of spans starting with `execute_block` span as
 	// the root.
 	for (const span of spans) {
 		if (!span.parentId) {
@@ -165,7 +165,7 @@ function parseSpans(
 }
 
 /**
- * Find the Ids of al the descendant spans of `root`.
+ * Find the Ids of all the descendant spans of `root`.
  *
  * @param root span which we want all the descendants of
  * @param spansById map of span id => span with children
@@ -218,7 +218,7 @@ function extractExtrinsicIndex(
 	}, [] as BN[]);
 
 	if (extrinsicIndex.length === 0) {
-		// Since we assume the `spanIds` are for span from an apply extrinsic action group,
+		// Since we assume the `spanIds` are for a span from an apply extrinsic action group,
 		// we assume there is always an `:extrinsic_index` event
 		throw new InternalServerError('Expected at least one extrinsic index');
 	}
@@ -465,7 +465,7 @@ export class Trace {
 	}
 
 	/**
-	 * Create a mapping adress => Account events for that address based on an
+	 * Create a mapping address => Account events for that address based on an
 	 * array of all the events.
 	 *
 	 * This mapping is useful because we create operations based on consecutive
