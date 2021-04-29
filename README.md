@@ -268,12 +268,14 @@ curl -s http://0.0.0.0:8080/blocks/head | jq
 
 Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](CONTRIBUTING.md) doc for more information.
 
-## Note for maintainers (Commits && Releases && Publishing)
+## Note for maintainers
+
+* Commits && Releases && Publishing
 
 All the commits in this repo follow the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#summary). When merging a PR, make sure 1/ to
 use squash merge and 2/ that the title of the PR follows the Conventional Commits spec.
 
-### Preperation
+### Preparation
 
 1. Checkout a branch `name-v5-0-1`. When deciding what version will be released it is important to look over the past commits since the last release and the updated dependencies release notes in step 2 to see if this will be a major, minor, or patch release. If you have any questions feel free to ask the maintainers.
 
