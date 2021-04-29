@@ -58,7 +58,7 @@ export interface TraceSpan {
  */
 export interface SpanWithChildren extends TraceSpan {
 	/**
-	 * Id of the child spans.
+	 * Ids of the child spans.
 	 */
 	children: number[];
 }
@@ -74,12 +74,12 @@ export function isBlockTrace(
 	thing: unknown
 ): thing is { blockTrace: BlockTrace } {
 	return (
-		typeof (thing as { blockTrace: BlockTrace })?.blockTrace.blockHash ===
+		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.blockHash ===
 			'string' &&
-		typeof (thing as { blockTrace: BlockTrace })?.blockTrace.tracingTargets ===
+		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.tracingTargets ===
 			'string' &&
-		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace.events) &&
-		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace.spans)
+		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.events) &&
+		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.spans)
 	);
 }
 
@@ -124,7 +124,7 @@ export interface StorageResourceId {
 	pallet: string;
 	item: string;
 	/**
-	 * field1 is nested in item.
+	 * field1 is a nested field in item.
 	 */
 	field1: string;
 	/**
@@ -164,13 +164,13 @@ export interface ActionGroup {
 	/**
 	 * Descendant spans of a primary span.
 	 *
-	 * For extrinsic application this will the actual extrinsic + any nested calls.
+	 * For extrinsic application this will be the actual extrinsic + any nested calls.
 	 *
 	 * For hooks this will be something be the `onInitialize`/`onFinalize` span.
 	 */
 	secondarySpans: SpanWithChildren[];
 	/**
-	 * Events from the primary  and secondary spans.
+	 * Events from the primary and secondary spans.
 	 */
 	events: PActionEvent[];
 }
