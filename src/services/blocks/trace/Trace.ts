@@ -49,7 +49,7 @@ const SPANS = {
 };
 
 // In the future this will need a more chain specific solution that creates
-// keys directly from expanded metadata.
+// keys directly from metadata. https://github.com/paritytech/substrate-api-sidecar/issues/528
 /**
  * Get all the storage key names based on the ones built into `api`.
  *
