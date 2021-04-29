@@ -43,7 +43,7 @@ async function main() {
 	const rpc = {
 		state: {
 			traceBlock: {
-				description: 'Blcok state trace prototype',
+				description: 'Block state trace prototype',
 				params: [
 					{
 						name: 'at',
