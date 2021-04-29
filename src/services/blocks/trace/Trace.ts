@@ -521,10 +521,10 @@ export class Trace {
 	}
 
 	/**
-	 * Convert an `PActionEvent` to a `PAccountEvent` by adding the decoded `accountInfo`
+	 * Convert a `PActionEvent` to a `PAccountEvent` by adding the decoded `accountInfo`
 	 * and `address`.
 	 *
-	 * Notes: will throw if event does not have system::account storagePath.
+	 * Notes: will throw if event does not have `system` `account` `storagePath`
 	 *
 	 * @param event PActionEvent
 	 */
@@ -537,7 +537,7 @@ export class Trace {
 			)
 		) {
 			throw new InternalServerError(
-				'Event did not have system::account path as expected'
+				'Event did not have system::account key prefix as expected'
 			);
 		}
 
