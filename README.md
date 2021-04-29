@@ -291,7 +291,7 @@ use squash merge and 2/ that the title of the PR follows the Conventional Commit
 
 4. Update the version in the package.json (this is very important for releasing on NPM).
 
-5. Update the changelog by looking at the past commits since the last release. Follow the format of previous releases. 
+5. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. 
 
   * Make sure to note if it has a high upgrade priority.
 
