@@ -494,7 +494,6 @@ export class Trace {
 	 * Note: Assumes passed in events are already sorted.
 	 *
 	 * @param events events with phase info
-	 * @returns
 	 */
 	accountEventsByAddress(events: PActionEvent[]): AccountEventsByAddress {
 		return events.reduce((acc, cur) => {
