@@ -245,7 +245,7 @@ function extractExtrinsicIndex(
 		// are not this program has some incorrect assumptions and this error should
 		// be reported to the maintainers.
 		for (const [i, extIdx] of extrinsicIndex.entries()) {
-			if (i > 0 && !extrinsicIndex[i -1]?.eq(extIdx)) {
+			if (i > 0 && !extrinsicIndex[i - 1]?.eq(extIdx)) {
 				throw new InternalServerError(
 					'Expect extrinsic to only be applied at a single index.'
 				);
