@@ -293,7 +293,7 @@ use squash merge and 2/ that the title of the PR follows the Conventional Commit
 
 5. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. 
 
-  * Make sure to note if it has a high upgrade priority.
+  * Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 
 6. Commit with ex: `chore(release): 5.0.1`, then push your release up, make a PR, get review approval, then merge. 
 
