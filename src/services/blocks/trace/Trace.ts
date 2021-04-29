@@ -48,6 +48,24 @@ const SPANS = {
 	},
 };
 
+/**
+ * Mapping of span id => span with children ids
+ */
+type SpansById = Map<number, SpanWithChildren>;
+
+/**
+ * Extrinsic indexs decoded from storage read events, keyed by the span Id to which
+ * the original storage event belonged to.
+ */
+type ExtrinsicIndexBySpanId = Map<number, BN>;
+
+/**
+ * Mapping of span id => array of the events belongin to the span.
+ */
+type EventsByParentId = Map<number, PEvent[]>;
+
+type AccountEventsByAddress = Map<string, PAccountEvent[]>;
+
 // In the future this will need a more chain specific solution that creates
 // keys directly from metadata. https://github.com/paritytech/substrate-api-sidecar/issues/528
 /**
@@ -61,7 +79,7 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
 			const queryObj = api.query[mod][item];
 			let key;
 			try {
-				// Slice off '0x' prefix
+				// `slice(2)` is to slice off '0x' prefix
 				key = queryObj.key().slice(2);
 			} catch {
 				key = queryObj.keyPrefix().slice(2);
@@ -107,7 +125,7 @@ function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
 function parseSpans(
 	spans: TraceSpan[]
 ): {
-	spansById: Map<number, SpanWithChildren>;
+	spansById: SpansById;
 	parsedSpans: SpanWithChildren[];
 	executeBlockSpanId: number;
 } {
@@ -172,10 +190,7 @@ function parseSpans(
  * @param root span which we want all the descendants of
  * @param spansById map of span id => `SpanWithChildren`
  */
-function findDescendants(
-	root: number,
-	spansById: Map<number, SpanWithChildren>
-): number[] {
+function findDescendants(root: number, spansById: SpansById): number[] {
 	// Note: traversal order doesn't matter here
 	const stack = spansById.get(root)?.children;
 	if (!stack) {
@@ -206,7 +221,7 @@ function findDescendants(
  */
 function extractExtrinsicIndex(
 	spanIds: number[],
-	extrinsicIndexBySpanId: Map<number, BN>
+	extrinsicIndexBySpanId: ExtrinsicIndexBySpanId
 ): BN {
 	// There are typically multiple reads of extrinsic index when applying an extrinsic,
 	// So we get all of those reads, which should all be the same number.
@@ -431,8 +446,8 @@ export class Trace {
 	private parseEvents(
 		spansById: Map<number, SpanWithChildren>
 	): {
-		eventsByParentId: Map<number, PEvent[]>;
-		extrinsicIndexBySpanId: Map<number, BN>;
+		eventsByParentId: EventsByParentId;
+		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId;
 	} {
 		const extrinsicIndexBySpanId = new Map<number, BN>();
 		const eventsByParentId = new Map<number, PEvent[]>();
@@ -481,7 +496,7 @@ export class Trace {
 	 * @param events events with phase info
 	 * @returns
 	 */
-	accountEventsByAddress(events: PActionEvent[]): Map<string, PAccountEvent[]> {
+	accountEventsByAddress(events: PActionEvent[]): AccountEventsByAddress {
 		return events.reduce((acc, cur) => {
 			if (
 				!(
@@ -565,7 +580,7 @@ export class Trace {
 	 * events.
 	 */
 	private deriveOperations(
-		accountEventsByAddress: Map<string, PAccountEvent[]>
+		accountEventsByAddress: AccountEventsByAddress
 	): Operation[] {
 		const ops = [];
 		for (const events of accountEventsByAddress.values()) {
