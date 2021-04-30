@@ -325,7 +325,7 @@ $ yarn npm publish
 1. Make sure the tag reflects your corresponding version, and run:
 
 ```bash
-git tag v5.0.1
+git tag -s v5.0.1
 git push origin v5.0.1
 ```
 
