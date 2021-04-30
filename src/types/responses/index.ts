@@ -2,6 +2,7 @@ export * from './AccountBalanceInfo';
 export * from './AccountStakingInfo';
 export * from './AccountStakingPayouts';
 export * from './AccountVestingInfo';
+export * from './Assets';
 export * from './At';
 export * from './Block';
 export * from './EraPayouts';
