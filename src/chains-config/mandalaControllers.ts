@@ -11,6 +11,7 @@ export const mandalaControllers: ControllerConfig = {
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,
 		AccountsVestingInfo: true,
+		Assets: false,
 		NodeNetwork: true,
 		NodeVersion: true,
 		NodeTransactionPool: true,

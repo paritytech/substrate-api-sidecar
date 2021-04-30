@@ -12,6 +12,7 @@ export const polkadotControllers: ControllerConfig = {
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,
 		AccountsVestingInfo: true,
+		Assets: true,
 		NodeNetwork: true,
 		NodeVersion: true,
 		NodeTransactionPool: true,

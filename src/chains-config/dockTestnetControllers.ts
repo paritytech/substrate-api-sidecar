@@ -11,6 +11,7 @@ export const dockTestnetControllers: ControllerConfig = {
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: false,
 		AccountsVestingInfo: false,
+		Assets: false,
 		NodeNetwork: true,
 		NodeVersion: true,
 		NodeTransactionPool: true,

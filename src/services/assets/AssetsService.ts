@@ -1,31 +1,32 @@
-import { ApiPromise } from "@polkadot/api";
-import { AbstractService } from "../AbstractService";
+import { ApiPromise } from '@polkadot/api';
+import { BlockHash } from '@polkadot/types/interfaces';
+
 import { IAssetInfo } from '../../types/responses';
-import { BlockHash } from '@polkadot/types/interfaces'
+import { AbstractService } from '../AbstractService';
 
 export class AssetsService extends AbstractService {
-    constructor(api: ApiPromise) {
-        super(api)
-    }
-    
-    async fetchAssetById(hash: BlockHash, index: number): Promise<IAssetInfo> {
-        const { api } = this;
+	constructor(api: ApiPromise) {
+		super(api);
+	}
 
-        const [{number}, assetInfo, assetMetaData] = await Promise.all([
-            api.rpc.chain.getHeader(hash),
-            api.query.assets.asset(index),
-            api.query.assets.metadata(index)
-        ]);
+	async fetchAssetById(hash: BlockHash, index: number): Promise<IAssetInfo> {
+		const { api } = this;
 
-        const at = {
-            hash,
-            height: number.unwrap().toString(10)
-        }
+		const [{ number }, assetInfo, assetMetaData] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.assets.asset(index),
+			api.query.assets.metadata(index),
+		]);
 
-        return {
-            at,
-            assetInfo,
-            assetMetaData
-        }
-    }
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		return {
+			at,
+			assetInfo,
+			assetMetaData,
+		};
+	}
 }
