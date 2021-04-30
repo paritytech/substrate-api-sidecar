@@ -26,7 +26,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 		 */
 		this.parseNumberOrThrow(
 			assetId,
-			'`exstrinsicIndex` path param is not a number'
+			'`assetId` path param is not a number'
 		);
 
 		/**
