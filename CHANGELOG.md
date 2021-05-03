@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * fix: readme docs for node version 14
 
-* fix: remove dependabot and add upgrade-interactive
+* fix: remove dependabot and add upgrade-interactive plugin ([#531](https://github.com/paritytech/substrate-api-sidecar/pull/531)) ([f22cf3f](https://github.com/paritytech/substrate-api-sidecar/commit/f22cf3ff6ae292144018821fbaa0c21d6f96490d))
 
 * deps: update @polkadot/types 4.8.1
 
