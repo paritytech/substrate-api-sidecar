@@ -285,7 +285,7 @@ use squash merge and 2/ that the title of the PR follows the Conventional Commit
   * @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
   * @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
 
-  Note: Every monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, and read the release notes for any breaking changes, or high priority updates.
+  Note: Every monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, and read the release notes for any breaking changes, or high priority updates. You can use the following command `yarn upgrade-interactive` to find and update all available releases. Feel free to update other packages that are available for upgrade if reasonable. 
 
 3. After updating the dependencies, the next step is making sure the release will work against all noted runtimes for Polkadot, Kusama, and Westend. This can be handled via the [sidecar-runtime-test](https://github.com/TarikGul/sidecar-runtime-test) helper library. Instructions for how to run it are in the repos README.md. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues). 
 
