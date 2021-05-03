@@ -164,6 +164,26 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return num;
 	}
 
+	protected parseQueryParamArrayOrThrow(
+		n: string,
+		errorMessage: string
+	): number[] {
+		const isValidParam = /[^,]+/.test(n);
+
+		if (!isValidParam) {
+			throw new BadRequest(errorMessage);
+		}
+
+		return n
+			.split(',')
+			.map((str) =>
+				this.parseNumberOrThrow(
+					str,
+					`Incorrect AssetId format: ${str} is not a U32.`
+				)
+			);
+	}
+
 	protected verifyAndCastOr(
 		name: string,
 		str: unknown,

@@ -1,20 +1,21 @@
-import { IAt } from '.';
-import { TAssetBalance } from '@polkadot/types/interfaces'
+import { AssetBalance, TAssetBalance } from '@polkadot/types/interfaces';
 
-interface IAssetBalance {
-    assetId: number;
-    balances: TAssetBalance;
-    isFrozen: boolean;
+import { IAt } from '.';
+
+export interface IAssetBalance {
+	assetId: number;
+	balances: TAssetBalance;
+	isFrozen: boolean;
 }
 
 export interface IAccountAssetsBalance {
-    at: IAt;
-    balances: TAssetBalance;
-    isFrozen: boolean;
-    isSufficient: boolean;
+	at: IAt;
+	balances: TAssetBalance;
+	isFrozen: boolean;
+	isSufficient: boolean;
 }
 
 export interface IAccountAssetsBalanceVec {
-    at: IAt;
-    assets: IAssetBalance[]
+	at: IAt;
+	assets: AssetBalance[];
 }

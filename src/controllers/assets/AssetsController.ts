@@ -24,10 +24,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 		/**
 		 * Verify our param `assetId` is an integer represented as a string
 		 */
-		this.parseNumberOrThrow(
-			assetId,
-			'`assetId` path param is not a number'
-		);
+		this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
 
 		/**
 		 * Change assetId from a type string to a number before passing it
