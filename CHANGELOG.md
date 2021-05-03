@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
+* docs: update release and publishing
+
+* fix: readme docs for node version 14
+
+* fix: remove dependabot and add upgrade-interactive
+
 * deps: update @polkadot/types 4.8.1
 
 * deps: update @http/errors 1.8.0
