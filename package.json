@@ -36,7 +36,7 @@
     "test": "substrate-exec-jest --silent"
   },
   "dependencies": {
-    "@polkadot/api": "^4.7.1",
+    "@polkadot/api": "^4.8.1",
     "@polkadot/apps-config": "^0.89.1",
     "@polkadot/util-crypto": "^6.3.1",
     "@substrate/calc": "^0.2.0",
