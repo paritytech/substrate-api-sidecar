@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * deps: update @polkadot/types 4.8.1
 
-* deps: update @polkadot/apps-config 0.90.1
+* deps: Update @polkadot/apps-config to get latest chain specific upgrades.
 
 * deps: update @http/errors 1.8.0
 
