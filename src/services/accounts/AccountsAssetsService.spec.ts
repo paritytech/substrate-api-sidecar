@@ -15,8 +15,8 @@ describe('AccountsAssetsService', () => {
 			const expectedResponse = {
 				at,
                 assets: [
-                    { balance: '10000000', isFrozen: false, isSufficient: true },
-                    { balance: '20000000', isFrozen: true, isSufficient: true }
+                    { assetId: '10', balance: '10000000', isFrozen: false, isSufficient: true },
+                    { assetId: '20', balance: '20000000', isFrozen: true, isSufficient: true }
                 ]
 			};
 
@@ -25,19 +25,19 @@ describe('AccountsAssetsService', () => {
 				'0xffff',
 				[10, 20]
 			);
-
-			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
+            console.log(sanitizeNumbers(response))
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
 
 		it('Should return the correct response without the assets param', async () => {
             const expectedResponse = {
                 at,
                 assets: [
-                    { balance: '10000000', isFrozen: false, isSufficient: true },
-                    { balance: '20000000', isFrozen: true, isSufficient: true },
-                    { balance: '20000000', isFrozen: false, isSufficient: false },
-                    { balance: '20000000', isFrozen: false, isSufficient: false },
-                    { balance: '20000000', isFrozen: false, isSufficient: false }
+                    { assetId: '10', balance: '10000000', isFrozen: false, isSufficient: true },
+                    { assetId: '20', balance: '20000000', isFrozen: true, isSufficient: true },
+                    { assetId: '30', balance: '20000000', isFrozen: false, isSufficient: false },
+                    { assetId: '30', balance: '20000000', isFrozen: false, isSufficient: false },
+                    { assetId: '30', balance: '20000000', isFrozen: false, isSufficient: false }
                 ]
             };
 
@@ -46,8 +46,8 @@ describe('AccountsAssetsService', () => {
                 '0xffff',
                 []
             );
-
-            expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
+            console.log(sanitizeNumbers(response))
+            expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
         });
 	});
 

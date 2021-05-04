@@ -22,7 +22,7 @@ export class AccountsAssetsService extends AbstractService {
 
 		const { number } = await api.rpc.chain.getHeader(hash);
 
-		let queryAllAssets;
+		let response;
 		if (assets.length === 0) {
 			/**
 			 * This will query all assets and return them in an array
@@ -30,27 +30,40 @@ export class AccountsAssetsService extends AbstractService {
 			const keys = await api.query.assets.account.keysAt(hash);
 			const assetIds = this.extractAssetIds(keys);
 
-			queryAllAssets = async () =>
+			const queryAllAssets = async () =>
 				await Promise.all(
-					assetIds.map((assetId: AssetId) => {
-
-						const asset = api.query.assets.account(assetId, address);
-						return asset
-					})
-				);
+					assetIds.map((assetId: AssetId) => 
+						api.query.assets.account(assetId, address)
+					)
+				)
+			response = (await queryAllAssets()).map((asset, i) => {
+				return {
+					assetId: assetIds[i],
+					balance: asset.balance,
+					isFrozen: asset.isFrozen,
+					isSufficient: asset.isSufficient
+				}
+			});
 		} else {
 			/**
 			 * This will query all assets by the requested AssetIds
 			 */
-			queryAllAssets = async () =>
+			const queryAllAssets = async () =>
 				await Promise.all(
 					assets.map((assetId: number | AnyNumber) =>
 						api.query.assets.account(assetId, address)
 					)
 				);
-		}
 
-		const response = await queryAllAssets();
+			response = (await queryAllAssets()).map((asset, i) => {
+				return {
+					assetId: assets[i],
+					balance: asset.balance,
+					isFrozen: asset.isFrozen,
+					isSufficient: asset.isSufficient
+				}
+			});
+		}
 
 		const at = {
 			hash,

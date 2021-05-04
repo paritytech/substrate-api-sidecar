@@ -33,7 +33,7 @@
     "start": "yarn run main",
     "start:log-rpc": "yarn run build && NODE_ENV=test yarn run main ",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
-    "test": "substrate-exec-jest --silent"
+    "test": "substrate-exec-jest"
   },
   "dependencies": {
     "@polkadot/api": "^4.7.1",
