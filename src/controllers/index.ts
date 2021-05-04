@@ -1,4 +1,5 @@
 import {
+	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsStakingInfo,
 	AccountsStakingPayouts,
@@ -23,6 +24,7 @@ import {
 export const controllers = {
 	Blocks,
 	BlocksExtrinsics,
+	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsStakingInfo,
 	AccountsVestingInfo,
