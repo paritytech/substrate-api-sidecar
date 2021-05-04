@@ -87,7 +87,7 @@ export class BlocksTraceService extends AbstractService {
 	): Promise<BlocksTraceOperations> {
 		const [{ block }, traceResponse] = await Promise.all([
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
-			// one that actually has the historical types. This is a polkadot-js bug
+			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
 			this.api.rpc.chain.getBlock(hash),
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore

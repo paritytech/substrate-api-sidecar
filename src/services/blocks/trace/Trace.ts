@@ -11,10 +11,10 @@ import {
 	BlockTrace,
 	KeyInfo,
 	Operation,
-	PAccountEvent,
-	PActionEvent,
 	PalletKeyInfo,
-	PEvent,
+	ParsedAccountEvent,
+	ParsedActionEvent,
+	ParsedEvent,
 	Phase,
 	PhaseOther,
 	SpanWithChildren,
@@ -80,9 +80,9 @@ type ExtrinsicIndexBySpanId = Map<number, BN>;
 /**
  * Mapping of span id => array of the events belongin to the span.
  */
-type EventsByParentId = Map<number, PEvent[]>;
+type EventsByParentId = Map<number, ParsedEvent[]>;
 
-type AccountEventsByAddress = Map<string, PAccountEvent[]>;
+type AccountEventsByAddress = Map<string, ParsedAccountEvent[]>;
 
 /**
  * Class for processing traces from the `state_traceBlock` RPC endpoint.
@@ -299,7 +299,7 @@ export class Trace {
 			spansById
 		);
 
-		const actionEvents: PActionEvent[] = [];
+		const actionEvents: ParsedActionEvent[] = [];
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
 		for (const primary of spans) {
@@ -315,7 +315,7 @@ export class Trace {
 			// Keep in mind events are storage Get/Put events. The spans are used to
 			// attribute events to some action in the block execution pipeline.
 			const secondarySpansIds = Trace.findDescendants(primary.id, spansById);
-			const secondarySpansEvents: PEvent[] = [];
+			const secondarySpansEvents: ParsedEvent[] = [];
 			const secondarySpans: SpanWithChildren[] = [];
 			secondarySpansIds.forEach((id) => {
 				const events = eventsByParentId.get(id);
@@ -401,7 +401,7 @@ export class Trace {
 	 *
 	 * @param event a parsed event
 	 */
-	private maybeExtractIndex(event: PEvent): IOption<BN> {
+	private maybeExtractIndex(event: ParsedEvent): IOption<BN> {
 		if (
 			!(
 				(event.storagePath as SpecialKeyInfo)?.special === ':extrinsic_index' &&
@@ -448,7 +448,7 @@ export class Trace {
 		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId;
 	} {
 		const extrinsicIndexBySpanId = new Map<number, BN>();
-		const eventsByParentId = new Map<number, PEvent[]>();
+		const eventsByParentId = new Map<number, ParsedEvent[]>();
 
 		for (const [idx, event] of this.traceBlock.events.entries()) {
 			const { key } = event.data.stringValues;
@@ -493,7 +493,7 @@ export class Trace {
 	 *
 	 * @param events events with phase info
 	 */
-	accountEventsByAddress(events: PActionEvent[]): AccountEventsByAddress {
+	accountEventsByAddress(events: ParsedActionEvent[]): AccountEventsByAddress {
 		return events.reduce((acc, cur) => {
 			if (
 				!(
@@ -515,18 +515,18 @@ export class Trace {
 			}
 
 			return acc;
-		}, new Map<string, PAccountEvent[]>());
+		}, new Map<string, ParsedAccountEvent[]>());
 	}
 
 	/**
-	 * Convert a `PActionEvent` to a `PAccountEvent` by adding the decoded `accountInfo`
+	 * Convert a `ParsedActionEvent` to a `ParsedAccountEvent` by adding the decoded `accountInfo`
 	 * and `address`.
 	 *
 	 * Notes: will throw if event does not have `system` `account` `storagePath`
 	 *
-	 * @param event PActionEvent
+	 * @param event ParsedActionEvent
 	 */
-	private toAccountEvent(event: PActionEvent): PAccountEvent {
+	private toAccountEvent(event: ParsedActionEvent): ParsedAccountEvent {
 		const { storagePath } = event;
 		if (
 			!(

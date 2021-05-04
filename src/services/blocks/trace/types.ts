@@ -22,7 +22,7 @@ export interface TraceEvent {
 /**
  * Parsed event.
  */
-export interface PEvent extends TraceEvent {
+export interface ParsedEvent extends TraceEvent {
 	storagePath: KeyInfo;
 	parentSpanId?: ParentSpanId;
 	eventIndex: number;
@@ -31,7 +31,7 @@ export interface PEvent extends TraceEvent {
 /**
  * Parsed event with info about the action group it belongs to.
  */
-export interface PActionEvent extends PEvent {
+export interface ParsedActionEvent extends ParsedEvent {
 	phase: PhaseId;
 	primarySpanId: ParentSpanId;
 }
@@ -40,7 +40,7 @@ export interface PActionEvent extends PEvent {
  * Parsed event of a `Get` from the `AccountInfo` storage item. Has info about
  * the action group it belongs to and the decoded `AccountInfo` storage item.
  */
-export interface PAccountEvent extends PActionEvent {
+export interface ParsedAccountEvent extends ParsedActionEvent {
 	accountInfo: AccountInfo;
 	address: Address;
 }
