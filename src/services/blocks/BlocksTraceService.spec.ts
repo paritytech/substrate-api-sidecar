@@ -15,7 +15,7 @@ import { Trace } from './trace';
  * Save the getKeyNames function refference, so we can point it to a different function
  * for testing and then reassing it back to the original after this test suite is done.
  */
-const tempGetKeyNames = Trace.getKeyNames.bind(Trace);
+const tempGetKeyNames = Trace['getKeyNames'].bind(Trace);
 /**
  * Save the refference to the mockBlock789629's registry so we can reassign it back once
  * the tests are over.
@@ -28,14 +28,15 @@ const tempMockBlock789629Registry = mockBlock789629.registry;
 const blocksTraceService = new BlocksTraceService(mockApi);
 
 beforeAll(() => {
+	// Override registry so we correctly create kusama types.
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
 	(mockBlock789629 as any).registry = kusamRegistryV2025;
-	Trace.getKeyNames = () => keyNames;
+	Trace['getKeyNames'] = () => keyNames;
 });
 
 afterAll(() => {
 	// Clean up our test specific overrides
-	Trace.getKeyNames = tempGetKeyNames;
+	Trace['getKeyNames'] = tempGetKeyNames;
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
 	(mockBlock789629 as any).registry = tempMockBlock789629Registry;
 });
@@ -58,12 +59,6 @@ describe('BlocksTraceService', () => {
 			).toMatchObject(operationsResponse);
 		});
 
-		it('works when ApiPromise works (with `actions`)', async () => {
-			expect(
-				sanitizeNumbers(
-					await blocksTraceService.operations(blockHash789629, false)
-				)
-			).toMatchObject(operationsResponse);
-		});
+		it.todo('works when ApiPromise works (with `actions`)');
 	});
 });

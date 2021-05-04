@@ -67,147 +67,6 @@ type EventsByParentId = Map<number, PEvent[]>;
 type AccountEventsByAddress = Map<string, PAccountEvent[]>;
 
 /**
- * Parses spans by
- * 1) creating a Map of span's `id` to the the span with its children
- * 2) creating an array with the same spans
- *
- * @param spans spans to parse
- */
-function parseSpans(
-	spans: TraceSpan[]
-): {
-	spansById: SpansById;
-	parsedSpans: SpanWithChildren[];
-	executeBlockSpanId: number;
-} {
-	// IMPORTANT for downstream logic: Make sure spans are sorted.
-	// If this gets taken out, then **all** `Operation`s will need to be sorted on
-	// `eventIndex` to ensure integrity in there ordering. (Ordering integrity
-	// is not strictly neccesary for MVP balance reconciliation, but operating
-	// under the assumption it may be neccesary for closer audits.)
-	spans.sort((a, b) => a.id - b.id);
-
-	const spansById = new Map<number, SpanWithChildren>();
-	const parsedSpans = [];
-	let executeBlockSpanId;
-	// This loop does 3 things: 1) build `spansById` 2) build `parseSpans` 3) finds
-	// `executeBlockSpanId`
-	for (const span of spans) {
-		const spanWithChildren = { ...span, children: [] };
-
-		if (
-			span.name === SPANS.executeBlock.name &&
-			span.target === SPANS.executeBlock.target
-		) {
-			if (executeBlockSpanId !== undefined) {
-				throw new InternalServerError(
-					'More than 1 execute block span found when only 1 was expected'
-				);
-			}
-			executeBlockSpanId = span.id;
-		}
-
-		parsedSpans.push(spanWithChildren);
-		spansById.set(span.id, spanWithChildren);
-	}
-
-	if (executeBlockSpanId === undefined) {
-		throw new InternalServerError('execute_block span could not be found');
-	}
-
-	// Go through each span, and add its `id` to the `children` array of its
-	// parent span, creating a tree of spans starting with `executeBlock` span as
-	// the root.
-	for (const span of spans) {
-		if (!span.parentId) {
-			continue;
-		}
-
-		if (!spansById.has(span.parentId)) {
-			throw new InternalServerError(
-				'Expected spans parent to exist in spansById'
-			);
-		}
-
-		spansById.get(span.parentId)?.children.push(span.id);
-	}
-
-	return { spansById, parsedSpans, executeBlockSpanId };
-}
-
-/**
- * Find the Ids of all the spans which are descendant of span `root`.
- *
- * @param root span which we want all the descendants of
- * @param spansById map of span id => `SpanWithChildren`
- */
-function findDescendants(root: number, spansById: SpansById): number[] {
-	// Note: traversal order doesn't matter here
-	const stack = spansById.get(root)?.children;
-	if (!stack) {
-		return [];
-	}
-
-	const descendants = [];
-	while (stack.length) {
-		const curId = stack.pop();
-		if (!curId) {
-			break;
-		}
-
-		descendants.push(curId);
-
-		const curSpanChildren = spansById.get(curId)?.children;
-		curSpanChildren && stack.push(...curSpanChildren);
-	}
-
-	return descendants;
-}
-
-/**
- * Extract extrinsic indexes from all `:extrinsic_index` storage item read events.
- *
- * @param spanIds List of spanIds for an apply extrinsic action group
- * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
- */
-function extractExtrinsicIndex(
-	spanIds: number[],
-	extrinsicIndexBySpanId: ExtrinsicIndexBySpanId
-): BN {
-	// There are typically multiple reads of extrinsic index when applying an extrinsic,
-	// So we get all of those reads, which should all be the same number.
-	const extrinsicIndex = spanIds.reduce((acc, id) => {
-		if (!extrinsicIndexBySpanId.has(id)) {
-			return acc;
-		}
-
-		acc.push(extrinsicIndexBySpanId.get(id) as BN);
-		return acc;
-	}, [] as BN[]);
-
-	if (extrinsicIndex.length === 0) {
-		// Since we assume the `spanIds` are for a span from an apply extrinsic action group,
-		// we assume there is always an `:extrinsic_index` event
-		throw new InternalServerError('Expected at least one extrinsic index');
-	}
-
-	if (extrinsicIndex.length > 1) {
-		// If there are multiple reads we check that they are all the same. If they
-		// are not this program has some incorrect assumptions and this error should
-		// be reported to the maintainers.
-		for (const [i, extIdx] of extrinsicIndex.entries()) {
-			if (i > 0 && !extrinsicIndex[i - 1]?.eq(extIdx)) {
-				throw new InternalServerError(
-					'Expect extrinsic to only be applied at a single index.'
-				);
-			}
-		}
-	}
-
-	return extrinsicIndex[0];
-}
-
-/**
  * Class for processing traces from the `state_traceBlock` RPC endpoint.
  *
  * Assumptions:
@@ -249,7 +108,7 @@ export class Trace {
 	 *
 	 * @param api ApiPromise
 	 */
-	static getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
+	private static getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
 		const moduleKeys = Object.keys(api.query).reduce((acc, mod) => {
 			Object.keys(api.query[mod]).forEach((item) => {
 				const queryObj = api.query[mod][item];
@@ -292,14 +151,157 @@ export class Trace {
 	}
 
 	/**
+	 * Extract extrinsic indexes from all `:extrinsic_index` storage item read events.
+	 *
+	 * @param spanIds List of spanIds for an apply extrinsic action group
+	 * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
+	 */
+	private static extractExtrinsicIndex(
+		spanIds: number[],
+		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId
+	): BN {
+		// There are typically multiple reads of extrinsic index when applying an extrinsic,
+		// So we get all of those reads, which should all be the same number.
+		const extrinsicIndex = spanIds.reduce((acc, id) => {
+			if (!extrinsicIndexBySpanId.has(id)) {
+				return acc;
+			}
+
+			acc.push(extrinsicIndexBySpanId.get(id) as BN);
+			return acc;
+		}, [] as BN[]);
+
+		if (extrinsicIndex.length === 0) {
+			// Since we assume the `spanIds` are for a span from an apply extrinsic action group,
+			// we assume there is always an `:extrinsic_index` event
+			throw new InternalServerError('Expected at least one extrinsic index');
+		}
+
+		if (extrinsicIndex.length > 1) {
+			// If there are multiple reads we check that they are all the same. If they
+			// are not this program has some incorrect assumptions and this error should
+			// be reported to the maintainers.
+			for (const [i, extIdx] of extrinsicIndex.entries()) {
+				if (i > 0 && !extrinsicIndex[i - 1]?.eq(extIdx)) {
+					throw new InternalServerError(
+						'Expect extrinsic to only be applied at a single index.'
+					);
+				}
+			}
+		}
+
+		return extrinsicIndex[0];
+	}
+
+	/**
+	 * Find the Ids of all the spans which are descendant of span `root`.
+	 *
+	 * @param root span which we want all the descendants of
+	 * @param spansById map of span id => `SpanWithChildren`
+	 */
+	private static findDescendants(root: number, spansById: SpansById): number[] {
+		// Note: traversal order doesn't matter here
+		const stack = spansById.get(root)?.children;
+		if (!stack) {
+			return [];
+		}
+
+		const descendants = [];
+		while (stack.length) {
+			const curId = stack.pop();
+			if (!curId) {
+				break;
+			}
+
+			descendants.push(curId);
+
+			const curSpanChildren = spansById.get(curId)?.children;
+			curSpanChildren && stack.push(...curSpanChildren);
+		}
+
+		return descendants;
+	}
+
+	/**
+	 * Parses spans by
+	 * 1) creating a Map of span's `id` to the the span with its children
+	 * 2) creating an array with the same spans
+	 *
+	 * @param spans spans to parse
+	 */
+	private static parseSpans(
+		spans: TraceSpan[]
+	): {
+		spansById: SpansById;
+		parsedSpans: SpanWithChildren[];
+		executeBlockSpanId: number;
+	} {
+		// IMPORTANT for downstream logic: Make sure spans are sorted.
+		// If this gets taken out, then **all** `Operation`s will need to be sorted on
+		// `eventIndex` to ensure integrity in there ordering. (Ordering integrity
+		// is not strictly neccesary for MVP balance reconciliation, but operating
+		// under the assumption it may be neccesary for closer audits.)
+		spans.sort((a, b) => a.id - b.id);
+
+		const spansById = new Map<number, SpanWithChildren>();
+		const parsedSpans = [];
+		let executeBlockSpanId;
+		// This loop does 3 things: 1) build `spansById` 2) build `parseSpans` 3) finds
+		// `executeBlockSpanId`
+		for (const span of spans) {
+			const spanWithChildren = { ...span, children: [] };
+
+			if (
+				span.name === SPANS.executeBlock.name &&
+				span.target === SPANS.executeBlock.target
+			) {
+				if (executeBlockSpanId !== undefined) {
+					throw new InternalServerError(
+						'More than 1 execute block span found when only 1 was expected'
+					);
+				}
+				executeBlockSpanId = span.id;
+			}
+
+			parsedSpans.push(spanWithChildren);
+			spansById.set(span.id, spanWithChildren);
+		}
+
+		if (executeBlockSpanId === undefined) {
+			throw new InternalServerError('execute_block span could not be found');
+		}
+
+		// Go through each span, and add its `id` to the `children` array of its
+		// parent span, creating a tree of spans starting with `executeBlock` span as
+		// the root.
+		for (const span of spans) {
+			if (!span.parentId) {
+				continue;
+			}
+
+			if (!spansById.has(span.parentId)) {
+				throw new InternalServerError(
+					'Expected spans parent to exist in spansById'
+				);
+			}
+
+			spansById.get(span.parentId)?.children.push(span.id);
+		}
+
+		return { spansById, parsedSpans, executeBlockSpanId };
+	}
+
+	/**
 	 * Derive the action groups and operations from the block trace.
 	 *
 	 * @returns the action groups and opertions
 	 */
 	actionsAndOps(): { actions: ActionGroup[]; operations: Operation[] } {
-		const { spansById, parsedSpans: spans, executeBlockSpanId } = parseSpans(
-			this.traceBlock.spans
-		);
+		const {
+			spansById,
+			parsedSpans: spans,
+			executeBlockSpanId,
+		} = Trace.parseSpans(this.traceBlock.spans);
 		const { eventsByParentId, extrinsicIndexBySpanId } = this.parseEvents(
 			spansById
 		);
@@ -319,7 +321,7 @@ export class Trace {
 			// hook or extrinsic.
 			// Keep in mind events are storage Get/Put events. The spans are used to
 			// attribute events to some action in the block execution pipeline.
-			const secondarySpansIds = findDescendants(primary.id, spansById);
+			const secondarySpansIds = Trace.findDescendants(primary.id, spansById);
 			const secondarySpansEvents: PEvent[] = [];
 			const secondarySpans: SpanWithChildren[] = [];
 			secondarySpansIds.forEach((id) => {
@@ -333,7 +335,7 @@ export class Trace {
 			let phase: PhaseOther, extrinsicIndex: BN | undefined;
 			if (primary.name === SPANS.applyExtrinsic.name) {
 				// This is an action group for an extrinsic application
-				extrinsicIndex = extractExtrinsicIndex(
+				extrinsicIndex = Trace.extractExtrinsicIndex(
 					// Pass in all the relevant spanIds of this action group
 					secondarySpansIds.concat(primary.id),
 					extrinsicIndexBySpanId
@@ -609,11 +611,7 @@ export class Trace {
 				};
 				const currency = {
 					// For now we assume everything is always in the same token
-					symbol:
-						this.registry
-							.getChainProperties()
-							?.tokenSymbol.unwrapOrDefault()[0]
-							.toString() || 'unknown',
+					symbol: this.registry.chainTokens[0],
 				};
 				// Base information for all `storage` values
 				const systemAccountData = {
