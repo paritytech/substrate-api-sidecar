@@ -66,55 +66,6 @@ type EventsByParentId = Map<number, PEvent[]>;
 
 type AccountEventsByAddress = Map<string, PAccountEvent[]>;
 
-// In the future this will need a more chain specific solution that creates
-// keys directly from metadata. https://github.com/paritytech/substrate-api-sidecar/issues/528
-/**
- * Get all the storage key names based on the ones built into `api`.
- *
- * @param api ApiPromise
- */
-function getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
-	const moduleKeys = Object.keys(api.query).reduce((acc, mod) => {
-		Object.keys(api.query[mod]).forEach((item) => {
-			const queryObj = api.query[mod][item];
-			let key;
-			try {
-				// `slice(2)` is to slice off '0x' prefix
-				key = queryObj.key().slice(2);
-			} catch {
-				key = queryObj.keyPrefix().slice(2);
-			}
-
-			acc[key] = {
-				module: mod,
-				item,
-			};
-		});
-
-		return acc;
-	}, {} as Record<string, KeyInfo>);
-
-	const wellKnownKeys = {
-		'3a636f6465': {
-			special: ':code',
-		},
-		'3a686561707061676573': {
-			special: ':heappages',
-		},
-		'3a65787472696e7369635f696e646578': {
-			special: ':extrinsic_index',
-		},
-		'3a6368616e6765735f74726965': {
-			special: ':changes_trie',
-		},
-		'3a6368696c645f73746f726167653a': {
-			special: ':child_storage:',
-		},
-	};
-
-	return { ...moduleKeys, ...wellKnownKeys };
-}
-
 /**
  * Parses spans by
  * 1) creating a Map of span's `id` to the the span with its children
@@ -288,7 +239,56 @@ export class Trace {
 			);
 		}
 
-		this.keyNames = getKeyNames(api);
+		this.keyNames = Trace.getKeyNames(api);
+	}
+
+	// In the future this will need a more chain specific solution that creates
+	// keys directly from metadata. https://github.com/paritytech/substrate-api-sidecar/issues/528
+	/**
+	 * Get all the storage key names based on the ones built into `api`.
+	 *
+	 * @param api ApiPromise
+	 */
+	static getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
+		const moduleKeys = Object.keys(api.query).reduce((acc, mod) => {
+			Object.keys(api.query[mod]).forEach((item) => {
+				const queryObj = api.query[mod][item];
+				let key;
+				try {
+					// `slice(2)` is to slice off '0x' prefix
+					key = queryObj.key().slice(2);
+				} catch {
+					key = queryObj.keyPrefix().slice(2);
+				}
+
+				acc[key.toString()] = {
+					module: mod,
+					item,
+				};
+			});
+
+			return acc;
+		}, {} as Record<string, KeyInfo>);
+
+		const wellKnownKeys = {
+			'3a636f6465': {
+				special: ':code',
+			},
+			'3a686561707061676573': {
+				special: ':heappages',
+			},
+			'3a65787472696e7369635f696e646578': {
+				special: ':extrinsic_index',
+			},
+			'3a6368616e6765735f74726965': {
+				special: ':changes_trie',
+			},
+			'3a6368696c645f73746f726167653a': {
+				special: ':child_storage:',
+			},
+		};
+
+		return { ...moduleKeys, ...wellKnownKeys };
 	}
 
 	/**
@@ -609,7 +609,11 @@ export class Trace {
 				};
 				const currency = {
 					// For now we assume everything is always in the same token
-					symbol: this.registry.chainTokens[0],
+					symbol:
+						this.registry
+							.getChainProperties()
+							?.tokenSymbol.unwrapOrDefault()[0]
+							.toString() || 'unknown',
 				};
 				// Base information for all `storage` values
 				const systemAccountData = {

@@ -1,0 +1,188 @@
+{
+  "at": {
+    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+    "height": "789629"
+  },
+  "operations": [
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "apply_extrinsic",
+        "target": "frame_executive",
+        "id": "20"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "9",
+      "address": "GCMo2fMUXEsP6FJ2qyxGd9KdnejbtyRZJ3ACUd8jdNsgWGM",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "free"
+      },
+      "amount": {
+        "value": "-3199998787",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    },
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "approve_as_multi",
+        "target": "pallet_multisig",
+        "id": "21"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "12",
+      "address": "GCMo2fMUXEsP6FJ2qyxGd9KdnejbtyRZJ3ACUd8jdNsgWGM",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "free"
+      },
+      "amount": {
+        "value": "-3358666656520",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    },
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "approve_as_multi",
+        "target": "pallet_multisig",
+        "id": "21"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "12",
+      "address": "GCMo2fMUXEsP6FJ2qyxGd9KdnejbtyRZJ3ACUd8jdNsgWGM",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "reserved"
+      },
+      "amount": {
+        "value": "3358666656520",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    },
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "apply_extrinsic",
+        "target": "frame_executive",
+        "id": "20"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "15",
+      "address": "GCMo2fMUXEsP6FJ2qyxGd9KdnejbtyRZJ3ACUd8jdNsgWGM",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "free"
+      },
+      "amount": {
+        "value": "1",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    },
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "apply_extrinsic",
+        "target": "frame_executive",
+        "id": "20"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "17",
+      "address": "F3opxRbN5ZbjJNU511Kj2TLuzFcDq9BGduA9TgiECafpg29",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "free"
+      },
+      "amount": {
+        "value": "2559999028",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    },
+    {
+      "phase": {
+        "variant": "applyExtrinsic",
+        "extrinsicIndex": "2"
+      },
+      "parentSpanId": {
+        "name": "apply_extrinsic",
+        "target": "frame_executive",
+        "id": "20"
+      },
+      "primarySpanId": {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "target": "frame_executive"
+      },
+      "eventIndex": "19",
+      "address": "HGN31MoMgsx1K6vTJF4L5vjBLfKrWpswCCt2YvK8VgGynRu",
+      "storage": {
+        "pallet": "system",
+        "item": "Account",
+        "field1": "data",
+        "field2": "free"
+      },
+      "amount": {
+        "value": "639999758",
+        "currency": {
+          "symbol": "KSM"
+        }
+      }
+    }
+  ]
+}
