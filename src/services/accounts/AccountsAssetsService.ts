@@ -69,12 +69,12 @@ export class AccountsAssetsService extends AbstractService {
 		address: string,
 		assetId: number,
 		delegate: string
-    ): Promise<IAccountAssetApproval> {
+	): Promise<IAccountAssetApproval> {
 		const { api } = this;
 
 		/**
 		 * AssetApprovalKey, contains the `accountId` as the address key, and the
-		 * delegate `accountId` 
+		 * delegate `accountId`
 		 */
 		const approvalKey = { owner: address, delegate };
 

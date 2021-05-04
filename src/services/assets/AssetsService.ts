@@ -9,13 +9,13 @@ export class AssetsService extends AbstractService {
 		super(api);
 	}
 
-	async fetchAssetById(hash: BlockHash, index: number): Promise<IAssetInfo> {
+	async fetchAssetById(hash: BlockHash, assetId: number): Promise<IAssetInfo> {
 		const { api } = this;
 
 		const [{ number }, assetInfo, assetMetaData] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.assets.asset(index),
-			api.query.assets.metadata(index),
+			api.query.assets.asset(assetId),
+			api.query.assets.metadata(assetId),
 		]);
 
 		const at = {

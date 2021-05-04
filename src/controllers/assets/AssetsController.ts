@@ -6,7 +6,7 @@ import AbstractController from '../AbstractController';
 
 export default class AssetsController extends AbstractController<AssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/assets/', new AssetsService(api));
+		super(api, '/assets', new AssetsService(api));
 		this.initRoutes();
 	}
 

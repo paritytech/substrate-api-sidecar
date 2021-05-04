@@ -518,6 +518,47 @@ const auctionsWinningsAt = () =>
 	});
 
 /**
+ * Asset specific constants.
+ * Note: It borrows some variables used in the parachains constant section
+ *
+ * Used in `/assets` and `/accounts` endpoints
+ */
+const isFrozen = rococoRegistry.createType('bool', false);
+
+const assetsInfo = () =>
+	Promise.resolve().then(() => {
+		const responseObj = {
+			owner: accountIdOne,
+			issue: accountIdTwo,
+			admin: accountIdTwo,
+			freezer: accountIdTwo,
+			supply: rococoRegistry.createType('u64', 10000000),
+			deposit: balanceOfTwo,
+			minBalance: rococoRegistry.createType('u64', 10000),
+			isSufficient: rococoRegistry.createType('bool', true),
+			accounts: rococoRegistry.createType('u32', 10),
+			sufficients: rococoRegistry.createType('u32', 15),
+			approvals: rococoRegistry.createType('u32', 20),
+			isFrozen,
+		};
+
+		return rococoRegistry.createType('AssetDetails', responseObj);
+	});
+
+const assetsMetadata = () =>
+	Promise.resolve().then(() => {
+		const responseObj = {
+			deposit: balanceOfTwo,
+			name: rococoRegistry.createType('Bytes', 'statemint'),
+			symbol: rococoRegistry.createType('Bytes', 'DOT'),
+			decimals: rococoRegistry.createType('u8', 10),
+			isFrozen,
+		};
+
+		return rococoRegistry.createType('AssetMetadata', responseObj);
+	});
+
+/**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
  */
@@ -528,6 +569,10 @@ export const mockApi = ({
 	tx,
 	runtimeMetadata: polkadotMetadata,
 	query: {
+		assets: {
+			asset: assetsInfo,
+			metadata: assetsMetadata,
+		},
 		auctions: {
 			auctionInfo: {
 				at: auctionsInfoAt,
