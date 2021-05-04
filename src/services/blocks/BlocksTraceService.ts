@@ -43,7 +43,10 @@ export class BlocksTraceService extends AbstractService {
 					hash,
 					height: number.unwrap().toString(10),
 				},
-				traces: traceResponse.blockTrace,
+				storageKeys: traceResponse.blockTrace.storageKeys,
+				tracingTargets: traceResponse.blockTrace.tracingTargets,
+				events: traceResponse.blockTrace.events,
+				spans: traceResponse.blockTrace.spans.sort((a, b) => a.id - b.id),
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);

@@ -1,13 +1,17 @@
 import {
 	ActionGroup,
-	BlockTrace,
 	Operation,
+	TraceEvent,
+	TraceSpan,
 } from '../../services/blocks/trace';
 import { IAt } from './At';
 
 export interface BlocksTrace {
 	at: IAt;
-	traces: BlockTrace;
+	storageKeys: string;
+	tracingTargets: string;
+	events: TraceEvent[];
+	spans: TraceSpan[];
 }
 
 export interface BlocksTraceOperations {

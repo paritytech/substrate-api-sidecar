@@ -35,6 +35,7 @@ import {
 } from '.';
 import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
+import traceBlockRPC from './data/traceBlock.json';
 import { validators789629Hex } from './data/validators789629Hex';
 
 const eventsAt = (_hash: Hash) =>
@@ -517,6 +518,8 @@ const auctionsWinningsAt = () =>
 		return optionWinnings;
 	});
 
+const traceBlock = () => Promise.resolve().then(() => traceBlockRPC.result);
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -644,6 +647,7 @@ export const mockApi = ({
 			getRuntimeVersion,
 			getMetadata,
 			getStorage,
+			traceBlock,
 		},
 		system: {
 			chain,

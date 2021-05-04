@@ -65,6 +65,7 @@ export interface SpanWithChildren extends TraceSpan {
 
 export interface BlockTrace {
 	blockHash: string;
+	storageKeys: string;
 	tracingTargets: string;
 	events: TraceEvent[];
 	spans: TraceSpan[];
@@ -77,6 +78,8 @@ export function isBlockTrace(
 		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.blockHash ===
 			'string' &&
 		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.tracingTargets ===
+			'string' &&
+		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.storageKeys ===
 			'string' &&
 		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.events) &&
 		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.spans)
