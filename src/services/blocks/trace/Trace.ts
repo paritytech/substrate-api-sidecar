@@ -22,14 +22,14 @@ import {
 	TraceSpan,
 } from './types';
 
-const EMPTY_KEY_INFO = {
+const EMPTY_KEY_INFO = Object.freeze({
 	error: 'key not found',
-};
+});
 
 /**
  * Known spans
  */
-const SPANS = {
+const SPANS = Object.freeze({
 	executeBlock: {
 		name: 'execute_block',
 		target: 'frame_executive',
@@ -46,7 +46,25 @@ const SPANS = {
 		name: 'on_finalize',
 		// Targets vary by pallet
 	},
-};
+});
+
+const WELL_KNOWN_KEYS = Object.freeze({
+	'3a636f6465': {
+		special: ':code',
+	},
+	'3a686561707061676573': {
+		special: ':heappages',
+	},
+	'3a65787472696e7369635f696e646578': {
+		special: ':extrinsic_index',
+	},
+	'3a6368616e6765735f74726965': {
+		special: ':changes_trie',
+	},
+	'3a6368696c645f73746f726167653a': {
+		special: ':child_storage:',
+	},
+});
 
 /**
  * Mapping of span id => span with children ids
@@ -129,25 +147,7 @@ export class Trace {
 			return acc;
 		}, {} as Record<string, KeyInfo>);
 
-		const wellKnownKeys = {
-			'3a636f6465': {
-				special: ':code',
-			},
-			'3a686561707061676573': {
-				special: ':heappages',
-			},
-			'3a65787472696e7369635f696e646578': {
-				special: ':extrinsic_index',
-			},
-			'3a6368616e6765735f74726965': {
-				special: ':changes_trie',
-			},
-			'3a6368696c645f73746f726167653a': {
-				special: ':child_storage:',
-			},
-		};
-
-		return { ...moduleKeys, ...wellKnownKeys };
+		return { ...moduleKeys, ...WELL_KNOWN_KEYS };
 	}
 
 	/**

@@ -9,9 +9,31 @@ import { AbstractService } from '../AbstractService';
 import { BlockTraceResponse, isBlockTrace, isTraceError, Trace } from './trace';
 
 const DEFAULT_TARGETS = 'pallet,frame,state';
-// :extrinsic_index & frame_system::Account
+/**
+ * These are the keys we pass as an arg to the RPC to filter events. We will get
+ * storage events where they have a key whose prefix matches one of these.
+ *
+ * Equivalent of the storage keys for :extrinsic_index & frame_system::Account.
+ * These are the storage keys we use to filter events to reduce payload size and
+ * computational complexity for processing the data. For creating operations we
+ * only need events for storage Get/Put to these two storage items.
+ *
+ * Note: frame_system::Account is the storage prefix for items in a map. In the
+ * storage events we will get the actual entries of the map and use the key suffix
+ * to extract the address.
+ * ref: https://github.com/paritytech/substrate/blob/a604906c340c90e22fb20a8d77bcb3fee86c73c1/frame/system/src/lib.rs#L530-L538
+ * learn about transparen keys: https://www.shawntabrizi.com/substrate/transparent-keys-in-substrate/
+ *
+ * Note: :extrinisc_index is the key for a single `u32` value that gets updated
+ * during block execution to reflect the index of the current extrinsic being excuted.
+ * ref: https://github.com/paritytech/substrate/blob/c93ef27486e5f14696e5b6d36edafea7936edbc8/primitives/storage/src/lib.rs#L169
+ */
 const DEFAULT_KEYS =
 	'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
+
+/**
+ * Error response when the response from the rpc is not the shape of
+ */
 const UNEXPECTED_RPC_RESPONSE = 'Unexpected response to state_traceBlock RPC';
 
 export class BlocksTraceService extends AbstractService {
