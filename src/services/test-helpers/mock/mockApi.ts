@@ -5,6 +5,7 @@ import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
 	ActiveEraInfo,
+	AssetId,
 	Block,
 	BlockNumber,
 	EraIndex,
@@ -19,6 +20,7 @@ import BN from 'bn.js';
 
 import { rococoMetadataV228 } from '../../..//test-helpers/metadata/rococoMetadata';
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
+import { statemintV1 } from '../../../test-helpers/metadata/statemintMetadata';
 import {
 	polkadotRegistry,
 	rococoRegistry,
@@ -523,7 +525,13 @@ const auctionsWinningsAt = () =>
  *
  * Used in `/assets` and `/accounts` endpoints
  */
-const isFrozen = rococoRegistry.createType('bool', false);
+const statemintApiV1 = createApiWithAugmentations(statemintV1);
+const statemintTypeFactory = new TypeFactory(statemintApiV1);
+
+const falseBool = rococoRegistry.createType('bool', false);
+const trueBool = rococoRegistry.createType('bool', true);
+const assetTBalanceOne = rococoRegistry.createType('u64', 10000000);
+const assetTBalanceTwo = rococoRegistry.createType('u64', 20000000);
 
 const assetsInfo = () =>
 	Promise.resolve().then(() => {
@@ -532,14 +540,14 @@ const assetsInfo = () =>
 			issue: accountIdTwo,
 			admin: accountIdTwo,
 			freezer: accountIdTwo,
-			supply: rococoRegistry.createType('u64', 10000000),
+			supply: assetTBalanceOne,
 			deposit: balanceOfTwo,
 			minBalance: rococoRegistry.createType('u64', 10000),
-			isSufficient: rococoRegistry.createType('bool', true),
+			isSufficient: trueBool,
 			accounts: rococoRegistry.createType('u32', 10),
 			sufficients: rococoRegistry.createType('u32', 15),
 			approvals: rococoRegistry.createType('u32', 20),
-			isFrozen,
+			isFrozen: falseBool,
 		};
 
 		return rococoRegistry.createType('AssetDetails', responseObj);
@@ -552,11 +560,105 @@ const assetsMetadata = () =>
 			name: rococoRegistry.createType('Bytes', 'statemint'),
 			symbol: rococoRegistry.createType('Bytes', 'DOT'),
 			decimals: rococoRegistry.createType('u8', 10),
-			isFrozen,
+			isFrozen: falseBool,
 		};
 
 		return rococoRegistry.createType('AssetMetadata', responseObj);
 	});
+
+const assetBalanceObjOne = {
+	balance: assetTBalanceOne,
+	isFrozen: falseBool,
+	isSufficient: trueBool,
+};
+
+const assetBalanceObjTwo = {
+	balance: assetTBalanceTwo,
+	isFrozen: trueBool,
+	isSufficient: trueBool,
+};
+
+const assetBalanceObjThree = {
+	balance: assetTBalanceTwo,
+	isFrozen: falseBool,
+	isSufficient: falseBool,
+};
+
+const assetBalanceFactory = {
+	'10': rococoRegistry.createType('AssetBalance', assetBalanceObjOne),
+	'20': rococoRegistry.createType('AssetBalance', assetBalanceObjTwo),
+	'30': rococoRegistry.createType('AssetBalance', assetBalanceObjThree),
+};
+
+const assetAccountStorageKeyOne = statemintTypeFactory.storageKey(
+	10,
+	'AssetId',
+	statemintApiV1.query.assets.asset,
+	accountIdOne
+);
+
+const assetAccountStorageKeyTwo = statemintTypeFactory.storageKey(
+	20,
+	'AssetId',
+	statemintApiV1.query.assets.asset,
+	accountIdOne
+);
+
+const assetAccountStorageKeyThree = statemintTypeFactory.storageKey(
+	30,
+	'AssetId',
+	statemintApiV1.query.assets.account,
+	accountIdOne
+);
+
+const assetsAccountKeysAt = () =>
+	Promise.resolve().then(() => {
+		return [
+			assetAccountStorageKeyOne,
+			assetAccountStorageKeyTwo,
+			assetAccountStorageKeyThree,
+			assetAccountStorageKeyThree,
+			assetAccountStorageKeyThree,
+		];
+	});
+
+/**
+ * @param assetId options are 10, 20, 30
+ */
+interface AssetsAccount {
+	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+	[key: string]: any;
+}
+
+const assetsAccount: AssetsAccount = (assetId: number | AssetId, _address: string) => {
+	const id = typeof assetId === 'number' ? assetId : assetId.toNumber();
+
+	return Promise.resolve().then(() => {
+		switch (id) {
+			case 10:
+				return assetBalanceFactory[10];
+			case 20:
+				return assetBalanceFactory[20];
+			case 30:
+				return assetBalanceFactory[30];
+			default:
+				return;
+		}
+	});
+};
+
+assetsAccount.extend = function (args: AssetsAccount) {
+	for (const i in args) {
+		// eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
+		this[i] = args[i];
+	}
+	return this;
+};
+
+// eslint-disable-next-line  @typescript-eslint/no-unsafe-call
+assetsAccount.extend({
+	keysAt: assetsAccountKeysAt,
+});
 
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
@@ -570,6 +672,7 @@ export const mockApi = ({
 	runtimeMetadata: polkadotMetadata,
 	query: {
 		assets: {
+			account: assetsAccount,
 			asset: assetsInfo,
 			metadata: assetsMetadata,
 		},

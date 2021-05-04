@@ -22,11 +22,8 @@ export class AccountsAssetsService extends AbstractService {
 
 		const { number } = await api.rpc.chain.getHeader(hash);
 
-		// Zero is a falsy value, therefore we check to see if the assets array is 0
-		const isAssetsEmpty = !!assets.length;
-
 		let queryAllAssets;
-		if (isAssetsEmpty) {
+		if (assets.length === 0) {
 			/**
 			 * This will query all assets and return them in an array
 			 */
@@ -98,6 +95,7 @@ export class AccountsAssetsService extends AbstractService {
 	}
 
 	extractAssetIds(keys: StorageKey<[AssetId, AccountId]>[]): AssetId[] {
+		console.log('keys', keys)
 		return keys.map(({ args: [assetId] }) => assetId).sort((a, b) => a.cmp(b));
 	}
 }

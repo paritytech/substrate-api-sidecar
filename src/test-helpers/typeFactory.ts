@@ -2,6 +2,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { StorageEntryBase } from '@polkadot/api/types/storage';
 import { Metadata } from '@polkadot/metadata';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
+import { AccountId } from '@polkadot/types/interfaces/runtime';
 import {
 	Codec,
 	CodecArg,
@@ -73,10 +74,14 @@ export class TypeFactory {
 	storageKey(
 		index: number,
 		indexType: keyof InterfaceTypes,
-		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>,
+		secondaryId?: AccountId
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
-		const key = new StorageKey(this.#registry, storageEntry.key(id));
+		const key = new StorageKey(
+			this.#registry,
+			storageEntry.key(id, secondaryId)
+		);
 
 		return key.setMeta(storageEntry.creator.meta);
 	}
