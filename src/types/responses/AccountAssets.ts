@@ -8,7 +8,7 @@ import { bool } from '@polkadot/types/primitive';
 import { IAt } from '.';
 
 /**
- * 
+ *
  */
 export interface IAssetBalance {
 	assetId: AssetId | number;

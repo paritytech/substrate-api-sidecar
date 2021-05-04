@@ -16,8 +16,8 @@ export class AccountsAssetsService extends AbstractService {
 	/**
 	 * Fetch all the `AssetBalance`s along side their `AssetId`'s for a given array of queried AssetId`'s.
 	 * If none are queried the function will get all AssetId's associated with the
-	 * given `AccountId`, and send back all the `AssetsBalance`s. 
-	 * 
+	 * given `AccountId`, and send back all the `AssetsBalance`s.
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param address `AccountId` associated with the balances
 	 * @param assets An array of `assetId`'s to be queried. If the length is zero
@@ -87,9 +87,9 @@ export class AccountsAssetsService extends AbstractService {
 	}
 
 	/**
-	 * Fetch all `AccountApproval`'s with a given `AssetId` and a `AssetApprovalKey` 
+	 * Fetch all `AccountApproval`'s with a given `AssetId` and a `AssetApprovalKey`
 	 * which consists of a `delegate` and an `owner(AccoundId)`
-	 * 
+	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param address `AccountId` or owner associated with the approvals
 	 * @param assetId `AssetId` associated with the `AssetApproval`
