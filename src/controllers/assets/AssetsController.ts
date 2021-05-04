@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import { AssetsService } from 'src/services/assets/AssetsService';
 
+import { AssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class AssetsController extends AbstractController<AssetsService> {
@@ -22,15 +22,13 @@ export default class AssetsController extends AbstractController<AssetsService> 
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 		/**
-		 * Verify our param `assetId` is an integer represented as a string
+		 * Verify our param `assetId` is an integer represented as a string, and return
+		 * is as an integer
 		 */
-		this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
-
-		/**
-		 * Change assetId from a type string to a number before passing it
-		 * into any service.
-		 */
-		const index = parseInt(assetId, 10);
+		const index = this.parseNumberOrThrow(
+			assetId,
+			'`assetId` path param is not a number'
+		);
 
 		AssetsController.sanitizedSend(
 			res,

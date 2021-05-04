@@ -1,9 +1,10 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
-import { AnyNumber } from '@polkadot/types/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
+import { AnyNumber } from '@polkadot/types/types';
 
+import { IAccountAssetApproval } from '../../types/responses';
 import { IAccountAssetsBalanceVec } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
@@ -18,10 +19,6 @@ export class AccountsAssetsService extends AbstractService {
 		assets: number[] | []
 	): Promise<IAccountAssetsBalanceVec> {
 		const { api } = this;
-		//Promise<IAccountAssetsBalance | IAccountAssetsBalanceVec>
-		/**
-		 * If the length of the array is empty then we dont do anything
-		 */
 
 		const { number } = await api.rpc.chain.getHeader(hash);
 
@@ -48,7 +45,7 @@ export class AccountsAssetsService extends AbstractService {
 			 */
 			queryAllAssets = async () =>
 				await Promise.all(
-                    assets.map((assetId: number | AnyNumber) =>
+					assets.map((assetId: number | AnyNumber) =>
 						api.query.assets.account(assetId, address)
 					)
 				);
@@ -64,6 +61,39 @@ export class AccountsAssetsService extends AbstractService {
 		return {
 			at,
 			assets: response,
+		};
+	}
+
+	async fetchAssetApproval(
+		hash: BlockHash,
+		address: string,
+		assetId: number,
+		delegate: string
+    ): Promise<IAccountAssetApproval> {
+		const { api } = this;
+
+		/**
+		 * AssetApprovalKey, contains the `accountId` as the address key, and the
+		 * delegate `accountId` 
+		 */
+		const approvalKey = { owner: address, delegate };
+
+		const [{ number }, assetApproval] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.assets.approvals(assetId, approvalKey),
+		]);
+
+		const { amount, deposit } = assetApproval.unwrap();
+
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		return {
+			at,
+			amount,
+			deposit,
 		};
 	}
 
