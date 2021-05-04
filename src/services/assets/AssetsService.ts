@@ -9,6 +9,12 @@ export class AssetsService extends AbstractService {
 		super(api);
 	}
 
+	/**
+	 * Fetch an asset for its `AssetDetails` and `AssetMetadata` based on their `AssetId`.
+	 * 
+	 * @param hash `BlockHash` to make call at
+	 * @param assetId `AssetId` used to get info and metadata for an asset
+	 */
 	async fetchAssetById(hash: BlockHash, assetId: number): Promise<IAssetInfo> {
 		const { api } = this;
 

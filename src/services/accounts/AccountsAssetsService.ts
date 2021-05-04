@@ -5,7 +5,7 @@ import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { AnyNumber } from '@polkadot/types/types';
 
 import { IAccountAssetApproval } from '../../types/responses';
-import { IAccountAssetsBalanceVec } from '../../types/responses';
+import { IAccountAssetsBalance } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsAssetsService extends AbstractService {
@@ -13,11 +13,21 @@ export class AccountsAssetsService extends AbstractService {
 		super(api);
 	}
 
+	/**
+	 * Fetch all the `AssetBalance`s along side their `AssetId`'s for a given array of queried AssetId`'s.
+	 * If none are queried the function will get all AssetId's associated with the
+	 * given `AccountId`, and send back all the `AssetsBalance`s. 
+	 * 
+	 * @param hash `BlockHash` to make call at
+	 * @param address `AccountId` associated with the balances
+	 * @param assets An array of `assetId`'s to be queried. If the length is zero
+	 * all assetId's associated to the account will be queried
+	 */
 	async fetchAssetBalances(
 		hash: BlockHash,
 		address: string,
 		assets: number[] | []
-	): Promise<IAccountAssetsBalanceVec> {
+	): Promise<IAccountAssetsBalance> {
 		const { api } = this;
 
 		const { number } = await api.rpc.chain.getHeader(hash);
@@ -76,6 +86,15 @@ export class AccountsAssetsService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Fetch all `AccountApproval`'s with a given `AssetId` and a `AssetApprovalKey` 
+	 * which consists of a `delegate` and an `owner(AccoundId)`
+	 * 
+	 * @param hash `BlockHash` to make call at
+	 * @param address `AccountId` or owner associated with the approvals
+	 * @param assetId `AssetId` associated with the `AssetApproval`
+	 * @param delegate `delegate`
+	 */
 	async fetchAssetApproval(
 		hash: BlockHash,
 		address: string,
@@ -109,6 +128,9 @@ export class AccountsAssetsService extends AbstractService {
 		};
 	}
 
+	/**
+	 * @param keys An Array of storage keys used to extract `AssetId`'s
+	 */
 	extractAssetIds(keys: StorageKey<[AssetId, AccountId]>[]): AssetId[] {
 		return keys.map(({ args: [assetId] }) => assetId).sort((a, b) => a.cmp(b));
 	}

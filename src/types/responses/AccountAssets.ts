@@ -7,6 +7,9 @@ import { bool } from '@polkadot/types/primitive';
 
 import { IAt } from '.';
 
+/**
+ * 
+ */
 export interface IAssetBalance {
 	assetId: AssetId | number;
 	balance: TAssetBalance;
@@ -14,7 +17,7 @@ export interface IAssetBalance {
 	isSufficient: bool;
 }
 
-export interface IAccountAssetsBalanceVec {
+export interface IAccountAssetsBalance {
 	at: IAt;
 	assets: IAssetBalance[];
 }
