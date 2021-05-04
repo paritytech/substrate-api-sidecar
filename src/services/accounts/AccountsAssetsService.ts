@@ -32,9 +32,11 @@ export class AccountsAssetsService extends AbstractService {
 
 			queryAllAssets = async () =>
 				await Promise.all(
-					assetIds.map((assetId: AssetId) =>
-						api.query.assets.account(assetId, address)
-					)
+					assetIds.map((assetId: AssetId) => {
+
+						const asset = api.query.assets.account(assetId, address);
+						return asset
+					})
 				);
 		} else {
 			/**
@@ -95,7 +97,6 @@ export class AccountsAssetsService extends AbstractService {
 	}
 
 	extractAssetIds(keys: StorageKey<[AssetId, AccountId]>[]): AssetId[] {
-		console.log('keys', keys)
 		return keys.map(({ args: [assetId] }) => assetId).sort((a, b) => a.cmp(b));
 	}
 }

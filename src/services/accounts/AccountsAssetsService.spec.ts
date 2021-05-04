@@ -47,8 +47,6 @@ describe('AccountsAssetsService', () => {
                 []
             );
 
-            console.log(sanitizeNumbers(response));
-
             expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
         });
 	});
