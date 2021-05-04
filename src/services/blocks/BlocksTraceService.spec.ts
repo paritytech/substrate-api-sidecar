@@ -12,8 +12,8 @@ import { BlocksTraceService } from './BlocksTraceService';
 import { Trace } from './trace';
 
 /**
- * Save the getKeyNames function refference, so we can point it to a different function
- * for testing and then reassing it back to the original after this test suite is done.
+ * Save the getKeyNames function reference, so we can point it to a different function
+ * for testing and then reassign it back to the original after this test suite is done.
  */
 const tempGetKeyNames = Trace['getKeyNames'].bind(Trace);
 /**
