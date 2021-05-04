@@ -86,7 +86,7 @@ export class AccountsAssetsService extends AbstractService {
 
 		/**
 		 * AssetApprovalKey, contains the `accountId` as the address key, and the
-		 * delegate `accountId`
+		 * delegate `accountId`. Both are required for a successfull query 
 		 */
 		const approvalKey = { owner: address, delegate };
 

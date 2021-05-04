@@ -25,7 +25,7 @@ describe('AccountsAssetsService', () => {
 				'0xffff',
 				[10, 20]
 			);
-            console.log(sanitizeNumbers(response))
+
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
 
@@ -46,10 +46,27 @@ describe('AccountsAssetsService', () => {
                 '0xffff',
                 []
             );
-            console.log(sanitizeNumbers(response))
+
             expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
         });
 	});
 
-	describe('AccountsAssetsService.fetchAssetApproval', () => {});
+	describe('AccountsAssetsService.fetchAssetApproval', () => {
+        it('Should return the correct response', async () => {
+            const expectedResponse = {
+                at,
+                amount: '10000000',
+                deposit: '2000000',
+            };
+
+            const response = await accountsAssetsService.fetchAssetApproval(
+                blockHash789629,
+                '',
+                10,
+                ''
+            );
+
+            expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
+        });
+    });
 });

@@ -38,9 +38,7 @@ describe('AssetsService', () => {
 
 			const response = await assetsService.fetchAssetById(blockHash789629, 10);
 
-			console.log(sanitizeNumbers(response));
-
-			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
 	});
 });

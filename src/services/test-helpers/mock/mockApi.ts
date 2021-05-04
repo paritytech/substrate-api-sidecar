@@ -660,6 +660,15 @@ assetsAccount.extend({
 	keysAt: assetsAccountKeysAt,
 });
 
+const assetApprovals = () => 
+	Promise.resolve().then(() => {
+		const assetObj = {
+			amount: assetTBalanceOne,
+			deposit: balanceOfTwo
+		}
+		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
+	});
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
@@ -673,6 +682,7 @@ export const mockApi = ({
 	query: {
 		assets: {
 			account: assetsAccount,
+			approvals: assetApprovals,
 			asset: assetsInfo,
 			metadata: assetsMetadata,
 		},
