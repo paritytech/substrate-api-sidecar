@@ -630,7 +630,10 @@ interface AssetsAccount {
 	[key: string]: any;
 }
 
-const assetsAccount: AssetsAccount = (assetId: number | AssetId, _address: string) => {
+const assetsAccount: AssetsAccount = (
+	assetId: number | AssetId,
+	_address: string
+) => {
 	const id = typeof assetId === 'number' ? assetId : assetId.toNumber();
 
 	return Promise.resolve().then(() => {
@@ -660,12 +663,12 @@ assetsAccount.extend({
 	keysAt: assetsAccountKeysAt,
 });
 
-const assetApprovals = () => 
+const assetApprovals = () =>
 	Promise.resolve().then(() => {
 		const assetObj = {
 			amount: assetTBalanceOne,
-			deposit: balanceOfTwo
-		}
+			deposit: balanceOfTwo,
+		};
 		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
 	});
 

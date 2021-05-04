@@ -4,6 +4,7 @@ import {
 } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
 import { bool } from '@polkadot/types/primitive';
+
 import { IAt } from '.';
 
 export interface IAssetBalance {

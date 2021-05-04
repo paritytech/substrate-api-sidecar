@@ -32,17 +32,17 @@ export class AccountsAssetsService extends AbstractService {
 
 			const queryAllAssets = async () =>
 				await Promise.all(
-					assetIds.map((assetId: AssetId) => 
+					assetIds.map((assetId: AssetId) =>
 						api.query.assets.account(assetId, address)
 					)
-				)
+				);
 			response = (await queryAllAssets()).map((asset, i) => {
 				return {
 					assetId: assetIds[i],
 					balance: asset.balance,
 					isFrozen: asset.isFrozen,
-					isSufficient: asset.isSufficient
-				}
+					isSufficient: asset.isSufficient,
+				};
 			});
 		} else {
 			/**
@@ -60,8 +60,8 @@ export class AccountsAssetsService extends AbstractService {
 					assetId: assets[i],
 					balance: asset.balance,
 					isFrozen: asset.isFrozen,
-					isSufficient: asset.isSufficient
-				}
+					isSufficient: asset.isSufficient,
+				};
 			});
 		}
 
@@ -86,7 +86,7 @@ export class AccountsAssetsService extends AbstractService {
 
 		/**
 		 * AssetApprovalKey, contains the `accountId` as the address key, and the
-		 * delegate `accountId`. Both are required for a successfull query 
+		 * delegate `accountId`. Both are required for a successfull query
 		 */
 		const approvalKey = { owner: address, delegate };
 
