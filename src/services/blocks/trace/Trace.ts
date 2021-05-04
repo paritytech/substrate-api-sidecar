@@ -236,13 +236,6 @@ export class Trace {
 		parsedSpans: SpanWithChildren[];
 		executeBlockSpanId: number;
 	} {
-		// IMPORTANT for downstream logic: Make sure spans are sorted.
-		// If this gets taken out, then **all** `Operation`s will need to be sorted on
-		// `eventIndex` to ensure integrity in there ordering. (Ordering integrity
-		// is not strictly neccesary for MVP balance reconciliation, but operating
-		// under the assumption it may be neccesary for closer audits.)
-		spans.sort((a, b) => a.id - b.id);
-
 		const spansById = new Map<number, SpanWithChildren>();
 		const parsedSpans = [];
 		let executeBlockSpanId;
@@ -306,7 +299,7 @@ export class Trace {
 			spansById
 		);
 
-		const operations: Operation[] = [];
+		const actionEvents: PActionEvent[] = [];
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
 		for (const primary of spans) {
@@ -358,14 +351,15 @@ export class Trace {
 					  stringCamelCase(primary.name);
 			}
 
-			const events =
-				eventsByParentId
-					.get(primary.id)
-					?.concat(secondarySpansEvents)
-					.sort((a, b) => a.eventIndex - b.eventIndex) || [];
+			const primarySpanEvents = eventsByParentId.get(primary.id);
+			const allActionEvents =
+				primarySpanEvents?.concat(secondarySpansEvents) || [];
+			const events = allActionEvents?.sort(
+				(a, b) => a.eventIndex - b.eventIndex
+			);
 
-			const eventsWithPhaseInfo = events.map((e) => {
-				return {
+			events.forEach((e) => {
+				actionEvents.push({
 					...e,
 					phase: {
 						variant: phase,
@@ -376,14 +370,8 @@ export class Trace {
 						name: primary.name,
 						target: primary.target,
 					},
-				};
+				});
 			});
-
-			operations.push(
-				...this.deriveOperations(
-					this.accountEventsByAddress(eventsWithPhaseInfo)
-				)
-			);
 
 			// Primary span, and all associated descendant spans and events
 			// representing an action group.
@@ -392,11 +380,19 @@ export class Trace {
 				phase,
 				primarySpan: primary,
 				secondarySpans,
-				events: eventsWithPhaseInfo,
 			});
 		}
 
-		return { actions, operations };
+		// Sort in place
+		actionEvents.sort((a, b) => a.eventIndex - b.eventIndex);
+		const accountEventsByAddress = this.accountEventsByAddress(actionEvents);
+
+		return {
+			actions,
+			// Note: if operations need to be in order of the actual storage ops they need to be sorted
+			// again by `eventIndex`. We skip that here for performance.
+			operations: this.deriveOperations(accountEventsByAddress),
+		};
 	}
 
 	/**

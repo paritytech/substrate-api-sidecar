@@ -172,10 +172,6 @@ export interface ActionGroup {
 	 * For hooks this will be something be the `onInitialize`/`onFinalize` span.
 	 */
 	secondarySpans: SpanWithChildren[];
-	/**
-	 * Events from the primary and secondary spans.
-	 */
-	events: PActionEvent[];
 }
 
 export interface CurrencyId {
