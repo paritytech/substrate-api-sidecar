@@ -11,3 +11,6 @@ yarn-error.log
 /.clinic
 **.log
 **/logs
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
