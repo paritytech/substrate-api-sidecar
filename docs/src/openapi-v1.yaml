@@ -930,7 +930,7 @@ paths:
         [Experimental - subject to breaking change.] Get traces for the most
         recently finalized block.
       description: |
-        Returns traces (spans and events) of the most recently finalize block from
+        Returns traces (spans and events) of the most recently finalized block from
         RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
         merged) for conceptual info.
       responses:
@@ -945,8 +945,7 @@ paths:
       tags:
       - trace
       summary: |
-        [Experimental - subject to breaking change.] Get traces for the most
-        recently finalized block.
+        [Experimental - subject to breaking change.] Get traces for the given `blockId`.
       description: |
         Returns traces (spans and events) of the specified block from
         RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
@@ -1002,7 +1001,7 @@ paths:
       parameters:
       - name: actions
         in: query
-        description: Wether or not to include action groups.
+        description: Whether or not to include action groups.
         required: false
         schema:
           type: boolean
@@ -1057,7 +1056,7 @@ paths:
           type: string
       - name: actions
         in: query
-        description: Wether or not to include action groups.
+        description: Whether or not to include action groups.
         required: false
         schema:
           type: boolean
