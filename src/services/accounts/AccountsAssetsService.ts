@@ -6,7 +6,7 @@ import { AnyNumber } from '@polkadot/types/types';
 
 import {
 	IAccountAssetApproval,
-	IAccountAssetsBalance,
+	IAccountAssetsBalances,
 	IAssetBalance,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -30,7 +30,7 @@ export class AccountsAssetsService extends AbstractService {
 		hash: BlockHash,
 		address: string,
 		assets: number[]
-	): Promise<IAccountAssetsBalance> {
+	): Promise<IAccountAssetsBalances> {
 		const { api } = this;
 
 		const { number } = await api.rpc.chain.getHeader(hash);
