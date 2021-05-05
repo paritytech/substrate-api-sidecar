@@ -78,7 +78,7 @@ type SpansById = Map<number, SpanWithChildren>;
 type ExtrinsicIndexBySpanId = Map<number, BN>;
 
 /**
- * Mapping of span id => array of the events belongin to the span.
+ * Mapping of span id => array of the events belonging to the span.
  */
 type EventsByParentId = Map<number, ParsedEvent[]>;
 
