@@ -27,7 +27,6 @@ export default class AccountsAssetsController extends AbstractController<Account
 		const hash = await this.getHashFromAt(at);
 
 		let assetsArray: number[] = [];
-
 		if (typeof assets === 'string') {
 			assetsArray = this.parseQueryParamArrayOrThrow(
 				assets,
