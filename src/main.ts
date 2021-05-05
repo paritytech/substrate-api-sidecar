@@ -39,7 +39,7 @@ async function main() {
 
 	logger.info(`Version: ${packageJSON.version}`);
 
-	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0xdb360a960cda5f3e2b697cc4e2e4a228554ca3c078a4aef93d86b9c23bafbbb7"]}' http://localhost:9933/
+	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0xdb360a960cda5f3e2b697cc4e2e4a228554ca3c078a4aef93d86b9c23bafbbb7","pallet,frame,state","3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"]}' http://localhost:9933/
 	const rpc = {
 		state: {
 			traceBlock: {
