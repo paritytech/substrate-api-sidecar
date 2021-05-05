@@ -23,7 +23,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 		const hash = await this.getHashFromAt(at);
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
-		 * is as an integer
+		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(
 			assetId,
