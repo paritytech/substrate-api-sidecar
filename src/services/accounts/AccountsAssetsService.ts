@@ -26,7 +26,7 @@ export class AccountsAssetsService extends AbstractService {
 	async fetchAssetBalances(
 		hash: BlockHash,
 		address: string,
-		assets: number[] | []
+		assets: number[]
 	): Promise<IAccountAssetsBalance> {
 		const { api } = this;
 
