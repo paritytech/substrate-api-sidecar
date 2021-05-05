@@ -1,11 +1,14 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
-import { AssetId, BlockHash } from '@polkadot/types/interfaces';
+import { AssetBalance, AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { AnyNumber } from '@polkadot/types/types';
 
-import { IAccountAssetApproval } from '../../types/responses';
-import { IAccountAssetsBalance } from '../../types/responses';
+import {
+	IAccountAssetApproval,
+	IAccountAssetsBalance,
+	IAssetBalance,
+} from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsAssetsService extends AbstractService {
@@ -40,39 +43,12 @@ export class AccountsAssetsService extends AbstractService {
 			const keys = await api.query.assets.account.keysAt(hash);
 			const assetIds = this.extractAssetIds(keys);
 
-			const queryAllAssets = async () =>
-				await Promise.all(
-					assetIds.map((assetId: AssetId) =>
-						api.query.assets.account(assetId, address)
-					)
-				);
-			response = (await queryAllAssets()).map((asset, i) => {
-				return {
-					assetId: assetIds[i],
-					balance: asset.balance,
-					isFrozen: asset.isFrozen,
-					isSufficient: asset.isSufficient,
-				};
-			});
+			response = await this.queryAssets(api, assetIds, address);
 		} else {
 			/**
 			 * This will query all assets by the requested AssetIds
 			 */
-			const queryAllAssets = async () =>
-				await Promise.all(
-					assets.map((assetId: number | AnyNumber) =>
-						api.query.assets.account(assetId, address)
-					)
-				);
-
-			response = (await queryAllAssets()).map((asset, i) => {
-				return {
-					assetId: assets[i],
-					balance: asset.balance,
-					isFrozen: asset.isFrozen,
-					isSufficient: asset.isSufficient,
-				};
-			});
+			response = await this.queryAssets(api, assets, address);
 		}
 
 		const at = {
@@ -126,6 +102,30 @@ export class AccountsAssetsService extends AbstractService {
 			amount,
 			deposit,
 		};
+	}
+
+	async queryAssets(
+		api: ApiPromise,
+		assets: AssetId[] | number[],
+		address: string
+	): Promise<IAssetBalance[]> {
+		const queryInputAssets = async (): Promise<AssetBalance[]> =>
+			await Promise.all(
+				assets.map((assetId: number | AnyNumber) =>
+					api.query.assets.account(assetId, address)
+				)
+			);
+
+		const response = (await queryInputAssets()).map((asset, i) => {
+			return {
+				assetId: assets[i],
+				balance: asset.balance,
+				isFrozen: asset.isFrozen,
+				isSufficient: asset.isSufficient,
+			};
+		});
+
+		return response;
 	}
 
 	/**
