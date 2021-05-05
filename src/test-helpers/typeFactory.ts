@@ -2,7 +2,6 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { StorageEntryBase } from '@polkadot/api/types/storage';
 import { Metadata } from '@polkadot/metadata';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
-import { AccountId } from '@polkadot/types/interfaces/runtime';
 import {
 	Codec,
 	CodecArg,
@@ -74,14 +73,38 @@ export class TypeFactory {
 	storageKey(
 		index: number,
 		indexType: keyof InterfaceTypes,
-		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>,
-		secondaryId?: AccountId
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
-		const key = new StorageKey(
-			this.#registry,
-			storageEntry.key(id, secondaryId)
-		);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
+
+		return key.setMeta(storageEntry.creator.meta);
+	}
+
+	/**
+	 * Similar to the storageKey method above, this is specific to storageKeys
+	 * that take in double map for keys.
+	 *
+	 * @param index The id to assign the key to.
+	 * @param indexTypeOne The First InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param indexTypeOne The Second InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
+	 * Contains necessary key value pairs to retrieve specific information from a query
+	 * such as `at`, `entriesAt`, `entries` etc..
+	 *
+	 * Some Parameter Examples:
+	 * 1. apiPromise.query.assets.account
+	 */
+	storageKeyDoubleMap(
+		index: number,
+		indexTypeOne: keyof InterfaceTypes,
+		indexTypeTwo: keyof InterfaceTypes,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const idOne = this.#registry.createType(indexTypeOne, index);
+		const idTwo = this.#registry.createType(indexTypeTwo);
+
+		const key = new StorageKey(this.#registry, storageEntry.key(idOne, idTwo));
 
 		return key.setMeta(storageEntry.creator.meta);
 	}

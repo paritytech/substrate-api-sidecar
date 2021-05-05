@@ -590,25 +590,25 @@ const assetBalanceFactory = {
 	'30': rococoRegistry.createType('AssetBalance', assetBalanceObjThree),
 };
 
-const assetAccountStorageKeyOne = statemintTypeFactory.storageKey(
+const assetAccountStorageKeyOne = statemintTypeFactory.storageKeyDoubleMap(
 	10,
 	'AssetId',
-	statemintApiV1.query.assets.asset,
-	accountIdOne
+	'AccountId',
+	statemintApiV1.query.assets.asset
 );
 
-const assetAccountStorageKeyTwo = statemintTypeFactory.storageKey(
+const assetAccountStorageKeyTwo = statemintTypeFactory.storageKeyDoubleMap(
 	20,
 	'AssetId',
-	statemintApiV1.query.assets.asset,
-	accountIdOne
+	'AccountId',
+	statemintApiV1.query.assets.asset
 );
 
-const assetAccountStorageKeyThree = statemintTypeFactory.storageKey(
+const assetAccountStorageKeyThree = statemintTypeFactory.storageKeyDoubleMap(
 	30,
 	'AssetId',
-	statemintApiV1.query.assets.account,
-	accountIdOne
+	'AccountId',
+	statemintApiV1.query.assets.asset
 );
 
 const assetsAccountKeysAt = () =>
