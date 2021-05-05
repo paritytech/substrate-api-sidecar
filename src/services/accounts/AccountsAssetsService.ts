@@ -132,6 +132,6 @@ export class AccountsAssetsService extends AbstractService {
 	 * @param keys An Array of storage keys used to extract `AssetId`'s
 	 */
 	extractAssetIds(keys: StorageKey<[AssetId, AccountId]>[]): AssetId[] {
-		return keys.map(({ args: [assetId] }) => assetId).sort((a, b) => a.cmp(b));
+		return keys.map(({ args: [assetId] }) => assetId);
 	}
 }
