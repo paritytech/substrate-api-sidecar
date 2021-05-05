@@ -151,6 +151,9 @@ export class Trace {
 	/**
 	 * Extract extrinsic indexes from all `:extrinsic_index` storage item read events.
 	 *
+	 * Note: Expects the given `spanIds` are from an apply extrinsic action group because
+	 * apply extrinsic action groups should contain read events to `:extrinsic_index`.
+	 *
 	 * @param spanIds List of spanIds for an apply extrinsic action group
 	 * @param extrinsicIndexBySpanId Map of spanId => extrinsicIndex
 	 */
@@ -170,7 +173,7 @@ export class Trace {
 		}, [] as BN[]);
 
 		if (extrinsicIndex.length === 0) {
-			// Since we assume the `spanIds` are for a span from an apply extrinsic action group,
+			// Since we assume the `spanIds` are for spans from an apply extrinsic action group,
 			// we assume there is always an `:extrinsic_index` event
 			throw new InternalServerError('Expected at least one extrinsic index');
 		}
@@ -192,7 +195,7 @@ export class Trace {
 	}
 
 	/**
-	 * Find the Ids of all the spans which are descendant of span `root`.
+	 * Find the Ids of all the spans which are descendant of the span `root`.
 	 *
 	 * @param root span which we want all the descendants of
 	 * @param spansById map of span id => `SpanWithChildren`
@@ -284,8 +287,6 @@ export class Trace {
 
 	/**
 	 * Derive the action groups and operations from the block trace.
-	 *
-	 * @returns the action groups and opertions
 	 */
 	actionsAndOps(): { actions: ActionGroup[]; operations: Operation[] } {
 		const {
@@ -499,7 +500,7 @@ export class Trace {
 					(cur.storagePath as PalletKeyInfo).item == 'account'
 				)
 			) {
-				// filter out non system::account events
+				// filter out non system::Account events
 				return acc;
 			}
 

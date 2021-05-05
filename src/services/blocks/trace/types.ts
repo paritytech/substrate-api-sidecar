@@ -74,15 +74,14 @@ export interface BlockTrace {
 export function isBlockTrace(
 	thing: unknown
 ): thing is { blockTrace: BlockTrace } {
+	const { blockHash, tracingTargets, storageKeys, events, spans } = (thing as {
+		blockTrace: BlockTrace;
+	})?.blockTrace;
+
 	return (
-		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.blockHash ===
-			'string' &&
-		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.tracingTargets ===
-			'string' &&
-		typeof (thing as { blockTrace: BlockTrace })?.blockTrace?.storageKeys ===
-			'string' &&
-		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.events) &&
-		Array.isArray((thing as { blockTrace: BlockTrace })?.blockTrace?.spans)
+		[blockHash, tracingTargets, storageKeys].every(
+			(s) => typeof s === 'string'
+		) && [events, spans].every((a) => Array.isArray(a))
 	);
 }
 
