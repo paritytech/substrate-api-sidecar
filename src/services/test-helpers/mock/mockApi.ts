@@ -622,44 +622,36 @@ const assetsAccountKeysAt = () =>
 		];
 	});
 
-/**
- * @param assetId options are 10, 20, 30
- */
 interface AssetsAccount {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	[key: string]: any;
 }
 
+/**
+ * @param assetId options are 10, 20, 30
+ */
 const assetsAccount: AssetsAccount = (
 	assetId: number | AssetId,
 	_address: string
 ) => {
 	const id = typeof assetId === 'number' ? assetId : assetId.toNumber();
 
-	return Promise.resolve().then(() => {
-		switch (id) {
-			case 10:
-				return assetBalanceFactory[10];
-			case 20:
-				return assetBalanceFactory[20];
-			case 30:
-				return assetBalanceFactory[30];
-			default:
-				return;
-		}
-	});
-};
-
-assetsAccount.extend = function (args: AssetsAccount) {
-	for (const i in args) {
-		// eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
-		this[i] = args[i];
+	switch (id) {
+		case 10:
+			return assetBalanceFactory[10];
+		case 20:
+			return assetBalanceFactory[20];
+		case 30:
+			return assetBalanceFactory[30];
+		default:
+			return;
 	}
-	return this;
 };
 
-// eslint-disable-next-line  @typescript-eslint/no-unsafe-call
-assetsAccount.extend({
+/**
+ * Attach `keysAt` to mockApi.query.assets.account
+ */
+Object.assign(assetsAccount, {
 	keysAt: assetsAccountKeysAt,
 });
 
