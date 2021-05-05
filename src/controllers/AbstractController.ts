@@ -179,7 +179,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			.map((str) =>
 				this.parseNumberOrThrow(
 					str,
-					`Incorrect AssetId format: ${str} is not a U32.`
+					`Incorrect AssetId format: ${str} is not a positive integer.`
 				)
 			);
 	}
