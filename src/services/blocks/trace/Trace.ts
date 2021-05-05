@@ -80,6 +80,9 @@ type ExtrinsicIndexBySpanId = Map<number, BN>;
  */
 type EventsByParentId = Map<number, ParsedEvent[]>;
 
+/**
+ * Mapping of address => `system::Account` events that belong to the address
+ */
 type AccountEventsByAddress = Map<string, ParsedAccountEvent[]>;
 
 /**
