@@ -27,7 +27,7 @@ const EMPTY_KEY_INFO = Object.freeze({
 });
 
 /**
- * Known spans
+ * Known spans that we actively look for in the operation creation logic.
  */
 const SPANS = Object.freeze({
 	executeBlock: {
@@ -38,16 +38,14 @@ const SPANS = Object.freeze({
 		name: 'apply_extrinsic',
 		target: 'frame_executive',
 	},
-	onInitialize: {
-		name: 'on_initialize',
-		// Targets vary by pallet
-	},
-	onFinalize: {
-		name: 'on_finalize',
-		// Targets vary by pallet
-	},
 });
 
+/**
+ * Corresponds to Substrate `well_known_keys` module.
+ * ref: https://github.com/paritytech/substrate/blob/c93ef27486e5f14696e5b6d36edafea7936edbc8/primitives/storage/src/lib.rs#L157
+ *
+ * Note: not all keys are used, just here for completeness.
+ */
 const WELL_KNOWN_KEYS = Object.freeze({
 	'3a636f6465': {
 		special: ':code',
@@ -62,7 +60,7 @@ const WELL_KNOWN_KEYS = Object.freeze({
 		special: ':changes_trie',
 	},
 	'3a6368696c645f73746f726167653a': {
-		special: ':child_storage:',
+		special: ':child_storage',
 	},
 });
 
