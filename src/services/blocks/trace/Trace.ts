@@ -413,7 +413,8 @@ export class Trace {
 			return null;
 		}
 
-		const indexEncodedOption = event.data.stringValues.result;
+		const { valueEncoded, resultEncoded } = event.data.stringValues;
+		const indexEncodedOption = valueEncoded ?? resultEncoded;
 		if (!(typeof indexEncodedOption == 'string')) {
 			throw new InternalServerError(
 				'Expected there to be an encoded extrinsic index for extrinsic index event'
@@ -551,7 +552,8 @@ export class Trace {
 		}
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
-		const accountInfoEncoded = event?.data?.stringValues?.result;
+		const { valueEncoded, resultEncoded } = event.data.stringValues;
+		const accountInfoEncoded = valueEncoded ?? resultEncoded;
 		if (!(typeof accountInfoEncoded === 'string')) {
 			throw new InternalServerError(
 				'Expect accountInfoEncoded to always be a string in system::Account event'
