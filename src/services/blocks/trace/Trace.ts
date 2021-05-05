@@ -354,11 +354,7 @@ export class Trace {
 			}
 
 			const primarySpanEvents = eventsByParentId.get(primary.id);
-			const allActionEvents =
-				primarySpanEvents?.concat(secondarySpansEvents) || [];
-			const events = allActionEvents?.sort(
-				(a, b) => a.eventIndex - b.eventIndex
-			);
+			const events = primarySpanEvents?.concat(secondarySpansEvents) || [];
 
 			events.forEach((e) => {
 				actionEvents.push({
@@ -385,15 +381,14 @@ export class Trace {
 			});
 		}
 
-		// Sort in place
-		actionEvents.sort((a, b) => a.eventIndex - b.eventIndex);
 		const accountEventsByAddress = this.accountEventsByAddress(actionEvents);
+		// Note: if operations need to be in order of the actual storage ops they need to be sorted
+		// again by `eventIndex`. We skip that here for performance.
+		const operations = this.deriveOperations(accountEventsByAddress);
 
 		return {
 			actions,
-			// Note: if operations need to be in order of the actual storage ops they need to be sorted
-			// again by `eventIndex`. We skip that here for performance.
-			operations: this.deriveOperations(accountEventsByAddress),
+			operations,
 		};
 	}
 
@@ -585,7 +580,10 @@ export class Trace {
 	): Operation[] {
 		const ops = [];
 		for (const events of accountEventsByAddress.values()) {
-			for (const [i, e] of events.entries()) {
+			// Note: we sort the events in order so we know the deltas are correct between
+			// previous event <=> current event.
+			const sortedEvents = events.sort((a, b) => a.eventIndex - b.eventIndex);
+			for (const [i, e] of sortedEvents.entries()) {
 				if (i === 0) {
 					// Skip the first event; we always compare previous event <=> current event.
 					continue;
