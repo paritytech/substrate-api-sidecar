@@ -104,6 +104,14 @@ export class AccountsAssetsService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Takes in an array of AssetId's, and an AccountId and returns
+	 * all balances tied to those AssetId's.
+	 * 
+	 * @param api ApiPromise
+	 * @param assets An Array of `AssetId`'s or numbers representing assetId's
+	 * @param address An `AccountId` associated with the queried path
+	 */
 	async queryAssets(
 		api: ApiPromise,
 		assets: AssetId[] | number[],
