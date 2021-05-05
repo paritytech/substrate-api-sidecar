@@ -47,7 +47,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		if (!(typeof delegate === 'string') || !(typeof assetId === 'string')) {
+		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
 			throw new BadRequest(
 				'Must include a delegate accountId as a query param'
 			);
