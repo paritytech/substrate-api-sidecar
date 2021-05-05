@@ -10,7 +10,7 @@ export class AssetsService extends AbstractService {
 	}
 
 	/**
-	 * Fetch an asset for its `AssetDetails` and `AssetMetadata` based on their `AssetId`.
+	 * Fetch an asset's `AssetDetails` and `AssetMetadata` with its `AssetId`.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param assetId `AssetId` used to get info and metadata for an asset
