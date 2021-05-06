@@ -323,12 +323,12 @@ export class BlocksService extends AbstractService {
 		block: Block,
 		events: Vec<EventRecord> | string,
 		extrinsicDocs: boolean
-	) {
+	) {g
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		// Note, if events is a string then there was an issue getting them from the node.
 		// In this case we try and create the calls with the registry on `block`
-		// The block from `api.derive.chain.getBlock` this regisry is just the most
-		// recent registry. We know e
+		// The block from `api.derive.chain.getBlock` has the most recent registry,
+		// which coudl cause issues with historical querries.
 		// On the other hand, we know `events` will have the correctly dated query
 		// since it is a storage query..
 		const registry =
