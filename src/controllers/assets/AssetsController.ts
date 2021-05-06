@@ -12,7 +12,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['/:assetsId/assetInfo', this.getAssetById],
+			['/:assetsId/asset-info', this.getAssetById],
 		]);
 	}
 
