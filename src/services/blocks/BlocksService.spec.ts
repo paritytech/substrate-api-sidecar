@@ -75,15 +75,13 @@ describe('BlocksService', () => {
 			).toMatchObject(blocks789629Response);
 		});
 
-		it('does not throw when an extrinsic is undefined', async () => {
+		it('throws when an extrinsic is undefined', async () => {
 			// Create a block with undefined as the first extrinisic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType(
 				'Block',
 				block789629
 			);
 
-			mockBlock789629BadExt.extrinsics.pop();
-			mockBlock789629BadExt.extrinsics.pop();
 			mockBlock789629BadExt.extrinsics.pop();
 
 			mockBlock789629BadExt.extrinsics.unshift(
