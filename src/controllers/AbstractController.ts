@@ -170,16 +170,16 @@ export default abstract class AbstractController<T extends AbstractService> {
 	): number[] {
 		const isValidArray = Array.isArray(n);
 
-		if(!isValidArray) {
+		if (!isValidArray) {
 			throw new BadRequest(errorMessage);
 		}
 
-		return n.map((str) => 
+		return n.map((str) =>
 			this.parseNumberOrThrow(
 				str,
 				`Incorrect AssetId format: ${str} is not a positive integer.`
 			)
-		)
+		);
 	}
 
 	protected verifyAndCastOr(

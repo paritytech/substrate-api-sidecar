@@ -26,12 +26,12 @@ export default class AccountsAssetsController extends AbstractController<Account
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const assetsArray = Array.isArray(assets) 
-		     ? this.parseQueryParamArrayOrThrow(
-				assets as string[],
-				'assets query parameter is not in the correct format.'
-			)
-		    : [];	
+		const assetsArray = Array.isArray(assets)
+			? this.parseQueryParamArrayOrThrow(
+					assets as string[],
+					'assets query parameter is not in the correct format.'
+			  )
+			: [];
 
 		AccountsAssetsController.sanitizedSend(
 			res,
