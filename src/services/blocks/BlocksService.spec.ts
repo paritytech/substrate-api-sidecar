@@ -75,13 +75,15 @@ describe('BlocksService', () => {
 			).toMatchObject(blocks789629Response);
 		});
 
-		it('throws when an extrinsic is undefined', async () => {
+		it('does not throw when an extrinsic is undefined', async () => {
 			// Create a block with undefined as the first extrinisic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType(
 				'Block',
 				block789629
 			);
 
+			mockBlock789629BadExt.extrinsics.pop();
+			mockBlock789629BadExt.extrinsics.pop();
 			mockBlock789629BadExt.extrinsics.pop();
 
 			mockBlock789629BadExt.extrinsics.unshift(
@@ -90,14 +92,14 @@ describe('BlocksService', () => {
 
 			// fetchBlock Options
 			const options = {
-				eventDocs: false,
+				eventDocs: true,
 				extrinsicDocs: false,
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 			};
 
-			mockApi.rpc.chain.getBlock = (() =>
+			mockApi.derive.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
@@ -112,7 +114,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
+			mockApi.derive.chain.getBlock = (getBlock as unknown) as GetBlock;
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
