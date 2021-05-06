@@ -323,7 +323,7 @@ export class BlocksService extends AbstractService {
 		block: Block,
 		events: Vec<EventRecord> | string,
 		extrinsicDocs: boolean
-	) {g
+	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		// Note, if events is a string then there was an issue getting them from the node.
 		// In this case we try and create the calls with the registry on `block`
