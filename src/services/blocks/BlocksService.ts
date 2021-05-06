@@ -326,11 +326,11 @@ export class BlocksService extends AbstractService {
 	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 		// Note, if events is a string then there was an issue getting them from the node.
-		// In this case we try and create the calls with the registry on `block`
+		// In this case we try and create the calls with the registry on `block`.
 		// The block from `api.derive.chain.getBlock` has the most recent registry,
-		// which coudl cause issues with historical querries.
+		// which could cause issues with historical querries.
 		// On the other hand, we know `events` will have the correctly dated query
-		// since it is a storage query..
+		// since it is a storage query.
 		const registry =
 			typeof events === 'string' ? block.registry : events.registry;
 
