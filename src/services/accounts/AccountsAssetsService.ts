@@ -12,9 +12,6 @@ import {
 import { AbstractService } from '../AbstractService';
 
 export class AccountsAssetsService extends AbstractService {
-	constructor(api: ApiPromise) {
-		super(api);
-	}
 
 	/**
 	 * Fetch all the `AssetBalance`s along side their `AssetId`'s for a given array of queried AssetId`'s.
