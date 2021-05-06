@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { expandMetadata } from '@polkadot/metadata/decorate';
-import { Compact, GenericCall, Struct } from '@polkadot/types';
+import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	Block,
@@ -321,15 +321,23 @@ export class BlocksService extends AbstractService {
 	 */
 	private extractExtrinsics(
 		block: Block,
-		events: EventRecord[] | string,
+		events: Vec<EventRecord> | string,
 		extrinsicDocs: boolean
 	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
+		// Note, if events is a string then there was an issue getting them from the node.
+		// In this case we try and create the calls with the registry on `block`
+		// The block from `api.derive.chain.getBlock` this regisry is just the most
+		// recent registry. We know e
+		// On the other hand, we know `events` will have the correctly dated query
+		// since it is a storage query..
+		const registry =
+			typeof events === 'string' ? block.registry : events.registry;
 
 		return block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const call = block.registry.createType('Call', method);
+			const call = registry.createType('Call', method);
 
 			return {
 				method: {
@@ -338,7 +346,7 @@ export class BlocksService extends AbstractService {
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce: isSigned ? nonce : null,
-				args: this.parseGenericCall(call, block.registry).args,
+				args: this.parseGenericCall(call, registry).args,
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
@@ -596,7 +604,7 @@ export class BlocksService extends AbstractService {
 	private async fetchEvents(
 		api: ApiPromise,
 		hash: BlockHash
-	): Promise<EventRecord[] | string> {
+	): Promise<Vec<EventRecord> | string> {
 		try {
 			return await api.query.system.events.at(hash);
 		} catch {
