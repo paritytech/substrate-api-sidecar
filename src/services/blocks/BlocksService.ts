@@ -1,14 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
 import { expandMetadata } from '@polkadot/metadata/decorate';
-import { Compact, GenericCall, Struct } from '@polkadot/types';
+import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
-	AccountId,
 	Block,
 	BlockHash,
 	BlockNumber,
 	BlockWeights,
-	Digest,
 	DispatchInfo,
 	EventRecord,
 	Hash,
@@ -90,30 +88,18 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
-		let block, events, finalizedHead, sessionValidators;
-		if (typeof api.query.session?.validators?.at === 'function') {
-			[
-				{ block },
-				events,
-				sessionValidators,
-				finalizedHead,
-			] = await Promise.all([
-				api.rpc.chain.getBlock(hash),
-				this.fetchEvents(api, hash),
-				api.query.session.validators.at(hash),
-				queryFinalizedHead
-					? api.rpc.chain.getFinalizedHead()
-					: Promise.resolve(hash),
-			]);
-		} else {
-			[{ block }, events, finalizedHead] = await Promise.all([
-				api.rpc.chain.getBlock(hash),
-				this.fetchEvents(api, hash),
-				queryFinalizedHead
-					? api.rpc.chain.getFinalizedHead()
-					: Promise.resolve(hash),
-			]);
+		const [deriveBlock, events, finalizedHead] = await Promise.all([
+			api.derive.chain.getBlock(hash),
+			this.fetchEvents(api, hash),
+			queryFinalizedHead
+				? api.rpc.chain.getFinalizedHead()
+				: Promise.resolve(hash),
+		]);
+
+		if (deriveBlock === undefined) {
+			throw new InternalServerError('Error querying for block');
 		}
+		const { block, author: authorId } = deriveBlock;
 
 		const {
 			parentHash,
@@ -122,10 +108,6 @@ export class BlocksService extends AbstractService {
 			extrinsicsRoot,
 			digest,
 		} = block.header;
-
-		const authorId = sessionValidators
-			? this.extractAuthor(sessionValidators, digest)
-			: undefined;
 
 		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };
@@ -339,15 +321,23 @@ export class BlocksService extends AbstractService {
 	 */
 	private extractExtrinsics(
 		block: Block,
-		events: EventRecord[] | string,
+		events: Vec<EventRecord> | string,
 		extrinsicDocs: boolean
 	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
+		// Note, if events is a string then there was an issue getting them from the node.
+		// In this case we try and create the calls with the registry on `block`.
+		// The block from `api.derive.chain.getBlock` has the most recent registry,
+		// which could cause issues with historical querries.
+		// On the other hand, we know `events` will have the correctly dated query
+		// since it is a storage query.
+		const registry =
+			typeof events === 'string' ? block.registry : events.registry;
 
 		return block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const call = block.registry.createType('Call', method);
+			const call = registry.createType('Call', method);
 
 			return {
 				method: {
@@ -356,7 +346,7 @@ export class BlocksService extends AbstractService {
 				},
 				signature: isSigned ? { signature, signer } : null,
 				nonce: isSigned ? nonce : null,
-				args: this.parseGenericCall(call, block.registry).args,
+				args: this.parseGenericCall(call, registry).args,
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
@@ -614,7 +604,7 @@ export class BlocksService extends AbstractService {
 	private async fetchEvents(
 		api: ApiPromise,
 		hash: BlockHash
-	): Promise<EventRecord[] | string> {
+	): Promise<Vec<EventRecord> | string> {
 		try {
 			return await api.query.system.events.at(hash);
 		} catch {
@@ -690,29 +680,6 @@ export class BlocksService extends AbstractService {
 			},
 			args: newArgs,
 		};
-	}
-
-	// Almost exact mimic of https://github.com/polkadot-js/api/blob/e51e89df5605b692033df864aa5ab6108724af24/packages/api-derive/src/type/util.ts#L6
-	// but we save a call to `getHeader` by hardcoding the logic here and using the digest from the blocks header.
-	private extractAuthor(
-		sessionValidators: AccountId[],
-		digest: Digest
-	): AccountId | undefined {
-		const [pitem] = digest.logs.filter(({ type }) => type === 'PreRuntime');
-		// extract from the substrate 2.0 PreRuntime digest
-		if (pitem) {
-			const [engine, data] = pitem.asPreRuntime;
-			return engine.extractAuthor(data, sessionValidators);
-		} else {
-			const [citem] = digest.logs.filter(({ type }) => type === 'Consensus');
-			// extract author from the consensus (substrate 1.0, digest)
-			if (citem) {
-				const [engine, data] = citem.asConsensus;
-				return engine.extractAuthor(data, sessionValidators);
-			}
-		}
-
-		return undefined;
 	}
 
 	/**
