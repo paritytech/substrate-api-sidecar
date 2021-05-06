@@ -13,6 +13,7 @@ import {
 	IParaIdParam,
 } from 'src/types/requests';
 
+import { ParsedQs } from 'qs';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 
@@ -165,23 +166,21 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	protected parseQueryParamArrayOrThrow(
-		n: string,
+		n: string[],
 		errorMessage: string
 	): number[] {
-		const isValidParam = /[^,]+/.test(n);
+		const isValidArray = Array.isArray(n);
 
-		if (!isValidParam) {
+		if(!isValidArray) {
 			throw new BadRequest(errorMessage);
 		}
-
-		return n
-			.split(',')
-			.map((str) =>
-				this.parseNumberOrThrow(
-					str,
-					`Incorrect AssetId format: ${str} is not a positive integer.`
-				)
-			);
+		
+		return n.map((str) => 
+			this.parseNumberOrThrow(
+				str,
+				`Incorrect AssetId format: ${str} is not a positive integer.`
+			)
+		)
 	}
 
 	protected verifyAndCastOr(

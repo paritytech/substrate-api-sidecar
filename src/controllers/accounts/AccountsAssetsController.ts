@@ -28,10 +28,10 @@ export default class AccountsAssetsController extends AbstractController<Account
 
 		const assetsArray = Array.isArray(assets) 
 		     ? this.parseQueryParamArrayOrThrow(
-				assets,
+				assets as string[],
 				'assets query parameter is not in the correct format.'
 			)
-		    : [ ];	
+		    : [];	
 
 		AccountsAssetsController.sanitizedSend(
 			res,
