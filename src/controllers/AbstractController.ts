@@ -13,7 +13,6 @@ import {
 	IParaIdParam,
 } from 'src/types/requests';
 
-import { ParsedQs } from 'qs';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 
@@ -174,7 +173,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		if(!isValidArray) {
 			throw new BadRequest(errorMessage);
 		}
-		
+
 		return n.map((str) => 
 			this.parseNumberOrThrow(
 				str,
