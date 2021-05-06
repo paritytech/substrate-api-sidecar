@@ -48,7 +48,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
 			throw new BadRequest(
-				'Must include a delegate accountId as a query param'
+				'Must include a `delegate` and `assetId` query param'
 			);
 		}
 
