@@ -32,7 +32,7 @@ describe('AccountsAssetsService', () => {
 
 			const response = await accountsAssetsService.fetchAssetBalances(
 				blockHash789629,
-				'0xffff',
+				'0xffff', // AccountId arg here does not affect the test results
 				[10, 20]
 			);
 
