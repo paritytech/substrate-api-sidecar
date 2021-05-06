@@ -12,7 +12,6 @@ import {
 import { AbstractService } from '../AbstractService';
 
 export class AccountsAssetsService extends AbstractService {
-
 	/**
 	 * Fetch all the `AssetBalance`s along side their `AssetId`'s for a given array of queried AssetId`'s.
 	 * If none are queried the function will get all AssetId's associated with the
