@@ -290,7 +290,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
-1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases.Only record dep updates if they reflect type definition updates as those affect the users API.
+1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API.
 
     * Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 
