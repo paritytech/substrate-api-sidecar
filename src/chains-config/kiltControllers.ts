@@ -5,8 +5,10 @@ import { ControllerConfig } from '../types/chains-config';
  */
 export const kiltControllers: ControllerConfig = {
 	controllers: {
+		Assets: false,
 		Blocks: true,
 		BlocksExtrinsics: true,
+		AccountsAssets: false,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,
