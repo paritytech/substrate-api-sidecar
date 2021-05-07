@@ -85,9 +85,9 @@ export class TypeFactory {
 	 * Similar to the storageKey method above, this is specific to storageKeys
 	 * that take in double map for keys.
 	 *
-	 * @param value The value assigned to `indexTypeOne`.
-	 * @param indexTypeOne The First InterfaceType that will be used to create the index into its new appropriate index type
-	 * @param indexTypeOne The Second InterfaceType that will be used to create the index into its new appropriate index type
+	 * @param value The value assigned to `valueTypeOne`.
+	 * @param indexTypeOne The First InterfaceType that will be used to create the first value in the double map
+	 * @param indexTypeOne The Second InterfaceType that will be used to create the second value in the double map
 	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
 	 * Contains necessary key value pairs to retrieve specific information from a query
 	 * such as `at`, `entriesAt`, `entries` etc..
@@ -97,14 +97,14 @@ export class TypeFactory {
 	 */
 	storageKeyDoubleMap(
 		value: number,
-		indexTypeOne: keyof InterfaceTypes,
-		indexTypeTwo: keyof InterfaceTypes,
+		valueTypeOne: keyof InterfaceTypes,
+		valueTypeTwo: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
-		const idOne = this.#registry.createType(indexTypeOne, value);
-		const idTwo = this.#registry.createType(indexTypeTwo);
+		const mapValueOne = this.#registry.createType(valueTypeOne, value);
+		const mapValueTwo = this.#registry.createType(valueTypeTwo);
 
-		const key = new StorageKey(this.#registry, storageEntry.key(idOne, idTwo));
+		const key = new StorageKey(this.#registry, storageEntry.key(mapValueOne, mapValueTwo));
 
 		return key.setMeta(storageEntry.creator.meta);
 	}
