@@ -85,7 +85,7 @@ export class TypeFactory {
 	 * Similar to the storageKey method above, this is specific to storageKeys
 	 * that take in double map for keys.
 	 *
-	 * @param index The id to assign the key to.
+	 * @param value The value assigned to `indexTypeOne`.
 	 * @param indexTypeOne The First InterfaceType that will be used to create the index into its new appropriate index type
 	 * @param indexTypeOne The Second InterfaceType that will be used to create the index into its new appropriate index type
 	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
@@ -96,12 +96,12 @@ export class TypeFactory {
 	 * 1. apiPromise.query.assets.account
 	 */
 	storageKeyDoubleMap(
-		index: number,
+		value: number,
 		indexTypeOne: keyof InterfaceTypes,
 		indexTypeTwo: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
-		const idOne = this.#registry.createType(indexTypeOne, index);
+		const idOne = this.#registry.createType(indexTypeOne, value);
 		const idTwo = this.#registry.createType(indexTypeTwo);
 
 		const key = new StorageKey(this.#registry, storageEntry.key(idOne, idTwo));
