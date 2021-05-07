@@ -590,50 +590,40 @@ const assetBalanceFactory = {
 	'30': rococoRegistry.createType('AssetBalance', assetBalanceObjThree),
 };
 
-const assetAccountStorageKeyOne = statemintTypeFactory.storageKeyDoubleMap(
+const assetStorageKeyOne = statemintTypeFactory.storageKey(
 	10,
 	'AssetId',
-	'AccountId',
 	statemintApiV1.query.assets.asset
 );
 
-const assetAccountStorageKeyTwo = statemintTypeFactory.storageKeyDoubleMap(
+const assetStorageKeyTwo = statemintTypeFactory.storageKey(
 	20,
 	'AssetId',
-	'AccountId',
 	statemintApiV1.query.assets.asset
 );
 
-const assetAccountStorageKeyThree = statemintTypeFactory.storageKeyDoubleMap(
+const assetStorageKeyThree = statemintTypeFactory.storageKey(
 	30,
 	'AssetId',
-	'AccountId',
 	statemintApiV1.query.assets.asset
 );
 
 const assetsAccountKeysAt = () =>
 	Promise.resolve().then(() => {
-		return [
-			assetAccountStorageKeyOne,
-			assetAccountStorageKeyTwo,
-			assetAccountStorageKeyThree,
-			assetAccountStorageKeyThree,
-			assetAccountStorageKeyThree,
-		];
+		return [assetStorageKeyOne, assetStorageKeyTwo, assetStorageKeyThree];
 	});
 
-interface AssetsAccount {
-	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-	[key: string]: any;
-}
+/**
+ * Attach `keysAt` to mockApi.query.assets.asset
+ */
+Object.assign(assetsInfo, {
+	keysAt: assetsAccountKeysAt,
+});
 
 /**
  * @param assetId options are 10, 20, 30
  */
-const assetsAccount: AssetsAccount = (
-	assetId: number | AssetId,
-	_address: string
-) => {
+const assetsAccount = (assetId: number | AssetId, _address: string) => {
 	const id = typeof assetId === 'number' ? assetId : assetId.toNumber();
 
 	switch (id) {
@@ -647,13 +637,6 @@ const assetsAccount: AssetsAccount = (
 			return;
 	}
 };
-
-/**
- * Attach `keysAt` to mockApi.query.assets.account
- */
-Object.assign(assetsAccount, {
-	keysAt: assetsAccountKeysAt,
-});
 
 const assetApprovals = () =>
 	Promise.resolve().then(() => {

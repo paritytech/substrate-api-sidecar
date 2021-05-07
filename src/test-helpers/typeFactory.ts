@@ -81,37 +81,6 @@ export class TypeFactory {
 		return key.setMeta(storageEntry.creator.meta);
 	}
 
-	/**
-	 * Similar to the storageKey method above, this is specific to storageKeys
-	 * that take in double map for keys.
-	 *
-	 * @param value The value assigned to `valueTypeOne`.
-	 * @param indexTypeOne The First InterfaceType that will be used to create the first value in the double map
-	 * @param indexTypeOne The Second InterfaceType that will be used to create the second value in the double map
-	 * @param storageEntry Used primarily on QueryableStorageEntry (ie: api.query) within the polkadot api library.
-	 * Contains necessary key value pairs to retrieve specific information from a query
-	 * such as `at`, `entriesAt`, `entries` etc..
-	 *
-	 * Some Parameter Examples:
-	 * 1. apiPromise.query.assets.account
-	 */
-	storageKeyDoubleMap(
-		value: number,
-		valueTypeOne: keyof InterfaceTypes,
-		valueTypeTwo: keyof InterfaceTypes,
-		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
-	): StorageKey {
-		const mapValueOne = this.#registry.createType(valueTypeOne, value);
-		const mapValueTwo = this.#registry.createType(valueTypeTwo);
-
-		const key = new StorageKey(
-			this.#registry,
-			storageEntry.key(mapValueOne, mapValueTwo)
-		);
-
-		return key.setMeta(storageEntry.creator.meta);
-	}
-
 	optionOf<T extends Codec>(value: T): Option<T> {
 		return new Option<T>(
 			this.#registry,

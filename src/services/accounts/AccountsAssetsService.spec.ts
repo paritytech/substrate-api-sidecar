@@ -61,18 +61,6 @@ describe('AccountsAssetsService', () => {
 						isFrozen: false,
 						isSufficient: false,
 					},
-					{
-						assetId: '30',
-						balance: '20000000',
-						isFrozen: false,
-						isSufficient: false,
-					},
-					{
-						assetId: '30',
-						balance: '20000000',
-						isFrozen: false,
-						isSufficient: false,
-					},
 				],
 			};
 

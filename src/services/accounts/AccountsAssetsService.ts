@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
 import { AssetBalance, AssetId, BlockHash } from '@polkadot/types/interfaces';
-import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { AnyNumber } from '@polkadot/types/types';
 
 import {
@@ -36,7 +35,7 @@ export class AccountsAssetsService extends AbstractService {
 			/**
 			 * This will query all assets and return them in an array
 			 */
-			const keys = await api.query.assets.account.keysAt(hash);
+			const keys = await api.query.assets.asset.keysAt(hash);
 			const assetIds = this.extractAssetIds(keys);
 
 			response = await this.queryAssets(api, assetIds, address);
@@ -135,7 +134,7 @@ export class AccountsAssetsService extends AbstractService {
 	/**
 	 * @param keys An Array of storage keys used to extract `AssetId`'s
 	 */
-	extractAssetIds(keys: StorageKey<[AssetId, AccountId]>[]): AssetId[] {
+	extractAssetIds(keys: StorageKey<[AssetId]>[]): AssetId[] {
 		return keys.map(({ args: [assetId] }) => assetId);
 	}
 }

@@ -6,6 +6,9 @@ import { validateAddress } from '../../middleware';
 import { AccountsAssetsService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
+/**
+ *
+ */
 export default class AccountsAssetsController extends AbstractController<AccountsAssetsService> {
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/', new AccountsAssetsService(api));
@@ -29,7 +32,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 		const assetsArray = Array.isArray(assets)
 			? this.parseQueryParamArrayOrThrow(
 					assets as string[],
-					'assets query parameter is not in the correct format.'
+					'`assets` query parameter is not in the correct format. Should be of the form `?assets[]=42&assets[]=3`. Reference the docs for more information.'
 			  )
 			: [];
 
