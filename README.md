@@ -294,7 +294,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
     * Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 
-1. Commit with ex: `chore(release): 5.0.1`, then push your release up, make a PR, get review approval, then merge.
+1. Commit with ex: `chore(release): 5.0.1`, then `git push` your release branch up, make a PR, get review approval, then merge.
 
   * NOTE: Before pushing up as a sanity check run the 3 following commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
 
@@ -315,7 +315,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     git push origin v5.0.1
     ```
 
-1. Go to tags on github, inside of the repo, and click the three dots to the far right and select the option to create a release.
+1. Go to [tags](https://github.com/paritytech/substrate-api-sidecar/tags) on github, inside of the repo, and click the three dots to the far right and select the option to create a release.
 
 1. Generally you can copy the changelog information and set the release notes to that. You can also observe past releases as a reference.
 
