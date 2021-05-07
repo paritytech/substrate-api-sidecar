@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
-import { AssetBalance, AssetId, BlockHash } from '@polkadot/types/interfaces';
-import { AnyNumber } from '@polkadot/types/types';
+import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 
 import {
 	IAccountAssetApproval,
@@ -112,23 +111,18 @@ export class AccountsAssetsService extends AbstractService {
 		assets: AssetId[] | number[],
 		address: string
 	): Promise<IAssetBalance[]> {
-		const queryInputAssets = async (): Promise<AssetBalance[]> =>
-			await Promise.all(
-				assets.map((assetId: number | AnyNumber) =>
-					api.query.assets.account(assetId, address)
-				)
-			);
+		return Promise.all(
+			assets.map(async (assetId: AssetId | number) => {
+				const assetBalance = await api.query.assets.account(assetId, address);
 
-		const response = (await queryInputAssets()).map((asset, i) => {
-			return {
-				assetId: assets[i],
-				balance: asset.balance,
-				isFrozen: asset.isFrozen,
-				isSufficient: asset.isSufficient,
-			};
-		});
-
-		return response;
+				return {
+					assetId,
+					balance: assetBalance.balance,
+					isFrozen: assetBalance.isFrozen,
+					isSufficient: assetBalance.isSufficient,
+				};
+			})
+		);
 	}
 
 	/**
