@@ -308,26 +308,28 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 #### Release on GitHub
 
-1. Make sure the tag reflects your corresponding version, and run:
+1. Now that master has the commit for the release, pull down `master` branch.
+
+2. Make sure the tag reflects your corresponding version, and run:
 
 ```bash
 git tag v5.0.1
 git push origin v5.0.1
 ```
 
-2. Go to tags on github, inside of the repo, and click the three dots to the far right and select the option to create a release. 
+3. Go to tags on github, inside of the repo, and click the three dots to the far right and select the option to create a release.
 
-3. Generally you can copy the changelog information and set the release notes to that. You can also observe past releases as a reference.
+4. Generally you can copy the changelog information and set the release notes to that. You can also observe past releases as a reference.
 
 #### Publish to NPM
 
-NOTE: You must be a member of the @substrate NPM org and must belong to the developers team within the org. (Please make sure you have 2FA enabled.)
+NOTE: You must be a member of the `@substrate` NPM org and must belong to the `Developers` team within the org. (Please make sure you have 2FA enabled.)
 
-1. Now that master has the commit for the release, pull down master. Run `yarn build` to ensure the target JS build is there for the NPM release.
+1. Now that master has the commit for the release, pull down `master` branch.
 
 2. Run the following commands. (Please ensure you have 2FA enabled)
 
 ```bash
 npm login # Only necessary if not already logged in
-npm publish
+yarn deploy # Builds JS target and then runs npm publish
 ```
