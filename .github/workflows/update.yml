@@ -1,0 +1,25 @@
+name: update
+
+#hack to test in the CI.
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+# on:
+#   schedule:
+#   - cron: "* * * * 0"
+
+jobs:
+  update:
+    name: Update polkadot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.3.0
+      - uses: actions/checkout@v2
+      - name: Run yarn update
+        run: yarn up "@polkadot/*"
