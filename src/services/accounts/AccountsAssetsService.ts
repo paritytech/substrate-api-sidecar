@@ -60,7 +60,7 @@ export class AccountsAssetsService extends AbstractService {
 
 	/**
 	 * Fetch all `AccountApproval`'s with a given `AssetId` and a `AssetApprovalKey`
-	 * which consists of a `delegate` and an `owner(AccoundId)`
+	 * which consists of a `delegate` and an `owner`
 	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param address `AccountId` or owner associated with the approvals
