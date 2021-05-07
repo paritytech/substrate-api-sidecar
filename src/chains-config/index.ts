@@ -7,6 +7,7 @@ import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockTestnetControllers } from './dockTestnetControllers';
+import { kiltControllers } from './kiltControllers';
 import { kulupuControllers } from './kulupuControllers';
 import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
@@ -18,6 +19,7 @@ const specToControllerMap = {
 	polkadot: polkadotControllers,
 	kusama: kusamaControllers,
 	kulupu: kulupuControllers,
+	kilt: kiltControllers,
 	mandala: mandalaControllers,
 	'dock-testnet': dockTestnetControllers,
 	'dock-main-runtime': dockMainnetControllers,
