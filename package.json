@@ -22,6 +22,9 @@
   "bugs": {
     "url": "https://github.com/paritytech/substrate-api-sidecar/issues"
   },
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "rimraf build/ && tsc",
     "build:calc": "bash ./calc/build.sh",
@@ -29,7 +32,7 @@
     "build:docs": "(cd docs && yarn && yarn build)",
     "main": "node ./build/src/main.js",
     "lint": "substrate-dev-run-lint",
-    "deploy": "yarn build && standard-version",
+    "deploy": "yarn build && npm publish",
     "start": "yarn run main",
     "start:log-rpc": "yarn run build && NODE_ENV=test yarn run main ",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
