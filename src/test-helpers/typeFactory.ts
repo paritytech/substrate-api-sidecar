@@ -104,7 +104,10 @@ export class TypeFactory {
 		const mapValueOne = this.#registry.createType(valueTypeOne, value);
 		const mapValueTwo = this.#registry.createType(valueTypeTwo);
 
-		const key = new StorageKey(this.#registry, storageEntry.key(mapValueOne, mapValueTwo));
+		const key = new StorageKey(
+			this.#registry,
+			storageEntry.key(mapValueOne, mapValueTwo)
+		);
 
 		return key.setMeta(storageEntry.creator.meta);
 	}
