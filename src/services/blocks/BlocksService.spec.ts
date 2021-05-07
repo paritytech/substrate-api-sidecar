@@ -26,7 +26,6 @@ import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
-	getBlock,
 	mockApi,
 	mockBlock789629,
 	mockForkedBlock789629,
@@ -96,8 +95,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 			};
-
-			mockApi.rpc.chain.getBlock = (() =>
+			const tempGetBlock = mockApi.derive.chain.getBlock;
+			mockApi.derive.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
@@ -112,7 +111,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.rpc.chain.getBlock = (getBlock as unknown) as GetBlock;
+			mockApi.derive.chain.getBlock = (tempGetBlock as unknown) as GetBlock;
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
