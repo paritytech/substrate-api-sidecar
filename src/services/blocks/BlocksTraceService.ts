@@ -18,14 +18,14 @@ const DEFAULT_TARGETS = 'pallet,frame,state';
  * computational complexity for processing the data. For creating operations we
  * only need events for storage Get/Put to these two storage items.
  *
- * Note: frame_system::Account is the storage prefix for items in a map. In the
+ * Note: frame_system::Account is the storage prefix for items in the storage map. In the
  * storage events we will get the actual entries of the map and use the key suffix
  * to extract the address.
  * ref: https://github.com/paritytech/substrate/blob/a604906c340c90e22fb20a8d77bcb3fee86c73c1/frame/system/src/lib.rs#L530-L538
- * learn about transparen keys: https://www.shawntabrizi.com/substrate/transparent-keys-in-substrate/
+ * learn about transparent keys: https://www.shawntabrizi.com/substrate/transparent-keys-in-substrate/
  *
  * Note: :extrinisc_index is the key for a single `u32` value that gets updated
- * during block execution to reflect the index of the current extrinsic being excuted.
+ * during block execution to reflect the index of the current extrinsic being executed.
  * ref: https://github.com/paritytech/substrate/blob/c93ef27486e5f14696e5b6d36edafea7936edbc8/primitives/storage/src/lib.rs#L169
  */
 const DEFAULT_KEYS =
