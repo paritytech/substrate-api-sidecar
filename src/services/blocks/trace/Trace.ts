@@ -287,7 +287,6 @@ export class Trace {
 			spansById
 		);
 
-		const actionEvents: ParsedActionEvent[] = [];
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
 		for (const primary of spans) {
@@ -342,19 +341,18 @@ export class Trace {
 			const primarySpanEvents = eventsByParentId.get(primary.id);
 			const events = primarySpanEvents?.concat(secondarySpansEvents) || [];
 
+			// Modify the original block trace events in place, making each event a
+			// `ParsedActionEvent`.
 			events.forEach((e) => {
-				actionEvents.push({
-					...e,
-					phase: {
-						variant: phase,
-						extrinsicIndex: extrinsicIndex,
-					},
-					primarySpanId: {
-						id: primary.id,
-						name: primary.name,
-						target: primary.target,
-					},
-				});
+				e.phase = {
+					variant: phase,
+					extrinsicIndex: extrinsicIndex,
+				};
+				e.primarySpanId = {
+					id: primary.id,
+					name: primary.name,
+					target: primary.target,
+				};
 			});
 
 			// Primary span, and all associated descendant spans and events
@@ -367,7 +365,9 @@ export class Trace {
 			});
 		}
 
-		const accountEventsByAddress = this.accountEventsByAddress(actionEvents);
+		const accountEventsByAddress = this.accountEventsByAddress(
+			this.traceBlock.events as ParsedActionEvent[]
+		);
 		// Note: if operations need to be in order of the actual storage ops they need to be sorted
 		// again by `eventIndex`. We skip that here for performance.
 		const operations = this.deriveOperations(accountEventsByAddress);
@@ -445,20 +445,23 @@ export class Trace {
 				target: p.target,
 				id: p.id,
 			};
+			// Make this a `ParsedEvent` by mutating it in place and 
+			event.parentSpanId = parentSpanId;
+			event.eventIndex = idx;
+			event.storagePath = storagePath;
 
-			const parsed = { ...event, storagePath, parentSpanId, eventIndex: idx };
-			const maybeId = eventsByParentId.get(parsed.parentId);
+			const maybeId = eventsByParentId.get(event.parentId);
 			if (!maybeId) {
-				eventsByParentId.set(parsed.parentId, [parsed]);
+				eventsByParentId.set(event.parentId, [event as ParsedEvent]);
 			} else {
-				eventsByParentId.get(parsed.parentId)?.push(parsed);
+				eventsByParentId.get(event.parentId)?.push(event as ParsedEvent);
 			}
 
-			const extrinsicIndexOpt = this.maybeExtractIndex(parsed);
+			const extrinsicIndexOpt = this.maybeExtractIndex(event as ParsedEvent);
 			if (isSome(extrinsicIndexOpt)) {
 				// Its ok to overwrite here, we just want thee last `:extrinsic_index` `Get`
 				// in this span.
-				extrinsicIndexBySpanId.set(parsed.parentId, extrinsicIndexOpt);
+				extrinsicIndexBySpanId.set(event.parentId, extrinsicIndexOpt);
 			}
 		}
 
@@ -548,7 +551,11 @@ export class Trace {
 			`0x${accountInfoEncoded.slice(2)}` // Slice off the leading Option byte
 		) as unknown) as AccountInfo;
 
-		return { ...event, accountInfo, address };
+		// Mutate the event to make it a `ParsedAccountEvent`
+		event.accountInfo = accountInfo;
+		event.address = address;
+
+		return event as ParsedAccountEvent;
 	}
 
 	/**
@@ -566,10 +573,9 @@ export class Trace {
 	): Operation[] {
 		const ops = [];
 		for (const events of accountEventsByAddress.values()) {
-			// Note: we sort the events in order so we know the deltas are correct between
-			// previous event <=> current event.
-			const sortedEvents = events.sort((a, b) => a.eventIndex - b.eventIndex);
-			for (const [i, e] of sortedEvents.entries()) {
+			// IMPORTANT NOTE: we assume the events are in order so we know the deltas are
+			// correct between previous event <=> current event.
+			for (const [i, e] of events.entries()) {
 				if (i === 0) {
 					// Skip the first event; we always compare previous event <=> current event.
 					continue;

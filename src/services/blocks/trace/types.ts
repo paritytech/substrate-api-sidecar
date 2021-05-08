@@ -12,11 +12,24 @@ export interface Data {
 	stringValues: StringValues;
 }
 
+/**
+ * Polymorphic super type of ParsedEvent & ParsedActionEvent & ParsedAccountEvent.
+ *
+ * The non-optional fields are what the original trace event, as returned by the
+ * RPC contain.
+ */
 export interface TraceEvent {
 	name: string;
 	parentId: number;
 	target: string;
 	data: Data;
+	storagePath?: KeyInfo;
+	parentSpanId?: ParentSpanId;
+	eventIndex?: number;
+	phase?: PhaseId;
+	primarySpanId?: ParentSpanId;
+	accountInfo?: AccountInfo;
+	address?: Address;
 }
 
 /**
