@@ -495,10 +495,11 @@ export class Trace {
 			const asAccount = this.toAccountEvent(cur);
 			const address = asAccount.address.toString();
 
-			if (!acc.has(address)) {
+			const maybeAccountEvents = acc.get(address);
+			if (!maybeAccountEvents) {
 				acc.set(address, [asAccount]);
 			} else {
-				acc.get(address)?.push(asAccount);
+				maybeAccountEvents.push(asAccount);
 			}
 
 			return acc;
