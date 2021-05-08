@@ -203,7 +203,9 @@ export class Trace {
 			descendants.push(curId);
 
 			const curSpanChildren = spansById.get(curId)?.children;
-			curSpanChildren && stack.push(...curSpanChildren);
+			if (curSpanChildren) {
+				stack.push(...curSpanChildren);
+			}
 		}
 
 		return descendants;
@@ -259,13 +261,14 @@ export class Trace {
 				continue;
 			}
 
-			if (!spansById.has(span.parentId)) {
+			const maybeParentSpan = spansById.get(span.parentId);
+			if (!maybeParentSpan) {
 				throw new InternalServerError(
 					'Expected spans parent to exist in spansById'
 				);
 			}
 
-			spansById.get(span.parentId)?.children.push(span.id);
+			maybeParentSpan.children.push(span.id);
 		}
 
 		return { spansById, parsedSpans, executeBlockSpanId };
