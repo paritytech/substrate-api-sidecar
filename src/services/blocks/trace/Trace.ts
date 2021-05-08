@@ -291,7 +291,7 @@ export class Trace {
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
 		for (const primary of spans) {
-			if (!(primary.parentId === executeBlockSpanId)) {
+			if (primary.parentId !== executeBlockSpanId) {
 				// Only use primary spans (spans where parentId === execute_block). All other
 				// spans are either the executeBlockSpan or descendant of a primary span.
 				continue;
