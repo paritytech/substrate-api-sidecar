@@ -163,38 +163,21 @@ export class Trace {
 	private static extractExtrinsicIndex(
 		spanIds: number[],
 		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId
-	): BN {
+	): BN | undefined {
 		// There are typically multiple reads of extrinsic index when applying an extrinsic,
-		// So we get all of those reads, which should all be the same number.
-		const extrinsicIndex = spanIds.reduce((acc, id) => {
-			if (!extrinsicIndexBySpanId.has(id)) {
-				return acc;
+		// so we check that all those reads are the same number.
+		return spanIds.reduce((uniqExtIdx, id) => {
+			const extIdxToCheck = extrinsicIndexBySpanId.get(id);
+			if (uniqExtIdx === undefined && extIdxToCheck) {
+				uniqExtIdx = extIdxToCheck;
+			} else if (extIdxToCheck && !uniqExtIdx?.eq(extIdxToCheck)) {
+				// Since we assume the `spanIds` are for spans from an apply extrinsic action group,
+				// we assume there is always an `:extrinsic_index` event
+				throw new InternalServerError('Expected at least one extrinsic index');
 			}
 
-			acc.push(extrinsicIndexBySpanId.get(id) as BN);
-			return acc;
-		}, [] as BN[]);
-
-		if (extrinsicIndex.length === 0) {
-			// Since we assume the `spanIds` are for spans from an apply extrinsic action group,
-			// we assume there is always an `:extrinsic_index` event
-			throw new InternalServerError('Expected at least one extrinsic index');
-		}
-
-		if (extrinsicIndex.length > 1) {
-			// If there are multiple reads we check that they are all the same. If they
-			// are not this program has some incorrect assumptions and this error should
-			// be reported to the maintainers.
-			for (const [i, extIdx] of extrinsicIndex.entries()) {
-				if (i > 0 && !extrinsicIndex[i - 1]?.eq(extIdx)) {
-					throw new InternalServerError(
-						'Expect extrinsic to only be applied at a single index.'
-					);
-				}
-			}
-		}
-
-		return extrinsicIndex[0];
+			return uniqExtIdx;
+		}, undefined as BN | undefined);
 	}
 
 	/**
