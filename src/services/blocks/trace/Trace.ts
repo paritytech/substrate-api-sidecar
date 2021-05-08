@@ -461,8 +461,8 @@ export class Trace {
 			};
 
 			const parsed = { ...event, storagePath, parentSpanId, eventIndex: idx };
-
-			if (!eventsByParentId.has(parsed.parentId)) {
+			const maybeId = eventsByParentId.get(parsed.parentId);
+			if (!maybeId) {
 				eventsByParentId.set(parsed.parentId, [parsed]);
 			} else {
 				eventsByParentId.get(parsed.parentId)?.push(parsed);

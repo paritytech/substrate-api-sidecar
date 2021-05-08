@@ -931,8 +931,8 @@ paths:
         recently finalized block.
       description: |
         Returns traces (spans and events) of the most recently finalized block from
-        RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
-        merged) for conceptual info.
+        RPC `state_straceBlock`. Consult the [RPC docs](https://github.com/paritytech/substrate/blob/aba876001651506f85c14baf26e006b36092e1a0/client/rpc-api/src/state/mod.rs#L140)
+        for conceptual info.
       responses:
         "200":
           description: successful operation
@@ -948,8 +948,7 @@ paths:
         [Experimental - subject to breaking change.] Get traces for the given `blockId`.
       description: |
         Returns traces (spans and events) of the specified block from
-        RPC `state_straceBlock`. Consult the [RPC docs](TODO add link when pr is
-        merged) for conceptual info.
+        RPC `state_straceBlock`. Consult the [RPC docs](https://github.com/paritytech/substrate/blob/aba876001651506f85c14baf26e006b36092e1a0/client/rpc-api/src/state/mod.rs#L140) for conceptual info.
       parameters:
       - name: blockId
         in: path

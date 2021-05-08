@@ -508,8 +508,8 @@ __metadata:
   linkType: hard
 
 "@eslint/eslintrc@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@eslint/eslintrc@npm:0.4.0"
+  version: 0.4.1
+  resolution: "@eslint/eslintrc@npm:0.4.1"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.1.1
@@ -520,7 +520,7 @@ __metadata:
     js-yaml: ^3.13.1
     minimatch: ^3.0.4
     strip-json-comments: ^3.1.1
-  checksum: d3f51b741997cbf36662d8b5a52985bfa5d2873e48cadccd95c67fcce1706327ec98ebb6f0be79c6ecbc31bdeca32c2b1c4f66fd1cf3934c434d1ac269cbceac
+  checksum: 418f5810c8dd9897d2457ceef098197d0e5f1ad345fbe4cd9256fd4223d7ea83d5e350f9091b3ab3483b6b1c367fa560df3ba1fccc7eb8ca6e1aae5a5b126d60
   languageName: node
   linkType: hard
 
@@ -913,20 +913,6 @@ __metadata:
   version: 4.9.2
   resolution: "@polkadot/metadata@npm:4.9.2"
   dependencies:
-    "@babel/runtime": ^7.13.17
-    "@polkadot/types": 4.7.2
-    "@polkadot/types-known": 4.7.2
-    "@polkadot/util": ^6.3.1
-    "@polkadot/util-crypto": ^6.3.1
-    bn.js: ^4.11.9
-  checksum: c2d02775bec8333b8f5dc01bab9b04c90256e41f8df24e3d79f0b063f08abe5965b0d398aad53dc53596b6b45717f0d391f7307ccf95d8d252a68c5b245afa2a
-  languageName: node
-  linkType: hard
-
-"@polkadot/metadata@npm:4.9.2":
-  version: 4.9.2
-  resolution: "@polkadot/metadata@npm:4.9.2"
-  dependencies:
     "@babel/runtime": ^7.14.0
     "@polkadot/types": 4.9.2
     "@polkadot/types-known": 4.9.2
@@ -994,19 +980,6 @@ __metadata:
   version: 4.9.2
   resolution: "@polkadot/types-known@npm:4.9.2"
   dependencies:
-    "@babel/runtime": ^7.13.17
-    "@polkadot/networks": ^6.3.1
-    "@polkadot/types": 4.7.2
-    "@polkadot/util": ^6.3.1
-    bn.js: ^4.11.9
-  checksum: 6895892af57d0cbbd556d2a70d50065709be91f7de9bcce9ec1b485e31f8f6ff4d8423e41395b370b404de4bb4273ffd804c1e0673b6f21d8635e3c2ec6f01ee
-  languageName: node
-  linkType: hard
-
-"@polkadot/types-known@npm:4.9.2":
-  version: 4.9.2
-  resolution: "@polkadot/types-known@npm:4.9.2"
-  dependencies:
     "@babel/runtime": ^7.14.0
     "@polkadot/networks": ^6.3.1
     "@polkadot/types": 4.9.2
@@ -1032,21 +1005,6 @@ __metadata:
   linkType: hard
 
 "@polkadot/types@npm:4.9.2, @polkadot/types@npm:^4.2.1":
-  version: 4.9.2
-  resolution: "@polkadot/types@npm:4.9.2"
-  dependencies:
-    "@babel/runtime": ^7.13.17
-    "@polkadot/metadata": 4.7.2
-    "@polkadot/util": ^6.3.1
-    "@polkadot/util-crypto": ^6.3.1
-    "@polkadot/x-rxjs": ^6.3.1
-    "@types/bn.js": ^4.11.6
-    bn.js: ^4.11.9
-  checksum: ac815b666b61942b2dd04d0fc3ac9d35be28db2ecf792ec12f30a80bffff85110556564853a8a64fb3de9263dc089ac22ec022c87471d3004fabb863f3a87cd9
-  languageName: node
-  linkType: hard
-
-"@polkadot/types@npm:4.9.2":
   version: 4.9.2
   resolution: "@polkadot/types@npm:4.9.2"
   dependencies:
@@ -6292,13 +6250,6 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"lodash.flatten@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "lodash.flatten@npm:4.4.0"
-  checksum: f22a7f6f163256d87345b07c76122e03d03abbf943b6c3aa5e5fafb7d5bce765013aedfc2aae7e649af0907287a2cf85de24237dbdd3ecd485a77d56e070b54c
-  languageName: node
-  linkType: hard
-
 "lodash.isempty@npm:^4.4.0":
   version: 4.4.0
   resolution: "lodash.isempty@npm:4.4.0"
@@ -8938,17 +8889,16 @@ fsevents@^2.1.2:
   linkType: hard
 
 "table@npm:^6.0.4":
-  version: 6.6.0
-  resolution: "table@npm:6.6.0"
+  version: 6.7.0
+  resolution: "table@npm:6.7.0"
   dependencies:
     ajv: ^8.0.1
     lodash.clonedeep: ^4.5.0
-    lodash.flatten: ^4.4.0
     lodash.truncate: ^4.4.2
     slice-ansi: ^4.0.0
     string-width: ^4.2.0
     strip-ansi: ^6.0.0
-  checksum: 78186283603545e6c182e00a37a775d677d1a0737bfff0a5948b1083104adfcc140be9aff53552d45a3912d85ee19f6745c4dfb97b9f9a27b309c4fcf3f48c79
+  checksum: 87ab315355fb76e42be583c0e6cfbf4a0359e2a3360125f50292e3a063e7e4b382c0a51107a227d9549680d5008abdb900dfe6b79d20312cab950c2f9d327d98
   languageName: node
   linkType: hard
 

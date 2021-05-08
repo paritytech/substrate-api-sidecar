@@ -6,8 +6,15 @@ import {
 	BlocksTraceOperations,
 } from '../../types/responses/BlocksTrace';
 import { AbstractService } from '../AbstractService';
-import { BlockTraceResponse, isBlockTrace, isTraceError, Trace } from './trace';
+import { isBlockTrace, isTraceError, Trace } from './trace';
 
+/**
+ * Substrate tracing targets. These match targets by prefix. To learn more consult
+ * the [`Params` section][1] of the RPC docs. These are the same as the defaults
+ * for the RPC.
+ *
+ * [1]: https://github.com/paritytech/substrate/blob/aba876001651506f85c14baf26e006b36092e1a0/client/rpc-api/src/state/mod.rs#L206
+ */
 const DEFAULT_TARGETS = 'pallet,frame,state';
 /**
  * These are the keys we pass as an arg to the RPC to filter events. We will get
@@ -45,14 +52,7 @@ export class BlocksTraceService extends AbstractService {
 	async traces(hash: BlockHash): Promise<BlocksTrace> {
 		const [{ number }, traceResponse] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-			this.api.rpc.state.traceBlock(
-				hash,
-				DEFAULT_TARGETS,
-				DEFAULT_KEYS
-			) as Promise<BlockTraceResponse>,
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
 		if (isTraceError(traceResponse)) {
