@@ -89,14 +89,7 @@ export class BlocksTraceService extends AbstractService {
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
 			this.api.rpc.chain.getBlock(hash),
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-			this.api.rpc.state.traceBlock(
-				hash,
-				DEFAULT_TARGETS,
-				DEFAULT_KEYS
-			) as Promise<BlockTraceResponse>,
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
 		if (isTraceError(traceResponse)) {
