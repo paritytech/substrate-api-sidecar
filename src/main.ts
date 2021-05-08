@@ -121,6 +121,7 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 		'wss://rpc.plasmnet.io/',
 		'wss://mainnet-rpc.stafi.io',
 		'wss://rpc.subsocial.network',
+		'wss://full-nodes-lb.kilt.io:443',
 	];
 
 	logger.info(
