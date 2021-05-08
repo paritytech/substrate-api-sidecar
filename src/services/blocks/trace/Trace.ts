@@ -445,7 +445,7 @@ export class Trace {
 				target: p.target,
 				id: p.id,
 			};
-			// Make this a `ParsedEvent` by mutating it in place and 
+			// Make this a `ParsedEvent` by mutating it in place and
 			event.parentSpanId = parentSpanId;
 			event.eventIndex = idx;
 			event.storagePath = storagePath;
