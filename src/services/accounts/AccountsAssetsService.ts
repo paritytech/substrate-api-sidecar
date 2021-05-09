@@ -85,7 +85,7 @@ export class AccountsAssetsService extends AbstractService {
 			api.query.assets.approvals(assetId, approvalKey),
 		]);
 
-		if (assetApproval.isEmpty) {
+		if (assetApproval.isNone) {
 			throw new BadRequest(
 				'No asset-approval at the given `address`, `assetId`, and `delegate`'
 			);
