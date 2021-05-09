@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import {
 	IAccountAssetApproval,
@@ -83,6 +84,12 @@ export class AccountsAssetsService extends AbstractService {
 			api.rpc.chain.getHeader(hash),
 			api.query.assets.approvals(assetId, approvalKey),
 		]);
+
+		if (assetApproval.isEmpty) {
+			throw new BadRequest(
+				'No asset-approval at the given `address`, `assetId`, and `delegate`'
+			);
+		}
 
 		const { amount, deposit } = assetApproval.unwrap();
 
