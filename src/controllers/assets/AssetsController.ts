@@ -47,7 +47,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AssetsController extends AbstractController<AssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/assets/:assetId/', new AssetsService(api));
+		super(api, '/assets/:assetId', new AssetsService(api));
 		this.initRoutes();
 	}
 
@@ -68,10 +68,9 @@ export default class AssetsController extends AbstractController<AssetsService> 
 			assetId,
 			'`assetId` path param is not a number'
 		);
-
 		AssetsController.sanitizedSend(
 			res,
-			this.service.fetchAssetById(hash, index)
+			await this.service.fetchAssetById(hash, index)
 		);
 	};
 }

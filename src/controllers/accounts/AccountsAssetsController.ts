@@ -51,7 +51,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsAssetsController extends AbstractController<AccountsAssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/', new AccountsAssetsService(api));
+		super(api, '/accounts/:address', new AccountsAssetsService(api));
 		this.initRoutes();
 	}
 
@@ -59,8 +59,8 @@ export default class AccountsAssetsController extends AbstractController<Account
 		this.router.use(this.path, validateAddress);
 
 		this.safeMountAsyncGetHandlers([
-			['asset-balances', this.getAssetBalances],
-			['asset-approvals', this.getAssetApprovals],
+			['/asset-balances', this.getAssetBalances],
+			['/asset-approvals', this.getAssetApprovals],
 		]);
 	}
 
