@@ -5,15 +5,15 @@ import { AssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
- * GET asset information for a single asset. 
- * 
- * Paths: 
+ * GET asset information for a single asset.
+ *
+ * Paths:
  * - `assetId`: The identifier of the asset.
- * 
+ *
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
- * 
+ *
  * `/assets/:assetId/assets-info`
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -39,7 +39,7 @@ import AbstractController from '../AbstractController';
  * 		- `symbol`: The ticker symbol for this asset.
  * 		- `decimals`: The number of decimals this asset uses to represent one unit.
  * 		- `isFrozen`: Whether the asset metadata may be changed by a non Force origin.
- * 
+ *
  * Substrate References:
  * - Assets Pallet: https://crates.parity.io/pallet_assets/index.html
  * - `AssetMetadata`: https://crates.parity.io/pallet_assets/struct.AssetMetadata.html
@@ -52,9 +52,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([
-			['/asset-info', this.getAssetById],
-		]);
+		this.safeMountAsyncGetHandlers([['/asset-info', this.getAssetById]]);
 	}
 
 	private getAssetById: RequestHandler = async (
