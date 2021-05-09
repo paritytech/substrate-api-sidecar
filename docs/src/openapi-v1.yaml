@@ -994,6 +994,8 @@ paths:
         example all the operations for 1 extrinsic will be in the same action group.
         The action groups can optionally be fetched with the `action` query param
         for closer auditing.
+        Note - There are no 0 value operations (e.g. a transfer of 0, or a
+        transfer to itself)
 
         To learn more about operation and action group creation please consult
         [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
@@ -1042,6 +1044,8 @@ paths:
         example all the operations for 1 extrinsic will be in the same action group.
         The action groups can optionally be fetched with the `action` query param
         for closer auditing.
+        Note - There are no 0 value operations (e.g. a transfer of 0, or a
+        transfer to itself)
 
         To learn more about operation and action group creation please consult
         [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
