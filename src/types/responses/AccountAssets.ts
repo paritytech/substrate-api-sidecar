@@ -40,9 +40,11 @@ export interface IAccountAssetsBalances {
 
 /**
  * Response from `/accounts/{accountId}/asset-approvals?asset=assetId&delegate=accountId`
+ *
+ * If an asset-approval does not exist, the `amount` and `deposit` will be null.
  */
 export interface IAccountAssetApproval {
 	at: IAt;
-	amount: TAssetBalance;
-	deposit: TAssetDepositBalance;
+	amount: TAssetBalance | null;
+	deposit: TAssetDepositBalance | null;
 }

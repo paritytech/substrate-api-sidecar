@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
-import { BadRequest } from 'http-errors';
 
 import {
 	IAccountAssetApproval,
@@ -85,13 +84,11 @@ export class AccountsAssetsService extends AbstractService {
 			api.query.assets.approvals(assetId, approvalKey),
 		]);
 
-		if (assetApproval.isNone) {
-			throw new BadRequest(
-				'No asset-approval at the given `address`, `assetId`, and `delegate`'
-			);
+		let amount = null,
+			deposit = null;
+		if (!assetApproval.isNone) {
+			({ amount, deposit } = assetApproval.unwrap());
 		}
-
-		const { amount, deposit } = assetApproval.unwrap();
 
 		const at = {
 			hash,
