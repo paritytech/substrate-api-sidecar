@@ -86,7 +86,7 @@ export class AccountsAssetsService extends AbstractService {
 
 		let amount = null,
 			deposit = null;
-		if (!assetApproval.isNone) {
+		if (assetApproval.isSome) {
 			({ amount, deposit } = assetApproval.unwrap());
 		}
 
