@@ -87,6 +87,15 @@ export interface BlockTrace {
 export function isBlockTrace(
 	thing: unknown
 ): thing is { blockTrace: BlockTrace } {
+	if (
+		!(thing as {
+			blockTrace: BlockTrace;
+		})?.blockTrace
+	) {
+		// Test before destructuring
+		return false;
+	}
+
 	const { blockHash, tracingTargets, storageKeys, events, spans } = (thing as {
 		blockTrace: BlockTrace;
 	})?.blockTrace;
@@ -105,6 +114,15 @@ export interface TraceError {
 export function isTraceError(
 	thing: unknown
 ): thing is { traceError: TraceError } {
+	if (
+		!(thing as {
+			traceError: TraceError;
+		})?.traceError
+	) {
+		// Test before destructuring
+		return false;
+	}
+
 	return (
 		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
 	);
