@@ -1,11 +1,11 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, mockApi } from '../test-helpers/mock';
-import { AssetsService } from './AssetsService';
+import { PalletsAssetsService } from './PalletsAssetsService';
 
-const assetsService = new AssetsService(mockApi);
+const palletsAssetsService = new PalletsAssetsService(mockApi);
 
-describe('AssetsService', () => {
-	describe('AssetsService.fetchAssetById', () => {
+describe('PalletsAssetsService', () => {
+	describe('PalletsAssetsService.fetchAssetById', () => {
 		it('Should return the correct response for an AssetId', async () => {
 			const expectedResponse = {
 				at: {
@@ -36,7 +36,10 @@ describe('AssetsService', () => {
 				},
 			};
 
-			const response = await assetsService.fetchAssetById(blockHash789629, 10);
+			const response = await palletsAssetsService.fetchAssetById(
+				blockHash789629,
+				10
+			);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});

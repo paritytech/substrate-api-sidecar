@@ -4,7 +4,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { IAssetInfo } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
-export class AssetsService extends AbstractService {
+export class PalletsAssetsService extends AbstractService {
 	constructor(api: ApiPromise) {
 		super(api);
 	}

@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
-import { AssetsService } from '../../services';
+import { PalletsAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 /**
@@ -14,10 +14,10 @@ import AbstractController from '../AbstractController';
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
  *
- * `/assets/:assetId/assets-info`
+ * `/pallets/assets/:assetId/asset-info`
  * Returns:
  * - `at`: Block number and hash at which the call was made.
- * - `assetsInfo`: All details concering an asset.
+ * - `assetInfo`: All details concering an asset.
  * 		- `owner`:
  * 		- `issuer`: The `AccountId` able to mint tokens.
  * 		- `admin`: The `AccountId` thaw tokens, force transfers and burn token from
@@ -45,9 +45,9 @@ import AbstractController from '../AbstractController';
  * - `AssetMetadata`: https://crates.parity.io/pallet_assets/struct.AssetMetadata.html
  * - `AssetDetails`: https://crates.parity.io/pallet_assets/struct.AssetDetails.html
  */
-export default class AssetsController extends AbstractController<AssetsService> {
+export default class PalletsAssetsController extends AbstractController<PalletsAssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/assets/:assetId', new AssetsService(api));
+		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
 		this.initRoutes();
 	}
 
@@ -68,7 +68,7 @@ export default class AssetsController extends AbstractController<AssetsService> 
 			assetId,
 			'`assetId` path param is not a number'
 		);
-		AssetsController.sanitizedSend(
+		PalletsAssetsController.sanitizedSend(
 			res,
 			await this.service.fetchAssetById(hash, index)
 		);
