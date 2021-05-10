@@ -114,15 +114,6 @@ export interface TraceError {
 export function isTraceError(
 	thing: unknown
 ): thing is { traceError: TraceError } {
-	if (
-		!(thing as {
-			traceError: TraceError;
-		})?.traceError
-	) {
-		// Test before destructuring
-		return false;
-	}
-
 	return (
 		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
 	);
