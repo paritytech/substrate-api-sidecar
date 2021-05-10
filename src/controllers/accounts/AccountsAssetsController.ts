@@ -60,7 +60,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 
 		this.safeMountAsyncGetHandlers([
 			['/asset-balances', this.getAssetBalances],
-			['/asset-approvals', this.getAssetApprovals],
+			['/asset-approvals', this.getAssetApproval],
 		]);
 	}
 
@@ -83,7 +83,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 		);
 	};
 
-	private getAssetApprovals: RequestHandler = async (
+	private getAssetApproval: RequestHandler = async (
 		{ params: { address }, query: { at, delegate, assetId } },
 		res
 	): Promise<void> => {

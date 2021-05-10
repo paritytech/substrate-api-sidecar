@@ -18,9 +18,9 @@ import AbstractController from '../AbstractController';
  * Returns:
  * - `at`: Block number and hash at which the call was made.
  * - `assetInfo`: All details concering an asset.
- * 		- `owner`:
+ * 		- `owner`: Owner of the assets privileges.
  * 		- `issuer`: The `AccountId` able to mint tokens.
- * 		- `admin`: The `AccountId` thaw tokens, force transfers and burn token from
+ * 		- `admin`: The `AccountId` can that thaw tokens, force transfers and burn token from
  * 			any account.
  * 		- `freezer`: The `AccountId` that can freeze tokens.
  * 		- `supply`: The total supply across accounts.
