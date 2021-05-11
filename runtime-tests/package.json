@@ -1,0 +1,18 @@
+{
+  "name": "runtime-network-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "substrate-dev-run-lint",
+    "test": "tsc && node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@substrate/dev": "^0.5.2",
+    "typescript": "^4.2.3"
+  }
+}

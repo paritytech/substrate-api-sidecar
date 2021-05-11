@@ -1,0 +1,3 @@
+{
+    "extends": "@substrate/dev/config/tsconfig.json",
+}
