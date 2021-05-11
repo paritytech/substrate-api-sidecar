@@ -44,7 +44,7 @@ paths:
         required: false
         schema:
           type: string
-          description: Block height (as a non-negative integer) or hash
+          description: Block height (as a positive integer) or hash
             (as a hex string).
           format: unsignedInteger or $hex
       - name: assets
