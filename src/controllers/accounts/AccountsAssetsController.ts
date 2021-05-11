@@ -16,9 +16,9 @@ import AbstractController from '../AbstractController';
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
  * - (Optional for `/accounts/:address/asset-balances`)`assets`
- * - (Not-Optional for `/accounts/:address/asset-approvals)`assetId` The assetId associated
+ * - (Required for `/accounts/:address/asset-approvals)`assetId` The assetId associated
  * 		with the `AssetApproval`.
- * - (Not-Optional for `/accounts/:address/asset-approvals)`delegate` The delegate associated
+ * - (Required for `/accounts/:address/asset-approvals)`delegate` The delegate associated
  * 		with the `ApprovalKey` which is tied to a `Approval`. The `ApprovalKey` consists
  * 		of an `owner` which is the `address` path parameter, and a `delegate`.
  *
