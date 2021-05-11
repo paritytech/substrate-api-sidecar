@@ -107,7 +107,7 @@ export class AccountsAssetsService extends AbstractService {
 	 * all balances tied to those `AssetId`s.
 	 *
 	 * @param api ApiPromise
-	 * @param assets An Array of `AssetId`'s or numbers representing assetId's
+	 * @param assets An Array of `AssetId`s or numbers representing `assetId`s
 	 * @param address An `AccountId` associated with the queried path
 	 */
 	async queryAssets(
