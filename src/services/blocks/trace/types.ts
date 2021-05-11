@@ -76,52 +76,52 @@ export interface SpanWithChildren extends TraceSpan {
 	children: number[];
 }
 
-// export interface BlockTrace {
-// 	blockHash: string;
-// 	storageKeys: string;
-// 	tracingTargets: string;
-// 	events: TraceEvent[];
-// 	spans: TraceSpan[];
-// }
+export interface BlockTrace {
+	blockHash: string;
+	storageKeys: string;
+	tracingTargets: string;
+	events: TraceEvent[];
+	spans: TraceSpan[];
+}
 
-// export function isBlockTrace(
-// 	thing: unknown
-// ): thing is { blockTrace: BlockTrace } {
-// 	if (
-// 		!(thing as {
-// 			blockTrace: BlockTrace;
-// 		})?.blockTrace
-// 	) {
-// 		// Test before destructuring
-// 		return false;
-// 	}
+export function isBlockTrace(
+	thing: unknown
+): thing is { blockTrace: BlockTrace } {
+	if (
+		!(thing as {
+			blockTrace: BlockTrace;
+		})?.blockTrace
+	) {
+		// Test before destructuring
+		return false;
+	}
 
-// 	const { blockHash, tracingTargets, storageKeys, events, spans } = (thing as {
-// 		blockTrace: BlockTrace;
-// 	})?.blockTrace;
+	const { blockHash, tracingTargets, storageKeys, events, spans } = (thing as {
+		blockTrace: BlockTrace;
+	})?.blockTrace;
 
-// 	return (
-// 		[blockHash, tracingTargets, storageKeys].every(
-// 			(s) => typeof s === 'string'
-// 		) && [events, spans].every((a) => Array.isArray(a))
-// 	);
-// }
+	return (
+		[blockHash, tracingTargets, storageKeys].every(
+			(s) => typeof s === 'string'
+		) && [events, spans].every((a) => Array.isArray(a))
+	);
+}
 
-// export interface TraceError {
-// 	error: string;
-// }
+export interface TraceError {
+	error: string;
+}
 
-// export function isTraceError(
-// 	thing: unknown
-// ): thing is { traceError: TraceError } {
-// 	return (
-// 		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
-// 	);
-// }
+export function isTraceError(
+	thing: unknown
+): thing is { traceError: TraceError } {
+	return (
+		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
+	);
+}
 
-// export type BlockTraceResponse =
-// 	| { traceError: TraceError }
-// 	| { blockTrace: BlockTrace };
+export type BlockTraceResponse =
+	| { traceError: TraceError }
+	| { blockTrace: BlockTrace };
 
 export interface PalletKeyInfo {
 	module: string;

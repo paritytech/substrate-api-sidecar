@@ -6,7 +6,7 @@ import {
 	BlocksTraceOperations,
 } from '../../types/responses/BlocksTrace';
 import { AbstractService } from '../AbstractService';
-import { Trace, TraceEvent, TraceSpan } from './trace';
+import { isBlockTrace, isTraceError, Trace } from './trace';
 
 /**
  * Substrate tracing targets. These match targets by prefix. To learn more consult
@@ -55,23 +55,20 @@ export class BlocksTraceService extends AbstractService {
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
-		if (traceResponse.isTraceError) {
+		if (isTraceError(traceResponse)) {
 			throw new InternalServerError(
-				`Error: ${JSON.stringify(traceResponse.asTraceError)}`
+				`Error: ${JSON.stringify(traceResponse.traceError)}`
 			);
-		} else if (traceResponse.isBlockTrace) {
-			const trace = traceResponse.asBlockTrace;
+		} else if (isBlockTrace(traceResponse)) {
 			return {
 				at: {
 					hash,
 					height: number.unwrap().toString(10),
 				},
-				storageKeys: trace.storageKeys.toString(),
-				tracingTargets: trace.tracingTargets.toString(),
-				events: (trace.events.toJSON() as unknown) as TraceEvent[],
-				spans: ((trace.spans.toJSON() as unknown) as TraceSpan[]).sort(
-					(a, b) => a.id - b.id
-				),
+				storageKeys: traceResponse.blockTrace.storageKeys,
+				tracingTargets: traceResponse.blockTrace.tracingTargets,
+				events: traceResponse.blockTrace.events,
+				spans: traceResponse.blockTrace.spans.sort((a, b) => a.id - b.id),
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);
@@ -95,14 +92,16 @@ export class BlocksTraceService extends AbstractService {
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
-		if (traceResponse.isTraceError) {
+		console.log(traceResponse);
+
+		if (isTraceError(traceResponse)) {
 			throw new InternalServerError(
-				`Error: ${JSON.stringify(traceResponse.asTraceError)}`
+				`Error: ${JSON.stringify(traceResponse.traceError)}`
 			);
-		} else if (traceResponse.isBlockTrace) {
+		} else if (isBlockTrace(traceResponse)) {
 			const trace = new Trace(
 				this.api,
-				traceResponse.asBlockTrace,
+				traceResponse.blockTrace,
 				block.registry
 			);
 
