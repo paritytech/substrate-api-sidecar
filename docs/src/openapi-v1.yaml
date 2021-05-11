@@ -36,7 +36,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
       - name: at
         in: query
         description: Block at which to query asset-balance info for the 
@@ -81,7 +81,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
       - name: at
         in: query
         description: Block at which to query asset approval info for the 
@@ -106,7 +106,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
       responses:
         "200": 
           description: successfull operation
@@ -129,7 +129,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
       - name: at
         in: query
         description: Block at which to query balance info for the
@@ -182,7 +182,7 @@ paths:
         description: SS58 address of the account. Must be a _Stash_ account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: at
         in: query
@@ -232,7 +232,7 @@ paths:
         description: SS58 address of the account. Must be a _Stash_ account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: depth
         in: query
@@ -293,7 +293,7 @@ paths:
         description: SS58 address of the account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: at
         in: query
@@ -1167,20 +1167,20 @@ components:
         owner:
           type: string
           description: Owner of the assets privileges.
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
         issuer: 
           type: string
           description: The `AccountId` able to mint tokens.
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
         admin: 
           type: string
           description: The `AccountId` that can thaw tokens, force transfers and burn token from
             any account.
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
         freezer: 
           type: string
           description: The `AccountId` that can freeze tokens.
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
         supply: 
           type: string
           description: The total supply across accounts.
