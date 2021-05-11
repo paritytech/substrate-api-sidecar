@@ -7,6 +7,7 @@ export const kiltControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		AccountsAssets: false,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,
@@ -21,6 +22,7 @@ export const kiltControllers: ControllerConfig = {
 		TransactionMaterial: true,
 		TransactionFeeEstimate: true,
 		TransactionSubmit: true,
+		PalletsAssets: false,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
 		Paras: false,

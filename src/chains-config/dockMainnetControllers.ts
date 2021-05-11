@@ -8,6 +8,7 @@ export const dockMainnetControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		AccountsAssets: false,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: false,
@@ -22,6 +23,7 @@ export const dockMainnetControllers: ControllerConfig = {
 		TransactionMaterial: true,
 		TransactionFeeEstimate: true,
 		TransactionSubmit: true,
+		PalletsAssets: false,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
 		Paras: false,
