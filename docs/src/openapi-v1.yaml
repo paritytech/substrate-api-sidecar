@@ -82,7 +82,7 @@ paths:
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
       - name: at
         in: query
-        description: Block at which to query asset-approval info for the 
+        description: Block at which to query asset approval info for the 
           specified account.
         required: false
         schema:
