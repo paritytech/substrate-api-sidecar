@@ -168,9 +168,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		n: string[],
 		errorMessage: string
 	): number[] {
-		const isValidArray = Array.isArray(n);
-
-		if (!isValidArray) {
+		if (!Array.isArray(n)) {
 			throw new BadRequest(errorMessage);
 		}
 
