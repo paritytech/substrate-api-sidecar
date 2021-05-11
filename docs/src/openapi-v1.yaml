@@ -1172,7 +1172,7 @@ components:
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
         admin: 
           type: string
-          description: The `AccountId` can that thaw tokens, force transfers and burn token from
+          description: The `AccountId` that can thaw tokens, force transfers and burn token from
             any account.
           pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
         freezer: 
