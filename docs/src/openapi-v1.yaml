@@ -49,7 +49,7 @@ paths:
           format: unsignedInteger or $hex
       - name: assets
         in: query
-        description: An array of AssetId's to be queried. If not inputed by default
+        description: An array of AssetId's to be queried. If not supplied, defaults to providing
           all asset-balances associated with the `accountId` will be returned. The array
           format follows Express 4.x API. ex:`?assets[]=1&assets[]=2&assets[]=3`.
         required: false
