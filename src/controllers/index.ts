@@ -1,4 +1,5 @@
 import {
+	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsStakingInfo,
 	AccountsStakingPayouts,
@@ -6,7 +7,11 @@ import {
 } from './accounts';
 import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
-import { PalletsStakingProgress, PalletsStorage } from './pallets';
+import {
+	PalletsAssets,
+	PalletsStakingProgress,
+	PalletsStorage,
+} from './pallets';
 import { Paras } from './paras';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import {
@@ -23,10 +28,12 @@ export const controllers = {
 	Blocks,
 	BlocksExtrinsics,
 	BlocksTrace,
+	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsStakingInfo,
 	AccountsVestingInfo,
 	AccountsStakingPayouts,
+	PalletsAssets,
 	PalletsStakingProgress,
 	PalletsStorage,
 	NodeNetwork,

@@ -15,3 +15,4 @@ yarn-error.log
 /docs/.yarn/*
 !.yarn/releases
 !.yarn/plugins
+/docs/.yarn

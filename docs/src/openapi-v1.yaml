@@ -21,6 +21,100 @@ tags:
 - name: paras
 - name: trace
 paths:
+  /accounts/{accountId}/asset-balances:
+    get:
+      tags:
+      - accounts
+      summary: Get an array of asset-balances for an account.
+      description: Returns information about an account's asset-balances. This is 
+        specific to the assets pallet for parachains. If no `assets` query parameter
+        is provided, all asset-balances for the given account will be returned. 
+      operationId: getAssetBalances
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query asset-balance info for the 
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a positive integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: assets
+        in: query
+        description: An array of AssetId's to be queried. If not supplied, defaults to providing
+          all asset balances associated with the `accountId` will be returned. The array query param
+          format follows Express 4.x API. ex:`?assets[]=1&assets[]=2&assets[]=3`.
+        required: false
+        schema:
+          type: array
+          items: 
+            type: string
+          description: An array of assetId numbers represented as strings
+          format: Array of unsignedInteger's
+      responses:
+        "200": 
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAssetsBalances'
+  /accounts/{accountId}/asset-approvals:
+    get:
+      tags:
+      - accounts
+      summary: Get an asset approval for an account.
+      description: Returns information about an account's asset approval transaction.
+        It is required to pass in a delegate and an assetId as query parameters.
+      operationId: getAssetApprovals
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query asset approval info for the 
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: assetId
+        in: query
+        description: The `assetId` associated with the asset-approval.
+        required: true
+        schema:
+          type: string
+          description: An assetId represented as an unsignedInteger.
+          format: unsignedInteger
+      - name: delegate
+        in: query
+        description: The delegate's `accountId` associated with an asset-approval.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      responses:
+        "200": 
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAssetsApproval'
   /accounts/{accountId}/balance-info:
     get:
       tags:
@@ -36,7 +130,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
       - name: at
         in: query
         description: Block at which to query balance info for the
@@ -89,7 +183,7 @@ paths:
         description: SS58 address of the account. Must be a _Stash_ account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: at
         in: query
@@ -139,7 +233,7 @@ paths:
         description: SS58 address of the account. Must be a _Stash_ account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: depth
         in: query
@@ -200,7 +294,7 @@ paths:
         description: SS58 address of the account.
         required: true
         schema:
-          pattern: '^[1-9A-HJ-NP-Za-km-z]{8,64}$'
+          format: SS58
           type: string
       - name: at
         in: query
@@ -523,6 +617,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pallets/assets/{assetId}/asset-info:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with an asset.
+      description: Returns information associated with an asset which includes
+        the assets `AssetDetails` and `AssetMetadata`. 
+      operationId: getAssetById
+      parameters:
+      - name: assetId
+        in: path
+        description: The unsignedInteger Id of an asset.  
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the assetInfo.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsAssetsInfo'
   /pallets/staking/progress:
     get:
       tags:
@@ -1132,6 +1257,133 @@ components:
             locks
           items:
             $ref: '#/components/schemas/BalanceLock'
+    AccountAssetsBalances:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        assets:
+          type: array
+          description: An array of queried assets.
+          items:
+            $ref: '#/components/schemas/AssetsBalance'
+    AssetsBalance:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: The identifier of the asset.
+          format: unsignedInteger
+        balance: 
+          type: string
+          description: The balance of the asset.
+          format: unsignedInteger
+        isFrozen: 
+          type: boolean
+          description: Whether the asset is frozen for non-admin transfers.
+        isSufficient: 
+          type: boolean
+          description: Whether a non-zero balance of this asset is a deposit of sufficient
+            value to account for the state bloat associated with its balance storage. If set to
+            `true`, then non-zero balances may be stored without a `consumer` reference (and thus
+            an ED in the Balances pallet or whatever else is used to control user-account state
+            growth).
+    AccountAssetsApproval:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        amount:
+          type: string
+          description: The amount of funds approved for the balance transfer from the owner
+            to some delegated target.
+          format: unsignedInteger
+        deposit:
+          type: string
+          description: The amount reserved on the owner's account to hold this item in storage.
+          format: unsignedInteger
+    PalletsAssetsInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        assetInfo:
+          $ref: '#/components/schemas/AssetInfo'
+        assetMetadata: 
+          $ref: '#/components/schemas/AssetMetadata'
+    AssetInfo:
+      type: object
+      properties:
+        owner:
+          type: string
+          description: Owner of the assets privileges.
+          format: SS58
+        issuer: 
+          type: string
+          description: The `AccountId` able to mint tokens.
+          format: SS58
+        admin: 
+          type: string
+          description: The `AccountId` that can thaw tokens, force transfers and burn token from
+            any account.
+          format: SS58
+        freezer: 
+          type: string
+          description: The `AccountId` that can freeze tokens.
+          format: SS58
+        supply: 
+          type: string
+          description: The total supply across accounts.
+          format: unsignedInteger
+        deposit: 
+          type: string
+          description: The balance deposited for this. This pays for the data stored.
+          format: unsignedInteger
+        minBalance: 
+          type: string
+          description: The ED for virtual accounts.
+          format: unsignedInteger
+        isSufficient: 
+          type: boolean
+          description: If `true`, then any account with this asset is given a provider reference. Otherwise, it
+            requires a consumer reference.
+        accounts: 
+          type: string
+          description: The total number of accounts.
+          format: unsignedInteger
+        sufficients: 
+          type: string
+          description: The total number of accounts for which is placed a self-sufficient reference.
+        approvals: 
+          type: string
+          description: The total number of approvals.
+          format: unsignedInteger
+        isFrozen:
+          type: boolean
+          description: Whether the asset is frozen for non-admin transfers.
+    AssetMetadata:
+      type: object
+      properties:
+        deposit: 
+          type: string
+          description: The balance deposited for this metadata. This pays for the data
+            stored in this struct.
+          format: unsignedInteger
+        name: 
+          type: string
+          description: The user friendly name of this asset.
+          format: $hex
+        symbol: 
+          type: string
+          description: The ticker symbol for this asset.
+          format: $hex
+        decimals:
+          type: string
+          description: The number of decimals this asset uses to represent one unit.
+          format: unsignedInteger
+        isFrozen: 
+          type: boolean
+          description: Whether the asset metadata may be changed by a non Force origin.
     StakingLedger:
       type: object
       properties:
