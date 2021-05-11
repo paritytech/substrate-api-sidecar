@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { AccountInfo } from '@polkadot/types/interfaces';
+import { AccountInfo, BlockTrace } from '@polkadot/types/interfaces';
 import { Registry } from '@polkadot/types/types';
 import { stringCamelCase } from '@polkadot/util';
 import BN from 'bn.js';
@@ -8,7 +8,6 @@ import { InternalServerError } from 'http-errors';
 import { IOption, isSome } from '../../../types/util';
 import {
 	ActionGroup,
-	BlockTrace,
 	KeyInfo,
 	Operation,
 	PalletKeyInfo,
@@ -19,6 +18,7 @@ import {
 	PhaseOther,
 	SpanWithChildren,
 	SpecialKeyInfo,
+	TraceEvent,
 	TraceSpan,
 } from './types';
 
@@ -282,7 +282,9 @@ export class Trace {
 			spansById,
 			parsedSpans: spans,
 			executeBlockSpanId,
-		} = Trace.parseSpans(this.traceBlock.spans);
+		} = Trace.parseSpans(
+			(this.traceBlock.spans.toJSON() as unknown) as TraceSpan[]
+		);
 		const { eventsByParentId, extrinsicIndexBySpanId } = this.parseEvents(
 			spansById
 		);
@@ -366,7 +368,7 @@ export class Trace {
 		}
 
 		const accountEventsByAddress = this.accountEventsByAddress(
-			this.traceBlock.events as ParsedActionEvent[]
+			(this.traceBlock.events as unknown) as ParsedActionEvent[]
 		);
 		// Note: if operations need to be in order of the actual storage ops they need to be sorted
 		// again by `eventIndex`. We skip that here for performance.
@@ -433,8 +435,9 @@ export class Trace {
 	} {
 		const extrinsicIndexBySpanId = new Map<number, BN>();
 		const eventsByParentId = new Map<number, ParsedEvent[]>();
+		const events = (this.traceBlock.events.toJSON() as unknown) as TraceEvent[];
 
-		for (const [idx, event] of this.traceBlock.events.entries()) {
+		for (const [idx, event] of events.entries()) {
 			const { key } = event.data.stringValues;
 			const keyPrefix = key?.slice(0, 64);
 			const storagePath = this.getStoragePathFromKey(keyPrefix);
