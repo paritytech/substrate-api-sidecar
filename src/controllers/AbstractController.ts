@@ -164,14 +164,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return num;
 	}
 
-	protected parseQueryParamArrayOrThrow(
-		n: string[],
-		errorMessage: string
-	): number[] {
-		if (!Array.isArray(n)) {
-			throw new BadRequest(errorMessage);
-		}
-
+	protected parseQueryParamArrayOrThrow(n: string[]): number[] {
 		return n.map((str) =>
 			this.parseNumberOrThrow(
 				str,

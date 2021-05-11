@@ -71,10 +71,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 		const hash = await this.getHashFromAt(at);
 
 		const assetsArray = Array.isArray(assets)
-			? this.parseQueryParamArrayOrThrow(
-					assets as string[],
-					'`assets` query parameter is not in the correct format. Should be of the form `?assets[]=42&assets[]=3`. Reference the docs for more information.'
-			  )
+			? this.parseQueryParamArrayOrThrow(assets as string[])
 			: [];
 
 		AccountsAssetsController.sanitizedSend(
