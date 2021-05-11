@@ -51,7 +51,7 @@ paths:
         in: query
         description: An array of AssetId's to be queried. If not inputed by default
           all asset-balances associated with the `accountId` will be returned. The array
-          format follows Express 4.x API recommendations. ex:`?assets[]=1&assets[]=2&assets[]=3`.
+          format follows Express 4.x API. ex:`?assets[]=1&assets[]=2&assets[]=3`.
         required: false
         schema:
           type: string
