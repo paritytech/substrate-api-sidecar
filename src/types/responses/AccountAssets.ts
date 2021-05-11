@@ -13,7 +13,7 @@ export interface IAssetBalance {
 	 */
 	assetId: AssetId | number;
 	/**
-	 * The units in which substrate record's balances.
+	 * The units in which substrate records balances.
 	 */
 	balance: TAssetBalance;
 	/**
