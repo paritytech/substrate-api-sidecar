@@ -69,7 +69,7 @@ paths:
       tags:
       - accounts
       summary: Get an asset approval for an account.
-      description: Returns information about an account's asset-approval transaction.
+      description: Returns information about an account's asset approval transaction.
         It is required to pass in a delegate and an assetId as query parameters.
       operationId: getAssetApprovals
       parameters:
