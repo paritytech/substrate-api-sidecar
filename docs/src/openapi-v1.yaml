@@ -26,7 +26,7 @@ paths:
       - accounts
       summary: Get an array of asset-balances for an account.
       description: Returns information about an accounts asset-balances. This is 
-        specific to the assets-pallet for parachains. If no `assets` query parameter
+        specific to the assets pallet for parachains. If no `assets` query parameter
         is provided, all asset-balances for the given account will be returned. 
       operationId: getAssetBalances
       parameters:
