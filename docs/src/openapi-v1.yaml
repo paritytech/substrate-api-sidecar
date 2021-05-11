@@ -50,11 +50,13 @@ paths:
       - name: assets
         in: query
         description: An array of AssetId's to be queried. If not supplied, defaults to providing
-          all asset-balances associated with the `accountId` will be returned. The array
+          all asset balances associated with the `accountId` will be returned. The array query param
           format follows Express 4.x API. ex:`?assets[]=1&assets[]=2&assets[]=3`.
         required: false
         schema:
-          type: string
+          type: array
+          items: 
+            type: string
           description: An array of assetId numbers represented as strings
           format: Array of unsignedInteger's
       responses:
