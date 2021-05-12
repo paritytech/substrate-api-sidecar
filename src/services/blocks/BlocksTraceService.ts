@@ -39,11 +39,6 @@ const DEFAULT_TARGETS = 'pallet,frame,state';
 const DEFAULT_KEYS =
 	'3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
 
-/**
- * Error response when the response from the rpc is not the shape of
- */
-const UNEXPECTED_RPC_RESPONSE = 'Unexpected response to state_traceBlock RPC';
-
 export class BlocksTraceService extends AbstractService {
 	/**
 	 * Get the state traces for a block.
@@ -58,7 +53,7 @@ export class BlocksTraceService extends AbstractService {
 
 		if (traceResponse.isTraceError) {
 			throw new InternalServerError(`${traceResponse.asTraceError.toString()}`);
-		} else if (traceResponse.isBlockTrace) {
+		} else {
 			const formattedTrace = BlocksTraceService.formatBlockTrace(
 				traceResponse.asBlockTrace
 			);
@@ -72,8 +67,6 @@ export class BlocksTraceService extends AbstractService {
 				events: formattedTrace.events,
 				spans: formattedTrace.spans.sort((a, b) => a.id - b.id),
 			};
-		} else {
-			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);
 		}
 	}
 
