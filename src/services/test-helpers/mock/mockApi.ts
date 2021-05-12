@@ -22,6 +22,7 @@ import { rococoMetadataV228 } from '../../..//test-helpers/metadata/rococoMetada
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import { statemintV1 } from '../../../test-helpers/metadata/statemintMetadata';
 import {
+	kusamaRegistry,
 	polkadotRegistry,
 	rococoRegistry,
 } from '../../../test-helpers/registries';
@@ -37,6 +38,7 @@ import {
 } from '.';
 import { events789629 } from './data/events789629Hex';
 import { localListenAddressesHex } from './data/localListenAddresses';
+import traceBlockRPC from './data/traceBlock.json';
 import { validators789629Hex } from './data/validators789629Hex';
 
 const eventsAt = (_hash: Hash) =>
@@ -519,6 +521,11 @@ const auctionsWinningsAt = () =>
 		return optionWinnings;
 	});
 
+const traceBlock = () =>
+	Promise.resolve().then(() =>
+		kusamaRegistry.createType('TraceBlockResponse', traceBlockRPC.result)
+	);
+
 /**
  * Asset specific constants.
  * Note: It borrows some variables used in the parachains constant section
@@ -780,6 +787,7 @@ export const mockApi = ({
 			getRuntimeVersion,
 			getMetadata,
 			getStorage,
+			traceBlock,
 		},
 		system: {
 			chain,

@@ -12,6 +12,7 @@ yarn-error.log
 **.log
 **/logs
 .yarn/*
+/docs/.yarn/*
 !.yarn/releases
 !.yarn/plugins
 /docs/.yarn

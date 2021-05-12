@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Substrate API Sidecar v1.
+  title: Substrate API Sidecar
   description: Substrate API Sidecar is a REST service that makes it easy to
     interact with blockchain nodes built using Substrate's FRAME framework.
   contact:
@@ -19,6 +19,7 @@ tags:
 - name: runtime
 - name: transaction
 - name: paras
+- name: trace
 paths:
   /accounts/{accountId}/asset-balances:
     get:
@@ -1046,6 +1047,155 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeaseInfo'
+  /experimental/blocks/head/traces:
+    get:
+      tags:
+      - trace
+      summary: |
+        [Experimental - subject to breaking change.] Get traces for the most
+        recently finalized block.
+      description: |
+        Returns traces (spans and events) of the most recently finalized block from
+        RPC `state_straceBlock`. Consult the [RPC docs](https://github.com/paritytech/substrate/blob/aba876001651506f85c14baf26e006b36092e1a0/client/rpc-api/src/state/mod.rs#L140)
+        for conceptual info.
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTrace'
+  /experimental/blocks/{blockId}/traces:
+    get:
+      tags:
+      - trace
+      summary: |
+        [Experimental - subject to breaking change.] Get traces for the given `blockId`.
+      description: |
+        Returns traces (spans and events) of the specified block from
+        RPC `state_straceBlock`. Consult the [RPC docs](https://github.com/paritytech/substrate/blob/aba876001651506f85c14baf26e006b36092e1a0/client/rpc-api/src/state/mod.rs#L140) for conceptual info.
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTrace'
+  /experimental/blocks/head/traces/operations:
+    get:
+      tags:
+      - trace
+      summary: |
+        [Experimental - subject to breaking change.] Get the operations from the
+        most recently finalized block.
+      description: |
+        Returns the operations from the most recently finalized block. Operations
+        represent one side of a balance change. For example if Alice transfers
+        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100.
+
+        Given account A and A's balance at block k0 (Ak0), if we sum all the
+        operations for A from block k1 through kn against Ak0, we will end up
+        with A's balance at block kn (Akn). Thus, operations can be used to audit
+        that balances change as expected.
+
+        This is useful for Substrate based chains because the advanced business
+        logic can make it difficult to ensure auditable balance reconciliation
+        based purely on events. Instead of using events one can use the
+        operations given from this endpoint.
+
+        Note - each operation corresponds to a delta of a single field of the
+        `system::AccountData` storage item (i.e `free`, `reserved`, `misc_frozen`
+        and `fee_frozen`).
+        Note - operations are assigned a block execution phase (and extrinsic index
+        for those in the apply extrinsic phase) based on an "action group". For
+        example all the operations for 1 extrinsic will be in the same action group.
+        The action groups can optionally be fetched with the `action` query param
+        for closer auditing.
+        Note - There are no 0 value operations (e.g. a transfer of 0, or a
+        transfer to itself)
+
+        To learn more about operation and action group creation please consult
+        [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
+      parameters:
+      - name: actions
+        in: query
+        description: Whether or not to include action groups.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTraceOperations'
+  /experimental/blocks/{blockId}/traces/operations:
+    get:
+      tags:
+      - trace
+      summary: |
+        [Experimental - subject to breaking change.] Get the operations from the
+        specified block.
+      description: |
+        Returns the operations from the most recently finalized block. Operations
+        represent one side of a balance change. For example if Alice transfers
+        100unit to Bob there will be two operations; 1) Alice - 100 2) Bob + 100.
+
+        Given account A and A's balance at block k0 (Ak0), if we sum all the
+        operations for A from block k1 through kn against Ak0, we will end up
+        with A's balance at block kn (Akn). Thus, operations can be used to audit
+        that balances change as expected.
+
+        This is useful for Substrate based chains because the advanced business
+        logic can make it difficult to ensure auditable balance reconciliation
+        based purely on events. Instead of using events one can use the
+        operations given from this endpoint.
+
+        Note - each operation corresponds to a delta of a single field of the
+        `system::AccountData` storage item (i.e `free`, `reserved`, `misc_frozen`
+        and `fee_frozen`).
+        Note - operations are assigned a block execution phase (and extrinsic index
+        for those in the apply extrinsic phase) based on an "action group". For
+        example all the operations for 1 extrinsic will be in the same action group.
+        The action groups can optionally be fetched with the `action` query param
+        for closer auditing.
+        Note - There are no 0 value operations (e.g. a transfer of 0, or a
+        transfer to itself)
+
+        To learn more about operation and action group creation please consult
+        [this diagram](https://docs.google.com/drawings/d/1vZoJo9jaXlz0LmrdTOgHck9_1LsfuQPRmTr-5g1tOis/edit?usp=sharing)
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          type: string
+      - name: actions
+        in: query
+        description: Whether or not to include action groups.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTraceOperations'
 components:
   schemas:
     BalanceLock:
@@ -2300,6 +2450,159 @@ components:
           description: |
             List of lease periods for which the `paraId` holds a lease along with
             the deposit held and the associated `accountId`.
+    TraceSpan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: unsignedInteger
+        name:
+          type: string
+        parentId:
+          type: string
+          format: unsignedInteger
+        target:
+            type: string
+        wasm:
+          type: boolean
+    TraceEventDataStringValues:
+      type: object
+      properties:
+        key:
+          type: string
+          format: hex
+          description: The complete storage key for the entry.
+        method:
+          type: string
+          description: Normally one of Put or Get.
+        result:
+          type: string
+          format: hex
+          description: Hex scale encoded storage value.
+      description: Note these exact values will only be present for storage events.
+    TraceEvent:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+              stringValues:
+                $ref: '#/components/schemas/TraceEventDataStringValues'
+        parentId:
+          type: string
+          format: unsignedInteger
+        target:
+          type: string
+    BlocksTrace:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        blockHash:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TraceEvent'
+        parentHash:
+          type: string
+        spans:
+          type: array
+          items:
+            $ref: '#/components/schemas/TraceSpan'
+        storageKeys:
+          type: string
+          description: Hex encoded storage keys used to filter events.
+        tracingTargets:
+          type: string
+          description: Targets used to filter spans and events.
+    SpanId:
+      type: object
+      properties:
+        name:
+          type: string
+        target:
+          type: string
+        id:
+          type: string
+          format: unsignedInteger
+    OperationAmountCurrency:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: KSM
+    OperationAmount:
+      type: object
+      properties:
+        values:
+          type: string
+          format: unsignedInteger
+        currency:
+          $ref: '#/components/schemas/OperationAmountCurrency'
+    OperationPhase:
+      type: object
+      properties:
+        variant:
+          type: string
+          enum:
+          - onInitialize
+          - initialChecks
+          - applyExtrinsic
+          - onFinalize
+          - finalChecks
+          description: Phase of block execution pipeline.
+        extrinsicIndex:
+          type: string
+          format: unsignedInteger
+          description: |
+            If phase variant is `applyExtrinsic` this will be the index of
+            the extrinsic. Otherwise this field will not be present.
+    Operation:
+      type: object
+      properties:
+        phase:
+          $ref: '#/components/schemas/OperationPhase'
+        parentSpanId:
+          $ref: '#/components/schemas/SpanId'
+        primarySpanId:
+          $ref: '#/components/schemas/SpanId'
+        eventIndex:
+          type: string
+          format: unsignedInteger
+          description: Index of the underlying trace event.
+        address:
+          type: string
+          description: |
+           Account this operation affects. Note - this will be an object like
+           `{ id: address }` if the network uses `MultiAddress`
+        storage:
+          type: object
+          properties:
+            pallet:
+              type: string
+            item:
+              type: string
+            field1:
+              type: string
+              description: |
+                A field of the storage item. (i.e `system::Account::get(address).data`)
+            field2:
+              type: string
+              description: |
+                A field of the struct described by field1 (i.e
+                `system::Account::get(address).data.free`)
+        amount:
+          $ref: '#/components/schemas/OperationAmount'
+    BlocksTraceOperations:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operation'
   requestBodies:
     Transaction:
       content:

@@ -7,6 +7,7 @@ export const mandalaControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		BlocksTrace: false,
 		AccountsAssets: false,
 		AccountsStakingPayouts: true,
 		AccountsBalanceInfo: true,

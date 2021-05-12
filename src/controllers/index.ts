@@ -5,7 +5,7 @@ import {
 	AccountsStakingPayouts,
 	AccountsVestingInfo,
 } from './accounts';
-import { Blocks, BlocksExtrinsics } from './blocks';
+import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
@@ -27,6 +27,7 @@ import {
 export const controllers = {
 	Blocks,
 	BlocksExtrinsics,
+	BlocksTrace,
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsStakingInfo,

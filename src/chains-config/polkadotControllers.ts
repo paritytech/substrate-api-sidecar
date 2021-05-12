@@ -8,6 +8,7 @@ export const polkadotControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		BlocksTrace: false,
 		AccountsAssets: true,
 		AccountsStakingPayouts: true,
 		AccountsBalanceInfo: true,

@@ -7,6 +7,7 @@ export const dockTestnetControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		BlocksTrace: false,
 		AccountsAssets: false,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
