@@ -1,4 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
+import { BlockTrace as PdJsBlockTrace } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
 import {
@@ -6,7 +7,7 @@ import {
 	BlocksTraceOperations,
 } from '../../types/responses/BlocksTrace';
 import { AbstractService } from '../AbstractService';
-import { isBlockTrace, isTraceError, Trace } from './trace';
+import { BlockTrace, StringValues, Trace } from './trace';
 
 /**
  * Substrate tracing targets. These match targets by prefix. To learn more consult
@@ -55,20 +56,21 @@ export class BlocksTraceService extends AbstractService {
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
-		if (isTraceError(traceResponse)) {
-			throw new InternalServerError(
-				`Error: ${JSON.stringify(traceResponse.traceError)}`
+		if (traceResponse.isTraceError) {
+			throw new InternalServerError(`${traceResponse.asTraceError.toString()}`);
+		} else if (traceResponse.isBlockTrace) {
+			const formattedTrace = BlocksTraceService.formatBlockTrace(
+				traceResponse.asBlockTrace
 			);
-		} else if (isBlockTrace(traceResponse)) {
 			return {
 				at: {
 					hash,
 					height: number.unwrap().toString(10),
 				},
-				storageKeys: traceResponse.blockTrace.storageKeys,
-				tracingTargets: traceResponse.blockTrace.tracingTargets,
-				events: traceResponse.blockTrace.events,
-				spans: traceResponse.blockTrace.spans.sort((a, b) => a.id - b.id),
+				storageKeys: formattedTrace.storageKeys,
+				tracingTargets: formattedTrace.tracingTargets,
+				events: formattedTrace.events,
+				spans: formattedTrace.spans.sort((a, b) => a.id - b.id),
 			};
 		} else {
 			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);
@@ -92,16 +94,12 @@ export class BlocksTraceService extends AbstractService {
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
 		]);
 
-		console.log(traceResponse);
-
-		if (isTraceError(traceResponse)) {
-			throw new InternalServerError(
-				`Error: ${JSON.stringify(traceResponse.traceError)}`
-			);
-		} else if (isBlockTrace(traceResponse)) {
+		if (traceResponse.isTraceError) {
+			throw new InternalServerError(`${traceResponse.asTraceError.toString()}`);
+		} else {
 			const trace = new Trace(
 				this.api,
-				traceResponse.blockTrace,
+				BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace),
 				block.registry
 			);
 
@@ -115,8 +113,59 @@ export class BlocksTraceService extends AbstractService {
 				operations,
 				actions: includeActions ? actions : undefined,
 			};
-		} else {
-			throw new InternalServerError(UNEXPECTED_RPC_RESPONSE);
 		}
+	}
+
+	/**
+	 * Format the response to the `traceBlock` RPC. Primarily used to normalize data
+	 * for `Trace`. This essentially should return something that closesly resembles
+	 * the raw RPC JSON response result.
+	 *
+	 * @param blockTrace Polkadot-js BlockTrace
+	 */
+	private static formatBlockTrace(blockTrace: PdJsBlockTrace): BlockTrace {
+		const events = blockTrace.events.map(
+			({ parentId, target, data: { stringValues } }) => {
+				const formattedStringValues = [...stringValues.entries()].reduce(
+					(acc, [k, v]) => {
+						acc[k.toString()] = v.toString();
+
+						return acc;
+					},
+					{} as StringValues
+				);
+
+				return {
+					parentId: (parentId.isSome
+						? parentId.unwrap().toNumber()
+						: null) as number, // TODO
+					target: target.toString(),
+					data: {
+						stringValues: formattedStringValues,
+					},
+				};
+			}
+		);
+
+		const spans = blockTrace.spans.map(
+			({ id, name, parentId, target, wasm }) => {
+				return {
+					id: id.toNumber(),
+					parentId: (parentId.isSome
+						? parentId.unwrap().toNumber()
+						: null) as number,
+					name: name.toString(),
+					target: target.toString(),
+					wasm: wasm.toJSON(),
+				};
+			}
+		);
+
+		return {
+			storageKeys: blockTrace.storageKeys.toString(),
+			tracingTargets: blockTrace.tracingTargets.toString(),
+			events,
+			spans,
+		};
 	}
 }

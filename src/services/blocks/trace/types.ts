@@ -4,8 +4,9 @@ import BN from 'bn.js';
 export interface StringValues {
 	key?: string;
 	method?: 'Put' | 'Get';
-	result?: string;
-	[i: string]: unknown;
+	value_encoded?: string;
+	result_encoded?: string;
+	[i: string]: string | undefined;
 }
 
 export interface Data {
@@ -19,7 +20,6 @@ export interface Data {
  * RPC contain.
  */
 export interface TraceEvent {
-	name: string;
 	parentId: number;
 	target: string;
 	data: Data;
@@ -63,7 +63,7 @@ export interface TraceSpan {
 	name: string;
 	parentId: number;
 	target: string;
-	data: Data;
+	wasm: boolean;
 }
 
 /**
@@ -77,51 +77,11 @@ export interface SpanWithChildren extends TraceSpan {
 }
 
 export interface BlockTrace {
-	blockHash: string;
 	storageKeys: string;
 	tracingTargets: string;
 	events: TraceEvent[];
 	spans: TraceSpan[];
 }
-
-export function isBlockTrace(
-	thing: unknown
-): thing is { blockTrace: BlockTrace } {
-	if (
-		!(thing as {
-			blockTrace: BlockTrace;
-		})?.blockTrace
-	) {
-		// Test before destructuring
-		return false;
-	}
-
-	const { blockHash, tracingTargets, storageKeys, events, spans } = (thing as {
-		blockTrace: BlockTrace;
-	})?.blockTrace;
-
-	return (
-		[blockHash, tracingTargets, storageKeys].every(
-			(s) => typeof s === 'string'
-		) && [events, spans].every((a) => Array.isArray(a))
-	);
-}
-
-export interface TraceError {
-	error: string;
-}
-
-export function isTraceError(
-	thing: unknown
-): thing is { traceError: TraceError } {
-	return (
-		typeof (thing as { traceError: TraceError })?.traceError?.error === 'string'
-	);
-}
-
-export type BlockTraceResponse =
-	| { traceError: TraceError }
-	| { blockTrace: BlockTrace };
 
 export interface PalletKeyInfo {
 	module: string;

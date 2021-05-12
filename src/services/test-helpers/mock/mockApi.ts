@@ -22,6 +22,7 @@ import { rococoMetadataV228 } from '../../..//test-helpers/metadata/rococoMetada
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import { statemintV1 } from '../../../test-helpers/metadata/statemintMetadata';
 import {
+	kusamaRegistry,
 	polkadotRegistry,
 	rococoRegistry,
 } from '../../../test-helpers/registries';
@@ -520,7 +521,12 @@ const auctionsWinningsAt = () =>
 		return optionWinnings;
 	});
 
-const traceBlock = () => Promise.resolve().then(() => traceBlockRPC.result);
+const traceBlock = () =>
+	Promise.resolve().then(() =>
+		kusamaRegistry.createType('TraceBlockResponse', traceBlockRPC.result)
+	);
+
+// const traceBlock = () => Promise.resolve().then(() => traceBlockRPC.result);
 
 /**
  * Asset specific constants.
