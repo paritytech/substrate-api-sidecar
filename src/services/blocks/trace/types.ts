@@ -1,5 +1,6 @@
 import { AccountInfo, Address } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
+import { IOption } from 'src/types/util';
 
 export interface StringValues {
 	key?: string;
@@ -20,7 +21,7 @@ export interface Data {
  * RPC contain.
  */
 export interface TraceEvent {
-	parentId: number;
+	parentId: IOption<number>;
 	target: string;
 	data: Data;
 	storagePath?: KeyInfo;
@@ -61,7 +62,7 @@ export interface ParsedAccountEvent extends ParsedActionEvent {
 export interface TraceSpan {
 	id: number;
 	name: string;
-	parentId: number;
+	parentId: IOption<number>;
 	target: string;
 	wasm: boolean;
 }

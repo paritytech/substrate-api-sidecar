@@ -129,9 +129,7 @@ export class BlocksTraceService extends AbstractService {
 				);
 
 				return {
-					parentId: (parentId.isSome
-						? parentId.unwrap().toNumber()
-						: null) as number, // TODO
+					parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
 					target: target.toString(),
 					data: {
 						stringValues: formattedStringValues,
@@ -144,9 +142,7 @@ export class BlocksTraceService extends AbstractService {
 			({ id, name, parentId, target, wasm }) => {
 				return {
 					id: id.toNumber(),
-					parentId: (parentId.isSome
-						? parentId.unwrap().toNumber()
-						: null) as number,
+					parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
 					name: name.toString(),
 					target: target.toString(),
 					wasm: wasm.toJSON(),

@@ -67,18 +67,18 @@ const WELL_KNOWN_KEYS = Object.freeze({
 /**
  * Mapping of span id => span with children ids
  */
-type SpansById = Map<number, SpanWithChildren>;
+type SpansById = Map<IOption<number>, SpanWithChildren>;
 
 /**
  * Extrinsic indexs decoded from storage read events, keyed by the span Id to which
  * the original storage event belonged to.
  */
-type ExtrinsicIndexBySpanId = Map<number, BN>;
+type ExtrinsicIndexBySpanId = Map<IOption<number>, BN>;
 
 /**
  * Mapping of span id => array of the events belonging to the span.
  */
-type EventsByParentId = Map<number, ParsedEvent[]>;
+type EventsByParentId = Map<IOption<number>, ParsedEvent[]>;
 
 /**
  * Mapping of address => `system::Account` events that belong to the address
@@ -225,7 +225,7 @@ export class Trace {
 		parsedSpans: SpanWithChildren[];
 		executeBlockSpanId: number;
 	} {
-		const spansById = new Map<number, SpanWithChildren>();
+		const spansById = new Map<IOption<number>, SpanWithChildren>();
 		const parsedSpans = [];
 		let executeBlockSpanId;
 		// This loop does 3 things: 1) build `spansById` 2) build `parseSpans` 3) finds
@@ -426,13 +426,13 @@ export class Trace {
 	 * from tracing the block.
 	 */
 	private parseEvents(
-		spansById: Map<number, SpanWithChildren>
+		spansById: Map<IOption<number>, SpanWithChildren>
 	): {
 		eventsByParentId: EventsByParentId;
 		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId;
 	} {
-		const extrinsicIndexBySpanId = new Map<number, BN>();
-		const eventsByParentId = new Map<number, ParsedEvent[]>();
+		const extrinsicIndexBySpanId = new Map<IOption<number>, BN>();
+		const eventsByParentId = new Map<IOption<number>, ParsedEvent[]>();
 
 		for (const [idx, event] of this.traceBlock.events.entries()) {
 			const { key } = event.data.stringValues;
