@@ -39,41 +39,10 @@ async function main() {
 
 	logger.info(`Version: ${packageJSON.version}`);
 
-	// curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "state_traceBlock", "params": ["0xdb360a960cda5f3e2b697cc4e2e4a228554ca3c078a4aef93d86b9c23bafbbb7","pallet,frame,state","3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"]}' http://localhost:9933/
-	const stateTraceBlockOverride = {
-		state: {
-			traceBlock: {
-				description: 'state_traceBlock',
-				params: [
-					{
-						name: 'at',
-						type: 'BlockHash',
-						isOptional: true,
-						isHistoric: true,
-					},
-					{
-						name: 'targets',
-						type: 'Text',
-						isOptional: true,
-						isHistoric: true,
-					},
-					{
-						name: 'storage_keys',
-						type: 'Text',
-						isOptional: true,
-						isHistoric: true,
-					},
-				],
-				type: 'Json',
-			},
-		},
-	};
-
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
 		provider: new WsProvider(config.SUBSTRATE.WS_URL),
-		rpc: stateTraceBlockOverride,
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
 			? (require(TYPES_BUNDLE) as OverrideBundleType)

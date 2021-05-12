@@ -17,8 +17,8 @@ export interface Data {
 /**
  * Polymorphic super type of ParsedEvent & ParsedActionEvent & ParsedAccountEvent.
  *
- * The non-optional fields are what the original trace event, as returned by the
- * RPC contain.
+ * The non-optional fields are what the trace event as returned by the RPC
+ * contains.
  */
 export interface TraceEvent {
 	parentId: IOption<number>;

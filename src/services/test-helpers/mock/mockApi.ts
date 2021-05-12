@@ -526,8 +526,6 @@ const traceBlock = () =>
 		kusamaRegistry.createType('TraceBlockResponse', traceBlockRPC.result)
 	);
 
-// const traceBlock = () => Promise.resolve().then(() => traceBlockRPC.result);
-
 /**
  * Asset specific constants.
  * Note: It borrows some variables used in the parachains constant section
