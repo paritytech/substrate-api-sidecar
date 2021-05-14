@@ -164,6 +164,15 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return num;
 	}
 
+	protected parseQueryParamArrayOrThrow(n: string[]): number[] {
+		return n.map((str) =>
+			this.parseNumberOrThrow(
+				str,
+				`Incorrect AssetId format: ${str} is not a positive integer.`
+			)
+		);
+	}
+
 	protected verifyAndCastOr(
 		name: string,
 		str: unknown,

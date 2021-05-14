@@ -7,7 +7,9 @@ import { ControllerConfig } from '../types/chains-config';
 export const defaultControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
+		BlocksTrace: false,
 		BlocksExtrinsics: true,
+		AccountsAssets: true,
 		AccountsStakingPayouts: true,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: true,
@@ -22,6 +24,7 @@ export const defaultControllers: ControllerConfig = {
 		TransactionMaterial: true,
 		TransactionFeeEstimate: true,
 		TransactionSubmit: true,
+		PalletsAssets: true,
 		PalletsStakingProgress: true,
 		PalletsStorage: true,
 		Paras: true,

@@ -4,6 +4,8 @@ export const kulupuControllers: ControllerConfig = {
 	controllers: {
 		Blocks: true,
 		BlocksExtrinsics: true,
+		BlocksTrace: false,
+		AccountsAssets: false,
 		AccountsStakingPayouts: false,
 		AccountsBalanceInfo: true,
 		AccountsStakingInfo: false,
@@ -18,6 +20,7 @@ export const kulupuControllers: ControllerConfig = {
 		TransactionMaterial: true,
 		TransactionFeeEstimate: true,
 		TransactionSubmit: true,
+		PalletsAssets: false,
 		PalletsStakingProgress: false,
 		PalletsStorage: true,
 		Paras: false,

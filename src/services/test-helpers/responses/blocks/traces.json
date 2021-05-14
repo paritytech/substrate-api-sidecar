@@ -1,0 +1,503 @@
+{
+  "at": {
+    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+    "height": "789629"
+  },
+    "storageKeys": "3a65787472696e7369635f696e646578,26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9",
+    "tracingTargets": "pallet,frame,state",
+    "events": [
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Put",
+            "value": "Some(00000000)",
+            "value_encoded": "0100000000"
+          }
+        },
+        "parentId": "2",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Get",
+            "result": "Some(00000000)",
+            "result_encoded": "0100000000"
+          }
+        },
+        "parentId": "16",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Put",
+            "value": "Some(01000000)",
+            "value_encoded": "0101000000"
+          }
+        },
+        "parentId": "16",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Get",
+            "result": "Some(01000000)",
+            "result_encoded": "0101000000"
+          }
+        },
+        "parentId": "18",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Put",
+            "value": "Some(02000000)",
+            "value_encoded": "0102000000"
+          }
+        },
+        "parentId": "18",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(0500000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "010500000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Put",
+            "value": "Some(0600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "value_encoded": "010600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(0600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "010600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(0600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "010600000000000000c03c2b68430c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Put",
+            "value": "Some(06000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "value_encoded": "0106000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(06000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "0106000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "21",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(06000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "0106000000000000007d216fa9420c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "21",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Put",
+            "value": "Some(060000000000000075164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "value_encoded": "01060000000000000075164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "21",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Get",
+            "result": "Some(02000000)",
+            "result_encoded": "0102000000"
+          }
+        },
+        "parentId": "21",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Get",
+            "result": "Some(060000000000000075164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "01060000000000000075164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9be3abb9658c090036d425c2b7ae13c99a03132e00503dccdedb74953d66e5728aee3c83445e88252679d64978b4a065d",
+            "method": "Put",
+            "value": "Some(060000000000000076164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "value_encoded": "01060000000000000076164da9340900000000000000000000080b22000e03000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da95ecffd7b6c0f78751baa9d281e0bfa3a6d6f646c70792f74727372790000000000000000000000000000000000000000",
+            "method": "Get",
+            "result": "Some(00000000000000004799fad727f017030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "result_encoded": "0100000000000000004799fad727f017030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da95ecffd7b6c0f78751baa9d281e0bfa3a6d6f646c70792f74727372790000000000000000000000000000000000000000",
+            "method": "Put",
+            "value": "Some(00000000000000007b15917028f017030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)",
+            "value_encoded": "0100000000000000007b15917028f017030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9226d4e351b848b6249bcd8f491392fd5cf7b399d10287abd1f697fd32c9389ff1c16bd36fdcb3b842a89c2a7d01d5093",
+            "method": "Get",
+            "result": "Some(0100000003000000580b264ce70100000000000000000000000000000000000000000000000000000010a5d4e800000000000000000000000010a5d4e80000000000000000000000)",
+            "result_encoded": "010100000003000000580b264ce70100000000000000000000000000000000000000000000000000000010a5d4e800000000000000000000000010a5d4e80000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9226d4e351b848b6249bcd8f491392fd5cf7b399d10287abd1f697fd32c9389ff1c16bd36fdcb3b842a89c2a7d01d5093",
+            "method": "Put",
+            "value": "Some(010000000300000066aa4b72e70100000000000000000000000000000000000000000000000000000010a5d4e800000000000000000000000010a5d4e80000000000000000000000)",
+            "value_encoded": "01010000000300000066aa4b72e70100000000000000000000000000000000000000000000000000000010a5d4e800000000000000000000000010a5d4e80000000000000000000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Get",
+            "result": "Some(02000000)",
+            "result_encoded": "0102000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Put",
+            "value": "Some(03000000)",
+            "value_encoded": "0103000000"
+          }
+        },
+        "parentId": "20",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Get",
+            "result": "Some(03000000)",
+            "result_encoded": "0103000000"
+          }
+        },
+        "parentId": "1",
+        "target": "state"
+      },
+      {
+        "data": {
+          "stringValues": {
+            "key": "3a65787472696e7369635f696e646578",
+            "method": "Put",
+            "value": "None",
+            "value_encoded": "00"
+          }
+        },
+        "parentId": "1",
+        "target": "state"
+      }
+    ],
+    "spans": [
+      {
+        "id": "1",
+        "name": "execute_block",
+        "parentId": null,
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "2",
+        "name": "init_block",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "3",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_scheduler",
+        "wasm": true
+      },
+      {
+        "id": "4",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_society",
+        "wasm": true
+      },
+      {
+        "id": "5",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_treasury",
+        "wasm": true
+      },
+      {
+        "id": "6",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_elections_phragmen",
+        "wasm": true
+      },
+      {
+        "id": "7",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_democracy",
+        "wasm": true
+      },
+      {
+        "id": "8",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_session",
+        "wasm": true
+      },
+      {
+        "id": "9",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_offences",
+        "wasm": true
+      },
+      {
+        "id": "10",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_staking",
+        "wasm": true
+      },
+      {
+        "id": "11",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_authorship",
+        "wasm": true
+      },
+      {
+        "id": "12",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_timestamp",
+        "wasm": true
+      },
+      {
+        "id": "13",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_babe",
+        "wasm": true
+      },
+      {
+        "id": "14",
+        "name": "on_initialize",
+        "parentId": "2",
+        "target": "pallet_randomness_collective_flip",
+        "wasm": true
+      },
+      {
+        "id": "15",
+        "name": "initial_checks",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "16",
+        "name": "apply_extrinsic",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "17",
+        "name": "set",
+        "parentId": "16",
+        "target": "pallet_timestamp",
+        "wasm": true
+      },
+      {
+        "id": "18",
+        "name": "apply_extrinsic",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "19",
+        "name": "final_hint",
+        "parentId": "18",
+        "target": "pallet_finality_tracker",
+        "wasm": true
+      },
+      {
+        "id": "20",
+        "name": "apply_extrinsic",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      },
+      {
+        "id": "21",
+        "name": "approve_as_multi",
+        "parentId": "20",
+        "target": "pallet_multisig",
+        "wasm": true
+      },
+      {
+        "id": "22",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_grandpa",
+        "wasm": true
+      },
+      {
+        "id": "23",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_finality_tracker",
+        "wasm": true
+      },
+      {
+        "id": "24",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_staking",
+        "wasm": true
+      },
+      {
+        "id": "25",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_authorship",
+        "wasm": true
+      },
+      {
+        "id": "26",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_transaction_payment",
+        "wasm": true
+      },
+      {
+        "id": "27",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_timestamp",
+        "wasm": true
+      },
+      {
+        "id": "28",
+        "name": "on_finalize",
+        "parentId": "1",
+        "target": "pallet_babe",
+        "wasm": true
+      },
+      {
+        "id": "29",
+        "name": "final_checks",
+        "parentId": "1",
+        "target": "frame_executive",
+        "wasm": true
+      }
+    ]
+}
