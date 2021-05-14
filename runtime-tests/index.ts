@@ -1,6 +1,5 @@
 const config = {
 	chain: 'polkadot',
-	flag: false,
 };
 const argv = process.argv.slice(0, 2);
 
@@ -12,8 +11,7 @@ const argv = process.argv.slice(0, 2);
  */
 process.argv.reduce((cmd, arg) => {
 	if (cmd) {
-		if(cmd.startsWith('/')) return '';
-		
+		if (cmd.startsWith('/')) return '';
 		config[cmd] = arg;
 		return '';
 	}
