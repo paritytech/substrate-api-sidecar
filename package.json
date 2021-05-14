@@ -39,7 +39,7 @@
     "test": "substrate-exec-jest --silent",
     "lint:runtime-tests": "cd runtime-tests && substrate-dev-run-lint",
     "build:runtime-tests": "(cd runtime-tests && substrate-exec-tsc)",
-    "test:runtime-tests": "yarn build:runtime-tests && node ./runtime-tests/build/index.js --config=./runtime-tests/jest.config.js runtimeTests.spec.ts",
+    "test:runtime-tests": "yarn build:runtime-tests && node ./runtime-tests/build/index.js --config=./runtime-tests/jest.config.js",
     "test:init-runtime-tests": "python3 ./scripts/run_chain_tests.py"
   },
   "dependencies": {
