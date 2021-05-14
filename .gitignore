@@ -1,6 +1,7 @@
 /.vscode
 **/node_modules
 /build
+/runtime-tests/build
 /target
 yarn-error.log
 **/*.rs.bk
