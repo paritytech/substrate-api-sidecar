@@ -1,1 +1,1 @@
-export * from "./chainSpec";
+export * from './chainSpec';
