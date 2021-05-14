@@ -52,7 +52,6 @@ def main():
     polka_test = run_chain_test("polkadot")
     kusama_test = run_chain_test("kusama")
     westend_test = run_chain_test("westend")
-    # shutil.rmtree(sidecar_test_path)
 
     if polka_test == 0 and kusama_test == 0 and westend_test == 0:
         return 0
