@@ -36,7 +36,11 @@
     "start": "yarn run main",
     "start:log-rpc": "yarn run build && NODE_ENV=test yarn run main ",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
-    "test": "substrate-exec-jest --silent"
+    "test": "substrate-exec-jest --silent",
+    "lint:runtime-tests": "cd runtime-tests && substrate-dev-run-lint",
+    "build:runtime-tests": "(cd runtime-tests && substrate-exec-tsc)",
+    "test:runtime-tests": "yarn build:runtime-tests && node ./runtime-tests/build/index.js --config=./runtime-tests/jest.config.js runtimeTests.spec.ts",
+    "test:init-runtime-tests": "python3 ./scripts/run_chain_tests.py"
   },
   "dependencies": {
     "@polkadot/api": "beta",
