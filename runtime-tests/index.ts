@@ -1,30 +1,34 @@
-// @ts-nocheck
 const config = {
 	chain: 'polkadot',
 	flag: false,
 };
 const argv = process.argv.slice(0, 2);
 
-// Naive argv parsing
+/**
+ * We return empty string's as an indication of a false value. JS recognizes "" as falsey.
+ * NodeJS.Process.argv.reduce expects the return value of the accumulator to
+ * be of type string, this is a way of satisfying the compiler, but also
+ * returning the correct behavior.
+ */
 process.argv.reduce((cmd, arg) => {
 	if (cmd) {
+		if(cmd.startsWith('/')) return '';
+		
 		config[cmd] = arg;
-		return;
+		return '';
 	}
 
 	if (arg.startsWith('--')) {
 		const sub = arg.substring('--'.length);
+		// Will only accept the flag if it's within the config
 		if (Object.keys(config).includes(sub)) {
-			if (typeof config[sub] === 'boolean') {
-				config[cmd] = true;
-				return;
-			}
-
+			// Set the sub to the next cmd
 			return sub;
 		}
 	}
 
 	argv.push(arg);
+	return '';
 });
 
 // Store configuration on env
