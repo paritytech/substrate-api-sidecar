@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@polkadot/api": "beta",
-    "@polkadot/apps-config": "beta",
-    "@polkadot/util-crypto": "beta",
+    "@polkadot/apps-config": "^0.90.1",
+    "@polkadot/util-crypto": "^6.4.1",
     "@substrate/calc": "^0.2.0",
     "confmgr": "^1.0.6",
     "express": "^4.17.1",

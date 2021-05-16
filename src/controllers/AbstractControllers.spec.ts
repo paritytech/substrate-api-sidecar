@@ -48,18 +48,18 @@ const MockController = class MockController extends AbstractController<AbstractS
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MockService = new (class MockService extends AbstractService {})(
-	(api as unknown) as ApiPromise
+	api as unknown as ApiPromise
 );
 
 const controller = new MockController(
-	(api as unknown) as ApiPromise,
+	api as unknown as ApiPromise,
 	'/mock',
 	MockService
 );
 
 // Mock arguments for Express RequestHandler
-const req = ('req' as unknown) as Request;
-const res = ('res' as unknown) as Response;
+const req = 'req' as unknown as Request;
+const res = 'res' as unknown as Response;
 
 describe('AbstractController', () => {
 	describe('catchWrap', () => {

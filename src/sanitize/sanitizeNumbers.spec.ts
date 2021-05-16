@@ -445,11 +445,11 @@ describe('sanitizeNumbers', () => {
 		describe('BTreeMap', () => {
 			const mockU32TextMap = new Map<Text, u32>()
 				.set(
-					(kusamaRegistry.createType('Text', 'u32Max') as unknown) as Text,
+					kusamaRegistry.createType('Text', 'u32Max') as unknown as Text,
 					kusamaRegistry.createType('u32', '0xffffffff')
 				)
 				.set(
-					(kusamaRegistry.createType('Text', 'zero') as unknown) as Text,
+					kusamaRegistry.createType('Text', 'zero') as unknown as Text,
 					kusamaRegistry.createType('u32', 0)
 				);
 			const bTreeMapConstructor = BTreeMap.with('Text', 'u32');
@@ -1086,8 +1086,7 @@ describe('sanitizeNumbers', () => {
 		it('converts a staking response', () => {
 			expect(sanitizeNumbers(PRE_SANITIZED_STAKING_RESPONSE)).toStrictEqual({
 				at: {
-					hash:
-						'0x5f2a8b33c24368148982c37aefe77d5724f5aca0bcae1a599e2a4634c1f0fab2',
+					hash: '0x5f2a8b33c24368148982c37aefe77d5724f5aca0bcae1a599e2a4634c1f0fab2',
 					height: '2669784',
 				},
 				staking: {

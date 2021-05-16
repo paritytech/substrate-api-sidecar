@@ -17,17 +17,13 @@ export class PalletsStakingProgressService extends AbstractService {
 	): Promise<IPalletStakingProgress> {
 		const { api } = this;
 
-		const [
-			validatorCount,
-			forceEra,
-			validators,
-			{ number },
-		] = await Promise.all([
-			api.query.staking.validatorCount.at(hash),
-			api.query.staking.forceEra.at(hash),
-			api.query.session.validators.at(hash),
-			api.rpc.chain.getHeader(hash),
-		]);
+		const [validatorCount, forceEra, validators, { number }] =
+			await Promise.all([
+				api.query.staking.validatorCount.at(hash),
+				api.query.staking.forceEra.at(hash),
+				api.query.session.validators.at(hash),
+				api.rpc.chain.getHeader(hash),
+			]);
 
 		let eraElectionStatus;
 		/**
@@ -48,10 +44,8 @@ export class PalletsStakingProgressService extends AbstractService {
 			activeEra,
 		} = await this.deriveSessionAndEraProgress(api, hash);
 
-		const unappliedSlashesAtActiveEra = await api.query.staking.unappliedSlashes.at(
-			hash,
-			activeEra
-		);
+		const unappliedSlashesAtActiveEra =
+			await api.query.staking.unappliedSlashes.at(hash, activeEra);
 
 		const currentBlockNumber = number.toBn();
 
@@ -157,16 +151,15 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 		const { index: activeEra } = activeEraOption.unwrap();
 
-		const activeEraStartSessionIndexOption = await api.query.staking.erasStartSessionIndex.at(
-			hash,
-			activeEra
-		);
+		const activeEraStartSessionIndexOption =
+			await api.query.staking.erasStartSessionIndex.at(hash, activeEra);
 		if (activeEraStartSessionIndexOption.isNone) {
 			throw new InternalServerError(
 				'EraStartSessionIndex is None when Some was expected.'
 			);
 		}
-		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
+		const activeEraStartSessionIndex =
+			activeEraStartSessionIndexOption.unwrap();
 
 		const { epochDuration: sessionLength } = api.consts.babe;
 		const eraLength = api.consts.staking.sessionsPerEra.mul(sessionLength);
@@ -201,7 +194,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		hash: BlockHash
 	): Promise<BN> {
 		if (api.consts.staking.electionLookahead) {
-			return (api.consts.staking.electionLookahead as unknown) as BN;
+			return api.consts.staking.electionLookahead as unknown as BN;
 		}
 
 		const { specName } = await api.rpc.state.getRuntimeVersion(hash);

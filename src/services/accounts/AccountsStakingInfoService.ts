@@ -33,15 +33,12 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const controller = controllerOption.unwrap();
 
-		const [
-			stakingLedgerOption,
-			rewardDestination,
-			slashingSpansOption,
-		] = await Promise.all([
-			api.query.staking.ledger.at(hash, controller),
-			api.query.staking.payee.at(hash, stash),
-			api.query.staking.slashingSpans.at(hash, stash),
-		]);
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] =
+			await Promise.all([
+				api.query.staking.ledger.at(hash, controller),
+				api.query.staking.payee.at(hash, stash),
+				api.query.staking.slashingSpans.at(hash, stash),
+			]);
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 

@@ -9,8 +9,7 @@ describe('PalletsAssetsService', () => {
 		it('Should return the correct response for an AssetId', async () => {
 			const expectedResponse = {
 				at: {
-					hash:
-						'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
 					height: '789629',
 				},
 				assetInfo: {

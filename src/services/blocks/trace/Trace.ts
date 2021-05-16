@@ -218,9 +218,7 @@ export class Trace {
 	 *
 	 * @param spans spans to parse
 	 */
-	private static parseSpans(
-		spans: TraceSpan[]
-	): {
+	private static parseSpans(spans: TraceSpan[]): {
 		spansById: SpansById;
 		parsedSpans: SpanWithChildren[];
 		executeBlockSpanId: number;
@@ -283,9 +281,8 @@ export class Trace {
 			parsedSpans: spans,
 			executeBlockSpanId,
 		} = Trace.parseSpans(this.traceBlock.spans);
-		const { eventsByParentId, extrinsicIndexBySpanId } = this.parseEvents(
-			spansById
-		);
+		const { eventsByParentId, extrinsicIndexBySpanId } =
+			this.parseEvents(spansById);
 
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
@@ -425,9 +422,7 @@ export class Trace {
 	 * @param spansById map of span id => to span with its children for all spans
 	 * from tracing the block.
 	 */
-	private parseEvents(
-		spansById: Map<IOption<number>, SpanWithChildren>
-	): {
+	private parseEvents(spansById: Map<IOption<number>, SpanWithChildren>): {
 		eventsByParentId: EventsByParentId;
 		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId;
 	} {
@@ -547,10 +542,10 @@ export class Trace {
 				'Expect accountInfoEncoded to always be a string in system::Account event'
 			);
 		}
-		const accountInfo = (this.registry.createType(
+		const accountInfo = this.registry.createType(
 			'AccountInfo',
 			`0x${accountInfoEncoded.slice(2)}` // Slice off the leading Option byte
-		) as unknown) as AccountInfo;
+		) as unknown as AccountInfo;
 
 		// Mutate the event to make it a `ParsedAccountEvent`
 		event.accountInfo = accountInfo;

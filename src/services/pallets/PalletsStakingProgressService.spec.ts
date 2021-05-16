@@ -46,8 +46,8 @@ describe('PalletStakingProgressService', () => {
 				)
 			);
 
-			(mockApi.query.staking
-				.erasStartSessionIndex as any).at = erasStartSessionIndexAt;
+			(mockApi.query.staking.erasStartSessionIndex as any).at =
+				erasStartSessionIndexAt;
 		});
 
 		it('throws when activeEra.isNone', async () => {
