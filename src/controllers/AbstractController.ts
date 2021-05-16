@@ -76,18 +76,16 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 *
 	 * @param cb ExpressHandler
 	 */
-	protected static catchWrap = (cb: RequestHandler): RequestHandler => async (
-		req,
-		res,
-		next
-	): Promise<void> => {
-		try {
-			// eslint-disable-next-line @typescript-eslint/await-thenable
-			await cb(req, res, next);
-		} catch (err) {
-			next(err);
-		}
-	};
+	protected static catchWrap =
+		(cb: RequestHandler): RequestHandler =>
+		async (req, res, next): Promise<void> => {
+			try {
+				// eslint-disable-next-line @typescript-eslint/await-thenable
+				await cb(req, res, next);
+			} catch (err) {
+				next(err);
+			}
+		};
 
 	/**
 	 * Create or retrieve the corresponding BlockHash for the given block identifier.

@@ -138,9 +138,8 @@ export class ParasService extends AbstractService {
 
 		let leasesFormatted;
 		if (leases.length) {
-			const currentLeasePeriodIndex = this.leasePeriodIndexAt(
-				blockNumber
-			).toNumber();
+			const currentLeasePeriodIndex =
+				this.leasePeriodIndexAt(blockNumber).toNumber();
 
 			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
 				if (curLeaseOpt.isSome) {
@@ -161,9 +160,10 @@ export class ParasService extends AbstractService {
 
 		let onboardingAs: ParaType | undefined;
 		if (paraLifecycleOpt.isSome && paraLifecycleOpt.unwrap().isOnboarding) {
-			const paraGenesisArgs = await this.api.query.paras.upcomingParasGenesis.at<
-				Option<ParaGenesisArgs>
-			>(hash, paraId);
+			const paraGenesisArgs =
+				await this.api.query.paras.upcomingParasGenesis.at<
+					Option<ParaGenesisArgs>
+				>(hash, paraId);
 
 			if (paraGenesisArgs.isSome) {
 				onboardingAs = paraGenesisArgs.unwrap().parachain.isTrue
@@ -336,10 +336,11 @@ export class ParasService extends AbstractService {
 			const paraId = k.args[0];
 			let onboardingAs: ParaType | undefined;
 			if (paraLifecycle.isOnboarding) {
-				const paraGenesisArgs = await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
-					hash,
-					paraId
-				);
+				const paraGenesisArgs =
+					await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
+						hash,
+						paraId
+					);
 				onboardingAs = paraGenesisArgs.parachain.isTrue
 					? 'parachain'
 					: 'parathread';

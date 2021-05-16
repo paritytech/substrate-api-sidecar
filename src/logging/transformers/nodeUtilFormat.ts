@@ -10,7 +10,7 @@ import * as winston from 'winston';
 export const nodeUtilFormat = winston.format(
 	(info: TransformableInfo, _opts: unknown) => {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const args = info[(SPLAT as unknown) as string];
+		const args = info[SPLAT as unknown as string];
 		if (args) {
 			info.message = format(info.message, ...args);
 		}

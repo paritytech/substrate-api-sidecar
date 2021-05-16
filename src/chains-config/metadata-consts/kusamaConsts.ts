@@ -4,20 +4,8 @@ import { extrinsicBaseWeight, perClass } from './substrateConsts';
 export const kusamaDefinitions: MetadataConsts[] = [
 	{
 		runtimeVersions: [
-			1062,
-			2005,
-			2007,
-			2008,
-			2011,
-			2012,
-			2013,
-			2015,
-			2019,
-			2022,
-			2023,
-			2024,
-			2025,
-			2026,
+			1062, 2005, 2007, 2008, 2011, 2012, 2013, 2015, 2019, 2022, 2023, 2024,
+			2025, 2026,
 		],
 		extrinsicBaseWeight,
 	},

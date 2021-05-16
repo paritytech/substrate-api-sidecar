@@ -84,7 +84,7 @@ describe('BlocksService', () => {
 			mockBlock789629BadExt.extrinsics.pop();
 
 			mockBlock789629BadExt.extrinsics.unshift(
-				(undefined as unknown) as GenericExtrinsic
+				undefined as unknown as GenericExtrinsic
 			);
 
 			// fetchBlock Options
@@ -111,7 +111,7 @@ describe('BlocksService', () => {
 				)
 			);
 
-			mockApi.derive.chain.getBlock = (tempGetBlock as unknown) as GetBlock;
+			mockApi.derive.chain.getBlock = tempGetBlock as unknown as GetBlock;
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
@@ -130,8 +130,8 @@ describe('BlocksService', () => {
 		});
 
 		it('Return an error with a null calcFee when perByte is undefined', async () => {
-			mockApi.consts.transactionPayment.transactionByteFee = (undefined as unknown) as BalanceOf &
-				AugmentedConst<'promise'>;
+			mockApi.consts.transactionPayment.transactionByteFee =
+				undefined as unknown as BalanceOf & AugmentedConst<'promise'>;
 
 			const configuredBlocksService = new BlocksService(mockApi, 0);
 
@@ -152,10 +152,9 @@ describe('BlocksService', () => {
 			const responseObj: ResponseObj = JSON.parse(JSON.stringify(response));
 
 			// Revert mockApi back to its original setting that was changed above.
-			mockApi.consts.transactionPayment.transactionByteFee = polkadotRegistry.createType(
-				'Balance',
-				1000000
-			) as BalanceOf & AugmentedConst<'promise'>;
+			mockApi.consts.transactionPayment.transactionByteFee =
+				polkadotRegistry.createType('Balance', 1000000) as BalanceOf &
+					AugmentedConst<'promise'>;
 
 			expect(responseObj.extrinsics[3].info).toEqual({
 				error: 'Fee calculation not supported for 16#polkadot',
@@ -168,7 +167,7 @@ describe('BlocksService', () => {
 			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
-				('0xParentHash' as unknown) as Hash,
+				'0xParentHash' as unknown as Hash,
 				mockBlock789629
 			);
 
@@ -181,7 +180,7 @@ describe('BlocksService', () => {
 			// tx hash: 0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
-				('0xParentHash' as unknown) as Hash,
+				'0xParentHash' as unknown as Hash,
 				mockBlock789629
 			);
 
@@ -194,23 +193,23 @@ describe('BlocksService', () => {
 			// Instantiate a blocks service where we explicitly know the block store is empty.
 			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0);
 
-			(mockApi.runtimeVersion
-				.specVersion as unknown) = polkadotRegistry.createType('u32', 20);
-			(mockApi.runtimeVersion
-				.specName as unknown) = polkadotRegistry.createType('Text', 'westend');
+			(mockApi.runtimeVersion.specVersion as unknown) =
+				polkadotRegistry.createType('u32', 20);
+			(mockApi.runtimeVersion.specName as unknown) =
+				polkadotRegistry.createType('Text', 'westend');
 
 			await blocksServiceEmptyBlockStore['createCalcFee'](
 				mockApi,
-				('0xParentHash' as unknown) as Hash,
+				'0xParentHash' as unknown as Hash,
 				mockBlock789629
 			);
 
 			expect(blocksServiceEmptyBlockStore['blockWeightStore'][20]).toBeTruthy();
 
-			(mockApi.runtimeVersion
-				.specVersion as unknown) = polkadotRegistry.createType('u32', 16);
-			(mockApi.runtimeVersion
-				.specName as unknown) = polkadotRegistry.createType('Text', 'polkadot');
+			(mockApi.runtimeVersion.specVersion as unknown) =
+				polkadotRegistry.createType('u32', 16);
+			(mockApi.runtimeVersion.specName as unknown) =
+				polkadotRegistry.createType('Text', 'polkadot');
 		});
 	});
 
@@ -224,7 +223,7 @@ describe('BlocksService', () => {
 			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
 			expect(
-				((weightValue as unknown) as ExtBaseWeightValue).extrinsicBaseWeight
+				(weightValue as unknown as ExtBaseWeightValue).extrinsicBaseWeight
 			).toBe(BigInt(125000000));
 		});
 
@@ -240,15 +239,14 @@ describe('BlocksService', () => {
 			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
 			expect(
-				((weightValue as unknown) as PerClassValue).perClass.normal
-					.baseExtrinsic
+				(weightValue as unknown as PerClassValue).perClass.normal.baseExtrinsic
 			).toBe(BigInt(125000000));
 			expect(
-				((weightValue as unknown) as PerClassValue).perClass.operational
+				(weightValue as unknown as PerClassValue).perClass.operational
 					.baseExtrinsic
 			).toBe(BigInt(1));
 			expect(
-				((weightValue as unknown) as PerClassValue).perClass.mandatory
+				(weightValue as unknown as PerClassValue).perClass.mandatory
 					.baseExtrinsic
 			).toBe(BigInt(512000000000001));
 
@@ -280,7 +278,7 @@ describe('BlocksService', () => {
 		it('does not handle an empty object', () =>
 			expect(() =>
 				blocksService['parseGenericCall'](
-					({} as unknown) as GenericCall,
+					{} as unknown as GenericCall,
 					mockBlock789629.registry
 				)
 			).toThrow());
