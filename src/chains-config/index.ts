@@ -52,7 +52,6 @@ export function getControllersForSpec(
  * @param config controller mount configuration object
  */
 function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
-	// If we don't typecast here, tsc thinks its just [string, any][]
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
