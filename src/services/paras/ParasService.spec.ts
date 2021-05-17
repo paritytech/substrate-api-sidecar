@@ -171,9 +171,8 @@ describe('ParasService', () => {
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return the correct data during an ongoing auction', async () => {
 			const leasePeriodIndex = new BN(1000);
-			const leaseIndexArray = parasService['enumerateLeaseSets'](
-				leasePeriodIndex
-			);
+			const leaseIndexArray =
+				parasService['enumerateLeaseSets'](leasePeriodIndex);
 			// Remove the first two entries with splice because we have them in the expectedResponse.
 			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
 			const additionalWinningOptions = leaseIndexArray

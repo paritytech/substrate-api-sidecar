@@ -9,9 +9,8 @@ import {
 
 const errorMiddlewareCallsNextWithErr = callsNextWithErr(errorMiddleware);
 
-const errorMiddlewareCatchesErrWithStatus = catchesErrWithStatus(
-	errorMiddleware
-);
+const errorMiddlewareCatchesErrWithStatus =
+	catchesErrWithStatus(errorMiddleware);
 
 describe('errorMiddleware', () => {
 	errorMiddlewareCallsNextWithErr('ILegacyError', {

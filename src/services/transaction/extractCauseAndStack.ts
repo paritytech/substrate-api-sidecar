@@ -2,9 +2,10 @@
 
 import { isToString } from '../../types/util';
 
-export function extractCauseAndStack(
-	err: unknown
-): { cause: string | unknown; stack: string | undefined } {
+export function extractCauseAndStack(err: unknown): {
+	cause: string | unknown;
+	stack: string | undefined;
+} {
 	const cause =
 		err instanceof Error ? err.message : isToString(err) ? err.toString() : err;
 

@@ -8,13 +8,11 @@ import {
 	catchesErrWithStatus,
 } from './testTools';
 
-const httpErrorMiddlewareCallsNextWithErr = callsNextWithErr(
-	httpErrorMiddleware
-);
+const httpErrorMiddlewareCallsNextWithErr =
+	callsNextWithErr(httpErrorMiddleware);
 
-const httpErrorMiddlewareCatchesErrWithStatus = catchesErrWithStatus(
-	httpErrorMiddleware
-);
+const httpErrorMiddlewareCatchesErrWithStatus =
+	catchesErrWithStatus(httpErrorMiddleware);
 
 describe('httpErrorMiddleware', () => {
 	httpErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));

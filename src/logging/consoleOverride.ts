@@ -29,7 +29,7 @@ export function consoleOverride(logger: Logger): void {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 			logger[winstonLevel].call(
 				logger,
-				(format.apply(format, args as [string]) as unknown) as object
+				format.apply(format, args as [string]) as unknown as object
 			);
 		};
 	});
