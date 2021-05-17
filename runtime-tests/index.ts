@@ -1,33 +1,29 @@
+import { ArgumentParser } from 'argparse';
+
 const config = {
 	chain: 'polkadot',
 };
+
 const argv = process.argv.slice(0, 2);
 
 /**
- * We return empty string's as an indication of a false value. JS recognizes "" as falsey.
- * NodeJS.Process.argv.reduce expects the return value of the accumulator to
- * be of type string, this is a way of satisfying the compiler, but also
- * returning the correct behavior.
+ * The arg parser takes in two commands. 
+ * @arg --chain The chain to be passed into the jest test
+ * @arg --config The path to the correct jest config. This is important as the
+ * jest config inside of /runtime-tests ignores all the other tests.
  */
-process.argv.reduce((cmd, arg) => {
-	if (cmd) {
-		if (cmd.startsWith('/')) return '';
-		config[cmd] = arg;
-		return '';
-	}
+const parser = new ArgumentParser();
 
-	if (arg.startsWith('--')) {
-		const sub = arg.substring('--'.length);
-		// Will only accept the flag if it's within the config
-		if (Object.keys(config).includes(sub)) {
-			// Set the sub to the next cmd
-			return sub;
-		}
-	}
+parser.add_argument('--chain', { choices: ['polkadot', 'kusama', 'westend'], default: 'polkadot' });
+parser.add_argument('--config', { default: './runtime-tests/jest.config.js' });
 
-	argv.push(arg);
-	return '';
-});
+const args = parser.parse_args();
+
+// Set the chain property for the jest test
+config['chain'] = args.chain
+
+// Pass in the Jest CLI path option to the correct config
+argv.push('--config=' + args.config)
 
 // Store configuration on env
 process.env.__CONFIGURATION = JSON.stringify(config);
