@@ -14,7 +14,7 @@ import { BlockWeightStore } from './MetadataConsts';
  */
 export interface ControllerConfig {
 	/**
-	 * Controller class names and wether or not to include them
+	 * Controller class names to be included
 	 */
 	controllers: (keyof typeof controllers)[];
 	/**
