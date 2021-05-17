@@ -2,7 +2,6 @@
 
 import os
 import psutil
-import shutil
 import signal
 import subprocess
 import time
