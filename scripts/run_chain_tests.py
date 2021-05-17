@@ -29,7 +29,7 @@ def run_chain_test(chain):
     proc = subprocess.Popen(["yarn", "dev"], stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
 
-    print('Sidecar is loading in developement mode...')
+    print('Sidecar is loading in development mode...')
     time.sleep(20)
 
     print('Running `yarn`, and checking/loading cache...')
