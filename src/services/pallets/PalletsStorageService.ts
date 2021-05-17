@@ -45,9 +45,8 @@ export class PalletsStorageService extends AbstractService {
 
 		let normalizedStorageItemMeta;
 		if (metadata) {
-			normalizedStorageItemMeta = this.normalizeStorageItemMeta(
-				storageItemMeta
-			);
+			normalizedStorageItemMeta =
+				this.normalizeStorageItemMeta(storageItemMeta);
 		}
 
 		const [value, { number }] = await Promise.all([
@@ -113,9 +112,9 @@ export class PalletsStorageService extends AbstractService {
 	private normalizeStorageItemMeta(
 		storageItemMeta: StorageEntryMetadataV12
 	): ISanitizedStorageItemMetadata {
-		const normalizedStorageItemMeta = (sanitizeNumbers(
+		const normalizedStorageItemMeta = sanitizeNumbers(
 			storageItemMeta
-		) as unknown) as ISanitizedStorageItemMetadata;
+		) as unknown as ISanitizedStorageItemMetadata;
 
 		normalizedStorageItemMeta.documentation = this.sanitizeDocs(
 			storageItemMeta.documentation
@@ -162,11 +161,8 @@ export class PalletsStorageService extends AbstractService {
 	private findPalletMeta(palletId: string): [ModuleMetadataV12, number] {
 		const { modules } = this.api.runtimeMetadata.asLatest;
 
-		const {
-			isValidPalletName,
-			isValidPalletIndex,
-			parsedPalletId,
-		} = this.validPalletId(modules, palletId);
+		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
+			this.validPalletId(modules, palletId);
 
 		const filtered = modules.filter((mod) => mod.storage.isSome);
 

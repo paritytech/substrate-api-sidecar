@@ -12,30 +12,29 @@ const mockReq = {} as Request;
  * @param name name of the error type
  * @param err error
  */
-export const callsNextWithErr = (ware: ErrorRequestHandler) => (
-	name: string,
-	err: unknown
-): void => {
-	it(`calls next on error of type ${name}`, () => {
-		const next = jest.fn();
-		const send = jest.fn();
-		const status = jest.fn((_code: number) => {
-			return {
-				send,
-			};
-		});
+export const callsNextWithErr =
+	(ware: ErrorRequestHandler) =>
+	(name: string, err: unknown): void => {
+		it(`calls next on error of type ${name}`, () => {
+			const next = jest.fn();
+			const send = jest.fn();
+			const status = jest.fn((_code: number) => {
+				return {
+					send,
+				};
+			});
 
-		ware(
-			err,
-			mockReq,
-			({ headersSent: false, status } as unknown) as Response,
-			next
-		);
-		expect(status).not.toBeCalled();
-		expect(send).not.toBeCalled();
-		expect(next).toBeCalledTimes(1);
-	});
-};
+			ware(
+				err,
+				mockReq,
+				{ headersSent: false, status } as unknown as Response,
+				next
+			);
+			expect(status).not.toBeCalled();
+			expect(send).not.toBeCalled();
+			expect(next).toBeCalledTimes(1);
+		});
+	};
 
 /**
  * Assert that a middleware function (`ware`) will catch `err` and set status to
@@ -46,32 +45,30 @@ export const callsNextWithErr = (ware: ErrorRequestHandler) => (
  * @param err error
  * @param code expected code to be sent as status
  */
-export const catchesErrWithStatus = (ware: ErrorRequestHandler) => (
-	name: string,
-	err: unknown,
-	code: number
-): void => {
-	it(`catches ${name} and sends status code ${code}`, () => {
-		const next = jest.fn();
-		const send = jest.fn();
-		const status = jest.fn((_code: number) => {
-			return {
-				send,
-			};
-		});
+export const catchesErrWithStatus =
+	(ware: ErrorRequestHandler) =>
+	(name: string, err: unknown, code: number): void => {
+		it(`catches ${name} and sends status code ${code}`, () => {
+			const next = jest.fn();
+			const send = jest.fn();
+			const status = jest.fn((_code: number) => {
+				return {
+					send,
+				};
+			});
 
-		ware(
-			err,
-			mockReq,
-			({ headersSent: false, status } as unknown) as Response,
-			next
-		);
-		expect(send).toBeCalledTimes(1);
-		expect(status).toBeCalledWith<[number]>(code);
-		expect(status).toBeCalledTimes(1);
-		expect(next).not.toBeCalled();
-	});
-};
+			ware(
+				err,
+				mockReq,
+				{ headersSent: false, status } as unknown as Response,
+				next
+			);
+			expect(send).toBeCalledTimes(1);
+			expect(status).toBeCalledWith<[number]>(code);
+			expect(status).toBeCalledTimes(1);
+			expect(next).not.toBeCalled();
+		});
+	};
 
 /**
  * Assert that a middleware function (`ware`) will catch `err`, set status to
@@ -83,34 +80,31 @@ export const catchesErrWithStatus = (ware: ErrorRequestHandler) => (
  * @param code expected code to be sent as status
  * @param response expected response body
  */
-export const catchesErrWithResponse = (ware: ErrorRequestHandler) => (
-	name: string,
-	err: unknown,
-	code: number,
-	response: unknown
-): void => {
-	it(`catches ${name} and sends status code ${code}`, () => {
-		const next = jest.fn();
-		const send = jest.fn();
-		const status = jest.fn((_code: number) => {
-			return {
-				send,
-			};
-		});
+export const catchesErrWithResponse =
+	(ware: ErrorRequestHandler) =>
+	(name: string, err: unknown, code: number, response: unknown): void => {
+		it(`catches ${name} and sends status code ${code}`, () => {
+			const next = jest.fn();
+			const send = jest.fn();
+			const status = jest.fn((_code: number) => {
+				return {
+					send,
+				};
+			});
 
-		ware(
-			err,
-			mockReq,
-			({ headersSent: false, status } as unknown) as Response,
-			next
-		);
-		expect(send).toBeCalledTimes(1);
-		expect(send).toBeCalledWith(response);
-		expect(status).toBeCalledWith<[number]>(code);
-		expect(status).toBeCalledTimes(1);
-		expect(next).not.toBeCalled();
-	});
-};
+			ware(
+				err,
+				mockReq,
+				{ headersSent: false, status } as unknown as Response,
+				next
+			);
+			expect(send).toBeCalledTimes(1);
+			expect(send).toBeCalledWith(response);
+			expect(status).toBeCalledWith<[number]>(code);
+			expect(status).toBeCalledTimes(1);
+			expect(next).not.toBeCalled();
+		});
+	};
 
 export function callsNextWithSentHeaders(
 	ware: ErrorRequestHandler,
@@ -128,7 +122,7 @@ export function callsNextWithSentHeaders(
 		ware(
 			err,
 			mockReq,
-			({ headersSent: true, status } as unknown) as Response,
+			{ headersSent: true, status } as unknown as Response,
 			next
 		);
 		expect(send).not.toBeCalled();

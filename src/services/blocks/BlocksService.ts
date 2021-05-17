@@ -101,13 +101,8 @@ export class BlocksService extends AbstractService {
 		}
 		const { block, author: authorId } = deriveBlock;
 
-		const {
-			parentHash,
-			number,
-			stateRoot,
-			extrinsicsRoot,
-			digest,
-		} = block.header;
+		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
+			block.header;
 
 		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };
@@ -537,12 +532,10 @@ export class BlocksService extends AbstractService {
 		} = expandMetadata(api.registry, metadata);
 
 		let weightValue;
-		if (((system.blockWeights as unknown) as BlockWeights)?.perClass) {
-			const {
-				normal,
-				operational,
-				mandatory,
-			} = ((system.blockWeights as unknown) as BlockWeights)?.perClass;
+		if ((system.blockWeights as unknown as BlockWeights)?.perClass) {
+			const { normal, operational, mandatory } = (
+				system.blockWeights as unknown as BlockWeights
+			)?.perClass;
 
 			const perClass = {
 				normal: {
@@ -559,7 +552,9 @@ export class BlocksService extends AbstractService {
 			weightValue = { perClass };
 		} else if (system.extrinsicBaseWeight) {
 			weightValue = {
-				extrinsicBaseWeight: ((system.extrinsicBaseWeight as unknown) as AbstractInt).toBigInt(),
+				extrinsicBaseWeight: (
+					system.extrinsicBaseWeight as unknown as AbstractInt
+				).toBigInt(),
 			};
 		} else {
 			throw new InternalServerError(

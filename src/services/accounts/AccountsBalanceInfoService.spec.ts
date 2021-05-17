@@ -40,10 +40,12 @@ describe('AccountsBalanceInfoService', () => {
 					hash: Hash,
 					address: Address
 				): Promise<any> =>
-					(((await mockApi.query.system.account.at(
-						hash,
-						address
-					)) as unknown) as AccountInfo).data;
+					(
+						(await mockApi.query.system.account.at(
+							hash,
+							address
+						)) as unknown as AccountInfo
+					).data;
 				// Wrap our functions in a jest mock so we can collect data on how they are called
 				mockTokensLocksAt = jest.fn(mockApi.query.balances.locks.at);
 				mockTokenAccountAt = jest.fn(tokensAccountAt);
@@ -77,13 +79,15 @@ describe('AccountsBalanceInfoService', () => {
 
 			it('querrys tokens pallet storage with a non-native token', async () => {
 				expect(
-					(sanitizeNumbers(
-						await accountsBalanceInfoService.fetchAccountBalanceInfo(
-							blockHash789629,
-							testAddress,
-							'fOoToKeN'
-						)
-					) as any).tokenSymbol
+					(
+						sanitizeNumbers(
+							await accountsBalanceInfoService.fetchAccountBalanceInfo(
+								blockHash789629,
+								testAddress,
+								'fOoToKeN'
+							)
+						) as any
+					).tokenSymbol
 				).toEqual('fOoToKeN');
 
 				expect(mockTokensLocksAt).toBeCalled();
@@ -93,13 +97,15 @@ describe('AccountsBalanceInfoService', () => {
 
 			it('does not query tokens pallet storage with the native token', async () => {
 				expect(
-					(sanitizeNumbers(
-						await accountsBalanceInfoService.fetchAccountBalanceInfo(
-							blockHash789629,
-							testAddress,
-							'doT'
-						)
-					) as any).tokenSymbol
+					(
+						sanitizeNumbers(
+							await accountsBalanceInfoService.fetchAccountBalanceInfo(
+								blockHash789629,
+								testAddress,
+								'doT'
+							)
+						) as any
+					).tokenSymbol
 				).toEqual('doT');
 
 				expect(mockTokensLocksAt).not.toBeCalled();

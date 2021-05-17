@@ -2,9 +2,7 @@
 
 import { isToString } from '../../types/util';
 
-export function extractCauseAndStack(
-	err: unknown
-): {
+export function extractCauseAndStack(err: unknown): {
 	cause: string | unknown;
 	stack: string | undefined;
 } {
