@@ -17,7 +17,7 @@ $ cd substrate-api-sidecar
 $ git checkout <your_branch>
 $ export SAS_SUBSTRATE_WS_URL=<network archive node>
 $ yarn
-$ yarn dev
+$ yarn build && yarn start
 ```
 
 Sidecar should be now connected to the node, and running successfully. If you are having issues running sidecar and are receiving some odd behavior, contact the maintainers, or file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
