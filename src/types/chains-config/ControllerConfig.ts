@@ -16,7 +16,7 @@ export interface ControllerConfig {
 	/**
 	 * Controller class names and wether or not to include them
 	 */
-	controllers: Record<keyof typeof controllers, boolean>;
+	controllers: (keyof typeof controllers)[];
 	/**
 	 * Options relating to how the controllers are configured.
 	 */
