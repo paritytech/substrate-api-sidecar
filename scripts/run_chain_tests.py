@@ -30,7 +30,7 @@ def run_chain_test(chain):
                             stderr=subprocess.STDOUT)
 
     print('Sidecar is loading in developement mode...')
-    time.sleep(12)
+    time.sleep(20)
 
     print('Running `yarn`, and checking/loading cache...')
     run_process(["yarn"])
