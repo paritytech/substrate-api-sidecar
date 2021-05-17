@@ -1,9 +1,11 @@
 import { endpoints } from './endpoints';
-import { PORT, HOST } from './helpers/consts';
+import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
 import { BlockResponse, ChainConfig, ChainSpec } from './types';
 
-const config = JSON.parse(process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string) as ChainConfig;
+const config = JSON.parse(
+	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
+) as ChainConfig;
 const chain = config.chain as ChainSpec;
 
 const polkadotEndpoints: string[][] = endpoints[chain];
