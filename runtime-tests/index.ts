@@ -26,7 +26,7 @@ config['chain'] = args.chain
 argv.push('--config=' + args.config)
 
 // Store configuration on env
-process.env.__CONFIGURATION = JSON.stringify(config);
+process.env.__SAS_RUNTIME_TEST_CONFIGURATION = JSON.stringify(config);
 
 // Setting real ARGV
 process.argv = argv;
