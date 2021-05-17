@@ -4,7 +4,7 @@ This is a helper library for Sidecar to run runtime tests against specific chain
 
 ## Testing
 
-Below I will go over testing for Polkadot. These instructions are specific to runtime-tests against one chain. 
+The below instructions are specific to runtime-tests against one chain. 
 If you are looking to run the runtime-tests against all 3 chains (Polkadot, Kusama, Westend) then run `yarn test:init-runtime-tests` in 
 the root directory of sidecar.
 
