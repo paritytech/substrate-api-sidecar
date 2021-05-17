@@ -9,8 +9,9 @@ import { txErrorMiddleware } from './txErrorMiddleware';
 
 const txErrorMiddlewareCallsNextWithErr = callsNextWithErr(txErrorMiddleware);
 
-const txErrorMiddlewareCatchesErrWithResponse =
-	catchesErrWithResponse(txErrorMiddleware);
+const txErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
+	txErrorMiddleware
+);
 
 describe('txErrorMiddleware', () => {
 	txErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
