@@ -15,7 +15,7 @@ Lets first get sidecar ready in a seperate terminal.
 ```
 $ cd substrate-api-sidecar
 $ git checkout <your_branch>
-$ export SAS_SUBSTRATE_WS_URL=wss://rpc.polkadot.io
+$ export SAS_SUBSTRATE_WS_URL=<network archive node>
 $ yarn
 $ yarn dev
 ```
