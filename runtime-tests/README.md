@@ -20,7 +20,7 @@ $ yarn
 $ yarn build && yarn start
 ```
 
-Sidecar should be now connected to the node, and running successfully. If you find a bug file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+Sidecar should now be connected to the node and running successfully. If you find a bug file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
 Now lets run our runtime tests against polkadot. Go to a separate terminal and run:
 
