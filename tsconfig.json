@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
+    "rootDirs": ["./src", "runtime-tests"],
     "suppressImplicitAnyIndexErrors": true,
     "resolveJsonModule": true,
   },

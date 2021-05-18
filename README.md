@@ -286,7 +286,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     * @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
     * @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
 
-1. After updating the dependencies, the next step is making sure the release will work against all noted runtimes for Polkadot, Kusama, and Westend. This can be handled via the [sidecar-runtime-test](https://github.com/TarikGul/sidecar-runtime-test) helper library. Instructions for how to run it are in the repos README.md. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+1. After updating the dependencies, the next step is making sure the release will work against all noted runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-runtime-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
