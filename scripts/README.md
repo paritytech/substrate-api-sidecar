@@ -18,5 +18,6 @@ a collection of different blocks, across different runtimes. It does this for Po
 
 `python3` - required to run the script
 
-`psutil` - package needed to run the script, available with `pip3 install psutil` or `pip install psutil`
+`psutil` - package needed to run the script
 
+Run: `pip install -r requirements.txt` from this directory in order to install necessary dependencies. 
