@@ -1,6 +1,6 @@
 import { ArgumentParser } from 'argparse';
 
-import { Parser } from './types';
+import { IParser } from './types';
 
 const config = {
 	chain: 'polkadot',
@@ -22,7 +22,7 @@ parser.add_argument('--chain', {
 });
 parser.add_argument('--config', { default: './runtime-tests/jest.config.js' });
 
-const args = parser.parse_args() as Parser;
+const args = parser.parse_args() as IParser;
 
 // Set the chain property for the jest test
 config['chain'] = args.chain;
