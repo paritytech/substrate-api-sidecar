@@ -73,15 +73,9 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAccountAssetApproval> {
 		const { api } = this;
 
-		/**
-		 * AssetApprovalKey, contains the `accountId` as the address key, and the
-		 * delegate `accountId`. Both are required for a successfull query
-		 */
-		const approvalKey = { owner: address, delegate };
-
 		const [{ number }, assetApproval] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.assets.approvals(assetId, approvalKey),
+			api.query.assets.approvals(assetId, address, delegate),
 		]);
 
 		let amount = null,
