@@ -9,13 +9,13 @@ import block5495855 from './5495855.json';
 import block5657482 from './5657482.json';
 
 export const westendEndpoints = [
-    ['/blocks/3032259', JSON.stringify(block3032259)],
-    ['/blocks/3813629', JSON.stringify(block3813629)],
-    ['/blocks/3889918', JSON.stringify(block3889918)],
-    ['/blocks/4781573', JSON.stringify(block4781573)],
-    ['/blocks/5277929', JSON.stringify(block5277929)],
-    ['/blocks/5480769', JSON.stringify(block5480769)], //v9000
-    ['/blocks/5493461', JSON.stringify(block5493461)], //v9000
-    ['/blocks/5495855', JSON.stringify(block5495855)], //v9000
-    ['/blocks/5657482', JSON.stringify(block5657482)], //v9010
+	['/blocks/3032259', JSON.stringify(block3032259)],
+	['/blocks/3813629', JSON.stringify(block3813629)],
+	['/blocks/3889918', JSON.stringify(block3889918)],
+	['/blocks/4781573', JSON.stringify(block4781573)],
+	['/blocks/5277929', JSON.stringify(block5277929)],
+	['/blocks/5480769', JSON.stringify(block5480769)], //v9000
+	['/blocks/5493461', JSON.stringify(block5493461)], //v9000
+	['/blocks/5495855', JSON.stringify(block5495855)], //v9000
+	['/blocks/5657482', JSON.stringify(block5657482)], //v9010
 ];

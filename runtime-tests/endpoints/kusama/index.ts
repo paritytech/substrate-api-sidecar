@@ -19,23 +19,23 @@ import block7354817 from './7354817.json';
 import block7519631 from './7519631.json';
 
 export const kusamaEndpoints = [
-    ['/blocks/2350438', JSON.stringify(block2350438)], //v1062
-    ['/blocks/2684767', JSON.stringify(block2684767)], //v2005
-    ['/blocks/2713513', JSON.stringify(block2713513)], //v2007
-    ['/blocks/2786879', JSON.stringify(block2786879)], //v2008
-    ['/blocks/2863649', JSON.stringify(block2863649)], //v2011
-    ['/blocks/3102680', JSON.stringify(block3102680)], //v2012
-    ['/blocks/3305067', JSON.stringify(block3305067)], //v2015
-    ['/blocks/3492347', JSON.stringify(block3492347)], //v2019
-    ['/blocks/3573193', JSON.stringify(block3573193)], //v2022
-    ['/blocks/4086065', JSON.stringify(block4086065)], //v2023
-    ['/blocks/4178606', JSON.stringify(block4178606)], //v2024
-    ['/blocks/4542697', JSON.stringify(block4542697)], //v2025
-    ['/blocks/5265416', JSON.stringify(block5265416)], //v2026
-    ['/blocks/6065418', JSON.stringify(block6065418)], //v2027
-    ['/blocks/6396694', JSON.stringify(block6396694)], //v2028
-    ['/blocks/6566865', JSON.stringify(block6566865)], //v2029
-    ['/blocks/6819725', JSON.stringify(block6819725)], //v2029
-    ['/blocks/7354817', JSON.stringify(block7354817)], //v2030
-    ['/blocks/7519631', JSON.stringify(block7519631)], //v9010
+	['/blocks/2350438', JSON.stringify(block2350438)], //v1062
+	['/blocks/2684767', JSON.stringify(block2684767)], //v2005
+	['/blocks/2713513', JSON.stringify(block2713513)], //v2007
+	['/blocks/2786879', JSON.stringify(block2786879)], //v2008
+	['/blocks/2863649', JSON.stringify(block2863649)], //v2011
+	['/blocks/3102680', JSON.stringify(block3102680)], //v2012
+	['/blocks/3305067', JSON.stringify(block3305067)], //v2015
+	['/blocks/3492347', JSON.stringify(block3492347)], //v2019
+	['/blocks/3573193', JSON.stringify(block3573193)], //v2022
+	['/blocks/4086065', JSON.stringify(block4086065)], //v2023
+	['/blocks/4178606', JSON.stringify(block4178606)], //v2024
+	['/blocks/4542697', JSON.stringify(block4542697)], //v2025
+	['/blocks/5265416', JSON.stringify(block5265416)], //v2026
+	['/blocks/6065418', JSON.stringify(block6065418)], //v2027
+	['/blocks/6396694', JSON.stringify(block6396694)], //v2028
+	['/blocks/6566865', JSON.stringify(block6566865)], //v2029
+	['/blocks/6819725', JSON.stringify(block6819725)], //v2029
+	['/blocks/7354817', JSON.stringify(block7354817)], //v2030
+	['/blocks/7519631', JSON.stringify(block7519631)], //v9010
 ];
