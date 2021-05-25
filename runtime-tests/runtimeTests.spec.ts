@@ -17,12 +17,12 @@ describe('Runtime Tests for blocks', () => {
 	 * Test runtimes for `/blocks`
 	 */
 	test.each(polkadotEndpoints)(
-		'Given path %p, it should return block height %p',
-		async (blockPath, blockHeight) => {
+		'Given path %p, it should return the correct JSON response',
+		async (blockPath, blockResponse) => {
 			const res = await request(blockPath, HOST, PORT);
 			const responseJson = JSON.parse(res) as BlockResponse;
 
-			expect(responseJson['number']).toBe(blockHeight);
+			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
 		}
 	);
 });
