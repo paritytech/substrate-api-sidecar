@@ -11,7 +11,10 @@ const chain = config.chain as ChainSpec;
 const polkadotEndpoints: string[][] = endpoints[chain];
 
 describe('Runtime Tests for blocks', () => {
-	jest.setTimeout(15000);
+	/**
+	 * Allows a timeout of 30 seconds for each response.
+	 */
+	jest.setTimeout(30000);
 
 	/**
 	 * Test runtimes for `/blocks`
