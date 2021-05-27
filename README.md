@@ -299,6 +299,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
   * NOTE: Before pushing up as a sanity check run the 3 following commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
 
     ```bash
+    yarn dedupe
     yarn build
     yarn lint
     yarn test
