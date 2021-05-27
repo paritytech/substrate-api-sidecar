@@ -12,11 +12,13 @@ import { kulupuControllers } from './kulupuControllers';
 import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
 import { polkadotControllers } from './polkadotControllers';
+import { polymeshControllers } from './polymeshControllers';
 import { westendControllers } from './westendControllers';
 
 const specToControllerMap = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
+	polymesh: polymeshControllers,
 	kusama: kusamaControllers,
 	kulupu: kulupuControllers,
 	kilt: kiltControllers,

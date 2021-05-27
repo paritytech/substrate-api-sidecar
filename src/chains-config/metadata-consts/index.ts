@@ -9,6 +9,7 @@ import {
 import { dockMainnetDefinitions } from './dockConsts';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
+import { polymeshDefinitions } from './polymeshConsts';
 import { westendDefinitions } from './westendConsts';
 
 /**
@@ -68,6 +69,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 	switch (specName) {
 		case 'polkadot':
 			return generateBlockWeightStore(polkadotDefinitions);
+		case 'polymesh':
+			return generateBlockWeightStore(polymeshDefinitions);
 		case 'kusama':
 			return generateBlockWeightStore(kusamaDefinitions);
 		case 'westend':
