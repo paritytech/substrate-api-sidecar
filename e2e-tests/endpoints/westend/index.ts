@@ -11,7 +11,7 @@ import block5657482 from './5657482.json';
 export const westendEndpoints = [
 	['/blocks/3032259', JSON.stringify(block3032259)], //v45
 	['/blocks/3813629', JSON.stringify(block3813629)],
-	['/blocks/3889918', JSON.stringify(block3889918)],
+	['/blocks/3889918', JSON.stringify(block3889918)], //v45
 	['/blocks/4781573', JSON.stringify(block4781573)], //v49
 	['/blocks/5277929', JSON.stringify(block5277929)], //v50
 	['/blocks/5480769', JSON.stringify(block5480769)], //v9000
