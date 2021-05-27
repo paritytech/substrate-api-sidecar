@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* Support for Polymesh blockchain ([#563](https://github.com/paritytech/substrate-api-sidecar/pull/563/files))
+* Support for Polymesh blockchain ([#563](https://github.com/paritytech/substrate-api-sidecar/pull/563/files)) ([45945fe](https://github.com/paritytech/substrate-api-sidecar/commit/45945fee178fa683c25d887d8d5574e8c4186aeb))
 
 ### Bug Fixes
 
