@@ -938,16 +938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/networks@npm:6.4.1, @polkadot/networks@npm:^6.0.5, @polkadot/networks@npm:^6.3.1, @polkadot/networks@npm:^6.4.1":
-  version: 6.4.1
-  resolution: "@polkadot/networks@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-  checksum: 87acb72f006bf321e6d6b45942639708861f1922e05b7378b36bffbe1aa0d4549c7846e376ddcd6d0f5b05616d12bb21d65342b7a7dce78a78d2fab7effec3bb
-  languageName: node
-  linkType: hard
-
-"@polkadot/networks@npm:6.5.1, @polkadot/networks@npm:^6.5.1":
+"@polkadot/networks@npm:6.5.1, @polkadot/networks@npm:^6.0.5, @polkadot/networks@npm:^6.3.1, @polkadot/networks@npm:^6.4.1, @polkadot/networks@npm:^6.5.1":
   version: 6.5.1
   resolution: "@polkadot/networks@npm:6.5.1"
   dependencies:
@@ -1071,7 +1062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:6.5.1, @polkadot/util-crypto@npm:^6.5.1":
+"@polkadot/util-crypto@npm:6.5.1, @polkadot/util-crypto@npm:^6.0.5, @polkadot/util-crypto@npm:^6.3.1, @polkadot/util-crypto@npm:^6.5.1":
   version: 6.5.1
   resolution: "@polkadot/util-crypto@npm:6.5.1"
   dependencies:
@@ -1097,32 +1088,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:^6.0.5, @polkadot/util-crypto@npm:^6.3.1":
-  version: 6.4.1
-  resolution: "@polkadot/util-crypto@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@polkadot/networks": 6.4.1
-    "@polkadot/util": 6.4.1
-    "@polkadot/wasm-crypto": ^4.0.2
-    "@polkadot/x-randomvalues": 6.4.1
-    base-x: ^3.0.8
-    base64-js: ^1.5.1
-    blakejs: ^1.1.0
-    bn.js: ^4.11.9
-    create-hash: ^1.2.0
-    elliptic: ^6.5.4
-    hash.js: ^1.1.7
-    js-sha3: ^0.8.0
-    scryptsy: ^2.1.0
-    tweetnacl: ^1.0.3
-    xxhashjs: ^0.2.2
-  peerDependencies:
-    "@polkadot/util": 6.4.1
-  checksum: eef9f8c73bbe8c7caefc905b09d175d4a0190d703bd4a8e65723dc2a5eadeb3646eac6b1a3c1034fe97bcf982aa0a3f7e4e4da01226d6993be488fa7c760684a
-  languageName: node
-  linkType: hard
-
 "@polkadot/util@npm:6.0.5":
   version: 6.0.5
   resolution: "@polkadot/util@npm:6.0.5"
@@ -1138,22 +1103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util@npm:6.4.1, @polkadot/util@npm:^6.0.5, @polkadot/util@npm:^6.3.1":
-  version: 6.4.1
-  resolution: "@polkadot/util@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@polkadot/x-textdecoder": 6.4.1
-    "@polkadot/x-textencoder": 6.4.1
-    "@types/bn.js": ^4.11.6
-    bn.js: ^4.11.9
-    camelcase: ^5.3.1
-    ip-regex: ^4.3.0
-  checksum: dce56aa96b60233cd72c7c7c615b972cdab069cbbd355c87ffbc32c292aff32e6b7bb35b1b365362eab454a876069c0006348282d9807f8846a2ecd9afc16c0d
-  languageName: node
-  linkType: hard
-
-"@polkadot/util@npm:6.5.1, @polkadot/util@npm:^6.5.1":
+"@polkadot/util@npm:6.5.1, @polkadot/util@npm:^6.0.5, @polkadot/util@npm:^6.3.1, @polkadot/util@npm:^6.5.1":
   version: 6.5.1
   resolution: "@polkadot/util@npm:6.5.1"
   dependencies:
@@ -1223,17 +1173,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/x-global@npm:6.4.1":
-  version: 6.4.1
-  resolution: "@polkadot/x-global@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@types/node-fetch": ^2.5.10
-    node-fetch: ^2.6.1
-  checksum: 396c051cf05fe9354ffa801b73f11617c10a72dc4f86950137b2db804d6a3229c7177b4747225a0685efa46090ee6652a471fadec50fb02f78c6c1700770c3ed
-  languageName: node
-  linkType: hard
-
 "@polkadot/x-global@npm:6.5.1, @polkadot/x-global@npm:^6.5.1":
   version: 6.5.1
   resolution: "@polkadot/x-global@npm:6.5.1"
@@ -1242,16 +1181,6 @@ __metadata:
     "@types/node-fetch": ^2.5.10
     node-fetch: ^2.6.1
   checksum: b563bb34653c84a24406c81904cc82d499ce09bd1b840bbf27caa6922cce3a4c1ace7dbf08890649f677c627904c02a75bd8d020041345d7da99f96b1f258c7f
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-randomvalues@npm:6.4.1":
-  version: 6.4.1
-  resolution: "@polkadot/x-randomvalues@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@polkadot/x-global": 6.4.1
-  checksum: e16d39aa9d6765bb86a8a82cb6a596dea5303e153f505266b3b52b8f7febc7f9e84195fa5068b1fa4f13b33788fcbad0f30f0f5a3443803daea3d48d6eba330a
   languageName: node
   linkType: hard
 
@@ -1265,17 +1194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/x-rxjs@npm:^6.0.5, @polkadot/x-rxjs@npm:^6.3.1":
-  version: 6.4.1
-  resolution: "@polkadot/x-rxjs@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    rxjs: ^6.6.7
-  checksum: cd73834f610d8cd5d7a229a013afede97364775a66459d74662d66f13fcdab962493185645680083cca05dc973a65c276c061d58a4513d59a3b323e6ef9ca35f
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-rxjs@npm:^6.5.1":
+"@polkadot/x-rxjs@npm:^6.0.5, @polkadot/x-rxjs@npm:^6.3.1, @polkadot/x-rxjs@npm:^6.5.1":
   version: 6.5.1
   resolution: "@polkadot/x-rxjs@npm:6.5.1"
   dependencies:
@@ -1292,16 +1211,6 @@ __metadata:
     "@babel/runtime": ^7.13.9
     "@polkadot/x-global": 6.0.5
   checksum: eb56d68418d41452520b6e9d5147e594864de0e35edc78a88304610886a7297fbc62ed9292b81862647c7d7d579a7b3736b2899ca4b6eb111d823bd97e445ae2
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-textdecoder@npm:6.4.1":
-  version: 6.4.1
-  resolution: "@polkadot/x-textdecoder@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@polkadot/x-global": 6.4.1
-  checksum: f6d9c4c1c3292746f55d6898cd0668e35a92f18f55d3acaa8c3691c77b36affba2e05b8083c25130cd19cd83bd8a2a717d59e467cd94c352dc88c0e0237c5e65
   languageName: node
   linkType: hard
 
@@ -1322,16 +1231,6 @@ __metadata:
     "@babel/runtime": ^7.13.9
     "@polkadot/x-global": 6.0.5
   checksum: 3b360312d28dcce37f3bb4bb89f69905eeba0e3e36e2c2d745d72d2f5a967937030e7fb5012765af925475d93b0bf04f89f3fc62021bb86e619da26fd4d3bdf0
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-textencoder@npm:6.4.1":
-  version: 6.4.1
-  resolution: "@polkadot/x-textencoder@npm:6.4.1"
-  dependencies:
-    "@babel/runtime": ^7.14.0
-    "@polkadot/x-global": 6.4.1
-  checksum: f276956fed01935bf5453c89cecaecd48ef1ebd53537d2960f134b0eefccdad0183107dafbc4edf74f24e0b402d5e3f830c6e0a488b2c5857587d540e2f8550b
   languageName: node
   linkType: hard
 
