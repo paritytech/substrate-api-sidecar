@@ -2386,10 +2386,10 @@ components:
           enum:
           - preEnding
           - ending
-        firstSlot:
+        firstPeriod:
           type: string
           format: unsignedInteger
-        lastSlot:
+        lastPeriod:
           type: string
           format: unsignedInteger
         trieIndex:

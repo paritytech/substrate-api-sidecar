@@ -29,8 +29,8 @@ describe('ParasService', () => {
 		end: '200000',
 		cap: '100000000000000000',
 		lastContribution: { preEnding: '6' },
-		firstSlot: '13',
-		lastSlot: '16',
+		firstPeriod: '13',
+		lastPeriod: '16',
 		trieIndex: '60',
 	};
 

@@ -60,9 +60,9 @@ export class ParasService extends AbstractService {
 		let fundInfo, leasePeriods;
 		if (fund.isSome) {
 			fundInfo = fund.unwrap();
-			const firstSlot = fundInfo.firstSlot.toNumber();
+			const firstSlot = fundInfo.firstPeriod.toNumber();
 			// number of lease periods this crowdloan covers
-			const leasePeriodCount = fundInfo.lastSlot.toNumber() - firstSlot + 1;
+			const leasePeriodCount = fundInfo.lastPeriod.toNumber() - firstSlot + 1;
 			leasePeriods = Array(leasePeriodCount)
 				.fill(0)
 				.map((_, i) => i + firstSlot);
