@@ -319,8 +319,8 @@ const funds = {
 	lastContribution: rococoRegistry.createType('LastContribution', {
 		preEnding: 6,
 	}),
-	firstSlot: rococoRegistry.createType('LeasePeriod', 13),
-	lastSlot: rococoRegistry.createType('LeasePeriod', 16),
+	firstPeriod: rococoRegistry.createType('LeasePeriod', 13),
+	lastPeriod: rococoRegistry.createType('LeasePeriod', 16),
 	trieIndex: rococoRegistry.createType('TrieIndex', 60),
 };
 
