@@ -11,7 +11,7 @@
 
 ### Summary
 
-This script calls the local runtime-tests helper library in order to test the current branch or development enviornment against 
+This script calls the local e2e-tests helper library in order to test the current branch or development enviornment against 
 a collection of different blocks, across different runtimes. It does this for Polkadot, Kusama, and Westend. 
 
 ### Requirements

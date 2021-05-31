@@ -1,0 +1,551 @@
+{
+    "number": "5265416",
+    "hash": "0x493d346f0369a742feb827f840ad02a49d60e97ee10e01cc028cb7c910ae9275",
+    "parentHash": "0x2411fdf234bd449aec5c3e01db6ee479ad8b75f5ee43b5ba4446e1aa3f576f78",
+    "stateRoot": "0xc2d9a4d7ba8b854c4dd4c96c66ce40bfda8cefb6c3adc7a99c3e0a83155ab18e",
+    "extrinsicsRoot": "0x38e52a0a9074ab5355ce5a9f325d1dd75961fb95d7986bd7238a93c6ee3ff797",
+    "authorId": "CzugcakpTckkPjMiwPCGs9hma1gMfYZqpnQvjTS7LPdq3Cx",
+    "logs": [
+        {
+            "type": "PreRuntime",
+            "index": "6",
+            "value": [
+                "0x42414245",
+                "0x02a7020000982df80f00000000"
+            ]
+        },
+        {
+            "type": "Seal",
+            "index": "5",
+            "value": [
+                "0x42414245",
+                "0xa0020aab55262766617e82cd6e518f63a61baec4137d3800d52e1653b819363e2843f60c1fcf618e2a838627fe4454045872185437c2aa514c1954d147929986"
+            ]
+        }
+    ],
+    "onInitialize": {
+        "events": []
+    },
+    "extrinsics": [
+        {
+            "method": {
+                "pallet": "timestamp",
+                "method": "set"
+            },
+            "signature": null,
+            "nonce": null,
+            "args": {
+                "now": "1607537040000"
+            },
+            "tip": null,
+            "hash": "0xb46c335b715dc793ab2bd5a4859c99061b42daabc8926a647d72155ea9a3090d",
+            "info": {},
+            "events": [
+                {
+                    "method": {
+                        "pallet": "system",
+                        "method": "ExtrinsicSuccess"
+                    },
+                    "data": [
+                        {
+                            "weight": "160514000",
+                            "class": "Mandatory",
+                            "paysFee": "Yes"
+                        }
+                    ]
+                }
+            ],
+            "success": true,
+            "paysFee": false
+        },
+        {
+            "method": {
+                "pallet": "utility",
+                "method": "batch"
+            },
+            "signature": {
+                "signature": "0x24fb17486caea95c1a098c068860f479e5b2bce851b327df50aa1c707e403a399158ea46157a7e389326972f14e839d3125404a0898bfc02f8971eddd3be8286",
+                "signer": "GX4ZdMUtrjZc7fThpvK4eAHU1EL8wLdA9x8ZwAkDWnrfM2U"
+            },
+            "nonce": "319",
+            "args": {
+                "calls": [
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                            "era": "1622"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                            "era": "1623"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                            "era": "1624"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                            "era": "1625"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                            "era": "1623"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                            "era": "1624"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                            "era": "1625"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                            "era": "1622"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                            "era": "1623"
+                        }
+                    },
+                    {
+                        "method": {
+                            "pallet": "staking",
+                            "method": "payoutStakers"
+                        },
+                        "args": {
+                            "validator_stash": "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                            "era": "1624"
+                        }
+                    }
+                ]
+            },
+            "tip": "0",
+            "hash": "0x5a66814a6a1c7e4a6112246269607024665c9aeb2e348742eeff80ddb48a5369",
+            "info": {
+                "weight": "647223827000",
+                "class": "Normal",
+                "partialFee": "165998390"
+            },
+            "events": [
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                        "91706028394"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "GhHP4irfL5y5Tog2qvC1W8smWMYdszrcHZLoLazJmL6P2cb",
+                        "1780825837"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "823247241148"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                        "30558333314"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EPeRzqBAtkE7MUS2fPB9Fjsstq56UqCCdNG5jM9T8euzJhg",
+                        "589143902"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "274251477166"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                        "61644886784"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "HRtMCsyu1wdTME9bdcsMXmDBxzRBL9trrm6VqhhsduEBdR8",
+                        "39720568179"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EPeRzqBAtkE7MUS2fPB9Fjsstq56UqCCdNG5jM9T8euzJhg",
+                        "1175897257"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "513539627300"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FFRSFafpeT3ESfnABTW4Cqi5WbLZ3JFnw512HBJtREnpYUr",
+                        "61801624377"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EwxZFgrTMQ5PkR29bqqEvrpv5HQLibEuCt1tN19t4UjVZjE",
+                        "402323944576"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "153581756976"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                        "45836214699"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "HRtMCsyu1wdTME9bdcsMXmDBxzRBL9trrm6VqhhsduEBdR8",
+                        "29861936798"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "GhHP4irfL5y5Tog2qvC1W8smWMYdszrcHZLoLazJmL6P2cb",
+                        "1510407003"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "380890410775"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                        "15410774514"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "GhHP4irfL5y5Tog2qvC1W8smWMYdszrcHZLoLazJmL6P2cb",
+                        "502175278"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "138107295088"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "EDcqtP9vMNrk7PHEbSw1TVgccE3s2mG1xPnbvsQrJ8CWvD2",
+                        "30900075016"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "GhHP4irfL5y5Tog2qvC1W8smWMYdszrcHZLoLazJmL6P2cb",
+                        "844158863"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "277109428806"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                        "61136281537"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "HRtMCsyu1wdTME9bdcsMXmDBxzRBL9trrm6VqhhsduEBdR8",
+                        "23476818824"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "526542783250"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                        "15278720424"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FoA4ziPuTKAhKBwC8P7Gd4YtH56gS5DvXD4jBSNkeb7EPWv",
+                        "7629675"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "137413127092"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "JCghFN7mD4ETKzMbvSVmMMPwWutJGk6Bm1yKWk8Z9KhPGeZ",
+                        "92464639596"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "FoA4ziPuTKAhKBwC8P7Gd4YtH56gS5DvXD4jBSNkeb7EPWv",
+                        "45654188"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "staking",
+                        "method": "Reward"
+                    },
+                    "data": [
+                        "DSELWxqt4g3THNfg7TAHhU69eQJo8N2kBbAMuaF636eZCX2",
+                        "831611175495"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "utility",
+                        "method": "BatchCompleted"
+                    },
+                    "data": []
+                },
+                {
+                    "method": {
+                        "pallet": "treasury",
+                        "method": "Deposit"
+                    },
+                    "data": [
+                        "6639998086"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "balances",
+                        "method": "Deposit"
+                    },
+                    "data": [
+                        "CzugcakpTckkPjMiwPCGs9hma1gMfYZqpnQvjTS7LPdq3Cx",
+                        "1659999522"
+                    ]
+                },
+                {
+                    "method": {
+                        "pallet": "system",
+                        "method": "ExtrinsicSuccess"
+                    },
+                    "data": [
+                        {
+                            "weight": "647223827000",
+                            "class": "Normal",
+                            "paysFee": "Yes"
+                        }
+                    ]
+                }
+            ],
+            "success": true,
+            "paysFee": true
+        }
+    ],
+    "onFinalize": {
+        "events": []
+    },
+    "finalized": true
+}

@@ -35,8 +35,8 @@ def run_chain_test(chain):
     print('Running `yarn`, and checking/loading cache...')
     run_process(["yarn"])
 
-    print('Running runtime tests for {}'.format(chain))
-    res = run_process(["yarn", "test:runtime-tests", "--chain", chain])
+    print('Running e2e tests for {}'.format(chain))
+    res = run_process(["yarn", "test:e2e-tests", "--chain", chain])
 
     print('Killing all processes...')
     for child in psutil.Process(proc.pid).children(recursive=True):
