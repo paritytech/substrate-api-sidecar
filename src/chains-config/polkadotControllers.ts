@@ -8,7 +8,6 @@ export const polkadotControllers: ControllerConfig = {
 	controllers: [
 		'Blocks',
 		'BlocksExtrinsics',
-		'AccountsAssets',
 		'AccountsStakingPayouts',
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
@@ -23,7 +22,6 @@ export const polkadotControllers: ControllerConfig = {
 		'TransactionMaterial',
 		'TransactionFeeEstimate',
 		'TransactionSubmit',
-		'PalletsAssets',
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',
