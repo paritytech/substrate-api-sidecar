@@ -1,17 +1,14 @@
 import { ControllerConfig } from '../types/chains-config';
-import { getBlockWeight } from './metadata-consts';
 
 /**
- * Polkadot configuration for Sidecar.
+ * Statemint configuration for Sidecar.
  */
-export const polkadotControllers: ControllerConfig = {
+export const statemintControllers: ControllerConfig = {
 	controllers: [
 		'Blocks',
 		'BlocksExtrinsics',
-		'AccountsStakingPayouts',
-		'AccountsBalanceInfo',
-		'AccountsStakingInfo',
-		'AccountsVestingInfo',
+		'AccountsAssets',
+		'PalletsAssets',
 		'NodeNetwork',
 		'NodeVersion',
 		'NodeTransactionPool',
@@ -22,13 +19,10 @@ export const polkadotControllers: ControllerConfig = {
 		'TransactionMaterial',
 		'TransactionFeeEstimate',
 		'TransactionSubmit',
-		'PalletsStakingProgress',
-		'PalletsStorage',
-		'Paras',
 	],
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
-		blockWeightStore: getBlockWeight('polkadot'),
+		blockWeightStore: {},
 	},
 };
