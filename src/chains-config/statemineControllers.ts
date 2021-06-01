@@ -15,6 +15,10 @@ export const statemineControllers: ControllerConfig = {
 		'RuntimeCode',
 		'RuntimeSpec',
 		'RuntimeMetadata',
+		'TransactionDryRun',
+		'TransactionMaterial',
+		'TransactionFeeEstimate',
+		'TransactionSubmit',
 	],
 	options: {
 		finalizes: true,
