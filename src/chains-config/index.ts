@@ -13,11 +13,8 @@ import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
 import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
-import { statemineControllers } from './statemineControllers';
 import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
-import { westmineControllers } from './westmineControllers';
-import { westmintControllers } from './westmintControllers';
 
 const specToControllerMap = {
 	westend: westendControllers,
@@ -30,9 +27,9 @@ const specToControllerMap = {
 	'dock-testnet': dockTestnetControllers,
 	'dock-main-runtime': dockMainnetControllers,
 	statemint: statemintControllers,
-	statemine: statemineControllers,
-	westmine: westmineControllers,
-	westmint: westmintControllers,
+	statemine: statemintControllers,
+	westmine: statemintControllers,
+	westmint: statemintControllers,
 };
 
 /**
