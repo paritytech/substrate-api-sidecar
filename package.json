@@ -43,7 +43,7 @@
     "test:init-e2e-tests": "python3 ./scripts/run_chain_tests.py"
   },
   "dependencies": {
-    "@polkadot/api": "beta",
+    "@polkadot/api": "^4.13.1",
     "@polkadot/apps-config": "^0.91.2",
     "@polkadot/util-crypto": "^6.6.1",
     "@substrate/calc": "^0.2.0",
