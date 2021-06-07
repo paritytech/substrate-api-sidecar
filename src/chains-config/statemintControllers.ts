@@ -5,19 +5,19 @@ import { ControllerConfig } from '../types/chains-config';
  */
 export const statemintControllers: ControllerConfig = {
 	controllers: [
+		'AccountsAssets',
 		'Blocks',
 		'BlocksExtrinsics',
-		'AccountsAssets',
-		'PalletsAssets',
 		'NodeNetwork',
-		'NodeVersion',
 		'NodeTransactionPool',
+		'NodeVersion',
+		'PalletsAssets',
 		'RuntimeCode',
-		'RuntimeSpec',
 		'RuntimeMetadata',
+		'RuntimeSpec',
 		'TransactionDryRun',
-		'TransactionMaterial',
 		'TransactionFeeEstimate',
+		'TransactionMaterial',
 		'TransactionSubmit',
 	],
 	options: {
