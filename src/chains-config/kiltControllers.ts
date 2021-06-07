@@ -5,13 +5,14 @@ import { ControllerConfig } from '../types/chains-config';
  */
 export const kiltControllers: ControllerConfig = {
 	controllers: [
-		'Blocks',
-		'BlocksExtrinsics',
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
+		'Blocks',
+		'BlocksExtrinsics',
 		'NodeNetwork',
-		'NodeVersion',
 		'NodeTransactionPool',
+		'NodeVersion',
+		'PalletsStorage',
 		'RuntimeCode',
 		'RuntimeSpec',
 		'RuntimeMetadata',
@@ -19,7 +20,6 @@ export const kiltControllers: ControllerConfig = {
 		'TransactionMaterial',
 		'TransactionFeeEstimate',
 		'TransactionSubmit',
-		'PalletsStorage',
 	],
 	options: {
 		finalizes: true,
