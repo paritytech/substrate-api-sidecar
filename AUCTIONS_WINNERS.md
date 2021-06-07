@@ -9,7 +9,7 @@ This is a guide to leverage substrate-api-sidecar's endpoints in order to extrac
 
 One important note to finding the winner of each auction is making sure to index the block at which an auction ends. Since Sidecar is a stateless API, and due to the storage architecture for auctions in Substrate, you must index and keep track of certain fields during an ongoing auction so that the data collected can be used to find out which paraId's have won certain lease periods. (This will be explained further in the walkthrough).
 
- This can be done by leveraging the `/experimental/paras/auctions/current` endpoint. 
+This can be done by leveraging the `/experimental/paras/auctions/current` endpoint. 
 
 When there is an ongoing auction the return object will look like following below:
 
@@ -56,9 +56,9 @@ Important keys here are `finishEnd` which is the last block at which the auction
 
 With the information you are now tracking there are two main relationships to note. 
 
-1. `auctionIndex` => `leasePeriods`
+1. `auctionIndex` => `leasePeriods` (Lease Periods that are actively being auctioned off)
 
-2. `paraId` => `leasePeriods` (it has won).
+2. `paraId` => `leasePeriods` (Lease Periods that have been won).
 
 
 ## Walkthrough
@@ -68,13 +68,13 @@ With the information you are now tracking there are two main relationships to no
 
 The begining of this guide will start by briefly introducing setting up a simple parachain enviornment if you dont already know how or dont have one set for local developement. 
 
-Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking out the `rococo-v1` branch. NOTE: Before compiling make sure to adjust the [EndingPeriod]() to `100`, and [LeasePeriod](https://github.com/paritytech/polkadot/blob/rococo-v1/runtime/rococo/src/lib.rs#L761) to `100` so the auction time is fit for local development. You can then follow this [gist](https://gist.github.com/emostov/a58f887fce6af8a9b4aa2421114836c5) to get your alice and bob dev validator nodes up. Then you can call those extrinsic calls with the polkadot-js UI. 
+Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking out the `rococo-v1` branch. NOTE: Before compiling make sure to adjust the [EndingPeriod](https://github.com/paritytech/polkadot/blob/rococo-v1/runtime/rococo/src/lib.rs#L745) to `100`, and [LeasePeriod](https://github.com/paritytech/polkadot/blob/rococo-v1/runtime/rococo/src/lib.rs#L761) to `100` so the auction time is fit for local development. You can then follow this [gist](https://gist.github.com/emostov/a58f887fce6af8a9b4aa2421114836c5) to get your alice and bob dev validator nodes up. Then you can call those extrinsic calls with the polkadot-js UI. 
 
 ### Using Sidecar to find the auction winners
 
 `/experimental/paras/auctions/current` ENDPOINT
 
-An auction will either be in two phases `starting` and `ending`. During this period when querying the endpoint you will receive a `finishPeriod` which will denote the last block where the `AuctionClosed` event will take place as well as the `Leased` event. These events will be under the `on_initialize` key. 
+An auction will either be in two phases `starting` or `ending`. During this period when querying the endpoint you will receive a `finishEnd` which will denote the last block where the `AuctionClosed` event will take place as well as the `Leased` event. These events will be under the `on_initialize` key. 
 
 It is important to index this block for the current `auctionIndex` because this will be your source of truth of where the winners of the auction are stored. 
 
@@ -92,7 +92,7 @@ auctionIndex: {
 }
 ```
 
-`/blocks/:blockId`
+`/blocks/:blockId` ENDPOINT
 
 Once the auction is over, its time to query the `blocks` endpoint at the block height given in the `finishEnd` field, and retrieve the events inside of `on_initialize`.
 
@@ -132,4 +132,4 @@ Example Response
 }
 ```
 
-Now that you have the all the paraId's that won slots for that auction, you can compare it with the data relavant to the `auctionIndex`. Comparing what leasePeriod's that are available during the active auction, to the leasePeriod('s) that have been won and denoted in the `Leased` events will give you all the winners for that auction. 
+Now that you have all the paraId's that won slots for that auction, you can compare it with the data relavant to the `auctionIndex`. Comparing the `leasePeriod`'s that are available during the active auction, to the `leasePeriod`'s that have been won and denoted in the `Leased` events (there may be multiple if there are multiple winners) will give you all the winners for that auction. 
