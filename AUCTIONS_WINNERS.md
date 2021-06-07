@@ -1,15 +1,15 @@
 <h1 style="text-align: center">WinnersData</h1>
 
-## Summary:
+## Summary
 
 This is a guide to leverage substrate-api-sidecar's endpoints in order to extract the necessary data to know the winner's of an auction based on its `auctionIndex`.
 
 
 ## Indexing
 
-One important note to finding the winner of each auction is making sure to index the block at which an auction ends. Since Sidecar is a stateless API, and due to the storage architecture for auctions in Substrate, you must index and keep track of certain fields during an ongoing auction so that the data collected can be used to find out which paraId's have won certain lease periods. 
+One important note to finding the winner of each auction is making sure to index the block at which an auction ends. Since Sidecar is a stateless API, and due to the storage architecture for auctions in Substrate, you must index and keep track of certain fields during an ongoing auction so that the data collected can be used to find out which paraId's have won certain lease periods. (This will be explained further in the walkthrough).
 
- This can be done by leveraging the `/experimental/paras/auctions current` endpoint. 
+ This can be done by leveraging the `/experimental/paras/auctions/current` endpoint. 
 
 When there is an ongoing auction the return object will look like following below:
 
@@ -53,15 +53,12 @@ Important keys here are `finishEnd` which is the last block at which the auction
 
 
 ## Relationships
-TODO: (Breakdown of what the relationships should look like for example what they are mapping)
 
 With the information you are now tracking there are two main relationships to note. 
 
 1. `auctionIndex` => `leasePeriods`
 
 2. `paraId` => `leasePeriods` (it has won).
-
-EX: `/experimental/paras/leases/current`.
 
 
 ## Walkthrough
@@ -134,3 +131,5 @@ Example Response
     }
 }
 ```
+
+Now that you have the all the paraId's that won slots for that auction, you can compare it with the data relavant to the `auctionIndex`. Comparing what leasePeriod's that are available during the active auction, to the leasePeriod('s) that have been won and denoted in the `Leased` events will give you all the winners for that auction. 
