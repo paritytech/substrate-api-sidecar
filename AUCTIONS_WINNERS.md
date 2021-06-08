@@ -58,7 +58,7 @@ With the information you are now tracking there are two main relationships to no
 
 1. `auctionIndex` => `leasePeriods` (Lease Periods that are actively being auctioned off)
 
-2. `paraId` => `leasePeriods` (Lease Periods that have been won).
+2. `paraId` => `leasePeriods` (Lease Periods that have been won by `paraId`).
 
 
 ## Walkthrough
