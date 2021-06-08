@@ -47,7 +47,7 @@ Important keys here are `finishEnd` which is the last block at which the auction
 
 `finishEnd`: This is the last block at which the auction will take place. Indexing it will allow you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
 
-`auctionIndex`: Also known as the `AuctionCounter`, the index will be a pointer or ID to a specific auction. 
+`auctionIndex`: The unique identifier for the auction. 
 
 `leasePeriods`: These are the available lease period indexes that may be bid on for the specific `auctionIndex`. You can use this to create two seperate relationships explained below. 
 
