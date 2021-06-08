@@ -7,7 +7,7 @@ This is a guide to leverage substrate-api-sidecar's endpoints in order to extrac
 
 ## Indexing
 
-One important note to finding the winner of each auction is making sure to index the block at which an auction ends. Since Sidecar is a stateless API, and due to the storage architecture for auctions in Substrate, you must index and keep track of certain fields during an ongoing auction so that the data collected can be used to find out which paraId's have won certain lease periods. (This will be explained further in the walkthrough).
+To find the winner of a completed auction we will need to know the block number the auction ended at. Since Sidecar is a stateless API and auction info is wiped once it is over we need the block number to make historic queries to a state when the relevant data was stored (keep reading for details).
 
 This can be done by leveraging the `/experimental/paras/auctions/current` endpoint. 
 
