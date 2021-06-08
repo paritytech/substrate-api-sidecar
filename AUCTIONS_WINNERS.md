@@ -45,7 +45,7 @@ Important keys here are `finishEnd` which is the last block at which the auction
 
 ** Details of each key **
 
-`finishEnd`: This is the last block at which the auction will take place, and also the most important piece of data needed. This will allow you to query the block at which the auction has ended and will give you all the events that have taken place during that block. 
+`finishEnd`: This is the last block at which the auction will take place. Indexing it will allow you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
 
 `auctionIndex`: Also known as the `AuctionCounter`, the index will be a pointer or ID to a specific auction. 
 
