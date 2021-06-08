@@ -26,7 +26,7 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf build/ && tsc",
+    "build": "rimraf build/ && substrate-exec-tsc",
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",
@@ -64,8 +64,7 @@
     "argparse": "^2.0.1",
     "rimraf": "^3.0.2",
     "standard-version": "^9.3.0",
-    "tsc-watch": "^4.2.9",
-    "typescript": "4.2.4"
+    "tsc-watch": "^4.2.9"
   },
   "resolutions": {
     "node-forge": ">=0.10.0",
