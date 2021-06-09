@@ -49,7 +49,7 @@ Important keys here are `finishEnd` which is the last block at which the auction
 
 `auctionIndex`: The unique identifier for the auction. 
 
-`leasePeriods`: These are the available lease period indexes that may be bid on for the specific `auctionIndex`. You can use this to create two seperate relationships explained below. 
+`leasePeriods`: The available lease period indexes that may be bid on for the specific `auctionIndex`. 
 
 
 ## Relationships
