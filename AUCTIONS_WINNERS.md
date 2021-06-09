@@ -5,7 +5,7 @@
 In this guide we will learn how to track auction winners using [substrate-api-sidecar](https://github.com/paritytech/substrate-api-sidecar).
 
 
-## Indexing
+## Key values to track and store
 
 To find the winner of a completed auction we will need to know the block number the auction ended at. Since Sidecar is a stateless API and auction info is wiped once it is over we need the block number to make historic queries to a state when the relevant data was stored (keep reading for details).
 
@@ -41,7 +41,7 @@ When there is an ongoing auction the return object will look like following belo
 }
 ```
 
-We will index `finishEnd`,`auctionIndex`, and `leasePeriods`. 
+We will track and store `finishEnd`,`auctionIndex`, and `leasePeriods` in a Database. 
 
 ** Details of each key **
 
@@ -50,15 +50,6 @@ We will index `finishEnd`,`auctionIndex`, and `leasePeriods`.
 `auctionIndex`: The unique identifier for the auction. 
 
 `leasePeriods`: The available lease period indexes that may be bid on for the specific `auctionIndex`. 
-
-
-## Relationships
-
-With the information you are now tracking there are two main relationships to note. 
-
-1. `auctionIndex` => `leasePeriods` (lease periods that are actively being auctioned off)
-
-2. `paraId` => `leasePeriods` (lease periods that have been won by `paraId`).
 
 
 ## Walkthrough
