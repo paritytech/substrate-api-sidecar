@@ -65,7 +65,7 @@ Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking
 
 `/experimental/paras/auctions/current` ENDPOINT
 
-An auction will either be in two phases `starting` or `ending`. During this period when querying the endpoint you will receive a `finishEnd` which will denote the last block where the `AuctionClosed` event will take place as well as the `Leased` event. These events will be under the `on_initialize` key. 
+An ongoing auction is either in one of two phases: `starting` or `ending`. During an ongoing auction the endpoint returns a `finishEnd` key which denotes the block where the `AuctionClosed` and `Leased` events are emitted. The aforementioned events are emitted under the `on_initialize` key. 
 
 It is important to index this block for the current `auctionIndex` because this will be your source of truth of where the winners of the auction are stored. 
 
