@@ -78,11 +78,11 @@ An auction will either be in two phases `starting` or `ending`. During this peri
 
 It is important to index this block for the current `auctionIndex` because this will be your source of truth of where the winners of the auction are stored. 
 
-The next important key is the `leasePeriods` that corresponds to the current `auctionIndex`. We will use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. 
+The next important part is the `leasePeriods` that corresponds to the current `auctionIndex`. We use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. (Note that this is a redundant way to find the auction winners when coupled with with watching for the `Leased` events)
 
 By this point we have the below relationship. 
 
-EX: (This is just an example, format the data from the endpoint however is necessary)
+EX: (The below code snippet is just an example, format the data from the endpoint however is necessary)
 ```javascript
 auctionIndex: {
     leasePeriods: [
