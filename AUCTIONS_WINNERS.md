@@ -123,4 +123,4 @@ Example Response
 }
 ```
 
-Now that you have all the paraId's that won slots for that auction, you can compare it with the data relavant to the `auctionIndex`. Comparing the `leasePeriod`'s that are available during the active auction, to the `leasePeriod`'s that have been won and denoted in the `Leased` events (there may be multiple if there are multiple winners) will give you all the winners for that auction. 
+Now that you have all the `paraId`s that won slots for that auction, you can compare it with the data relevant to the `auctionIndex`. Comparing the `leasePeriod`s that are available during the active auction to the `leasePeriod`s that have been won and denoted in the `Leased` events (there may be multiple if there are multiple winners) will give you all the winners for that auction. 
