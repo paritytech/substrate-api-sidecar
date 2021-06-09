@@ -41,7 +41,7 @@ When there is an ongoing auction the return object will look like following belo
 }
 ```
 
-Important keys here are `finishEnd` which is the last block at which the auction will take place, `auctionIndex` which will act as your point of reference for that specific auction, and `leasePeriods` which are the available lease period indexes that may be bid on for the specific `auctionIndex`. 
+Important keys here are `finishEnd`,`auctionIndex`, and `leasePeriods`. 
 
 ** Details of each key **
 
