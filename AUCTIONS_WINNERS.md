@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is a guide to leverage substrate-api-sidecar's endpoints in order to extract the necessary data to know the winner's of an auction based on its `auctionIndex`.
+In this guide we will learn how to track auction winners using [substrate-api-sidecar](https://github.com/paritytech/substrate-api-sidecar).
 
 
 ## Indexing
