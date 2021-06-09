@@ -67,7 +67,7 @@ Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking
 
 An ongoing auction is either in one of two phases: `starting` or `ending`. During an ongoing auction the endpoint returns a `finishEnd` key which denotes the block where the `AuctionClosed` and `Leased` events are emitted. The aforementioned events are emitted under the `on_initialize` key. 
 
-It is important to index this block for the current `auctionIndex` because this will be your source of truth of where the winners of the auction are stored. 
+By storing the `finishEnd` block and looking at the `Leased` events within it, we can see who the auction winners are and what lease periods they were rewarded.
 
 The next important part is the `leasePeriods` that corresponds to the current `auctionIndex`. We use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. (Note that this is a redundant way to find the auction winners when coupled with with watching for the `Leased` events)
 
