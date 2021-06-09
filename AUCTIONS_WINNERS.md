@@ -45,7 +45,7 @@ We will track and store `finishEnd`,`auctionIndex`, and `leasePeriods` in a Data
 
 ** Details of each key **
 
-`finishEnd`: This is the last block at which the auction will take place. Indexing it will allow you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
+`finishEnd`: This is the last block at which the auction will take place. Storing it will allow you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
 
 `auctionIndex`: The unique identifier for the auction. 
 
@@ -70,8 +70,6 @@ An auction will either be in two phases `starting` or `ending`. During this peri
 It is important to index this block for the current `auctionIndex` because this will be your source of truth of where the winners of the auction are stored. 
 
 The next important part is the `leasePeriods` that corresponds to the current `auctionIndex`. We use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. (Note that this is a redundant way to find the auction winners when coupled with with watching for the `Leased` events)
-
-By this point we have the below relationship. 
 
 EX: (The below code snippet is just an example, format the data from the endpoint however is necessary)
 ```javascript
