@@ -41,7 +41,7 @@ When there is an ongoing auction the return object will look like following belo
 }
 ```
 
-Important keys here are `finishEnd`,`auctionIndex`, and `leasePeriods`. 
+We will index `finishEnd`,`auctionIndex`, and `leasePeriods`. 
 
 ** Details of each key **
 
