@@ -22,7 +22,7 @@
 
 ## Note
 
-v1.0.0 was released on 2020-10-23. This major release introduced several renamed endpoints as breaking changes. It is important that users complete the transition to the new endpoints ASAP so they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](/MIGRATION_GUIDE.md) to
+v1.0.0 was released on 2020-10-23. This major release introduced several renamed endpoints as breaking changes. It is important that users complete the transition to the new endpoints ASAP so they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](./guides/MIGRATION_GUIDE.md) to
 learn more.
 
 ## Prerequisites
@@ -36,7 +36,7 @@ This service requires Node version 14 or higher.
 - [Configuration](#configuration)
 - [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
-- [Chain integration guide](/CHAIN_INTEGRATION.md)
+- [Chain integration guide](./guides/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
 - [Note for maintainers](#note-for-maintainers)
 
@@ -266,7 +266,7 @@ curl -s http://0.0.0.0:8080/blocks/head | jq
 
 ## Contribute
 
-Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](CONTRIBUTING.md) doc for more information.
+Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](./guides/CONTRIBUTING.md) doc for more information.
 
 ## Notes for maintainers
 
