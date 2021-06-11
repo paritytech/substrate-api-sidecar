@@ -45,7 +45,7 @@ We will track and store `finishEnd`,`auctionIndex`, and `leasePeriods` in a Data
 
 ** Details of each key **
 
-`finishEnd`: This is the last block at which the auction will take place. Storing it will allow you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
+`finishEnd`: This is the last block of the auction. Storing it allows you to query the block at which the auction ended. From that block you can extract the lease winning related events. (To query the block: GET `/blocks/{finishEnd}`.)
 
 `auctionIndex`: The unique identifier for the auction. 
 
