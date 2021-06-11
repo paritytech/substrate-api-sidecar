@@ -69,7 +69,7 @@ An ongoing auction is either in one of two phases: `starting` or `ending`. Durin
 
 By storing the `finishEnd` block and looking at the `Leased` events within it, we can see who the auction winners are and what lease periods they were rewarded.
 
-The next important part is the `leasePeriods` that corresponds to the current `auctionIndex`. We use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. (Note that this is a redundant way to find the auction winners when coupled with with watching for the `Leased` events)
+The next important part is the `leasePeriods` that corresponds to the current `auctionIndex`. We use these available `leasePeriods` to compare the winning results and see which `paraId`'s took which slots. (Note that this is a redundant way to find the auction winners when coupled with watching for the `Leased` events)
 
 EX: (The below code snippet is just an example, format the data from the endpoint however is necessary)
 ```javascript
