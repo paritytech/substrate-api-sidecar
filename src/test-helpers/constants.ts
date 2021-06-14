@@ -23,8 +23,8 @@ export const MAX_U8 = '255';
 export const MAX_I8 = '127';
 export const MIN_I8 = '-128';
 
-export const H512_U64 =
+export const MAX_H512 =
 	'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-export const H256_U32 =
+export const MAX_H256 =
 	'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-export const H160_U16 = '0xffffffffffffffffffffffffffffffffffffffffffffffff';
+export const MAX_H160 = '0xffffffffffffffffffffffffffffffffffffffffffffffff';

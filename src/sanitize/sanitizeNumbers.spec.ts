@@ -30,9 +30,9 @@ import { UInt } from '@polkadot/types/codec/UInt';
 import BN from 'bn.js';
 
 import {
-	H160_U16,
-	H256_U32,
-	H512_U64,
+	MAX_H160,
+	MAX_H256,
+	MAX_H512,
 	MAX_I8,
 	MAX_I16,
 	MAX_I32,
@@ -256,21 +256,21 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles H512', () => {
-			const h = kusamaRegistry.createType('H512', H512_U64);
+			const h = kusamaRegistry.createType('H512', MAX_H512);
 			expect(sanitizeNumbers(h)).toBe(
 				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
 		it('handles H256', () => {
-			const h = kusamaRegistry.createType('H256', H256_U32);
+			const h = kusamaRegistry.createType('H256', MAX_H256);
 			expect(sanitizeNumbers(h)).toBe(
 				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
 		it('handles H160', () => {
-			const h = kusamaRegistry.createType('H160', H160_U16);
+			const h = kusamaRegistry.createType('H160', MAX_H160);
 			expect(sanitizeNumbers(h)).toBe(
 				'0xffffffffffffffffffffffffffffffffffffffff'
 			);
@@ -980,7 +980,7 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts Signature', () => {
-			const s = kusamaRegistry.createType('Signature', H512_U64);
+			const s = kusamaRegistry.createType('Signature', MAX_H512);
 			expect(sanitizeNumbers(s)).toBe(
 				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
