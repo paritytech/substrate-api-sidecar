@@ -178,7 +178,7 @@ and then set the enviroment variable to point to your definitions:
 
 ```bash
 export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
-``` 
+```
 
 ### Logging
 
@@ -202,7 +202,7 @@ Log levels in order of decreasing importance are: `error`, `warn`, `info`, `http
 
 #### RPC logging
 
-If looking to track raw RPC requests/responses, one can use `yarn start:log-rpc` to turn on polkadot-js's 
+If looking to track raw RPC requests/responses, one can use `yarn start:log-rpc` to turn on polkadot-js's
 logging. It is recommended to also set `SAS_LOG_STRIP_ANSI=true` to increase the readability of the logging stream.
 
 **N.B.** If running `yarn start:log-rpc`, the NODE_ENV will be set to `test`. In order still run your `.env`
@@ -286,7 +286,9 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     * @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
     * @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
 
-1. After updating the dependencies, the next step is making sure the release will work against all noted runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+1. After updating the dependencies, the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues). Note that the e2e tests will connect to a running node in order to test sidecar against real data.
+
+You can run the e2e tests for each chain individually with: `yarn test:e2e-tests --chain polkadot` (start `sidecar` in a separate terminal, with `SAS_SUBSTRATE_WS_URL` set to the appropriate rpc node, e.g.: `wss://rpc.polkadot.io`, `wss://rpc.polkadot.io`, `wss://westend-rpc.polkadot.io`)
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
