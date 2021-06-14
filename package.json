@@ -43,9 +43,9 @@
     "test:init-e2e-tests": "python3 ./scripts/run_chain_tests.py"
   },
   "dependencies": {
-    "@polkadot/api": "^4.13.1",
-    "@polkadot/apps-config": "^0.92.1",
-    "@polkadot/util-crypto": "^6.7.1",
+    "@polkadot/api": "^4.14.1",
+    "@polkadot/apps-config": "^0.93.1",
+    "@polkadot/util-crypto": "^6.8.1",
     "@substrate/calc": "^0.2.0",
     "confmgr": "^1.0.6",
     "express": "^4.17.1",
@@ -54,7 +54,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.5.2",
+    "@substrate/dev": "^0.5.3",
     "@types/argparse": "^2.0.8",
     "@types/express": "^4.17.11",
     "@types/express-serve-static-core": "^4.17.19",
