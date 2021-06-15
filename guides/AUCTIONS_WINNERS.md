@@ -98,7 +98,7 @@ EX: (The below code snippet is just an example, format the data from the endpoin
 ```javascript
 auctionIndex: {
     leasePeriods: [
-        "String"
+        "11", "12", "13", "14"
     ],
     finishEnd: '200'
 }
