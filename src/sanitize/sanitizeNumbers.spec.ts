@@ -30,6 +30,9 @@ import { UInt } from '@polkadot/types/codec/UInt';
 import BN from 'bn.js';
 
 import {
+	MAX_H160,
+	MAX_H256,
+	MAX_H512,
 	MAX_I8,
 	MAX_I16,
 	MAX_I32,
@@ -253,23 +256,23 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles H512', () => {
-			const h = kusamaRegistry.createType('H512', MAX_U64);
+			const h = kusamaRegistry.createType('H512', MAX_H512);
 			expect(sanitizeNumbers(h)).toBe(
-				'0x31383434363734343037333730393535313631350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
 		it('handles H256', () => {
-			const h = kusamaRegistry.createType('H256', MAX_U32);
+			const h = kusamaRegistry.createType('H256', MAX_H256);
 			expect(sanitizeNumbers(h)).toBe(
-				'0x3432393439363732393500000000000000000000000000000000000000000000'
+				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
 		it('handles H160', () => {
-			const h = kusamaRegistry.createType('H160', MAX_U16);
+			const h = kusamaRegistry.createType('H160', MAX_H160);
 			expect(sanitizeNumbers(h)).toBe(
-				'0x3635353335000000000000000000000000000000'
+				'0xffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
@@ -806,7 +809,10 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts U8a fixed', () => {
-			const u8a = new (U8aFixed.with(32))(kusamaRegistry, [0x02, 0x03]);
+			const u8a = new (U8aFixed.with(32))(
+				kusamaRegistry,
+				[0x02, 0x03, 0x00, 0x00]
+			);
 			expect(sanitizeNumbers(u8a)).toStrictEqual('0x02030000');
 		});
 
@@ -974,9 +980,9 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('converts Signature', () => {
-			const s = kusamaRegistry.createType('Signature', MAX_U64);
+			const s = kusamaRegistry.createType('Signature', MAX_H512);
 			expect(sanitizeNumbers(s)).toBe(
-				'0x31383434363734343037333730393535313631350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+				'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 			);
 		});
 
@@ -1102,7 +1108,7 @@ describe('sanitizeNumbers', () => {
 		it('converts Vec<BalanceLock>', () => {
 			expect(sanitizeNumbers(PRE_SANITIZED_BALANCE_LOCK)).toStrictEqual([
 				{
-					id: '0x4c6f636b49640000',
+					id: '0x3030303030303030',
 					amount: '71857424040631296',
 					reasons: 'Misc',
 				},
