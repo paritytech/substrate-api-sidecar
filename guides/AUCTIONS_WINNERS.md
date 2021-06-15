@@ -7,37 +7,60 @@ In this guide we will learn how to track auction winners using [substrate-api-si
 
 ## Key values to track and store
 
-To find the winner of a completed auction we will need to know the block number the auction ended at. Since Sidecar is a stateless API and auction info is wiped once it is over we need the block number to make historic queries to a state when the relevant data was stored (keep reading for details).
+To find the winner of a completed auction we will need to know the block number the auction ended at. Since Sidecar is a stateless API and the auction info is stored at the final block of an auction, once the auction is over we need the block number to make historic queries to retrieve the event and data stored in it (keep reading for details).
 
-This can be done by leveraging the `/experimental/paras/auctions/current` endpoint. 
+We will start by leveraging the `/experimental/paras/auctions/current` endpoint. 
 
 When there is an ongoing auction the return object will look like following below:
 
 ```
 {
   "at": {
-    "hash": "string",
-    "height": "string"
+    "hash": "0x88c1d8ba6ae0dd8f288a1ff35ff33eec1ad78b569df71dcac0ac1ab611154396",
+    "height": "285"
   },
-  "beginEnd": "string",
-  "finishEnd": "string",
-  "phase": "opening",
-  "auctionIndex": "string",
+  "beginEnd": "356",
+  "finishEnd": "456",
+  "phase": "starting",
+  "auctionIndex": "1",
   "leasePeriods": [
-    "string"
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
   ],
   "winning": [
     {
+      "bid": null,
+      "leaseSet": [
+        "3"
+      ]
+    },
+    {
       "bid": {
-        "accountId": "string",
-        "paraId": "string",
-        "amount": "string"
+        "accountId": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+        "paraId": "1000",
+        "amount": "500000000000000"
       },
       "leaseSet": [
-        "string"
+        "3",
+        "4"
+      ]
+    },
+    {
+      "bid": null,
+      "leaseSet": [
+        "3",
+        "4",
+        "5"
       ]
     }
-  ]
+  ],
+  ...
 }
 ```
 
@@ -59,7 +82,7 @@ We will track and store `finishEnd`,`auctionIndex`, and `leasePeriods` in a Data
 
 The begining of this guide will start by briefly introducing setting up a simple parachain enviornment if you dont already know how or dont have one set for local developement. 
 
-Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking out the `rococo-v1` branch. NOTE: Before compiling make sure to adjust the [EndingPeriod](https://github.com/paritytech/polkadot/blob/rococo-v1/runtime/rococo/src/lib.rs#L745) to `100`, and [LeasePeriod](https://github.com/paritytech/polkadot/blob/rococo-v1/runtime/rococo/src/lib.rs#L761) to `100` so the auction time is fit for local development. You can then follow this [gist](https://gist.github.com/emostov/a58f887fce6af8a9b4aa2421114836c5) to get your alice and bob dev validator nodes up. Then you can call those extrinsic calls with the polkadot-js UI. (Note: When the latest polkadot release contains the upgrade to parachains, the above links will reflect that change)
+Start by cloning [polkadot](https://github.com/paritytech/polkadot) and checking out the 'release-v0.9.5' branch. NOTE: Before compiling make sure to adjust the [EndingPeriod](https://github.com/paritytech/polkadot/blob/master/runtime/kusama/src/lib.rs#L1158) to `100`, and [LeasePeriod](https://github.com/paritytech/polkadot/blob/master/runtime/kusama/src/lib.rs#L1123) to `100` so the auction time is fit for local development. You can then follow this [gist](https://gist.github.com/emostov/a58f887fce6af8a9b4aa2421114836c5) to get your alice and bob dev validator nodes up (make sure to change '--chain' to 'kusama'). Then you can call those extrinsic calls with the polkadot-js UI. (Note: When the latest polkadot release contains the upgrade to parachains, the above links will reflect that change)
 
 ### Using Sidecar to find the auction winners
 
