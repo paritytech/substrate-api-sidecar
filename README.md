@@ -298,7 +298,7 @@ You can also run the e2e tests for each chain individually with: `yarn test:e2e-
 
 1. Commit with ex: `chore(release): 5.0.1`, then `git push` your release branch up, make a PR, get review approval, then merge.
 
-    **NOTE**: Before pushing up as a sanity check run the 3 following commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
+    **NOTE**: Before pushing up as a sanity check run the following 4 commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
 
     ```bash
     yarn dedupe
