@@ -152,11 +152,11 @@ the type formats (see `RegisteredTypes`).
 **N.B** Types set from environment variables will override the corresponding types pulled from
 @polkadot/apps-config.
 
--   `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
+- `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
     rpc definitions. Format: `OverrideBundleType` (see [`typesBundle`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L72)).
--   `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by `chainName`. Format: `Record<string, RegistryTypes>` (see [`typesChain`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L76)).
--   `SAS_SUBSTRATE_TYPES_SPEC`: type definitions keyed by `specName`. Format: `Record<string, RegistryTypes>` (see [`typesSpec`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L80)).
--   `SAS_SUBSTRATE_TYPES`: type definitions and overrides, not keyed. Format: `RegistryTypes` (see [`types`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L64)).
+- `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by `chainName`. Format: `Record<string, RegistryTypes>` (see [`typesChain`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L76)).
+- `SAS_SUBSTRATE_TYPES_SPEC`: type definitions keyed by `specName`. Format: `Record<string, RegistryTypes>` (see [`typesSpec`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L80)).
+- `SAS_SUBSTRATE_TYPES`: type definitions and overrides, not keyed. Format: `RegistryTypes` (see [`types`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L64)).
 
 You can read more about [defining types for polkadot-js here.](https://polkadot.js.org/api/start/types.extend.html)
 
@@ -182,12 +182,12 @@ export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 
 ### Logging
 
--   `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`
+- `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`
     to see all HTTP requests.
--   `SAS_LOG_JSON`: wether or not to have logs formatted as JSON, defaults to `false`.
+- `SAS_LOG_JSON`: wether or not to have logs formatted as JSON, defaults to `false`.
     Useful when using `stdout` to programmatically process Sidecar log data.
--   `SAS_LOG_FILTER_RPC`: wether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
--   `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters from logs, defaults
+- `SAS_LOG_FILTER_RPC`: wether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
+- `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters from logs, defaults
     to `false`. Useful when logging RPC calls with JSON written to transports.
 
 #### Log levels
@@ -282,23 +282,23 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Ensure we have the latest polkadot-js dependencies. Note: Every monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, and read the release notes for any breaking changes, or high priority updates. You can use the following command `yarn upgrade-interactive` to find and update all available releases. Feel free to update other packages that are available for upgrade if reasonable. To upgrade just `@polkadot` scoped deps use `yarn up "@polkadot/*"`
 
-    * @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
-    * @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
-    * @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
+    - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
+    - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
+    - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
 
 1. After updating the dependencies, the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues). Note that the e2e tests will connect to a running node in order to test sidecar against real data.
 
-You can run the e2e tests for each chain individually with: `yarn test:e2e-tests --chain polkadot` (start `sidecar` in a separate terminal, with `SAS_SUBSTRATE_WS_URL` set to the appropriate rpc node, e.g.: `wss://rpc.polkadot.io`, `wss://rpc.polkadot.io`, `wss://westend-rpc.polkadot.io`)
+You can also run the e2e tests for each chain individually with: `yarn test:e2e-tests --chain polkadot` (start `sidecar` in a separate terminal, with `SAS_SUBSTRATE_WS_URL` set to the appropriate rpc node, e.g.: `wss://rpc.polkadot.io`, `wss://kusama-rpc.polkadot.io`, `wss://westend-rpc.polkadot.io`)
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
 1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API.
 
-    * Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
+    Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 
 1. Commit with ex: `chore(release): 5.0.1`, then `git push` your release branch up, make a PR, get review approval, then merge.
 
-  * NOTE: Before pushing up as a sanity check run the 3 following commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
+    **NOTE**: Before pushing up as a sanity check run the following 4 commands and ensure they all run with zero errors. There is one exception with `yarn test` where you will see errors logged, that is expected as long as all the test suites pass.
 
     ```bash
     yarn dedupe
