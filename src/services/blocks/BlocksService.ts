@@ -453,13 +453,21 @@ export class BlocksService extends AbstractService {
 			block
 		);
 
-		const [version, multiplier] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(parentParentHash),
-			api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash),
-		]);
+		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
 
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
+
+		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
+			return {
+				specVersion: -1,
+				specName: 'ERROR',
+				calcFee: undefined,
+			};
+		}
+
+		const multiplier =
+			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
 
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
