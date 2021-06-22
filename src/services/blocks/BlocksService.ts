@@ -179,7 +179,7 @@ export class BlocksService extends AbstractService {
 
 			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
-					error: `Fee calculation not supported for this specVersion`,
+					error: `Fee calculation not supported for this specVersion. ${specVersion}#${specName}`,
 				};
 				continue;
 			}
@@ -460,8 +460,8 @@ export class BlocksService extends AbstractService {
 
 		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
 			return {
-				specVersion: -1,
-				specName: 'ERROR',
+				specVersion: specVersion,
+				specName: specName,
 				calcFee: undefined,
 			};
 		}
