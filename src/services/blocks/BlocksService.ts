@@ -179,7 +179,7 @@ export class BlocksService extends AbstractService {
 
 			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
-					error: `Fee calculation not supported for this specVersion. ${specVersion}#${specName}`,
+					error: `Fee calculation not supported for ${specVersion}#${specName}`,
 				};
 				continue;
 			}
@@ -460,9 +460,8 @@ export class BlocksService extends AbstractService {
 
 		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
 			return {
-				specVersion: specVersion,
-				specName: specName,
-				calcFee: undefined,
+				specVersion,
+				specName,
 			};
 		}
 
@@ -475,13 +474,7 @@ export class BlocksService extends AbstractService {
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 		const { weightToFee } = api.consts.transactionPayment;
 
-		if (
-			!perByte ||
-			!extrinsicBaseWeightExists ||
-			(this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) ||
-			!multiplier ||
-			!weightToFee
-		) {
+		if (!perByte || !extrinsicBaseWeightExists || !multiplier || !weightToFee) {
 			// This particular runtime version is not supported with fee calcs or
 			// does not have the necessay materials to build calcFee
 			return {
