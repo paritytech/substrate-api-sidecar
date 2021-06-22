@@ -179,7 +179,7 @@ export class BlocksService extends AbstractService {
 
 			if (calcFee === null || calcFee === undefined) {
 				extrinsics[idx].info = {
-					error: `Fee calculation not supported for ${specVersion}#${specName}`,
+					error: `Fee calculation not supported for this specVersion`,
 				};
 				continue;
 			}
