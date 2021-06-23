@@ -453,13 +453,20 @@ export class BlocksService extends AbstractService {
 			block
 		);
 
-		const [version, multiplier] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(parentParentHash),
-			api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash),
-		]);
+		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
 
 		const specName = version.specName.toString();
 		const specVersion = version.specVersion.toNumber();
+
+		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
+			return {
+				specVersion,
+				specName,
+			};
+		}
+
+		const multiplier =
+			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
 
 		const perByte = api.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -467,13 +474,7 @@ export class BlocksService extends AbstractService {
 			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
 		const { weightToFee } = api.consts.transactionPayment;
 
-		if (
-			!perByte ||
-			!extrinsicBaseWeightExists ||
-			(this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) ||
-			!multiplier ||
-			!weightToFee
-		) {
+		if (!perByte || !extrinsicBaseWeightExists || !multiplier || !weightToFee) {
 			// This particular runtime version is not supported with fee calcs or
 			// does not have the necessay materials to build calcFee
 			return {
