@@ -20,7 +20,7 @@ import block7354817 from './7354817.json';
 import block7519631 from './7519631.json';
 
 export const kusamaEndpoints = [
-	['/blocks/9253', JSON.stringify(block9253)],
+	['/blocks/9253', JSON.stringify(block9253)], //v1020
 	['/blocks/2350438', JSON.stringify(block2350438)], //v1062
 	['/blocks/2684767', JSON.stringify(block2684767)], //v2005
 	['/blocks/2713513', JSON.stringify(block2713513)], //v2007
