@@ -10,7 +10,7 @@ export const kusamaDefinitions: MetadataConsts[] = [
 		extrinsicBaseWeight,
 	},
 	{
-		runtimeVersions: [2027, 2028, 2029],
+		runtimeVersions: [2027, 2028, 2029, 2030, 9010, 9030, 9040, 9050, 9070],
 		perClass,
 	},
 ];
