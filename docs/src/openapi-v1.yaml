@@ -2340,13 +2340,13 @@ components:
           enum:
           - starting
           - ending
-          - delay
+          - vrfDelay
           description: |
-            An auction can be in one of 4 phases. Both `starting` and `ending` denoting
-            an ongoing auction. `delay` is part of the VRFDelay inside of Substrate which is a Period 
-            `finishEnd` block number where contributions are no longer accepted. After this `delay` phase 
-            the auction is officially finalized and a winner is declared. If `null` is returned 
-            this means the auction has not started yet.
+            An auction can be in one of 4 phases. Both `startingPeriod` () and `endingPeriod` indicate
+            an ongoing auction, while `vrfDelay` lines up with the `AuctionStatus::VrfDelay` . Finally, a value of `null`
+            indicates there is no ongoing auction. Keep in mind the that the `finishEnd` field is the block number the 
+            `endingPeriod` finishes and the `vrfDelay` period begins. The `vrfDelay` period is typically about an 
+            epoch long and no crowdloan contributions are accepted. 
         auctionIndex:
           type: string
           format: unsignedInteger
