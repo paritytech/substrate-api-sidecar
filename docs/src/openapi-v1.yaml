@@ -2338,12 +2338,15 @@ components:
         phase:
           type: string
           enum:
-          - opening
+          - starting
           - ending
+          - delay
           description: |
-            Whether the auction is in the `opening` or `ending` phase. The
-            `ending` phase is where the eventual winners are retroactively
-            picked from. `null` if there is no ongoing auction.
+            An auction can be in one of 4 phases. Both `starting` and `ending` denoting
+            an ongoing auction. `delay` is part of the VRFDelay inside of Substrate which is a Period 
+            `finishEnd` block number where contributions are no longer accepted. After this `delay` phase 
+            the auction is officially finalized and a winner is declared. If `null` is returned 
+            this means the auction has not started yet.
         auctionIndex:
           type: string
           format: unsignedInteger
