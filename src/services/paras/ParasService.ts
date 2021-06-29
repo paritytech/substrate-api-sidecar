@@ -240,7 +240,7 @@ export class ParasService extends AbstractService {
 			finishEnd = beginEnd.add(endingPeriod);
 
 			if (finishEnd.lt(blockNumber)) {
-				phase = 'delay';
+				phase = 'vrfDelay';
 			} else {
 				phase = beginEnd.gt(blockNumber) ? 'starting' : 'ending';
 			}

@@ -188,7 +188,7 @@ describe('ParasService', () => {
 				at: expectedAt,
 				beginEnd: '1000',
 				finishEnd: '21000',
-				phase: 'delay',
+				phase: 'vrfDelay',
 				auctionIndex: '4',
 				leasePeriods: ['39', '40', '41', '42'],
 				winning: [
