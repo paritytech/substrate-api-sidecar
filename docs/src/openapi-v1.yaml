@@ -2338,8 +2338,8 @@ components:
         phase:
           type: string
           enum:
-          - starting
-          - ending
+          - startPeriod
+          - endPeriod
           - vrfDelay
           description: |
             An auction can be in one of 4 phases. Both `startingPeriod` () and `endingPeriod` indicate
