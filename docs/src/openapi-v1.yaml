@@ -2338,12 +2338,15 @@ components:
         phase:
           type: string
           enum:
-          - opening
-          - ending
+          - startPeriod
+          - endPeriod
+          - vrfDelay
           description: |
-            Whether the auction is in the `opening` or `ending` phase. The
-            `ending` phase is where the eventual winners are retroactively
-            picked from. `null` if there is no ongoing auction.
+            An auction can be in one of 4 phases. Both `startingPeriod` () and `endingPeriod` indicate
+            an ongoing auction, while `vrfDelay` lines up with the `AuctionStatus::VrfDelay` . Finally, a value of `null`
+            indicates there is no ongoing auction. Keep in mind the that the `finishEnd` field is the block number the 
+            `endingPeriod` finishes and the `vrfDelay` period begins. The `vrfDelay` period is typically about an 
+            epoch long and no crowdloan contributions are accepted. 
         auctionIndex:
           type: string
           format: unsignedInteger
