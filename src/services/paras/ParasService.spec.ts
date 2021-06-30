@@ -219,7 +219,8 @@ describe('ParasService', () => {
 
 		/**
 		 * The goal of this test is to manipulate the number of the finalized block so that it is less than
-		 * the expected `finishHead`, but higher the `beginEnd` which would denote we are in the `ending` phase
+		 * the expected `finishHead`, but higher the `beginEnd` which would denote we are in the `endPeriod` phase
+		 * of the current auction.
 		 */
 		it('Should return the correct `ending` phase', async () => {
 			const overrideHeader = {
@@ -238,7 +239,7 @@ describe('ParasService', () => {
 			(mockApi.rpc.chain.getHeader as unknown) = () =>
 				Promise.resolve().then(() => header);
 
-			const expectedResponse = 'ending';
+			const expectedResponse = 'endPeriod';
 
 			const response = await parasService.auctionsCurrent(blockHash20000);
 
