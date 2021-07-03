@@ -32,28 +32,27 @@ export const validateAddressMiddleware: RequestHandler = (req, _res, next) => {
 function checkAddress(address: string): [boolean, string | undefined] {
 	let decoded;
 
-	if (address.startsWith('0x')) {
-		decoded = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
-
-		if (decoded.length != 20) {
-			return [false, `Invalid decoded address length ${decoded.length}`];
+	try {
+		decoded = base58Decode(address);
+	} catch (error) {
+		// 
+		if (address.startsWith('0x')) {
+			decoded = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
+	
+			if (decoded.length != 20) {
+				return [false, `Invalid decoded address length ${decoded.length} for H160 account`];
+			}
+	
+			return [true, undefined];
 		}
-
-		return [true, undefined];
-	} else {
-		try {
-			decoded = base58Decode(address);
-		} catch (error) {
-			return [false, (error as Error).message];
-		}
-
-		if (!defaults.allowedEncodedLengths.includes(decoded.length)) {
-			return [false, `Invalid encoded address length`];
-		}
-
-		const [isValid] = checkAddressChecksum(decoded);
-		
-		return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
+		return [false, (error as Error).message];
 	}
-}
 
+	if (!defaults.allowedEncodedLengths.includes(decoded.length)) {
+		return [false, `Invalid encoded address length`];
+	}
+
+	const [isValid] = checkAddressChecksum(decoded);
+	
+	return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
+}
