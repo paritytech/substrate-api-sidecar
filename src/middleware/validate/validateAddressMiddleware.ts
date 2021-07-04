@@ -1,4 +1,4 @@
-import { base58Validate, checkAddressChecksum, isEthereumAddress } from '@polkadot/util-crypto';
+import { checkAddressChecksum, isEthereumAddress } from '@polkadot/util-crypto';
 import { base58Decode } from '@polkadot/util-crypto';
 import { isHex } from '@polkadot/util';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
@@ -31,27 +31,27 @@ export const validateAddressMiddleware: RequestHandler = (req, _res, next) => {
  * @param address potential ss58 or raw address
  */
 function checkAddress(address: string): [boolean, string | undefined] {
-	let hexAddress;
+	let u8Address;
 
-	if (base58Validate(address)) {
+	if (isHex(address)) {
+		u8Address = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
+	} else {
 		try {
-			hexAddress = base58Decode(address);
+			u8Address = base58Decode(address);
 		} catch (error) {
 			return [false, (error as Error).message];
 		}
-	} else if (isHex(address)) {
-		hexAddress = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
-	} else {
-		return [false, 'Invalid address format'];
 	}
-	
-	if (defaults.allowedEncodedLengths.includes(hexAddress.length)) {
-		const [isValid] = checkAddressChecksum(hexAddress);
-		
+
+	if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
+		const [isValid] = checkAddressChecksum(u8Address);
+
 		return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
-	} else if (isEthereumAddress(address)) {
+	}
+
+	if (isEthereumAddress(address)) {
 		return [true, undefined];
 	}
 
-	return [false, 'Invalid decoded address checksum'];
+	return [false, 'Invalid address format'];
 }

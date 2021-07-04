@@ -104,7 +104,7 @@ describe('validateAddressMiddleware', () => {
 				address: 'y9EMHt34JJo4rWLSaxoLGdYXvjgSXEd4zHUnQgfNzwES8b',
 			},
 		} as unknown as Request,
-		new BadRequest('Invalid encoded address length')
+		new BadRequest('Invalid address format')
 	);
 
 	errorsWith(
