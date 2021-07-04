@@ -38,11 +38,11 @@ function checkAddress(address: string): [boolean, string | undefined] {
 		// If ss58 doesn't pass, we try H160 address.
 		if (address.startsWith('0x')) {
 			decoded = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
-	
+
 			if (decoded.length != 20) {
 				return [false, `Invalid decoded address length ${decoded.length} for H160 account`];
 			}
-	
+
 			return [true, undefined];
 		}
 		return [false, (error as Error).message];
@@ -53,6 +53,6 @@ function checkAddress(address: string): [boolean, string | undefined] {
 	}
 
 	const [isValid] = checkAddressChecksum(decoded);
-	
+
 	return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
 }
