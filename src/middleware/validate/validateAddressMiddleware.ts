@@ -35,7 +35,7 @@ function checkAddress(address: string): [boolean, string | undefined] {
 	try {
 		decoded = base58Decode(address);
 	} catch (error) {
-		// 
+		// If ss58 doesn't pass, we try H160 address.
 		if (address.startsWith('0x')) {
 			decoded = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
 	
