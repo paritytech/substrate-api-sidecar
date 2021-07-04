@@ -1,5 +1,6 @@
-import { checkAddressChecksum } from '@polkadot/util-crypto';
+import { base58Validate, checkAddressChecksum, isEthereumAddress } from '@polkadot/util-crypto';
 import { base58Decode } from '@polkadot/util-crypto';
+import { isHex } from '@polkadot/util';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
@@ -25,34 +26,32 @@ export const validateAddressMiddleware: RequestHandler = (req, _res, next) => {
  * Verify that an address is a valid substrate address.
  *
  * Note: this is very similar '@polkadot/util-crypto/address/checkAddress,
- * except it does not check the prefix.
+ * except it does not check the ss58 prefix and supports H256/H160 raw address.
  *
- * @param address potential ss58 address
+ * @param address potential ss58 or raw address
  */
 function checkAddress(address: string): [boolean, string | undefined] {
-	let decoded;
+	let hexAddress;
 
-	try {
-		decoded = base58Decode(address);
-	} catch (error) {
-		// If ss58 doesn't pass, we try H160 address.
-		if (address.startsWith('0x')) {
-			decoded = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
-
-			if (decoded.length != 20) {
-				return [false, `Invalid decoded address length ${decoded.length} for H160 account`];
-			}
-
-			return [true, undefined];
+	if (base58Validate(address)) {
+		try {
+			hexAddress = base58Decode(address);
+		} catch (error) {
+			return [false, (error as Error).message];
 		}
-		return [false, (error as Error).message];
+	} else if (isHex(address)) {
+		hexAddress = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
+	} else {
+		return [false, 'Invalid address format'];
+	}
+	
+	if (defaults.allowedEncodedLengths.includes(hexAddress.length)) {
+		const [isValid] = checkAddressChecksum(hexAddress);
+		
+		return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
+	} else if (isEthereumAddress(address)) {
+		return [true, undefined];
 	}
 
-	if (!defaults.allowedEncodedLengths.includes(decoded.length)) {
-		return [false, `Invalid encoded address length`];
-	}
-
-	const [isValid] = checkAddressChecksum(decoded);
-
-	return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
+	return [false, 'Invalid decoded address checksum'];
 }
