@@ -13,7 +13,6 @@
   "files": [
     "calc_bg.wasm",
     "calc.js",
-    "calc_bg.js",
     "calc.d.ts"
   ],
   "main": "calc.js",

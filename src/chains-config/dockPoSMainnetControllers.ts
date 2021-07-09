@@ -1,16 +1,20 @@
 import { ControllerConfig } from '../types/chains-config';
+import { getBlockWeight } from './metadata-consts';
 
 /**
- * Controllers for Dock's test network.
+ * Controllers for Dock's mainnet.
  */
-export const dockTestnetControllers: ControllerConfig = {
+export const dockPoSMainnetControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsStakingInfo',
+		'AccountsStakingPayouts',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
+		'PalletsStakingProgress',
 		'PalletsStorage',
 		'RuntimeCode',
 		'RuntimeMetadata',
@@ -22,7 +26,7 @@ export const dockTestnetControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 1,
-		blockWeightStore: {},
+		minCalcFeeRuntime: 29,
+		blockWeightStore: getBlockWeight('dock-pos-main-runtime'),
 	},
 };

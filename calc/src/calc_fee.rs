@@ -50,7 +50,8 @@ impl Multiplier {
             ("westend", v) if 31 <= v => V2(new_u128(inner)),
 
             ("dock-main-runtime", _) => V2(new_u128(inner)),
-            ("dock-testnet", _) => V2(new_u128(inner)),
+            ("dock-pos-main-runtime", _) => V2(new_u128(inner)),
+            ("dock-pos-test-runtime", _) => V2(new_u128(inner)),
 
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);
