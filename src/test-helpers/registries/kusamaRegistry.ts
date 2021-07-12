@@ -1,5 +1,5 @@
-import { Metadata } from '@polkadot/types';
 import substrateMetadataRpc from '@polkadot/metadata/v11/static';
+import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 

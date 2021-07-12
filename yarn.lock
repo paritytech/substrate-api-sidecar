@@ -1242,30 +1242,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-asmjs@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@polkadot/wasm-crypto-asmjs@npm:4.0.2"
-  dependencies:
-    "@babel/runtime": ^7.13.9
-  checksum: 31e88b73a1c73882fd5d8fca4b0b5f1b4db0fc1e5d75c6196b1f7a8f24c19c69cee6f66fd38df41d6f3f0c5b250a346137123dc69a5683bf77294daa11ebdaf0
-  languageName: node
-  linkType: hard
-
 "@polkadot/wasm-crypto-asmjs@npm:^4.1.2":
   version: 4.1.2
   resolution: "@polkadot/wasm-crypto-asmjs@npm:4.1.2"
   dependencies:
     "@babel/runtime": ^7.14.6
   checksum: 24837536f936f462acc4e702b6444e500dcf1fa07059102c10cc61321e951bcf5f584e0410cf436566888edd3b4363ffc75f169d084095e57f5c691b8a7d8cde
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto-wasm@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@polkadot/wasm-crypto-wasm@npm:4.0.2"
-  dependencies:
-    "@babel/runtime": ^7.13.9
-  checksum: d149e025a4bc97753adac39f11ec994d3a9a4b0ac37148d5e7c64c41fc6f2cc9c0e4ebb349b043f2dceddbb2ea432b67a11c37fd2547b81aed091680461265cb
   languageName: node
   linkType: hard
 
@@ -1278,21 +1260,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@polkadot/wasm-crypto@npm:4.0.2"
-  dependencies:
-    "@babel/runtime": ^7.13.9
-    "@polkadot/wasm-crypto-asmjs": ^4.0.2
-    "@polkadot/wasm-crypto-wasm": ^4.0.2
-  peerDependencies:
-    "@polkadot/util": "*"
-    "@polkadot/x-randomvalues": "*"
-  checksum: 3375e334b01f88d454663355806a961868394600d55628067f37407a7764da8f411ba779ccfd3a215dde9873b0aa07e653c9a72f6d587b20e15d543ef52509dc
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto@npm:^4.1.2":
+"@polkadot/wasm-crypto@npm:^4.0.2, @polkadot/wasm-crypto@npm:^4.1.2":
   version: 4.1.2
   resolution: "@polkadot/wasm-crypto@npm:4.1.2"
   dependencies:
@@ -1797,23 +1765,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.5.11":
+"@types/node-fetch@npm:^2.5.11, @types/node-fetch@npm:^2.5.8":
   version: 2.5.11
   resolution: "@types/node-fetch@npm:2.5.11"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
   checksum: 944b0c6bed70afe330db022b90fb0c99f51b70a3fe38e2cc197207985cb6e1903eac5c0a87bb642c4b3683db9dafe3bee5ba020f9f9868b7c3eb70beae379b1a
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.5.8":
-  version: 2.5.10
-  resolution: "@types/node-fetch@npm:2.5.10"
-  dependencies:
-    "@types/node": "*"
-    form-data: ^3.0.0
-  checksum: 7687038f73cf0f2e4bac8ced3abdfbb77f8b2719de2f180d0064238d7460c8b4dc0b39c08da35a76d7db9f86528599ea0f7cee7c468ad7cfecfe2db1c5863641
   languageName: node
   linkType: hard
 
