@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { expandMetadata } from '@polkadot/metadata/decorate';
+import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
