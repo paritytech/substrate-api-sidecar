@@ -284,7 +284,9 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
+      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers and do a peer review of the changes in apps-config, and make sure no bugs will be inherited. 
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
+    - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
 1. After updating the dependencies, the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues). Note that the e2e tests will connect to a running node in order to test sidecar against real data.
 
@@ -306,6 +308,8 @@ You can also run the e2e tests for each chain individually with: `yarn test:e2e-
     yarn lint
     yarn test
     ```
+
+1. If one of the commits for this release includes the `calc` directory and package, make sure to follow the instructions below for releasing it on npm (if a new version hasn't yet been released seperately).
 
 #### Publish on GitHub
 
@@ -334,3 +338,15 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
     npm login # Only necessary if not already logged in
     yarn deploy # Builds JS target and then runs npm publish
     ```
+
+#### Calc Package Release Prep
+
+1. Head into the `calc` directory in sidecar, and increment the version inside of the `Cargo.toml`, as well as the `pkg/package.json`.
+
+2. Confirm that the package compiles correctly, `cargo build --release`.
+
+3. Continue with the normal sidecar release process.
+
+#### Publish Calc Package
+
+1. `cd` into `calc/pkg` and `npm login`, then `npm publish`.
