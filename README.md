@@ -284,7 +284,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
-      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers and do a peer review of the changes in apps-config, and make sure no bugs will be inherited. 
+      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers of sidecar and do a peer review of the changes in apps-config, and make sure no bugs will be inherited. 
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
