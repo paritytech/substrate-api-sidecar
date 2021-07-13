@@ -1,4 +1,4 @@
-import { expandMetadata } from '@polkadot/metadata/decorate';
+import { expandMetadata } from '@polkadot/types/metadata/decorate';
 
 import { kusamaRegistry } from '../registries/kusamaRegistry';
 import { polkadotRegistry } from '../registries/polkadotRegistry';
