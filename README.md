@@ -278,19 +278,21 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 #### Preparation
 
-1. Checkout a branch `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
+1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
+
+1. Checkout a branch with the format `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
 
 1. Ensure we have the latest polkadot-js dependencies. Note: Every monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, and read the release notes for any breaking changes, or high priority updates. You can use the following command `yarn upgrade-interactive` to find and update all available releases. Feel free to update other packages that are available for upgrade if reasonable. To upgrade just `@polkadot` scoped deps use `yarn up "@polkadot/*"`
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
-      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers of sidecar and do a peer review of the changes in apps-config, and make sure no bugs will be inherited. 
+      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers of sidecar and do a peer review of the changes in apps-config, and make sure no bugs will be inherited.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. After updating the dependencies, the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues). Note that the e2e tests will connect to a running node in order to test sidecar against real data.
+1. After updating the dependencies, the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. You must have `python3`, and the dependencies inside of `./scripts/requirements.txt` installed to run the script (Read the [README](./scripts/README.md) for more instructions). Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
-You can also run the e2e tests for each chain individually with: `yarn test:e2e-tests --chain polkadot` (start `sidecar` in a separate terminal, with `SAS_SUBSTRATE_WS_URL` set to the appropriate rpc node, e.g.: `wss://rpc.polkadot.io`, `wss://kusama-rpc.polkadot.io`, `wss://westend-rpc.polkadot.io`)
+    Note that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running tests just for the chain that failed with something like `yarn test:init-e2e-tests:polkadot`.
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
