@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import psutil
 import signal
@@ -10,7 +11,11 @@ def run_process(args):
     return subprocess.check_output(args, stderr=subprocess.STDOUT,
                                    encoding="utf-8")
 
-def run_chain_test(chain):
+def run_chain_test(chain) -> bool:
+    """
+    Run tests against a specific chain, returning a boolean for
+    whether the tests passed or not.
+    """
     run_process(["yarn"])
 
     if chain == "polkadot":
@@ -26,8 +31,11 @@ def run_chain_test(chain):
         return -1
 
     os.environ["SAS_SUBSTRATE_WS_URL"] = url
-    proc = subprocess.Popen(["yarn", "dev"], stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT)
+    proc = subprocess.Popen(
+        ["yarn", "dev"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
 
     print('Sidecar is loading in development mode...')
     time.sleep(30)
@@ -44,18 +52,35 @@ def run_chain_test(chain):
     proc.kill()
 
     print(res)
-    return res.find("PASS")
+    return "PASS" in res
 
 
 def main():
-    polka_test = run_chain_test("polkadot")
-    kusama_test = run_chain_test("kusama")
-    westend_test = run_chain_test("westend")
+    arg_parser = argparse.ArgumentParser(
+        description='Run tests against live chains.'
+    )
+    arg_parser.add_argument(
+        '--chain',
+        type=str,
+        default='',
+        help='Only run the tests against this chain',
+        choices=['polkadot', 'kusama', 'westend']
+    )
 
-    if polka_test == 0 and kusama_test == 0 and westend_test == 0:
-        return 0
+    args = arg_parser.parse_args()
+
+    # Run tests against a specific chain only:
+    if args.chain:
+        if run_chain_test(args.chain):
+            return 0
+        else:
+            return -1
+    # Run tests against all chains of interest to us:
     else:
-        return -1
+        if run_chain_test("polkadot") and run_chain_test("kusama") and run_chain_test("westend"):
+            return 0
+        else:
+            return -1
 
 
 if __name__ == "__main__":
