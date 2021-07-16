@@ -1,4 +1,4 @@
-import { Constants } from '@polkadot/metadata/decorate/types';
+import { Constants } from '@polkadot/types/metadata/decorate/types';
 
 import { IAt } from '.';
 

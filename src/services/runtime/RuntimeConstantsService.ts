@@ -1,5 +1,5 @@
 //import { Option, Raw } from '@polkadot/types';
-import { decorateConstants } from '@polkadot/metadata';
+import { decorateConstants } from '@polkadot/types/metadata';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { IConstants } from 'src/types/responses';
 
