@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 
@@ -10,6 +11,12 @@ interface ControllerOptions {
 	finalizes: boolean;
 	minCalcFeeRuntime: null | number;
 	blockWeightStore: {};
+}
+
+interface IFinalizationOpts {
+	hash: BlockHash;
+	omitFinalizedTag: boolean;
+	queryFinalizedHead: boolean;
 }
 
 /**
@@ -89,6 +96,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.safeMountAsyncGetHandlers([
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
+			['/head/summary', this.getLatestBlock],
+			['/:number/summary', this.getBlockById],
 		]);
 	}
 
@@ -99,27 +108,19 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized } },
+		{ query: { eventDocs, extrinsicDocs, finalized }, path },
 		res
 	) => {
+		const isSummary = path.endsWith('summary') ? true : false; 
+		
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
-		let hash, queryFinalizedHead, omitFinalizedTag;
-		if (!this.options.finalizes) {
-			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
-			omitFinalizedTag = true;
-			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
-		} else if (finalized === 'false') {
-			omitFinalizedTag = false;
-			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
-		} else {
-			omitFinalizedTag = false;
-			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
-		}
+		const { hash, queryFinalizedHead, omitFinalizedTag } =
+			await this.parseFinalizationOpts(
+				this.options.finalizes,
+				finalized as string
+			);
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -127,6 +128,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			isSummary
 		};
 
 		BlocksController.sanitizedSend(
@@ -136,13 +138,14 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
-	 * Get a block by its hash or number identifier.
+	 * Get a block by its hash or number identifier. If the path ends with 
+	 * `/summary` then a short summary of the block will be returned
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs }, path },
 		res
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -155,12 +158,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
 
+		const isSummary = path.endsWith('summary') ? true : false;
+
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			isSummary
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
@@ -168,5 +174,38 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			res,
 			await this.service.fetchBlock(hash, options)
 		);
+	};
+
+	/**
+	 * This also returns the hash for the block to query.
+	 *
+	 * @param optFinalizes
+	 * @param paramFinalized
+	 */
+	private parseFinalizationOpts = async (
+		optFinalizes: boolean,
+		paramFinalized: string
+	): Promise<IFinalizationOpts> => {
+		let hash, queryFinalizedHead, omitFinalizedTag;
+		if (!optFinalizes) {
+			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
+			omitFinalizedTag = true;
+			queryFinalizedHead = false;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else if (paramFinalized === 'false') {
+			omitFinalizedTag = false;
+			queryFinalizedHead = true;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else {
+			omitFinalizedTag = false;
+			queryFinalizedHead = false;
+			hash = await this.api.rpc.chain.getFinalizedHead();
+		}
+
+		return {
+			hash,
+			omitFinalizedTag,
+			queryFinalizedHead,
+		};
 	};
 }
