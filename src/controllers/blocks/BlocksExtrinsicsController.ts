@@ -1,6 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BlockWeightStore } from 'src/types/chains-config';
+import { IBlock } from 'src/types/responses';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
@@ -54,9 +55,14 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			checkFinalized: true,
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
+			isSummary: false,
 		};
 
-		const block = await this.service.fetchBlock(hash, options);
+		/**
+		 * By default we will return a `IBlock` response since `isSummary` is false
+		 * in the options. Therefore we typecast here to make sure the compiler is happy
+		 */
+		const block = await this.service.fetchBlock(hash, options) as IBlock;
 
 		/**
 		 * Verify our param `extrinsicIndex` is an integer represented as a string
