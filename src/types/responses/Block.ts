@@ -20,15 +20,6 @@ export interface IBlock {
 	finalized: boolean | undefined;
 }
 
-export interface IBlockSummary {
-	number: Compact<BlockNumber>;
-	hash: BlockHash;
-	parentHash: Hash;
-	stateRoot: Hash;
-	extrinsicsRoot: Hash;
-	authorId: AccountId | undefined;
-}
-
 interface IOnInitializeOrFinalize {
 	events: ISanitizedEvent[];
 }

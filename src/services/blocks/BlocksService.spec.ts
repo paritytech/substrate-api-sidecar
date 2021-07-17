@@ -23,7 +23,7 @@ import {
 	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
-import { IBlock, IExtrinsic } from '../../types/responses/';
+import { IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
 	mockApi,
@@ -124,7 +124,7 @@ describe('BlocksService', () => {
 				omitFinalizedTag: true,
 			};
 
-			const block = await blocksService.fetchBlock(blockHash789629, options) as IBlock;
+			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(block.finalized).toEqual(undefined);
 		});
@@ -481,7 +481,7 @@ describe('BlocksService', () => {
 			 * The `extrinsicIndex` (second param) is being tested for a non-zero
 			 * index here.
 			 */
-			const extrinsic = blocksService['fetchExtrinsicByIndex'](block as IBlock, 2);
+			const extrinsic = blocksService['fetchExtrinsicByIndex'](block, 2);
 
 			expect(JSON.stringify(sanitizeNumbers(extrinsic))).toEqual(
 				JSON.stringify(block789629Extrinsic)
@@ -492,7 +492,7 @@ describe('BlocksService', () => {
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(() => {
-				blocksService['fetchExtrinsicByIndex'](block as IBlock, 5);
+				blocksService['fetchExtrinsicByIndex'](block, 5);
 			}).toThrow(new BadRequest('Requested `extrinsicIndex` does not exist'));
 		});
 

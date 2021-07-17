@@ -111,8 +111,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		{ query: { eventDocs, extrinsicDocs, finalized }, path },
 		res
 	) => {
-		const isSummary = path.endsWith('summary') ? true : false; 
-		
+		const isSummary = path.endsWith('summary') ? true : false;
+
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
@@ -128,7 +128,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			isSummary
+			isSummary,
 		};
 
 		BlocksController.sanitizedSend(
@@ -138,7 +138,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
-	 * Get a block by its hash or number identifier. If the path ends with 
+	 * Get a block by its hash or number identifier. If the path ends with
 	 * `/summary` then a short summary of the block will be returned
 	 *
 	 * @param req Express Request
@@ -166,7 +166,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			isSummary
+			isSummary,
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead

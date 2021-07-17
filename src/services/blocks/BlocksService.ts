@@ -26,7 +26,6 @@ import {
 } from '../../types/chains-config';
 import {
 	IBlock,
-	IBlockSummary,
 	ICalcFee,
 	IExtrinsic,
 	IExtrinsicIndex,
@@ -52,7 +51,6 @@ interface FetchBlockOptions {
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
-	isSummary?: boolean;
 }
 
 /**
@@ -86,9 +84,8 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			isSummary,
 		}: FetchBlockOptions
-	): Promise<IBlock | IBlockSummary> {
+	): Promise<IBlock> {
 		const { api } = this;
 
 		const [deriveBlock, events, finalizedHead] = await Promise.all([
@@ -106,17 +103,6 @@ export class BlocksService extends AbstractService {
 
 		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
 			block.header;
-
-		if(isSummary) {
-			return {
-				number,
-				hash,
-				stateRoot,
-				extrinsicsRoot,
-				parentHash,
-				authorId,
-			}
-		}
 
 		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };
