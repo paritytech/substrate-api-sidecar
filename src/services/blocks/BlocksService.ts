@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { HeaderExtended } from '@polkadot/api-derive/types';
 import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
@@ -11,6 +10,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -285,16 +285,16 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * 
-	 * @param hash 
-	 * @returns 
+	 * Return the header of a block
+	 *
+	 * @param hash When no hash is inputted the header of the chain will be queried.
 	 */
-	async fetchBlockSummary(hash: BlockHash): Promise<HeaderExtended> {
-		const header = await this.api.derive.chain.getHeader(hash);
+	async fetchBlockSummary(hash?: BlockHash): Promise<Header> {
+		const { api } = this;
 
-		if (!header) {
-			throw new BadRequest(`Error querying hash: ${hash}`);
-		}
+		const header = hash
+			? await api.rpc.chain.getHeader(hash)
+			: await api.rpc.chain.getHeader();
 
 		return header;
 	}
