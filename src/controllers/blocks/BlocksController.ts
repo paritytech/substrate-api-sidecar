@@ -133,8 +133,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
-	 * Get a block by its hash or number identifier. If the path ends with
-	 * `/summary` then a short summary of the block will be returned
+	 * Get a block by its hash or number identifier.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
