@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { HeaderExtended } from '@polkadot/api-derive/types';
 import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
@@ -281,6 +282,21 @@ export class BlocksService extends AbstractService {
 			onFinalize,
 			finalized,
 		};
+	}
+
+	/**
+	 * 
+	 * @param hash 
+	 * @returns 
+	 */
+	async fetchBlockSummary(hash: BlockHash): Promise<HeaderExtended> {
+		const header = await this.api.derive.chain.getHeader(hash);
+
+		if (!header) {
+			throw new BadRequest(`Error querying hash: ${hash}`);
+		}
+
+		return header;
 	}
 
 	/**

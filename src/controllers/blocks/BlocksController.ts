@@ -96,8 +96,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.safeMountAsyncGetHandlers([
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
-			['/head/summary', this.getLatestBlock],
-			['/:number/summary', this.getBlockById],
+			['/head/summary', this.getLatestBlockSummary],
+			['/:number/summary', this.getBlockByIdSummary],
 		]);
 	}
 
@@ -108,11 +108,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized }, path },
+		{ query: { eventDocs, extrinsicDocs, finalized } },
 		res
 	) => {
-		const isSummary = path.endsWith('summary') ? true : false;
-
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
@@ -127,8 +125,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized: false,
 			queryFinalizedHead,
-			omitFinalizedTag,
-			isSummary,
+			omitFinalizedTag
 		};
 
 		BlocksController.sanitizedSend(
@@ -145,7 +142,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs }, path },
+		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -158,21 +155,56 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
 
-		const isSummary = path.endsWith('summary') ? true : false;
-
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			isSummary,
 		};
 
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
 			await this.service.fetchBlock(hash, options)
+		);
+	};
+
+	/**
+	 * 
+	 * @param param0 
+	 * @param res 
+	 */
+	private getBlockByIdSummary: RequestHandler<INumberParam> = async (
+		{ params: { number } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashForBlock(number);
+
+		BlocksController.sanitizedSend(
+			res,
+			await this.service.fetchBlockSummary(hash)
+		);
+	};
+
+	/**
+	 * 
+	 * @param param0 
+	 * @param res 
+	 */
+	private getLatestBlockSummary: RequestHandler<INumberParam> = async (
+		{ params: { number } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashForBlock(number);
+
+		let options = {
+			finalizedHead: true,
+		}
+
+		BlocksController.sanitizedSend(
+			res,
+			await this.service.fetchBlockSummary(hash)
 		);
 	};
 
