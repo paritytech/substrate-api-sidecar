@@ -54,13 +54,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			checkFinalized: true,
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
-			isSummary: false,
 		};
 
-		/**
-		 * By default we will return a `IBlock` response since `isSummary` is false
-		 * in the options. Therefore we typecast here to make sure the compiler is happy
-		 */
 		const block = await this.service.fetchBlock(hash, options);
 
 		/**
