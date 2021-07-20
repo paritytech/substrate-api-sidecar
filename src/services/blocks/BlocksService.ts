@@ -351,7 +351,7 @@ export class BlocksService extends AbstractService {
 				// we set to false if !isSigned because unsigned never pays a fee
 				paysFee: isSigned ? null : false,
 				docs: extrinsicDocs
-					? this.sanitizeDocs(extrinsic.meta.documentation)
+					? this.sanitizeDocs(extrinsic.meta.docs)
 					: undefined,
 			};
 		});
@@ -384,9 +384,7 @@ export class BlocksService extends AbstractService {
 						method: event.method,
 					},
 					data: event.data,
-					docs: eventDocs
-						? this.sanitizeDocs(event.data.meta.documentation)
-						: undefined,
+					docs: eventDocs ? this.sanitizeDocs(event.data.meta.docs) : undefined,
 				};
 
 				if (phase.isApplyExtrinsic) {
