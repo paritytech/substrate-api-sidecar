@@ -384,9 +384,7 @@ export class BlocksService extends AbstractService {
 						method: event.method,
 					},
 					data: event.data,
-					docs: eventDocs
-						? this.sanitizeDocs(event.data.meta.docs)
-						: undefined,
+					docs: eventDocs ? this.sanitizeDocs(event.data.meta.docs) : undefined,
 				};
 
 				if (phase.isApplyExtrinsic) {

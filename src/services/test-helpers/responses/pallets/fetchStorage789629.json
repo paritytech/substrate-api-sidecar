@@ -13,7 +13,7 @@
         "plain": "PropIndex"
       },
       "fallback": "0x00000000",
-      "documentation": " The number of (public) proposals that have been made so far."
+      "docs": " The number of (public) proposals that have been made so far."
     },
     {
       "name": "PublicProps",
@@ -22,7 +22,7 @@
         "plain": "Vec<(PropIndex,Hash,AccountId)>"
       },
       "fallback": "0x00",
-      "documentation": " The public proposals. Unsorted. The second item is the proposal's hash."
+      "docs": " The public proposals. Unsorted. The second item is the proposal's hash."
     },
     {
       "name": "DepositOf",
@@ -36,7 +36,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " Those who have locked a deposit.\n\n TWOX-NOTE: Safe, as increasing integer keys are safe."
+      "docs": " Those who have locked a deposit.\n\n TWOX-NOTE: Safe, as increasing integer keys are safe."
     },
     {
       "name": "Preimages",
@@ -50,7 +50,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " Map of hashes to the proposal preimage, along with who registered it and their deposit.\n The block number is the block at which it was deposited."
+      "docs": " Map of hashes to the proposal preimage, along with who registered it and their deposit.\n The block number is the block at which it was deposited."
     },
     {
       "name": "ReferendumCount",
@@ -59,7 +59,7 @@
         "plain": "ReferendumIndex"
       },
       "fallback": "0x00000000",
-      "documentation": " The next free referendum index, aka the number of referenda started so far."
+      "docs": " The next free referendum index, aka the number of referenda started so far."
     },
     {
       "name": "LowestUnbaked",
@@ -68,7 +68,7 @@
         "plain": "ReferendumIndex"
       },
       "fallback": "0x00000000",
-      "documentation": " The lowest referendum index representing an unbaked referendum. Equal to\n `ReferendumCount` if there isn't a unbaked referendum."
+      "docs": " The lowest referendum index representing an unbaked referendum. Equal to\n `ReferendumCount` if there isn't a unbaked referendum."
     },
     {
       "name": "ReferendumInfoOf",
@@ -82,7 +82,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+      "docs": " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
     },
     {
       "name": "VotingOf",
@@ -96,7 +96,7 @@
         }
       },
       "fallback": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-      "documentation": " All votes for a particular voter. We store the balance for the number of votes that we\n have recorded. The second item is the total amount of delegations, that will be added.\n\n TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway."
+      "docs": " All votes for a particular voter. We store the balance for the number of votes that we\n have recorded. The second item is the total amount of delegations, that will be added.\n\n TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway."
     },
     {
       "name": "Locks",
@@ -110,7 +110,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " Accounts for which there are locks in action which may be removed at some point in the\n future. The value is the block number at which the lock expires and may be removed.\n\n TWOX-NOTE: OK ― `AccountId` is a secure hash."
+      "docs": " Accounts for which there are locks in action which may be removed at some point in the\n future. The value is the block number at which the lock expires and may be removed.\n\n TWOX-NOTE: OK ― `AccountId` is a secure hash."
     },
     {
       "name": "LastTabledWasExternal",
@@ -119,7 +119,7 @@
         "plain": "bool"
       },
       "fallback": "0x00",
-      "documentation": " True if the last referendum tabled was submitted externally. False if it was a public\n proposal."
+      "docs": " True if the last referendum tabled was submitted externally. False if it was a public\n proposal."
     },
     {
       "name": "NextExternal",
@@ -128,7 +128,7 @@
         "plain": "(Hash,VoteThreshold)"
       },
       "fallback": "0x00",
-      "documentation": " The referendum to be tabled whenever it would be valid to table an external proposal.\n This happens when a referendum needs to be tabled and one of two conditions are met:\n - `LastTabledWasExternal` is `false`; or\n - `PublicProps` is empty."
+      "docs": " The referendum to be tabled whenever it would be valid to table an external proposal.\n This happens when a referendum needs to be tabled and one of two conditions are met:\n - `LastTabledWasExternal` is `false`; or\n - `PublicProps` is empty."
     },
     {
       "name": "Blacklist",
@@ -142,7 +142,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " A record of who vetoed what. Maps proposal hash to a possible existent block number\n (until when it may not be resubmitted) and who vetoed it."
+      "docs": " A record of who vetoed what. Maps proposal hash to a possible existent block number\n (until when it may not be resubmitted) and who vetoed it."
     },
     {
       "name": "Cancellations",
@@ -156,7 +156,7 @@
         }
       },
       "fallback": "0x00",
-      "documentation": " Record of all proposals that have been subject to emergency cancellation."
+      "docs": " Record of all proposals that have been subject to emergency cancellation."
     },
     {
       "name": "StorageVersion",
@@ -165,7 +165,7 @@
         "plain": "Releases"
       },
       "fallback": "0x00",
-      "documentation": " Storage version of the pallet.\n\n New networks start with last version."
+      "docs": " Storage version of the pallet.\n\n New networks start with last version."
     }
   ]
 }
