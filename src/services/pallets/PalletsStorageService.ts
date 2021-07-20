@@ -117,7 +117,7 @@ export class PalletsStorageService extends AbstractService {
 		) as unknown as ISanitizedStorageItemMetadata;
 
 		normalizedStorageItemMeta.documentation = this.sanitizeDocs(
-			storageItemMeta.documentation
+			storageItemMeta.docs
 		);
 
 		return normalizedStorageItemMeta;
