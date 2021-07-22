@@ -4,5 +4,5 @@ export interface ISanitizedStorageItemMetadata {
 	modifier: string;
 	type: unknown;
 	fallback: string;
-	documentation: string[] | string;
+	docs: string[] | string;
 }

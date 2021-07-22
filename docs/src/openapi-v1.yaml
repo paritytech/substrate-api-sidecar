@@ -2234,7 +2234,7 @@ components:
         fallback:
           type: string
           example: "0x00"
-        documentation:
+        docs:
           type: string
           example: " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of a storage item from a FRAME pallet.
