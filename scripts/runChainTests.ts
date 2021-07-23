@@ -25,7 +25,10 @@ const launchProcess = async ({
 	args,
 }: IProcOpts): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
+        const { Success, Failed } = StatusCode;
+
 		const command = 'yarn';
+
 
 		procs[proc] = spawn(command, args, { detached: true });
 
@@ -33,7 +36,7 @@ const launchProcess = async ({
 			console.log(data.toString());
 
 			if (data.toString().includes(resolver)) {
-				resolve(StatusCode.Success);
+				resolve(Success);
 			}
 		});
 
@@ -41,23 +44,24 @@ const launchProcess = async ({
 			console.error(data.toString());
 
 			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
-				resolve(StatusCode.Failed);
+				resolve(Failed);
 			}
 		});
 
 		procs[proc].on('close', () => {
-			resolve(StatusCode.Success);
+			resolve(Success);
 		});
 
 		procs[proc].on('error', (err) => {
 			console.log(err);
-			reject(StatusCode.Failed);
+			reject(Failed);
 		});
 	});
 };
 
 const launchChainTest = async (chain: string): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
+    const { Success } = StatusCode;
 
 	// Set the ws url env var
 	setWsUrl(wsUrl);
@@ -65,12 +69,12 @@ const launchChainTest = async (chain: string): Promise<boolean> => {
 	console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess(SasStartOpts);
 
-	if (sidecarStart === '0') {
+	if (sidecarStart === Success) {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess(JestProcOpts);
 
-		if (jest === '0') {
+		if (jest === Success) {
 			killAll();
 			return true;
 		} else {
