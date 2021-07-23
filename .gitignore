@@ -2,6 +2,7 @@
 **/node_modules
 /build
 /e2e-tests/build
+/scripts/build
 /target
 yarn-error.log
 **/*.rs.bk
