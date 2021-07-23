@@ -10,13 +10,20 @@ interface IProcOpts {
 	args: string[];
 }
 
-// Short for processes
+// Stores all the processes
 const procs: { [key: string]: ChildProcessWithoutNullStreams } = {};
 
+// Set the env variable for SAS_SUBSTRATE_WS_URL
 const setWsUrl = (url: string): void => {
 	process.env.SAS_SUBSTRATE_WS_URL = url;
 };
 
+/**
+ * Launch any given process. It accepts a resolver as a option, which will act
+ * as the success case when searching through the stdout.
+ * 
+ * @param IProcOpts 
+ */
 const launchProcess = async ({
 	process,
 	resolver,
@@ -54,31 +61,21 @@ const launchProcess = async ({
 
 const launchChainTest = async (
 	wsUrl: string,
-	SasBuildOpts: IProcOpts,
 	SasStartOpts: IProcOpts,
 	JestProcOpts: IProcOpts
 ): Promise<boolean> => {
 	setWsUrl(wsUrl);
 
-	console.log('Building Sidecar...');
-	const sidecarBuild = await launchProcess(SasBuildOpts);
+	console.log('Launching Sidecar...');
+	const sidecarStart = await launchProcess(SasStartOpts);
 
-    let sidecarStart;
-    // If the sidecar build is successful then launch sidecar
-    if(sidecarBuild === '0') {
-        console.log('Launching Sidecar...')
-        sidecarStart = await launchProcess(SasStartOpts);
-    } else {
-        console.log('Error building sidecar...')
-        return false
-    }
-
-    if (sidecarBuild === '0' && sidecarStart === '0') {
+	if (sidecarStart === '0') {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess(JestProcOpts);
 
 		if (jest === '0') {
+			killAll();
 			return true;
 		}
 	} else {
@@ -91,19 +88,31 @@ const launchChainTest = async (
 
 // Kill all processes spawned and tracked by this file.
 const killAll = () => {
-    console.log('\nKilling all processes...');
-    for (const key of Object.keys(procs)) {
-        console.log(`\nKilling ${key} process`);
-        procs[key].kill();
-    }
+	console.log('\nKilling all processes...');
+	for (const key of Object.keys(procs)) {
+		console.log(`\nKilling ${key} process`);
+		procs[key].kill();
+	}
 };
 
 const main = async (): Promise<void> => {
 	const { polkadot } = config;
 
+	// Build sidecar
+	console.log('Building Sidecar...');
+	const sidecarBuild = await launchProcess(polkadot.SasBuildOpts);
+
+	if (sidecarBuild === '1') {
+		console.log('Sidecar failed to build, exiting...');
+		// Kill all processes
+		killAll();
+		// Exit program
+		process.exit();
+	}
+
+	// Test tthe e2e tests against polkadot
 	const polkadotTest = await launchChainTest(
 		polkadot.wsUrl,
-		polkadot.SasBuildOpts,
 		polkadot.SasStartOpts,
 		polkadot.JestProcOpts
 	);
