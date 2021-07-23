@@ -33,7 +33,7 @@ const launchProcess = async ({
 			console.log(data.toString());
 
 			if (data.toString().includes(resolver)) {
-				resolve('0');
+				resolve(StatusCode.Success);
 			}
 		});
 
@@ -41,17 +41,17 @@ const launchProcess = async ({
 			console.error(data.toString());
 
 			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
-				resolve('1');
+				resolve(StatusCode.Failed);
 			}
 		});
 
 		procs[proc].on('close', () => {
-			resolve('0');
+			resolve(StatusCode.Success);
 		});
 
 		procs[proc].on('error', (err) => {
 			console.log(err);
-			reject('1');
+			reject(StatusCode.Failed);
 		});
 	});
 };
