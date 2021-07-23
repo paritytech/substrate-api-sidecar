@@ -26,7 +26,7 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf build/ && substrate-exec-tsc",
+    "build": "rimraf build/ && substrate-exec-tsc && echo Build Finished",
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",

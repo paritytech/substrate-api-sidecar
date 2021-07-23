@@ -1,6 +1,6 @@
 const defaultSasBuildOpts = {
 	process: 'sidecar',
-	resolver: '',
+	resolver: 'Build Finished',
 	args: ['build'],
 };
 

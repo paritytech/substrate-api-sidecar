@@ -10,6 +10,7 @@ interface IProcOpts {
 	args: string[];
 }
 
+// Short for processes
 const procs: { [key: string]: ChildProcessWithoutNullStreams } = {};
 
 const setWsUrl = (url: string): void => {
@@ -51,15 +52,6 @@ const launchProcess = async ({
 	});
 };
 
-// Kill all processes spawned and tracked by this file.
-const killAll = () => {
-	console.log('\nKilling all processes...');
-	for (const key of Object.keys(procs)) {
-		console.log(`\nKilling ${key} process`);
-		procs[key].kill();
-	}
-};
-
 const launchChainTest = async (
 	wsUrl: string,
 	SasBuildOpts: IProcOpts,
@@ -68,11 +60,20 @@ const launchChainTest = async (
 ): Promise<boolean> => {
 	setWsUrl(wsUrl);
 
-	console.log('Launching Sidecar...');
+	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess(SasBuildOpts);
-	const sidecarStart = await launchProcess(SasStartOpts);
 
-	if (sidecarBuild === '0' && sidecarStart === '0') {
+    let sidecarStart;
+    // If the sidecar build is successful then launch sidecar
+    if(sidecarBuild === '0') {
+        console.log('Launching Sidecar...')
+        sidecarStart = await launchProcess(SasStartOpts);
+    } else {
+        console.log('Error building sidecar...')
+        return false
+    }
+
+    if (sidecarBuild === '0' && sidecarStart === '0') {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess(JestProcOpts);
@@ -86,6 +87,15 @@ const launchChainTest = async (
 	}
 
 	return false;
+};
+
+// Kill all processes spawned and tracked by this file.
+const killAll = () => {
+    console.log('\nKilling all processes...');
+    for (const key of Object.keys(procs)) {
+        console.log(`\nKilling ${key} process`);
+        procs[key].kill();
+    }
 };
 
 const main = async (): Promise<void> => {
