@@ -25,10 +25,9 @@ const launchProcess = async ({
 	args,
 }: IProcOpts): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
-        const { Success, Failed } = StatusCode;
+		const { Success, Failed } = StatusCode;
 
 		const command = 'yarn';
-
 
 		procs[proc] = spawn(command, args, { detached: true });
 
@@ -61,7 +60,7 @@ const launchProcess = async ({
 
 const launchChainTest = async (chain: string): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
-    const { Success } = StatusCode;
+	const { Success } = StatusCode;
 
 	// Set the ws url env var
 	setWsUrl(wsUrl);
@@ -138,10 +137,10 @@ const main = async (args: Namespace): Promise<void> => {
 		const westendTest = await launchChainTest('westend');
 
 		if (polkadotTest && kusamaTest && westendTest) {
-            console.log('[PASSED] All Tests Passed!');
+			console.log('[PASSED] All Tests Passed!');
 			process.exit(0);
 		} else {
-            console.log('[FAILED] Some Tests Failed!');
+			console.log('[FAILED] Some Tests Failed!');
 			process.exit(1);
 		}
 	}

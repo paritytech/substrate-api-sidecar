@@ -40,12 +40,12 @@
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
     "build:e2e-tests": "(cd e2e-tests && substrate-exec-tsc)",
     "test:e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/index.js --config=./e2e-tests/jest.config.js",
-    "test:init-e2e-tests": "python3 ./scripts/run_chain_tests.py",
-    "test:init-e2e-tests:polkadot": "python3 ./scripts/run_chain_tests.py --chain polkadot",
-    "test:init-e2e-tests:kusama": "python3 ./scripts/run_chain_tests.py --chain kusama",
-    "test:init-e2e-tests:westend": "python3 ./scripts/run_chain_tests.py --chain westend",
+    "test:init-e2e-tests": "yarn start:e2e-scripts",
+    "test:init-e2e-tests:polkadot": "yarn start:e2e-scripts --chain polkadot",
+    "test:init-e2e-tests:kusama": "yarn start:e2e-scripts --chain kusama",
+    "test:init-e2e-tests:westend": "yarn start:e2e-scripts --chain westend",
+    "start:e2e-scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
     "build:scripts": "cd scripts && substrate-exec-tsc",
-    "start:scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
     "lint:scripts": "cd scripts && substrate-dev-run-lint"
   },
   "dependencies": {

@@ -2,8 +2,8 @@
 // export type StatusCode = '0' | '1';
 
 export enum StatusCode {
-    Success = '0',
-    Failed = '1'
+	Success = '0',
+	Failed = '1',
 }
 
 export interface IChainConfig {
