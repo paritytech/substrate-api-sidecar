@@ -1,21 +1,28 @@
+import { IChainConfig } from './types';
+
 const defaultSasStartOpts = {
-	process: 'sidecar',
+	proc: 'sidecar',
 	resolver: 'Check the root endpoint',
+	resolverStartupErr: 'error: uncaughtException: listen EADDRINUSE:',
 	args: ['start'],
 };
 
+const defaultJestOpts = {
+	proc: 'jest',
+	resolver: 'PASS',
+};
+
 export const defaultSasBuildOpts = {
-	process: 'sidecar',
+	proc: 'sidecar',
 	resolver: 'Build Finished',
 	args: ['build'],
 };
 
-export const config = {
+export const config: Record<string, IChainConfig> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
 		JestProcOpts: {
-			process: 'jest',
-			resolver: 'PASS',
+			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'polkadot'],
 		},
 		SasStartOpts: defaultSasStartOpts,
@@ -23,8 +30,7 @@ export const config = {
 	kusama: {
 		wsUrl: 'wss://kusama-rpc.polkadot.io',
 		JestProcOpts: {
-			process: 'jest',
-			resolver: 'PASS',
+			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'kusama'],
 		},
 		SasStartOpts: defaultSasStartOpts,
@@ -32,8 +38,7 @@ export const config = {
 	westend: {
 		wsUrl: 'wss://westend-rpc.polkadot.io',
 		JestProcOpts: {
-			process: 'jest',
-			resolver: 'PASS',
+			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'westend'],
 		},
 		SasStartOpts: defaultSasStartOpts,

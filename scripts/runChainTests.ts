@@ -1,14 +1,8 @@
+import { ArgumentParser, Namespace } from 'argparse';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 
 import { config, defaultSasBuildOpts } from './config';
-
-type StatusCode = '0' | '1';
-
-interface IProcOpts {
-	process: string;
-	resolver: string;
-	args: string[];
-}
+import { IProcOpts, StatusCode } from './types';
 
 // Stores all the processes
 const procs: { [key: string]: ChildProcessWithoutNullStreams } = {};
@@ -25,16 +19,17 @@ const setWsUrl = (url: string): void => {
  * @param IProcOpts
  */
 const launchProcess = async ({
-	process,
+	proc,
 	resolver,
+	resolverStartupErr,
 	args,
 }: IProcOpts): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
 		const command = 'yarn';
 
-		procs[process] = spawn(command, args);
+		procs[proc] = spawn(command, args, { detached: true });
 
-		procs[process].stdout.on('data', (data: Buffer) => {
+		procs[proc].stdout.on('data', (data: Buffer) => {
 			console.log(data.toString());
 
 			if (data.toString().includes(resolver)) {
@@ -42,15 +37,19 @@ const launchProcess = async ({
 			}
 		});
 
-		procs[process].stderr.on('data', (data: Buffer) => {
+		procs[proc].stderr.on('data', (data: Buffer) => {
 			console.error(data.toString());
+
+			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
+				resolve('1');
+			}
 		});
 
-		procs[process].on('close', () => {
+		procs[proc].on('close', () => {
 			resolve('0');
 		});
 
-		procs[process].on('error', (err) => {
+		procs[proc].on('error', (err) => {
 			console.log(err);
 			reject('1');
 		});
@@ -59,6 +58,8 @@ const launchProcess = async ({
 
 const launchChainTest = async (chain: string): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
+
+	// Set the ws url env var
 	setWsUrl(wsUrl);
 
 	console.log('Launching Sidecar...');
@@ -72,53 +73,94 @@ const launchChainTest = async (chain: string): Promise<boolean> => {
 		if (jest === '0') {
 			killAll();
 			return true;
+		} else {
+			killAll();
+			return false;
 		}
 	} else {
-		console.log('Error launching sidecar');
-		return false;
+		console.error('Error launching sidecar... exiting...');
+		killAll();
+		process.exit(1);
 	}
-
-	return false;
 };
 
 // Kill all processes spawned and tracked by this file.
 const killAll = () => {
-	console.log('\nKilling all processes...');
+	console.log('Killing all processes...');
 	for (const key of Object.keys(procs)) {
-		console.log(`\nKilling ${key} process`);
-		procs[key].kill();
+		if (!procs[key].killed) {
+			try {
+				console.log(`Killing ${key}`);
+				// Kill child and all its descendants.
+				process.kill(-procs[key].pid, 'SIGTERM');
+				process.kill(-procs[key].pid, 'SIGKILL');
+			} catch (e) {
+				/* continue regardless */
+			}
+		}
 	}
 };
 
-const main = async (): Promise<void> => {
+const main = async (args: Namespace): Promise<void> => {
 	// Build sidecar
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess(defaultSasBuildOpts);
 
+	// When sidecar fails to build, we kill all process's and exit
 	if (sidecarBuild === '1') {
-		console.log('Sidecar failed to build, exiting...');
+		console.error('Sidecar failed to build, exiting...');
 		// Kill all processes
 		killAll();
 		// Exit program
 		process.exit();
 	}
 
-	// Test the e2e tests against polkadot
-	const polkadotTest = await launchChainTest('polkadot');
+	if (args.chain) {
+		const selectedChain = await launchChainTest(args.chain);
 
-	// Test the e2e tests against kusama
-	const kusamaTest = await launchChainTest('kusama');
-
-	// Test the e2e tests against westend
-	const westendTest = await launchChainTest('westend');
-
-	if (polkadotTest && kusamaTest && westendTest) {
-		killAll();
-		process.exit(0);
+		if (selectedChain) {
+			process.exit(0);
+		} else {
+			process.exit(1);
+		}
 	} else {
-		killAll();
-		process.exit(1);
+		// Test the e2e tests against polkadot
+		const polkadotTest = await launchChainTest('polkadot');
+
+		// Test the e2e tests against kusama
+		const kusamaTest = await launchChainTest('kusama');
+
+		// Test the e2e tests against westend
+		const westendTest = await launchChainTest('westend');
+
+		if (polkadotTest && kusamaTest && westendTest) {
+			process.exit(0);
+		} else {
+			process.exit(1);
+		}
 	}
 };
 
-main().catch((err) => console.log(err));
+/**
+ * Arg Parser
+ */
+const parser = new ArgumentParser();
+
+parser.add_argument('--chain', {
+	choices: ['polkadot', 'kusama', 'westend'],
+});
+
+const args = parser.parse_args() as Namespace;
+
+/**
+ * Signal interrupt
+ */
+process.on('SIGINT', function () {
+	console.log('Caught interrupt signal');
+	killAll();
+	process.exit();
+});
+
+main(args).finally(() => {
+	killAll();
+});
