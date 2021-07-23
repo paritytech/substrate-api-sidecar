@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 
-import { config } from './config';
+import { config, defaultSasBuildOpts } from './config';
 
 type StatusCode = '0' | '1';
 
@@ -21,8 +21,8 @@ const setWsUrl = (url: string): void => {
 /**
  * Launch any given process. It accepts a resolver as a option, which will act
  * as the success case when searching through the stdout.
- * 
- * @param IProcOpts 
+ *
+ * @param IProcOpts
  */
 const launchProcess = async ({
 	process,
@@ -37,8 +37,6 @@ const launchProcess = async ({
 		procs[process].stdout.on('data', (data: Buffer) => {
 			console.log(data.toString());
 
-			// This ensures that sidecar is fully launched and the last
-			// info logger has been consoled
 			if (data.toString().includes(resolver)) {
 				resolve('0');
 			}
@@ -59,11 +57,8 @@ const launchProcess = async ({
 	});
 };
 
-const launchChainTest = async (
-	wsUrl: string,
-	SasStartOpts: IProcOpts,
-	JestProcOpts: IProcOpts
-): Promise<boolean> => {
+const launchChainTest = async (chain: string): Promise<boolean> => {
+	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
 	setWsUrl(wsUrl);
 
 	console.log('Launching Sidecar...');
@@ -96,11 +91,9 @@ const killAll = () => {
 };
 
 const main = async (): Promise<void> => {
-	const { polkadot } = config;
-
 	// Build sidecar
 	console.log('Building Sidecar...');
-	const sidecarBuild = await launchProcess(polkadot.SasBuildOpts);
+	const sidecarBuild = await launchProcess(defaultSasBuildOpts);
 
 	if (sidecarBuild === '1') {
 		console.log('Sidecar failed to build, exiting...');
@@ -111,16 +104,21 @@ const main = async (): Promise<void> => {
 	}
 
 	// Test the e2e tests against polkadot
-	const polkadotTest = await launchChainTest(
-		polkadot.wsUrl,
-		polkadot.SasStartOpts,
-		polkadot.JestProcOpts
-	);
+	const polkadotTest = await launchChainTest('polkadot');
 
-	console.log(polkadotTest);
-	setTimeout(() => {
+	// Test the e2e tests against kusama
+	const kusamaTest = await launchChainTest('kusama');
+
+	// Test the e2e tests against westend
+	const westendTest = await launchChainTest('westend');
+
+	if (polkadotTest && kusamaTest && westendTest) {
 		killAll();
-	}, 10000);
+		process.exit(0);
+	} else {
+		killAll();
+		process.exit(1);
+	}
 };
 
 main().catch((err) => console.log(err));
