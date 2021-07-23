@@ -22,28 +22,21 @@ export const config = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	kusama: {
+        wsUrl: 'wss://kusama-rpc.polkadot.io',
 		JestProcOpts: {
 			process: 'jest',
 			resolver: 'PASS',
-			args: [],
+            args: ['test:e2e-tests', '--chain', 'kusama'],
 		},
 		SasBuildOpts: defaultSasBuildOpts,
 		SasStartOpts: defaultSasStartOpts,
 	},
 	westend: {
+        wsUrl: 'wss://westend-rpc.polkadot.io',
 		JestProcOpts: {
 			process: 'jest',
 			resolver: 'PASS',
-			args: [],
-		},
-		SasBuildOpts: defaultSasBuildOpts,
-		SasStartOpts: defaultSasStartOpts,
-	},
-	statemine: {
-		JestProcOpts: {
-			process: 'jest',
-			resolver: 'PASS',
-			args: [],
+            args: ['test:e2e-tests', '--chain', 'westend'],
 		},
 		SasBuildOpts: defaultSasBuildOpts,
 		SasStartOpts: defaultSasStartOpts,

@@ -110,7 +110,7 @@ const main = async (): Promise<void> => {
 		process.exit();
 	}
 
-	// Test tthe e2e tests against polkadot
+	// Test the e2e tests against polkadot
 	const polkadotTest = await launchChainTest(
 		polkadot.wsUrl,
 		polkadot.SasStartOpts,
