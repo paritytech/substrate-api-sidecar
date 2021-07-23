@@ -134,8 +134,10 @@ const main = async (args: Namespace): Promise<void> => {
 		const westendTest = await launchChainTest('westend');
 
 		if (polkadotTest && kusamaTest && westendTest) {
+            console.log('[PASSED] All Tests Passed!');
 			process.exit(0);
 		} else {
+            console.log('[FAILED] Some Tests Failed!');
 			process.exit(1);
 		}
 	}
