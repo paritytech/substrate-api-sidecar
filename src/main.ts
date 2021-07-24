@@ -29,6 +29,8 @@ import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
 import { SidecarConfig } from './SidecarConfig';
+import { parseArgs } from './Cli';
+import { version } from '../package.json';
 
 const { logger } = Log;
 const { config } = SidecarConfig;
@@ -88,12 +90,6 @@ async function main() {
 	app.listen();
 }
 
-process.on('SIGINT', function () {
-	console.log('Caught interrupt signal, exiting...');
-	process.exit(0);
-});
-main().catch(console.log);
-
 /**
  * Prompt the user with some basic info about the node and the network they have
  * connected Sidecar to.
@@ -149,4 +145,18 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 			`Using unencrypted connection to a public node (${wsUrl}); All traffic is sent over the internet in cleartext.`
 		);
 	}
+}
+
+process.on('SIGINT', function () {
+	console.log('Caught interrupt signal, exiting...');
+	process.exit(0);
+});
+
+const args = parseArgs();
+
+if (args.version) {
+	console.log(`@substrate/api-sidecar v${version}`);
+	process.exit(0);
+} else {
+	main().catch(console.log)
 }
