@@ -1,10 +1,9 @@
-import { ArgumentParser } from 'argparse';
-// import { version } from '../package.json'
+import { ArgumentParser, Namespace } from 'argparse';
 
-export const parseArgs = () => {
-    const parser = new ArgumentParser();
+export const parseArgs = (): Namespace => {
+	const parser = new ArgumentParser();
 
-    parser.add_argument('-v', '--version', { action: 'store_true' });
-    
-    return parser.parse_args()
-}
+	parser.add_argument('-v', '--version', { action: 'store_true' });
+
+	return parser.parse_args() as Namespace;
+};

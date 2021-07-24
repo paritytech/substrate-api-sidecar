@@ -23,14 +23,14 @@ import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import packageJSON from '../package.json';
+import { version } from '../package.json';
 import App from './App';
 import { getControllersForSpec } from './chains-config';
+import { parseArgs } from './Cli';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
 import { SidecarConfig } from './SidecarConfig';
-import { parseArgs } from './Cli';
-import { version } from '../package.json';
 
 const { logger } = Log;
 const { config } = SidecarConfig;
@@ -158,5 +158,5 @@ if (args.version) {
 	console.log(`@substrate/api-sidecar v${version}`);
 	process.exit(0);
 } else {
-	main().catch(console.log)
+	main().catch(console.log);
 }
