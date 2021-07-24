@@ -14,12 +14,12 @@ const setWsUrl = (url: string): void => {
 
 /**
  * Launch any given process. It accepts an options object.
- * 
+ *
  * {
  *   proc => the name of the process to be saved in our cache
  *   resolver => string: If the stdout contains the resolver it with resolve the process
  *   resolverStartupErr => string: If the stdout contains the resolver it with resolve the process
- *   args => an array of args to be attached to the `yarn` command. 
+ *   args => an array of args to be attached to the `yarn` command.
  * }
  *
  * @param IProcOpts
@@ -67,8 +67,8 @@ const launchProcess = async ({
 /**
  * Launches Sidecar, and if successful it will launch the jest runner. This operation
  * handles killing all the processes after the jest runner is done.
- * 
- * @param chain The chain in which to target the e2e tests too. 
+ *
+ * @param chain The chain in which to target the e2e tests too.
  */
 const launchChainTest = async (chain: string): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
@@ -110,41 +110,43 @@ const killAll = () => {
 				process.kill(-procs[key].pid, 'SIGTERM');
 				process.kill(-procs[key].pid, 'SIGKILL');
 			} catch (e) {
-                /**
-                 * The error we are catching here silently, is when `-procs[key].pid` takes
-                 * the range of all pid's inside of the subprocess group created with
-                 * `spawn`, and one of the process's is either already closed or doesn't exist anymore.
-                 * 
-                 * ex: `Error: kill ESRCH`
-                 * 
-                 * This is a very specific use case of an empty catch block and is used
-                 * outside of the scope of the API therefore justifiable, and should be used cautiously
-                 * elsewhere. 
-                 */
+				/**
+				 * The error we are catching here silently, is when `-procs[key].pid` takes
+				 * the range of all pid's inside of the subprocess group created with
+				 * `spawn`, and one of the process's is either already closed or doesn't exist anymore.
+				 *
+				 * ex: `Error: kill ESRCH`
+				 *
+				 * This is a very specific use case of an empty catch block and is used
+				 * outside of the scope of the API therefore justifiable, and should be used cautiously
+				 * elsewhere.
+				 */
 			}
 		}
 	}
 };
 
 const checkTests = (...args: boolean[]) => {
-    const testStatus = args.every((test) => test);
+	const testStatus = args.every((test) => test);
 
-    if (testStatus) {
-        console.log('[PASSED] All Tests Passed!');
-        process.exit(0);
-    } else {
-        console.log('[FAILED] Some Tests Failed!');
-        process.exit(1);
-    }
-}
+	if (testStatus) {
+		console.log('[PASSED] All Tests Passed!');
+		process.exit(0);
+	} else {
+		console.log('[FAILED] Some Tests Failed!');
+		process.exit(1);
+	}
+};
 
 const main = async (args: Namespace): Promise<void> => {
+	const { Failed } = StatusCode;
+
 	// Build sidecar
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess(defaultSasBuildOpts);
 
 	// When sidecar fails to build, we kill all process's and exit
-	if (sidecarBuild === '1') {
+	if (sidecarBuild === Failed) {
 		console.error('Sidecar failed to build, exiting...');
 		// Kill all processes
 		killAll();
@@ -155,7 +157,7 @@ const main = async (args: Namespace): Promise<void> => {
 	if (args.chain) {
 		const selectedChain = await launchChainTest(args.chain);
 
-        checkTests(selectedChain)
+		checkTests(selectedChain);
 	} else {
 		// Test the e2e tests against polkadot
 		const polkadotTest = await launchChainTest('polkadot');
@@ -166,7 +168,7 @@ const main = async (args: Namespace): Promise<void> => {
 		// Test the e2e tests against westend
 		const westendTest = await launchChainTest('westend');
 
-        checkTests(polkadotTest, kusamaTest, westendTest);
+		checkTests(polkadotTest, kusamaTest, westendTest);
 	}
 };
 
