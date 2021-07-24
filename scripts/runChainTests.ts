@@ -192,4 +192,4 @@ process.on('SIGINT', function () {
 	process.exit();
 });
 
-main(args);
+main(args).finally(() => process.exit());
