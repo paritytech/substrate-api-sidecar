@@ -132,8 +132,10 @@ const main = async (args: Namespace): Promise<void> => {
 		const selectedChain = await launchChainTest(args.chain);
 
 		if (selectedChain) {
+            console.log('[PASSED] All Tests Passed!');
 			process.exit(0);
 		} else {
+            console.log('[FAILED] Some Tests Failed!');
 			process.exit(1);
 		}
 	} else {
