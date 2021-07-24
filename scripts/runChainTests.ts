@@ -13,8 +13,14 @@ const setWsUrl = (url: string): void => {
 };
 
 /**
- * Launch any given process. It accepts a resolver as a option, which will act
- * as the success case when searching through the stdout.
+ * Launch any given process. It accepts an options object.
+ * 
+ * {
+ *   proc => the name of the process to be saved in our cache
+ *   resolver => string: If the stdout contains the resolver it with resolve the process
+ *   resolverStartupErr => string: If the stdout contains the resolver it with resolve the process
+ *   args => an array of args to be attached to the `yarn` command. 
+ * }
  *
  * @param IProcOpts
  */
@@ -58,6 +64,12 @@ const launchProcess = async ({
 	});
 };
 
+/**
+ * Launches Sidecar, and if successful it will launch the jest runner. This operation
+ * handles killing all the processes after the jest runner is done.
+ * 
+ * @param chain The chain in which to target the e2e tests too. 
+ */
 const launchChainTest = async (chain: string): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
 	const { Success } = StatusCode;
@@ -114,6 +126,18 @@ const killAll = () => {
 	}
 };
 
+const checkTests = (...args: boolean[]) => {
+    const testStatus = args.every((test) => test);
+
+    if (testStatus) {
+        console.log('[PASSED] All Tests Passed!');
+        process.exit(0);
+    } else {
+        console.log('[FAILED] Some Tests Failed!');
+        process.exit(1);
+    }
+}
+
 const main = async (args: Namespace): Promise<void> => {
 	// Build sidecar
 	console.log('Building Sidecar...');
@@ -131,13 +155,7 @@ const main = async (args: Namespace): Promise<void> => {
 	if (args.chain) {
 		const selectedChain = await launchChainTest(args.chain);
 
-		if (selectedChain) {
-            console.log('[PASSED] All Tests Passed!');
-			process.exit(0);
-		} else {
-            console.log('[FAILED] Some Tests Failed!');
-			process.exit(1);
-		}
+        checkTests(selectedChain)
 	} else {
 		// Test the e2e tests against polkadot
 		const polkadotTest = await launchChainTest('polkadot');
@@ -148,13 +166,7 @@ const main = async (args: Namespace): Promise<void> => {
 		// Test the e2e tests against westend
 		const westendTest = await launchChainTest('westend');
 
-		if (polkadotTest && kusamaTest && westendTest) {
-			console.log('[PASSED] All Tests Passed!');
-			process.exit(0);
-		} else {
-			console.log('[FAILED] Some Tests Failed!');
-			process.exit(1);
-		}
+        checkTests(polkadotTest, kusamaTest, westendTest);
 	}
 };
 
