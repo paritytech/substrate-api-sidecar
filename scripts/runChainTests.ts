@@ -98,7 +98,17 @@ const killAll = () => {
 				process.kill(-procs[key].pid, 'SIGTERM');
 				process.kill(-procs[key].pid, 'SIGKILL');
 			} catch (e) {
-				/* continue regardless */
+                /**
+                 * The error we are catching here silently, is when `-procs[key].pid` takes
+                 * the range of all pid's inside of the subprocess group created with
+                 * `spawn`, and one of the process's is either already closed or doesn't exist anymore.
+                 * 
+                 * ex: `Error: kill ESRCH`
+                 * 
+                 * This is a very specific use case of an empty catch block and is used
+                 * outside of the scope of the API therefore justifiable, and should be used cautiously
+                 * elsewhere. 
+                 */
 			}
 		}
 	}
@@ -166,6 +176,4 @@ process.on('SIGINT', function () {
 	process.exit();
 });
 
-main(args).finally(() => {
-	killAll();
-});
+main(args);
