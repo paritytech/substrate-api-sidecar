@@ -369,14 +369,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /blocks/{blockId}/summary:
+  /blocks/{blockId}/header:
     get:
       tags:
       - blocks
       summary: Get a block's header by its height or hash.
       description: Returns a single block's header. BlockId can either be a block hash or a
         block height.
-      operationId: getBlockByIdSummary
+      operationId: getBlockHeaderById
       parameters:
       - name: blockId
         in: path
@@ -391,7 +391,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockSummary'
+                $ref: '#/components/schemas/BlockHeader'
         "400":
           description: invalid Block identifier supplied
           content:
@@ -490,13 +490,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Block'
-  /blocks/head/summary:
+  /blocks/head/header:
     get:
       tags:
       - blocks
       summary: Get information about the header of the most recent finalized block. 
       description: Returns the most recently finalized block's header.
-      operationId: getHeadBlockSummary
+      operationId: getLatestBlockHeader
       parameters:
       - name: finalized
         in: query
@@ -513,7 +513,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockSummary'
+                $ref: '#/components/schemas/BlockHeader'
         "400":
           description: invalid Block identifier supplied
           content:
@@ -2665,7 +2665,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
-    BlockSummary:
+    BlockHeader:
       type: object
       properties:
         parentHash:
