@@ -23,10 +23,9 @@ import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import packageJSON from '../package.json';
-import { version } from '../package.json';
 import App from './App';
 import { getControllersForSpec } from './chains-config';
-import { parseArgs } from './Cli';
+import { parseArgs } from './parseArgs';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
@@ -155,7 +154,7 @@ process.on('SIGINT', function () {
 const args = parseArgs();
 
 if (args.version) {
-	console.log(`@substrate/api-sidecar v${version}`);
+	console.log(`@substrate/api-sidecar v${packageJSON.version}`);
 	process.exit(0);
 } else {
 	main().catch(console.log);
