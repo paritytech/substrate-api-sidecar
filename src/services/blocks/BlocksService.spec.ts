@@ -535,7 +535,7 @@ describe('BlocksService', () => {
 			},
 		};
 		it('Returns the correct summary for the latest block', async () => {
-			const blockSummary = await blocksService.fetchBlockSummary(
+			const blockSummary = await blocksService.fetchBlockHeader(
 				blockHash789629
 			);
 
@@ -543,7 +543,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the correct summary for the given block number', async () => {
-			const blockSummary = await blocksService.fetchBlockSummary();
+			const blockSummary = await blocksService.fetchBlockHeader();
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
 		});
