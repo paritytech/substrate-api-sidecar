@@ -168,7 +168,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
-	 * Return the Header of a block when a block number is queried
+	 * Return the Header of the identified block.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
