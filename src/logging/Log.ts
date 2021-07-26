@@ -1,5 +1,5 @@
 import { createLogger, Logger } from 'winston';
-import winston from 'winston/lib/winston/transports';
+import { ConsoleTransportInstance } from 'winston/lib/winston/transports';
 
 import { consoleTransport } from './transports';
 
@@ -7,7 +7,7 @@ import { consoleTransport } from './transports';
  * Access a singleton winston.Logger that will be intialized on first use.
  */
 export class Log {
-	private static _transports: winston.ConsoleTransportInstance[] | undefined;
+	private static _transports: ConsoleTransportInstance[] | undefined;
 	private static _logger: Logger | undefined;
 	private static create(): Logger {
 		if (this._logger) {
