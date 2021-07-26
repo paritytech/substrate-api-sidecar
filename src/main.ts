@@ -25,10 +25,10 @@ import { json } from 'express';
 import packageJSON from '../package.json';
 import App from './App';
 import { getControllersForSpec } from './chains-config';
-import { parseArgs } from './parseArgs';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
+import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
 const { logger } = Log;
