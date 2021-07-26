@@ -10,14 +10,13 @@ import {
 	timeStamp,
 } from '../transformers';
 
-const {
-	config: { LOG },
-} = SidecarConfig;
-
 /**
  * Console transport for winston logger.
  */
 export function consoleTransport(): transports.ConsoleTransportInstance {
+	const {
+		config: { LOG },
+	} = SidecarConfig;
 	/**
 	 * A simple printing format for how `TransformableInfo` shows up.
 	 */

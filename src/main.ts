@@ -31,10 +31,9 @@ import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
-const { logger } = Log;
-const { config } = SidecarConfig;
-
 async function main() {
+	const { config } = SidecarConfig;
+	const { logger } = Log;
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
@@ -98,6 +97,8 @@ async function main() {
  * @param implName implementation name of the node Sidecar is connected to
  */
 function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
+	const { logger } = Log;
+	const { config } = SidecarConfig;
 	/**
 	 * Best effort list of known public nodes that do not encourage high traffic
 	 * sidecar installations connecting to them for non - testing / development purposes.
