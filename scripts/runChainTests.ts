@@ -17,8 +17,8 @@ const setWsUrl = (url: string): void => {
  *
  * {
  *   proc => the name of the process to be saved in our cache
- *   resolver => string: If the stdout contains the resolver it will resolve the process
- *   resolverStartupErr => string: If the stderr contains the resolver it will resolve the process
+ *   resolver => If the stdout contains the resolver it will resolve the process
+ *   resolverStartupErr => If the stderr contains the resolver it will resolve the process
  *   args => an array of args to be attached to the `yarn` command.
  * }
  *
