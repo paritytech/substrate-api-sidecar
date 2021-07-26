@@ -289,7 +289,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param hash When no hash is inputted the header of the chain will be queried.
 	 */
-	async fetchBlockSummary(hash?: BlockHash): Promise<Header> {
+	async fetchBlockHeader(hash?: BlockHash): Promise<Header> {
 		const { api } = this;
 
 		const header = hash

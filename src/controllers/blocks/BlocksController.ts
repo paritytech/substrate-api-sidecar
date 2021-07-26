@@ -96,8 +96,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.safeMountAsyncGetHandlers([
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
-			['/head/summary', this.getLatestBlockSummary],
-			['/:number/summary', this.getBlockByIdSummary],
+			['/head/header', this.getLatestBlockHeader],
+			['/:number/header', this.getBlockHeaderById],
 		]);
 	}
 
@@ -173,7 +173,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockByIdSummary: RequestHandler<INumberParam> = async (
+	private getBlockHeaderById: RequestHandler<INumberParam> = async (
 		{ params: { number } },
 		res
 	): Promise<void> => {
@@ -181,7 +181,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlockSummary(hash)
+			await this.service.fetchBlockHeader(hash)
 		);
 	};
 
@@ -191,7 +191,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlockSummary: RequestHandler = async (
+	private getLatestBlockHeader: RequestHandler = async (
 		{ query: { finalized } },
 		res
 	): Promise<void> => {
@@ -203,7 +203,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlockSummary(hash)
+			await this.service.fetchBlockHeader(hash)
 		);
 	};
 
