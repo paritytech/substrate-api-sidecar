@@ -195,9 +195,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		{ query: { finalized } },
 		res
 	): Promise<void> => {
-		const paramFinalized = finalized === 'true' ? true : false;
+		const paramFinalized = finalized !== 'false';
 
-		const hash = !paramFinalized
+		const hash = paramFinalized
 			? await this.api.rpc.chain.getFinalizedHead()
 			: undefined;
 
