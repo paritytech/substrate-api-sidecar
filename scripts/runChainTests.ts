@@ -192,4 +192,13 @@ process.on('SIGINT', function () {
 	process.exit();
 });
 
+/**
+ * Signal hangup terminal
+ */
+process.on('SIGHUP', function () {
+	console.log('Caught terminal termination');
+	killAll();
+	process.exit();
+});
+
 main(args).finally(() => process.exit());
