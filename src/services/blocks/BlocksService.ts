@@ -10,6 +10,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -281,6 +282,21 @@ export class BlocksService extends AbstractService {
 			onFinalize,
 			finalized,
 		};
+	}
+
+	/**
+	 * Return the header of a block
+	 *
+	 * @param hash When no hash is inputted the header of the chain will be queried.
+	 */
+	async fetchBlockHeader(hash?: BlockHash): Promise<Header> {
+		const { api } = this;
+
+		const header = hash
+			? await api.rpc.chain.getHeader(hash)
+			: await api.rpc.chain.getHeader();
+
+		return header;
 	}
 
 	/**

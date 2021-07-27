@@ -369,6 +369,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /blocks/{blockId}/header:
+    get:
+      tags:
+      - blocks
+      summary: Get a block's header by its height or hash.
+      description: Returns a single block's header. BlockId can either be a block hash or a
+        block height.
+      operationId: getBlockHeaderById
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockHeader'
+        "400":
+          description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks/{blockId}/extrinsics/{extrinsicIndex}:
     get:
       tags:
@@ -461,6 +490,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Block'
+  /blocks/head/header:
+    get:
+      tags:
+      - blocks
+      summary: Get information about the header of the most recent finalized block. 
+      description: Returns the most recently finalized block's header.
+      operationId: getLatestBlockHeader
+      parameters:
+      - name: finalized
+        in: query
+        description: Boolean representing whether or not to get the finalized head.
+          If it is not set the value defaults to true. When set to false it will attempt
+          to get the newest known block, which may not be finalized.
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockHeader'
+        "400":
+          description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /node/network:
     get:
       tags:
@@ -2606,6 +2665,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    BlockHeader:
+      type: object
+      properties:
+        parentHash:
+          type: string
+          description: The hash of the parent block.
+          format: hex
+        number:
+          type: string
+          description: The block's height.
+          format: unsignedInteger
+        stateRoot:
+          type: string
+          description: The state root after executing this block.
+          format: hex
+        extrinsicRoot:
+          type: string
+          description: The Merkle root of the extrinsics.
+          format: hex
+        digest:
+          type: object
+          properties: 
+            logs:
+              type: array
+              items:
+                $ref: '#/components/schemas/DigestItem'
+              description: Array of `DigestItem`s associated with the block.
   requestBodies:
     Transaction:
       content:
