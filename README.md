@@ -58,6 +58,8 @@ Run the service from any directory on your machine:
 substrate-api-sidecar
 ```
 
+To check your version you may append the `--version` flag to `substrate-api-sidecar`.
+
 ### Local installation
 
 Install the service locally:
