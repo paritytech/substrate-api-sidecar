@@ -75,7 +75,7 @@ export class Specs {
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
 			this._specs.getSpec(CONFIG.WS_URL, 'Websocket URL', {
-				default: 'wss://ws.sora2.soramitsu.co.jp',
+				default: 'ws://127.0.0.1:9944',
 				mandatory: true,
 				regexp: /^wss?:\/\/.*(:\d{4,5})?$/,
 			})
