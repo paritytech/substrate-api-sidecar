@@ -1,7 +1,7 @@
 import { ControllerConfig } from '../types/chains-config';
 
 /**
- * SORA configuration fro sidecar.
+ * SORA configuration for sidecar.
  */
 export const soraControllers: ControllerConfig = {
 	controllers: [
