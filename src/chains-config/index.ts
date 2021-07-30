@@ -13,9 +13,9 @@ import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
 import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
+import { soraControllers } from './soraControllers';
 import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
-import { soraControllers } from './soraControllers';
 
 const specToControllerMap = {
 	westend: westendControllers,
