@@ -6,7 +6,8 @@ import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
-import { dockTestnetControllers } from './dockTestnetControllers';
+import { dockPoSMainnetControllers } from './dockPoSMainnetControllers';
+import { dockTestnetControllers } from './dockPoSTestnetControllers';
 import { kiltControllers } from './kiltControllers';
 import { kulupuControllers } from './kulupuControllers';
 import { kusamaControllers } from './kusamaControllers';
@@ -14,6 +15,7 @@ import { mandalaControllers } from './mandalaControllers';
 import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
 import { soraControllers } from './soraControllers';
+import { statemineControllers } from './statemineControllers';
 import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
 
@@ -25,11 +27,12 @@ const specToControllerMap = {
 	kulupu: kulupuControllers,
 	kilt: kiltControllers,
 	mandala: mandalaControllers,
-	'dock-testnet': dockTestnetControllers,
 	'dock-main-runtime': dockMainnetControllers,
+	'dock-pos-main-runtime': dockPoSMainnetControllers,
+	'dock-pos-test-runtime': dockTestnetControllers,
+	statemine: statemineControllers,
 	statemint: statemintControllers,
-	statemine: statemintControllers,
-	westmine: statemintControllers,
+	westmine: statemineControllers,
 	westmint: statemintControllers,
 	sora: soraControllers,
 };

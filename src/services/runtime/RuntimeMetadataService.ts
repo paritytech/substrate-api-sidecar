@@ -1,4 +1,4 @@
-import { Metadata } from '@polkadot/metadata';
+import { Metadata } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';

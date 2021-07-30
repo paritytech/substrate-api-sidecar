@@ -1,5 +1,5 @@
-import { Metadata } from '@polkadot/metadata';
-import substrateMetadataRpc from '@polkadot/metadata/v11/static';
+import { Metadata } from '@polkadot/types/metadata';
+import substrateMetadataRpc from '@polkadot/types/metadata/v11/static';
 
 import { kusamaRegistry } from '../registries/kusamaRegistry';
 import {

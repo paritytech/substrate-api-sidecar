@@ -28,12 +28,12 @@ import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
+import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
-const { logger } = Log;
-const { config } = SidecarConfig;
-
 async function main() {
+	const { config } = SidecarConfig;
+	const { logger } = Log;
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
@@ -88,12 +88,6 @@ async function main() {
 	app.listen();
 }
 
-process.on('SIGINT', function () {
-	console.log('Caught interrupt signal, exiting...');
-	process.exit(0);
-});
-main().catch(console.log);
-
 /**
  * Prompt the user with some basic info about the node and the network they have
  * connected Sidecar to.
@@ -103,6 +97,8 @@ main().catch(console.log);
  * @param implName implementation name of the node Sidecar is connected to
  */
 function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
+	const { logger } = Log;
+	const { config } = SidecarConfig;
 	/**
 	 * Best effort list of known public nodes that do not encourage high traffic
 	 * sidecar installations connecting to them for non - testing / development purposes.
@@ -149,4 +145,18 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 			`Using unencrypted connection to a public node (${wsUrl}); All traffic is sent over the internet in cleartext.`
 		);
 	}
+}
+
+process.on('SIGINT', function () {
+	console.log('Caught interrupt signal, exiting...');
+	process.exit(0);
+});
+
+const args = parseArgs();
+
+if (args.version) {
+	console.log(`@substrate/api-sidecar v${packageJSON.version}`);
+	process.exit(0);
+} else {
+	main().catch(console.log);
 }

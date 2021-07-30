@@ -6,7 +6,11 @@ import {
 	MetadataConsts,
 	PerClassValue,
 } from '../../types/chains-config';
-import { dockMainnetDefinitions } from './dockConsts';
+import {
+	dockMainnetDefinitions,
+	dockPoSMainnetDefinitions,
+	dockPoSTestnetDefinitions,
+} from './dockConsts';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
@@ -77,6 +81,10 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(westendDefinitions);
 		case 'dock-main-runtime':
 			return generateBlockWeightStore(dockMainnetDefinitions);
+		case 'dock-pos-main-runtime':
+			return generateBlockWeightStore(dockPoSMainnetDefinitions);
+		case 'dock-pos-test-runtime':
+			return generateBlockWeightStore(dockPoSTestnetDefinitions);
 		default:
 			return {};
 	}

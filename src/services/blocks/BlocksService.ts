@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { expandMetadata } from '@polkadot/metadata/decorate';
+import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -10,6 +10,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Hash,
+	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -284,6 +285,21 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
+	 * Return the header of a block
+	 *
+	 * @param hash When no hash is inputted the header of the chain will be queried.
+	 */
+	async fetchBlockHeader(hash?: BlockHash): Promise<Header> {
+		const { api } = this;
+
+		const header = hash
+			? await api.rpc.chain.getHeader(hash)
+			: await api.rpc.chain.getHeader();
+
+		return header;
+	}
+
+	/**
 	 *
 	 * @param block Takes in a block which is the result of `BlocksService.fetchBlock`
 	 * @param extrinsicIndex Parameter passed into the request
@@ -351,7 +367,7 @@ export class BlocksService extends AbstractService {
 				// we set to false if !isSigned because unsigned never pays a fee
 				paysFee: isSigned ? null : false,
 				docs: extrinsicDocs
-					? this.sanitizeDocs(extrinsic.meta.documentation)
+					? this.sanitizeDocs(extrinsic.meta.docs)
 					: undefined,
 			};
 		});
@@ -384,9 +400,7 @@ export class BlocksService extends AbstractService {
 						method: event.method,
 					},
 					data: event.data,
-					docs: eventDocs
-						? this.sanitizeDocs(event.data.meta.documentation)
-						: undefined,
+					docs: eventDocs ? this.sanitizeDocs(event.data.meta.docs) : undefined,
 				};
 
 				if (phase.isApplyExtrinsic) {

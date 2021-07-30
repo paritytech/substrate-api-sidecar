@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
-    "rootDirs": ["./src", "./e2e-tests"],
+    "rootDirs": ["./src", "./e2e-tests", "./scripts"],
     "suppressImplicitAnyIndexErrors": true,
     "resolveJsonModule": true,
   },

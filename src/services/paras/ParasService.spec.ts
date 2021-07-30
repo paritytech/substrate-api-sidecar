@@ -1,11 +1,14 @@
 import BN from 'bn.js';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	auctionsInfoAt,
+	blockHash20000,
 	blockHash789629,
 	emptyVectorLeases,
 	mockApi,
+	mockBlock789629,
 	noneAuctionsInfoAt,
 	slotsLeasesAt,
 } from '../test-helpers/mock';
@@ -170,7 +173,7 @@ describe('ParasService', () => {
 
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return the correct data during an ongoing auction', async () => {
-			const leasePeriodIndex = new BN(1000);
+			const leasePeriodIndex = new BN(39);
 			const leaseIndexArray =
 				parasService['enumerateLeaseSets'](leasePeriodIndex);
 			// Remove the first two entries with splice because we have them in the expectedResponse.
@@ -183,11 +186,11 @@ describe('ParasService', () => {
 
 			const expectedResponse = {
 				at: expectedAt,
-				beginEnd: '39',
-				finishEnd: '20039',
-				phase: 'ending',
+				beginEnd: '1000',
+				finishEnd: '21000',
+				phase: 'vrfDelay',
 				auctionIndex: '4',
-				leasePeriods: ['1000', '1001', '1002', '1003'],
+				leasePeriods: ['39', '40', '41', '42'],
 				winning: [
 					{
 						bid: {
@@ -195,7 +198,7 @@ describe('ParasService', () => {
 							amount: '1000000',
 							paraId: '199',
 						},
-						leaseSet: ['1000'],
+						leaseSet: ['39'],
 					},
 					{
 						bid: {
@@ -203,7 +206,7 @@ describe('ParasService', () => {
 							amount: '2000000',
 							paraId: '200',
 						},
-						leaseSet: ['1000', '1001'],
+						leaseSet: ['39', '40'],
 					},
 					...additionalWinningOptions,
 				],
@@ -212,6 +215,39 @@ describe('ParasService', () => {
 			const response = await parasService.auctionsCurrent(blockHash789629);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
+		});
+
+		/**
+		 * The goal of this test is to manipulate the number of the finalized block so that it is less than
+		 * the expected `finishHead`, but higher the `beginEnd` which would denote we are in the `endPeriod` phase
+		 * of the current auction.
+		 */
+		it('Should return the correct `ending` phase', async () => {
+			const overrideHeader = {
+				parentHash:
+					'0x3d489d71f8fd2e15259df5059a1497436e6b73497500a303b1a705993e25cb27',
+				number: 20000,
+				stateRoot:
+					'0xa0089595e48850a8a00081dd987a4735d0e8f94ac98af89030521f23f6cb8e31',
+				extrinsicsRoot:
+					'0x2d5d3fdb96b487d480b08b64ed69a65433c1713ae3579dd23704cb790aa3b2ae',
+				digest: {},
+			};
+			const header = polkadotRegistry.createType('Header', overrideHeader);
+
+			// Override the mockApi
+			(mockApi.rpc.chain.getHeader as unknown) = () =>
+				Promise.resolve().then(() => header);
+
+			const expectedResponse = 'endPeriod';
+
+			const response = await parasService.auctionsCurrent(blockHash20000);
+
+			expect(response.phase).toBe(expectedResponse);
+
+			// Set the MockApi back to its original self
+			(mockApi.rpc.chain.getHeader as unknown) = () =>
+				Promise.resolve().then(() => mockBlock789629.header);
 		});
 
 		it('Should return the correct null values when `auctionInfo` is `None`', async () => {
