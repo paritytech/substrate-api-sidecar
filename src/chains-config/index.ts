@@ -14,6 +14,7 @@ import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
 import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
+import { soraControllers } from './soraControllers';
 import { statemineControllers } from './statemineControllers';
 import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
@@ -33,6 +34,7 @@ const specToControllerMap = {
 	statemint: statemintControllers,
 	westmine: statemineControllers,
 	westmint: statemintControllers,
+	sora: soraControllers,
 };
 
 /**
