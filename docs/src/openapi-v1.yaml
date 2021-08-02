@@ -1639,6 +1639,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    ChainType:
+      type: object
+      description: Type of the chain. It will return one of the following enum variants as a key. Live, Development, Local, or Custom. Each variant will have a value as null except when the ChainType is Custom, it will return a string. 
+      properties:
+        live: 
+          type: string
+          nullable: true
+          default: null
+        development:
+          type: string
+          nullable: true
+          default: null
+        local: 
+          type: string
+          nullable: true
+          default: null
+        custom:
+          type: string
+      example: "{\"live\": null}"
     DigestItem:
       type: object
       properties:
@@ -2259,12 +2278,7 @@ components:
           description: The version of the authorship interface. An authoring node
             will not attempt to author blocks unless this is equal to its native runtime.
         chainType:
-          type: string
-          description: Type of the chain.
-          enum:
-          - Development
-          - Local
-          - Live
+          $ref: '#/components/schemas/ChainType'
         implVersion:
           type: string
           description: Version of the implementation specification. Non-consensus-breaking
