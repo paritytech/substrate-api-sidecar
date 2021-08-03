@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 import { getBlockWeight } from './metadata-consts';
 
 /**
@@ -31,5 +32,6 @@ export const kusamaControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1062,
 		blockWeightStore: getBlockWeight('kusama'),
+		blockStore: initLRUCache(),
 	},
 };

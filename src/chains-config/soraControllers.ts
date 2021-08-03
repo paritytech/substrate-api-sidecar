@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 
 /**
  * SORA configuration for sidecar.
@@ -29,5 +30,6 @@ export const soraControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockWeightStore: {},
+		blockStore: initLRUCache(),
 	},
 };

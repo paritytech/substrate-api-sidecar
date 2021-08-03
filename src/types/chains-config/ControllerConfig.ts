@@ -1,3 +1,5 @@
+import LRU from 'lru-cache';
+
 import { controllers } from '../../controllers';
 import { IOption } from '../util';
 import { BlockWeightStore } from './MetadataConsts';
@@ -27,5 +29,6 @@ export interface ControllerConfig {
 		finalizes: boolean;
 		minCalcFeeRuntime: IOption<number>;
 		blockWeightStore: BlockWeightStore;
+		blockStore: LRU<unknown, unknown>;
 	};
 }

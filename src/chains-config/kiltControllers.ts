@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 
 /**
  * Controllers for KILT's mashnet.
@@ -25,5 +26,6 @@ export const kiltControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockWeightStore: {},
+		blockStore: initLRUCache(),
 	},
 };

@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 
 /**
  * Statemine configuration for Sidecar.
@@ -24,5 +25,6 @@ export const statemineControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
 		blockWeightStore: {},
+		blockStore: initLRUCache(),
 	},
 };

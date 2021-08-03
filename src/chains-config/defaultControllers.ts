@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 
 /**
  * Controllers that Sidecar will always default to. This will always be
@@ -32,5 +33,6 @@ export const defaultControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockWeightStore: {},
+		blockStore: initLRUCache(),
 	},
 };
