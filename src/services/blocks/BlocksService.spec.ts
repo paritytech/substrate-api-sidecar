@@ -10,6 +10,7 @@ import {
 	SignedBlock,
 } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
+import LRU from 'lru-cache';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
@@ -23,7 +24,7 @@ import {
 	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
-import { IExtrinsic } from '../../types/responses/';
+import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
 	mockApi,
@@ -53,7 +54,7 @@ interface ResponseObj {
 /**
  * BlockService mock
  */
-const blocksService = new BlocksService(mockApi, 0);
+const blocksService = new BlocksService(mockApi, 0, {} as LRU<string, IBlock>);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
@@ -133,7 +134,11 @@ describe('BlocksService', () => {
 			mockApi.consts.transactionPayment.transactionByteFee =
 				undefined as unknown as BalanceOf & AugmentedConst<'promise'>;
 
-			const configuredBlocksService = new BlocksService(mockApi, 0);
+			const configuredBlocksService = new BlocksService(
+				mockApi,
+				0,
+				{} as LRU<string, IBlock>
+			);
 
 			// fetchBlock options
 			const options = {
@@ -191,7 +196,11 @@ describe('BlocksService', () => {
 
 		it('Should store a new runtime specific extrinsicBaseWeight when it doesnt exist', async () => {
 			// Instantiate a blocks service where we explicitly know the block store is empty.
-			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0);
+			const blocksServiceEmptyBlockStore = new BlocksService(
+				mockApi,
+				0,
+				{} as LRU<string, IBlock>
+			);
 
 			(mockApi.runtimeVersion.specVersion as unknown) =
 				polkadotRegistry.createType('u32', 20);
