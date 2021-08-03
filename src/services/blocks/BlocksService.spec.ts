@@ -24,7 +24,7 @@ import {
 	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
-import { IBlock, IExtrinsic } from '../../types/responses/';
+import { IExtrinsic } from '../../types/responses/';
 import {
 	blockHash789629,
 	mockApi,
@@ -54,7 +54,7 @@ interface ResponseObj {
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -72,7 +72,7 @@ describe('BlocksService', () => {
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			// Create a block with undefined as the first extrinisic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType(
 				'Block',
@@ -113,7 +113,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -132,11 +132,7 @@ describe('BlocksService', () => {
 			mockApi.consts.transactionPayment.transactionByteFee =
 				undefined as unknown as BalanceOf & AugmentedConst<'promise'>;
 
-			const configuredBlocksService = new BlocksService(
-				mockApi,
-				0,
-				new LRU() as LRU<string, IBlock>
-			);
+			const configuredBlocksService = new BlocksService(mockApi, 0, new LRU());
 
 			// fetchBlock options
 			const options = {
@@ -167,7 +163,7 @@ describe('BlocksService', () => {
 
 	describe('createCalcFee & calc_fee', () => {
 		it('calculates partialFee for proxy.proxy in polkadot block 789629', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
@@ -181,7 +177,7 @@ describe('BlocksService', () => {
 		});
 
 		it('calculates partialFee for utility.batch in polkadot block 789629', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			// tx hash: 0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
@@ -199,7 +195,7 @@ describe('BlocksService', () => {
 			const blocksServiceEmptyBlockStore = new BlocksService(
 				mockApi,
 				0,
-				new LRU() as LRU<string, IBlock>
+				new LRU()
 			);
 
 			(mockApi.runtimeVersion.specVersion as unknown) =
@@ -229,7 +225,7 @@ describe('BlocksService', () => {
 		);
 
 		it('Should return correct `extrinsicBaseWeight`', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
 			expect(
@@ -238,7 +234,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Should return correct `blockWeights`', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 
 			const changeMetadataToV29 = () =>
 				Promise.resolve().then(() => polkadotMetadataV29);
@@ -287,7 +283,7 @@ describe('BlocksService', () => {
 			},
 		};
 
-		const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+		const blocksService = new BlocksService(mockApi, 0, new LRU());
 
 		it('does not handle an empty object', () =>
 			expect(() =>
@@ -434,7 +430,7 @@ describe('BlocksService', () => {
 		);
 
 		it('Returns false when queried blockId is not canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const getHeader = (_hash: Hash) =>
 				Promise.resolve().then(() => mockForkedBlock789629.header);
 
@@ -467,7 +463,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			expect(
 				await blocksService['isFinalizedBlock'](
 					mockApi,
@@ -491,7 +487,7 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			/**
@@ -506,7 +502,7 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(() => {
@@ -553,7 +549,7 @@ describe('BlocksService', () => {
 			},
 		};
 		it('Returns the correct summary for the latest block', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const blockSummary = await blocksService.fetchBlockHeader(
 				blockHash789629
 			);
@@ -562,7 +558,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the correct summary for the given block number', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU() as LRU<string, IBlock>);
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			const blockSummary = await blocksService.fetchBlockHeader();
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
