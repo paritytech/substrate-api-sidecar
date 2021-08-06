@@ -591,7 +591,6 @@ describe('BlocksService', () => {
 	});
 
 	describe('Block LRUcache', () => {
-
 		// fetchBlock options
 		const options = {
 			eventDocs: true,
@@ -605,7 +604,7 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			await blocksService.fetchBlock(blockHash789629, options)
+			await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(cache.length).toBe(1);
 		});
