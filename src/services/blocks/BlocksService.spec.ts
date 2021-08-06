@@ -26,6 +26,8 @@ import {
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
+	blockHash20000,
+	blockHash100000,
 	blockHash789629,
 	mockApi,
 	mockBlock789629,
@@ -53,7 +55,7 @@ interface ResponseObj {
 
 // LRU cache used to cache blocks
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const cache = new LRU() as LRU<string, IBlock>;
+const cache = new LRU({ max: 2 }) as LRU<string, IBlock>;
 
 // Block Service
 const blocksService = new BlocksService(mockApi, 0, cache);
@@ -600,13 +602,26 @@ describe('BlocksService', () => {
 			omitFinalizedTag: false,
 		};
 
-		it('Should correctly store the most recent queried block', async () => {
+		it('Should correctly store the most recent queried blocks', async () => {
 			// Reset LRU cache
 			cache.reset();
 
 			await blocksService.fetchBlock(blockHash789629, options);
+			await blocksService.fetchBlock(blockHash20000, options);
 
-			expect(cache.length).toBe(1);
+			expect(cache.length).toBe(2);
+		});
+
+		it('Should have a max of 2 blocks within the LRUcache, and should save the most recent and remove the oldest block', async () => {
+			// Reset LRU cache
+			cache.reset();
+
+			await blocksService.fetchBlock(blockHash789629, options);
+			await blocksService.fetchBlock(blockHash20000, options);
+			await blocksService.fetchBlock(blockHash100000, options);
+
+			expect(cache.get(blockHash789629.toString())).toBe(undefined);
+			expect(cache.length).toBe(2);
 		});
 	});
 });
