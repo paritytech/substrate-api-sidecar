@@ -91,7 +91,7 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
-		// Before we making any api calls check the cache if the queried block exists
+		// Before making any api calls check the cache if the queried block exists
 		const isBlockCached = this.blockStore.get(hash.toString());
 
 		if (isBlockCached) {
