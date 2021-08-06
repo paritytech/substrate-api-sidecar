@@ -521,7 +521,9 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU());
+			// Reset LRU cache
+			cache.reset();
+
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(() => {
@@ -585,6 +587,27 @@ describe('BlocksService', () => {
 			const blockSummary = await blocksService.fetchBlockHeader();
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
+		});
+	});
+
+	describe('Block LRUcache', () => {
+
+		// fetchBlock options
+		const options = {
+			eventDocs: true,
+			extrinsicDocs: true,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+		};
+
+		it('Should correctly store the most recent queried block', async () => {
+			// Reset LRU cache
+			cache.reset();
+
+			await blocksService.fetchBlock(blockHash789629, options)
+
+			expect(cache.length).toBe(1);
 		});
 	});
 });
