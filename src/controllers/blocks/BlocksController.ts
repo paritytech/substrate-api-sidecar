@@ -114,9 +114,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
-		const paramFinalized = finalized === 'true' ? true : false;
 		const { hash, queryFinalizedHead, omitFinalizedTag } =
-			await this.parseFinalizationOpts(this.options.finalizes, paramFinalized);
+			await this.parseFinalizationOpts(this.options.finalizes, finalized as string);
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -215,7 +214,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 */
 	private parseFinalizationOpts = async (
 		optFinalizes: boolean,
-		paramFinalized: boolean
+		paramFinalized: string
 	): Promise<IFinalizationOpts> => {
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!optFinalizes) {
@@ -223,7 +222,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag = true;
 			queryFinalizedHead = false;
 			hash = (await this.api.rpc.chain.getHeader()).hash;
-		} else if (!paramFinalized) {
+		} else if (paramFinalized === 'false') {
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
 			hash = (await this.api.rpc.chain.getHeader()).hash;
