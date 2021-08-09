@@ -115,8 +115,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			hash = (await this.api.rpc.chain.getHeader()).hash;
 		} else if (finalized === 'false') {
 			// We query the finalized head to know where the latest finalized block
-			// is. It is a way to confirm whether the queried block is less than or greater
-			// than the finalized head.
+			// is. It is a way to confirm whether the queried block is less than or
+			// equal to the finalized head.
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
 			hash = (await this.api.rpc.chain.getHeader()).hash;
