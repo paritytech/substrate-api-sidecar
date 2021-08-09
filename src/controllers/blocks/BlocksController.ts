@@ -115,7 +115,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
 		const { hash, queryFinalizedHead, omitFinalizedTag } =
-			await this.parseFinalizationOpts(this.options.finalizes, finalized as string);
+			await this.parseFinalizationOpts(
+				this.options.finalizes,
+				finalized as string
+			);
 
 		const options = {
 			eventDocs: eventDocsArg,
