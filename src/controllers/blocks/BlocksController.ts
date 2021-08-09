@@ -1,5 +1,4 @@
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 
@@ -11,12 +10,6 @@ interface ControllerOptions {
 	finalizes: boolean;
 	minCalcFeeRuntime: null | number;
 	blockWeightStore: {};
-}
-
-interface IFinalizationOpts {
-	hash: BlockHash;
-	omitFinalizedTag: boolean;
-	queryFinalizedHead: boolean;
 }
 
 /**
@@ -114,9 +107,24 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
-		const paramFinalized = finalized === 'true' ? true : false;
-		const { hash, queryFinalizedHead, omitFinalizedTag } =
-			await this.parseFinalizationOpts(this.options.finalizes, paramFinalized);
+		let hash, queryFinalizedHead, omitFinalizedTag;
+		if (!this.options.finalizes) {
+			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
+			omitFinalizedTag = true;
+			queryFinalizedHead = false;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else if (finalized === 'false') {
+			// We query the finalized head to know where the latest finalized block
+			// is. It is a way to confirm whether the queried block is less than or
+			// equal to the finalized head.
+			omitFinalizedTag = false;
+			queryFinalizedHead = true;
+			hash = (await this.api.rpc.chain.getHeader()).hash;
+		} else {
+			omitFinalizedTag = false;
+			queryFinalizedHead = false;
+			hash = await this.api.rpc.chain.getFinalizedHead();
+		}
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -205,38 +213,5 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			res,
 			await this.service.fetchBlockHeader(hash)
 		);
-	};
-
-	/**
-	 * This also returns the hash for the block to query.
-	 *
-	 * @param optFinalizes
-	 * @param paramFinalized
-	 */
-	private parseFinalizationOpts = async (
-		optFinalizes: boolean,
-		paramFinalized: boolean
-	): Promise<IFinalizationOpts> => {
-		let hash, queryFinalizedHead, omitFinalizedTag;
-		if (!optFinalizes) {
-			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
-			omitFinalizedTag = true;
-			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
-		} else if (!paramFinalized) {
-			omitFinalizedTag = false;
-			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
-		} else {
-			omitFinalizedTag = false;
-			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
-		}
-
-		return {
-			hash,
-			omitFinalizedTag,
-			queryFinalizedHead,
-		};
 	};
 }
