@@ -357,9 +357,26 @@ describe('BlocksService', () => {
 		});
 
 		it('handles a batch transfer correctly', () => {
-			const batch = createCall('utility', 'batch', {
-				calls: [],
+			const proxy = createCall('proxy', 'proxy', {
+				forceProxyType: 'Any',
+				call: transfer,
 			});
+
+			const batch = createCall('utility', 'batch', {
+				calls: [proxy, proxy],
+			});
+
+			const proxyCall = {
+				method: {
+					pallet: 'proxy',
+					method: 'proxy',
+				},
+				args: {
+					real: '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
+					force_proxy_type: 'Any',
+					call: transferOutput,
+				},
+			};
 
 			expect(
 				JSON.stringify(
@@ -372,7 +389,7 @@ describe('BlocksService', () => {
 						method: 'batch',
 					},
 					args: {
-						calls: [],
+						calls: [proxyCall, proxyCall],
 					},
 				})
 			);
