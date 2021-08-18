@@ -356,39 +356,10 @@ describe('BlocksService', () => {
 			);
 		});
 
-		it('handles a batch sudo proxy transfer', () => {
-			const proxy = createCall('proxy', 'proxy', {
-				forceProxyType: 'Any',
-				call: transfer,
-			});
-
-			const sudo = createCall('sudo', 'sudo', {
-				call: proxy,
-			});
-
+		it('handles a batch transfer correctly', () => {
 			const batch = createCall('utility', 'batch', {
-				calls: [sudo, sudo, sudo],
+				calls: [],
 			});
-
-			const sudoOutput = {
-				method: {
-					pallet: 'sudo',
-					method: 'sudo',
-				},
-				args: {
-					call: {
-						method: {
-							pallet: 'proxy',
-							method: 'proxy',
-						},
-						args: {
-							real: '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
-							force_proxy_type: 'Any',
-							call: transferOutput,
-						},
-					},
-				},
-			};
 
 			expect(
 				JSON.stringify(
@@ -401,7 +372,7 @@ describe('BlocksService', () => {
 						method: 'batch',
 					},
 					args: {
-						calls: [sudoOutput, sudoOutput, sudoOutput],
+						calls: [],
 					},
 				})
 			);

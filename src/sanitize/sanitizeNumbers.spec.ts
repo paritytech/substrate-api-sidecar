@@ -49,7 +49,7 @@ import {
 	MIN_I64,
 	MIN_I128,
 } from '../test-helpers/constants';
-import { kusamaRegistry } from '../test-helpers/registries';
+import { kusamaRegistry, polkadotRegistry } from '../test-helpers/registries';
 import {
 	PRE_SANITIZED_BALANCE_LOCK,
 	PRE_SANITIZED_OPTION_VESTING_INFO,
@@ -863,25 +863,26 @@ describe('sanitizeNumbers', () => {
 		it('handles Call', () => {
 			const c = new GenericCall(kusamaRegistry, {
 				args: ['5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw', 100000],
-				callIndex: [6, 0], // balances.transfer
+				callIndex: [4, 0], // balances.transfer
 			});
 			expect(sanitizeNumbers(c)).toStrictEqual({
 				args: {
 					dest: '5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
 					value: '100000',
 				},
-				callIndex: '0x0600',
+				callIndex: '0x0400',
 			});
 		});
 
 		it('handles Event', () => {
 			const event = kusamaRegistry.createType(
 				'Event',
-				new Uint8Array([6, 1, 1, 1])
+				new Uint8Array([6, 0, 0])
 			);
+
 			expect(sanitizeNumbers(event)).toStrictEqual({
-				data: ['257', '0', []],
-				index: '0x0601',
+				data: [[]],
+				index: '0x0600',
 			});
 		});
 
@@ -914,12 +915,12 @@ describe('sanitizeNumbers', () => {
 		});
 
 		it('handles Extrinsic', () => {
-			const extrinsic = kusamaRegistry.createType(
+			const extrinsic = polkadotRegistry.createType(
 				'Extrinsic',
 				'0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a4830'
 			);
 			expect(sanitizeNumbers(extrinsic)).toBe(
-				'0xb10184d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf0415'
+				'0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0182630bcec823e017e7ae576feda0dae3bf76f74049f3b8f72884dcb41169154bc7d179d47b50453f4f8865a5f3030c1e78ed8eff624765d0ff5eb0136a46538e1502000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a4830'
 			);
 		});
 

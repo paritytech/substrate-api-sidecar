@@ -4,7 +4,6 @@ import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
 	Codec,
-	CodecArg,
 	Constructor,
 	InterfaceTypes,
 	Registry,
@@ -15,8 +14,8 @@ import { Observable } from '@polkadot/x-rxjs';
  * Type to fulfill StorageEntryBase regarding storage keys
  */
 type GenericStorageEntryFunction = (
-	arg1?: CodecArg,
-	arg2?: CodecArg
+	arg1?: unknown,
+	arg2?: unknown
 ) => Observable<Codec>;
 
 /**
