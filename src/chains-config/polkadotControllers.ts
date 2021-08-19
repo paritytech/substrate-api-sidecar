@@ -17,7 +17,6 @@ export const polkadotControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsStakingProgress',
 		'PalletsStorage',
-		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
