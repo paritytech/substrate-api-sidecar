@@ -38,7 +38,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		res
 	): Promise<void> => {
 		this.checkParasModule();
-		
+
 		const hash = await this.getHashFromAt(at);
 		const paraIdArg = this.parseNumberOrThrow(
 			paraId,
