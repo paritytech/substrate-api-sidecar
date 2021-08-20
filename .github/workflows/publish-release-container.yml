@@ -13,13 +13,6 @@ jobs:
 
     - uses:                       actions/checkout@v2
 
-    - name: Workaround rootless build
-    # temporary workaround for https://github.com/redhat-actions/buildah-build/issues/45
-      run: |
-        sudo apt-get install fuse-overlayfs
-        mkdir -vp ~/.config/containers
-        printf "[storage.options]\nmount_program=\"/usr/bin/fuse-overlayfs\"" > ~/.config/containers/storage.conf
-
     - name:                       Build Image
       uses:                       redhat-actions/buildah-build@v2.2
       with:
@@ -34,7 +27,7 @@ jobs:
 
     - name:                       Push image to docker.io
       id:                         push-to-dockerhub
-      uses:                       redhat-actions/push-to-registry@v2.1.1
+      uses:                       redhat-actions/push-to-registry@v2.1
       with:
         registry:                 docker.io/parity
         image:                    substrate-api-sidecar
