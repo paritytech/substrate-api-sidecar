@@ -19,14 +19,6 @@ export const blockHash789629 = polkadotRegistry.createType(
 );
 
 /**
- * BlockHash for polkadot block #20000
- */
-export const blockHash20000 = polkadotRegistry.createType(
-	'BlockHash',
-	'0x1c309003c5737bb473fa04dc3cce638122d5ffd64497e024835bce71587c4d46'
-);
-
-/**
  * Mock for polkadot forked block #789629.
  */
 export const mockForkedBlock789629 = polkadotRegistry.createType(

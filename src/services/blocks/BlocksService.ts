@@ -17,6 +17,7 @@ import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
 import { BadRequest, InternalServerError } from 'http-errors';
+import LRU from 'lru-cache';
 
 import {
 	BlockWeightStore,
@@ -66,6 +67,7 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
+		private blockStore: LRU<string, IBlock>,
 		private blockWeightStore: BlockWeightStore = {}
 	) {
 		super(api);
@@ -88,6 +90,13 @@ export class BlocksService extends AbstractService {
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
+
+		// Before making any api calls check the cache if the queried block exists
+		const isBlockCached = this.blockStore.get(hash.toString());
+
+		if (isBlockCached) {
+			return isBlockCached;
+		}
 
 		const [deriveBlock, events, finalizedHead] = await Promise.all([
 			api.derive.chain.getBlock(hash),
@@ -269,7 +278,7 @@ export class BlocksService extends AbstractService {
 			});
 		}
 
-		return {
+		const response = {
 			number,
 			hash,
 			parentHash,
@@ -282,6 +291,11 @@ export class BlocksService extends AbstractService {
 			onFinalize,
 			finalized,
 		};
+
+		// Store the block in the cache
+		this.blockStore.set(hash.toString(), response);
+
+		return response;
 	}
 
 	/**

@@ -1,4 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 import { getBlockWeight } from './metadata-consts';
 
 /**
@@ -28,5 +29,6 @@ export const dockTestnetControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 26,
 		blockWeightStore: getBlockWeight('dock-pos-test-runtime'),
+		blockStore: initLRUCache(),
 	},
 };

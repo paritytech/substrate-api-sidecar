@@ -10,6 +10,7 @@ import {
 	SignedBlock,
 } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
+import LRU from 'lru-cache';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
@@ -23,8 +24,10 @@ import {
 	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
-import { IExtrinsic } from '../../types/responses/';
+import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
+	blockHash20000,
+	blockHash100000,
 	blockHash789629,
 	mockApi,
 	mockBlock789629,
@@ -50,14 +53,19 @@ interface ResponseObj {
 	extrinsics: IExtrinsic[];
 }
 
-/**
- * BlockService mock
- */
-const blocksService = new BlocksService(mockApi, 0);
+// LRU cache used to cache blocks
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+const cache = new LRU({ max: 2 }) as LRU<string, IBlock>;
+
+// Block Service
+const blocksService = new BlocksService(mockApi, 0, cache);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -75,6 +83,8 @@ describe('BlocksService', () => {
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
+			// Reset LRU cache
+			cache.reset();
 			// Create a block with undefined as the first extrinisic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType(
 				'Block',
@@ -115,6 +125,8 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
+			// Reset LRU cache
+			cache.reset();
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -133,7 +145,7 @@ describe('BlocksService', () => {
 			mockApi.consts.transactionPayment.transactionByteFee =
 				undefined as unknown as BalanceOf & AugmentedConst<'promise'>;
 
-			const configuredBlocksService = new BlocksService(mockApi, 0);
+			const configuredBlocksService = new BlocksService(mockApi, 0, new LRU());
 
 			// fetchBlock options
 			const options = {
@@ -164,6 +176,8 @@ describe('BlocksService', () => {
 
 	describe('createCalcFee & calc_fee', () => {
 		it('calculates partialFee for proxy.proxy in polkadot block 789629', async () => {
+			// Reset LRU cache
+			cache.reset();
 			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
@@ -177,6 +191,8 @@ describe('BlocksService', () => {
 		});
 
 		it('calculates partialFee for utility.batch in polkadot block 789629', async () => {
+			// Reset LRU cache
+			cache.reset();
 			// tx hash: 0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
@@ -190,8 +206,10 @@ describe('BlocksService', () => {
 		});
 
 		it('Should store a new runtime specific extrinsicBaseWeight when it doesnt exist', async () => {
-			// Instantiate a blocks service where we explicitly know the block store is empty.
-			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0);
+			// Reset LRU cache
+			cache.reset();
+
+			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0, cache);
 
 			(mockApi.runtimeVersion.specVersion as unknown) =
 				polkadotRegistry.createType('u32', 20);
@@ -220,6 +238,9 @@ describe('BlocksService', () => {
 		);
 
 		it('Should return correct `extrinsicBaseWeight`', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
 
 			expect(
@@ -228,6 +249,9 @@ describe('BlocksService', () => {
 		});
 
 		it('Should return correct `blockWeights`', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const changeMetadataToV29 = () =>
 				Promise.resolve().then(() => polkadotMetadataV29);
 			const revertedMetadata = () =>
@@ -256,6 +280,9 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlocksService.parseGenericCall', () => {
+		// Reset LRU cache
+		cache.reset();
+
 		const transfer = createCall('balances', 'transfer', {
 			value: 12,
 			dest: kusamaRegistry.createType(
@@ -408,6 +435,9 @@ describe('BlocksService', () => {
 		);
 
 		it('Returns false when queried blockId is not canonical', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const getHeader = (_hash: Hash) =>
 				Promise.resolve().then(() => mockForkedBlock789629.header);
 
@@ -440,6 +470,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
+			const blocksService = new BlocksService(mockApi, 0, new LRU());
 			expect(
 				await blocksService['isFinalizedBlock'](
 					mockApi,
@@ -463,6 +494,9 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			/**
@@ -477,6 +511,9 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const block = await blocksService.fetchBlock(blockHash789629, options);
 
 			expect(() => {
@@ -523,6 +560,9 @@ describe('BlocksService', () => {
 			},
 		};
 		it('Returns the correct summary for the latest block', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const blockSummary = await blocksService.fetchBlockHeader(
 				blockHash789629
 			);
@@ -531,9 +571,45 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the correct summary for the given block number', async () => {
+			// Reset LRU cache
+			cache.reset();
+
 			const blockSummary = await blocksService.fetchBlockHeader();
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
+		});
+	});
+
+	describe('Block LRUcache', () => {
+		// fetchBlock options
+		const options = {
+			eventDocs: true,
+			extrinsicDocs: true,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+		};
+
+		it('Should correctly store the most recent queried blocks', async () => {
+			// Reset LRU cache
+			cache.reset();
+
+			await blocksService.fetchBlock(blockHash789629, options);
+			await blocksService.fetchBlock(blockHash20000, options);
+
+			expect(cache.length).toBe(2);
+		});
+
+		it('Should have a max of 2 blocks within the LRUcache, and should save the most recent and remove the oldest block', async () => {
+			// Reset LRU cache
+			cache.reset();
+
+			await blocksService.fetchBlock(blockHash789629, options);
+			await blocksService.fetchBlock(blockHash20000, options);
+			await blocksService.fetchBlock(blockHash100000, options);
+
+			expect(cache.get(blockHash789629.toString())).toBe(undefined);
+			expect(cache.length).toBe(2);
 		});
 	});
 });

@@ -1,14 +1,17 @@
 import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
+import LRU from 'lru-cache';
 
 import { BlocksService } from '../../services';
 import { INumberParam } from '../../types/requests';
+import { IBlock } from '../../types/responses';
 import AbstractController from '../AbstractController';
 
 interface ControllerOptions {
 	finalizes: boolean;
 	minCalcFeeRuntime: null | number;
+	blockStore: LRU<string, IBlock>;
 	blockWeightStore: {};
 }
 
@@ -79,6 +82,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			new BlocksService(
 				api,
 				options.minCalcFeeRuntime,
+				options.blockStore,
 				options.blockWeightStore
 			)
 		);
