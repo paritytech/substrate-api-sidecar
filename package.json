@@ -95,5 +95,6 @@
     "sidecar",
     "polkadot",
     "kusama"
-  ]
+  ],
+  "packageManager": "yarn@3.0.0"
 }
