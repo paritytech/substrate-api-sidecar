@@ -24,7 +24,6 @@ const polkadotBlockEndpoints = [
 	['/blocks/5705186', JSON.stringify(block5705186)], //v9050
 ];
 
-
 export const polkadotEndpoints = {
-	blocks: polkadotBlockEndpoints
-}
+	blocks: polkadotBlockEndpoints,
+};

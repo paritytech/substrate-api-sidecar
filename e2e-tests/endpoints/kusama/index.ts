@@ -20,7 +20,7 @@ import block7354817 from './blocks/7354817.json';
 import block7519631 from './blocks/7519631.json';
 import block7673144 from './blocks/7673144.json';
 import block7944249 from './blocks/7944249.json';
-import block8049096 from './blocks/8049096.json'
+import block8049096 from './blocks/8049096.json';
 import block8113510 from './blocks/8113510.json';
 
 export const kusamaBlockEndpoints = [
@@ -51,5 +51,5 @@ export const kusamaBlockEndpoints = [
 ];
 
 export const kusamaEndpoints = {
-	blocks: kusamaBlockEndpoints
-}
+	blocks: kusamaBlockEndpoints,
+};

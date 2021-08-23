@@ -21,5 +21,5 @@ export const westendBlockEndpoints = [
 ];
 
 export const westendEndpoints = {
-	blocks: westendBlockEndpoints
-}
+	blocks: westendBlockEndpoints,
+};

@@ -17,7 +17,7 @@ export interface IEnvChainConfig {
 }
 
 export interface IChains {
-	kusama: ChainEndpoints,
-	polkadot: ChainEndpoints,
-	westend: ChainEndpoints
+	kusama: ChainEndpoints;
+	polkadot: ChainEndpoints;
+	westend: ChainEndpoints;
 }

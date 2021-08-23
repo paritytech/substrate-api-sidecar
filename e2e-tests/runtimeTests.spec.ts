@@ -1,7 +1,7 @@
 import { endpoints } from './endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
-import { BlockResponse, IEnvChainConfig, ChainSpec } from './types';
+import { BlockResponse, ChainSpec, IEnvChainConfig } from './types';
 
 const config = JSON.parse(
 	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
