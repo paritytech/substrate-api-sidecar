@@ -1,14 +1,15 @@
 import { endpoints } from './endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
-import { BlockResponse, ChainConfig, ChainSpec } from './types';
+import { BlockResponse, IEnvChainConfig, ChainSpec } from './types';
 
 const config = JSON.parse(
 	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
-) as ChainConfig;
+) as IEnvChainConfig;
+
 const chain = config.chain as ChainSpec;
 
-const polkadotEndpoints: string[][] = endpoints[chain];
+const blockEndpoints = endpoints[chain]['blocks'];
 
 describe('Runtime Tests for blocks', () => {
 	/**
@@ -19,7 +20,7 @@ describe('Runtime Tests for blocks', () => {
 	/**
 	 * Test runtimes for `/blocks`
 	 */
-	test.each(polkadotEndpoints)(
+	test.each(blockEndpoints)(
 		'Given path %p, it should return the correct JSON response',
 		async (blockPath, blockResponse) => {
 			const res = await request(blockPath, HOST, PORT);
