@@ -20,6 +20,9 @@ export const westendBlockEndpoints = [
 	['/blocks/5657482', JSON.stringify(block5657482)], //v9010
 ];
 
+const westendAccountsEndpoints = [['', '']];
+
 export const westendEndpoints = {
 	blocks: westendBlockEndpoints,
+	accounts: westendAccountsEndpoints,
 };

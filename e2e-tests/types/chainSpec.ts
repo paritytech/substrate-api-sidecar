@@ -2,7 +2,11 @@
  * String literal for specific chains that are being tested for
  */
 export type ChainSpec = 'polkadot' | 'kusama' | 'westend';
-export type EndpointSpec = 'blocks';
+
+/**
+ * Sidecar endpoints that are supported
+ */
+export type EndpointSpec = 'blocks' | 'accounts';
 
 /**
  * Chain object and the associated endpoints
@@ -16,6 +20,9 @@ export interface IEnvChainConfig {
 	chain: string;
 }
 
+/**
+ * All chains that are supported to test against
+ */
 export interface IChains {
 	kusama: ChainEndpoints;
 	polkadot: ChainEndpoints;

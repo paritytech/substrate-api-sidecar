@@ -23,7 +23,7 @@ import block7944249 from './blocks/7944249.json';
 import block8049096 from './blocks/8049096.json';
 import block8113510 from './blocks/8113510.json';
 
-export const kusamaBlockEndpoints = [
+const kusamaBlockEndpoints = [
 	['/blocks/9253', JSON.stringify(block9253)], //v1020
 	['/blocks/2350438', JSON.stringify(block2350438)], //v1062
 	['/blocks/2684767', JSON.stringify(block2684767)], //v2005
@@ -50,6 +50,9 @@ export const kusamaBlockEndpoints = [
 	['/blocks/8113510', JSON.stringify(block8113510)], //v9070
 ];
 
+const kusamaAccountsEndpoints = [['', '']];
+
 export const kusamaEndpoints = {
 	blocks: kusamaBlockEndpoints,
+	accounts: kusamaAccountsEndpoints,
 };

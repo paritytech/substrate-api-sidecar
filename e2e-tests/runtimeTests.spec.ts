@@ -9,7 +9,7 @@ const config = JSON.parse(
 
 const chain = config.chain as ChainSpec;
 
-const blockEndpoints = endpoints[chain]['blocks'];
+const { blocks, accounts } = endpoints[chain];
 
 describe('Runtime Tests for blocks', () => {
 	/**
@@ -20,13 +20,26 @@ describe('Runtime Tests for blocks', () => {
 	/**
 	 * Test runtimes for `/blocks`
 	 */
-	test.each(blockEndpoints)(
+	test.each(blocks)(
 		'Given path %p, it should return the correct JSON response',
 		async (blockPath, blockResponse) => {
 			const res = await request(blockPath, HOST, PORT);
 			const responseJson = JSON.parse(res) as BlockResponse;
 
 			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
+		}
+	);
+
+	/**
+	 * Test runtiems for `/accounts/*`
+	 */
+	test.each(accounts)(
+		'Given path %p, it should return the correct',
+		async (accountsPath, accountsResponse) => {
+			const res = await request(accountsPath, HOST, PORT);
+			const responseJson = JSON.parse(res) as string;
+
+			expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
 		}
 	);
 });
