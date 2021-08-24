@@ -1,7 +1,7 @@
 import { endpoints } from './endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
-import { BlockResponse, ChainSpec, IEnvChainConfig } from './types';
+import { IBlockResponse, ChainSpec, IEnvChainConfig, AccountsResponse } from './types';
 
 const config = JSON.parse(
 	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
@@ -24,7 +24,7 @@ describe('Runtime Tests for blocks', () => {
 		'Given path %p, it should return the correct JSON response',
 		async (blockPath, blockResponse) => {
 			const res = await request(blockPath, HOST, PORT);
-			const responseJson = JSON.parse(res) as BlockResponse;
+			const responseJson = JSON.parse(res) as IBlockResponse;
 
 			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
 		}
@@ -37,7 +37,7 @@ describe('Runtime Tests for blocks', () => {
 		'Given path %p, it should return the correct',
 		async (accountsPath, accountsResponse) => {
 			const res = await request(accountsPath, HOST, PORT);
-			const responseJson = JSON.parse(res) as string;
+			const responseJson = JSON.parse(res) as AccountsResponse;
 
 			expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
 		}
