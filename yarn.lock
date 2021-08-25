@@ -398,12 +398,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.10.4":
-  version: 7.10.4
-  resolution: "@babel/runtime@npm:7.10.4"
+"@babel/runtime@npm:7.14.8":
+  version: 7.14.8
+  resolution: "@babel/runtime@npm:7.14.8"
   dependencies:
     regenerator-runtime: ^0.13.4
-  checksum: 42b170370dbd377391ac28aa2a1bcf4a99c67b1a04aa5e71980ad7998cbbec1eccd94b1d6405dee2ae70018c51cae707ac1ab3af869bed62daf0c880afcb5a8a
+  checksum: d2dd0ce51ddab78ac93928b04042425145d0dc8cc2b70150d47934f8703f55702eb0b2894f9bd47f66794ad04d8bb03a6a847d0138fbb7aa0b970b5ccd5cc8b7
   languageName: node
   linkType: hard
 
@@ -1299,20 +1299,20 @@ __metadata:
     "@polkadot/x-rxjs": ^6.11.1
     "@substrate/calc": ^0.2.2
     "@substrate/dev": ^0.5.5
-    "@types/argparse": ^2.0.8
-    "@types/express": ^4.17.12
-    "@types/express-serve-static-core": ^4.17.21
-    "@types/http-errors": ^1.8.0
+    "@types/argparse": 2.0.10
+    "@types/express": 4.17.13
+    "@types/express-serve-static-core": 4.17.24
+    "@types/http-errors": 1.8.1
     "@types/lru-cache": ^5.1.1
-    "@types/morgan": ^1.9.2
+    "@types/morgan": 1.9.3
     "@types/triple-beam": ^1.3.2
     argparse: ^2.0.1
-    confmgr: ^1.0.6
+    confmgr: 1.0.7
     express: ^4.17.1
     express-winston: ^4.1.0
     http-errors: ^1.8.0
     lru-cache: ^6.0.0
-    standard-version: ^9.3.0
+    standard-version: 9.3.1
     tsc-watch: ^4.4.0
     winston: ^3.3.3
   bin:
@@ -1362,10 +1362,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/argparse@npm:^2.0.8":
-  version: 2.0.8
-  resolution: "@types/argparse@npm:2.0.8"
-  checksum: 6b2889a39d043cb3529b954c2ab951441e0d01fc4af665bb6e9dba59c90fa3299e86ee6a5713322c2319659344274616c914e802a438e73a44727435a34d48ca
+"@types/argparse@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@types/argparse@npm:2.0.10"
+  checksum: 6f74560fa300f69ecae339fcb89e82cff0193ba643c05b98b3866e0c7b0dc099aa53821a109bab3c33d48150bd4da9a95b3e186f09de081f2d78e7c005cd8dc1
   languageName: node
   linkType: hard
 
@@ -1438,7 +1438,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^4.17.18, @types/express-serve-static-core@npm:^4.17.21":
+"@types/express-serve-static-core@npm:4.17.24":
+  version: 4.17.24
+  resolution: "@types/express-serve-static-core@npm:4.17.24"
+  dependencies:
+    "@types/node": "*"
+    "@types/qs": "*"
+    "@types/range-parser": "*"
+  checksum: 2f0b4711261d663bf93df4dbd6f0270e84d1624278e2f3722cf050e2e6be521b6d385bb69bd0eac14abbf1119d4b308a731ec746fb2c3848697658e9e49e5676
+  languageName: node
+  linkType: hard
+
+"@types/express-serve-static-core@npm:^4.17.18":
   version: 4.17.21
   resolution: "@types/express-serve-static-core@npm:4.17.21"
   dependencies:
@@ -1449,15 +1460,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4.17.12":
-  version: 4.17.12
-  resolution: "@types/express@npm:4.17.12"
+"@types/express@npm:4.17.13":
+  version: 4.17.13
+  resolution: "@types/express@npm:4.17.13"
   dependencies:
     "@types/body-parser": "*"
     "@types/express-serve-static-core": ^4.17.18
     "@types/qs": "*"
     "@types/serve-static": "*"
-  checksum: 5869f575f66e5ea891a00fd253719577a1afe8d39fba47f3f24539188dac351d61f4511a168c6b5b5c902c724b26809950421325887896f5e23f28a3a2aa9458
+  checksum: 12a2a0e6c4b993fc0854bec665906788aea0d8ee4392389d7a98a5de1eefdd33c9e1e40a91f3afd274011119c506f7b4126acb97fae62ae20b654974d44cba12
   languageName: node
   linkType: hard
 
@@ -1470,10 +1481,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-errors@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "@types/http-errors@npm:1.8.0"
-  checksum: 72b4721a2894f045202b005833d49afe085dc44cf6abc083a081676f0ec6ff812f150ad40704d1409e268b33d4fe1fd32264d5583e2e3cbb55eb97bb4afd3c13
+"@types/http-errors@npm:1.8.1":
+  version: 1.8.1
+  resolution: "@types/http-errors@npm:1.8.1"
+  checksum: f0710ea284a7eb5584c5e324b1dc810bc971e1adc94deff63a0c434a8a75adc020487e3e6d511cd82cef101bbcf090b8f56995c143d123e0c374dc0f61be3a61
   languageName: node
   linkType: hard
 
@@ -1549,12 +1560,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/morgan@npm:^1.9.2":
-  version: 1.9.2
-  resolution: "@types/morgan@npm:1.9.2"
+"@types/morgan@npm:1.9.3":
+  version: 1.9.3
+  resolution: "@types/morgan@npm:1.9.3"
   dependencies:
     "@types/node": "*"
-  checksum: 01c6de626d73b7e1335eadcdaaa7a434acf4a6805bc4380eac2f84910d8a8937c0964ac7aac4afd944c5379e8d69804075c6b87b5653893209a013a85a4cab89
+  checksum: 0b9bc8641ce03f7176f617523b8da300e5d47225b1667396749950ac7fdfa1f990447d490648fbaff050c2b0ef5fa60c3f2f00c6b76efec06fe5148de5020813
   languageName: node
   linkType: hard
 
@@ -2438,13 +2449,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:4.1.0":
-  version: 4.1.0
-  resolution: "chalk@npm:4.1.0"
+"chalk@npm:4.1.2":
+  version: 4.1.2
+  resolution: "chalk@npm:4.1.2"
   dependencies:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
-  checksum: 5561c7b4c063badee3e16d04bce50bd033e1be1bf4c6948639275683ffa7a1993c44639b43c22b1c505f0f813a24b1889037eb182546b48946f9fe7cdd0e7d13
+  checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
   languageName: node
   linkType: hard
 
@@ -2725,17 +2736,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confmgr@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "confmgr@npm:1.0.6"
+"confmgr@npm:1.0.7":
+  version: 1.0.7
+  resolution: "confmgr@npm:1.0.7"
   dependencies:
-    "@babel/runtime": 7.10.4
+    "@babel/runtime": 7.14.8
     "@types/yaml": 1.9.7
-    chalk: 4.1.0
-    dotenv: 8.2.0
-    typescript: 3.9.6
-    yaml: 1.10.0
-  checksum: ed51396351823b1ac361c76c9d54c0b4bd3a1bf71e14087b67e395ead7f10281d67c231889ac2207c04317695cff0946a9e20ecbe5fe5a6cd02c7cf8f79b34cd
+    chalk: 4.1.2
+    dotenv: 10.0.0
+    typescript: 4.3.5
+    yaml: 1.10.2
+  checksum: abfc9aed60759ff672bc336cbcdeb930b48b24ed62d067173606757227f13cf94f34ef4591f8c02903908e6fd32cf36a5ee04fae885e466e0188a233c50d220d
   languageName: node
   linkType: hard
 
@@ -3274,10 +3285,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:8.2.0":
-  version: 8.2.0
-  resolution: "dotenv@npm:8.2.0"
-  checksum: ad4c8e0df3e24b4811c8e93377d048a10a9b213dcd9f062483b4a2d3168f08f10ec9c618c23f5639060d230ccdb174c08761479e9baa29610aa978e1ee66df76
+"dotenv@npm:10.0.0":
+  version: 10.0.0
+  resolution: "dotenv@npm:10.0.0"
+  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
   languageName: node
   linkType: hard
 
@@ -7900,9 +7911,9 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
-"standard-version@npm:^9.3.0":
-  version: 9.3.0
-  resolution: "standard-version@npm:9.3.0"
+"standard-version@npm:9.3.1":
+  version: 9.3.1
+  resolution: "standard-version@npm:9.3.1"
   dependencies:
     chalk: ^2.4.2
     conventional-changelog: 3.1.24
@@ -7921,7 +7932,7 @@ fsevents@^2.3.2:
     yargs: ^16.0.0
   bin:
     standard-version: bin/cli.js
-  checksum: f1c94daed94b0cc2c3dd20674fe8877ed3ca12b2572a40b71a39539ae0b7f3395bb5cfa1004e1efc3f82b7e7eb5a64d69c41b281b55b5eff0b040d084aeecfd6
+  checksum: 8cf328d8400cf603a3d189656b742bb8dd36b467d71f110ea2ee353b4864c3c5097f06a903aa5d1c1ce23233a28d71dade518e8250467784bbddf5398f6edb87
   languageName: node
   linkType: hard
 
@@ -8521,17 +8532,7 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
-typescript@3.9.6:
-  version: 3.9.6
-  resolution: "typescript@npm:3.9.6"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 65f4a9eb975e0833e6c850d6874725276c3e4b295dc9dec2f7d9a6dc18228d62ecac947b59147a0e761d8e18740202efaab70b609eef092d7c1c9f7ea53cca81
-  languageName: node
-  linkType: hard
-
-"typescript@^4.1.3, typescript@^4.2.4, typescript@^4.3.5":
+"typescript@4.3.5, typescript@^4.1.3, typescript@^4.2.4, typescript@^4.3.5":
   version: 4.3.5
   resolution: "typescript@npm:4.3.5"
   bin:
@@ -8541,17 +8542,7 @@ typescript@3.9.6:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@3.9.6#~builtin<compat/typescript>":
-  version: 3.9.6
-  resolution: "typescript@patch:typescript@npm%3A3.9.6#~builtin<compat/typescript>::version=3.9.6&hash=d8b4e7"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: c97616caa22bfc7b7cb2e7404a4330d839e15eb7070d763dd216cbda0bdd81c1d92769978a1a38d6cdb0924f7c5e78c218cdd74ea1d82b591697a3fee7212c4d
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.1.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.2.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.3.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.2.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>":
   version: 4.3.5
   resolution: "typescript@patch:typescript@npm%3A4.3.5#~builtin<compat/typescript>::version=4.3.5&hash=d8b4e7"
   bin:
@@ -9010,17 +9001,10 @@ typescript@3.9.6:
   languageName: node
   linkType: hard
 
-"yaml@npm:*":
+"yaml@npm:*, yaml@npm:1.10.2":
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
-  languageName: node
-  linkType: hard
-
-"yaml@npm:1.10.0":
-  version: 1.10.0
-  resolution: "yaml@npm:1.10.0"
-  checksum: ae81d29a82d70a9dcf6f7fa8d9e0898f2148570521acb60c1ac9bdafff298dfc86b591a0983f6cc4f9fb11fb420df4c786919060dfd970d2533de20748ccbb28
   languageName: node
   linkType: hard
 
