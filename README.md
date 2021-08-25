@@ -258,7 +258,7 @@ docker run --rm -it --read-only -p 8080:8080 substrate-api-sidecar
 docker run --rm -it --read-only --env-file .env.docker -p 8080:8080 substrate-api-sidecar
 ```
 
-**NOTE**: While you could ommit the `--read-only` flag, it is **strongly recommended for containers used in production**.
+**NOTE**: While you could omit the `--read-only` flag, it is **strongly recommended for containers used in production**.
 
 then you can test with:
 
