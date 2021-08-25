@@ -5,6 +5,7 @@ image := 'substrate-api-sidecar'
 _default:
     just --choose --chooser "fzf +s -x --tac --cycle"
 
+# Shows the list of commands
 help:
     just --list
 
