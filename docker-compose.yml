@@ -7,11 +7,12 @@ services:
       - ~/polkadot-data:/data
     # ports:
     #   - "9944:9944"
-    command: 'polkadot --chain polkadot --unsafe-ws-external --rpc-cors=all'
+    command: '--chain polkadot --unsafe-ws-external --rpc-cors=all'
 
   sidecar:
     # build: .
     image: docker.io/parity/substrate-api-sidecar:latest
+    read_only: true
     ports:
       - "8080:8080"
     environment:
