@@ -49,8 +49,8 @@
     "lint:scripts": "cd scripts && substrate-dev-run-lint"
   },
   "dependencies": {
-    "@polkadot/api": "^5.6.1",
-    "@polkadot/apps-config": "0.95.2-33",
+    "@polkadot/api": "5.6.2-7",
+    "@polkadot/apps-config": "0.95.2-41",
     "@polkadot/util-crypto": "^7.2.1",
     "@polkadot/x-rxjs": "^6.11.1",
     "@substrate/calc": "^0.2.2",
