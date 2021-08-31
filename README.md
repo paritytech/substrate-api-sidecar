@@ -120,7 +120,7 @@ yarn start
 
 ## Configuration
 
-To use a specific env profile (here for instance a profile called 'env.sample'):
+To use a specific env profile (here for instance a profile called '.env.sample'):
 
 ```bash
 NODE_ENV=sample yarn start
