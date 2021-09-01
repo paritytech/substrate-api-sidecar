@@ -28,16 +28,16 @@ export class AccountsBalanceInfoService extends AbstractService {
 		const { api } = this;
 
 		// Retrieve the api for the given hash
-		const a = await api.at(hash);
+		const historicalApi = await api.at(hash);
 
 		// Check if this is a historical block that needs a seperate api
-		if (a.query.balances.freeBalance) {
+		if (historicalApi.query.balances.freeBalance) {
 			const [header, free, locks, reserved, nonce] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
-				a.query.balances.freeBalance(address) as Promise<Balance>,
-				a.query.balances.locks(address),
-				a.query.balances.reservedBalance(address) as Promise<Balance>,
-				a.query.system.accountNonce(address) as Promise<Index>,
+				historicalApi.query.balances.freeBalance(address) as Promise<Balance>,
+				historicalApi.query.balances.locks(address),
+				historicalApi.query.balances.reservedBalance(address) as Promise<Balance>,
+				historicalApi.query.system.accountNonce(address) as Promise<Index>,
 			]);
 
 			// Values dont exist for these historic runtimes
