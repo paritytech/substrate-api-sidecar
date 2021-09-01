@@ -1,8 +1,10 @@
 import { Vec } from '@polkadot/types';
 import {
 	AccountData,
+	Balance,
 	BalanceLock,
 	BlockHash,
+	Index,
 } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 import { IAccountBalanceInfo } from 'src/types/responses';
@@ -24,6 +26,40 @@ export class AccountsBalanceInfoService extends AbstractService {
 		token: string
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
+
+		// Retrieve the api for the given hash
+		const a = await api.at(hash);
+
+		// Check if this is a historical block that needs a seperate api
+		if (a.query.balances.freeBalance) {
+			const [header, free, locks, reserved, nonce] = await Promise.all([
+				api.rpc.chain.getHeader(hash),
+				a.query.balances.freeBalance(address) as Promise<Balance>,
+				a.query.balances.locks(address),
+				a.query.balances.reservedBalance(address) as Promise<Balance>,
+				a.query.system.accountNonce(address) as Promise<Index>,
+			]);
+
+			// Values dont exist for these historic runtimes
+			const miscFrozen = 0 as unknown as Balance,
+				feeFrozen = 0 as unknown as Balance;
+
+			const at = {
+				hash,
+				height: header.number.toNumber().toString(10),
+			};
+
+			return {
+				at,
+				nonce,
+				tokenSymbol: token,
+				free,
+				reserved,
+				miscFrozen,
+				feeFrozen,
+				locks,
+			};
+		}
 
 		let locks, header, accountInfo, accountData;
 		// We assume the first token is the native token
