@@ -43,24 +43,28 @@ export class AccountsBalanceInfoService extends AbstractService {
 			]);
 
 			// Values dont exist for these historic runtimes
-			const miscFrozen = 0 as unknown as Balance,
-				feeFrozen = 0 as unknown as Balance;
+			const miscFrozen = api.registry.createType('Balance', 0),
+				feeFrozen = api.registry.createType('Balance', 0);
 
 			const at = {
 				hash,
 				height: header.number.toNumber().toString(10),
 			};
 
-			return {
-				at,
-				nonce,
-				tokenSymbol: token,
-				free,
-				reserved,
-				miscFrozen,
-				feeFrozen,
-				locks,
-			};
+			if (locks && free && reserved && nonce) {
+				return {
+					at,
+					nonce,
+					tokenSymbol: token,
+					free,
+					reserved,
+					miscFrozen,
+					feeFrozen,
+					locks,
+				};
+			} else {
+				throw new BadRequest('Account not found');
+			}
 		}
 
 		let locks, header, accountInfo, accountData;
