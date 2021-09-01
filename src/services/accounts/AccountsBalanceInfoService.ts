@@ -36,7 +36,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicalApi.query.balances.freeBalance(address) as Promise<Balance>,
 				historicalApi.query.balances.locks(address),
-				historicalApi.query.balances.reservedBalance(address) as Promise<Balance>,
+				historicalApi.query.balances.reservedBalance(
+					address
+				) as Promise<Balance>,
 				historicalApi.query.system.accountNonce(address) as Promise<Index>,
 			]);
 
