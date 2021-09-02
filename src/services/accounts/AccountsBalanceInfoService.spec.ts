@@ -1,14 +1,35 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/require-await */
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotMetadata } from '../../test-helpers/metadata/metadata';
+import { polkadotRegistry } from '../../test-helpers/registries';
+import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { blockHash789629, mockApi, testAddress } from '../test-helpers/mock';
 import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
 const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);
+
+/**
+ * Historical Queries MockApi
+ */
+const historicalMockApi = {
+	query: {
+		balances: {
+			freeBalance: async () =>
+				polkadotRegistry.createType('Balance', 123456789),
+			reservedBalance: async () => polkadotRegistry.createType('Balance', 1),
+			locks: async () => polkadotRegistry.createType('Vec<BalanceLock>', []),
+		},
+		system: {
+			accountNonce: async () => polkadotRegistry.createType('Index', 1),
+		},
+	},
+};
 
 describe('AccountsBalanceInfoService', () => {
 	describe('fetchAccountBalanceInfo', () => {
@@ -111,6 +132,37 @@ describe('AccountsBalanceInfoService', () => {
 				expect(mockTokensLocksAt).not.toBeCalled();
 				expect(mockTokenAccountAt).not.toBeCalled();
 				expect(mockBalancesLocksAt).toBeCalled();
+			});
+
+			it('Correctly queries historical blocks', async () => {
+				// Set the at to a historical runtime, before the storage key format changed
+				(mockApi.at as unknown) = () =>
+					Promise.resolve().then(() => historicalMockApi);
+
+				const result = await accountsBalanceInfoService.fetchAccountBalanceInfo(
+					blockHash789629,
+					testAddress,
+					'DOT'
+				);
+
+				const expectedResponse = {
+					at: {
+						hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+						height: '789629',
+					},
+					feeFrozen: '0',
+					free: '123456789',
+					locks: [],
+					miscFrozen: '0',
+					nonce: '1',
+					reserved: '1',
+					tokenSymbol: 'DOT',
+				};
+
+				expect(sanitizeNumbers(result)).toStrictEqual(expectedResponse);
+
+				mockApi.at = async () =>
+					createApiWithAugmentations(polkadotMetadata.toHex());
 			});
 		});
 	});
