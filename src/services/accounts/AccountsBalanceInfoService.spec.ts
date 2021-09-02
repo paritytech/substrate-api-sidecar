@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/require-await */
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -19,24 +20,13 @@ const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);
 const historicalMockApi = {
 	query: {
 		balances: {
-			freeBalance: () =>
-				Promise.resolve().then(() => {
-					return polkadotRegistry.createType('Balance', 123456789);
-				}),
-			reservedBalance: () =>
-				Promise.resolve().then(() => {
-					return polkadotRegistry.createType('Balance', 1);
-				}),
-			locks: () =>
-				Promise.resolve().then(() => {
-					return polkadotRegistry.createType('Vec<BalanceLock>', []);
-				}),
+			freeBalance: async () =>
+				polkadotRegistry.createType('Balance', 123456789),
+			reservedBalance: async () => polkadotRegistry.createType('Balance', 1),
+			locks: async () => polkadotRegistry.createType('Vec<BalanceLock>', []),
 		},
 		system: {
-			accountNonce: () =>
-				Promise.resolve().then(() => {
-					return polkadotRegistry.createType('Index', 1);
-				}),
+			accountNonce: async () => polkadotRegistry.createType('Index', 1),
 		},
 	},
 };
@@ -171,10 +161,8 @@ describe('AccountsBalanceInfoService', () => {
 
 				expect(sanitizeNumbers(result)).toStrictEqual(expectedResponse);
 
-				mockApi.at = () =>
-					Promise.resolve().then(() => {
-						return createApiWithAugmentations(polkadotMetadata.toHex());
-					});
+				mockApi.at = async () =>
+					createApiWithAugmentations(polkadotMetadata.toHex());
 			});
 		});
 	});
