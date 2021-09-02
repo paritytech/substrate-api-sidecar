@@ -654,11 +654,17 @@ const assetApprovals = () =>
 		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
 	});
 
+const apiAt = () =>
+	Promise.resolve().then(() => {
+		return createApiWithAugmentations(polkadotMetadata.toHex());
+	});
+
 /**
  * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #789629, which is what most Service unit tests are based on.
  */
 export const mockApi = {
+	at: apiAt,
 	runtimeVersion,
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
