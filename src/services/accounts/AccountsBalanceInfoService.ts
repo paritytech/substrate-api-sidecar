@@ -35,7 +35,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		 * to have the correct runtime methods.
 		 *
 		 * a) Does the block use the oldest api where the free balance is found
-		 * using `historicalApi.query.balances.freeBalance`
+		 * using `historicalApi.query.balances.freeBalance`.
 		 *
 		 * b) Does the block use an older api where the free balance is within the
 		 * AccountInfo type, but the storage does not yet have the `.at` method.
