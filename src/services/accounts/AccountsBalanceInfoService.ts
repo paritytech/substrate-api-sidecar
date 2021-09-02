@@ -27,10 +27,19 @@ export class AccountsBalanceInfoService extends AbstractService {
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
 
-		// Retrieve the api for the given hash
+		// Retrieve the historic api for the given hash
 		const historicalApi = await api.at(hash);
 
-		// Check if this is a historical block that needs a seperate api
+		/**
+		 * Check two different cases where a historicalApi is needed in order
+		 * to have the correct runtime methods.
+		 *
+		 * a) Does the block use the oldest api where the free balance is found
+		 * using `historicalApi.query.balances.freeBalance`
+		 *
+		 * b) Does the block use an older api where the free balance is within the
+		 * AccountInfo type, but the storage does not yet have the `.at` method.
+		 */
 		if (historicalApi.query.balances.freeBalance) {
 			const [header, free, locks, reserved, nonce] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
@@ -52,6 +61,39 @@ export class AccountsBalanceInfoService extends AbstractService {
 			};
 
 			if (locks && free && reserved && nonce) {
+				return {
+					at,
+					nonce,
+					tokenSymbol: token,
+					free,
+					reserved,
+					miscFrozen,
+					feeFrozen,
+					locks,
+				};
+			} else {
+				throw new BadRequest('Account not found');
+			}
+		} else if (
+			!Object.keys(historicalApi.query.system.account).includes('at')
+		) {
+			const [header, accountInfo, locks] = await Promise.all([
+				api.rpc.chain.getHeader(hash),
+				historicalApi.query.system.account(address),
+				historicalApi.query.balances.locks(address),
+			]);
+
+			const {
+				data: { free, reserved, feeFrozen, miscFrozen },
+				nonce,
+			} = accountInfo;
+
+			const at = {
+				hash,
+				height: header.number.toNumber().toString(10),
+			};
+
+			if (accountInfo && locks) {
 				return {
 					at,
 					nonce,
