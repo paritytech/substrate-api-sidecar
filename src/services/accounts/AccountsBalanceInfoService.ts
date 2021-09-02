@@ -74,9 +74,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 			} else {
 				throw new BadRequest('Account not found');
 			}
-		} else if (
-			!Object.keys(historicalApi.query.system.account).includes('at')
-		) {
+		} else if (!historicalApi.query.system.account.at) {
 			const [header, accountInfo, locks] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				historicalApi.query.system.account(address),
