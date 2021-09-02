@@ -878,21 +878,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/orml-type-definitions@npm:^0.9.4-19, @open-web3/orml-type-definitions@npm:^0.9.4-33":
+"@open-web3/orml-type-definitions@npm:^0.9.4-19, @open-web3/orml-type-definitions@npm:^0.9.4-33, @open-web3/orml-type-definitions@npm:^0.9.4-7":
   version: 0.9.4-34
   resolution: "@open-web3/orml-type-definitions@npm:0.9.4-34"
   dependencies:
     lodash.merge: ^4.6.2
   checksum: 60b5e815abfc97130b56f341b5b7b4d702a911ecf3daf341cd400478936b842325d3ac70671a75c395e9ba18ab68701bc2ed1c8b75144a6664abd41efb18e829
-  languageName: node
-  linkType: hard
-
-"@open-web3/orml-type-definitions@npm:^0.9.4-7":
-  version: 0.9.4-32
-  resolution: "@open-web3/orml-type-definitions@npm:0.9.4-32"
-  dependencies:
-    lodash.merge: ^4.6.2
-  checksum: f137e3196083fcb3648d5eb94bb62180711deb11f6274aaddf36bd654fa1f48f0d313d8a0ab44b550763d01b8cd2aef45b6873a093a04551b1bad2c1cebc5fa7
   languageName: node
   linkType: hard
 
@@ -1445,7 +1436,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:4.17.24":
+"@types/express-serve-static-core@npm:4.17.24, @types/express-serve-static-core@npm:^4.17.18":
   version: 4.17.24
   resolution: "@types/express-serve-static-core@npm:4.17.24"
   dependencies:
@@ -1453,17 +1444,6 @@ __metadata:
     "@types/qs": "*"
     "@types/range-parser": "*"
   checksum: 2f0b4711261d663bf93df4dbd6f0270e84d1624278e2f3722cf050e2e6be521b6d385bb69bd0eac14abbf1119d4b308a731ec746fb2c3848697658e9e49e5676
-  languageName: node
-  linkType: hard
-
-"@types/express-serve-static-core@npm:^4.17.18":
-  version: 4.17.21
-  resolution: "@types/express-serve-static-core@npm:4.17.21"
-  dependencies:
-    "@types/node": "*"
-    "@types/qs": "*"
-    "@types/range-parser": "*"
-  checksum: 27a95fa85dfbc5c7e6aa6e2fbd27eb621fe4e49d38be89b9bfa0b6c1defd30e6f9a5109f14ebfa0c7de967950e742d36cd0354158443b684032974c0abf7308d
   languageName: node
   linkType: hard
 
@@ -2456,7 +2436,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:4.1.2":
+"chalk@npm:4.1.2, chalk@npm:^4.0.0":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -2484,16 +2464,6 @@ __metadata:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: 8e3ddf3981c4da405ddbd7d9c8d91944ddf6e33d6837756979f7840a29272a69a5189ecae0ff84006750d6d1e92368d413335eab4db5476db6e6703a1d1e0505
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^4.0.0":
-  version: 4.1.1
-  resolution: "chalk@npm:4.1.1"
-  dependencies:
-    ansi-styles: ^4.1.0
-    supports-color: ^7.1.0
-  checksum: 036e973e665ba1a32c975e291d5f3d549bceeb7b1b983320d4598fb75d70fe20c5db5d62971ec0fe76cdbce83985a00ee42372416abfc3a5584465005a7855ed
   languageName: node
   linkType: hard
 
