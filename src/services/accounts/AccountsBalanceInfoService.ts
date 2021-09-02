@@ -60,7 +60,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				height: header.number.toNumber().toString(10),
 			};
 
-			if (locks && free && reserved && nonce) {
+			if (free) {
 				return {
 					at,
 					nonce,
