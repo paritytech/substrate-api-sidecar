@@ -4,8 +4,27 @@
 export type ChainSpec = 'polkadot' | 'kusama' | 'westend';
 
 /**
- *
+ * Sidecar endpoints that are supported
  */
-export interface ChainConfig {
+export type EndpointSpec = 'blocks' | 'accounts';
+
+/**
+ * Chain object and the associated endpoints
+ */
+export type ChainEndpoints = Record<EndpointSpec, string[][]>;
+
+/**
+ * Chain Config that is passed into the env
+ */
+export interface IEnvChainConfig {
 	chain: string;
+}
+
+/**
+ * All chains that are supported to test against
+ */
+export interface IChains {
+	kusama: ChainEndpoints;
+	polkadot: ChainEndpoints;
+	westend: ChainEndpoints;
 }
