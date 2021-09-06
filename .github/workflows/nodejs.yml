@@ -21,6 +21,8 @@ jobs:
     steps:
     - name: Install wasm-pack
       uses: jetli/wasm-pack-action@v0.3.0
+      with:
+        version: v0.10.0
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
