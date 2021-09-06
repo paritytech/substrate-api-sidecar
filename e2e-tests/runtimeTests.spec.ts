@@ -34,6 +34,13 @@ describe('Runtime Tests for blocks', () => {
 			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
 		}
 	);
+});
+
+describe('Runtime Tests for accounts', () => {
+	/**
+	 * Allows a timeout of 30 seconds for each response.
+	 */
+	jest.setTimeout(30000);
 
 	/**
 	 * Test runtiems for `/accounts/*`

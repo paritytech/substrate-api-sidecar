@@ -1,5 +1,5 @@
-import { kusamaBlockEndpoints } from "./blocks";
-import { kusamaAccountsEndpoints } from './accounts'; 
+import { kusamaAccountsEndpoints } from './accounts';
+import { kusamaBlockEndpoints } from './blocks';
 
 export const kusamaEndpoints = {
 	blocks: kusamaBlockEndpoints,

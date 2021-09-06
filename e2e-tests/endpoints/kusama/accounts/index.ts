@@ -1,3 +1,3 @@
 import { kusamaAccountBalanceEndpoints } from './balance-info';
 
-export const kusamaAccountsEndpoints = [...kusamaAccountBalanceEndpoints]
+export const kusamaAccountsEndpoints = [...kusamaAccountBalanceEndpoints];
