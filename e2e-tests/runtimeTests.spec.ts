@@ -39,7 +39,7 @@ describe('Runtime Tests for blocks', () => {
 	 * Test runtiems for `/accounts/*`
 	 */
 	test.each(accounts)(
-		'Given path %p, it should return the correct',
+		'Given path %p, it should return the correct JSON response',
 		async (accountsPath, accountsResponse) => {
 			const res = await request(accountsPath, HOST, PORT);
 			const responseJson = JSON.parse(res) as AccountsResponse;
