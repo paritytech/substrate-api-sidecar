@@ -96,8 +96,16 @@ export default abstract class AbstractController<T extends AbstractService> {
 	protected async getHashForBlock(blockId: string): Promise<BlockHash> {
 		let blockNumber;
 
+		// isHex, as imported, returns "value is string", which undersells what it
+		// is checking for (it's not only checking that value is string, but that it's
+		// valid looking hex). So, we vaguen up the type signature here to avoid breakage
+		// below (see https://github.com/polkadot-js/common/issues/1102).
+		function isHexBool(value: unknown): boolean {
+			return isHex(value);
+		}
+
 		try {
-			const isHexStr = isHex(blockId);
+			const isHexStr = isHexBool(blockId);
 			if (isHexStr && blockId.length === 66) {
 				// This is a block hash
 				return this.api.createType('BlockHash', blockId);
