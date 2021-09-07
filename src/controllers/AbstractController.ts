@@ -101,7 +101,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		// valid looking hex). So, we vaguen up the type signature here to avoid breakage
 		// below (see https://github.com/polkadot-js/common/issues/1102).
 		function isHexBool(value: unknown): boolean {
-			return isHex(value)
+			return isHex(value);
 		}
 
 		try {
