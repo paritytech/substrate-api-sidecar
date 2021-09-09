@@ -3,8 +3,9 @@
 
 <div align="center">
   <h1 align="center">@substrate/api-sidecar</h1>
-  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.</h4>
-
+  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's 
+    <a href="https://substrate.dev/docs/en/knowledgebase/runtime/frame">FRAME</a>    
+    framework.</h4>
   <p align="center">
     <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
       <img alt="npm" src="https://img.shields.io/npm/v/@substrate/api-sidecar" />
