@@ -54,7 +54,6 @@ stages:
         --atomic
         --timeout 120s
         --namespace $HELM_NAMESPACE
-        --create-namespace
         --set image.repository="${CONTAINER_REPO}"
         --set image.tag="${DOCKER_IMAGE_TAG}"
         --values ${HELM_CUSTOM_VALUES_FILE_1}
@@ -64,7 +63,6 @@ stages:
         --atomic
         --timeout 120s
         --namespace $HELM_NAMESPACE
-        --create-namespace
         --set image.repository="${CONTAINER_REPO}"
         --set image.tag="${DOCKER_IMAGE_TAG}"
         --values ${HELM_CUSTOM_VALUES_FILE_2}
