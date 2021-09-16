@@ -6,7 +6,7 @@ export type ChainSpec = 'polkadot' | 'kusama' | 'westend';
 /**
  * Sidecar endpoints that are supported
  */
-export type EndpointSpec = 'blocks' | 'accounts';
+export type EndpointSpec = 'blocks' | 'accounts' | 'runtime';
 
 /**
  * Chain object and the associated endpoints
