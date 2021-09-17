@@ -229,7 +229,7 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Chain integration guide
 
-[Click here for chain integration guide.](/CHAIN_INTEGRATION.md)
+[Click here for chain integration guide.](./guides/CHAIN_INTEGRATION.md))
 
 ## Docker
 
