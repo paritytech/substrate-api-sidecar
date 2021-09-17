@@ -229,7 +229,7 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Chain integration guide
 
-[Click here for chain integration guide.](/CHAIN_INTEGRATION.md)
+[Click here for chain integration guide.](./guides/CHAIN_INTEGRATION.md))
 
 ## Docker
 
@@ -302,6 +302,8 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     Note: that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running tests just for the chain that failed with something like `yarn test:init-e2e-tests:polkadot`.
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
+
+1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`. 
 
 1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API.
 
