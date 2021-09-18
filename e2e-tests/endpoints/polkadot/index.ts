@@ -5,5 +5,5 @@ import { polkadotRuntimeEndpoints } from './runtime';
 export const polkadotEndpoints = {
 	blocks: polkadotBlockEndpoints,
 	accounts: polkadotAccountsEndpoints,
-	runtime: polkadotRuntimeEndpoints
+	runtime: polkadotRuntimeEndpoints,
 };
