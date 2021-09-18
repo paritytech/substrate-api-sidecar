@@ -6,6 +6,7 @@ import {
 	ChainSpec,
 	IBlockResponse,
 	IEnvChainConfig,
+	RuntimeResponse
 } from './types';
 
 const config = JSON.parse(
@@ -66,7 +67,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 		'Given path %p, it should return the correct JSON response',
 		async (runtimePath, runtimeResponse) => {
 			const res = await request(runtimePath, HOST, PORT);
-			const responseJson = JSON.parse(res);
+			const responseJson = JSON.parse(res) as RuntimeResponse;
 
 			expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse))
 		}
