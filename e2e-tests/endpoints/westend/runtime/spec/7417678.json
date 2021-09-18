@@ -1,0 +1,23 @@
+{
+    "at": {
+        "height": "7417678",
+        "hash": "0x1913246c808369103b618c054fc95501f47a9a88f7909512dcadabe08ff11622"
+    },
+    "authoringVersion": "2",
+    "transactionVersion": "5",
+    "implVersion": "0",
+    "specName": "westend",
+    "specVersion": "9090",
+    "chainType": {
+        "live": null
+    },
+    "properties": {
+        "ss58Format": "42",
+        "tokenDecimals": [
+            "12"
+        ],
+        "tokenSymbol": [
+            "WND"
+        ]
+    }
+}
