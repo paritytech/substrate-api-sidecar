@@ -49,7 +49,7 @@
     "lint:scripts": "cd scripts && substrate-dev-run-lint"
   },
   "dependencies": {
-    "@polkadot/api": "^6.0.2",
+    "@polkadot/api": "^6.0.3",
     "@polkadot/apps-config": "0.95.2-114",
     "@polkadot/util-crypto": "^7.4.1",
     "@polkadot/x-rxjs": "^6.11.1",
@@ -75,15 +75,15 @@
     "tsc-watch": "^4.4.0"
   },
   "resolutions": {
-    "@polkadot/api": "^6.0.2",
-    "@polkadot/api-contract": "^6.0.2",
+    "@polkadot/api": "^6.0.3",
+    "@polkadot/api-contract": "^6.0.3",
     "@polkadot/hw-ledger": "^7.4.1",
     "@polkadot/keyring": "^7.4.1",
     "@polkadot/networks": "^7.4.1",
     "@polkadot/phishing": "^0.6.286",
-    "@polkadot/types": "^6.0.2",
-    "@polkadot/types-known": "^6.0.2",
-    "@polkadot/types-support": "^6.0.2",
+    "@polkadot/types": "^6.0.3",
+    "@polkadot/types-known": "^6.0.3",
+    "@polkadot/types-support": "^6.0.3",
     "@polkadot/util": "^7.4.1",
     "@polkadot/util-crypto": "^7.4.1",
     "@polkadot/wasm-crypto": "^4.2.1",
