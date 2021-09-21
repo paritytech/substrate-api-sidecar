@@ -29,6 +29,11 @@ export interface IBlockResponse {
 export type AccountsResponse = IAccountBalanceInfo | IAccountVestingInfo;
 
 /**
+ * Runtime type
+ */
+export type RuntimeResponse = IRuntimeSpec | IRuntimeCode | IRuntimeMetadata;
+
+/**
  * Response for `/accounts/balance-info`
  */
 export interface IAccountBalanceInfo {
@@ -52,7 +57,7 @@ export interface IBalanceLock {
 }
 
 /**
- * Respone for `/accounts/vesting-info`
+ * Response for `/accounts/vesting-info`
  */
 export interface IAccountVestingInfo {
 	at: IAt;
@@ -67,3 +72,30 @@ export interface IVestingSchedule {
 	perBlock: string;
 	staringBlock: string;
 }
+
+/**
+ * Response for `/runtime/spec`
+ */
+export interface IRuntimeSpec {
+	at: IAt;
+	authoringVersion: string;
+	chainType: string;
+	implVersion: string;
+	specName: string;
+	specVersion: string;
+	transactionVersion: string;
+	properties: object;
+}
+
+/**
+ * Response for `/runtime/code`
+ */
+export interface IRuntimeCode {
+	at: IAt;
+	code: string;
+}
+
+/**
+ * Response for `/runtime/code`
+ */
+export type IRuntimeMetadata = Object;

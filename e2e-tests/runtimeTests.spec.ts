@@ -6,6 +6,7 @@ import {
 	ChainSpec,
 	IBlockResponse,
 	IEnvChainConfig,
+	RuntimeResponse,
 } from './types';
 
 const config = JSON.parse(
@@ -14,7 +15,7 @@ const config = JSON.parse(
 
 const chain = config.chain as ChainSpec;
 
-const { blocks, accounts } = endpoints[chain];
+const { blocks, accounts, runtime } = endpoints[chain];
 
 describe('Runtime Tests for blocks', () => {
 	/**
@@ -52,6 +53,23 @@ describe('Runtime Tests for accounts', () => {
 			const responseJson = JSON.parse(res) as AccountsResponse;
 
 			expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
+		}
+	);
+});
+
+describe('Runtime Tests for `/runtime/*`', () => {
+	/**
+	 * Allows a timeout of 30 seconds for each response.
+	 */
+	jest.setTimeout(30000);
+
+	test.each(runtime)(
+		'Given path %p, it should return the correct JSON response',
+		async (runtimePath, runtimeResponse) => {
+			const res = await request(runtimePath, HOST, PORT);
+			const responseJson = JSON.parse(res) as RuntimeResponse;
+
+			expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 		}
 	);
 });
