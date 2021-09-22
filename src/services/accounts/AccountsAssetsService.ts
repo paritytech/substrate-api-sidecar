@@ -117,7 +117,8 @@ export class AccountsAssetsService extends AbstractService {
 					assetId,
 					balance: assetBalance.balance,
 					isFrozen: assetBalance.isFrozen,
-					isSufficient: assetBalance.sufficient || (assetBalance['isSufficient'] as bool),
+					isSufficient:
+						assetBalance.sufficient || (assetBalance['isSufficient'] as bool),
 				};
 			})
 		);
