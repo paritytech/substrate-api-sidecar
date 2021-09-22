@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
-import { StorageKey } from '@polkadot/types';
+import { bool, StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 
 import {
@@ -117,7 +117,8 @@ export class AccountsAssetsService extends AbstractService {
 					assetId,
 					balance: assetBalance.balance,
 					isFrozen: assetBalance.isFrozen,
-					isSufficient: assetBalance.isSufficient,
+					isSufficient:
+						assetBalance.sufficient || (assetBalance['isSufficient'] as bool),
 				};
 			})
 		);

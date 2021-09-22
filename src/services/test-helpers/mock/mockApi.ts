@@ -15,6 +15,7 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetBalance } from '@polkadot/types/lookup';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 
@@ -576,25 +577,25 @@ const assetsMetadata = () =>
 const assetBalanceObjOne = {
 	balance: assetTBalanceOne,
 	isFrozen: falseBool,
-	isSufficient: trueBool,
+	sufficient: trueBool,
 };
 
 const assetBalanceObjTwo = {
 	balance: assetTBalanceTwo,
 	isFrozen: trueBool,
-	isSufficient: trueBool,
+	sufficient: trueBool,
 };
 
 const assetBalanceObjThree = {
 	balance: assetTBalanceTwo,
 	isFrozen: falseBool,
-	isSufficient: falseBool,
+	sufficient: falseBool,
 };
 
 const assetBalanceFactory = {
-	'10': rococoRegistry.createType('AssetBalance', assetBalanceObjOne),
-	'20': rococoRegistry.createType('AssetBalance', assetBalanceObjTwo),
-	'30': rococoRegistry.createType('AssetBalance', assetBalanceObjThree),
+	'10': assetBalanceObjOne as PalletAssetsAssetBalance,
+	'20': assetBalanceObjTwo as PalletAssetsAssetBalance,
+	'30': assetBalanceObjThree as PalletAssetsAssetBalance,
 };
 
 const assetStorageKeyOne = statemintTypeFactory.storageKey(

@@ -157,7 +157,7 @@ export class PalletsStorageService extends AbstractService {
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
 	private findPalletMeta(palletId: string): [ModuleMetadataV12, number] {
-		const { modules } = this.api.runtimeMetadata.asLatest;
+		const { modules } = this.api.runtimeMetadata.asV12;
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(modules, palletId);

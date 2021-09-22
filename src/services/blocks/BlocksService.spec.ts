@@ -1,14 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { AugmentedConst } from '@polkadot/api/types/consts';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
-import { GenericExtrinsic } from '@polkadot/types';
+import { GenericExtrinsic, u128 } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
-import {
-	BalanceOf,
-	BlockHash,
-	Hash,
-	SignedBlock,
-} from '@polkadot/types/interfaces';
+import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -143,7 +138,7 @@ describe('BlocksService', () => {
 
 		it('Return an error with a null calcFee when perByte is undefined', async () => {
 			mockApi.consts.transactionPayment.transactionByteFee =
-				undefined as unknown as BalanceOf & AugmentedConst<'promise'>;
+				undefined as unknown as u128 & AugmentedConst<'promise'>;
 
 			const configuredBlocksService = new BlocksService(mockApi, 0, new LRU());
 
@@ -165,7 +160,7 @@ describe('BlocksService', () => {
 
 			// Revert mockApi back to its original setting that was changed above.
 			mockApi.consts.transactionPayment.transactionByteFee =
-				polkadotRegistry.createType('Balance', 1000000) as BalanceOf &
+				polkadotRegistry.createType('Balance', 1000000) as u128 &
 					AugmentedConst<'promise'>;
 
 			expect(responseObj.extrinsics[3].info).toEqual({
