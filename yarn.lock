@@ -878,21 +878,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/orml-type-definitions@npm:^0.9.4-34":
+"@open-web3/orml-type-definitions@npm:^0.9.4-34, @open-web3/orml-type-definitions@npm:^0.9.4-7":
   version: 0.9.4-38
   resolution: "@open-web3/orml-type-definitions@npm:0.9.4-38"
   dependencies:
     lodash.merge: ^4.6.2
   checksum: 49d2d1b902621cf0e295002f62ff4f1aa5e9a75acdf490dd16fb4c944c58aa48aeac2c535ce8b5cac9e0d5acd4dd706c37b2267e4d11db126601974572559302
-  languageName: node
-  linkType: hard
-
-"@open-web3/orml-type-definitions@npm:^0.9.4-7":
-  version: 0.9.4-34
-  resolution: "@open-web3/orml-type-definitions@npm:0.9.4-34"
-  dependencies:
-    lodash.merge: ^4.6.2
-  checksum: 60b5e815abfc97130b56f341b5b7b4d702a911ecf3daf341cd400478936b842325d3ac70671a75c395e9ba18ab68701bc2ed1c8b75144a6664abd41efb18e829
   languageName: node
   linkType: hard
 
