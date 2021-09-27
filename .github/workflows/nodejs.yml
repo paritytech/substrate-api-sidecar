@@ -64,6 +64,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Build Sidecar
       run: |
+        yarn
         yarn build
         yarn pack
     - name: Create test folder
