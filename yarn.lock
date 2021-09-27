@@ -939,9 +939,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/apps-config@npm:0.96.2-26":
-  version: 0.96.2-26
-  resolution: "@polkadot/apps-config@npm:0.96.2-26"
+"@polkadot/apps-config@npm:0.96.2-27":
+  version: 0.96.2-27
+  resolution: "@polkadot/apps-config@npm:0.96.2-27"
   dependencies:
     "@acala-network/type-definitions": 2.3.1
     "@babel/runtime": ^7.15.4
@@ -968,7 +968,7 @@ __metadata:
     moonbeam-types-bundle: 1.2.6
     pontem-types-bundle: 1.0.15
     rxjs: ^7.3.0
-  checksum: 294dfd8b06e9bab040aac7e3ae48edb8297bf37e88d58776d2431f502dbb50a590ee83f05d70ce727c90c8172b7b0b2caff2eb1ad293bf29d6d3d3f9b3644480
+  checksum: 6873aaae18afebcfd848ee67049eecc86f9d24e193183c4e6b767909f366d70ab198c514693bbaf1e1869a44e0786589dc4c2249a0af5d1c19a28ccbf8e25715
   languageName: node
   linkType: hard
 
@@ -1297,7 +1297,7 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@polkadot/api": ^6.0.5
-    "@polkadot/apps-config": 0.96.2-26
+    "@polkadot/apps-config": 0.96.2-27
     "@polkadot/util-crypto": ^7.4.1
     "@polkadot/x-rxjs": ^6.11.1
     "@substrate/calc": ^0.2.2
