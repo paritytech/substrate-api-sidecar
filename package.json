@@ -45,8 +45,10 @@
     "test:init-e2e-tests:kusama": "yarn start:e2e-scripts --chain kusama",
     "test:init-e2e-tests:westend": "yarn start:e2e-scripts --chain westend",
     "start:e2e-scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
-    "build:scripts": "cd scripts && substrate-exec-tsc",
-    "lint:scripts": "cd scripts && substrate-dev-run-lint"
+    "build:scripts": "substrate-exec-rimraf scripts/build/ && cd scripts && substrate-exec-tsc",
+    "lint:scripts": "cd scripts && substrate-dev-run-lint",
+    "start:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js",
+    "test:test-release": "yarn start:test-release"
   },
   "dependencies": {
     "@polkadot/api": "^6.0.5",
