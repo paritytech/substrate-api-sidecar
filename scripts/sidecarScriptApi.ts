@@ -2,6 +2,10 @@ import { spawn } from 'child_process';
 
 import { IProcOpts, ProcsType, StatusCode } from './types';
 
+export const setWsUrl = (url: string): void => {
+    process.env.SAS_SUBSTRATE_WS_URL = url;
+};
+
 /**
  * Kill all processes
  *

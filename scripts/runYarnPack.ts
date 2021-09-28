@@ -1,5 +1,5 @@
 import { defaultSasBuildOpts, defaultSasPackOpts } from './config';
-import { killAll, launchProcess } from './sidecarScriptApi';
+import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
 
 const procs: ProcsType = {};
@@ -94,6 +94,7 @@ const main = async () => {
 	/**
 	 * Start sidecar and see if it works
 	 */
+    setWsUrl('wss://kusama-rpc.polkadot.io');
 	console.log('Initializing Sidecar');
 	const sasStartPackOpts = {
 		proc: 'sidecar',
