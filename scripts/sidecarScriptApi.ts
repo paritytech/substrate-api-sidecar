@@ -56,7 +56,7 @@ export const killAll = (procs: ProcsType): void => {
  * }
  */
 export const launchProcess = (
-	cmd: string = 'yarn',
+	cmd: string,
 	procs: ProcsType,
 	{ proc, resolver, resolverStartupErr, args }: IProcOpts,
 ): Promise<StatusCode> => {
