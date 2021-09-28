@@ -1,3 +1,7 @@
+import { ChildProcessWithoutNullStreams } from 'child_process';
+
+export type ProcsType = { [key: string]: ChildProcessWithoutNullStreams };
+
 export enum StatusCode {
 	Success = '0',
 	Failed = '1',
