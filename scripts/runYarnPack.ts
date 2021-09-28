@@ -121,4 +121,22 @@ const main = async () => {
 	}
 };
 
+/**
+ * Signal interrupt
+ */
+process.on('SIGINT', function () {
+    console.log('Caught interrupt signal');
+    killAll(procs);
+    process.exit();
+});
+
+/**
+ * Signal hangup terminal
+ */
+process.on('SIGHUP', function () {
+    console.log('Caught terminal termination');
+    killAll(procs);
+    process.exit();
+});
+
 main().finally(() => process.exit());
