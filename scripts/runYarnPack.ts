@@ -19,7 +19,7 @@ const cleanup = async () => {
 		resolver: 'YN0000: Done',
 		args: ['remove', '@substrate/api-sidecar'],
 	};
-	const sidecarUnInstallPack = await launchProcess(sasUnInstallPackOpts, procs);
+	const sidecarUnInstallPack = await launchProcess('yarn', procs, sasUnInstallPackOpts);
 
 	if (sidecarUnInstallPack === Failed) {
 		console.error('UnInstalling sidecar package failed');
@@ -35,7 +35,7 @@ const cleanup = async () => {
 		resolver: '',
 		args: ['-rf', `${__dirname}/../../package.tgz`],
 	};
-	const deleteTarball = await launchProcess(sasDeleteTarballOpts, procs, 'rm');
+    const deleteTarball = await launchProcess('rm', procs, sasDeleteTarballOpts);
 
 	if (deleteTarball === Failed) {
 		console.error('Error deleting tarball');
@@ -54,7 +54,7 @@ const main = async () => {
 	 * Build sidecar
 	 */
 	console.log('Building Sidecar');
-	const sidecarBuild = await launchProcess(defaultSasBuildOpts, procs);
+	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
 	if (sidecarBuild === Failed) {
 		console.error('Sidecar failed to build, exiting...');
@@ -66,7 +66,7 @@ const main = async () => {
 	 * Build Tarball via yarn pack
 	 */
 	console.log('Building Local Npm release of Sidecar.');
-	const sidecarPack = await launchProcess(defaultSasPackOpts, procs);
+	const sidecarPack = await launchProcess('yarn', procs, defaultSasPackOpts);
 
 	if (sidecarPack === Failed) {
 		console.error('Sidecar failed to build an local npm tarball.');
@@ -83,7 +83,7 @@ const main = async () => {
 		resolver: 'YN0000: Done',
 		args: ['add', `${__dirname}/../../package.tgz`],
 	};
-	const sidecarInstallPack = await launchProcess(sasInstallPackOpts, procs);
+	const sidecarInstallPack = await launchProcess('yarn', procs, sasInstallPackOpts);
 
 	if (sidecarInstallPack === Failed) {
 		console.error('Installing the binary failed..');
@@ -103,9 +103,9 @@ const main = async () => {
 		args: [],
 	};
 	const sidecarStart = await launchProcess(
-		sasStartPackOpts,
+		`${__dirname}/../../node_modules/.bin/substrate-api-sidecar`,
 		procs,
-		`${__dirname}/../../node_modules/.bin/substrate-api-sidecar`
+        sasStartPackOpts
 	);
 
 	if (sidecarStart === Success) {
