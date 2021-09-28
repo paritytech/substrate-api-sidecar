@@ -2,6 +2,11 @@ import { spawn } from 'child_process';
 
 import { IProcOpts, ProcsType, StatusCode } from './types';
 
+/**
+ * Sets the url that sidecar will use in the env
+ * 
+ * @param url ws url used in sidecar
+ */
 export const setWsUrl = (url: string): void => {
     process.env.SAS_SUBSTRATE_WS_URL = url;
 };
@@ -48,6 +53,8 @@ export const killAll = (procs: ProcsType): void => {
  * }
  *
  * @param IProcOpts
+ * @param procs Object of saved processes 
+ * @param cmd Optional Command will default to 'yarn'
  */
 export const launchProcess = (
 	{ proc, resolver, resolverStartupErr, args }: IProcOpts,
