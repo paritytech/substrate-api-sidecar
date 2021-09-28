@@ -99,7 +99,7 @@ const main = async () => {
 	const sasStartPackOpts = {
 		proc: 'sidecar',
 		resolver: 'Check the root endpoint',
-		resolverStartupErr: 'error: uncaughtException: listen EADDRINUSE:',
+		resolverStartupErr: 'Error',
 		args: [],
 	};
 	const sidecarStart = await launchProcess(
