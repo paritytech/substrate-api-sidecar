@@ -1,21 +1,27 @@
 import { IChainConfig } from './types';
 
-const defaultSasStartOpts = {
+const defaultJestOpts = {
+	proc: 'jest',
+	resolver: 'PASS',
+};
+
+export const defaultSasStartOpts = {
 	proc: 'sidecar',
 	resolver: 'Check the root endpoint',
 	resolverStartupErr: 'error: uncaughtException: listen EADDRINUSE:',
 	args: ['start'],
 };
 
-const defaultJestOpts = {
-	proc: 'jest',
-	resolver: 'PASS',
-};
-
 export const defaultSasBuildOpts = {
 	proc: 'sidecar',
 	resolver: 'Build Finished',
 	args: ['build'],
+};
+
+export const defaultSasPackOpts = {
+	proc: 'sidecar-pack',
+	resolver: 'YN0000: Done in',
+	args: ['pack'],
 };
 
 export const config: Record<string, IChainConfig> = {
