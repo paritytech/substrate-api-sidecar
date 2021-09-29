@@ -22,7 +22,8 @@ const cleanup = async () => {
 	const sidecarUnInstallPack = await launchProcess('yarn', procs, sasUnInstallPackOpts);
 
 	if (sidecarUnInstallPack === Failed) {
-		console.error('UnInstalling sidecar package failed');
+		console.error('UnInstalling sidecar package failed..');
+		console.error('Please uninstall the package using `yarn remove @substrate/api-sidecar`.');
 		killAll(procs);
 	}
 
@@ -38,13 +39,14 @@ const cleanup = async () => {
     const deleteTarball = await launchProcess('rm', procs, sasDeleteTarballOpts);
 
 	if (deleteTarball === Failed) {
-		console.error('Error deleting tarball');
+		console.error('Error deleting tarball.');
+		console.error('In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.');
 		killAll(procs);
 	}
 };
 
 /**
- * This scripts focus is to create a dry-run npm release and check if sidecar
+ * This script creates a dry-run npm release and checks if sidecar
  * launches succesfully.
  */
 const main = async () => {
