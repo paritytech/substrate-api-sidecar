@@ -1802,9 +1802,7 @@ components:
         the transaction is valid forever. `mortalEra` consists of a tuple containing a period and phase.
         ex: `"{"mortalEra": ["64", "11"]}"`. The Period is the period of validity from the block hash found in the signing material. 
         The Phase is the period that this transaction's lifetime begins (and, importantly, 
-        implies which block hash is included in the signature material). If the `period` is 
-        greater than 1 << 12, then it will be a factor of the times greater than 1<<12 that 
-        `period` is.
+        implies which block hash is included in the signature material).
       properties:
         mortalEra: 
           type: string
