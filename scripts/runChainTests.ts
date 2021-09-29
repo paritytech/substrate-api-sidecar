@@ -1,8 +1,8 @@
 import { ArgumentParser, Namespace } from 'argparse';
 
 import { config, defaultSasBuildOpts } from './config';
-import { StatusCode, ProcsType } from './types';
-import { setWsUrl, launchProcess, killAll } from './sidecarScriptApi';
+import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
+import { ProcsType, StatusCode } from './types';
 
 // Stores all the processes
 const procs: ProcsType = {};

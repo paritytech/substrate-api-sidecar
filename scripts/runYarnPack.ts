@@ -19,11 +19,17 @@ const cleanup = async () => {
 		resolver: 'YN0000: Done',
 		args: ['remove', '@substrate/api-sidecar'],
 	};
-	const sidecarUnInstallPack = await launchProcess('yarn', procs, sasUnInstallPackOpts);
+	const sidecarUnInstallPack = await launchProcess(
+		'yarn',
+		procs,
+		sasUnInstallPackOpts
+	);
 
 	if (sidecarUnInstallPack === Failed) {
 		console.error('UnInstalling sidecar package failed..');
-		console.error('Please uninstall the package using `yarn remove @substrate/api-sidecar`.');
+		console.error(
+			'Please uninstall the package using `yarn remove @substrate/api-sidecar`.'
+		);
 		killAll(procs);
 	}
 
@@ -36,11 +42,13 @@ const cleanup = async () => {
 		resolver: '',
 		args: ['-rf', `${__dirname}/../../package.tgz`],
 	};
-    const deleteTarball = await launchProcess('rm', procs, sasDeleteTarballOpts);
+	const deleteTarball = await launchProcess('rm', procs, sasDeleteTarballOpts);
 
 	if (deleteTarball === Failed) {
 		console.error('Error deleting tarball.');
-		console.error('In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.');
+		console.error(
+			'In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.'
+		);
 		killAll(procs);
 	}
 };
@@ -85,7 +93,11 @@ const main = async () => {
 		resolver: 'YN0000: Done',
 		args: ['add', `${__dirname}/../../package.tgz`],
 	};
-	const sidecarInstallPack = await launchProcess('yarn', procs, sasInstallPackOpts);
+	const sidecarInstallPack = await launchProcess(
+		'yarn',
+		procs,
+		sasInstallPackOpts
+	);
 
 	if (sidecarInstallPack === Failed) {
 		console.error('Installing the binary failed..');
@@ -96,7 +108,7 @@ const main = async () => {
 	/**
 	 * Start sidecar and see if it works
 	 */
-    setWsUrl('wss://kusama-rpc.polkadot.io');
+	setWsUrl('wss://kusama-rpc.polkadot.io');
 	console.log('Initializing Sidecar');
 	const sasStartPackOpts = {
 		proc: 'sidecar',
@@ -107,7 +119,7 @@ const main = async () => {
 	const sidecarStart = await launchProcess(
 		`${__dirname}/../../node_modules/.bin/substrate-api-sidecar`,
 		procs,
-        sasStartPackOpts
+		sasStartPackOpts
 	);
 
 	if (sidecarStart === Success) {
@@ -127,18 +139,18 @@ const main = async () => {
  * Signal interrupt
  */
 process.on('SIGINT', function () {
-    console.log('Caught interrupt signal');
-    killAll(procs);
-    process.exit();
+	console.log('Caught interrupt signal');
+	killAll(procs);
+	process.exit();
 });
 
 /**
  * Signal hangup terminal
  */
 process.on('SIGHUP', function () {
-    console.log('Caught terminal termination');
-    killAll(procs);
-    process.exit();
+	console.log('Caught terminal termination');
+	killAll(procs);
+	process.exit();
 });
 
 main().finally(() => process.exit());
