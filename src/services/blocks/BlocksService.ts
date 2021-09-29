@@ -360,7 +360,8 @@ export class BlocksService extends AbstractService {
 			typeof events === 'string' ? block.registry : events.registry;
 
 		return block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, tip, era } = extrinsic;
+			const { method, nonce, signature, signer, isSigned, tip, era } =
+				extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 			const call = registry.createType('Call', method);
 
