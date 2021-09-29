@@ -360,7 +360,7 @@ export class BlocksService extends AbstractService {
 			typeof events === 'string' ? block.registry : events.registry;
 
 		return block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, tip } = extrinsic;
+			const { method, nonce, signature, signer, isSigned, tip, era } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 			const call = registry.createType('Call', method);
 
@@ -375,6 +375,7 @@ export class BlocksService extends AbstractService {
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
+				eraInfo: era,
 				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
