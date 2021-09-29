@@ -375,7 +375,7 @@ export class BlocksService extends AbstractService {
 				tip: isSigned ? tip : null,
 				hash,
 				info: {},
-				eraInfo: era,
+				era: era,
 				events: [] as ISanitizedEvent[],
 				success: defaultSuccess,
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
