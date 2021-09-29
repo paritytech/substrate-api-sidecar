@@ -29,7 +29,7 @@ const cleanup = async () => {
 	/**
 	 * Delete tarball
 	 */
-	console.log('Deleting Tarball');
+	console.log('Deleting tarball');
 	const sasDeleteTarballOpts = {
 		proc: 'delete-tarball',
 		resolver: '',
