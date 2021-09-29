@@ -1736,6 +1736,8 @@ components:
           format: hex
         info:
           $ref: '#/components/schemas/RuntimeDispatchInfo'
+        era:
+          $ref: '#/components/schemas/GenericExtrinsicEra'
         events:
           type: array
           description: An array of `SanitizedEvent`s that occurred during extrinsic
@@ -1793,6 +1795,25 @@ components:
         trieIndex:
           type: string
           format: unsignedInteger
+    GenericExtrinsicEra:
+      type: object
+      description: |
+        The return value for eraInfo can either be `mortal`, or `immortal` and is represented as an enum in substrate. `immortal` meaning 
+        the transaction is valid forever. `mortal` consists of a tuple containing a period and phase.
+        ex: `{"mortal": ["64", "11"]}`. The Period is the period of validity from the block hash found in the signing material. 
+        The Phase is the period that this transaction's lifetime begins (and, importantly, 
+        implies which block hash is included in the signature material). If the `period` is 
+        greater than 1 << 12, then it will be a factor of the times greater than 1<<12 that 
+        `period` is.
+      properties:
+        mortal: 
+          type: string
+          nullable: true
+        immortal:
+          type: string
+          nullable: true
+          default: ['0x00']
+      example: "{\"immmortal\": ['0x00']}"
     NodeNetwork:
       type: object
       properties:
