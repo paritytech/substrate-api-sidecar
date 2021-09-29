@@ -16,6 +16,9 @@
         "tip": null,
         "hash": "0xcf52705d1ade64fc0b05859ac28358c0770a217dd76b75e586ae848c56ae810d",
         "info": {},
+        "era": {
+            "immortalEra": "0x00"
+        },
         "events": [
             {
                 "method": {
