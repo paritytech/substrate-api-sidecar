@@ -1811,7 +1811,7 @@ components:
           type: string
           nullable: true
           default: ['0x00']
-      example: "{\"immmortalEra\": ['0x00']}"
+      example: "{\"immortalEra\": ['0x00']}"
     NodeNetwork:
       type: object
       properties:
