@@ -14,6 +14,7 @@ import {
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
+import { shidenDefinitions } from './shidenConsts';
 import { westendDefinitions } from './westendConsts';
 
 /**
@@ -85,6 +86,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(dockPoSMainnetDefinitions);
 		case 'dock-pos-test-runtime':
 			return generateBlockWeightStore(dockPoSTestnetDefinitions);
+		case 'shiden':
+			return generateBlockWeightStore(shidenDefinitions);
 		default:
 			return {};
 	}
