@@ -28,7 +28,7 @@ export const shidenControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 1,
 		blockWeightStore: getBlockWeight('shiden'),
 		blockStore: initLRUCache(),
 	},
