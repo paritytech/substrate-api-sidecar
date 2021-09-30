@@ -1,5 +1,6 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for Shiden collator network
@@ -7,15 +8,14 @@ import { initLRUCache } from './cache/lruCache';
 export const shidenControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
-		'AccountsStakingInfo',
-		'AccountsStakingPayouts',
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksTrace',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
-		'PalletsStakingProgress',
+		'PalletsAssets',
 		'PalletsStorage',
 		'Paras',
 		'RuntimeCode',
@@ -29,7 +29,7 @@ export const shidenControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: null,
-		blockWeightStore: {},
+		blockWeightStore: getBlockWeight('shiden'),
 		blockStore: initLRUCache(),
 	},
 };
