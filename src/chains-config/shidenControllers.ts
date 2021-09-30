@@ -3,7 +3,7 @@ import { initLRUCache } from './cache/lruCache';
 import { getBlockWeight } from './metadata-consts';
 
 /**
- * Controllers for Shiden collator network
+ * Controllers for Shiden collator
  */
 export const shidenControllers: ControllerConfig = {
 	controllers: [
