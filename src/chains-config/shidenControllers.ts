@@ -21,7 +21,6 @@ export const shidenControllers: ControllerConfig = {
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
-		'TransactionDryRun',
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
