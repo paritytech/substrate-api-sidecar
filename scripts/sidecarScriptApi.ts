@@ -4,11 +4,11 @@ import { IProcOpts, ProcsType, StatusCode } from './types';
 
 /**
  * Sets the url that sidecar will use in the env
- * 
+ *
  * @param url ws url used in sidecar
  */
 export const setWsUrl = (url: string): void => {
-    process.env.SAS_SUBSTRATE_WS_URL = url;
+	process.env.SAS_SUBSTRATE_WS_URL = url;
 };
 
 /**
@@ -46,7 +46,7 @@ export const killAll = (procs: ProcsType): void => {
  * Launch any given process. It accepts an options object.
  *
  * @param cmd Optional Command will default to 'yarn'
- * @param procs Object of saved processes 
+ * @param procs Object of saved processes
  * @param IProcOpts
  * {
  *   proc => the name of the process to be saved in our cache
@@ -58,7 +58,7 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{ proc, resolver, resolverStartupErr, args }: IProcOpts,
+	{ proc, resolver, resolverStartupErr, args }: IProcOpts
 ): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;

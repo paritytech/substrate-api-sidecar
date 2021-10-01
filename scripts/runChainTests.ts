@@ -1,68 +1,11 @@
 import { ArgumentParser, Namespace } from 'argparse';
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 
 import { config, defaultSasBuildOpts } from './config';
-import { IProcOpts, StatusCode } from './types';
+import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
+import { ProcsType, StatusCode } from './types';
 
 // Stores all the processes
-const procs: { [key: string]: ChildProcessWithoutNullStreams } = {};
-
-// Set the env variable for SAS_SUBSTRATE_WS_URL
-const setWsUrl = (url: string): void => {
-	process.env.SAS_SUBSTRATE_WS_URL = url;
-};
-
-/**
- * Launch any given process. It accepts an options object.
- *
- * {
- *   proc => the name of the process to be saved in our cache
- *   resolver => If the stdout contains the resolver it will resolve the process
- *   resolverStartupErr => If the stderr contains the resolver it will resolve the process
- *   args => an array of args to be attached to the `yarn` command.
- * }
- *
- * @param IProcOpts
- */
-const launchProcess = async ({
-	proc,
-	resolver,
-	resolverStartupErr,
-	args,
-}: IProcOpts): Promise<StatusCode> => {
-	return new Promise<StatusCode>((resolve, reject) => {
-		const { Success, Failed } = StatusCode;
-
-		const command = 'yarn';
-
-		procs[proc] = spawn(command, args, { detached: true });
-
-		procs[proc].stdout.on('data', (data: Buffer) => {
-			console.log(data.toString());
-
-			if (data.toString().includes(resolver)) {
-				resolve(Success);
-			}
-		});
-
-		procs[proc].stderr.on('data', (data: Buffer) => {
-			console.error(data.toString());
-
-			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
-				resolve(Failed);
-			}
-		});
-
-		procs[proc].on('close', () => {
-			resolve(Success);
-		});
-
-		procs[proc].on('error', (err) => {
-			console.log(err);
-			reject(Failed);
-		});
-	});
-};
+const procs: ProcsType = {};
 
 /**
  * Launches Sidecar, and if successful it will launch the jest runner. This operation
@@ -78,51 +21,24 @@ const launchChainTest = async (chain: string): Promise<boolean> => {
 	setWsUrl(wsUrl);
 
 	console.log('Launching Sidecar...');
-	const sidecarStart = await launchProcess(SasStartOpts);
+	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
 
 	if (sidecarStart === Success) {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
-		const jest = await launchProcess(JestProcOpts);
+		const jest = await launchProcess('yarn', procs, JestProcOpts);
 
 		if (jest === Success) {
-			killAll();
+			killAll(procs);
 			return true;
 		} else {
-			killAll();
+			killAll(procs);
 			return false;
 		}
 	} else {
 		console.error('Error launching sidecar... exiting...');
-		killAll();
+		killAll(procs);
 		process.exit(1);
-	}
-};
-
-// Kill all processes spawned and tracked by this file.
-const killAll = () => {
-	console.log('Killing all processes...');
-	for (const key of Object.keys(procs)) {
-		if (!procs[key].killed) {
-			try {
-				console.log(`Killing ${key}`);
-				// Kill child and all its descendants.
-				process.kill(-procs[key].pid, 'SIGTERM');
-				process.kill(-procs[key].pid, 'SIGKILL');
-			} catch (e) {
-				/**
-				 * The error we are catching here silently, is when `-procs[key].pid` takes
-				 * the range of all pid's inside of the subprocess group created with
-				 * `spawn`, and one of the process's is either already closed or doesn't exist anymore.
-				 *
-				 * ex: `Error: kill ESRCH`
-				 *
-				 * This is a very specific use case of an empty catch block and is used
-				 * outside of the scope of the API therefore justifiable, and should be used cautiously
-				 * elsewhere.
-				 */
-			}
-		}
 	}
 };
 
@@ -143,13 +59,13 @@ const main = async (args: Namespace): Promise<void> => {
 
 	// Build sidecar
 	console.log('Building Sidecar...');
-	const sidecarBuild = await launchProcess(defaultSasBuildOpts);
+	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
 	// When sidecar fails to build, we kill all process's and exit
 	if (sidecarBuild === Failed) {
 		console.error('Sidecar failed to build, exiting...');
 		// Kill all processes
-		killAll();
+		killAll(procs);
 		// Exit program
 		process.exit();
 	}
@@ -188,7 +104,7 @@ const args = parser.parse_args() as Namespace;
  */
 process.on('SIGINT', function () {
 	console.log('Caught interrupt signal');
-	killAll();
+	killAll(procs);
 	process.exit();
 });
 
@@ -197,7 +113,7 @@ process.on('SIGINT', function () {
  */
 process.on('SIGHUP', function () {
 	console.log('Caught terminal termination');
-	killAll();
+	killAll(procs);
 	process.exit();
 });
 
