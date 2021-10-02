@@ -40,6 +40,9 @@
             "tip": null,
             "hash": "0x400edae8b9c35c43fec0e2fef7d39ab739a4e7fc0145a6c98d670898cad91083",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -71,6 +74,9 @@
             "tip": null,
             "hash": "0x007224b0a6a6987659ab781cc598564876ede542af15918f08ae8b4190513f2f",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -102,6 +108,9 @@
             "tip": null,
             "hash": "0xcf52705d1ade64fc0b05859ac28358c0770a217dd76b75e586ae848c56ae810d",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -153,6 +162,9 @@
             "hash": "0x4e478caa1f4e5e87a493f51abe9e2204a431fdfdbe91c2ec4420696d7aac7777",
             "info": {
                 "error": "Fee calculation not supported for 1020#kusama"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -224,6 +236,9 @@
             "info": {
                 "error": "Fee calculation not supported for 1020#kusama"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -284,6 +299,9 @@
             "hash": "0x2c1a587bdd81095e6f58a0633b2e2080f3eaa4a7a6b4673e3ca3fbe4761c3347",
             "info": {
                 "error": "Fee calculation not supported for 1020#kusama"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -355,6 +373,9 @@
             "info": {
                 "error": "Fee calculation not supported for 1020#kusama"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -424,6 +445,9 @@
             "hash": "0xfbeb261f7419a7869b744393caf84ecc49c4ce51fd9c33e27330d435ea38944a",
             "info": {
                 "error": "Fee calculation not supported for 1020#kusama"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {

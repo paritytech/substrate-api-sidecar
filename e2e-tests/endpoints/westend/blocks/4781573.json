@@ -40,6 +40,9 @@
             "tip": null,
             "hash": "0x46cc82240cecf260d4640324a063e7a755d1f1bcea099ddc0b0c52241236dc4a",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -82,6 +85,9 @@
                 "weight": "200933000",
                 "class": "Normal",
                 "partialFee": "15600001607"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -147,6 +153,9 @@
                 "class": "Normal",
                 "partialFee": "15600001607"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -210,6 +219,9 @@
                 "weight": "200933000",
                 "class": "Normal",
                 "partialFee": "15600001607"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -275,6 +287,9 @@
                 "class": "Normal",
                 "partialFee": "15600001607"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -338,6 +353,9 @@
                 "weight": "200933000",
                 "class": "Normal",
                 "partialFee": "15600001607"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -403,6 +421,9 @@
                 "class": "Normal",
                 "partialFee": "15600001607"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -466,6 +487,9 @@
                 "weight": "200933000",
                 "class": "Normal",
                 "partialFee": "15600001607"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -531,6 +555,9 @@
                 "class": "Normal",
                 "partialFee": "15600001607"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -594,6 +621,9 @@
                 "weight": "200933000",
                 "class": "Normal",
                 "partialFee": "15600001607"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {

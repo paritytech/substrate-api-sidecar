@@ -40,6 +40,9 @@
             "tip": null,
             "hash": "0x4d1e7a74ecf6a6a0c27c6370c339dfb1cddee6e7986566fb7b55aa21b8397451",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -82,6 +85,12 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "mortalEra": [
+                    "4096",
+                    "2311"
+                ]
             },
             "events": [
                 {
@@ -141,6 +150,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -206,6 +218,9 @@
                 "class": "Normal",
                 "partialFee": "15900001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -264,6 +279,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -329,6 +347,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -392,6 +413,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -457,6 +481,9 @@
                 "class": "Normal",
                 "partialFee": "15900001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -515,6 +542,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -580,6 +610,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -643,6 +676,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -708,6 +744,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -771,6 +810,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -836,6 +878,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -899,6 +944,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -964,6 +1012,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1027,6 +1078,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -1092,6 +1146,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1155,6 +1212,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -1220,6 +1280,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1283,6 +1346,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -1348,6 +1414,9 @@
                 "class": "Normal",
                 "partialFee": "15900001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1406,6 +1475,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -1471,6 +1543,9 @@
                 "class": "Normal",
                 "partialFee": "15900001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1529,6 +1604,9 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15600001612"
+            },
+            "era": {
+                "immortalEra": "0x00"
             },
             "events": [
                 {
@@ -1594,6 +1672,9 @@
                 "class": "Normal",
                 "partialFee": "15600001612"
             },
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -1657,6 +1738,12 @@
                 "weight": "201538000",
                 "class": "Normal",
                 "partialFee": "15300001612"
+            },
+            "era": {
+                "mortalEra": [
+                    "4096",
+                    "2312"
+                ]
             },
             "events": [
                 {

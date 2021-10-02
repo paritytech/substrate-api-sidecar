@@ -40,6 +40,9 @@
             "tip": null,
             "hash": "0xb46c335b715dc793ab2bd5a4859c99061b42daabc8926a647d72155ea9a3090d",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -178,6 +181,12 @@
                 "weight": "647223827000",
                 "class": "Normal",
                 "partialFee": "165998390"
+            },
+            "era": {
+                "mortalEra": [
+                    "64",
+                    "3"
+                ]
             },
             "events": [
                 {

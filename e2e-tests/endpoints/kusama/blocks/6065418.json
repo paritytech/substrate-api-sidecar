@@ -40,6 +40,9 @@
             "tip": null,
             "hash": "0x4e5f3a213954964f39ce98ff6bef239505b40e063051792ce71b5900078b10f5",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -91,6 +94,9 @@
             "tip": null,
             "hash": "0x89726593ca061549ce796c554bd843764957e5ab6a3e58cecadfe3ecccc9b898",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -151,6 +157,9 @@
             "tip": null,
             "hash": "0xc808ac74f0037125ec8c70ddb0bd57601d20fa7a539444f588ae3a15c6cbc659",
             "info": {},
+            "era": {
+                "immortalEra": "0x00"
+            },
             "events": [
                 {
                     "method": {
@@ -198,6 +207,12 @@
                 "weight": "218087000",
                 "class": "Normal",
                 "partialFee": "51999513"
+            },
+            "era": {
+                "mortalEra": [
+                    "64",
+                    "5"
+                ]
             },
             "events": [
                 {
