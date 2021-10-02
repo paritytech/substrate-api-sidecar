@@ -655,7 +655,7 @@ const assetApprovals = () =>
 		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
 	});
 
-const apiAt = () =>
+export const apiAt = (): Promise<ApiPromise> =>
 	Promise.resolve().then(() => {
 		return createApiWithAugmentations(polkadotMetadata.toHex());
 	});

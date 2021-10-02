@@ -18,9 +18,11 @@ import {
 	polkadotRegistry,
 	polkadotRegistryV29,
 } from '../../test-helpers/registries';
+import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
+	apiAt,
 	blockHash20000,
 	blockHash100000,
 	blockHash789629,
@@ -251,7 +253,13 @@ describe('BlocksService', () => {
 				Promise.resolve().then(() => polkadotMetadataV29);
 			const revertedMetadata = () =>
 				Promise.resolve().then(() => polkadotMetadata);
+			// Set this historic At to the tests current runtime
+			const historicAt = () =>
+				Promise.resolve().then(() =>
+					createApiWithAugmentations(polkadotMetadataV29.toHex())
+				);
 
+			(mockApi.at as unknown) = historicAt;
 			(mockApi.registry as unknown) = polkadotRegistryV29;
 			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
 
@@ -269,6 +277,7 @@ describe('BlocksService', () => {
 					.baseExtrinsic
 			).toBe(BigInt(512000000000001));
 
+			(mockApi.at as unknown) = apiAt;
 			(mockApi.registry as unknown) = polkadotRegistry;
 			(mockApi.rpc.state.getMetadata as unknown) = revertedMetadata;
 		});
