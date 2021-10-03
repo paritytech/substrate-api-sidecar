@@ -51,7 +51,7 @@
     "test:test-release": "yarn start:test-release"
   },
   "dependencies": {
-    "@polkadot/api": "^6.0.5",
+    "@polkadot/api": "^6.1.2",
     "@polkadot/apps-config": "0.96.2-27",
     "@polkadot/util-crypto": "^7.4.1",
     "@polkadot/x-rxjs": "^6.11.1",
@@ -77,15 +77,11 @@
     "tsc-watch": "^4.4.0"
   },
   "resolutions": {
-    "@polkadot/api": "^6.0.5",
-    "@polkadot/api-contract": "^6.0.5",
-    "@polkadot/hw-ledger": "^7.4.1",
+    "@polkadot/api": "^6.1.2",
     "@polkadot/keyring": "^7.4.1",
     "@polkadot/networks": "^7.4.1",
-    "@polkadot/phishing": "^0.6.286",
-    "@polkadot/types": "^6.0.5",
-    "@polkadot/types-known": "^6.0.5",
-    "@polkadot/types-support": "^6.0.5",
+    "@polkadot/types": "^6.1.2",
+    "@polkadot/types-known": "^6.1.2",
     "@polkadot/util": "^7.4.1",
     "@polkadot/util-crypto": "^7.4.1",
     "@polkadot/wasm-crypto": "^4.2.1",

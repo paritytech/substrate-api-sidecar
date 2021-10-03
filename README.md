@@ -295,7 +295,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. Next make sure the resolutions are up to date inside of the `package.json` to match polkadot-js [here](https://github.com/polkadot-js/apps/blob/master/package.json). This is a manual process, and the packages we want to update are only the ones with `@polkadot` appended to it. If any issues may surface, contact the maintainers. 
+1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions. 
 
 1. After updating the dependencies and resolutions (if applicable), the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. If you would like to test on an individual chain, you may run the same command followed by its chain, ex: `yarn test:init-e2e-tests:polkadot`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
