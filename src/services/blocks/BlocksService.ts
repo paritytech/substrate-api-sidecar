@@ -558,9 +558,10 @@ export class BlocksService extends AbstractService {
 		blockHash: BlockHash
 	): Promise<WeightValue> {
 		const metadata = await api.rpc.state.getMetadata(blockHash);
+		const historicApi = (await api.at(blockHash)) as ApiPromise;
 		const {
 			consts: { system },
-		} = expandMetadata(api.registry, metadata);
+		} = expandMetadata(historicApi.registry, metadata);
 
 		let weightValue;
 		if ((system.blockWeights as unknown as BlockWeights)?.perClass) {

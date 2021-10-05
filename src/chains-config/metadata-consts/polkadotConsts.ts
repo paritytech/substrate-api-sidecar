@@ -9,7 +9,9 @@ export const polkadotDefinitions: MetadataConsts[] = [
 		extrinsicBaseWeight,
 	},
 	{
-		runtimeVersions: [27, 28, 29, 30, 9050],
+		runtimeVersions: [
+			27, 28, 29, 30, 9000, 9010, 9030, 9033, 9050, 9070, 9080, 9090, 9100,
+		],
 		perClass,
 	},
 ];
