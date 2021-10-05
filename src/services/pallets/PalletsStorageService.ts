@@ -1,8 +1,8 @@
 import { Text, Vec } from '@polkadot/types';
 import {
 	BlockHash,
-	ModuleMetadataV12,
-	StorageEntryMetadataV12,
+	ModuleMetadataV13,
+	StorageEntryMetadataV13,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -110,7 +110,7 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageItemMeta polkadot-js StorageEntryMetadataV12
 	 */
 	private normalizeStorageItemMeta(
-		storageItemMeta: StorageEntryMetadataV12
+		storageItemMeta: StorageEntryMetadataV13
 	): ISanitizedStorageItemMetadata {
 		const normalizedStorageItemMeta = sanitizeNumbers(
 			storageItemMeta
@@ -128,9 +128,9 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageId name of the storage item in camel or pascal case
 	 */
 	private findStorageItemMeta(
-		palletMeta: ModuleMetadataV12,
+		palletMeta: ModuleMetadataV13,
 		storageItemId: string
-	): StorageEntryMetadataV12 {
+	): StorageEntryMetadataV13 {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
@@ -156,15 +156,15 @@ export class PalletsStorageService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
-	private findPalletMeta(palletId: string): [ModuleMetadataV12, number] {
-		const { modules } = this.api.runtimeMetadata.asV12;
+	private findPalletMeta(palletId: string): [ModuleMetadataV13, number] {
+		const { modules } = this.api.runtimeMetadata.asV13;
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(modules, palletId);
 
 		const filtered = modules.filter((mod) => mod.storage.isSome);
 
-		let palletMeta: ModuleMetadataV12 | undefined;
+		let palletMeta: ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
 
 		if (isValidPalletIndex) {
@@ -210,7 +210,7 @@ export class PalletsStorageService extends AbstractService {
 	}
 
 	private validPalletId(
-		modules: Vec<ModuleMetadataV12>,
+		modules: Vec<ModuleMetadataV13>,
 		palletId: string
 	): {
 		isValidPalletName: boolean;
