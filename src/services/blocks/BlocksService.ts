@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
+import { extractAuthor } from '@polkadot/api-derive/type/util';
 import {
 	Block,
 	BlockHash,
@@ -98,21 +99,23 @@ export class BlocksService extends AbstractService {
 			return isBlockCached;
 		}
 
-		const [deriveBlock, events, finalizedHead] = await Promise.all([
-			api.derive.chain.getBlock(hash),
+		const [{ block }, validators, events, finalizedHead] = await Promise.all([
+			api.rpc.chain.getBlock(hash),
+			api.query.session.validators(),
 			this.fetchEvents(api, hash),
 			queryFinalizedHead
 				? api.rpc.chain.getFinalizedHead()
 				: Promise.resolve(hash),
 		]);
 
-		if (deriveBlock === undefined) {
+		if (block === undefined) {
 			throw new InternalServerError('Error querying for block');
 		}
-		const { block, author: authorId } = deriveBlock;
 
 		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
 			block.header;
+
+		const authorId = extractAuthor(digest, validators);
 
 		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };
