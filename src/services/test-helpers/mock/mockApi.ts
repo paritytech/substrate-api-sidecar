@@ -718,7 +718,7 @@ export const mockApi = {
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
-			validators: { at: validatorsAt },
+			validators: validatorsAt,
 		},
 		slots: {
 			leases: {
