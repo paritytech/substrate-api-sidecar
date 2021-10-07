@@ -119,7 +119,7 @@ const eraElectionStatusAt = (_hash: Hash) =>
 		polkadotRegistry.createType('ElectionStatus', { Close: null })
 	);
 
-export const validatorsAt = (_hash: Hash) =>
+const validatorsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
 	);
