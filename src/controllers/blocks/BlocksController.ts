@@ -174,9 +174,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
-		console.time('historic')
+		// HistoricApi to fetch any historic information that doesnt include the current runtime
 		const historicApi = await this.api.at(hash);
-		console.timeEnd('historic')
+
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
