@@ -60,7 +60,9 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			omitFinalizedTag: true,
 		};
 
-		const block = await this.service.fetchBlock(hash, options);
+		const historicApi = await this.api.at(hash);
+
+		const block = await this.service.fetchBlock(hash, historicApi, options);
 
 		/**
 		 * Verify our param `extrinsicIndex` is an integer represented as a string

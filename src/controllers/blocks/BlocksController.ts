@@ -138,9 +138,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
+		const historicApi = await this.api.at(hash);
+
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, options)
+			await this.service.fetchBlock(hash, historicApi, options)
 		);
 	};
 
@@ -172,10 +174,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
+		console.time('historic')
+		const historicApi = await this.api.at(hash);
+		console.timeEnd('historic')
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.fetchBlock(hash, options)
+			await this.service.fetchBlock(hash, historicApi, options)
 		);
 	};
 

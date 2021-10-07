@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
@@ -82,6 +83,7 @@ export class BlocksService extends AbstractService {
 	 */
 	async fetchBlock(
 		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		{
 			eventDocs,
 			extrinsicDocs,
@@ -98,10 +100,10 @@ export class BlocksService extends AbstractService {
 		if (isBlockCached) {
 			return isBlockCached;
 		}
-
+		
 		const [{ block }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
-			api.query.session.validators(),
+			historicApi.query.session.validators(),
 			this.fetchEvents(api, hash),
 			queryFinalizedHead
 				? api.rpc.chain.getFinalizedHead()
@@ -172,7 +174,7 @@ export class BlocksService extends AbstractService {
 			calcFee = undefined;
 		} else {
 			// This runtime supports fee calc
-			const createCalcFee = await this.createCalcFee(api, parentHash, block);
+			const createCalcFee = await this.createCalcFee(api, historicApi, parentHash, block);
 			calcFee = createCalcFee.calcFee;
 			specName = createCalcFee.specName;
 			specVersion = createCalcFee.specVersion;
@@ -477,6 +479,7 @@ export class BlocksService extends AbstractService {
 	 */
 	private async createCalcFee(
 		api: ApiPromise,
+		historicApi: ApiDecoration<'promise'>,
 		parentHash: Hash,
 		block: Block
 	): Promise<ICalcFee> {
@@ -531,6 +534,7 @@ export class BlocksService extends AbstractService {
 		// the weights in the store
 		this.blockWeightStore[specVersion] ||= await this.getWeight(
 			api,
+			historicApi,
 			parentHash
 		);
 
@@ -558,10 +562,10 @@ export class BlocksService extends AbstractService {
 	 */
 	private async getWeight(
 		api: ApiPromise,
+		historicApi: ApiDecoration<'promise'>,
 		blockHash: BlockHash
 	): Promise<WeightValue> {
 		const metadata = await api.rpc.state.getMetadata(blockHash);
-		const historicApi = (await api.at(blockHash)) as ApiPromise;
 		const {
 			consts: { system },
 		} = expandMetadata(historicApi.registry, metadata);
