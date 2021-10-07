@@ -104,7 +104,7 @@ export class BlocksService extends AbstractService {
 		const [{ block }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			historicApi.query.session.validators(),
-			this.fetchEvents(api, hash),
+			this.fetchEvents(api),
 			queryFinalizedHead
 				? api.rpc.chain.getFinalizedHead()
 				: Promise.resolve(hash),
@@ -501,14 +501,13 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const multiplier =
-			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
+		const multiplier = await historicApi.query.transactionPayment?.nextFeeMultiplier();
 
-		const perByte = api.consts.transactionPayment?.transactionByteFee;
+		const perByte = historicApi.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
-			api.consts.system.extrinsicBaseWeight ||
-			api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
-		const { weightToFee } = api.consts.transactionPayment;
+			historicApi.consts.system.extrinsicBaseWeight ||
+			historicApi.consts.system.blockWeights.perClass.normal.baseExtrinsic;
+		const { weightToFee } = historicApi.consts.transactionPayment;
 
 		if (!perByte || !extrinsicBaseWeightExists || !multiplier || !weightToFee) {
 			// This particular runtime version is not supported with fee calcs or
@@ -636,11 +635,10 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` to make query at
 	 */
 	private async fetchEvents(
-		api: ApiPromise,
-		hash: BlockHash
+		historicApi: ApiDecoration<'promise'>,
 	): Promise<Vec<EventRecord> | string> {
 		try {
-			return await api.query.system.events.at(hash);
+			return await historicApi.query.system.events();
 		} catch {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}

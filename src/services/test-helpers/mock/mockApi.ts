@@ -739,11 +739,11 @@ export const mockApi = {
 			slashingSpans: { at: slashingSpansAt },
 		},
 		system: {
-			events: { at: eventsAt },
+			events: eventsAt,
 			account: { at: accountAt },
 		},
 		transactionPayment: {
-			nextFeeMultiplier: { at: nextFeeMultiplierAt },
+			nextFeeMultiplier: nextFeeMultiplierAt,
 		},
 		vesting: {
 			vesting: { at: vestingAt },
