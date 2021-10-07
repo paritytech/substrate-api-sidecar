@@ -104,7 +104,7 @@ export class BlocksService extends AbstractService {
 		const [{ block }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			historicApi.query.session.validators(),
-			this.fetchEvents(api),
+			this.fetchEvents(historicApi),
 			queryFinalizedHead
 				? api.rpc.chain.getFinalizedHead()
 				: Promise.resolve(hash),
