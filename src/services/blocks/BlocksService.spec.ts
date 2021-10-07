@@ -60,7 +60,6 @@ const blocksService = new BlocksService(mockApi, 0, cache);
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
-
 			// Reset LRU cache
 			cache.reset();
 
@@ -134,7 +133,11 @@ describe('BlocksService', () => {
 				omitFinalizedTag: true,
 			};
 
-			const block = await blocksService.fetchBlock(blockHash789629, mockApi, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			expect(block.finalized).toEqual(undefined);
 		});
@@ -155,7 +158,11 @@ describe('BlocksService', () => {
 			};
 
 			const response = sanitizeNumbers(
-				await configuredBlocksService.fetchBlock(blockHash789629, mockApi, options)
+				await configuredBlocksService.fetchBlock(
+					blockHash789629,
+					mockApi,
+					options
+				)
 			);
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -243,7 +250,11 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const weightValue = await blocksService['getWeight'](mockApi, mockApi, blockHash);
+			const weightValue = await blocksService['getWeight'](
+				mockApi,
+				mockApi,
+				blockHash
+			);
 
 			expect(
 				(weightValue as unknown as ExtBaseWeightValue).extrinsicBaseWeight
@@ -268,7 +279,11 @@ describe('BlocksService', () => {
 			(mockApi.registry as unknown) = polkadotRegistryV29;
 			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
 
-			const weightValue = await blocksService['getWeight'](mockApi, mockApi, blockHash);
+			const weightValue = await blocksService['getWeight'](
+				mockApi,
+				mockApi,
+				blockHash
+			);
 
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.normal.baseExtrinsic
@@ -506,7 +521,11 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const block = await blocksService.fetchBlock(blockHash789629, mockApi, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			/**
 			 * The `extrinsicIndex` (second param) is being tested for a non-zero
@@ -523,7 +542,11 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const block = await blocksService.fetchBlock(blockHash789629, mockApi, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			expect(() => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);

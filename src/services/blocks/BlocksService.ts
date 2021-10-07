@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
+import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-import { extractAuthor } from '@polkadot/api-derive/type/util';
 import {
 	Block,
 	BlockHash,
@@ -100,7 +100,7 @@ export class BlocksService extends AbstractService {
 		if (isBlockCached) {
 			return isBlockCached;
 		}
-		
+
 		const [{ block }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			historicApi.query.session.validators(),
@@ -174,7 +174,12 @@ export class BlocksService extends AbstractService {
 			calcFee = undefined;
 		} else {
 			// This runtime supports fee calc
-			const createCalcFee = await this.createCalcFee(api, historicApi, parentHash, block);
+			const createCalcFee = await this.createCalcFee(
+				api,
+				historicApi,
+				parentHash,
+				block
+			);
 			calcFee = createCalcFee.calcFee;
 			specName = createCalcFee.specName;
 			specVersion = createCalcFee.specVersion;
@@ -501,7 +506,8 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const multiplier = await historicApi.query.transactionPayment?.nextFeeMultiplier();
+		const multiplier =
+			await historicApi.query.transactionPayment?.nextFeeMultiplier();
 
 		const perByte = historicApi.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =
@@ -635,7 +641,7 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` to make query at
 	 */
 	private async fetchEvents(
-		historicApi: ApiDecoration<'promise'>,
+		historicApi: ApiDecoration<'promise'>
 	): Promise<Vec<EventRecord> | string> {
 		try {
 			return await historicApi.query.system.events();
