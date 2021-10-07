@@ -9,6 +9,7 @@ import {
 	blockHash789629,
 	erasStartSessionIndexAt,
 	mockApi,
+	validatorsAt,
 } from '../test-helpers/mock';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
@@ -20,6 +21,8 @@ const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
 
 describe('PalletStakingProgressService', () => {
 	describe('derivePalletStakingProgress', () => {
+		(mockApi.query.session.validators as unknown) = { at: validatorsAt };
+		
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(
@@ -65,6 +68,7 @@ describe('PalletStakingProgressService', () => {
 			);
 
 			(mockApi.query.staking.activeEra as any).at = activeEraAt;
+			(mockApi.query.session.validators as unknown) = validatorsAt;
 		});
 	});
 });
