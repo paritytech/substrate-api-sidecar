@@ -1,13 +1,14 @@
+import { ApiPromise } from '@polkadot/api';
+import { AssetId } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetBalance } from '@polkadot/types/lookup';
+
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { statemintV1 } from '../../test-helpers/metadata/statemintMetadata';
+import { rococoRegistry } from '../../test-helpers/registries';
+import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
+import { TypeFactory } from '../../test-helpers/typeFactory';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { AccountsAssetsService } from './AccountsAssetsService';
-import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
-import { rococoRegistry } from '../../test-helpers/registries';
-import { statemintV1 } from '../../test-helpers/metadata/statemintMetadata';
-import { TypeFactory } from '../../test-helpers/typeFactory';
-import { ApiPromise } from '@polkadot/api';
-import { PalletAssetsAssetBalance } from '@polkadot/types/lookup';
-import { AssetId } from '@polkadot/types/interfaces';
 
 const statemintApiV1 = createApiWithAugmentations(statemintV1);
 const statemintTypeFactory = new TypeFactory(statemintApiV1);
@@ -150,7 +151,7 @@ const mockApi = {
 			asset: assetsInfo,
 			metadata: assetsMetadata,
 		},
-	}
+	},
 } as unknown as ApiPromise;
 
 const accountsAssetsService = new AccountsAssetsService(mockApi);

@@ -31,19 +31,17 @@ import {
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
+import { events789629 } from '../test-helpers/mock/data/events789629Hex';
+import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import { BlocksService } from './BlocksService';
 
-import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
-import { events789629 } from '../test-helpers/mock/data/events789629Hex'
-
 const validatorsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
 	);
-
 
 const eventsAt = (_hash: Hash) =>
 	Promise.resolve().then(() =>
@@ -71,25 +69,25 @@ const mockHistoricApi = {
 		},
 		system: {
 			extrinsicBaseWeight: polkadotRegistry.createType('u64', 125000000),
-		}
+		},
 	},
 	query: {
 		session: {
-			validators: validatorsAt
+			validators: validatorsAt,
 		},
 		system: {
-			events: eventsAt
+			events: eventsAt,
 		},
 		transactionPayment: {
 			nextFeeMultiplier: nextFeeMultiplierAt,
 		},
-	}
-} as unknown as ApiDecoration<'promise'>
+	},
+} as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
 	...defaultMockApi,
-	at: async (_hash: Hash) => mockHistoricApi,
-} as unknown as ApiPromise
+	at: (_hash: Hash) => mockHistoricApi,
+} as unknown as ApiPromise;
 
 /**
  * For type casting mock getBlock functions so tsc does not complain
@@ -129,7 +127,11 @@ describe('BlocksService', () => {
 
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options)
+					await blocksService.fetchBlock(
+						blockHash789629,
+						mockHistoricApi,
+						options
+					)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -336,7 +338,7 @@ describe('BlocksService', () => {
 			const weightValue = await blocksService['getWeight'](
 				mockApi,
 				historicV29Api,
-				blockHash,
+				blockHash
 			);
 
 			expect(
