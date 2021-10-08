@@ -12,6 +12,15 @@ export const setWsUrl = (url: string): void => {
 };
 
 /**
+ * Sets the log level for sidecar
+ *
+ * @param level log-levels -> error, warn, info, http, verbose, debug, silly
+ */
+export const setLogLevel = (level: string): void => {
+	process.env.SAS_LOG_LEVEL = level;
+};
+
+/**
  * Kill all processes
  *
  * @param procs

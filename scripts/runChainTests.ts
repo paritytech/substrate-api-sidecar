@@ -1,7 +1,12 @@
 import { ArgumentParser, Namespace } from 'argparse';
 
 import { config, defaultSasBuildOpts } from './config';
-import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
+import {
+	killAll,
+	launchProcess,
+	setLogLevel,
+	setWsUrl,
+} from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
 
 // Stores all the processes
@@ -57,6 +62,10 @@ const checkTests = (...args: boolean[]) => {
 const main = async (args: Namespace): Promise<void> => {
 	const { Failed } = StatusCode;
 
+	if (args.log_level) {
+		setLogLevel(args.log_level);
+	}
+
 	// Build sidecar
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
@@ -95,6 +104,9 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend'],
+});
+parser.add_argument('--log-level', {
+	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
 });
 
 const args = parser.parse_args() as Namespace;
