@@ -1,7 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
+
 import { sanitizeNumbers } from '../../sanitize';
-import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { polkadotRegistry } from '../../test-helpers/registries';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import fetchStorageRes from '../test-helpers/responses/pallets/fetchStorage789629.json';
 import fetchStorageIdsOnlyRes from '../test-helpers/responses/pallets/fetchStorageIdsOnly789629.json';
 import fetchStorageItemRes from '../test-helpers/responses/pallets/fetchStorageItem789629.json';
@@ -18,7 +19,7 @@ const mockApi = {
 		democracy: {
 			referendumInfoOf: { at: referendumInfoOfAt },
 		},
-	}
+	},
 } as unknown as ApiPromise;
 
 /**
