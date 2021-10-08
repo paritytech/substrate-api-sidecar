@@ -1,9 +1,9 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../test-helpers/mock';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import response789629 from '../test-helpers/responses/runtime/metadata789629.json';
 import { RuntimeMetadataService } from './RuntimeMetadataService';
 
-const runtimeMetadataService = new RuntimeMetadataService(mockApi);
+const runtimeMetadataService = new RuntimeMetadataService(defaultMockApi);
 
 describe('RuntimeMetadataService', () => {
 	describe('fetchMetadata', () => {
