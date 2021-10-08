@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { ApiPromise } from '@polkadot/api';
+import { EraIndex, Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -7,22 +9,86 @@ import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	activeEraAt,
 	blockHash789629,
+	defaultMockApi,
 	erasStartSessionIndexAt,
-	mockApi,
 } from '../test-helpers/mock';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
-/**
- * Mock PalletStakingProgressService instance.
- */
-const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
+const epochIndexAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
+
+const genesisSlotAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265084563));
+
+const currentSlotAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265876724));
+
+const currentIndexAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('SessionIndex', 330)
+	);
+
+const eraElectionStatusAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('ElectionStatus', { Close: null })
+	);
 
 const validatorsAt = () =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
 	);
+
+const forceEraAt = (_hash: Hash) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Forcing', 'NotForcing')
+	);
+
+const unappliedSlashesAt = (_hash: Hash, _activeEra: EraIndex) =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<UnappliedSlash>', [])
+	);
+
+const validatorCountAt = (_hash: Hash) =>
+	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
+
+const mockApi = {
+	...defaultMockApi,
+	consts: {
+		babe: {
+			epochDuration: polkadotRegistry.createType('u64', 2400),
+		},
+		staking: {
+			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
+			sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
+		},
+	},
+	query: {
+		babe: {
+			currentSlot: { at: currentSlotAt },
+			epochIndex: { at: epochIndexAt },
+			genesisSlot: { at: genesisSlotAt },
+		},
+		session: {
+			currentIndex: { at: currentIndexAt },
+			validators: validatorsAt,
+		},
+		staking: {
+			activeEra: { at: activeEraAt },
+			eraElectionStatus: { at: eraElectionStatusAt },
+			erasStartSessionIndex: { at: erasStartSessionIndexAt },
+			forceEra: { at: forceEraAt },
+			unappliedSlashes: { at: unappliedSlashesAt },
+			validatorCount: { at: validatorCountAt },
+		},
+	},
+} as unknown as ApiPromise;
+
+/**
+ * Mock PalletStakingProgressService instance.
+ */
+const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
 
 describe('PalletStakingProgressService', () => {
 	describe('derivePalletStakingProgress', () => {
