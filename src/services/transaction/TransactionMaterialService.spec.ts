@@ -1,9 +1,11 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, mockApi } from '../test-helpers/mock';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import response789629 from '../test-helpers/responses/transaction/material789629.json';
 import { TransactionMaterialService } from './TransactionMaterialService';
 
-const transactionMaterialService = new TransactionMaterialService(mockApi);
+const transactionMaterialService = new TransactionMaterialService(
+	defaultMockApi
+);
 
 describe('TransactionMaterialService', () => {
 	describe('getTransactionMaterial', () => {
