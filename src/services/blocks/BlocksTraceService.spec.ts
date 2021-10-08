@@ -2,7 +2,7 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { kusamRegistryV2025 } from '../../test-helpers/registries';
 import {
 	blockHash789629,
-	mockApi,
+	defaultMockApi,
 	mockBlock789629,
 } from '../test-helpers/mock';
 import { keyNames } from '../test-helpers/mock/data/getKeyNames';
@@ -25,7 +25,7 @@ const tempMockBlock789629Registry = mockBlock789629.registry;
 /**
  * BlocksTraceService mock
  */
-const blocksTraceService = new BlocksTraceService(mockApi);
+const blocksTraceService = new BlocksTraceService(defaultMockApi);
 
 beforeAll(() => {
 	// Override registry so we correctly create kusama types.
