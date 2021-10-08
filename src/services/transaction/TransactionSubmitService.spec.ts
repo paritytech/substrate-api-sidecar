@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ApiPromise } from '@polkadot/api';
+
 import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
-	mockApi,
+	defaultMockApi,
 	submitExtrinsic,
 	tx,
 } from '../test-helpers/mock';
 import failParseResponse from '../test-helpers/responses/transaction/submitFailParse.json';
 import nodeRejectResponse from '../test-helpers/responses/transaction/submitNodeReject.json';
 import { TransactionSubmitService } from './TransactionSubmitService';
+
+const mockApi = {
+	...defaultMockApi,
+} as unknown as ApiPromise;
 
 const transactionSubmitService = new TransactionSubmitService(mockApi);
 
