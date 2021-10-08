@@ -821,3 +821,48 @@ export const mockApi = {
 		},
 	},
 } as unknown as ApiPromise;
+
+export const defaultMockApi = {
+	runtimeVersion,
+	createType: polkadotRegistry.createType.bind(polkadotRegistry),
+	registry: polkadotRegistry,
+	tx,
+	runtimeMetadata: polkadotMetadata,
+	rpc: {
+		chain: {
+			getHeader,
+			getBlock,
+			getBlockHash: getBlockHashGenesis,
+			getFinalizedHead,
+		},
+		state: {
+			getRuntimeVersion,
+			getMetadata,
+			getStorage,
+			traceBlock,
+		},
+		system: {
+			chain,
+			health,
+			localListenAddresses,
+			nodeRoles,
+			localPeerId,
+			version,
+			chainType,
+			properties,
+		},
+		payment: {
+			queryInfo: queryInfoBalancesTransfer,
+		},
+		author: {
+			submitExtrinsic,
+			pendingExtrinsics,
+		},
+	},
+	derive: {
+		chain: {
+			getHeader: deriveGetHeader,
+			getBlock: deriveGetBlock,
+		},
+	},
+} as unknown as ApiPromise;
