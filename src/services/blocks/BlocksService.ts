@@ -510,7 +510,7 @@ export class BlocksService extends AbstractService {
 		 * of the `parentHash` block.
 		 */
 		const multiplier =
-			await historicApi.query.transactionPayment?.nextFeeMultiplier();
+			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
 
 		const perByte = historicApi.consts.transactionPayment?.transactionByteFee;
 		const extrinsicBaseWeightExists =

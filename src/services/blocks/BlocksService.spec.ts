@@ -82,6 +82,11 @@ const mockHistoricApi = {
 
 const mockApi = {
 	...defaultMockApi,
+	query: {
+		transactionPayment: {
+			nextFeeMultiplier: { at: nextFeeMultiplierAt },
+		},
+	},
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
