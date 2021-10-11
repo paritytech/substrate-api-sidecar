@@ -509,7 +509,7 @@ export class BlocksService extends AbstractService {
 		 * This will remain using the original api.query.*.*.at to retrieve the multiplier
 		 * of the `parentHash` block.
 		 */
-		const multiplier = await api.query.transactionPayment?.nextFeeMultiplier.at(
+		const multiplier = await api.query.transactionPayment?.nextFeeMultiplier?.at(
 			parentHash
 		);
 
