@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { AugmentedConst } from '@polkadot/api/types/consts';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic, u128 } from '@polkadot/types';
@@ -9,20 +10,15 @@ import LRU from 'lru-cache';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
-import {
-	polkadotMetadata,
-	polkadotMetadataV29,
-} from '../../test-helpers/metadata/metadata';
+import { polkadotMetadataV29 } from '../../test-helpers/metadata/metadata';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
-	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
-	apiAt,
 	blockHash20000,
 	blockHash100000,
 	blockHash789629,
@@ -74,7 +70,7 @@ describe('BlocksService', () => {
 
 			expect(
 				sanitizeNumbers(
-					await blocksService.fetchBlock(blockHash789629, options)
+					await blocksService.fetchBlock(blockHash789629, mockApi, options)
 				)
 			).toMatchObject(blocks789629Response);
 		});
@@ -102,8 +98,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 			};
-			const tempGetBlock = mockApi.derive.chain.getBlock;
-			mockApi.derive.chain.getBlock = (() =>
+			const tempGetBlock = mockApi.rpc.chain.getBlock;
+			mockApi.rpc.chain.getBlock = (() =>
 				Promise.resolve().then(() => {
 					return {
 						block: mockBlock789629BadExt,
@@ -111,14 +107,14 @@ describe('BlocksService', () => {
 				}) as unknown) as GetBlock;
 
 			await expect(
-				blocksService.fetchBlock(blockHash789629, options)
+				blocksService.fetchBlock(blockHash789629, mockApi, options)
 			).rejects.toThrow(
 				new Error(
 					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
 				)
 			);
 
-			mockApi.derive.chain.getBlock = tempGetBlock as unknown as GetBlock;
+			mockApi.rpc.chain.getBlock = tempGetBlock as unknown as GetBlock;
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
@@ -133,7 +129,11 @@ describe('BlocksService', () => {
 				omitFinalizedTag: true,
 			};
 
-			const block = await blocksService.fetchBlock(blockHash789629, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			expect(block.finalized).toEqual(undefined);
 		});
@@ -154,7 +154,11 @@ describe('BlocksService', () => {
 			};
 
 			const response = sanitizeNumbers(
-				await configuredBlocksService.fetchBlock(blockHash789629, options)
+				await configuredBlocksService.fetchBlock(
+					blockHash789629,
+					mockApi,
+					options
+				)
 			);
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -178,6 +182,7 @@ describe('BlocksService', () => {
 			// tx hash: 0x6d6c0e955650e689b14fb472daf14d2bdced258c748ded1d6cb0da3bfcc5854f
 			const { calcFee } = await blocksService['createCalcFee'](
 				mockApi,
+				mockApi,
 				'0xParentHash' as unknown as Hash,
 				mockBlock789629
 			);
@@ -192,6 +197,7 @@ describe('BlocksService', () => {
 			cache.reset();
 			// tx hash: 0xc96b4d442014fae60c932ea50cba30bf7dea3233f59d1fe98c6f6f85bfd51045
 			const { calcFee } = await blocksService['createCalcFee'](
+				mockApi,
 				mockApi,
 				'0xParentHash' as unknown as Hash,
 				mockBlock789629
@@ -215,6 +221,8 @@ describe('BlocksService', () => {
 
 			await blocksServiceEmptyBlockStore['createCalcFee'](
 				mockApi,
+				// place holder as historicApi
+				mockApi,
 				'0xParentHash' as unknown as Hash,
 				mockBlock789629
 			);
@@ -229,41 +237,26 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlocksService.getWeight', () => {
-		const blockHash = polkadotRegistry.createType(
-			'BlockHash',
-			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
-		);
-
-		it('Should return correct `extrinsicBaseWeight`', async () => {
+		it('Should return correct `extrinsicBaseWeight`', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
+			const weightValue = blocksService['getWeight'](mockApi);
 
 			expect(
 				(weightValue as unknown as ExtBaseWeightValue).extrinsicBaseWeight
 			).toBe(BigInt(125000000));
 		});
 
-		it('Should return correct `blockWeights`', async () => {
+		it('Should return correct `blockWeights`', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const changeMetadataToV29 = () =>
-				Promise.resolve().then(() => polkadotMetadataV29);
-			const revertedMetadata = () =>
-				Promise.resolve().then(() => polkadotMetadata);
-			// Set this historic At to the tests current runtime
-			const historicAt = () =>
-				Promise.resolve().then(() =>
-					createApiWithAugmentations(polkadotMetadataV29.toHex())
-				);
+			const historicApi = createApiWithAugmentations(
+				polkadotMetadataV29.toHex()
+			) as ApiDecoration<'promise'>;
 
-			(mockApi.at as unknown) = historicAt;
-			(mockApi.registry as unknown) = polkadotRegistryV29;
-			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
-
-			const weightValue = await blocksService['getWeight'](mockApi, blockHash);
+			const weightValue = blocksService['getWeight'](historicApi);
 
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.normal.baseExtrinsic
@@ -276,10 +269,6 @@ describe('BlocksService', () => {
 				(weightValue as unknown as PerClassValue).perClass.mandatory
 					.baseExtrinsic
 			).toBe(BigInt(512000000000001));
-
-			(mockApi.at as unknown) = apiAt;
-			(mockApi.registry as unknown) = polkadotRegistry;
-			(mockApi.rpc.state.getMetadata as unknown) = revertedMetadata;
 		});
 	});
 
@@ -501,7 +490,11 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const block = await blocksService.fetchBlock(blockHash789629, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			/**
 			 * The `extrinsicIndex` (second param) is being tested for a non-zero
@@ -518,7 +511,11 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const block = await blocksService.fetchBlock(blockHash789629, options);
+			const block = await blocksService.fetchBlock(
+				blockHash789629,
+				mockApi,
+				options
+			);
 
 			expect(() => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);
@@ -598,8 +595,8 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			await blocksService.fetchBlock(blockHash789629, options);
-			await blocksService.fetchBlock(blockHash20000, options);
+			await blocksService.fetchBlock(blockHash789629, mockApi, options);
+			await blocksService.fetchBlock(blockHash20000, mockApi, options);
 
 			expect(cache.length).toBe(2);
 		});
@@ -608,9 +605,9 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			await blocksService.fetchBlock(blockHash789629, options);
-			await blocksService.fetchBlock(blockHash20000, options);
-			await blocksService.fetchBlock(blockHash100000, options);
+			await blocksService.fetchBlock(blockHash789629, mockApi, options);
+			await blocksService.fetchBlock(blockHash20000, mockApi, options);
+			await blocksService.fetchBlock(blockHash100000, mockApi, options);
 
 			expect(cache.get(blockHash789629.toString())).toBe(undefined);
 			expect(cache.length).toBe(2);

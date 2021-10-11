@@ -10,6 +10,7 @@ import {
 	erasStartSessionIndexAt,
 	mockApi,
 } from '../test-helpers/mock';
+import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
@@ -18,8 +19,15 @@ import { PalletsStakingProgressService } from './PalletsStakingProgressService';
  */
 const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
 
+const validatorsAt = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
+	);
+
 describe('PalletStakingProgressService', () => {
 	describe('derivePalletStakingProgress', () => {
+		(mockApi.query.session.validators as unknown) = { at: validatorsAt };
+
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
 				sanitizeNumbers(
@@ -65,6 +73,7 @@ describe('PalletStakingProgressService', () => {
 			);
 
 			(mockApi.query.staking.activeEra as any).at = activeEraAt;
+			(mockApi.query.session.validators as unknown) = validatorsAt;
 		});
 	});
 });

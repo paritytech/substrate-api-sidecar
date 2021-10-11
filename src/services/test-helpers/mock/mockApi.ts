@@ -718,7 +718,7 @@ export const mockApi = {
 		},
 		session: {
 			currentIndex: { at: currentIndexAt },
-			validators: { at: validatorsAt },
+			validators: validatorsAt,
 		},
 		slots: {
 			leases: {
@@ -739,7 +739,7 @@ export const mockApi = {
 			slashingSpans: { at: slashingSpansAt },
 		},
 		system: {
-			events: { at: eventsAt },
+			events: eventsAt,
 			account: { at: accountAt },
 		},
 		transactionPayment: {
