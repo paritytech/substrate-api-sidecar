@@ -743,7 +743,7 @@ export const mockApi = {
 			account: { at: accountAt },
 		},
 		transactionPayment: {
-			nextFeeMultiplier: nextFeeMultiplierAt,
+			nextFeeMultiplier: { at: nextFeeMultiplierAt },
 		},
 		vesting: {
 			vesting: { at: vestingAt },
