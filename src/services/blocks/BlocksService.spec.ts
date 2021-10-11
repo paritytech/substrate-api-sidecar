@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { AugmentedConst } from '@polkadot/api/types/consts';
 import { RpcPromiseResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic, u128 } from '@polkadot/types';
@@ -9,20 +10,15 @@ import LRU from 'lru-cache';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
-import {
-	polkadotMetadata,
-	polkadotMetadataV29,
-} from '../../test-helpers/metadata/metadata';
+import { polkadotMetadataV29 } from '../../test-helpers/metadata/metadata';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
-	polkadotRegistryV29,
 } from '../../test-helpers/registries';
 import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
-	apiAt,
 	blockHash20000,
 	blockHash100000,
 	blockHash789629,
@@ -241,49 +237,26 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlocksService.getWeight', () => {
-		const blockHash = polkadotRegistry.createType(
-			'BlockHash',
-			'0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
-		);
-
-		it('Should return correct `extrinsicBaseWeight`', async () => {
+		it('Should return correct `extrinsicBaseWeight`', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const weightValue = await blocksService['getWeight'](
-				mockApi,
-				mockApi,
-				blockHash
-			);
+			const weightValue = blocksService['getWeight'](mockApi);
 
 			expect(
 				(weightValue as unknown as ExtBaseWeightValue).extrinsicBaseWeight
 			).toBe(BigInt(125000000));
 		});
 
-		it('Should return correct `blockWeights`', async () => {
+		it('Should return correct `blockWeights`', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const changeMetadataToV29 = () =>
-				Promise.resolve().then(() => polkadotMetadataV29);
-			const revertedMetadata = () =>
-				Promise.resolve().then(() => polkadotMetadata);
-			// Set this historic At to the tests current runtime
-			const historicAt = () =>
-				Promise.resolve().then(() =>
-					createApiWithAugmentations(polkadotMetadataV29.toHex())
-				);
+			const historicApi = createApiWithAugmentations(
+				polkadotMetadataV29.toHex()
+			) as ApiDecoration<'promise'>;
 
-			(mockApi.at as unknown) = historicAt;
-			(mockApi.registry as unknown) = polkadotRegistryV29;
-			(mockApi.rpc.state.getMetadata as unknown) = changeMetadataToV29;
-
-			const weightValue = await blocksService['getWeight'](
-				mockApi,
-				mockApi,
-				blockHash
-			);
+			const weightValue = blocksService['getWeight'](historicApi);
 
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.normal.baseExtrinsic
@@ -296,10 +269,6 @@ describe('BlocksService', () => {
 				(weightValue as unknown as PerClassValue).perClass.mandatory
 					.baseExtrinsic
 			).toBe(BigInt(512000000000001));
-
-			(mockApi.at as unknown) = apiAt;
-			(mockApi.registry as unknown) = polkadotRegistry;
-			(mockApi.rpc.state.getMetadata as unknown) = revertedMetadata;
 		});
 	});
 
