@@ -7981,7 +7981,7 @@
                         {
                             "name": "batched_calls_limit",
                             "type": "u32",
-                            "value": "0x0cc30000",
+                            "value": "0x0dd20000",
                             "docs": [
                                 " The limit on the number of batched calls."
                             ]

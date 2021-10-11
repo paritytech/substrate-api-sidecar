@@ -4098,7 +4098,7 @@
                         {
                             "name": "batched_calls_limit",
                             "type": "u32",
-                            "value": "0x3c230000",
+                            "value": "0x822d0000",
                             "docs": [
                                 " The limit on the number of batched calls."
                             ]

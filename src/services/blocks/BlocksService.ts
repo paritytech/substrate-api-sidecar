@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { expandMetadata } from '@polkadot/types';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
@@ -506,6 +505,10 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
+		/**
+		 * This will remain using the original api.query.*.*.at to retrieve the multiplier
+		 * of the `parentHash` block.
+		 */
 		const multiplier =
 			await historicApi.query.transactionPayment?.nextFeeMultiplier();
 
@@ -537,11 +540,7 @@ export class BlocksService extends AbstractService {
 
 		// Now that we know the exact runtime supports fee calcs, make sure we have
 		// the weights in the store
-		this.blockWeightStore[specVersion] ||= await this.getWeight(
-			api,
-			historicApi,
-			parentHash
-		);
+		this.blockWeightStore[specVersion] ||= this.getWeight(historicApi);
 
 		const calcFee = CalcFee.from_params(
 			coefficients,
@@ -565,15 +564,10 @@ export class BlocksService extends AbstractService {
 	 * @param blockHash Hash of a block in the runtime to get the extrinsic base weight(s) for
 	 * @returns formatted block weight store entry
 	 */
-	private async getWeight(
-		api: ApiPromise,
-		historicApi: ApiDecoration<'promise'>,
-		blockHash: BlockHash
-	): Promise<WeightValue> {
-		const metadata = await api.rpc.state.getMetadata(blockHash);
+	private getWeight(historicApi: ApiDecoration<'promise'>): WeightValue {
 		const {
 			consts: { system },
-		} = expandMetadata(historicApi.registry, metadata);
+		} = historicApi;
 
 		let weightValue;
 		if ((system.blockWeights as unknown as BlockWeights)?.perClass) {
