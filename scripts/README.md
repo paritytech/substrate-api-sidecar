@@ -14,6 +14,13 @@
 This script calls the local e2e-tests helper library in order to test the current branch or development environment against
 a collection of different blocks, across different runtimes. It does this for Polkadot, Kusama, and Westend.
 
+### Flags
+
+`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'westend', 'kusama']`. If no chain is selected it will default to run the e2e-tests against all chains.
+
+`--log-level`: Acceptable values are `['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']`. This will enable logging in Sidecar.
+
+
 
 ## Script `runYarnPack.ts`
 
