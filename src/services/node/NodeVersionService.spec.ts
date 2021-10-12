@@ -1,9 +1,9 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { mockApi } from '../test-helpers/mock';
+import { defaultMockApi } from '../test-helpers/mock';
 import nodeVersionResponse from '../test-helpers/responses/node/version.json';
 import { NodeVersionService } from '.';
 
-const nodeVersionService = new NodeVersionService(mockApi);
+const nodeVersionService = new NodeVersionService(defaultMockApi);
 
 describe('NodeVersionService', () => {
 	describe('fetchVersion', () => {

@@ -1,17 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
+import { ApiPromise } from '@polkadot/api';
+
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
 	blockHash789629,
-	mockApi,
+	defaultMockApi,
 	queryInfoBalancesTransfer,
 } from '../test-helpers/mock';
 import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
 import validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
+
+const mockApi = {
+	...defaultMockApi,
+} as unknown as ApiPromise;
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(
 	mockApi

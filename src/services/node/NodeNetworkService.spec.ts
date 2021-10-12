@@ -1,9 +1,9 @@
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { mockApi } from '../test-helpers/mock';
+import { defaultMockApi } from '../test-helpers/mock';
 import nodeNetworkResponse from '../test-helpers/responses/node/network.json';
 import { NodeNetworkService } from '.';
 
-const nodeNetworkService = new NodeNetworkService(mockApi);
+const nodeNetworkService = new NodeNetworkService(defaultMockApi);
 
 describe('NodeNetworkService', () => {
 	describe('fetchNetwork', () => {
