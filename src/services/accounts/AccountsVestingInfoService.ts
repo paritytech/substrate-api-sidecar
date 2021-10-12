@@ -16,9 +16,11 @@ export class AccountsVestingInfoService extends AbstractService {
 	): Promise<IAccountVestingInfo> {
 		const { api } = this;
 
+		const historicApi = await api.at(hash);
+
 		const [{ number }, vesting] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.vesting.vesting.at(hash, address),
+			historicApi.query.vesting.vesting(address),
 		]);
 
 		const at = {
