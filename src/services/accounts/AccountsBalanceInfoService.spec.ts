@@ -41,7 +41,7 @@ const accountAt = (_hash: Hash, _address: string) =>
 const freeBalance = async () =>
 	polkadotRegistry.createType('Balance', 123456789);
 
-const mockHistoricalApi = {
+const mockHistoricApi = {
 	query: {
 		balances: {
 			freeBalance,
@@ -74,7 +74,7 @@ const queryMockApi = {
 const mockApi = {
 	...defaultMockApi,
 	...queryMockApi,
-	at: (_hash: Hash) => mockHistoricalApi,
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);
@@ -82,7 +82,7 @@ const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);
 describe('AccountsBalanceInfoService', () => {
 	describe('fetchAccountBalanceInfo', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
-			const tempHistoricApi = { ...mockHistoricalApi };
+			const tempHistoricApi = { ...mockHistoricApi };
 			(tempHistoricApi.query.balances.freeBalance as unknown) = undefined;
 
 			const tempMockApi = {
@@ -137,7 +137,7 @@ describe('AccountsBalanceInfoService', () => {
 		});
 
 		describe('token recognition', () => {
-			const tokenHistoricApi = { ...mockHistoricalApi };
+			const tokenHistoricApi = { ...mockHistoricApi };
 			(tokenHistoricApi.query.system.account as unknown) = { at: true };
 			(tokenHistoricApi.query.balances.freeBalance as unknown) = undefined;
 
