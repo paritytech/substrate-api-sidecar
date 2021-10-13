@@ -1,4 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
+import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistry } from '../../test-helpers/registries';
@@ -13,13 +15,18 @@ const referendumInfoOfAt = () =>
 		polkadotRegistry.createType('ReferendumInfo');
 	});
 
-const mockApi = {
-	...defaultMockApi,
+const mockHistoricApi = {
+	registry: polkadotRegistry,
 	query: {
 		democracy: {
-			referendumInfoOf: { at: referendumInfoOfAt },
+			referendumInfoOf: referendumInfoOfAt,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 /**
@@ -32,13 +39,14 @@ describe('PalletStorageService', () => {
 		it('works with a query to a single key storage map', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorageItem({
+					await palletsStorageService.fetchStorageItem(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						storageItemId: 'referendumInfoOf',
 						key1: '0',
 						key2: undefined,
 						metadata: false,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -47,13 +55,14 @@ describe('PalletStorageService', () => {
 		it('works with a index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorageItem({
+					await palletsStorageService.fetchStorageItem(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: '15',
 						storageItemId: 'referendumInfoOf',
 						key1: '0',
 						key2: undefined,
 						metadata: false,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -62,13 +71,14 @@ describe('PalletStorageService', () => {
 		it('appropriately uses metadata params', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorageItem({
+					await palletsStorageService.fetchStorageItem(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						storageItemId: 'referendumInfoOf',
 						key1: '0',
 						key2: undefined,
 						metadata: true,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -79,10 +89,11 @@ describe('PalletStorageService', () => {
 		it('works with no query params', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorage({
+					await palletsStorageService.fetchStorage(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: false,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageRes);
@@ -91,10 +102,11 @@ describe('PalletStorageService', () => {
 		it('work with a index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorage({
+					await palletsStorageService.fetchStorage(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: '15',
 						onlyIds: false,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageRes);
@@ -103,10 +115,11 @@ describe('PalletStorageService', () => {
 		it('only list storage item ids when onlyIds is true', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsStorageService.fetchStorage({
+					await palletsStorageService.fetchStorage(mockHistoricApi, {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: true,
+						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageIdsOnlyRes);
