@@ -827,9 +827,9 @@ paths:
           type: string
       - name: adjustMetadataV13
         in: query
-        description: This gives the option to set historic blocks to use V13 metadata as oppose to V14. There are some
-          type differences between V14 and V13 when it comes to `StorageEntryType`. Specifally the 'map' key.
-          In turn this gives the ability to receive both older and newer storage responses while transitioning to V14.
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+          It will be deprecated and then removed in the future.
         required: false
         schema:
           type: boolean
@@ -895,9 +895,9 @@ paths:
           type: string
       - name: adjustMetadataV13
         in: query
-        description: This gives the option to set historic blocks to use V13 metadata as oppose to V14. There are some
-          type differences between V14 and V13 when it comes to `StorageEntryType`. Specifally the 'map' key.
-          In turn this gives the ability to receive both older and newer storage responses while transitioning to V14.
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+          It will be deprecated and then removed in the future.
         required: false
         schema:
           type: boolean
@@ -2064,7 +2064,8 @@ components:
       type: object
       description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are 
         pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
-        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses.
+        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
+        will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
     Para:
       type: object
       properties:

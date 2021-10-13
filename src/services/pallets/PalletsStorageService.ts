@@ -56,12 +56,12 @@ export class PalletsStorageService extends AbstractService {
 			adjustMetadataV13Arg,
 		}: IFetchStorageItemArgs
 	): Promise<IPalletStorageItem> {
-		const adjustedMetadata = await this.adjustMetadata(
+		const chosenMetadata = await this.chooseMetadataVersion(
 			hash,
 			adjustMetadataV13Arg
 		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			adjustedMetadata,
+			chosenMetadata,
 			historicApi,
 			palletId
 		);
@@ -106,12 +106,12 @@ export class PalletsStorageService extends AbstractService {
 			adjustMetadataV13Arg,
 		}: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletStorage> {
-		const adjustedMetadata = await this.adjustMetadata(
+		const chosenMetadata = await this.chooseMetadataVersion(
 			hash,
 			adjustMetadataV13Arg
 		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			adjustedMetadata,
+			chosenMetadata,
 			historicApi,
 			palletId
 		);
@@ -150,7 +150,7 @@ export class PalletsStorageService extends AbstractService {
 	 *
 	 * @param hash BlockHash to query
 	 */
-	private adjustMetadata = async (
+	private chooseMetadataVersion = async (
 		hash: BlockHash,
 		adjustMetadataV13Arg: boolean
 	): Promise<MetadataV13 | MetadataV14> => {
@@ -162,17 +162,17 @@ export class PalletsStorageService extends AbstractService {
 
 		const blockNumber = blockHeader.number.toNumber();
 
-		let adjustedMetadata;
+		let chosenMetadata;
 		if (
 			blockNumber < upgradeBlocks[specName.toString()] &&
 			adjustMetadataV13Arg
 		) {
-			adjustedMetadata = historicMetadata.asV13;
+			chosenMetadata = historicMetadata.asV13;
 		} else {
-			adjustedMetadata = historicMetadata.asV14;
+			chosenMetadata = historicMetadata.asV14;
 		}
 
-		return adjustedMetadata;
+		return chosenMetadata;
 	};
 
 	/**
