@@ -42,8 +42,8 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	): Promise<void> => {
 		const key1Arg = typeof key1 === 'string' ? key1 : undefined;
 		const key2Arg = typeof key2 === 'string' ? key2 : undefined;
-		const metadataArg = metadata === 'true' ? true : false;
-		const adjustMetadataV13Arg = adjustMetadataV13 === 'true' ? true : false;
+		const metadataArg = metadata === 'true';
+		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -67,8 +67,8 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		{ params: { palletId }, query: { at, onlyIds, adjustMetadataV13 } },
 		res
 	): Promise<void> => {
-		const onlyIdsArg = onlyIds === 'true' ? true : false;
-		const adjustMetadataV13Arg = adjustMetadataV13 === 'true' ? true : false;
+		const onlyIdsArg = onlyIds === 'true';
+		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
