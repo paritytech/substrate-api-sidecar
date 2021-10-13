@@ -23,6 +23,7 @@ import { AbstractService } from '../AbstractService';
 interface IFetchPalletArgs {
 	hash: BlockHash;
 	palletId: string;
+	adjustMetadataV13Arg: boolean;
 }
 
 interface IFetchStorageItemArgs extends IFetchPalletArgs {
@@ -30,6 +31,7 @@ interface IFetchStorageItemArgs extends IFetchPalletArgs {
 	key1?: string;
 	key2?: string;
 	metadata: boolean;
+	adjustMetadataV13Arg: boolean;
 }
 
 /**
@@ -51,9 +53,13 @@ export class PalletsStorageService extends AbstractService {
 			key1,
 			key2,
 			metadata,
+			adjustMetadataV13Arg,
 		}: IFetchStorageItemArgs
 	): Promise<IPalletStorageItem> {
-		const adjustedMetadata = await this.adjustMetadata(hash);
+		const adjustedMetadata = await this.adjustMetadata(
+			hash,
+			adjustMetadataV13Arg
+		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			adjustedMetadata,
 			historicApi,
@@ -93,9 +99,17 @@ export class PalletsStorageService extends AbstractService {
 
 	async fetchStorage(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+		{
+			hash,
+			palletId,
+			onlyIds,
+			adjustMetadataV13Arg,
+		}: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletStorage> {
-		const adjustedMetadata = await this.adjustMetadata(hash);
+		const adjustedMetadata = await this.adjustMetadata(
+			hash,
+			adjustMetadataV13Arg
+		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			adjustedMetadata,
 			historicApi,
@@ -128,11 +142,20 @@ export class PalletsStorageService extends AbstractService {
 		};
 	}
 
+	/**
+	 * This will grab either V13 or V14 metadata for pallets. The reason being is v14 introduced
+	 * `StorageEntryTypeV14` which is different from `StorageEntryTypeV13` when it comes
+	 * to `asMap`. This will ultimately give different responses, and we want to make sure
+	 * we preserve the integrity of older blocks.
+	 *
+	 * @param hash BlockHash to query
+	 */
 	private adjustMetadata = async (
-		hash: BlockHash
+		hash: BlockHash,
+		adjustMetadataV13Arg: boolean
 	): Promise<MetadataV13 | MetadataV14> => {
 		const [historicMetadata, blockHeader, { specName }] = await Promise.all([
-			await this.api.rpc.state.getMetadata(),
+			await this.api.rpc.state.getMetadata(hash),
 			await this.api.rpc.chain.getHeader(hash),
 			this.api.rpc.state.getRuntimeVersion(),
 		]);
@@ -140,7 +163,10 @@ export class PalletsStorageService extends AbstractService {
 		const blockNumber = blockHeader.number.toNumber();
 
 		let adjustedMetadata;
-		if (blockNumber < upgradeBlocks[specName.toString()]) {
+		if (
+			blockNumber < upgradeBlocks[specName.toString()] &&
+			adjustMetadataV13Arg
+		) {
 			adjustedMetadata = historicMetadata.asV13;
 		} else {
 			adjustedMetadata = historicMetadata.asV14;
