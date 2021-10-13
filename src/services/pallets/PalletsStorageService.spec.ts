@@ -26,7 +26,7 @@ const mockHistoricApi = {
 
 const mockApi = {
 	...defaultMockApi,
-	at: (_hash: Hash) => mockHistoricApi
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 /**

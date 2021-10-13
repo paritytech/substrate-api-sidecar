@@ -2,7 +2,11 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Text, Vec } from '@polkadot/types';
 import {
 	BlockHash,
+	MetadataV13,
+	MetadataV14,
+	ModuleMetadataV13,
 	PalletMetadataV14,
+	StorageEntryMetadataV13,
 	StorageEntryMetadataV14,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
@@ -28,16 +32,33 @@ interface IFetchStorageItemArgs extends IFetchPalletArgs {
 	metadata: boolean;
 }
 
+/**
+ * This is where these networks switched to v9110 which introduces v14 Metadata.
+ */
+const upgradeBlocks = {
+	kusama: 9625129,
+	polkadot: 7229126,
+	westend: 7766392,
+};
+
 export class PalletsStorageService extends AbstractService {
-	async fetchStorageItem(historicApi: ApiDecoration<'promise'>,{
-		hash,
-		palletId,
-		storageItemId,
-		key1,
-		key2,
-		metadata,
-	}: IFetchStorageItemArgs): Promise<IPalletStorageItem> {
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(historicApi, palletId);
+	async fetchStorageItem(
+		historicApi: ApiDecoration<'promise'>,
+		{
+			hash,
+			palletId,
+			storageItemId,
+			key1,
+			key2,
+			metadata,
+		}: IFetchStorageItemArgs
+	): Promise<IPalletStorageItem> {
+		const adjustedMetadata = await this.adjustMetadata(hash);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
+			adjustedMetadata,
+			historicApi,
+			palletId
+		);
 		const palletName = stringCamelCase(palletMeta.name);
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
@@ -70,12 +91,16 @@ export class PalletsStorageService extends AbstractService {
 		};
 	}
 
-	async fetchStorage(historicApi: ApiDecoration<'promise'>, {
-		hash,
-		palletId,
-		onlyIds,
-	}: IFetchPalletArgs & { onlyIds: boolean }): Promise<IPalletStorage> {
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(historicApi ,palletId);
+	async fetchStorage(
+		historicApi: ApiDecoration<'promise'>,
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+	): Promise<IPalletStorage> {
+		const adjustedMetadata = await this.adjustMetadata(hash);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
+			adjustedMetadata,
+			historicApi,
+			palletId
+		);
 
 		let items: [] | ISanitizedStorageItemMetadata[] | Text[];
 		if (palletMeta.storage.isNone) {
@@ -103,6 +128,27 @@ export class PalletsStorageService extends AbstractService {
 		};
 	}
 
+	private adjustMetadata = async (
+		hash: BlockHash
+	): Promise<MetadataV13 | MetadataV14> => {
+		const [historicMetadata, blockHeader, { specName }] = await Promise.all([
+			await this.api.rpc.state.getMetadata(),
+			await this.api.rpc.chain.getHeader(hash),
+			this.api.rpc.state.getRuntimeVersion(),
+		]);
+
+		const blockNumber = blockHeader.number.toNumber();
+
+		let adjustedMetadata;
+		if (blockNumber < upgradeBlocks[specName.toString()]) {
+			adjustedMetadata = historicMetadata.asV13;
+		} else {
+			adjustedMetadata = historicMetadata.asV14;
+		}
+
+		return adjustedMetadata;
+	};
+
 	/**
 	 * Normalize storage item metadata by running it through `sanitizeNumbers` and
 	 * converting the docs section from an array of strings to a single string
@@ -111,7 +157,7 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageItemMeta polkadot-js StorageEntryMetadataV12
 	 */
 	private normalizeStorageItemMeta(
-		storageItemMeta: StorageEntryMetadataV14
+		storageItemMeta: StorageEntryMetadataV14 | StorageEntryMetadataV13
 	): ISanitizedStorageItemMetadata {
 		const normalizedStorageItemMeta = sanitizeNumbers(
 			storageItemMeta
@@ -129,9 +175,9 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageId name of the storage item in camel or pascal case
 	 */
 	private findStorageItemMeta(
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		storageItemId: string
-	): StorageEntryMetadataV14 {
+	): StorageEntryMetadataV14 | StorageEntryMetadataV13 {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
@@ -157,16 +203,26 @@ export class PalletsStorageService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
-	private findPalletMeta(historicApi: ApiDecoration<'promise'>, palletId: string): [PalletMetadataV14, number] {
-		const historicMetadata = historicApi.registry.metadata;
-		const pallets = historicMetadata.pallets ? historicMetadata.pallets : historicMetadata['modules'] as Vec<PalletMetadataV14>
-		console.log(historicMetadata.pallets)
+	private findPalletMeta(
+		adjustedMetadata: MetadataV13 | MetadataV14,
+		historicApi: ApiDecoration<'promise'>,
+		palletId: string
+	): [PalletMetadataV14 | ModuleMetadataV13, number] {
+		const metadataType = adjustedMetadata.toRawType();
+
+		let pallets: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>;
+		if (metadataType.includes('MetadataV13')) {
+			pallets = adjustedMetadata['modules'] as Vec<ModuleMetadataV13>;
+		} else {
+			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
+		}
+
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(historicApi, pallets, palletId);
 
 		const filtered = pallets.filter((mod) => mod.storage.isSome);
 
-		let palletMeta: PalletMetadataV14 | undefined;
+		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
 
 		if (isValidPalletIndex) {
@@ -213,7 +269,7 @@ export class PalletsStorageService extends AbstractService {
 
 	private validPalletId(
 		historicApi: ApiDecoration<'promise'>,
-		modules: Vec<PalletMetadataV14>,
+		modules: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>,
 		palletId: string
 	): {
 		isValidPalletName: boolean;
