@@ -1,8 +1,8 @@
 import { Text, Vec } from '@polkadot/types';
 import {
 	BlockHash,
-	ModuleMetadataV13,
-	StorageEntryMetadataV13,
+	PalletMetadataV14,
+	StorageEntryMetadataV14,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -110,7 +110,7 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageItemMeta polkadot-js StorageEntryMetadataV12
 	 */
 	private normalizeStorageItemMeta(
-		storageItemMeta: StorageEntryMetadataV13
+		storageItemMeta: StorageEntryMetadataV14
 	): ISanitizedStorageItemMetadata {
 		const normalizedStorageItemMeta = sanitizeNumbers(
 			storageItemMeta
@@ -128,9 +128,9 @@ export class PalletsStorageService extends AbstractService {
 	 * @param storageId name of the storage item in camel or pascal case
 	 */
 	private findStorageItemMeta(
-		palletMeta: ModuleMetadataV13,
+		palletMeta: PalletMetadataV14,
 		storageItemId: string
-	): StorageEntryMetadataV13 {
+	): StorageEntryMetadataV14 {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
@@ -156,15 +156,15 @@ export class PalletsStorageService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
-	private findPalletMeta(palletId: string): [ModuleMetadataV13, number] {
-		const { modules } = this.api.runtimeMetadata.asV13;
+	private findPalletMeta(palletId: string): [PalletMetadataV14, number] {
+		const { pallets } = this.api.runtimeMetadata.asV14;
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
-			this.validPalletId(modules, palletId);
+			this.validPalletId(pallets, palletId);
 
-		const filtered = modules.filter((mod) => mod.storage.isSome);
+		const filtered = pallets.filter((mod) => mod.storage.isSome);
 
-		let palletMeta: ModuleMetadataV13 | undefined;
+		let palletMeta: PalletMetadataV14 | undefined;
 		let palletIdx: number | undefined;
 
 		if (isValidPalletIndex) {
@@ -210,7 +210,7 @@ export class PalletsStorageService extends AbstractService {
 	}
 
 	private validPalletId(
-		modules: Vec<ModuleMetadataV13>,
+		modules: Vec<PalletMetadataV14>,
 		palletId: string
 	): {
 		isValidPalletName: boolean;
