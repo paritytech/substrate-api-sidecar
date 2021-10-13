@@ -825,6 +825,14 @@ paths:
         required: true
         schema:
           type: string
+      - name: adjustMetadataV13
+        in: query
+        description: This gives the option to set historic blocks to use V13 metadata as oppose to V14. There are some
+          type differences between V14 and V13 when it comes to `StorageEntryType`. Specifally the 'map' key.
+          In turn this gives the ability to receive both older and newer storage responses while transitioning to V14.
+        required: false
+        schema:
+          type: boolean
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
@@ -885,6 +893,14 @@ paths:
         required: true
         schema:
           type: string
+      - name: adjustMetadataV13
+        in: query
+        description: This gives the option to set historic blocks to use V13 metadata as oppose to V14. There are some
+          type differences between V14 and V13 when it comes to `StorageEntryType`. Specifally the 'map' key.
+          In turn this gives the ability to receive both older and newer storage responses while transitioning to V14.
+        required: false
+        schema:
+          type: boolean
       - name: key1
         in: query
         description: Key for a map, or first key for a double map. Required for querying
@@ -1806,6 +1822,8 @@ components:
       properties:
         mortalEra:  
           type: array
+          items: 
+            type: string
           description: Tuple of a Phase, and Period. Each item in the array will be a string formatted as an integer. 
         immortalEra:
           type: string
@@ -2044,14 +2062,9 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: Info about the data structure used for storage.
-      example:
-          Map:
-              hasher: "Twox64Concat"
-              key:
-                example: "ReferendumIndex"
-              value: "ReferendumInfo"
-              linked: false
+      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are 
+        pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
+        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses.
     Para:
       type: object
       properties:
@@ -2430,6 +2443,35 @@ components:
           items:
             type: string
             format: ss58
+    StorageEntryTypeV13:
+      type: object
+      properties: 
+        hasher:
+          type: string
+          description: Returns a string deonting the storage hasher. 
+        key:
+          type: string
+          description: Key of the queried pallet storageId.
+        value:
+          type: string
+          description: Value of the queried pallet storageId.
+        linked:
+          type: boolean
+    StorageEntryTypeV14:
+      type: object
+      properties: 
+        hasher:
+          type: array
+          items:
+            type: string
+          description: Returns a string denoting the storage
+            hasher inside of an array. 
+        key:
+          type: string
+          description: The SiLookupTypeId to identify the type.
+        value:
+          type: string
+          description: The SiLookupTypeId to identify the type.
     TraceEvent:
       type: object
       properties:
