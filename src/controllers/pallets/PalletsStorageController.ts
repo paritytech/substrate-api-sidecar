@@ -45,10 +45,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const metadataArg = metadata === 'true' ? true : false;
 
 		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,
-			await this.service.fetchStorageItem({
+			await this.service.fetchStorageItem(historicApi, {
 				hash,
 				// stringCamelCase ensures we don't have snake case or kebab case
 				palletId: stringCamelCase(palletId),
@@ -67,10 +68,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const onlyIdsArg = onlyIds === 'true' ? true : false;
 
 		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,
-			await this.service.fetchStorage({
+			await this.service.fetchStorage(historicApi, {
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
