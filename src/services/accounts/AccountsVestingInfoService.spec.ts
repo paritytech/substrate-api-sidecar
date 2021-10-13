@@ -20,14 +20,14 @@ const vestingAt = (_address: string) =>
 const mockHistoricApi = {
 	query: {
 		vesting: {
-			vesting: vestingAt
-		}
-	}
-} as unknown as ApiDecoration<'promise'>
+			vesting: vestingAt,
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
 	...defaultMockApi,
-	at: (_hash: Hash) => mockHistoricApi
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);

@@ -43,9 +43,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.balances.freeBalance(address) as Promise<Balance>,
 				historicApi.query.balances.locks(address),
-				historicApi.query.balances.reservedBalance(
-					address
-				) as Promise<Balance>,
+				historicApi.query.balances.reservedBalance(address) as Promise<Balance>,
 				historicApi.query.system.accountNonce(address) as Promise<Index>,
 			]);
 
@@ -107,7 +105,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		let locks, header, accountInfo, accountData;
 		// We assume the first token is the native token
-		if (token.toUpperCase() === historicApi.registry.chainTokens[0].toUpperCase()) {
+		if (
+			token.toUpperCase() === historicApi.registry.chainTokens[0].toUpperCase()
+		) {
 			[header, locks, accountInfo] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.balances.locks(address),

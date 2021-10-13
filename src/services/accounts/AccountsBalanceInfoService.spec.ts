@@ -33,8 +33,9 @@ const accountAt = (_address: string) =>
 	);
 
 const freeBalanceAt = () =>
-	Promise.resolve().then(() => polkadotRegistry.createType('Balance', 123456789));
-	
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Balance', 123456789)
+	);
 
 const mockHistoricApi = {
 	registry: polkadotRegistry,
@@ -42,7 +43,7 @@ const mockHistoricApi = {
 		balances: {
 			freeBalance: freeBalanceAt,
 			reservedBalance: async () => polkadotRegistry.createType('Balance', 1),
-			locks: locksAt
+			locks: locksAt,
 		},
 		system: {
 			accountNonce: async () => polkadotRegistry.createType('Index', 1),
@@ -141,9 +142,7 @@ describe('AccountsBalanceInfoService', () => {
 				tempQueryTokens = tokenHistoricApi.query.tokens;
 				tempQueryBalance = tokenHistoricApi.query.balances;
 
-				const tokensAccountAt = async (
-					address: Address
-				): Promise<any> =>
+				const tokensAccountAt = async (address: Address): Promise<any> =>
 					(
 						(await tokenHistoricApi.query.system.account(
 							address
@@ -158,7 +157,8 @@ describe('AccountsBalanceInfoService', () => {
 				} as any;
 
 				mockBalancesLocksAt = jest.fn(tokenHistoricApi.query.balances.locks);
-				(tokenHistoricApi.query.balances.locks as unknown) = mockBalancesLocksAt;
+				(tokenHistoricApi.query.balances.locks as unknown) =
+					mockBalancesLocksAt;
 			});
 
 			afterEach(() => {

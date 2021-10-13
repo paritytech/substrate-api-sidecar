@@ -76,7 +76,12 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 
 		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg)
+			await this.service.fetchAccountBalanceInfo(
+				hash,
+				historicApi,
+				address,
+				tokenArg
+			)
 		);
 	};
 }
