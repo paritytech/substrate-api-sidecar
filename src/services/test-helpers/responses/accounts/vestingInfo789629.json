@@ -3,5 +3,9 @@
     "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
     "height": "789629"
   },
-  "vesting": {}
+  "vesting": [{
+    "locked": "1749990000000000",
+    "perBlock": "166475460",
+    "startingBlock": "4961000"
+  }]
 }
