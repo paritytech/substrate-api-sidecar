@@ -26,13 +26,18 @@ export class AccountsVestingInfoService extends AbstractService {
 			height: number.unwrap().toString(10),
 		};
 
-		return {
-			at,
-			vesting: vesting.isNone
-				? []
-				: Array.isArray(vesting.unwrap())
-				? vesting.unwrap()
-				: [vesting.unwrap()],
-		};
+		if (vesting.isNone) {
+			return {
+				at,
+				vesting: [],
+			};
+		} else {
+			const unwrapVesting = vesting.unwrap();
+
+			return {
+				at,
+				vesting: Array.isArray(unwrapVesting) ? unwrapVesting : [unwrapVesting],
+			};
+		}
 	}
 }
