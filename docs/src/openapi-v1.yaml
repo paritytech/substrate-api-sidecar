@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 9.2.0
+  version: 10.0.0
 tags:
 - name: accounts
 - name: blocks
@@ -825,6 +825,14 @@ paths:
         required: true
         schema:
           type: string
+      - name: adjustMetadataV13
+        in: query
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+          It will be deprecated and then removed in the future.
+        required: false
+        schema:
+          type: boolean
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
@@ -885,6 +893,14 @@ paths:
         required: true
         schema:
           type: string
+      - name: adjustMetadataV13
+        in: query
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+          It will be deprecated and then removed in the future.
+        required: false
+        schema:
+          type: boolean
       - name: key1
         in: query
         description: Key for a map, or first key for a double map. Required for querying
@@ -1806,6 +1822,8 @@ components:
       properties:
         mortalEra:  
           type: array
+          items: 
+            type: string
           description: Tuple of a Phase, and Period. Each item in the array will be a string formatted as an integer. 
         immortalEra:
           type: string
@@ -2044,14 +2062,10 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: Info about the data structure used for storage.
-      example:
-          Map:
-              hasher: "Twox64Concat"
-              key:
-                example: "ReferendumIndex"
-              value: "ReferendumInfo"
-              linked: false
+      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are 
+        pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
+        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
+        will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
     Para:
       type: object
       properties:
@@ -2430,6 +2444,35 @@ components:
           items:
             type: string
             format: ss58
+    StorageEntryTypeV13:
+      type: object
+      properties: 
+        hasher:
+          type: string
+          description: Returns a string deonting the storage hasher. 
+        key:
+          type: string
+          description: Key of the queried pallet storageId.
+        value:
+          type: string
+          description: Value of the queried pallet storageId.
+        linked:
+          type: boolean
+    StorageEntryTypeV14:
+      type: object
+      properties: 
+        hasher:
+          type: array
+          items:
+            type: string
+          description: Returns a string denoting the storage
+            hasher inside of an array. 
+        key:
+          type: string
+          description: The SiLookupTypeId to identify the type.
+        value:
+          type: string
+          description: The SiLookupTypeId to identify the type.
     TraceEvent:
       type: object
       properties:
