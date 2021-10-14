@@ -36,10 +36,10 @@ const vestingAt = (_hash: Hash, _address: string) =>
 		return factory.optionOf(vecVestingInfo);
 	});
 
-const historicVestingAt = (_hash: Hash, _address: string) => 
-	Promise.resolve().then(() => 
+const historicVestingAt = (_hash: Hash, _address: string) =>
+	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<VestingInfo>', vestingRes)
-	)
+	);
 
 const mockApi = {
 	...defaultMockApi,
@@ -102,6 +102,6 @@ describe('AccountVestingInfoService', () => {
 				)
 			).toStrictEqual(response789629);
 			(mockApi.query.vesting.vesting.at as unknown) = vestingAt;
-		})
+		});
 	});
 });
