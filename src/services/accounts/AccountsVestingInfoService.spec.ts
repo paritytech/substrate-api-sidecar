@@ -19,13 +19,14 @@ import { AccountsVestingInfoService } from './AccountsVestingInfoService';
 const typeFactorApiV9110 = createApiWithAugmentations(polkadotMetadataRpcV9110);
 const factory = new TypeFactory(typeFactorApiV9110);
 
+const vestingRes = {
+	locked: '1749990000000000',
+	perBlock: '166475460',
+	startingBlock: '4961000',
+};
+
 const vestingAt = (_hash: Hash, _address: string) =>
 	Promise.resolve().then(() => {
-		const vestingRes = {
-			locked: '1749990000000000',
-			perBlock: '166475460',
-			startingBlock: '4961000',
-		};
 		const vestingInfo = typeFactorApiV9110.createType(
 			'PalletVestingVestingInfo',
 			vestingRes
@@ -34,6 +35,11 @@ const vestingAt = (_hash: Hash, _address: string) =>
 
 		return factory.optionOf(vecVestingInfo);
 	});
+
+const historicVestingAt = (_hash: Hash, _address: string) => 
+	Promise.resolve().then(() => 
+		polkadotRegistry.createType('Option<VestingInfo>', vestingRes)
+	)
 
 const mockApi = {
 	...defaultMockApi,
@@ -84,5 +90,18 @@ describe('AccountVestingInfoService', () => {
 			).toStrictEqual(expectedResponse);
 			(mockApi.query.vesting.vesting.at as unknown) = vestingAt;
 		});
+
+		it('Should correctly adjust `Option<VestingInfo>` for pre V14 blocks to return an array', async () => {
+			(mockApi.query.vesting.vesting.at as unknown) = historicVestingAt;
+			expect(
+				sanitizeNumbers(
+					await accountsVestingInfoService.fetchAccountVestingInfo(
+						blockHash789629,
+						testAddress
+					)
+				)
+			).toStrictEqual(response789629);
+			(mockApi.query.vesting.vesting.at as unknown) = vestingAt;
+		})
 	});
 });
