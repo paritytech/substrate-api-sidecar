@@ -1396,11 +1396,17 @@ components:
                 $ref: '#/components/schemas/Payouts'
     AccountVestingInfo:
       type: object
+      description: Sidecar version's <= v10.0.0 have a`vesting` return value that defaults to an object for
+        when there is no available vesting-info data. It also returns a `VestingSchedule` as an object. 
+        For Sidecar >=10.0.1, that value will now default as an array when there is no value, and `Vec<VestingSchedule>` 
+        is wrapped in an array now.
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         vesting:
-          $ref: '#/components/schemas/VestingSchedule'
+          type: array
+          items: 
+            $ref: '#/components/schemas/VestingSchedule'
     AssetsBalance:
       type: object
       properties:
