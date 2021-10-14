@@ -28,7 +28,11 @@ export class AccountsVestingInfoService extends AbstractService {
 
 		return {
 			at,
-			vesting: vesting.isNone ? {} : vesting.unwrap(),
+			vesting: vesting.isNone
+				? []
+				: Array.isArray(vesting.unwrap())
+				? vesting.unwrap()
+				: [vesting.unwrap()],
 		};
 	}
 }
