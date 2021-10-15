@@ -1,4 +1,5 @@
 import { BlockHash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 import { IAccountVestingInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -17,6 +18,10 @@ export class AccountsVestingInfoService extends AbstractService {
 		const { api } = this;
 
 		const historicApi = await api.at(hash);
+
+		if (!historicApi.query.vesting) {
+			throw new BadRequest(`Vesting pallet does not exist on the specified blocks runtime version`);
+		}
 
 		const [{ number }, vesting] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
