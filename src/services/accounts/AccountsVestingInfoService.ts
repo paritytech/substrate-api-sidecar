@@ -20,7 +20,9 @@ export class AccountsVestingInfoService extends AbstractService {
 		const historicApi = await api.at(hash);
 
 		if (!historicApi.query.vesting) {
-			throw new BadRequest(`Vesting pallet does not exist on the specified blocks runtime version`);
+			throw new BadRequest(
+				`Vesting pallet does not exist on the specified blocks runtime version`
+			);
 		}
 
 		const [{ number }, vesting] = await Promise.all([
