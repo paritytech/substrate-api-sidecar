@@ -71,7 +71,11 @@ async function main() {
 
 	// Create our App
 	const app = new App({
-		preMiddleware: [json(), middleware.httpLoggerCreate(logger)],
+		preMiddleware: [
+			json(),
+			middleware.httpLoggerCreate(logger),
+			middleware.isConnectedMiddleware(api),
+		],
 		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
 			middleware.txError,

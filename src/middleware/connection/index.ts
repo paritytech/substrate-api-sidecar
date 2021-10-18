@@ -1,0 +1,1 @@
+export { isConnectedMiddleware } from './isConnectedMiddleware';
