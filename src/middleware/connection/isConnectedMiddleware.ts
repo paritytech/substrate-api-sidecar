@@ -22,11 +22,22 @@ export const isConnectedMiddleware = (
 ): RequestHandler => {
 	return async (_req, _res, next) => {
 		/**
-		 * Check if sidecar is manually trying to reconnect.
+		 * Check if sidecar is manually trying to reconnect. If so block this req
+		 * until sidecar has reconnected.
 		 */
 		if (apiConnectionCache.isReconnecting) {
 			while (apiConnectionCache.isReconnecting) {
 				await delay(1000);
+			}
+
+			/**
+			 * This is to make sure if sidecar failed to reconnect but set the
+			 * `isReconnecting` key to false that the api is actually not connected.
+			 */
+			if (!api.isConnected) {
+				throw new InternalServerError(
+					`Failed reconnecting to the API-WS, please check your node or manually restart sidecar.`
+				);
 			}
 
 			await api.isReady;
@@ -65,6 +76,8 @@ export const isConnectedMiddleware = (
 
 				return next();
 			} else {
+				apiConnectionCache.isReconnecting = false;
+
 				throw new InternalServerError(
 					`Failed reconnecting to the API-WS, please check your node or manually restart sidecar.`
 				);
