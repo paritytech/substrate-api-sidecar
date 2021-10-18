@@ -1,6 +1,7 @@
 import { ApiDecoration } from '@polkadot/api/types';
 import { bool, StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import {
 	IAccountAssetApproval,
@@ -27,6 +28,9 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAccountAssetsBalances> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
+
+		// Check if this runtime has the assets pallet
+		this.checkAssetsError(historicApi);
 
 		const { number } = await api.rpc.chain.getHeader(hash);
 
@@ -74,6 +78,9 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAccountAssetApproval> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
+
+		// Check if this runtime has the assets pallet
+		this.checkAssetsError(historicApi);
 
 		const [{ number }, assetApproval] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
@@ -134,5 +141,17 @@ export class AccountsAssetsService extends AbstractService {
 	 */
 	extractAssetIds(keys: StorageKey<[AssetId]>[]): AssetId[] {
 		return keys.map(({ args: [assetId] }) => assetId);
+	}
+
+	/**
+	 * Checks if the historicApi has the following assets pallet. If not
+	 * it will throw a BadRequest error.
+	 * 
+	 * @param historicApi Decorated historic api
+	 */
+	private checkAssetsError(historicApi: ApiDecoration<'promise'>): void {
+		if (!historicApi.query.assets) {
+			throw new BadRequest(`The queried block's runtime does not contain the appropriate metadata required for this endpoint.`)
+		}
 	}
 }
