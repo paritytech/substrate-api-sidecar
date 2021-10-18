@@ -146,12 +146,14 @@ export class AccountsAssetsService extends AbstractService {
 	/**
 	 * Checks if the historicApi has the following assets pallet. If not
 	 * it will throw a BadRequest error.
-	 * 
+	 *
 	 * @param historicApi Decorated historic api
 	 */
 	private checkAssetsError(historicApi: ApiDecoration<'promise'>): void {
 		if (!historicApi.query.assets) {
-			throw new BadRequest(`The queried block's runtime does not contain the appropriate metadata required for this endpoint.`)
+			throw new BadRequest(
+				`The queried block's runtime does not contain the appropriate metadata required for this endpoint.`
+			);
 		}
 	}
 }
