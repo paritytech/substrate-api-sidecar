@@ -34,6 +34,9 @@ import { SidecarConfig } from './SidecarConfig';
 async function main() {
 	const { config } = SidecarConfig;
 	const { logger } = Log;
+	const apiConnection: Record<string, boolean> = {
+		isReconnecting: false
+	};
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
 
@@ -74,7 +77,7 @@ async function main() {
 		preMiddleware: [
 			json(),
 			middleware.httpLoggerCreate(logger),
-			middleware.isConnectedMiddleware(api),
+			middleware.isConnectedMiddleware(api, apiConnection),
 		],
 		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
