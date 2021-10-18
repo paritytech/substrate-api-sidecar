@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { AssetId } from '@polkadot/types/interfaces';
+import { ApiDecoration } from '@polkadot/api/types';
+import { AssetId, Hash } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetBalance } from '@polkadot/types/lookup';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -112,7 +113,7 @@ const assetsAccountKeysAt = () =>
  * Attach `keysAt` to mockApi.query.assets.asset
  */
 Object.assign(assetsInfo, {
-	keysAt: assetsAccountKeysAt,
+	keys: assetsAccountKeysAt,
 });
 
 /**
@@ -142,8 +143,7 @@ const assetApprovals = () =>
 		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
 	});
 
-const mockApi = {
-	...defaultMockApi,
+const historicApi = {
 	query: {
 		assets: {
 			account: assetsAccount,
@@ -152,6 +152,11 @@ const mockApi = {
 			metadata: assetsMetadata,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => historicApi
 } as unknown as ApiPromise;
 
 const accountsAssetsService = new AccountsAssetsService(mockApi);

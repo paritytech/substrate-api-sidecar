@@ -1,4 +1,4 @@
-import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { bool, StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 
@@ -26,6 +26,7 @@ export class AccountsAssetsService extends AbstractService {
 		assets: number[]
 	): Promise<IAccountAssetsBalances> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 
 		const { number } = await api.rpc.chain.getHeader(hash);
 
@@ -34,15 +35,15 @@ export class AccountsAssetsService extends AbstractService {
 			/**
 			 * This will query all assets and return them in an array
 			 */
-			const keys = await api.query.assets.asset.keysAt(hash);
+			const keys = await historicApi.query.assets.asset.keys(hash);
 			const assetIds = this.extractAssetIds(keys);
 
-			response = await this.queryAssets(api, assetIds, address);
+			response = await this.queryAssets(historicApi, assetIds, address);
 		} else {
 			/**
 			 * This will query all assets by the requested AssetIds
 			 */
-			response = await this.queryAssets(api, assets, address);
+			response = await this.queryAssets(historicApi, assets, address);
 		}
 
 		const at = {
@@ -72,10 +73,11 @@ export class AccountsAssetsService extends AbstractService {
 		delegate: string
 	): Promise<IAccountAssetApproval> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 
 		const [{ number }, assetApproval] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.assets.approvals(assetId, address, delegate),
+			historicApi.query.assets.approvals(assetId, address, delegate),
 		]);
 
 		let amount = null,
@@ -105,13 +107,13 @@ export class AccountsAssetsService extends AbstractService {
 	 * @param address An `AccountId` associated with the queried path
 	 */
 	async queryAssets(
-		api: ApiPromise,
+		historicApi: ApiDecoration<'promise'>,
 		assets: AssetId[] | number[],
 		address: string
 	): Promise<IAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await api.query.assets.account(assetId, address);
+				const assetBalance = await historicApi.query.assets.account(assetId, address);
 
 				return {
 					assetId,
