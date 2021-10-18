@@ -11,41 +11,44 @@ const delay = (ms: number) => {
 };
 
 /**
- * Before each request in sidecar, we make sure the api is connected. 
+ * Before each request in sidecar, we make sure the api is connected.
  * If it is isnt, we attempt to reconnect manually reconnect
- * 
+ *
  * @param api ApiPromise
  */
-export const isConnectedMiddleware = (api: ApiPromise, apiConnectionCache: Record<string, boolean>): RequestHandler => {
+export const isConnectedMiddleware = (
+	api: ApiPromise,
+	apiConnectionCache: Record<string, boolean>
+): RequestHandler => {
 	return async (_req, _res, next) => {
-        /**
-         * Check if sidecar is manually trying to reconnect.
-         */
-        if (apiConnectionCache.isReconnecting) {
-            while (apiConnectionCache.isReconnecting) {
-                await delay(1000)
-            }
+		/**
+		 * Check if sidecar is manually trying to reconnect.
+		 */
+		if (apiConnectionCache.isReconnecting) {
+			while (apiConnectionCache.isReconnecting) {
+				await delay(1000);
+			}
 
-            await api.isReady
+			await api.isReady;
 
-            return next()
-        }
-        /**
-         * Check to see if the API-WS is connected
-         */
+			return next();
+		}
+		/**
+		 * Check to see if the API-WS is connected
+		 */
 		if (!api.isConnected) {
 			Log.logger.error(
 				'API-WS: disconnected, attempting to manually reconnect...'
 			);
 
-            /**
-             * Set the caches `isReconnecting` key to true so that other middleware
-             * `isConnectedMiddleware` calls dont attempt to reconnect but instead hang
-             */
-            apiConnectionCache.isReconnecting = true;
-            /**
-             * Attempt to reconnect
-             */
+			/**
+			 * Set the caches `isReconnecting` key to true so that other middleware
+			 * `isConnectedMiddleware` calls dont attempt to reconnect but instead hang
+			 */
+			apiConnectionCache.isReconnecting = true;
+			/**
+			 * Attempt to reconnect
+			 */
 			const attempReconnect = await reconnectApi(api);
 
 			if (attempReconnect) {
@@ -53,17 +56,17 @@ export const isConnectedMiddleware = (api: ApiPromise, apiConnectionCache: Recor
 				/**
 				 * Time buffer to allow polkadot-js to re-enable itself
 				 */
-				await api.isReady
-                /**
-                 * Reset isReconnecting to false to allow all other blocked requests 
-                 * to continue to be processed.
-                 */
-                apiConnectionCache.isReconnecting = false;
+				await api.isReady;
+				/**
+				 * Reset isReconnecting to false to allow all other blocked requests
+				 * to continue to be processed.
+				 */
+				apiConnectionCache.isReconnecting = false;
 
 				return next();
 			} else {
 				throw new InternalServerError(
-					`Tried connecting to ${api}`
+					`Failed reconnecting to the API-WS, please check your node or manually restart sidecar.`
 				);
 			}
 		}
@@ -101,9 +104,9 @@ const reconnectApi = async (
 	if (checkConnection) {
 		return true;
 	} else {
-        /**
-         * Give each reconnect a 1.5s buffer
-         */
+		/**
+		 * Give each reconnect a 1.5s buffer
+		 */
 		await delay(1500);
 
 		/**
@@ -116,7 +119,7 @@ const reconnectApi = async (
 		 */
 		if (reconnectAttemps < MAX_CONNECTION_ATTEMPTS) {
 			return reconnectApi(api, reconnectAttemps + 1);
-        }
+		}
 
 		return false;
 	}

@@ -35,7 +35,7 @@ async function main() {
 	const { config } = SidecarConfig;
 	const { logger } = Log;
 	const apiConnection: Record<string, boolean> = {
-		isReconnecting: false
+		isReconnecting: false,
 	};
 	// Overide console.{log, error, warn, etc}
 	consoleOverride(logger);
