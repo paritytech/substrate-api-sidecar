@@ -35,7 +35,7 @@ export class AccountsAssetsService extends AbstractService {
 			/**
 			 * This will query all assets and return them in an array
 			 */
-			const keys = await historicApi.query.assets.asset.keys(hash);
+			const keys = await historicApi.query.assets.asset.keys();
 			const assetIds = this.extractAssetIds(keys);
 
 			response = await this.queryAssets(historicApi, assetIds, address);
@@ -113,7 +113,10 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await historicApi.query.assets.account(assetId, address);
+				const assetBalance = await historicApi.query.assets.account(
+					assetId,
+					address
+				);
 
 				return {
 					assetId,

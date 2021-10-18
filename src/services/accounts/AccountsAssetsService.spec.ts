@@ -152,11 +152,11 @@ const historicApi = {
 			metadata: assetsMetadata,
 		},
 	},
-} as unknown as ApiDecoration<'promise'>
+} as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
 	...defaultMockApi,
-	at: (_hash: Hash) => historicApi
+	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
 const accountsAssetsService = new AccountsAssetsService(mockApi);
