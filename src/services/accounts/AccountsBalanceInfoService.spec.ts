@@ -13,16 +13,10 @@ import {
 	defaultMockApi,
 	testAddress,
 } from '../test-helpers/mock';
-import { events789629 } from '../test-helpers/mock/data/events789629Hex';
 import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
-const eventsAt = (_hash: Hash) =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Vec<EventRecord>', events789629)
-	);
-
-const locksAt = (_hash: Hash, _address: string) =>
+const locksAt = (_address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType(
 			'Vec<BalanceLock>',
@@ -30,7 +24,7 @@ const locksAt = (_hash: Hash, _address: string) =>
 		)
 	);
 
-const accountAt = (_hash: Hash, _address: string) =>
+const accountAt = (_address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType(
 			'AccountInfo',
@@ -38,19 +32,18 @@ const accountAt = (_hash: Hash, _address: string) =>
 		)
 	);
 
-const freeBalance = async () =>
-	polkadotRegistry.createType('Balance', 123456789);
+const freeBalanceAt = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('Balance', 123456789)
+	);
 
 const mockHistoricApi = {
+	registry: polkadotRegistry,
 	query: {
 		balances: {
-			freeBalance,
+			freeBalance: freeBalanceAt,
 			reservedBalance: async () => polkadotRegistry.createType('Balance', 1),
-			locks: async () =>
-				polkadotRegistry.createType(
-					'Vec<BalanceLock>',
-					'0x047374616b696e672000e8764817000000000000000000000002'
-				),
+			locks: locksAt,
 		},
 		system: {
 			accountNonce: async () => polkadotRegistry.createType('Index', 1),
@@ -59,21 +52,8 @@ const mockHistoricApi = {
 	},
 } as unknown as ApiDecoration<'promise'>;
 
-const queryMockApi = {
-	query: {
-		system: {
-			events: eventsAt,
-			account: { at: accountAt },
-		},
-		balances: {
-			locks: { at: locksAt },
-		},
-	},
-};
-
 const mockApi = {
 	...defaultMockApi,
-	...queryMockApi,
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
@@ -87,7 +67,6 @@ describe('AccountsBalanceInfoService', () => {
 
 			const tempMockApi = {
 				...defaultMockApi,
-				...queryMockApi,
 				at: (_hash: Hash) => tempHistoricApi,
 			} as unknown as ApiPromise;
 
@@ -99,6 +78,7 @@ describe('AccountsBalanceInfoService', () => {
 				sanitizeNumbers(
 					await tempAccountsBalanceInfoService.fetchAccountBalanceInfo(
 						blockHash789629,
+						mockHistoricApi,
 						testAddress,
 						'DOT'
 					)
@@ -109,6 +89,7 @@ describe('AccountsBalanceInfoService', () => {
 		it('Correctly queries historical blocks', async () => {
 			const result = await accountsBalanceInfoService.fetchAccountBalanceInfo(
 				blockHash789629,
+				mockHistoricApi,
 				testAddress,
 				'DOT'
 			);
@@ -138,12 +119,11 @@ describe('AccountsBalanceInfoService', () => {
 
 		describe('token recognition', () => {
 			const tokenHistoricApi = { ...mockHistoricApi };
-			(tokenHistoricApi.query.system.account as unknown) = { at: true };
+			Object.assign(tokenHistoricApi.query.system.account, { at: true });
 			(tokenHistoricApi.query.balances.freeBalance as unknown) = undefined;
 
 			const tokenMockApi = {
 				...defaultMockApi,
-				...queryMockApi,
 				at: (_hash: Hash) => tokenHistoricApi,
 			} as unknown as ApiPromise;
 
@@ -159,29 +139,26 @@ describe('AccountsBalanceInfoService', () => {
 			beforeAll(() => {
 				// Important: these temp values should never be reassinged. They are used so we can assign
 				// the mockApi properties back to their original values after this sub-section of tests run.
-				tempQueryTokens = tokenMockApi.query.tokens;
-				tempQueryBalance = tokenMockApi.query.balances;
+				tempQueryTokens = tokenHistoricApi.query.tokens;
+				tempQueryBalance = tokenHistoricApi.query.balances;
 
-				const tokensAccountAt = async (
-					hash: Hash,
-					address: Address
-				): Promise<any> =>
+				const tokensAccountAt = async (address: Address): Promise<any> =>
 					(
-						(await tokenMockApi.query.system.account.at(
-							hash,
+						(await tokenHistoricApi.query.system.account(
 							address
 						)) as unknown as AccountInfo
 					).data;
 				// Wrap our functions in a jest mock so we can collect data on how they are called
-				mockTokensLocksAt = jest.fn(tokenMockApi.query.balances.locks.at);
+				mockTokensLocksAt = jest.fn(tokenHistoricApi.query.balances.locks);
 				mockTokenAccountAt = jest.fn(tokensAccountAt);
-				tokenMockApi.query.tokens = {
-					locks: { at: mockTokensLocksAt },
-					accounts: { at: mockTokenAccountAt },
+				tokenHistoricApi.query.tokens = {
+					locks: mockTokensLocksAt,
+					accounts: mockTokenAccountAt,
 				} as any;
 
-				mockBalancesLocksAt = jest.fn(tokenMockApi.query.balances.locks.at);
-				tokenMockApi.query.balances.locks.at = mockBalancesLocksAt;
+				mockBalancesLocksAt = jest.fn(tokenHistoricApi.query.balances.locks);
+				(tokenHistoricApi.query.balances.locks as unknown) =
+					mockBalancesLocksAt;
 			});
 
 			afterEach(() => {
@@ -192,13 +169,13 @@ describe('AccountsBalanceInfoService', () => {
 			});
 
 			afterAll(() => {
-				mockApi.query.tokens = tempQueryTokens;
-				mockApi.query.balances = tempQueryBalance;
+				tokenHistoricApi.query.tokens = tempQueryTokens;
+				tokenHistoricApi.query.balances = tempQueryBalance;
 			});
 
 			it('only has `["DOT"]` (all uppercase chars) for the mockApi registry', () => {
-				expect(mockApi.registry.chainTokens).toStrictEqual(['DOT']);
-				expect(mockApi.registry.chainDecimals).toStrictEqual([12]);
+				expect(tokenHistoricApi.registry.chainTokens).toStrictEqual(['DOT']);
+				expect(tokenHistoricApi.registry.chainDecimals).toStrictEqual([12]);
 			});
 
 			it('querrys tokens pallet storage with a non-native token', async () => {
@@ -207,6 +184,7 @@ describe('AccountsBalanceInfoService', () => {
 						sanitizeNumbers(
 							await tokenAccountsBalanceInfoService.fetchAccountBalanceInfo(
 								blockHash789629,
+								tokenHistoricApi,
 								testAddress,
 								'fOoToKeN'
 							)
@@ -225,6 +203,7 @@ describe('AccountsBalanceInfoService', () => {
 						sanitizeNumbers(
 							await tokenAccountsBalanceInfoService.fetchAccountBalanceInfo(
 								blockHash789629,
+								tokenHistoricApi,
 								testAddress,
 								'doT'
 							)
