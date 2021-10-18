@@ -18,6 +18,9 @@ const delay = (ms: number) => {
  */
 export const isConnectedMiddleware = (api: ApiPromise): RequestHandler => {
 	return async (_req, _res, next) => {
+        /**
+         * Check to see if the API-WS is connected
+         */
 		if (!api.isConnected) {
 			Log.logger.error(
 				'API-WS: disconnected, attempting to manually reconnect...'
@@ -29,12 +32,12 @@ export const isConnectedMiddleware = (api: ApiPromise): RequestHandler => {
 				/**
 				 * Time buffer to allow polkadot-js to re-enable itself
 				 */
-				await delay(5000);
+				await api.isReady
 
 				return next();
 			} else {
 				throw new InternalServerError(
-					'There is an issue reconnecting to the node.'
+					`Tried connecting to ${api}`
 				);
 			}
 		}
