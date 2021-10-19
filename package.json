@@ -44,6 +44,7 @@
     "test:init-e2e-tests:polkadot": "yarn start:e2e-scripts --chain polkadot",
     "test:init-e2e-tests:kusama": "yarn start:e2e-scripts --chain kusama",
     "test:init-e2e-tests:westend": "yarn start:e2e-scripts --chain westend",
+    "test:init-e2e-tests:statemine": "yarn start:e2e-scripts --chain statemine",
     "start:e2e-scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && cd scripts && substrate-exec-tsc",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",

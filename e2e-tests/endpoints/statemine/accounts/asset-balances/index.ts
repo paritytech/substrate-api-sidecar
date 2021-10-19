@@ -3,7 +3,7 @@ import accountAssetBalance650000 from './650000.json';
 import accountAssetBalance960000 from './960000.json';
 import accountAssetBalance986791 from './986791.json';
 
-export const statemintAccountAssetEndpoints = [
+export const statemineAccountAssetBalanceEndpoints = [
     [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/asset-balances?at=450000',
         JSON.stringify(accountAssetBalance450000),
