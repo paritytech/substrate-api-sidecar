@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -25,7 +26,7 @@ const vestingRes = {
 	startingBlock: '4961000',
 };
 
-const vestingAt = (_hash: Hash, _address: string) =>
+const vestingAt = (_address: string) =>
 	Promise.resolve().then(() => {
 		const vestingInfo = typeFactorApiV9110.createType(
 			'PalletVestingVestingInfo',
@@ -36,18 +37,22 @@ const vestingAt = (_hash: Hash, _address: string) =>
 		return factory.optionOf(vecVestingInfo);
 	});
 
-const historicVestingAt = (_hash: Hash, _address: string) =>
+const historicVestingAt = (_address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Option<VestingInfo>', vestingRes)
 	);
 
-const mockApi = {
-	...defaultMockApi,
+const mockHistoricApi = {
 	query: {
 		vesting: {
-			vesting: { at: vestingAt },
+			vesting: vestingAt,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);
@@ -70,7 +75,7 @@ describe('AccountVestingInfoService', () => {
 				Promise.resolve().then(() =>
 					polkadotRegistry.createType('Option<VestingInfo>', null)
 				);
-			(mockApi.query.vesting.vesting.at as unknown) = tempVest;
+			(mockHistoricApi.query.vesting.vesting as unknown) = tempVest;
 
 			const expectedResponse = {
 				at: {
@@ -88,11 +93,11 @@ describe('AccountVestingInfoService', () => {
 					)
 				)
 			).toStrictEqual(expectedResponse);
-			(mockApi.query.vesting.vesting.at as unknown) = vestingAt;
+			(mockHistoricApi.query.vesting.vesting as unknown) = vestingAt;
 		});
 
 		it('Should correctly adjust `Option<VestingInfo>` for pre V14 blocks to return an array', async () => {
-			(mockApi.query.vesting.vesting.at as unknown) = historicVestingAt;
+			(mockHistoricApi.query.vesting.vesting as unknown) = historicVestingAt;
 			expect(
 				sanitizeNumbers(
 					await accountsVestingInfoService.fetchAccountVestingInfo(
@@ -101,7 +106,7 @@ describe('AccountVestingInfoService', () => {
 					)
 				)
 			).toStrictEqual(response789629);
-			(mockApi.query.vesting.vesting.at as unknown) = vestingAt;
+			(mockHistoricApi.query.vesting.vesting as unknown) = vestingAt;
 		});
 	});
 });

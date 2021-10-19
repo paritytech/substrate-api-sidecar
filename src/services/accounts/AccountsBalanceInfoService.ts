@@ -1,3 +1,4 @@
+import { ApiDecoration } from '@polkadot/api/types';
 import { Vec } from '@polkadot/types';
 import {
 	AccountData,
@@ -22,33 +23,28 @@ export class AccountsBalanceInfoService extends AbstractService {
 	 */
 	async fetchAccountBalanceInfo(
 		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		address: string,
 		token: string
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
-
-		// Retrieve the historic api for the given hash
-		const historicalApi = await api.at(hash);
-
 		/**
-		 * Check two different cases where a historicalApi is needed in order
+		 * Check two different cases where a historicApi is needed in order
 		 * to have the correct runtime methods.
 		 *
 		 * a) Does the block use the oldest api where the free balance is found
-		 * using `historicalApi.query.balances.freeBalance`.
+		 * using `historicApi.query.balances.freeBalance`.
 		 *
 		 * b) Does the block use an older api where the free balance is within the
 		 * AccountInfo type, but the storage does not yet have the `.at` method.
 		 */
-		if (historicalApi.query.balances.freeBalance) {
+		if (historicApi.query.balances.freeBalance) {
 			const [header, free, locks, reserved, nonce] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
-				historicalApi.query.balances.freeBalance(address) as Promise<Balance>,
-				historicalApi.query.balances.locks(address),
-				historicalApi.query.balances.reservedBalance(
-					address
-				) as Promise<Balance>,
-				historicalApi.query.system.accountNonce(address) as Promise<Index>,
+				historicApi.query.balances.freeBalance(address) as Promise<Balance>,
+				historicApi.query.balances.locks(address),
+				historicApi.query.balances.reservedBalance(address) as Promise<Balance>,
+				historicApi.query.system.accountNonce(address) as Promise<Index>,
 			]);
 
 			// Values dont exist for these historic runtimes
@@ -74,11 +70,11 @@ export class AccountsBalanceInfoService extends AbstractService {
 			} else {
 				throw new BadRequest('Account not found');
 			}
-		} else if (!historicalApi.query.system.account.at) {
+		} else if (!historicApi.query.system.account.at) {
 			const [header, accountInfo, locks] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
-				historicalApi.query.system.account(address),
-				historicalApi.query.balances.locks(address),
+				historicApi.query.system.account(address),
+				historicApi.query.balances.locks(address),
 			]);
 
 			const {
@@ -109,28 +105,30 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		let locks, header, accountInfo, accountData;
 		// We assume the first token is the native token
-		if (token.toUpperCase() === api.registry.chainTokens[0].toUpperCase()) {
+		if (
+			token.toUpperCase() === historicApi.registry.chainTokens[0].toUpperCase()
+		) {
 			[header, locks, accountInfo] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
-				api.query.balances.locks.at(hash, address),
-				api.query.system.account.at(hash, address),
+				historicApi.query.balances.locks(address),
+				historicApi.query.system.account(address),
 			]);
 
 			accountData =
 				accountInfo.data != null
 					? accountInfo.data
-					: await api.query.balances.account.at(hash, address);
+					: await historicApi.query.balances.account(address);
 		} else {
 			// Assume we are using ORML token pallet
 			let locksAny, accountDataAny;
 			try {
 				[header, locksAny, accountDataAny, accountInfo] = await Promise.all([
 					api.rpc.chain.getHeader(hash),
-					api.query.tokens.locks.at(hash, address, { Token: token }),
-					api.query.tokens.accounts.at(hash, address, {
+					historicApi.query.tokens.locks(address, { Token: token }),
+					historicApi.query.tokens.accounts(address, {
 						Token: token,
 					}),
-					api.query.system.account.at(hash, address),
+					historicApi.query.system.account(address),
 				]);
 			} catch {
 				throw new BadRequest(

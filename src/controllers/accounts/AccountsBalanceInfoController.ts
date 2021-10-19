@@ -72,10 +72,16 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 				  this.api.registry.chainTokens[0].toUpperCase();
 
 		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
 
 		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalanceInfo(hash, address, tokenArg)
+			await this.service.fetchAccountBalanceInfo(
+				hash,
+				historicApi,
+				address,
+				tokenArg
+			)
 		);
 	};
 }

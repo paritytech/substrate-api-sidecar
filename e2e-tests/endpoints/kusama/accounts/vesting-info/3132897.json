@@ -1,0 +1,13 @@
+{
+    "at": {
+        "hash": "0xc5b3a62fed58ac86f55a8fbf9f8c8cc3cd441fd7b97991990649a4d8e917157a",
+        "height": "3132897"
+    },
+    "vesting": [
+        {
+            "locked": "300000000000000",
+            "perBlock": "173544625",
+            "startingBlock": "0"
+        }
+    ]
+}
