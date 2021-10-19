@@ -30,6 +30,7 @@ import { Log } from './logging/Log';
 import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
+import { defaults } from '@polkadot/util-crypto/address/defaults';
 
 async function main() {
 	const { config } = SidecarConfig;
@@ -56,7 +57,9 @@ async function main() {
 		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
 		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
-
+	if(api.registry.chainSS58 != undefined){
+		defaults.prefix = api.registry.chainSS58;
+	}
 	// Gather some basic details about the node so we can display a nice message
 	const [chainName, { implName, specName }] = await Promise.all([
 		api.rpc.system.chain(),

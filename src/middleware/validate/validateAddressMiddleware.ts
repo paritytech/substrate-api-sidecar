@@ -45,10 +45,12 @@ function checkAddress(address: string): [boolean, string | undefined] {
 			return [false, (error as Error).message];
 		}
 	}
-
+	const prefix = defaults.prefix;
 	if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
-		const [isValid] = checkAddressChecksum(u8Address);
-
+		const [isValid, , , ss58Decoded] = checkAddressChecksum(u8Address);
+		if (ss58Decoded !== prefix) {
+			return [false, `Prefix mismatch, expected ${prefix}, found ${ss58Decoded}`];
+		}
 		return [isValid, isValid ? undefined : 'Invalid decoded address checksum'];
 	}
 
