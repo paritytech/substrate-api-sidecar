@@ -1,1 +1,1 @@
-export { isConnectedMiddleware } from './isConnectedMiddleware';
+export { reconnectMiddleware } from './reconnectMiddleware';

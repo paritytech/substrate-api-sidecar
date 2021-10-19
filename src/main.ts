@@ -77,7 +77,7 @@ async function main() {
 		preMiddleware: [
 			json(),
 			middleware.httpLoggerCreate(logger),
-			middleware.isConnectedMiddleware(api, apiConnection),
+			middleware.reconnectMiddleware(api, apiConnection),
 		],
 		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
