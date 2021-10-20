@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES ⚠
 
-- fix!: adjust the vesting-info response to be in line with substrate ([#717](https://github.com/paritytech/substrate-api-sidecar/pull/717)) ([8b9866d](https://github.com/paritytech/substrate-api-sidecar/commit/8b9866d02ab4aa2ab22a19159a8c90a8ddfc9a1b))
+- fix: adjust the vesting-info response to be in line with substrate ([#717](https://github.com/paritytech/substrate-api-sidecar/pull/717)) ([8b9866d](https://github.com/paritytech/substrate-api-sidecar/commit/8b9866d02ab4aa2ab22a19159a8c90a8ddfc9a1b))
     - Previous to runtime v9110 vesting information was returned in the form of an object, but now due to vesting-schedules the return value will be wrapped in an array for all blocks containing a runtime >= v9110. 
     - All responses historic and new, are now returned in the form of an array.
 
