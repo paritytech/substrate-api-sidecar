@@ -39,7 +39,6 @@ This version of Sidecar has been tested against:
 - Polkadot v9110
 - Kusama v9110
 
-
 ## [10.0.0](https://github.com/paritytech/substrate-api-sidecare/compare/v9.2.0..v10.0.0) (2021-10-13)
 
 ### ⚠ BREAKING CHANGES ⚠
