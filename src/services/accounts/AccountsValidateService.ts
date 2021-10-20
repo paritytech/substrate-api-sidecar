@@ -5,12 +5,11 @@ import {
 } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 import { knownSubstrate } from '@polkadot/networks/substrate';
-import { KnownSubstrate } from '@polkadot/networks/types';
 import { AbstractService } from "../AbstractService";
 
 interface ValidateAddrResponse {
     isValid: boolean;
-    networkInfo: KnownSubstrate | null;
+    networkId: string | null;
     ss58: number | null;
 }
 
@@ -26,7 +25,7 @@ export class ValidateService extends AbstractService {
             } catch {
                 return {
                     isValid: false,
-                    networkInfo: null,
+                    networkId: null,
                     ss58: null
                 }
             }
@@ -39,14 +38,14 @@ export class ValidateService extends AbstractService {
 
             return {
                 isValid: isValid && isValidNetworkId,
-                networkInfo: networkInfo,
+                networkId: networkInfo.network,
                 ss58: ss58Decoded
             }
         }
 
         return {
             isValid: false,
-            networkInfo: null,
+            networkId: null,
             ss58: null
         }
     }
