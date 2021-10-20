@@ -10,6 +10,7 @@ export const polkadotControllers: ControllerConfig = {
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
+		'AccountsValidate',
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
