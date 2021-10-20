@@ -38,7 +38,7 @@ export class ValidateService extends AbstractService {
 
             return {
                 isValid: isValid && isValidNetworkId,
-                networkId: networkInfo.network,
+                networkId: networkInfo ? networkInfo.network : null,
                 ss58: ss58Decoded
             }
         }
