@@ -1,12 +1,12 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
-import { ValidateService } from '../../services/accounts';
+import { AccountsValidateService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
-export default class ValidateAddressController extends AbstractController<ValidateService> {
+export default class ValidateAddressController extends AbstractController<AccountsValidateService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/validate', new ValidateService(api));
+        super(api, '/accounts/:address/validate', new AccountsValidateService(api));
 		this.initRoutes();
 	}
 
