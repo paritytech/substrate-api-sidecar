@@ -10,6 +10,7 @@ export const westendControllers: ControllerConfig = {
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
+		'AccountsValidate',
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
