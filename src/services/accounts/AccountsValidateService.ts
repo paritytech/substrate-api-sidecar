@@ -1,5 +1,5 @@
 import { knownSubstrate } from '@polkadot/networks/substrate';
-import { hexToU8a, isHex } from '@polkadot/util';
+import { isHex } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 
@@ -15,7 +15,7 @@ export class AccountsValidateService extends AbstractService {
 	validateAddress(address: string): ValidateAddrResponse {
 		let u8Address;
 		if (isHex(address)) {
-            u8Address = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
+			u8Address = Uint8Array.from(Buffer.from(address.slice(2), 'hex'));
 		} else {
 			try {
 				u8Address = base58Decode(address);

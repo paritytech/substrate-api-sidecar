@@ -6,7 +6,7 @@ import AbstractController from '../AbstractController';
 
 export default class ValidateAddressController extends AbstractController<AccountsValidateService> {
 	constructor(api: ApiPromise) {
-        super(api, '/accounts/:address/validate', new AccountsValidateService(api));
+		super(api, '/accounts/:address/validate', new AccountsValidateService(api));
 		this.initRoutes();
 	}
 
