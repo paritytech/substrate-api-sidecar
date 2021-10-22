@@ -128,6 +128,7 @@ describe('Validate addresses', () => {
 			sanitizeNumbers(validateService.validateAddress(karuraHex))
 		).toStrictEqual(expectedResponse);
 	});
+
 	it('Should return the correct response for an invalid hex value', () => {
 		const expectedResponse = {
 			isValid: false,
