@@ -70,4 +70,18 @@ describe('Validate addresses', () => {
 			sanitizeNumbers(validateService.validateAddress(substrateAddr))
 		).toStrictEqual(expectedResponse);
 	});
+
+	it('Should give the correct response with a valid ss58 addr on the wrong network', () => {
+		const expectedResponse = {
+			isValid: false,
+			networkId: 'polkadot',
+			ss58: '0',
+		};
+		const polkadotAddr = '1xN1Q5eKQmS5AzASdjt6R6sHF76611vKR4PFpFjy1kXau4m';
+		(mockApi.registry.chainSS58 as unknown) = 2;
+
+		expect(
+			sanitizeNumbers(validateService.validateAddress(polkadotAddr))
+		).toStrictEqual(expectedResponse);
+	});
 });
