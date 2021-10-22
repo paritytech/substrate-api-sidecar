@@ -12,7 +12,7 @@ describe('Validate addresses', () => {
 	const validateService = new AccountsValidateService(mockApi);
 
 	afterEach(() => {
-		// Reset the MockApi to be 0 - Polkadot
+		// Reset the `mockApi.registry.chainSS58` to be 0  before each test
 		(mockApi.registry.chainSS58 as unknown) = 0;
 	});
 
@@ -82,6 +82,63 @@ describe('Validate addresses', () => {
 
 		expect(
 			sanitizeNumbers(validateService.validateAddress(polkadotAddr))
+		).toStrictEqual(expectedResponse);
+	});
+
+	it('Should give the correct response for a polkadot hex value', () => {
+		const expectedResponse = {
+			isValid: true,
+			networkId: 'polkadot',
+			ss58: '0',
+		};
+		const polkadotHex =
+			'0x002a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc592312';
+
+		expect(
+			sanitizeNumbers(validateService.validateAddress(polkadotHex))
+		).toStrictEqual(expectedResponse);
+	});
+
+	it('Should give the correct response for a kusama hex value', () => {
+		const expectedResponse = {
+			isValid: true,
+			networkId: 'kusama',
+			ss58: '2',
+		};
+		const kusamaHex =
+			'0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9';
+		(mockApi.registry.chainSS58 as unknown) = 2;
+
+		expect(
+			sanitizeNumbers(validateService.validateAddress(kusamaHex))
+		).toStrictEqual(expectedResponse);
+	});
+
+	it('Should give the correct response for a karura hex value', () => {
+		const expectedResponse = {
+			isValid: true,
+			networkId: 'karura',
+			ss58: '8',
+		};
+		const karuraHex =
+			'0x086d6f646c6163612f6364707400000000000000000000000000000000000000008333';
+		(mockApi.registry.chainSS58 as unknown) = 8;
+
+		expect(
+			sanitizeNumbers(validateService.validateAddress(karuraHex))
+		).toStrictEqual(expectedResponse);
+	});
+	it('Should return the correct response for an invalid hex value', () => {
+		const expectedResponse = {
+			isValid: false,
+			networkId: null,
+			ss58: null,
+		};
+		const invalidAddr =
+			'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59';
+
+		expect(
+			sanitizeNumbers(validateService.validateAddress(invalidAddr))
 		).toStrictEqual(expectedResponse);
 	});
 });
