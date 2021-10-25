@@ -91,11 +91,11 @@ const reconnectApi = async (
 			'Disconnecting the polkadot-js API-WS. Sidecar will be disabled shortly as it attempts to reconnect'
 		);
 	}
-	await api.disconnect()
+	await api.disconnect();
 
 	Log.logger.warn('Attemping to reconnect to polkadot-js api.');
 
-	await api.connect()
+	await api.connect();
 
 	const checkConnection = api.isConnected;
 
