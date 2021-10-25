@@ -2,15 +2,11 @@ import { hexToU8a, isHex } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 
+import { IValidateAddrResponse } from '../../types/responses/ValidateAddress';
 import { AbstractService } from '../AbstractService';
 
-interface ValidateAddrResponse {
-	isValid: boolean;
-	ss58Prefix: number | null;
-}
-
 export class AccountsValidateService extends AbstractService {
-	validateAddress(address: string): ValidateAddrResponse {
+	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
 		if (isHex(address)) {
 			u8Address = hexToU8a(address);
