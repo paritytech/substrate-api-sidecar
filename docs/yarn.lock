@@ -6865,7 +6865,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:^0.7.18":
+"ua-parser-js@npm:<= 0.7.21":
   version: 0.7.21
   resolution: "ua-parser-js@npm:0.7.21"
   checksum: 5c1f523e784442ee03d859981fccd642c3825c50365148c3803e151ba19419cef0ec1c47af9ebde1cb7be211ed194d255f7e5ba659a9f1f77d3c674da7b454da
