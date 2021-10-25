@@ -1423,13 +1423,10 @@ components:
       properties:
         isValid:
           type: boolean
-          description: Whether the given address is valid for the given network.
-        networkId:
+          description: Whether the given address is valid ss58 formatted.
+        ss58Prefix:
           type: string
-          description: Name of the network the address is associated with
-        ss58:
-          type: string
-          description: SS58 prefix of the given address
+          description: SS58 prefix of the given address.
           format: unsignedInteger
     AccountVestingInfo:
       type: object
