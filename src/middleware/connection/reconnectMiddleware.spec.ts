@@ -3,7 +3,9 @@ import { Request, Response } from 'express';
 
 import { reconnectMiddleware } from './reconnectMiddleware';
 
-const mockApi = {} as unknown as ApiPromise;
+const mockApi = {
+	isConnected: true,
+} as unknown as ApiPromise;
 
 describe('reconnectMiddleware', () => {
 	const apiConnectionCache = {
