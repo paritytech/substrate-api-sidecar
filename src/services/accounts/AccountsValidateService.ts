@@ -22,11 +22,11 @@ export class AccountsValidateService extends AbstractService {
 		}
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
-			const [isValid, , , ss58Decoded] = checkAddressChecksum(u8Address);
+			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
 
 			return {
 				isValid: isValid,
-				ss58Prefix: ss58Decoded,
+				ss58Prefix,
 			};
 		}
 
