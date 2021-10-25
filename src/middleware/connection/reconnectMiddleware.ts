@@ -44,9 +44,7 @@ export const reconnectMiddleware = (
 
 			return next();
 		}
-		/**
-		 * Check to see if the API-WS is connected
-		 */
+
 		if (!api.isConnected) {
 			Log.logger.error(
 				'API-WS: disconnected, attempting to manually reconnect...'
@@ -57,9 +55,6 @@ export const reconnectMiddleware = (
 			 * `reconnectMiddleware` calls dont attempt to reconnect but instead hang
 			 */
 			apiConnectionCache.isReconnecting = true;
-			/**
-			 * Attempt to reconnect
-			 */
 			const attempReconnect = await reconnectApi(api);
 
 			if (attempReconnect) {
@@ -68,10 +63,6 @@ export const reconnectMiddleware = (
 				 * Time buffer to allow polkadot-js to re-enable itself
 				 */
 				await api.isReady;
-				/**
-				 * Reset isReconnecting to false to allow all other blocked requests
-				 * to continue to be processed.
-				 */
 				apiConnectionCache.isReconnecting = false;
 
 				return next();
@@ -100,26 +91,17 @@ const reconnectApi = async (
 			'Disconnecting the polkadot-js API-WS. Sidecar will be disabled shortly as it attempts to reconnect'
 		);
 	}
-	await api.disconnect().catch((err) => {
-		throw new InternalServerError(err);
-	});
+	await api.disconnect()
 
-	/**
-	 * Attemp to reconnect to the api.
-	 */
 	Log.logger.warn('Attemping to reconnect to polkadot-js api.');
-	await api.connect().catch((err) => {
-		throw new InternalServerError(err);
-	});
+
+	await api.connect()
 
 	const checkConnection = api.isConnected;
 
 	if (checkConnection) {
 		return true;
 	} else {
-		/**
-		 * Give each reconnect a 1.5s buffer
-		 */
 		await delay(1500);
 
 		/**
@@ -127,9 +109,6 @@ const reconnectApi = async (
 		 */
 		if (api.isConnected) return true;
 
-		/**
-		 * Recursively attempt to reconnect to the Api
-		 */
 		if (reconnectAttemps < MAX_CONNECTION_ATTEMPTS) {
 			return reconnectApi(api, reconnectAttemps + 1);
 		}
