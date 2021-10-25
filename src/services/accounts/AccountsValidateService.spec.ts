@@ -41,7 +41,7 @@ describe('Validate addresses', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should verify a kulupu address when connected to kulup', () => {
+	it('Should verify a kulupu address when connected to kulupu', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '16',
@@ -67,7 +67,7 @@ describe('Validate addresses', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should correctly validate a polkadot addr on kusama', () => {
+	it('Should correctly validate a polkadot address on kusama', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '0',
