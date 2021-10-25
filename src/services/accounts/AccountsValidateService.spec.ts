@@ -19,8 +19,7 @@ describe('Validate addresses', () => {
 	it('Should verify a polkadot address when connected to polkadot', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'polkadot',
-			ss58: '0',
+			ss58Prefix: '0',
 		};
 		const polkadotAddr = '1xN1Q5eKQmS5AzASdjt6R6sHF76611vKR4PFpFjy1kXau4m';
 
@@ -32,8 +31,7 @@ describe('Validate addresses', () => {
 	it('Should verify a kusama address when connected to kusama', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'kusama',
-			ss58: '2',
+			ss58Prefix: '2',
 		};
 		const kusamaAddr = 'DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc';
 		(mockApi.registry.chainSS58 as unknown) = 2;
@@ -46,8 +44,7 @@ describe('Validate addresses', () => {
 	it('Should verify a kulupu address when connected to kulup', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'kulupu',
-			ss58: '16',
+			ss58Prefix: '16',
 		};
 		const kulupuAddr = '2cYv9Gk6U4m4a7Taw9pG8qMfd1Pnxw6FLTvV6kYZNhGL6M9y';
 		(mockApi.registry.chainSS58 as unknown) = 16;
@@ -60,8 +57,7 @@ describe('Validate addresses', () => {
 	it('Should verify a valid default substrate address', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'substrate',
-			ss58: '42',
+			ss58Prefix: '42',
 		};
 		const substrateAddr = '5EnxxUmEbw8DkENKiYuZ1DwQuMoB2UWEQJZZXrTsxoz7SpgG';
 		(mockApi.registry.chainSS58 as unknown) = 42;
@@ -71,11 +67,10 @@ describe('Validate addresses', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should give the correct response with a valid ss58 addr on the wrong network', () => {
+	it('Should correctly validate a polkadot addr on kusama', () => {
 		const expectedResponse = {
-			isValid: false,
-			networkId: 'polkadot',
-			ss58: '0',
+			isValid: true,
+			ss58Prefix: '0',
 		};
 		const polkadotAddr = '1xN1Q5eKQmS5AzASdjt6R6sHF76611vKR4PFpFjy1kXau4m';
 		(mockApi.registry.chainSS58 as unknown) = 2;
@@ -88,8 +83,7 @@ describe('Validate addresses', () => {
 	it('Should give the correct response for a polkadot hex value', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'polkadot',
-			ss58: '0',
+			ss58Prefix: '0',
 		};
 		const polkadotHex =
 			'0x002a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc592312';
@@ -102,8 +96,7 @@ describe('Validate addresses', () => {
 	it('Should give the correct response for a kusama hex value', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'kusama',
-			ss58: '2',
+			ss58Prefix: '2',
 		};
 		const kusamaHex =
 			'0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9';
@@ -117,8 +110,7 @@ describe('Validate addresses', () => {
 	it('Should give the correct response for a karura hex value', () => {
 		const expectedResponse = {
 			isValid: true,
-			networkId: 'karura',
-			ss58: '8',
+			ss58Prefix: '8',
 		};
 		const karuraHex =
 			'0x086d6f646c6163612f6364707400000000000000000000000000000000000000008333';
@@ -132,8 +124,7 @@ describe('Validate addresses', () => {
 	it('Should return the correct response for an invalid hex value', () => {
 		const expectedResponse = {
 			isValid: false,
-			networkId: null,
-			ss58: null,
+			ss58Prefix: null,
 		};
 		const invalidAddr =
 			'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59';
