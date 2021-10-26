@@ -155,8 +155,8 @@ export class PalletsStorageService extends AbstractService {
 		adjustMetadataV13Arg: boolean
 	): Promise<MetadataV13 | MetadataV14> => {
 		const [historicMetadata, blockHeader, { specName }] = await Promise.all([
-			await this.api.rpc.state.getMetadata(hash),
-			await this.api.rpc.chain.getHeader(hash),
+			this.api.rpc.state.getMetadata(hash),
+			this.api.rpc.chain.getHeader(hash),
 			this.api.rpc.state.getRuntimeVersion(),
 		]);
 
