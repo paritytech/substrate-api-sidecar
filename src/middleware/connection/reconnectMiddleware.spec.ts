@@ -49,11 +49,8 @@ describe('reconnectMiddleware', () => {
 		(mockApi.isConnected as unknown) = false;
 
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
-
 		await delay(2000);
-
 		(mockApi.isConnected as unknown) = true;
-
 		await delay(2000);
 
 		expect(next).toBeCalled();
@@ -96,4 +93,19 @@ describe('reconnectMiddleware', () => {
 			);
 		}
 	});
+
+	it('Should handle multiple requests correctly', async () => {
+		const res = jest.fn() as unknown as Response;
+		const req = jest.fn() as unknown as Request;
+		const next = jest.fn();
+
+		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
+		await delay(2000);
+		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
+		await delay(2000);
+		(mockApi.isConnected as unknown) = true;
+		await delay(2000);
+
+		expect(next).toBeCalledTimes(2)
+	})
 });
