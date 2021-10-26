@@ -106,6 +106,6 @@ describe('reconnectMiddleware', () => {
 		(mockApi.isConnected as unknown) = true;
 		await delay(2000);
 
-		expect(next).toBeCalledTimes(2)
-	})
+		expect(next).toBeCalledTimes(2);
+	});
 });

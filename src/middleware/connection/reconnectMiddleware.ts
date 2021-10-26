@@ -17,7 +17,7 @@ const delay = (ms: number) => {
 export const reconnectMiddleware = (
 	api: ApiPromise,
 	apiConnectionCache: Record<string, boolean>,
-	maxConnAttempts: number = 30
+	maxConnAttempts = 30
 ): RequestHandler => {
 	return async (_req, _res, next) => {
 		/**
@@ -87,7 +87,7 @@ export const reconnectMiddleware = (
 const reconnectApi = async (
 	api: ApiPromise,
 	maxConnAttempts: number,
-	reconnectAttemps: number = 0
+	reconnectAttemps = 0
 ): Promise<boolean> => {
 	/**
 	 * Ensure disconnection before attempting to reconnect, avoiding conflict with the underlying api trying to reconnect
