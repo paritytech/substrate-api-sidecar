@@ -152,7 +152,7 @@ export class AccountsAssetsService extends AbstractService {
 	private checkAssetsError(historicApi: ApiDecoration<'promise'>): void {
 		if (!historicApi.query.assets) {
 			throw new BadRequest(
-				`The queried block's runtime does not contain the appropriate metadata required for this endpoint.`
+				`The runtime does not include the assets pallet at this block.`
 			);
 		}
 	}
