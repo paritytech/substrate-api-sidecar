@@ -51,7 +51,7 @@
     "test:test-release": "yarn start:test-release"
   },
   "dependencies": {
-    "@polkadot/api": "^6.5.1",
+    "@polkadot/api": "^6.5.2",
     "@polkadot/apps-config": "0.97.2-0",
     "@polkadot/util-crypto": "^7.6.1",
     "@polkadot/x-rxjs": "^6.11.1",
@@ -65,7 +65,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.5.5",
+    "@substrate/dev": "^0.5.6",
     "@types/argparse": "2.0.10",
     "@types/express": "4.17.13",
     "@types/express-serve-static-core": "4.17.24",
@@ -77,11 +77,11 @@
     "tsc-watch": "^4.4.0"
   },
   "resolutions": {
-    "@polkadot/api": "6.5.1",
+    "@polkadot/api": "6.5.2",
     "@polkadot/keyring": "7.6.1",
     "@polkadot/networks": "7.6.1",
-    "@polkadot/types": "6.5.1",
-    "@polkadot/types-known": "6.5.1",
+    "@polkadot/types": "6.5.2",
+    "@polkadot/types-known": "6.5.2",
     "@polkadot/util": "7.6.1",
     "@polkadot/util-crypto": "7.6.1",
     "@polkadot/wasm-crypto": "4.2.1",
