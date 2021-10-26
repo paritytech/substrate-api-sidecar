@@ -1,3 +1,4 @@
+import { QueryableModuleStorage } from '@polkadot/api/types';
 import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
@@ -48,6 +49,8 @@ export class ParasService extends AbstractService {
 	): Promise<ICrowdloansInfo> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
 
 		const [fund, { number }] = await Promise.all([
 			historicApi.query.crowdloan.funds<Option<FundInfo>>(paraId),
@@ -458,5 +461,23 @@ export class ParasService extends AbstractService {
 		}
 
 		return ranges;
+	}
+
+	/**
+	 * Parachains pallets and modules are not available on all runtimes. This
+	 * verifies that by checking if the module exists. If it doesnt it will throw an error
+	 *
+	 * @param queryFn The QueryModuleStorage key that we want to check exists
+	 * @param mod Module we are checking
+	 */
+	private assertQueryModule(
+		queryFn: QueryableModuleStorage<'promise'>,
+		mod: string
+	): void {
+		if (!queryFn) {
+			throw Error(
+				`The runtime does not include the ${mod} module at this block`
+			);
+		}
 	}
 }
