@@ -201,14 +201,19 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.auctions, 'auctions');
+
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
-			this.api.query.auctions.auctionInfo.at<Option<Vec<BlockNumber>>>(hash),
+			historicApi.query.auctions.auctionInfo<Option<Vec<BlockNumber>>>(),
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.auctions.auctionCounter.at<BlockNumber>(hash),
+			historicApi.query.auctions.auctionCounter<BlockNumber>(),
 		]);
 		const blockNumber = number.unwrap();
 
-		const endingPeriod = this.api.consts.auctions.endingPeriod as BlockNumber;
+		const endingPeriod = historicApi.consts.auctions.endingPeriod as BlockNumber;
 
 		let leasePeriodIndex: IOption<BlockNumber>,
 			beginEnd: IOption<BlockNumber>,
@@ -217,20 +222,19 @@ export class ParasService extends AbstractService {
 			winning;
 		if (auctionInfoOpt.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
-			const endingOffset = this.endingOffset(blockNumber, beginEnd);
+			const endingOffset = this.endingOffset(historicApi, blockNumber, beginEnd);
+
 			const winningOpt = endingOffset
-				? await this.api.query.auctions.winning.at<Option<WinningData>>(
-						hash,
+				? await historicApi.query.auctions.winning<Option<WinningData>>(
 						endingOffset
 				  )
-				: await this.api.query.auctions.winning.at<Option<WinningData>>(
-						hash,
+				: await historicApi.query.auctions.winning<Option<WinningData>>(
 						// when we are not in the ending phase of the auction winning bids are stored at 0
 						0
 				  );
 
 			if (winningOpt.isSome) {
-				const ranges = this.enumerateLeaseSets(leasePeriodIndex);
+				const ranges = this.enumerateLeaseSets(historicApi, leasePeriodIndex);
 
 				// zip the winning bids together with their enumerated `SlotRange` (aka `leaseSet`)
 				winning = winningOpt.unwrap().map((bid, idx) => {
@@ -266,7 +270,7 @@ export class ParasService extends AbstractService {
 		}
 
 		const leasePeriodsPerSlot =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
+			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 		const leasePeriods = isSome(leasePeriodIndex)
 			? Array(leasePeriodsPerSlot)
@@ -403,7 +407,7 @@ export class ParasService extends AbstractService {
 	 * @param now current block number
 	 * @param beginEnd block number of the start of the auction's ending period
 	 */
-	private endingOffset(now: BN, beginEnd: IOption<BN>): IOption<BN> {
+	private endingOffset(historicApi: ApiDecoration<'promise'>, now: BN, beginEnd: IOption<BN>): IOption<BN> {
 		if (isNull(beginEnd)) {
 			return null;
 		}
@@ -416,7 +420,7 @@ export class ParasService extends AbstractService {
 		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
 		// need a fallback
 		const sampleLength =
-			(this.api.consts.auctions.sampleLength as BlockNumber) ||
+			(historicApi.consts.auctions.sampleLength as BlockNumber) ||
 			SAMPLE_LENGTH_FALLBACK;
 		return afterEarlyEnd.div(sampleLength);
 	}
@@ -451,12 +455,13 @@ export class ParasService extends AbstractService {
 	 * So now we have an array, where each index corresponds to the same `SlotRange` that
 	 * would be at that index in the `auctions::winning` array.
 	 *
+	 * @param historicApi
 	 * @param leasePeriodIndex
 	 */
-	private enumerateLeaseSets(leasePeriodIndex: BN): number[][] {
+	private enumerateLeaseSets(historicApi: ApiDecoration<'promise'>, leasePeriodIndex: BN): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
 		const lPPS =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
+			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 
 		const ranges: number[][] = [];
