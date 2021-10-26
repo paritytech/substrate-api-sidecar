@@ -46,9 +46,12 @@ export class ParasService extends AbstractService {
 		hash: BlockHash,
 		paraId: number
 	): Promise<ICrowdloansInfo> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
 		const [fund, { number }] = await Promise.all([
-			this.api.query.crowdloan.funds.at<Option<FundInfo>>(hash, paraId),
-			this.api.rpc.chain.getHeader(hash),
+			historicApi.query.crowdloan.funds<Option<FundInfo>>(paraId),
+			api.rpc.chain.getHeader(hash),
 		]);
 
 		if (!fund) {
