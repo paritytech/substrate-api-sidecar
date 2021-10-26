@@ -144,7 +144,7 @@ export class AccountsAssetsService extends AbstractService {
 	}
 
 	/**
-	 * Checks if the historicApi has the following assets pallet. If not
+	 * Checks if the historicApi has the assets pallet. If not
 	 * it will throw a BadRequest error.
 	 *
 	 * @param historicApi Decorated historic api
