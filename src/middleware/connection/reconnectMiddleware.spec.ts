@@ -102,10 +102,11 @@ describe('reconnectMiddleware', () => {
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
 		await delay(2000);
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
+		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
 		await delay(2000);
 		(mockApi.isConnected as unknown) = true;
 		await delay(2000);
 
-		expect(next).toBeCalledTimes(2);
+		expect(next).toBeCalledTimes(3);
 	});
 });
