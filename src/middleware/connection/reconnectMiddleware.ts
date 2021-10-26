@@ -4,8 +4,6 @@ import { InternalServerError } from 'http-errors';
 
 import { Log } from '../../logging/Log';
 
-const MAX_CONNECTION_ATTEMPTS = 30;
-
 const delay = (ms: number) => {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -18,7 +16,8 @@ const delay = (ms: number) => {
  */
 export const reconnectMiddleware = (
 	api: ApiPromise,
-	apiConnectionCache: Record<string, boolean>
+	apiConnectionCache: Record<string, boolean>,
+	maxConnAttempts: number = 30
 ): RequestHandler => {
 	return async (_req, _res, next) => {
 		/**
@@ -55,7 +54,7 @@ export const reconnectMiddleware = (
 			 * `reconnectMiddleware` calls dont attempt to reconnect but instead hang
 			 */
 			apiConnectionCache.isReconnecting = true;
-			const attempReconnect = await reconnectApi(api);
+			const attempReconnect = await reconnectApi(api, maxConnAttempts);
 
 			if (attempReconnect) {
 				Log.logger.info('API-WS has succesfully reconnected');
@@ -79,9 +78,16 @@ export const reconnectMiddleware = (
 	};
 };
 
+/**
+ * Attempt to reconnect to the API recursively
+ *
+ * @param api
+ * @param reconnectAttemps
+ */
 const reconnectApi = async (
 	api: ApiPromise,
-	reconnectAttemps = 0
+	maxConnAttempts: number,
+	reconnectAttemps: number = 0
 ): Promise<boolean> => {
 	/**
 	 * Ensure disconnection before attempting to reconnect, avoiding conflict with the underlying api trying to reconnect
@@ -109,8 +115,8 @@ const reconnectApi = async (
 		 */
 		if (api.isConnected) return true;
 
-		if (reconnectAttemps < MAX_CONNECTION_ATTEMPTS) {
-			return reconnectApi(api, reconnectAttemps + 1);
+		if (reconnectAttemps < maxConnAttempts) {
+			return reconnectApi(api, maxConnAttempts, reconnectAttemps + 1);
 		}
 
 		return false;
