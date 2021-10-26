@@ -110,7 +110,7 @@ const assetsAccountKeysAt = () =>
 	});
 
 /**
- * Attach `keysAt` to mockApi.query.assets.asset
+ * Attach `keys` to mockApi.query.assets.asset
  */
 Object.assign(assetsInfo, {
 	keys: assetsAccountKeysAt,
