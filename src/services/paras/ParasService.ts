@@ -95,11 +95,14 @@ export class ParasService extends AbstractService {
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
 	async crowdloans(hash: BlockHash): Promise<ICrowdloans> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan')
+
 		const [{ number }, funds] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
-			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>, [ParaId]>(
-				hash
-			),
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.crowdloan.funds.entries<Option<FundInfo>, [ParaId]>(),
 		]);
 
 		const fundsByParaId = funds.map(([keys, fundInfo]) => {
