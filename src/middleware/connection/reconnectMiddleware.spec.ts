@@ -1,5 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { Request, Response } from 'express';
+import { NextFunction } from 'express';
 
 import { reconnectMiddleware } from './reconnectMiddleware';
 
@@ -25,7 +26,11 @@ describe('reconnectMiddleware', () => {
 
 	jest.setTimeout(10000);
 
+	let res: Response, req: Request, next: NextFunction;
 	beforeEach(() => {
+		res = jest.fn() as unknown as Response;
+		req = jest.fn() as unknown as Request;
+		next = jest.fn() as unknown as NextFunction;
 		apiConnectionCache.isReconnecting = false;
 
 		(mockApi.isConnected as unknown) = true;
@@ -33,19 +38,12 @@ describe('reconnectMiddleware', () => {
 	});
 
 	it('Should successfully call next when connected', () => {
-		const res = jest.fn() as unknown as Response;
-		const req = jest.fn() as unknown as Request;
-		const next = jest.fn();
-
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
 
 		expect(next).toBeCalled();
 	});
 
 	it('Should succesfully reconnect when disconnected and call next', async () => {
-		const res = jest.fn() as unknown as Response;
-		const req = jest.fn() as unknown as Request;
-		const next = jest.fn();
 		(mockApi.isConnected as unknown) = false;
 
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
@@ -58,9 +56,6 @@ describe('reconnectMiddleware', () => {
 	});
 
 	it('Should correctly throw an error when max connection attempts is reached', async () => {
-		const res = jest.fn() as unknown as Response;
-		const req = jest.fn() as unknown as Request;
-		const next = jest.fn();
 		(mockApi.isConnected as unknown) = false;
 
 		try {
@@ -74,9 +69,6 @@ describe('reconnectMiddleware', () => {
 	});
 
 	it('Should correctly throw an error when done reconnecting unsuccessfully', async () => {
-		const res = jest.fn() as unknown as Response;
-		const req = jest.fn() as unknown as Request;
-		const next = jest.fn();
 		(apiConnectionCache.isReconnecting as unknown) = true;
 		(mockApi.isConnected as unknown) = false;
 
@@ -95,12 +87,11 @@ describe('reconnectMiddleware', () => {
 	});
 
 	it('Should handle multiple requests correctly', async () => {
-		const res = jest.fn() as unknown as Response;
-		const req = jest.fn() as unknown as Request;
-		const next = jest.fn();
-
+		// Acts as the first initial request the will attempt to reconnect recursively
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
+		// Delay to allow for a minimum a sinlge iteration of reconnection
 		await delay(2000);
+		// Send two more requests
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
 		reconnectMiddleware(mockApi, apiConnectionCache)(req, res, next);
 		await delay(2000);
