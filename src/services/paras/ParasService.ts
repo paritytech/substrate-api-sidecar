@@ -13,6 +13,7 @@ import {
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
+import { BN_ONE } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -33,8 +34,6 @@ import { AbstractService } from '../AbstractService';
 // This was the orgiginal value in the rococo test net. Once the exposed metadata
 // consts makes its way into `rococo-v1` this can be taken out.
 const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
-
-const SAMPLE_LENGTH_FALLBACK = new BN(1);
 
 export class ParasService extends AbstractService {
 	/**
@@ -222,7 +221,7 @@ export class ParasService extends AbstractService {
 			winning;
 		if (auctionInfoOpt.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
-			const endingOffset = this.endingOffset(historicApi, blockNumber, beginEnd);
+			const endingOffset = this.endingOffset(blockNumber, beginEnd);
 
 			const winningOpt = endingOffset
 				? await historicApi.query.auctions.winning<Option<WinningData>>(
@@ -409,7 +408,7 @@ export class ParasService extends AbstractService {
 	 * @param now current block number
 	 * @param beginEnd block number of the start of the auction's ending period
 	 */
-	private endingOffset(historicApi: ApiDecoration<'promise'>, now: BN, beginEnd: IOption<BN>): IOption<BN> {
+	private endingOffset(now: BN, beginEnd: IOption<BN>): IOption<BN> {
 		if (isNull(beginEnd)) {
 			return null;
 		}
@@ -419,12 +418,7 @@ export class ParasService extends AbstractService {
 			return null;
 		}
 
-		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
-		// need a fallback
-		const sampleLength =
-			(historicApi.consts.auctions.sampleLength as BlockNumber) ||
-			SAMPLE_LENGTH_FALLBACK;
-		return afterEarlyEnd.div(sampleLength);
+		return now.sub(new BN(beginEnd)).iadd(BN_ONE);
 	}
 
 	/**
