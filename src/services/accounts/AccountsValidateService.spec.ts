@@ -7,7 +7,7 @@ const mockApi = {} as unknown as ApiPromise;
 const validateService = new AccountsValidateService(mockApi);
 
 describe('Validate addresses', () => {
-	it('Should verify a polkadot address when connected to polkadot', () => {
+	it('Should verify a polkadot address', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '0',
