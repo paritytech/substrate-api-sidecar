@@ -147,7 +147,7 @@ export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
 
 const getStorage = () =>
 	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Option<Raw>', '0x')
+		polkadotRegistry.createType('Option<Raw>', '0x00')
 	);
 
 const chainType = () =>

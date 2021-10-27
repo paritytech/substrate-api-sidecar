@@ -24,6 +24,7 @@
     "yaml-loader": "^0.5.0"
   },
   "resolutions": {
-    "prismjs": "^1.23.0"
+    "prismjs": "^1.23.0",
+    "ua-parser-js": "<= 0.7.21"
   }
 }

@@ -49,4 +49,12 @@ export const config: Record<string, IChainConfig> = {
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
+	statemine: {
+		wsUrl: 'wss://kusama-statemine-rpc.paritytech.net',
+		JestProcOpts: {
+			...defaultJestOpts,
+			args: ['test:e2e-tests', '--chain', 'statemine'],
+		},
+		SasStartOpts: defaultSasStartOpts,
+	}
 };

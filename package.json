@@ -44,6 +44,7 @@
     "test:init-e2e-tests:polkadot": "yarn start:e2e-scripts --chain polkadot",
     "test:init-e2e-tests:kusama": "yarn start:e2e-scripts --chain kusama",
     "test:init-e2e-tests:westend": "yarn start:e2e-scripts --chain westend",
+    "test:init-e2e-tests:statemine": "yarn start:e2e-scripts --chain statemine",
     "start:e2e-scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && cd scripts && substrate-exec-tsc",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",
@@ -51,9 +52,9 @@
     "test:test-release": "yarn start:test-release"
   },
   "dependencies": {
-    "@polkadot/api": "6.4.1",
+    "@polkadot/api": "^6.5.2",
     "@polkadot/apps-config": "0.97.2-0",
-    "@polkadot/util-crypto": "^7.5.1",
+    "@polkadot/util-crypto": "^7.6.1",
     "@polkadot/x-rxjs": "^6.11.1",
     "@substrate/calc": "^0.2.3",
     "argparse": "^2.0.1",
@@ -65,7 +66,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.5.5",
+    "@substrate/dev": "^0.5.6",
     "@types/argparse": "2.0.10",
     "@types/express": "4.17.13",
     "@types/express-serve-static-core": "4.17.24",
@@ -77,13 +78,13 @@
     "tsc-watch": "^4.4.0"
   },
   "resolutions": {
-    "@polkadot/api": "6.4.1",
-    "@polkadot/keyring": "7.5.1",
-    "@polkadot/networks": "7.5.1",
-    "@polkadot/types": "6.4.1",
-    "@polkadot/types-known": "6.4.1",
-    "@polkadot/util": "7.5.1",
-    "@polkadot/util-crypto": "7.5.1",
+    "@polkadot/api": "6.5.2",
+    "@polkadot/keyring": "7.6.1",
+    "@polkadot/networks": "7.6.1",
+    "@polkadot/types": "6.5.2",
+    "@polkadot/types-known": "6.5.2",
+    "@polkadot/util": "7.6.1",
+    "@polkadot/util-crypto": "7.6.1",
     "@polkadot/wasm-crypto": "4.2.1",
     "node-forge": ">=0.10.0",
     "node-fetch": ">=2.6.1",

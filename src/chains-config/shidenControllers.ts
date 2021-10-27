@@ -9,6 +9,7 @@ export const shidenControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
 		'AccountsVestingInfo',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksTrace',

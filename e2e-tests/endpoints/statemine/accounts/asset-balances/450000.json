@@ -1,0 +1,524 @@
+{
+    "at": {
+        "hash": "0x219b8d60bee1f883a4f7cfecd021e54c23532f4bba9151a4ef1ce904d5245a94",
+        "height": "450000"
+    },
+    "assets": [
+        {
+            "assetId": "9999",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "100",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "123",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "9000",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "69420",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "50",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "420",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "0",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "10",
+            "balance": "69420000000000",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "300",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "4",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "21",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "333",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "28",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "20",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2048",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "999",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "99",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "7777",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "168",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2077",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "16",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "11",
+            "balance": "690000000000000",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "138",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "111",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "66",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "14",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "360",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "80085",
+            "balance": "690000000000",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "6",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "19",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "42069",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "4206969",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2021",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "77",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "33",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "71",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "15",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "3721",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "374",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "13",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2049",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "188",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "89",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "42",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "7777777",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "365",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "5",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "18",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "7",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "8848",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "87",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "233",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "1688",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "777777",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "22",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "777",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "567",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "24",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "8",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "841",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "5201314",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "1234",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "223",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "2121",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "1",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "12",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "3",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "1337",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "666",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "88",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "17",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "25",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "69",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "23",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "759",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "13000",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "1225",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "64",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "520",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "9",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "888",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "911",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "214",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        },
+        {
+            "assetId": "345",
+            "balance": "0",
+            "isFrozen": false,
+            "isSufficient": false
+        }
+    ]
+}

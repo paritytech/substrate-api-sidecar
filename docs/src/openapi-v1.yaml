@@ -328,10 +328,8 @@ paths:
     get:
       tags:
       - accounts
-      summary: Validate a given address for the connected network.
-      description: Returns information regarding an address's validity for whichever network
-        sidecar is connected too. It will check if the address is valid, what the ss58 prefix is, 
-        and what the networkId for that address is.
+      summary: Validate a given address.
+      description: Returns whether the given address is valid ss58 format and the ss58 prefix if the address has one.
       operationId: getValidationByAccountId
       parameters: 
       - name: accountId
@@ -1423,13 +1421,11 @@ components:
       properties:
         isValid:
           type: boolean
-          description: Whether the given address is valid for the given network.
-        networkId:
+          description: Whether the given address is valid ss58 formatted.
+        ss58Prefix:
           type: string
-          description: Name of the network the address is associated with
-        ss58:
-          type: string
-          description: SS58 prefix of the given address
+          description: SS58 prefix of the given address. If the address is a valid
+            base58 format, but incorrect ss58, a prefix for the given address will still be returned.
           format: unsignedInteger
     AccountVestingInfo:
       type: object

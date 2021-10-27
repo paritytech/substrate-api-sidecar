@@ -1,51 +1,41 @@
-import { knownSubstrate } from '@polkadot/networks/substrate';
 import { hexToU8a, isHex } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 
+import { IValidateAddrResponse } from '../../types/responses/ValidateAddress';
 import { AbstractService } from '../AbstractService';
 
-interface ValidateAddrResponse {
-	isValid: boolean;
-	networkId: string | null;
-	ss58: number | null;
-}
-
 export class AccountsValidateService extends AbstractService {
-	validateAddress(address: string): ValidateAddrResponse {
+	/**
+	 * Takes a given address and determines whether it is a ss58 formatted address,
+	 * and what the ss58 prefix for that address is.
+	 *
+	 * @param address ss58 or hex address to validate
+	 */
+	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
 		if (isHex(address)) {
 			u8Address = hexToU8a(address);
 		} else {
 			try {
 				u8Address = base58Decode(address);
-			} catch {
-				return {
-					isValid: false,
-					networkId: null,
-					ss58: null,
-				};
+			} catch (e) {
+				throw new Error(e as string);
 			}
 		}
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
-			const [isValid, , , ss58Decoded] = checkAddressChecksum(u8Address);
-			const isValidNetworkId = this.api.registry.chainSS58 === ss58Decoded;
-			const networkInfo = knownSubstrate.filter(
-				(obj) => obj.prefix === ss58Decoded
-			)[0];
+			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
 
 			return {
-				isValid: isValid && isValidNetworkId,
-				networkId: networkInfo ? networkInfo.network : null,
-				ss58: ss58Decoded,
+				isValid: isValid,
+				ss58Prefix,
 			};
 		}
 
 		return {
 			isValid: false,
-			networkId: null,
-			ss58: null,
+			ss58Prefix: null,
 		};
 	}
 }
