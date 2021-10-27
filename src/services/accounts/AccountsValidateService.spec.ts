@@ -31,7 +31,7 @@ describe('Validate addresses', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should verify a kulupu address when connected to kulupu', () => {
+	it('Should verify a kulupu address', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '16',
