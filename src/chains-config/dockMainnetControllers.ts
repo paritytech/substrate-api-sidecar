@@ -8,6 +8,7 @@ import { getBlockWeight } from './metadata-consts';
 export const dockMainnetControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',

@@ -8,6 +8,7 @@ export const kiltControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',

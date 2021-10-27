@@ -11,6 +11,7 @@ export const defaultControllers: ControllerConfig = {
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
+		'AccountsValidate',
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',

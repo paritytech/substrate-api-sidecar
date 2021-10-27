@@ -9,6 +9,7 @@ export const soraControllers: ControllerConfig = {
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',

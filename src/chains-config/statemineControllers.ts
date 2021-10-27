@@ -7,6 +7,7 @@ import { initLRUCache } from './cache/lruCache';
 export const statemineControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',
