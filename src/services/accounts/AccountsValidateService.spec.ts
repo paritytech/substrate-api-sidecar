@@ -106,4 +106,11 @@ describe('Validate addresses', () => {
 			sanitizeNumbers(validateService.validateAddress(invalidAddr))
 		).toStrictEqual(expectedResponse);
 	});
+
+	it('Should correctly throw an error for an invalid ss58 address', () => {
+		const invalidAddr = '15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX0';
+		expect(() =>
+			sanitizeNumbers(validateService.validateAddress(invalidAddr))
+		).toThrow('Error: Invalid base58 character "0" (0x30) at index 48');
+	});
 });

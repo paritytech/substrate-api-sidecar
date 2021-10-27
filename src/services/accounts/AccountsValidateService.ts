@@ -19,11 +19,8 @@ export class AccountsValidateService extends AbstractService {
 		} else {
 			try {
 				u8Address = base58Decode(address);
-			} catch {
-				return {
-					isValid: false,
-					ss58Prefix: null,
-				};
+			} catch (e) {
+				throw new Error(e as string);
 			}
 		}
 
