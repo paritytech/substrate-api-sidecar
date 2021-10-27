@@ -1,5 +1,4 @@
 {
     "isValid": true,
-    "networkId": "polkadot",
-    "ss58": "0"
+    "ss58Prefix": "0"
 }

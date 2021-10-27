@@ -1,5 +1,4 @@
 {
     "isValid": true,
-    "networkId": "kusama",
-    "ss58": "2"
+    "ss58Prefix": "2"
 }

@@ -1,5 +1,4 @@
 {
     "isValid": true,
-    "networkId": "substrate",
-    "ss58": "42"
+    "ss58Prefix": "42"
 }
