@@ -1424,7 +1424,8 @@ components:
           description: Whether the given address is valid ss58 formatted.
         ss58Prefix:
           type: string
-          description: SS58 prefix of the given address.
+          description: SS58 prefix of the given address. If the address is a valid
+            base58 format, but incorrect ss58, a prefix for the given address will still be returned.
           format: unsignedInteger
     AccountVestingInfo:
       type: object
