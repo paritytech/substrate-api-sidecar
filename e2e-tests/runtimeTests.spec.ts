@@ -80,15 +80,15 @@ describe('Runtime Tests for `/experimental/paras/*`', () => {
 	 */
 	jest.setTimeout(30000);
 
-	if(paras.length) {
+	if (paras.length) {
 		test.each(paras)(
 			'Given path %p, it should return the correct JSON response',
-			async(runtimePath, runtimeResponse) => {
+			async (runtimePath, runtimeResponse) => {
 				const res = await request(runtimePath, HOST, PORT);
 				const responseJson = JSON.parse(res);
-	
+
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 			}
-		)
+		);
 	}
-})
+});
