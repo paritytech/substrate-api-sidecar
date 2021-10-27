@@ -1,5 +1,5 @@
-import { u32 } from '@polkadot/types';
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
+import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -97,7 +97,7 @@ export class ParasService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan')
+		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
 
 		const [{ number }, funds] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
@@ -137,9 +137,7 @@ export class ParasService extends AbstractService {
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
 			>(paraId),
 			this.api.rpc.chain.getHeader(hash),
-			historicApi.query.paras.paraLifecycles<Option<ParaLifecycle>>(
-				paraId
-			),
+			historicApi.query.paras.paraLifecycles<Option<ParaLifecycle>>(paraId),
 		]);
 		const blockNumber = number.unwrap();
 
@@ -150,8 +148,10 @@ export class ParasService extends AbstractService {
 
 		let leasesFormatted;
 		if (leases.length) {
-			const currentLeasePeriodIndex =
-				this.leasePeriodIndexAt(historicApi, blockNumber).toNumber();
+			const currentLeasePeriodIndex = this.leasePeriodIndexAt(
+				historicApi,
+				blockNumber
+			).toNumber();
 
 			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
 				if (curLeaseOpt.isSome) {
@@ -212,7 +212,8 @@ export class ParasService extends AbstractService {
 		]);
 		const blockNumber = number.unwrap();
 
-		const endingPeriod = historicApi.consts.auctions.endingPeriod as BlockNumber;
+		const endingPeriod = historicApi.consts.auctions
+			.endingPeriod as BlockNumber;
 
 		let leasePeriodIndex: IOption<BlockNumber>,
 			beginEnd: IOption<BlockNumber>,
@@ -394,7 +395,10 @@ export class ParasService extends AbstractService {
 	 * @param blockHeight current blockheight
 	 * @param leasePeriod duration of lease period
 	 */
-	private leasePeriodIndexAt(historicApi: ApiDecoration<'promise'>, now: BN): BN {
+	private leasePeriodIndexAt(
+		historicApi: ApiDecoration<'promise'>,
+		now: BN
+	): BN {
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
 		return now.div(leasePeriod);
 	}
@@ -454,7 +458,10 @@ export class ParasService extends AbstractService {
 	 * @param historicApi
 	 * @param leasePeriodIndex
 	 */
-	private enumerateLeaseSets(historicApi: ApiDecoration<'promise'>, leasePeriodIndex: BN): number[][] {
+	private enumerateLeaseSets(
+		historicApi: ApiDecoration<'promise'>,
+		leasePeriodIndex: BN
+	): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
 		const lPPS =
 			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||

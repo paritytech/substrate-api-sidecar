@@ -303,12 +303,12 @@ Object.assign(historicApi.query.paras.paraLifecycles, {
  * Assign necessary keys to slots.leases
  */
 Object.assign(historicApi.query.slots.leases, {
-	entries: slotsLeasesEntriesAt
+	entries: slotsLeasesEntriesAt,
 });
 
 const mockApi = {
 	...defaultMockApi,
-	at: (_hash: Hash) => historicApi
+	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
 const parasService = new ParasService(mockApi);
@@ -471,8 +471,10 @@ describe('ParasService', () => {
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return the correct data during an ongoing auction', async () => {
 			const leasePeriodIndex = new BN(39);
-			const leaseIndexArray =
-				parasService['enumerateLeaseSets'](historicApi, leasePeriodIndex);
+			const leaseIndexArray = parasService['enumerateLeaseSets'](
+				historicApi,
+				leasePeriodIndex
+			);
 			// Remove the first two entries with splice because we have them in the expectedResponse.
 			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
 			const additionalWinningOptions = leaseIndexArray
