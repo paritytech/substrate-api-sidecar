@@ -392,8 +392,8 @@ export class ParasService extends AbstractService {
 	/**
 	 * Calculate the current lease period index.
 	 *
-	 * @param blockHeight current blockheight
-	 * @param leasePeriod duration of lease period
+	 * @param historicApi 
+	 * @param now Current blockHeight
 	 */
 	private leasePeriodIndexAt(
 		historicApi: ApiDecoration<'promise'>,
