@@ -350,11 +350,14 @@ export class ParasService extends AbstractService {
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
 	async paras(hash: BlockHash): Promise<IParas> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.paras, 'paras');
+
 		const [{ number }, paraLifecycles] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle, [ParaId]>(
-				hash
-			),
+			historicApi.query.paras.paraLifecycles.entries<ParaLifecycle, [ParaId]>(),
 		]);
 
 		const parasPromises = paraLifecycles.map(async ([k, paraLifecycle]) => {
@@ -362,8 +365,7 @@ export class ParasService extends AbstractService {
 			let onboardingAs: ParaType | undefined;
 			if (paraLifecycle.isOnboarding) {
 				const paraGenesisArgs =
-					await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
-						hash,
+					await historicApi.query.paras.paraGenesisArgs<ParaGenesisArgs>(
 						paraId
 					);
 				onboardingAs = paraGenesisArgs.parachain.isTrue
