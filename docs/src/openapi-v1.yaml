@@ -341,7 +341,7 @@ paths:
           type: string 
       responses:
         "200":
-          description: successfully retrieve address info
+          description: successfully retrieved address info
           content:
             application/json:
               schema:
