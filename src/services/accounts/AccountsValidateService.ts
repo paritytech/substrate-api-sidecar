@@ -7,7 +7,7 @@ import { AbstractService } from '../AbstractService';
 
 export class AccountsValidateService extends AbstractService {
 	/**
-	 * Takes a given address and informs whether the address is in a valid ss58 format,
+	 * Takes a given address and determines whether it is a ss58 formatted address,
 	 * and what the ss58 prefix for that address is.
 	 *
 	 * @param address ss58 or hex address to validate
