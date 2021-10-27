@@ -1,0 +1,16 @@
+{
+    "at": {
+        "hash": "0x4cead84882586ab41fc299d10e1a873cd19aeb3c9cf3dda2e663f183bef030ab",
+        "height": "9000000"
+    },
+    "leasePeriodIndex": "14",
+    "endOfLeasePeriod": "9072000",
+    "currentLeaseHolders": [
+        "2001",
+        "2000",
+        "2004",
+        "2007",
+        "1000",
+        "2023"
+    ]
+}

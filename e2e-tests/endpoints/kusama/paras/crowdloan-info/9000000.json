@@ -1,0 +1,30 @@
+{
+    "at": {
+        "hash": "0x4cead84882586ab41fc299d10e1a873cd19aeb3c9cf3dda2e663f183bef030ab",
+        "height": "9000000"
+    },
+    "fundInfo": {
+        "depositor": "Eo2YWNA49Uhqu3rVawFUjhm19H72XeuNinmAHBGbKpHasNH",
+        "verifier": null,
+        "deposit": "9999999900000",
+        "raised": "0",
+        "end": "8467200",
+        "cap": "135000000000000000",
+        "lastContribution": {
+            "preEnding": "43"
+        },
+        "firstPeriod": "13",
+        "lastPeriod": "20",
+        "trieIndex": "12"
+    },
+    "leasePeriods": [
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+    ]
+}
