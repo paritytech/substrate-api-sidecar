@@ -19,7 +19,7 @@ describe('Validate addresses', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should verify a kusama address when connected to kusama', () => {
+	it('Should verify a kusama address', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '2',
