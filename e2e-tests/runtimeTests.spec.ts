@@ -85,6 +85,7 @@ describe('Runtime Tests for `/experimental/paras/*`', () => {
 			'Given path %p, it should return the correct JSON response',
 			async (runtimePath, runtimeResponse) => {
 				const res = await request(runtimePath, HOST, PORT);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const responseJson = JSON.parse(res);
 
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
