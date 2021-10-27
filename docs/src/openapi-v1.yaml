@@ -328,10 +328,8 @@ paths:
     get:
       tags:
       - accounts
-      summary: Validate a given address for the connected network.
-      description: Returns information regarding an address's validity for whichever network
-        sidecar is connected too. It will check if the address is valid, what the ss58 prefix is, 
-        and what the networkId for that address is.
+      summary: Validate a given address.
+      description: Returns whether the given address is valid ss58 format and the ss58 prefix if the address has one.
       operationId: getValidationByAccountId
       parameters: 
       - name: accountId
