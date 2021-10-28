@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { Log } from '../../logging/Log';
 import { PalletsStorageService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -45,6 +46,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const metadataArg = metadata === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
+		this.deprecationWarning(
+			adjustMetadataV13Arg,
+			'The adjustMetadataV13 query parameter is subject to deprecation soon.'
+		);
+
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
 
@@ -70,6 +76,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const onlyIdsArg = onlyIds === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
+		this.deprecationWarning(
+			adjustMetadataV13Arg,
+			'The adjustMetadataV13 query parameter is subject to deprecation soon.'
+		);
+
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
 
@@ -83,4 +94,10 @@ export default class PalletsStorageController extends AbstractController<Pallets
 			})
 		);
 	};
+
+	private deprecationWarning(arg: boolean, message: string) {
+		if (arg) {
+			Log.logger.warn(message);
+		}
+	}
 }

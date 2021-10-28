@@ -57,6 +57,7 @@ export class PalletsStorageService extends AbstractService {
 		}: IFetchStorageItemArgs
 	): Promise<IPalletStorageItem> {
 		const chosenMetadata = await this.chooseMetadataVersion(
+			historicApi,
 			hash,
 			adjustMetadataV13Arg
 		);
@@ -107,6 +108,7 @@ export class PalletsStorageService extends AbstractService {
 		}: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletStorage> {
 		const chosenMetadata = await this.chooseMetadataVersion(
+			historicApi,
 			hash,
 			adjustMetadataV13Arg
 		);
@@ -151,11 +153,11 @@ export class PalletsStorageService extends AbstractService {
 	 * @param hash BlockHash to query
 	 */
 	private chooseMetadataVersion = async (
+		historicApi: ApiDecoration<'promise'>,
 		hash: BlockHash,
 		adjustMetadataV13Arg: boolean
 	): Promise<MetadataV13 | MetadataV14> => {
-		const [historicMetadata, blockHeader, { specName }] = await Promise.all([
-			this.api.rpc.state.getMetadata(hash),
+		const [blockHeader, { specName }] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
 			this.api.rpc.state.getRuntimeVersion(),
 		]);
@@ -167,9 +169,10 @@ export class PalletsStorageService extends AbstractService {
 			blockNumber < upgradeBlocks[specName.toString()] &&
 			adjustMetadataV13Arg
 		) {
+			const historicMetadata = await this.api.rpc.state.getMetadata(hash);
 			chosenMetadata = historicMetadata.asV13;
 		} else {
-			chosenMetadata = historicMetadata.asV14;
+			chosenMetadata = historicApi.registry.metadata;
 		}
 
 		return chosenMetadata;
