@@ -25,7 +25,8 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();
-		this.deprecationMsg = 'The adjustMetadataV13 query parameter is deprecated and will be removed in v12 of sidecar';
+		this.deprecationMsg =
+			'The adjustMetadataV13 query parameter is deprecated and will be removed in v12 of sidecar';
 	}
 
 	protected initRoutes(): void {
