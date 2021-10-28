@@ -847,14 +847,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
@@ -915,14 +907,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: key1
         in: query
         description: Key for a map, or first key for a double map. Required for querying
@@ -2091,7 +2075,7 @@ components:
           type: string
           example: "Optional"
         type:
-          $ref: '#/components/schemas/PalletStorageType'
+          $ref: '#/components/schemas/StorageEntryTypeV14'
         fallback:
           type: string
           example: "0x00"
@@ -2099,12 +2083,6 @@ components:
           type: string
           example: " Information concerning any given referendum.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of a storage item from a FRAME pallet.
-    PalletStorageType:
-      type: object
-      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are 
-        pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
-        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
-        will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
     Para:
       type: object
       properties:
@@ -2483,20 +2461,6 @@ components:
           items:
             type: string
             format: ss58
-    StorageEntryTypeV13:
-      type: object
-      properties: 
-        hasher:
-          type: string
-          description: Returns a string deonting the storage hasher. 
-        key:
-          type: string
-          description: Key of the queried pallet storageId.
-        value:
-          type: string
-          description: Value of the queried pallet storageId.
-        linked:
-          type: boolean
     StorageEntryTypeV14:
       type: object
       properties: 
