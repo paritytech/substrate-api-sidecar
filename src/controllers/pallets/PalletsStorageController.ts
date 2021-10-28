@@ -20,10 +20,12 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
+	private readonly deprecationMsg: string;
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();
+		this.deprecationMsg = 'The adjustMetadataV13 query parameter is deprecated and will be removed in v12 of sidecar';
 	}
 
 	protected initRoutes(): void {
@@ -46,10 +48,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const metadataArg = metadata === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
-		this.deprecationWarning(
-			adjustMetadataV13Arg,
-			'The adjustMetadataV13 query parameter is subject to deprecation soon.'
-		);
+		adjustMetadataV13Arg && Log.logger.warn(this.deprecationMsg);
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -76,10 +75,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const onlyIdsArg = onlyIds === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
-		this.deprecationWarning(
-			adjustMetadataV13Arg,
-			'The adjustMetadataV13 query parameter is subject to deprecation soon.'
-		);
+		adjustMetadataV13Arg && Log.logger.warn(this.deprecationMsg);
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -94,10 +90,4 @@ export default class PalletsStorageController extends AbstractController<Pallets
 			})
 		);
 	};
-
-	private deprecationWarning(arg: boolean, message: string) {
-		if (arg) {
-			Log.logger.warn(message);
-		}
-	}
 }
