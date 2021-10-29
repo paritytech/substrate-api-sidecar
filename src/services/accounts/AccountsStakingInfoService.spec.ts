@@ -53,7 +53,7 @@ const historicApi = {
 			slashingSpans: slashingSpansAt,
 		},
 	},
-} as unknown as ApiDecoration<'promise'>
+} as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
 	...defaultMockApi,
