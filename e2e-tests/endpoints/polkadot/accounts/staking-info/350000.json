@@ -1,0 +1,27 @@
+{
+    "at": {
+        "hash": "0xcb823ccd2b9b558998b00906a23bb98ee468eb9f3ecffcfb3c68c4358c634725",
+        "height": "350000"
+    },
+    "controller": "14SPACEEpRuNmjaQFp5tDSv6kHjvDeSexdq9Hg62EJZW3EhA",
+    "rewardDestination": {
+        "staked": null
+    },
+    "numSlashingSpans": "0",
+    "staking": {
+        "stash": "16SpacegeUTft9v3ts27CEC3tJaxgvE4uZeCctThFH3Vb24p",
+        "total": "138910737119627",
+        "active": "138910737119627",
+        "unlocking": [],
+        "claimedRewards": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8"
+        ]
+    }
+}
