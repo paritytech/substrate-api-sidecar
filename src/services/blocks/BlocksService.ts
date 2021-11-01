@@ -645,7 +645,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Checks to see if the current chain has the session module, then will retrieve all
+	 * Checks to see if the current chain has the session module, then retrieve all
 	 * validators.
 	 *
 	 * @param historicApi ApiDecoration to use for the query
