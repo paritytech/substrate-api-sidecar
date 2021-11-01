@@ -685,6 +685,12 @@ paths:
           description: If true, does not return metadata hex. This is useful when
             metadata is not needed and response time is a concern. Defaults to false.
           default: false
+      - name: decodeMeta
+        in: query
+        schema:
+          type: boolean
+          description: If true, the metadata returned will be decoded and JSON formatted. 
+          default: false
       responses:
         "200":
           description: successful operation
@@ -2707,7 +2713,8 @@ components:
             does not change `txVersion`.
         metadata:
           type: string
-          description: The chain's metadata in hex format.
+          description: The chain's metadata in hex format. When the query parameter
+            `decodeMeta` is true the metadata will returned a decoded object of the metadata. 
           format: hex
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
