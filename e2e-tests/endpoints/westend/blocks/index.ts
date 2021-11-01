@@ -7,6 +7,12 @@ import block5480769 from './5480769.json';
 import block5493461 from './5493461.json';
 import block5495855 from './5495855.json';
 import block5657482 from './5657482.json';
+import block6200000 from './6200000.json';
+import block6800000 from './6800000.json';
+import block7200000 from './7200000.json';
+import block7600000 from './7600000.json';
+import block7800000 from './7800000.json';
+import block8000000 from './8000000.json';
 
 export const westendBlockEndpoints = [
 	['/blocks/3032259', JSON.stringify(block3032259)], //v45
@@ -18,4 +24,10 @@ export const westendBlockEndpoints = [
 	['/blocks/5493461', JSON.stringify(block5493461)], //v9000
 	['/blocks/5495855', JSON.stringify(block5495855)], //v9000
 	['/blocks/5657482', JSON.stringify(block5657482)], //v9010
+	['/blocks/6200000', JSON.stringify(block6200000)], //v9050
+	['/blocks/6800000', JSON.stringify(block6800000)], //v9080
+	['/blocks/7200000', JSON.stringify(block7200000)], //v9090
+	['/blocks/7600000', JSON.stringify(block7600000)], //v9100
+	['/blocks/7800000', JSON.stringify(block7800000)], //v9111
+	['/blocks/8000000', JSON.stringify(block8000000)], //v9122
 ];
