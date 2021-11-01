@@ -654,7 +654,7 @@ export class BlocksService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>
 	): Promise<Vec<AccountId32>> {
 		return historicApi.query.session
-			? historicApi.query.session.validators()
+			? await historicApi.query.session.validators()
 			: ([] as unknown as Vec<AccountId32>);
 	}
 
