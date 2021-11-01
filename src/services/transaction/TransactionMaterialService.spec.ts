@@ -21,7 +21,7 @@ describe('TransactionMaterialService', () => {
 			).toStrictEqual(response789629);
 		});
 
-		it('Should return the correct metadata when the `decodeMeta` query param is true', async () => {
+		it('Should return the decoded metadata when the `decodeMeta` query param is true', async () => {
 			const res = await transactionMaterialService.fetchTransactionMaterial(
 				blockHash789629,
 				false,
