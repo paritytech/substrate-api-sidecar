@@ -4,6 +4,7 @@ import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
+	AccountId32,
 	Block,
 	BlockHash,
 	BlockNumber,
@@ -102,7 +103,7 @@ export class BlocksService extends AbstractService {
 
 		const [{ block }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
-			historicApi.query.session.validators(),
+			this.fetchValidators(historicApi),
 			this.fetchEvents(historicApi),
 			queryFinalizedHead
 				? api.rpc.chain.getFinalizedHead()
@@ -631,8 +632,7 @@ export class BlocksService extends AbstractService {
 	/**
 	 * Fetch events for the specified block.
 	 *
-	 * @param api ApiPromise to use for query
-	 * @param hash `BlockHash` to make query at
+	 * @param historicApi ApiDecoration to use for the query
 	 */
 	private async fetchEvents(
 		historicApi: ApiDecoration<'promise'>
@@ -642,6 +642,20 @@ export class BlocksService extends AbstractService {
 		} catch {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}
+	}
+
+	/**
+	 * Checks to see if the current chain has the session module, then retrieve all
+	 * validators.
+	 *
+	 * @param historicApi ApiDecoration to use for the query
+	 */
+	private async fetchValidators(
+		historicApi: ApiDecoration<'promise'>
+	): Promise<Vec<AccountId32>> {
+		return historicApi.query.session
+			? await historicApi.query.session.validators()
+			: ([] as unknown as Vec<AccountId32>);
 	}
 
 	/**
