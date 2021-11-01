@@ -51,16 +51,17 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param res Express Response
 	 */
 	private getTransactionMaterial: RequestHandler = async (
-		{ query: { noMeta, at } },
+		{ query: { noMeta, at, decodeMeta } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		const noMetaArg = noMeta === 'true';
+		const decodeMetaArg = decodeMeta === 'true';
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(hash, noMetaArg)
+			await this.service.fetchTransactionMaterial(hash, noMetaArg, decodeMetaArg)
 		);
 	};
 }

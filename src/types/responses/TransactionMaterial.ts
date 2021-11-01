@@ -1,3 +1,4 @@
+import { AnyJson } from '@polkadot/types/types'; 
 import { BlockHash } from '@polkadot/types/interfaces';
 import { u32 } from '@polkadot/types/primitive';
 
@@ -10,5 +11,5 @@ export interface ITransactionMaterial {
 	specName: string;
 	specVersion: u32;
 	txVersion: u32;
-	metadata?: string;
+	metadata?: string | Record<string, AnyJson>;
 }

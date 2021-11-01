@@ -14,10 +14,21 @@ describe('TransactionMaterialService', () => {
 				sanitizeNumbers(
 					await transactionMaterialService.fetchTransactionMaterial(
 						blockHash789629,
-						false
+						false,
+						false,
 					)
 				)
 			).toStrictEqual(response789629);
+		});
+
+		it('Should return the correct metadata when the `decodeMeta` query param is true', async () => {
+			const res = await transactionMaterialService.fetchTransactionMaterial(
+				blockHash789629,
+				false,
+				true,
+			);
+			// Confirms the returned metadata is not a hex string.
+			expect(typeof res.metadata).toBe('object');
 		});
 	});
 });

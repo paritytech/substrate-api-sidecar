@@ -11,7 +11,8 @@ export class TransactionMaterialService extends AbstractService {
 	 */
 	async fetchTransactionMaterial(
 		hash: BlockHash,
-		noMeta: boolean
+		noMeta: boolean,
+		decodeMeta: boolean,
 	): Promise<ITransactionMaterial> {
 		const { api } = this;
 
@@ -51,6 +52,8 @@ export class TransactionMaterialService extends AbstractService {
 			height: header.number.toNumber().toString(10),
 		};
 
+		const formattedMeta = decodeMeta ? metadata.toJSON() : metadata.toHex();
+
 		return {
 			at,
 			genesisHash,
@@ -58,7 +61,7 @@ export class TransactionMaterialService extends AbstractService {
 			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
-			metadata: metadata.toHex(),
+			metadata: formattedMeta,
 		};
 	}
 }
