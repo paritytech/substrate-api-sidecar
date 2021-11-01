@@ -12,7 +12,7 @@ export class TransactionMaterialService extends AbstractService {
 	async fetchTransactionMaterial(
 		hash: BlockHash,
 		noMeta: boolean,
-		decodeMeta: boolean,
+		decodeMeta: boolean
 	): Promise<ITransactionMaterial> {
 		const { api } = this;
 

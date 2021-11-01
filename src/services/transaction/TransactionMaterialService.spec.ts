@@ -15,7 +15,7 @@ describe('TransactionMaterialService', () => {
 					await transactionMaterialService.fetchTransactionMaterial(
 						blockHash789629,
 						false,
-						false,
+						false
 					)
 				)
 			).toStrictEqual(response789629);
@@ -25,7 +25,7 @@ describe('TransactionMaterialService', () => {
 			const res = await transactionMaterialService.fetchTransactionMaterial(
 				blockHash789629,
 				false,
-				true,
+				true
 			);
 			// Confirms the returned metadata is not a hex string.
 			expect(typeof res.metadata).toBe('object');

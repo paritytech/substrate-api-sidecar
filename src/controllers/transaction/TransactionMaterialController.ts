@@ -61,7 +61,11 @@ export default class TransactionMaterialController extends AbstractController<Tr
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(hash, noMetaArg, decodeMetaArg)
+			await this.service.fetchTransactionMaterial(
+				hash,
+				noMetaArg,
+				decodeMetaArg
+			)
 		);
 	};
 }

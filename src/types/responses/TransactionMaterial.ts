@@ -1,6 +1,6 @@
-import { AnyJson } from '@polkadot/types/types'; 
 import { BlockHash } from '@polkadot/types/interfaces';
 import { u32 } from '@polkadot/types/primitive';
+import { AnyJson } from '@polkadot/types/types';
 
 import { IAt } from '.';
 
