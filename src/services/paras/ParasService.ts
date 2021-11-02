@@ -13,7 +13,7 @@ import {
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
-import { BN_ONE } from '@polkadot/util';
+import { BN_ONE, BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -391,6 +391,7 @@ export class ParasService extends AbstractService {
 
 	/**
 	 * Calculate the current lease period index.
+	 * Ref: https://github.com/paritytech/polkadot/pull/3980
 	 *
 	 * @param historicApi
 	 * @param now Current block number
@@ -400,7 +401,10 @@ export class ParasService extends AbstractService {
 		now: BN
 	): BN {
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
-		return now.div(leasePeriod);
+		const offset =
+			(historicApi.consts.slots.leaseOffset as BlockNumber) || BN_ZERO;
+
+		return now.sub(offset).div(leasePeriod);
 	}
 
 	/**
