@@ -1,8 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { Log } from '../../logging/Log';
 import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
+
+export type MetadataOpts = 'json' | 'scale';
 
 /**
  * GET all the network information needed to construct a transaction offline.
@@ -51,21 +54,43 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param res Express Response
 	 */
 	private getTransactionMaterial: RequestHandler = async (
-		{ query: { noMeta, at, decodeMeta } },
+		{ query: { noMeta, at, metadata } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const noMetaArg = noMeta === 'true';
-		const decodeMetaArg = decodeMeta === 'true';
+		const metadataArg = this.parseMetadataArgs(noMeta, metadata);
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(
-				hash,
-				noMetaArg,
-				decodeMetaArg
-			)
+			await this.service.fetchTransactionMaterial(hash, metadataArg)
 		);
 	};
+
+	/**
+	 * The metadata args have two
+	 *
+	 * @param noMeta
+	 * @param metadata
+	 */
+	private parseMetadataArgs(
+		noMeta: unknown,
+		metadata: unknown
+	): MetadataOpts | false {
+		const metadataArg =
+			!metadata || metadata === 'json' || metadata === 'scale';
+
+		if (!metadataArg)
+			throw new Error('Invalid inputted value for the `metadata` query param.');
+		if (metadata === 'json') return 'json';
+		if (!noMeta || noMeta === 'false' || metadata === 'scale') return 'scale';
+		if (noMeta === 'true') {
+			Log.logger.warn(
+				'`noMeta` query param will be deprecated in sidecar v13, and replaced with `metadata` please migrate'
+			);
+			return false;
+		}
+
+		return 'scale';
+	}
 }
