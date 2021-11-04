@@ -30,7 +30,7 @@ export const calamariControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 1,
 		blockWeightStore: getBlockWeight('calamari'),
 		blockStore: initLRUCache(),
 	},
