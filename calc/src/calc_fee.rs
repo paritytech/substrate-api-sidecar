@@ -61,6 +61,8 @@ impl Multiplier {
             ("dock-pos-main-runtime", _) => V2(new_u128(inner)),
             ("dock-pos-test-runtime", _) => V2(new_u128(inner)),
 
+            ("calamari", _v) => V2(new_u128(inner)),
+
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);
                 return None;
