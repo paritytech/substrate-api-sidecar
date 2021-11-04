@@ -77,20 +77,32 @@ export default class TransactionMaterialController extends AbstractController<Tr
 		noMeta: unknown,
 		metadata: unknown
 	): MetadataOpts | false {
-		const metadataArg =
-			!metadata || metadata === 'json' || metadata === 'scale';
 
-		if (!metadataArg)
-			throw new Error('Invalid inputted value for the `metadata` query param.');
-		if (metadata === 'json') return 'json';
-		if (!noMeta || noMeta === 'false' || metadata === 'scale') return 'scale';
-		if (noMeta === 'true') {
+		/**
+		 * Checks to see if the `metadata` query param is inputted, if it isnt,
+		 * it will default to the old behavior. This is to be removed once after 
+		 * the `noMeta` query param is fully deprecated.
+		 */
+		if (metadata) {
+			switch (metadata) {
+				case('json'):
+					return 'json';
+				case('scale'):
+					return 'scale';
+				default:
+					throw new Error('Invalid inputted value for the `metadata` query param.');
+			}
+		}
+
+		if (noMeta) {
 			Log.logger.warn(
 				'`noMeta` query param will be deprecated in sidecar v13, and replaced with `metadata` please migrate'
 			);
-			return false;
+			if (noMeta === 'true') return false;
+			if (noMeta === 'false') return 'scale';
 		}
 
+		// default behavior until `noMeta` is deprecated, then false will be default
 		return 'scale';
 	}
 }
