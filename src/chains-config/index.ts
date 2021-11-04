@@ -5,6 +5,8 @@ import { AbstractService } from 'src/services/AbstractService';
 import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
+
+import { calamariControllers } from './calamariControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockPoSMainnetControllers } from './dockPoSMainnetControllers';
 import { dockTestnetControllers } from './dockPoSTestnetControllers';
@@ -37,6 +39,7 @@ const specToControllerMap = {
 	westmint: statemintControllers,
 	shiden: shidenControllers,
 	sora: soraControllers,
+	calamari: calamariControllers,
 };
 
 /**
