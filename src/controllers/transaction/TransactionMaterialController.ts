@@ -99,8 +99,12 @@ export default class TransactionMaterialController extends AbstractController<Tr
 			Log.logger.warn(
 				'`noMeta` query param will be deprecated in sidecar v13, and replaced with `metadata` please migrate'
 			);
-			if (noMeta === 'true') return false;
-			if (noMeta === 'false') return 'scale';
+			switch (noMeta) {
+				case 'true':
+					return false;
+				case 'false':
+					return 'scale';
+			}
 		}
 
 		// default behavior until `noMeta` is deprecated, then false will be default
