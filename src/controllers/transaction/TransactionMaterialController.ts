@@ -77,20 +77,21 @@ export default class TransactionMaterialController extends AbstractController<Tr
 		noMeta: unknown,
 		metadata: unknown
 	): MetadataOpts | false {
-
 		/**
 		 * Checks to see if the `metadata` query param is inputted, if it isnt,
-		 * it will default to the old behavior. This is to be removed once after 
+		 * it will default to the old behavior. This is to be removed once after
 		 * the `noMeta` query param is fully deprecated.
 		 */
 		if (metadata) {
 			switch (metadata) {
-				case('json'):
+				case 'json':
 					return 'json';
-				case('scale'):
+				case 'scale':
 					return 'scale';
 				default:
-					throw new Error('Invalid inputted value for the `metadata` query param.');
+					throw new Error(
+						'Invalid inputted value for the `metadata` query param.'
+					);
 			}
 		}
 
