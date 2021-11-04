@@ -2716,8 +2716,8 @@ components:
             does not change `txVersion`.
         metadata:
           type: string
-          description: The chain's metadata in hex format. When the query parameter
-            `decodeMeta` is true the metadata will returned a decoded object of the metadata. 
+          description: The chain's metadata. It's default return value is hex, but may be returned in
+            decoded json format. 
           format: hex
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
