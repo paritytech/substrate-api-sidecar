@@ -3,10 +3,9 @@ import AbstractController from 'src/controllers/AbstractController';
 import { AbstractService } from 'src/services/AbstractService';
 
 import { controllers } from '../controllers';
+import { calamariControllers } from './calamariControllers';
 import { ControllerConfig } from '../types/chains-config';
 import { defaultControllers } from './defaultControllers';
-
-import { calamariControllers } from './calamariControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockPoSMainnetControllers } from './dockPoSMainnetControllers';
 import { dockTestnetControllers } from './dockPoSTestnetControllers';

@@ -6,6 +6,7 @@ import {
 	MetadataConsts,
 	PerClassValue,
 } from '../../types/chains-config';
+import { calamariDefinitions } from './calamariConsts';
 import {
 	dockMainnetDefinitions,
 	dockPoSMainnetDefinitions,
@@ -16,7 +17,6 @@ import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
 import { shidenDefinitions } from './shidenConsts';
 import { westendDefinitions } from './westendConsts';
-import { calamariDefinitions } from './calamariConsts';
 
 /**
  * Creates an object that maps each runtime to their appropriate weight data.
