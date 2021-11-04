@@ -16,6 +16,7 @@ import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
 import { shidenDefinitions } from './shidenConsts';
 import { westendDefinitions } from './westendConsts';
+import { calamariDefinitions } from './calamariConsts';
 
 /**
  * Creates an object that maps each runtime to their appropriate weight data.
@@ -88,6 +89,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(dockPoSTestnetDefinitions);
 		case 'shiden':
 			return generateBlockWeightStore(shidenDefinitions);
+		case 'calamari':
+			return generateBlockWeightStore(calamariDefinitions);
 		default:
 			return {};
 	}
