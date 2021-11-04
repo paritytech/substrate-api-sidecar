@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 11.1.0
+  version: 11.1.1
 tags:
 - name: accounts
 - name: blocks
@@ -684,13 +684,16 @@ paths:
           type: boolean
           description: If true, does not return metadata hex. This is useful when
             metadata is not needed and response time is a concern. Defaults to false.
+            This is due for deprecation in future releases. Please migrate to using the
+            `metadata` query param.
           default: false
-      - name: decodeMeta
+      - name: metadata
         in: query
         schema:
-          type: boolean
-          description: If true, the metadata returned will be decoded and JSON formatted. 
-          default: false
+          type: string
+          description: Specifies the format of the metadata to be returned. Accepted values are 
+            'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+            When inputted it will override the `noMeta` query parameter.
       responses:
         "200":
           description: successful operation
