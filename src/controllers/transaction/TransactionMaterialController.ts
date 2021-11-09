@@ -68,7 +68,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	};
 
 	/**
-	 * The metadata args have two
+	 * The metadata args have two options. `json`, and `scale`.
 	 *
 	 * @param noMeta
 	 * @param metadata
