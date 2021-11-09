@@ -6,6 +6,7 @@ import {
 	MetadataConsts,
 	PerClassValue,
 } from '../../types/chains-config';
+import { calamariDefinitions } from './calamariConsts';
 import {
 	dockMainnetDefinitions,
 	dockPoSMainnetDefinitions,
@@ -88,6 +89,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(dockPoSTestnetDefinitions);
 		case 'shiden':
 			return generateBlockWeightStore(shidenDefinitions);
+		case 'calamari':
+			return generateBlockWeightStore(calamariDefinitions);
 		default:
 			return {};
 	}
