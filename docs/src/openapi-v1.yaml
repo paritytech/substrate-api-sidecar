@@ -684,7 +684,16 @@ paths:
           type: boolean
           description: If true, does not return metadata hex. This is useful when
             metadata is not needed and response time is a concern. Defaults to false.
+            This is due for deprecation in future releases. Please migrate to using the
+            `metadata` query param.
           default: false
+      - name: metadata
+        in: query
+        schema:
+          type: string
+          description: Specifies the format of the metadata to be returned. Accepted values are 
+            'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+            When inputted it will override the `noMeta` query parameter.
       responses:
         "200":
           description: successful operation
@@ -2707,7 +2716,8 @@ components:
             does not change `txVersion`.
         metadata:
           type: string
-          description: The chain's metadata in hex format.
+          description: The chain's metadata. It's default return value is hex, but may be returned in
+            decoded json format. 
           format: hex
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
