@@ -151,11 +151,13 @@ export class ParasService extends AbstractService {
 			const currentLeasePeriodIndex = this.leasePeriodIndexAt(
 				historicApi,
 				blockNumber
-			).toNumber();
+			);
 
 			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
 				if (curLeaseOpt.isSome) {
-					const leasePeriodIndex = currentLeasePeriodIndex + idx;
+					const leasePeriodIndex = currentLeasePeriodIndex
+						? currentLeasePeriodIndex.toNumber() + idx
+						: 0;
 					const lease = curLeaseOpt.unwrap();
 					acc.push({
 						leasePeriodIndex,
@@ -330,14 +332,16 @@ export class ParasService extends AbstractService {
 
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
 		const leasePeriodIndex = this.leasePeriodIndexAt(historicApi, blockNumber);
-		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
+		const endOfLeasePeriod = leasePeriodIndex
+			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod)
+			: BN_ZERO;
 
 		return {
 			at: {
 				hash,
 				height: blockNumber.toString(10),
 			},
-			leasePeriodIndex,
+			leasePeriodIndex: leasePeriodIndex ? leasePeriodIndex : BN_ZERO,
 			endOfLeasePeriod,
 			currentLeaseHolders,
 		};
@@ -399,10 +403,15 @@ export class ParasService extends AbstractService {
 	private leasePeriodIndexAt(
 		historicApi: ApiDecoration<'promise'>,
 		now: BN
-	): BN {
+	): IOption<BN> {
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
 		const offset =
 			(historicApi.consts.slots.leaseOffset as BlockNumber) || BN_ZERO;
+
+		// Edge case, see https://github.com/paritytech/polkadot/commit/3668966dc02ac793c799d8c8667e8c396d891734
+		if (now.toNumber() - offset.toNumber() < 0) {
+			return null;
+		}
 
 		return now.sub(offset).div(leasePeriod);
 	}
