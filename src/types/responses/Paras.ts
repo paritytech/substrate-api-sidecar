@@ -50,9 +50,10 @@ export interface ICrowdloans {
 
 export interface LeaseFormatted {
 	/**
-	 * Lease period.
+	 * Lease period. The `leasePeriodIndex` can be null when the current block now,
+	 * substracted by the offset is less than zero.
 	 */
-	leasePeriodIndex: number;
+	leasePeriodIndex: number | null;
 	/**
 	 * Amount held on deposit for the lease period.
 	 */
@@ -132,13 +133,15 @@ export interface IAuctionsCurrent {
 export interface ILeasesCurrent {
 	at: IAt;
 	/**
-	 * The current lease period.
+	 * The current lease period. The `leasePeriodIndex` can be null when the current block now,
+	 * substracted by the offset is less than zero.
 	 */
-	leasePeriodIndex: BN;
+	leasePeriodIndex: BN | null;
 	/**
-	 * Last block of the current lease period.
+	 * Last block of the current lease period. The `endOfLeasePeriod` may be null
+	 * when the `leasePeriodIndex` is null.
 	 */
-	endOfLeasePeriod: BN;
+	endOfLeasePeriod: BN | null;
 	/**
 	 * ParaIds of current lease holders.
 	 */
