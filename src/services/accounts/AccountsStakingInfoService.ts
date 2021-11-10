@@ -16,10 +16,11 @@ export class AccountsStakingInfoService extends AbstractService {
 		stash: string
 	): Promise<IAccountStakingInfo> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 
 		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.bonded.at(hash, stash), // Option<AccountId> representing the controller
+			historicApi.query.staking.bonded(stash), // Option<AccountId> representing the controller
 		]);
 
 		const at = {
@@ -35,9 +36,9 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] =
 			await Promise.all([
-				api.query.staking.ledger.at(hash, controller),
-				api.query.staking.payee.at(hash, stash),
-				api.query.staking.slashingSpans.at(hash, stash),
+				historicApi.query.staking.ledger(controller),
+				historicApi.query.staking.payee(stash),
+				historicApi.query.staking.slashingSpans(stash),
 			]);
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);

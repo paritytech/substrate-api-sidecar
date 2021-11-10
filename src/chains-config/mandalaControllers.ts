@@ -9,6 +9,7 @@ export const mandalaControllers: ControllerConfig = {
 		'AccountsBalanceInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
+		'AccountsValidate',
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',

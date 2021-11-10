@@ -1,6 +1,7 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { ITransactionMaterial } from 'src/types/responses';
 
+import { MetadataOpts } from '../../controllers/transaction/TransactionMaterialController';
 import { AbstractService } from '../AbstractService';
 
 export class TransactionMaterialService extends AbstractService {
@@ -11,11 +12,11 @@ export class TransactionMaterialService extends AbstractService {
 	 */
 	async fetchTransactionMaterial(
 		hash: BlockHash,
-		noMeta: boolean
+		metadataArg: MetadataOpts | false
 	): Promise<ITransactionMaterial> {
 		const { api } = this;
 
-		if (noMeta) {
+		if (!metadataArg) {
 			const [header, genesisHash, name, version] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				api.rpc.chain.getBlockHash(0),
@@ -51,6 +52,9 @@ export class TransactionMaterialService extends AbstractService {
 			height: header.number.toNumber().toString(10),
 		};
 
+		const formattedMeta =
+			metadataArg === 'scale' ? metadata.toHex() : metadata.toJSON();
+
 		return {
 			at,
 			genesisHash,
@@ -58,7 +62,7 @@ export class TransactionMaterialService extends AbstractService {
 			specName: version.specName.toString(),
 			specVersion: version.specVersion,
 			txVersion: version.transactionVersion,
-			metadata: metadata.toHex(),
+			metadata: formattedMeta,
 		};
 	}
 }

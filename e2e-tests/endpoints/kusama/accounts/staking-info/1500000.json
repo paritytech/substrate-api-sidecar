@@ -1,0 +1,18 @@
+{
+    "at": {
+        "hash": "0x9ab99465a0f2613ca4dde52b8545c664f9413d3fc0c73855f0c5d0afd5886239",
+        "height": "1500000"
+    },
+    "controller": "HJ6cnbBrA1N4SXkrC58tTH3VB2KdvrdMpXbH8SAEAa46oQC",
+    "rewardDestination": {
+        "stash": null
+    },
+    "numSlashingSpans": "3",
+    "staking": {
+        "stash": "HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK",
+        "total": "497576923500",
+        "active": "497576923500",
+        "unlocking": [],
+        "lastReward": "552"
+    }
+}
