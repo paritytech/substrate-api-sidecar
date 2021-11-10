@@ -2218,11 +2218,13 @@ components:
         leasePeriodIndex:
           type: string
           format: unsignedInteger
-          description: Current lease period index.
+          description: Current lease period index. This value may be null when the current block now, 
+            substracted by the leaseOffset is less then zero. 
         endOfLeasePeriod:
           type: string
           format: unsignedInteger
-          description: Last block (number) of the current lease period.
+          description: Last block (number) of the current lease period. This value may be null when 
+            `leasePeriodIndex` is null. 
         currentLeaseHolders:
           type: array
           items:
