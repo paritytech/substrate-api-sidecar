@@ -15,7 +15,7 @@ const config = JSON.parse(
 
 const chain = config.chain as ChainSpec;
 
-const { blocks, accounts, runtime } = endpoints[chain];
+const { blocks, accounts, runtime, paras } = endpoints[chain];
 
 describe('Runtime Tests for blocks', () => {
 	/**
@@ -72,4 +72,24 @@ describe('Runtime Tests for `/runtime/*`', () => {
 			expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 		}
 	);
+});
+
+describe('Runtime Tests for `/experimental/paras/*`', () => {
+	/**
+	 * Allows a timeout of 30 seconds for each response.
+	 */
+	jest.setTimeout(30000);
+
+	if (paras.length) {
+		test.each(paras)(
+			'Given path %p, it should return the correct JSON response',
+			async (runtimePath, runtimeResponse) => {
+				const res = await request(runtimePath, HOST, PORT);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const responseJson = JSON.parse(res);
+
+				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
+			}
+		);
+	}
 });

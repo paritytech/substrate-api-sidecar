@@ -1,0 +1,92 @@
+{
+    "at": {
+        "hash": "0xd04190fb7b5e6ad66b7f5e218f41a3706fd19426ae9176fee64c777a232a1030",
+        "height": "8400000"
+    },
+    "paras": [
+        {
+            "paraId": "2009",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2082",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2021",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2001",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2080",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2008",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2000",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2077",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2024",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2015",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2018",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2004",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2019",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2007",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "1000",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2016",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2023",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2012",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2078",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2006",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2013",
+            "paraLifecycle": "Parathread"
+        }
+    ]
+}

@@ -5,5 +5,6 @@ import { westendRuntimeEndpoints } from './runtime';
 export const westendEndpoints = {
 	blocks: westendBlockEndpoints,
 	accounts: westendAccountsEndpoints,
+	paras: [],
 	runtime: westendRuntimeEndpoints,
 };

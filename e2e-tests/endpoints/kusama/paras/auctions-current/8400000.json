@@ -1,0 +1,21 @@
+{
+    "at": {
+        "hash": "0xd04190fb7b5e6ad66b7f5e218f41a3706fd19426ae9176fee64c777a232a1030",
+        "height": "8400000"
+    },
+    "beginEnd": "8351750",
+    "finishEnd": "8423750",
+    "phase": "endPeriod",
+    "auctionIndex": "5",
+    "leasePeriods": [
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+    ],
+    "winning": null
+}

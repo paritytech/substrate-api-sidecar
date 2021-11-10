@@ -5,5 +5,6 @@ import { statemineRuntimeEndpoints } from './runtime';
 export const statemineEndpoints = {
 	accounts: statemineAccountAssetEndpoints,
 	blocks: statemineBlockEndpoints,
+	paras: [],
 	runtime: statemineRuntimeEndpoints,
 };

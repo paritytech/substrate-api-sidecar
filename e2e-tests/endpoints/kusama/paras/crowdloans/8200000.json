@@ -1,0 +1,265 @@
+{
+    "at": {
+        "hash": "0x6cdf2b4c9d7aa5e5f0a6217def7ca53b46691300853f40b3be4e5d9df36f0044",
+        "height": "8200000"
+    },
+    "funds": [
+        {
+            "paraId": "2009",
+            "fundInfo": {
+                "depositor": "Hss64YRSDjDAbikNatbaQJeq1kCa7Dc6SrDhtW8zah4eKS8",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "17556246303864331",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199559"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "4"
+            }
+        },
+        {
+            "paraId": "2021",
+            "fundInfo": {
+                "depositor": "EmKDCmxqHbmY4fsNSvM1fWX1z3jSGYKEekxtBqFsxzHW96E",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "8838989728440653",
+                "end": "8467200",
+                "cap": "200000000000000000",
+                "lastContribution": {
+                    "ending": "8199901"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "13"
+            }
+        },
+        {
+            "paraId": "2001",
+            "fundInfo": {
+                "depositor": "GLiebiQp5f6G5vNcc7BgRE9T3hrZSYDwP6evERn3hEczdaM",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "34348017193957943",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199973"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "9"
+            }
+        },
+        {
+            "paraId": "2008",
+            "fundInfo": {
+                "depositor": "FPjQ5Rb5cdyt1LXXTrRwMFbXmf3pTca8XHtdZwaLrtjfMTy",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "137110998999000",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8191400"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "10"
+            }
+        },
+        {
+            "paraId": "2000",
+            "fundInfo": {
+                "depositor": "Gq2No2gcF6s4DLfzzuB53G5opWCoCtK9tZeVGRGcmkSDGoK",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "501137661910050505",
+                "end": "8467200",
+                "cap": "1500000000000000000",
+                "lastContribution": {
+                    "preEnding": "20"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "1"
+            }
+        },
+        {
+            "paraId": "2077",
+            "fundInfo": {
+                "depositor": "Eo2YWNA49Uhqu3rVawFUjhm19H72XeuNinmAHBGbKpHasNH",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "7393449309369177",
+                "end": "8467200",
+                "cap": "135000000000000000",
+                "lastContribution": {
+                    "ending": "8199980"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "12"
+            }
+        },
+        {
+            "paraId": "2024",
+            "fundInfo": {
+                "depositor": "G5PCG13D3dGMaak3GuPAFw5TW3B9nNiWNpzZE8Rp5g4WDzc",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "4752991753783741",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199708"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "11"
+            }
+        },
+        {
+            "paraId": "2018",
+            "fundInfo": {
+                "depositor": "J1JkbmLGaGz69VADfbtZubFE5dtYxNRhn6HNYz6VV1Vk5PM",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "278759999995000",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8196573"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "8"
+            }
+        },
+        {
+            "paraId": "2004",
+            "fundInfo": {
+                "depositor": "DaEJPYPCJQnKeHGfV6SSF8WPWtLg9zggbWwAwCZRWVPeWvv",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "40619141528745618",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199973"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "6"
+            }
+        },
+        {
+            "paraId": "2019",
+            "fundInfo": {
+                "depositor": "Eax1EEpQt2yhEACJcY8gXA55YEKyQFp5pdYdTt9AeymyqBB",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "1100000000000",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199976"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "14"
+            }
+        },
+        {
+            "paraId": "2007",
+            "fundInfo": {
+                "depositor": "Ekf4HssuTpYjmUEvzy9AAFuqpUcNm9AAkrMF1stTU6Mo1hR",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "136020871615303070",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199997"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "0"
+            }
+        },
+        {
+            "paraId": "2016",
+            "fundInfo": {
+                "depositor": "DPpEXDQVyLxN1Qprq3aEcyaBP7jvcaGdo2ts6nfo7wHAgFm",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "4379935461196055",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8197824"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "7"
+            }
+        },
+        {
+            "paraId": "2023",
+            "fundInfo": {
+                "depositor": "FFuCbRwsDTkj1cc2w6dvBmXvumyoZR6QgfAv1LwL3kBgmbX",
+                "verifier": {
+                    "sr25519": "0x6c79c2c862124697baf6d0562055a50f3b0eac3c895c23bb16e8d1e2da341549"
+                },
+                "deposit": "9999999900000",
+                "raised": "205935011120809976",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8123536"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "2"
+            }
+        },
+        {
+            "paraId": "2012",
+            "fundInfo": {
+                "depositor": "F2fjhcks69mYK7QuMp2AgCEcZbYzpH82cvk8FcDeCfXXF6P",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "6943540883090060",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8195465"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "3"
+            }
+        },
+        {
+            "paraId": "2006",
+            "fundInfo": {
+                "depositor": "CoxPmsXK24q3QB6jHSxwTxEHJ5375Mo4kPfUZYfKQMxXqZ9",
+                "verifier": null,
+                "deposit": "9999999900000",
+                "raised": "2797610958211726",
+                "end": "8467200",
+                "cap": "1000000000000000000",
+                "lastContribution": {
+                    "ending": "8199300"
+                },
+                "firstPeriod": "13",
+                "lastPeriod": "20",
+                "trieIndex": "5"
+            }
+        }
+    ]
+}
