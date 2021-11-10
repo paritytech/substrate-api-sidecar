@@ -4,6 +4,7 @@ import { initLRUCache } from './cache/lruCache';
 export const kulupuControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',

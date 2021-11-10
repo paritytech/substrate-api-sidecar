@@ -1,8 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { Log } from '../../logging/Log';
 import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
+
+export type MetadataOpts = 'json' | 'scale';
 
 /**
  * GET all the network information needed to construct a transaction offline.
@@ -51,16 +54,60 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param res Express Response
 	 */
 	private getTransactionMaterial: RequestHandler = async (
-		{ query: { noMeta, at } },
+		{ query: { noMeta, at, metadata } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const noMetaArg = noMeta === 'true';
+		const metadataArg = this.parseMetadataArgs(noMeta, metadata);
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterial(hash, noMetaArg)
+			await this.service.fetchTransactionMaterial(hash, metadataArg)
 		);
 	};
+
+	/**
+	 * The metadata args have two options. `json`, and `scale`.
+	 *
+	 * @param noMeta
+	 * @param metadata
+	 */
+	private parseMetadataArgs(
+		noMeta: unknown,
+		metadata: unknown
+	): MetadataOpts | false {
+		/**
+		 * Checks to see if the `metadata` query param is inputted, if it isnt,
+		 * it will default to the old behavior. This is to be removed once after
+		 * the `noMeta` query param is fully deprecated.
+		 */
+		if (metadata) {
+			switch (metadata) {
+				case 'json':
+					return 'json';
+				case 'scale':
+					return 'scale';
+				default:
+					throw new Error(
+						'Invalid inputted value for the `metadata` query param.'
+					);
+			}
+		}
+
+		if (noMeta) {
+			Log.logger.warn(
+				'`noMeta` query param will be deprecated in sidecar v13, and replaced with `metadata` please migrate'
+			);
+			switch (noMeta) {
+				case 'true':
+					return false;
+				case 'false':
+					return 'scale';
+			}
+		}
+
+		// default behavior until `noMeta` is deprecated, then false will be default
+		return 'scale';
+	}
 }

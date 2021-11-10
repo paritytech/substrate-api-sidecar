@@ -1,3 +1,4 @@
+import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
 import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
@@ -12,6 +13,7 @@ import {
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
+import { BN_ONE, BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -33,8 +35,6 @@ import { AbstractService } from '../AbstractService';
 // consts makes its way into `rococo-v1` this can be taken out.
 const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
-const SAMPLE_LENGTH_FALLBACK = new BN(1);
-
 export class ParasService extends AbstractService {
 	/**
 	 * Get crowdloan information for a `paraId`.
@@ -46,9 +46,14 @@ export class ParasService extends AbstractService {
 		hash: BlockHash,
 		paraId: number
 	): Promise<ICrowdloansInfo> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
+
 		const [fund, { number }] = await Promise.all([
-			this.api.query.crowdloan.funds.at<Option<FundInfo>>(hash, paraId),
-			this.api.rpc.chain.getHeader(hash),
+			historicApi.query.crowdloan.funds<Option<FundInfo>>(paraId),
+			api.rpc.chain.getHeader(hash),
 		]);
 
 		if (!fund) {
@@ -89,11 +94,14 @@ export class ParasService extends AbstractService {
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
 	async crowdloans(hash: BlockHash): Promise<ICrowdloans> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
+
 		const [{ number }, funds] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
-			this.api.query.crowdloan.funds.entriesAt<Option<FundInfo>, [ParaId]>(
-				hash
-			),
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.crowdloan.funds.entries<Option<FundInfo>, [ParaId]>(),
 		]);
 
 		const fundsByParaId = funds.map(([keys, fundInfo]) => {
@@ -119,15 +127,17 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.paras, 'paras');
+
 		const [leases, { number }, paraLifecycleOpt] = await Promise.all([
-			this.api.query.slots.leases.at<
+			historicApi.query.slots.leases<
 				Vec<Option<ITuple<[AccountId, BalanceOf]>>>
-			>(hash, paraId),
+			>(paraId),
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.paras.paraLifecycles.at<Option<ParaLifecycle>>(
-				hash,
-				paraId
-			),
+			historicApi.query.paras.paraLifecycles<Option<ParaLifecycle>>(paraId),
 		]);
 		const blockNumber = number.unwrap();
 
@@ -138,12 +148,16 @@ export class ParasService extends AbstractService {
 
 		let leasesFormatted;
 		if (leases.length) {
-			const currentLeasePeriodIndex =
-				this.leasePeriodIndexAt(blockNumber).toNumber();
+			const currentLeasePeriodIndex = this.leasePeriodIndexAt(
+				historicApi,
+				blockNumber
+			);
 
 			leasesFormatted = leases.reduce((acc, curLeaseOpt, idx) => {
 				if (curLeaseOpt.isSome) {
-					const leasePeriodIndex = currentLeasePeriodIndex + idx;
+					const leasePeriodIndex = currentLeasePeriodIndex
+						? currentLeasePeriodIndex.toNumber() + idx
+						: null;
 					const lease = curLeaseOpt.unwrap();
 					acc.push({
 						leasePeriodIndex,
@@ -161,9 +175,9 @@ export class ParasService extends AbstractService {
 		let onboardingAs: ParaType | undefined;
 		if (paraLifecycleOpt.isSome && paraLifecycleOpt.unwrap().isOnboarding) {
 			const paraGenesisArgs =
-				await this.api.query.paras.upcomingParasGenesis.at<
+				await historicApi.query.paras.upcomingParasGenesis<
 					Option<ParaGenesisArgs>
-				>(hash, paraId);
+				>(paraId);
 
 			if (paraGenesisArgs.isSome) {
 				onboardingAs = paraGenesisArgs.unwrap().parachain.isTrue
@@ -188,14 +202,20 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.auctions, 'auctions');
+
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
-			this.api.query.auctions.auctionInfo.at<Option<Vec<BlockNumber>>>(hash),
+			historicApi.query.auctions.auctionInfo<Option<Vec<BlockNumber>>>(),
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.auctions.auctionCounter.at<BlockNumber>(hash),
+			historicApi.query.auctions.auctionCounter<BlockNumber>(),
 		]);
 		const blockNumber = number.unwrap();
 
-		const endingPeriod = this.api.consts.auctions.endingPeriod as BlockNumber;
+		const endingPeriod = historicApi.consts.auctions
+			.endingPeriod as BlockNumber;
 
 		let leasePeriodIndex: IOption<BlockNumber>,
 			beginEnd: IOption<BlockNumber>,
@@ -205,19 +225,18 @@ export class ParasService extends AbstractService {
 		if (auctionInfoOpt.isSome) {
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
 			const endingOffset = this.endingOffset(blockNumber, beginEnd);
+
 			const winningOpt = endingOffset
-				? await this.api.query.auctions.winning.at<Option<WinningData>>(
-						hash,
+				? await historicApi.query.auctions.winning<Option<WinningData>>(
 						endingOffset
 				  )
-				: await this.api.query.auctions.winning.at<Option<WinningData>>(
-						hash,
+				: await historicApi.query.auctions.winning<Option<WinningData>>(
 						// when we are not in the ending phase of the auction winning bids are stored at 0
 						0
 				  );
 
 			if (winningOpt.isSome) {
-				const ranges = this.enumerateLeaseSets(leasePeriodIndex);
+				const ranges = this.enumerateLeaseSets(historicApi, leasePeriodIndex);
 
 				// zip the winning bids together with their enumerated `SlotRange` (aka `leaseSet`)
 				winning = winningOpt.unwrap().map((bid, idx) => {
@@ -253,7 +272,7 @@ export class ParasService extends AbstractService {
 		}
 
 		const leasePeriodsPerSlot =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
+			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 		const leasePeriods = isSome(leasePeriodIndex)
 			? Array(leasePeriodsPerSlot)
@@ -288,6 +307,9 @@ export class ParasService extends AbstractService {
 		hash: BlockHash,
 		includeCurrentLeaseHolders: boolean
 	): Promise<ILeasesCurrent> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
 		let blockNumber, currentLeaseHolders;
 		if (!includeCurrentLeaseHolders) {
 			const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -295,10 +317,10 @@ export class ParasService extends AbstractService {
 		} else {
 			const [{ number }, leaseEntries] = await Promise.all([
 				this.api.rpc.chain.getHeader(hash),
-				this.api.query.slots.leases.entriesAt<
+				historicApi.query.slots.leases.entries<
 					Vec<Option<ITuple<[AccountId, BalanceOf]>>>,
 					[ParaId]
-				>(hash),
+				>(),
 			]);
 
 			blockNumber = number.unwrap();
@@ -308,16 +330,18 @@ export class ParasService extends AbstractService {
 				.map(([key, _l]) => key.args[0]);
 		}
 
-		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
-		const leasePeriodIndex = this.leasePeriodIndexAt(blockNumber);
-		const endOfLeasePeriod = leasePeriodIndex.mul(leasePeriod).add(leasePeriod);
+		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
+		const leasePeriodIndex = this.leasePeriodIndexAt(historicApi, blockNumber);
+		const endOfLeasePeriod = leasePeriodIndex
+			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod)
+			: null;
 
 		return {
 			at: {
 				hash,
 				height: blockNumber.toString(10),
 			},
-			leasePeriodIndex,
+			leasePeriodIndex: leasePeriodIndex ? leasePeriodIndex : BN_ZERO,
 			endOfLeasePeriod,
 			currentLeaseHolders,
 		};
@@ -330,11 +354,14 @@ export class ParasService extends AbstractService {
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
 	async paras(hash: BlockHash): Promise<IParas> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		this.assertQueryModule(historicApi.query.paras, 'paras');
+
 		const [{ number }, paraLifecycles] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.query.paras.paraLifecycles.entriesAt<ParaLifecycle, [ParaId]>(
-				hash
-			),
+			historicApi.query.paras.paraLifecycles.entries<ParaLifecycle, [ParaId]>(),
 		]);
 
 		const parasPromises = paraLifecycles.map(async ([k, paraLifecycle]) => {
@@ -342,8 +369,7 @@ export class ParasService extends AbstractService {
 			let onboardingAs: ParaType | undefined;
 			if (paraLifecycle.isOnboarding) {
 				const paraGenesisArgs =
-					await this.api.query.paras.paraGenesisArgs.at<ParaGenesisArgs>(
-						hash,
+					await historicApi.query.paras.paraGenesisArgs<ParaGenesisArgs>(
 						paraId
 					);
 				onboardingAs = paraGenesisArgs.parachain.isTrue
@@ -369,13 +395,25 @@ export class ParasService extends AbstractService {
 
 	/**
 	 * Calculate the current lease period index.
+	 * Ref: https://github.com/paritytech/polkadot/pull/3980
 	 *
-	 * @param blockHeight current blockheight
-	 * @param leasePeriod duration of lease period
+	 * @param historicApi
+	 * @param now Current block number
 	 */
-	private leasePeriodIndexAt(now: BN): BN {
-		const leasePeriod = this.api.consts.slots.leasePeriod as BlockNumber;
-		return now.div(leasePeriod);
+	private leasePeriodIndexAt(
+		historicApi: ApiDecoration<'promise'>,
+		now: BN
+	): IOption<BN> {
+		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
+		const offset =
+			(historicApi.consts.slots.leaseOffset as BlockNumber) || BN_ZERO;
+
+		// Edge case, see https://github.com/paritytech/polkadot/commit/3668966dc02ac793c799d8c8667e8c396d891734
+		if (now.toNumber() - offset.toNumber() < 0) {
+			return null;
+		}
+
+		return now.sub(offset).div(leasePeriod);
 	}
 
 	/**
@@ -397,12 +435,7 @@ export class ParasService extends AbstractService {
 			return null;
 		}
 
-		// Once https://github.com/paritytech/polkadot/pull/2848 is merged no longer
-		// need a fallback
-		const sampleLength =
-			(this.api.consts.auctions.sampleLength as BlockNumber) ||
-			SAMPLE_LENGTH_FALLBACK;
-		return afterEarlyEnd.div(sampleLength);
+		return now.sub(new BN(beginEnd)).iadd(BN_ONE);
 	}
 
 	/**
@@ -435,12 +468,16 @@ export class ParasService extends AbstractService {
 	 * So now we have an array, where each index corresponds to the same `SlotRange` that
 	 * would be at that index in the `auctions::winning` array.
 	 *
+	 * @param historicApi
 	 * @param leasePeriodIndex
 	 */
-	private enumerateLeaseSets(leasePeriodIndex: BN): number[][] {
+	private enumerateLeaseSets(
+		historicApi: ApiDecoration<'promise'>,
+		leasePeriodIndex: BN
+	): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
 		const lPPS =
-			(this.api.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
+			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() ||
 			LEASE_PERIODS_PER_SLOT_FALLBACK;
 
 		const ranges: number[][] = [];
@@ -455,5 +492,23 @@ export class ParasService extends AbstractService {
 		}
 
 		return ranges;
+	}
+
+	/**
+	 * Parachains pallets and modules are not available on all runtimes. This
+	 * verifies that by checking if the module exists. If it doesnt it will throw an error
+	 *
+	 * @param queryFn The QueryModuleStorage key that we want to check exists
+	 * @param mod Module we are checking
+	 */
+	private assertQueryModule(
+		queryFn: QueryableModuleStorage<'promise'>,
+		mod: string
+	): void {
+		if (!queryFn) {
+			throw Error(
+				`The runtime does not include the ${mod} module at this block`
+			);
+		}
 	}
 }

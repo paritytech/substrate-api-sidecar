@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { Option } from '@polkadot/types';
 import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -43,16 +44,20 @@ const payeeAt = (_hash: Hash, _address: string) =>
 const slashingSpansAt = (_hash: Hash, _address: string) =>
 	Promise.resolve().then(() => polkadotRegistry.createType('SlashingSpans'));
 
-const mockApi = {
-	...defaultMockApi,
+const historicApi = {
 	query: {
 		staking: {
-			bonded: { at: bondedAt },
-			ledger: { at: ledgerAt },
-			payee: { at: payeeAt },
-			slashingSpans: { at: slashingSpansAt },
+			bonded: bondedAt,
+			ledger: ledgerAt,
+			payee: payeeAt,
+			slashingSpans: slashingSpansAt,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
@@ -71,7 +76,7 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('throws a 400 when the given address is not a stash', async () => {
-			(mockApi.query.staking.bonded as any).at = () =>
+			(historicApi.query.staking.bonded as any) = () =>
 				Promise.resolve().then(() =>
 					polkadotRegistry.createType('Option<AccountId>', null)
 				);
@@ -85,11 +90,11 @@ describe('AccountsStakingInfoService', () => {
 				new BadRequest('The address NotStash is not a stash address.')
 			);
 
-			(mockApi.query.staking.bonded as any).at = bondedAt;
+			(historicApi.query.staking.bonded as any) = bondedAt;
 		});
 
 		it('throws a 404 when the staking ledger cannot be found', async () => {
-			(mockApi.query.staking.ledger as any).at = () =>
+			(historicApi.query.staking.ledger as any) = () =>
 				Promise.resolve().then(() =>
 					polkadotRegistry.createType('Option<StakingLedger>', null)
 				);
@@ -105,7 +110,7 @@ describe('AccountsStakingInfoService', () => {
 				)
 			);
 
-			(mockApi.query.staking.ledger as any).at = ledgerAt;
+			(historicApi.query.staking.ledger as any) = ledgerAt;
 		});
 	});
 });

@@ -22,6 +22,11 @@ import block7673144 from './7673144.json';
 import block7944249 from './7944249.json';
 import block8049096 from './8049096.json';
 import block8113510 from './8113510.json';
+import block8600000 from './8600000.json';
+import block9000000 from './9000000.json';
+import block9611378 from './9611378.json';
+import block9625130 from './9625130.json';
+import block9866423 from './9866423.json';
 
 export const kusamaBlockEndpoints = [
 	['/blocks/9253', JSON.stringify(block9253)], //v1020
@@ -48,4 +53,9 @@ export const kusamaBlockEndpoints = [
 	['/blocks/7944249', JSON.stringify(block7944249)], //v9040
 	['/blocks/8049096', JSON.stringify(block8049096)], //v9050
 	['/blocks/8113510', JSON.stringify(block8113510)], //v9070
+	['/blocks/8600000', JSON.stringify(block8600000)], //v9080
+	['/blocks/9000000', JSON.stringify(block9000000)], //v9090
+	['/blocks/9611378', JSON.stringify(block9611378)], //v9100
+	['/blocks/9625130', JSON.stringify(block9625130)], //v9111
+	['/blocks/9866423', JSON.stringify(block9866423)], //v9122
 ];

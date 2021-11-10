@@ -9,6 +9,7 @@ export const polymeshControllers: ControllerConfig = {
 	controllers: [
 		'AccountsStakingPayouts',
 		'AccountsStakingInfo',
+		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',

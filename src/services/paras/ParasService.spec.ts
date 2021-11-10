@@ -1,7 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Tuple, Vec } from '@polkadot/types';
 import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-import { BlockNumber } from '@polkadot/types/interfaces';
+import { BlockNumber, Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 
@@ -252,8 +253,7 @@ const auctionsWinningsAt = () =>
 		return optionWinnings;
 	});
 
-const mockApi = {
-	...defaultMockApi,
+const historicApi = {
 	consts: {
 		auctions: {
 			endingPeriod: new BN(20000),
@@ -266,42 +266,49 @@ const mockApi = {
 	},
 	query: {
 		auctions: {
-			auctionInfo: {
-				at: auctionsInfoAt,
-			},
-			auctionCounter: {
-				at: auctionCounterAt,
-			},
-			winning: {
-				at: auctionsWinningsAt,
-			},
+			auctionInfo: auctionsInfoAt,
+			auctionCounter: auctionCounterAt,
+			winning: auctionsWinningsAt,
 		},
 		crowdloan: {
-			funds: {
-				entriesAt: fundsEntries,
-				keys: fundsKeys,
-				at: fundsAt,
-			},
+			funds: fundsAt,
 		},
 		paras: {
-			paraLifecycles: {
-				entriesAt: parasLifecyclesEntriesAt,
-				at: parasLifecyclesAt,
-			},
-			paraGenesisArgs: {
-				at: parasGenesisArgsAt,
-			},
-			upcomingParasGenesis: {
-				at: upcomingParasGenesisAt,
-			},
+			paraLifecycles: parasLifecyclesAt,
+			paraGenesisArgs: parasGenesisArgsAt,
+			upcomingParasGenesis: upcomingParasGenesisAt,
 		},
 		slots: {
-			leases: {
-				entriesAt: slotsLeasesEntriesAt,
-				at: slotsLeasesAt,
-			},
+			leases: slotsLeasesAt,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>;
+
+/**
+ * Assign necessary keys to crowdloan.funds
+ */
+Object.assign(historicApi.query.crowdloan.funds, {
+	entries: fundsEntries,
+	keys: fundsKeys,
+});
+
+/**
+ * Assign necessary keys to paras.paraLifecycles
+ */
+Object.assign(historicApi.query.paras.paraLifecycles, {
+	entries: parasLifecyclesEntriesAt,
+});
+
+/**
+ * Assign necessary keys to slots.leases
+ */
+Object.assign(historicApi.query.slots.leases, {
+	entries: slotsLeasesEntriesAt,
+});
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
 const parasService = new ParasService(mockApi);
@@ -393,7 +400,7 @@ describe('ParasService', () => {
 			const emptyLeasesAt = () =>
 				Promise.resolve().then(() => emptyVectorLeases);
 
-			(mockApi.query.slots.leases.at as unknown) = emptyLeasesAt;
+			(historicApi.query.slots.leases as unknown) = emptyLeasesAt;
 
 			const expectedResponse = {
 				at: expectedAt,
@@ -406,7 +413,7 @@ describe('ParasService', () => {
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
-			(mockApi.query.slots.leases.at as unknown) = slotsLeasesAt;
+			(historicApi.query.slots.leases as unknown) = slotsLeasesAt;
 		});
 	});
 
@@ -464,8 +471,10 @@ describe('ParasService', () => {
 	describe('ParasService.auctionsCurrent', () => {
 		it('Should return the correct data during an ongoing auction', async () => {
 			const leasePeriodIndex = new BN(39);
-			const leaseIndexArray =
-				parasService['enumerateLeaseSets'](leasePeriodIndex);
+			const leaseIndexArray = parasService['enumerateLeaseSets'](
+				historicApi,
+				leasePeriodIndex
+			);
 			// Remove the first two entries with splice because we have them in the expectedResponse.
 			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
 			const additionalWinningOptions = leaseIndexArray
@@ -541,7 +550,7 @@ describe('ParasService', () => {
 		});
 
 		it('Should return the correct null values when `auctionInfo` is `None`', async () => {
-			(mockApi.query.auctions.auctionInfo.at as unknown) = noneAuctionsInfoAt;
+			(historicApi.query.auctions.auctionInfo as unknown) = noneAuctionsInfoAt;
 
 			const expectedResponse = {
 				at: expectedAt,
@@ -557,7 +566,7 @@ describe('ParasService', () => {
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
-			(mockApi.query.auctions.auctionInfo.at as unknown) = auctionsInfoAt;
+			(historicApi.query.auctions.auctionInfo as unknown) = auctionsInfoAt;
 		});
 	});
 });

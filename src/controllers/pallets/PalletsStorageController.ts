@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { Log } from '../../logging/Log';
 import { PalletsStorageService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -19,10 +20,13 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
+	private readonly deprecationMsg: string;
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();
+		this.deprecationMsg =
+			'The adjustMetadataV13 query parameter is deprecated and will be removed in v12 of sidecar';
 	}
 
 	protected initRoutes(): void {
@@ -44,6 +48,8 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		const key2Arg = typeof key2 === 'string' ? key2 : undefined;
 		const metadataArg = metadata === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
+
+		adjustMetadataV13Arg && Log.logger.warn(this.deprecationMsg);
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -69,6 +75,8 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
+
+		adjustMetadataV13Arg && Log.logger.warn(this.deprecationMsg);
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
