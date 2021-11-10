@@ -6,12 +6,14 @@ import {
 	MetadataConsts,
 	PerClassValue,
 } from '../../types/chains-config';
+import { acalaDefinitions } from './acalaConsts';
 import { calamariDefinitions } from './calamariConsts';
 import {
 	dockMainnetDefinitions,
 	dockPoSMainnetDefinitions,
 	dockPoSTestnetDefinitions,
 } from './dockConsts';
+import { karuraDefinitions } from './karuraConsts';
 import { kusamaDefinitions } from './kusamaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
@@ -91,6 +93,10 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(shidenDefinitions);
 		case 'calamari':
 			return generateBlockWeightStore(calamariDefinitions);
+		case 'karura':
+			return generateBlockWeightStore(karuraDefinitions);
+		case 'acala':
+			return generateBlockWeightStore(acalaDefinitions);
 		default:
 			return {};
 	}
