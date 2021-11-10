@@ -157,7 +157,7 @@ export class ParasService extends AbstractService {
 				if (curLeaseOpt.isSome) {
 					const leasePeriodIndex = currentLeasePeriodIndex
 						? currentLeasePeriodIndex.toNumber() + idx
-						: 0;
+						: null;
 					const lease = curLeaseOpt.unwrap();
 					acc.push({
 						leasePeriodIndex,
@@ -334,7 +334,7 @@ export class ParasService extends AbstractService {
 		const leasePeriodIndex = this.leasePeriodIndexAt(historicApi, blockNumber);
 		const endOfLeasePeriod = leasePeriodIndex
 			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod)
-			: BN_ZERO;
+			: null;
 
 		return {
 			at: {
