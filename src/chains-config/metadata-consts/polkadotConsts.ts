@@ -11,7 +11,7 @@ export const polkadotDefinitions: MetadataConsts[] = [
 	{
 		runtimeVersions: [
 			27, 28, 29, 30, 9000, 9010, 9030, 9033, 9050, 9070, 9080, 9090, 9100,
-			9110,
+			9110, 9122,
 		],
 		perClass,
 	},
