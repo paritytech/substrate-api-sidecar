@@ -1305,11 +1305,11 @@ __metadata:
     "@polkadot/apps-config": 0.98.2-57
     "@polkadot/util-crypto": ^7.8.2
     "@polkadot/x-rxjs": ^6.11.1
-    "@substrate/calc": ^0.2.4
+    "@substrate/calc": ^0.2.5
     "@substrate/dev": ^0.5.6
     "@types/argparse": 2.0.10
     "@types/express": 4.17.13
-    "@types/express-serve-static-core": 4.17.24
+    "@types/express-serve-static-core": 4.17.25
     "@types/http-errors": 1.8.1
     "@types/lru-cache": ^5.1.1
     "@types/morgan": 1.9.3
@@ -1320,7 +1320,7 @@ __metadata:
     express-winston: ^4.1.0
     http-errors: ^1.8.0
     lru-cache: ^6.0.0
-    standard-version: 9.3.1
+    standard-version: 9.3.2
     tsc-watch: ^4.4.0
     winston: ^3.3.3
   bin:
@@ -1328,10 +1328,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@substrate/calc@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "@substrate/calc@npm:0.2.4"
-  checksum: fb1b51853ead2e2a6e50232982402a2357beb45b6371d61c4383c0a3a8eb7fdb58fc1e6c7f1cf42bbd25ffc11f2b12bc14630c0a870347b367fc2866aa87838f
+"@substrate/calc@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "@substrate/calc@npm:0.2.5"
+  checksum: 9abfbd6cc09ebefd62f119d74e87e0bbad6b0d42990bb976ac0514739aa03cc56affac343bc9fbc04722a01bd387e777d4208fd1cb3858cc0f4753d62ac44f5f
   languageName: node
   linkType: hard
 
@@ -1446,14 +1446,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:4.17.24, @types/express-serve-static-core@npm:^4.17.18":
-  version: 4.17.24
-  resolution: "@types/express-serve-static-core@npm:4.17.24"
+"@types/express-serve-static-core@npm:4.17.25, @types/express-serve-static-core@npm:^4.17.18":
+  version: 4.17.25
+  resolution: "@types/express-serve-static-core@npm:4.17.25"
   dependencies:
     "@types/node": "*"
     "@types/qs": "*"
     "@types/range-parser": "*"
-  checksum: 2f0b4711261d663bf93df4dbd6f0270e84d1624278e2f3722cf050e2e6be521b6d385bb69bd0eac14abbf1119d4b308a731ec746fb2c3848697658e9e49e5676
+  checksum: a60d44676db470afd413130ca8b464d864eb2c1a882b1037a52c5b612eebb61bcc4289d927cb09456be56c78bebe3cb24ffeaf0fa11bd7f5237a3ed5360abf3a
   languageName: node
   linkType: hard
 
@@ -2794,25 +2794,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conventional-changelog-conventionalcommits@npm:4.5.0":
-  version: 4.5.0
-  resolution: "conventional-changelog-conventionalcommits@npm:4.5.0"
+"conventional-changelog-conventionalcommits@npm:4.6.1, conventional-changelog-conventionalcommits@npm:^4.5.0":
+  version: 4.6.1
+  resolution: "conventional-changelog-conventionalcommits@npm:4.6.1"
   dependencies:
     compare-func: ^2.0.0
     lodash: ^4.17.15
     q: ^1.5.1
-  checksum: e11944881f123f26a92e823a96e4d921b03203a312da9d539773c424103b49917f59fa717a079738f4d5b0e9709b0336ec323a86a56df7d008663b01e5f8b3b9
-  languageName: node
-  linkType: hard
-
-"conventional-changelog-conventionalcommits@npm:^4.5.0":
-  version: 4.6.0
-  resolution: "conventional-changelog-conventionalcommits@npm:4.6.0"
-  dependencies:
-    compare-func: ^2.0.0
-    lodash: ^4.17.15
-    q: ^1.5.1
-  checksum: b7dccba3e91ee9122f5b5e214e891f9dc516cd7432894fef8e3bf60d76bd8618bb252621c23fe628ec0eda2032ba2e253e0177317aa133452ef62b9703b84778
+  checksum: f866616c8f6f21cea005b42792451bfbd16bd4d82872867d1218f67a7993a53c5d87e26d6b483d9252e8022f2e4570e6cf9fa2a409aae5a3d73eea92ccf78b13
   languageName: node
   linkType: hard
 
@@ -7842,14 +7831,14 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
-"standard-version@npm:9.3.1":
-  version: 9.3.1
-  resolution: "standard-version@npm:9.3.1"
+"standard-version@npm:9.3.2":
+  version: 9.3.2
+  resolution: "standard-version@npm:9.3.2"
   dependencies:
     chalk: ^2.4.2
     conventional-changelog: 3.1.24
     conventional-changelog-config-spec: 2.1.0
-    conventional-changelog-conventionalcommits: 4.5.0
+    conventional-changelog-conventionalcommits: 4.6.1
     conventional-recommended-bump: 6.1.0
     detect-indent: ^6.0.0
     detect-newline: ^3.1.0
@@ -7863,7 +7852,7 @@ fsevents@^2.3.2:
     yargs: ^16.0.0
   bin:
     standard-version: bin/cli.js
-  checksum: 8cf328d8400cf603a3d189656b742bb8dd36b467d71f110ea2ee353b4864c3c5097f06a903aa5d1c1ce23233a28d71dade518e8250467784bbddf5398f6edb87
+  checksum: 40e1105b73e77105338a869096708e15aebf0c1104740f8cbbbb24173f55a8e7f221ff2e4cad4765c230d34094caa4e378ceb74a1ea890709c32f5fb67bd49b7
   languageName: node
   linkType: hard
 
