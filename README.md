@@ -324,16 +324,9 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 #### Publish on GitHub
 
-1. Now that master has the commit for the release, pull down `master` branch.
+1. Double check that `master` is properly merged, pull down `master` branch.
 
-1. Make sure the tag reflects your corresponding version, and run:
-
-    ```bash
-    git tag v5.0.1
-    git push origin v5.0.1
-    ```
-
-1. Go to [tags](https://github.com/paritytech/substrate-api-sidecar/tags) on github, inside of the repo, and click the three dots to the far right and select the option to create a release.
+1. [Create a new release](https://github.com/paritytech/substrate-api-sidecar/releases/new) on github, select `Choose a tag` and create a new tag name matching the version like `v5.0.1`. The tag will be automatically published along with the release notes.
 
 1. Generally you can copy the changelog information and set the release notes to that. You can also observe past releases as a reference.
 
