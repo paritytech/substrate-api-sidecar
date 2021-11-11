@@ -80,7 +80,11 @@ export class PalletsStakingProgressService extends AbstractService {
 			? nextSession // there is a new era every session
 			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextActiveEra is at the end of this era
 
-		const electionLookAhead = await this.deriveElectionLookAhead(api, historicApi, hash);
+		const electionLookAhead = await this.deriveElectionLookAhead(
+			api,
+			historicApi,
+			hash
+		);
 
 		const nextCurrentEra = nextActiveEra
 			.sub(currentBlockNumber)
@@ -122,7 +126,7 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	private async deriveSessionAndEraProgress(
-		historicApi: ApiDecoration<'promise'>,
+		historicApi: ApiDecoration<'promise'>
 	): Promise<{
 		eraLength: BN;
 		eraProgress: BN;
@@ -163,7 +167,8 @@ export class PalletsStakingProgressService extends AbstractService {
 			activeEraStartSessionIndexOption.unwrap();
 
 		const { epochDuration: sessionLength } = historicApi.consts.babe;
-		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(sessionLength);
+		const eraLength =
+			historicApi.consts.staking.sessionsPerEra.mul(sessionLength);
 		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
 		const sessionProgress = currentSlot.sub(epochStartSlot);
 		const eraProgress = currentIndex

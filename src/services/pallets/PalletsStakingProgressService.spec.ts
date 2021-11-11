@@ -71,7 +71,7 @@ const mockHistoricApi = {
 			genesisSlot: genesisSlotAt,
 		},
 		session: {
-			currentIndex:currentIndexAt,
+			currentIndex: currentIndexAt,
 			validators: validatorsAt,
 		},
 		staking: {
@@ -82,7 +82,7 @@ const mockHistoricApi = {
 			unappliedSlashes: unappliedSlashesAt,
 			validatorCount: validatorCountAt,
 		},
-	}
+	},
 } as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
