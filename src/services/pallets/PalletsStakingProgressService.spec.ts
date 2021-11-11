@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import { EraIndex, Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
@@ -16,21 +17,21 @@ import { validators789629Hex } from '../test-helpers/mock/data/validators789629H
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
-const epochIndexAt = (_hash: Hash) =>
+const epochIndexAt = () =>
 	Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
 
-const genesisSlotAt = (_hash: Hash) =>
+const genesisSlotAt = () =>
 	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265084563));
 
-const currentSlotAt = (_hash: Hash) =>
+const currentSlotAt = () =>
 	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265876724));
 
-const currentIndexAt = (_hash: Hash) =>
+const currentIndexAt = () =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('SessionIndex', 330)
 	);
 
-const eraElectionStatusAt = (_hash: Hash) =>
+const eraElectionStatusAt = () =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('ElectionStatus', { Close: null })
 	);
@@ -40,21 +41,20 @@ const validatorsAt = () =>
 		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
 	);
 
-const forceEraAt = (_hash: Hash) =>
+const forceEraAt = () =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Forcing', 'NotForcing')
 	);
 
-const unappliedSlashesAt = (_hash: Hash, _activeEra: EraIndex) =>
+const unappliedSlashesAt = (_activeEra: EraIndex) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType('Vec<UnappliedSlash>', [])
 	);
 
-const validatorCountAt = (_hash: Hash) =>
+const validatorCountAt = () =>
 	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
 
-const mockApi = {
-	...defaultMockApi,
+const mockHistoricApi = {
 	consts: {
 		babe: {
 			epochDuration: polkadotRegistry.createType('u64', 2400),
@@ -66,23 +66,28 @@ const mockApi = {
 	},
 	query: {
 		babe: {
-			currentSlot: { at: currentSlotAt },
-			epochIndex: { at: epochIndexAt },
-			genesisSlot: { at: genesisSlotAt },
+			currentSlot: currentSlotAt,
+			epochIndex: epochIndexAt,
+			genesisSlot: genesisSlotAt,
 		},
 		session: {
-			currentIndex: { at: currentIndexAt },
+			currentIndex: currentIndexAt,
 			validators: validatorsAt,
 		},
 		staking: {
-			activeEra: { at: activeEraAt },
-			eraElectionStatus: { at: eraElectionStatusAt },
-			erasStartSessionIndex: { at: erasStartSessionIndexAt },
-			forceEra: { at: forceEraAt },
-			unappliedSlashes: { at: unappliedSlashesAt },
-			validatorCount: { at: validatorCountAt },
+			activeEra: activeEraAt,
+			eraElectionStatus: eraElectionStatusAt,
+			erasStartSessionIndex: erasStartSessionIndexAt,
+			forceEra: forceEraAt,
+			unappliedSlashes: unappliedSlashesAt,
+			validatorCount: validatorCountAt,
 		},
 	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApi = {
+	...defaultMockApi,
+	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
 /**
@@ -92,7 +97,7 @@ const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
 
 describe('PalletStakingProgressService', () => {
 	describe('derivePalletStakingProgress', () => {
-		(mockApi.query.session.validators as unknown) = { at: validatorsAt };
+		(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
 
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
@@ -105,7 +110,7 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
-			(mockApi.query.staking.erasStartSessionIndex as any).at = () =>
+			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
 				Promise.resolve().then(() =>
 					polkadotRegistry.createType('Option<SessionIndex>', null)
 				);
@@ -120,12 +125,12 @@ describe('PalletStakingProgressService', () => {
 				)
 			);
 
-			(mockApi.query.staking.erasStartSessionIndex as any).at =
+			(mockHistoricApi.query.staking.erasStartSessionIndex as any) =
 				erasStartSessionIndexAt;
 		});
 
 		it('throws when activeEra.isNone', async () => {
-			(mockApi.query.staking.activeEra as any).at = () =>
+			(mockHistoricApi.query.staking.activeEra as any) = () =>
 				Promise.resolve().then(() =>
 					polkadotRegistry.createType('Option<ActiveEraInfo>', null)
 				);
@@ -138,8 +143,8 @@ describe('PalletStakingProgressService', () => {
 				new InternalServerError('ActiveEra is None when Some was expected.')
 			);
 
-			(mockApi.query.staking.activeEra as any).at = activeEraAt;
-			(mockApi.query.session.validators as unknown) = validatorsAt;
+			(mockHistoricApi.query.staking.activeEra as any) = activeEraAt;
+			(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
 		});
 	});
 });
