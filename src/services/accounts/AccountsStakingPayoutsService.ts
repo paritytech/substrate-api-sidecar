@@ -1,4 +1,5 @@
 import { ApiPromise } from '@polkadot/api';
+import { ApiDecoration } from '@polkadot/api/types';
 import {
 	DeriveEraExposure,
 	DeriveEraExposureNominating,
@@ -68,10 +69,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		currentEra: number
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 
 		const [{ number }, historyDepth] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.staking.historyDepth.at(hash),
+			historicApi.query.staking.historyDepth(),
 		]);
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
@@ -98,15 +100,14 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		// Fetch general data about the era
 		const allErasGeneral = await this.fetchAllErasGeneral(
 			api,
-			hash,
+			historicApi,
 			startEra,
 			era
 		);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
-			api,
-			hash,
+			historicApi,
 			address,
 			startEra,
 			// Create an array of `DeriveEraExposure`
@@ -146,7 +147,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					eraRewardPoints,
 					erasValidatorRewardOption,
 					exposuresWithCommission,
-					eraIndex: api.createType('EraIndex', idx + startEra),
+					eraIndex: historicApi.registry.createType('EraIndex', idx + startEra),
 				};
 			}
 		);
@@ -169,18 +170,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 */
 	async fetchAllErasGeneral(
 		api: ApiPromise,
-		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		startEra: number,
 		era: number
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		for (let e = startEra; e <= era; e += 1) {
-			const eraIndex = api.createType('EraIndex', e);
+			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
 			const eraGeneralTuple = Promise.all([
 				api.derive.staking.eraExposure(eraIndex),
-				api.query.staking.erasRewardPoints.at(hash, eraIndex),
-				api.query.staking.erasValidatorReward.at(hash, eraIndex),
+				historicApi.query.staking.erasRewardPoints(eraIndex),
+				historicApi.query.staking.erasValidatorReward(eraIndex),
 			]);
 
 			allDeriveQuerys.push(eraGeneralTuple);
@@ -199,8 +200,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param deriveErasExposures exposures per era for `address`
 	 */
 	fetchAllErasCommissions(
-		api: ApiPromise,
-		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		address: string,
 		startEra: number,
 		deriveErasExposures: DeriveEraExposure[]
@@ -223,10 +223,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 				const singleEraCommissions = nominatedExposures.map(({ validatorId }) =>
 					this.fetchCommissionAndLedger(
-						api,
+						historicApi,
 						validatorId,
 						currEra,
-						hash,
 						validatorLedgerCache
 					)
 				);
@@ -352,17 +351,16 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param validatorLedgerCache object mapping validatorId => StakingLedger to limit redundant queries
 	 */
 	private async fetchCommissionAndLedger(
-		api: ApiPromise,
+		historicApi: ApiDecoration<'promise'>,
 		validatorId: string,
 		era: number,
-		hash: BlockHash,
 		validatorLedgerCache: { [id: string]: StakingLedger }
 	): Promise<ICommissionAndLedger> {
 		let commission;
 		let validatorLedger;
 		if (validatorId in validatorLedgerCache) {
 			validatorLedger = validatorLedgerCache[validatorId];
-			const prefs = await api.query.staking.erasValidatorPrefs(
+			const prefs = await historicApi.query.staking.erasValidatorPrefs(
 				era,
 				validatorId
 			);
@@ -370,8 +368,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			commission = prefs.commission.unwrap();
 		} else {
 			const [prefs, validatorControllerOption] = await Promise.all([
-				api.query.staking.erasValidatorPrefs.at(hash, era, validatorId),
-				api.query.staking.bonded.at(hash, validatorId),
+				historicApi.query.staking.erasValidatorPrefs(era, validatorId),
+				historicApi.query.staking.bonded(validatorId),
 			]);
 
 			commission = prefs.commission.unwrap();
@@ -382,8 +380,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				};
 			}
 
-			const validatorLedgerOption = await api.query.staking.ledger.at(
-				hash,
+			const validatorLedgerOption = await historicApi.query.staking.ledger(
 				validatorControllerOption.unwrap()
 			);
 
