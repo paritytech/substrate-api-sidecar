@@ -980,13 +980,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /experimental/paras:
+  /paras:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] List all registered paras
-        (parathreads & parachains).
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
+        List all registered paras (parathreads & parachains).
       description: Returns all registered parachains and parathreads with lifecycle info.
       parameters:
       - name: at
@@ -1004,13 +1005,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Paras'
-  /experimental/paras/leases/current:
+  /paras/leases/current:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] Get general information about
-        the current lease period.
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
+        Get general information about the current lease period.
       description: |
         Returns an overview of the current lease period, including lease holders.
       parameters:
@@ -1039,13 +1041,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeasesCurrent'
-  /experimental/paras/auctions/current:
+  /paras/auctions/current:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] Get the status of the current
-        auction.
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
+        Get the status of the current auction.
       description: |
         Returns an overview of the current of auction. There is only one auction
         at a time. If there is no auction most fields will be `null`.
@@ -1065,12 +1068,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasAuctionsCurrent'
-  /experimental/paras/crowdloans:
+  /paras/crowdloans:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] List all stored crowdloans.
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
+        List all stored crowdloans.
       description: |
         Returns a list of all the crowdloans and their associated paraIds.
       parameters:
@@ -1089,13 +1094,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasCrowdloans'
-  /experimental/paras/{paraId}/crowdloan-info:
+  /paras/{paraId}/crowdloan-info:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] Get crowdloan information for a
-        `paraId`.
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler. 
+        Get crowdloan information for a `paraId`.
       description: |
         Returns crowdloan's `fundInfo` and the set of `leasePeriods` the crowdloan`
         covers.
@@ -1121,13 +1127,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasCrowdloanInfo'
-  /experimental/paras/{paraId}/lease-info:
+  /paras/{paraId}/lease-info:
     get:
       tags:
       - paras
       summary: |
-        [Experimental - subject to breaking change.] Get current and future leases
-        as well as the lifecycle stage for a given `paraId`.
+        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
+        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
+        Get current and future leases as well as the lifecycle stage for a given `paraId`.
       description: |
         Returns a list of leases that belong to the `paraId` as well as the
         `paraId`'s current lifecycle stage.
