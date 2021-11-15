@@ -7,18 +7,24 @@ import AbstractController from '../AbstractController';
 
 export default class ParasController extends AbstractController<ParasService> {
 	constructor(api: ApiPromise) {
-		super(api, '/experimental/paras', new ParasService(api));
+		super(api, '', new ParasService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['/', this.getParas],
-			['/crowdloans', this.getCrowdloans],
-			['/:paraId/crowdloan-info', this.getCrowdloanInfo],
-			['/:paraId/lease-info', this.getLeaseInfo],
-			['/leases/current', this.getLeasesCurrent],
-			['/auctions/current', this.getAuctionsCurrent],
+			['/paras', this.getParas],
+			['/paras/crowdloans', this.getCrowdloans],
+			['/paras/:paraId/crowdloan-info', this.getCrowdloanInfo],
+			['/paras/:paraId/lease-info', this.getLeaseInfo],
+			['/paras/leases/current', this.getLeasesCurrent],
+			['/paras/auctions/current', this.getAuctionsCurrent],
+			['/experimental/paras/', this.getParas],
+			['/experimental/paras/crowdloans', this.getCrowdloans],
+			['/experimental/paras/:paraId/crowdloan-info', this.getCrowdloanInfo],
+			['/experimental/paras/:paraId/lease-info', this.getLeaseInfo],
+			['/experimental/paras/leases/current', this.getLeasesCurrent],
+			['/experimental/paras/auctions/current', this.getAuctionsCurrent],
 		]);
 	}
 
