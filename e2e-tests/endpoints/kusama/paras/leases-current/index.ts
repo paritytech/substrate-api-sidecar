@@ -4,15 +4,15 @@ import parasLeasesCurrent9800000 from './9800000.json';
 
 export const parasLeasesCurrentEndpoints = [
 	[
-		'/experimental/paras/leases/current?at=8200000',
+		'/paras/leases/current?at=8200000',
 		JSON.stringify(parasLeasesCurrent8200000),
 	],
 	[
-		'/experimental/paras/leases/current?at=9000000',
+		'/paras/leases/current?at=9000000',
 		JSON.stringify(parasLeasesCurrent9000000),
 	],
 	[
-		'/experimental/paras/leases/current?at=9800000',
+		'/paras/leases/current?at=9800000',
 		JSON.stringify(parasLeasesCurrent9800000),
 	],
 ];
