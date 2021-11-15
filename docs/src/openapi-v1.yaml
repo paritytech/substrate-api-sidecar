@@ -985,8 +985,6 @@ paths:
       tags:
       - paras
       summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
         List all registered paras (parathreads & parachains).
       description: Returns all registered parachains and parathreads with lifecycle info.
       parameters:
@@ -1010,8 +1008,6 @@ paths:
       tags:
       - paras
       summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
         Get general information about the current lease period.
       description: |
         Returns an overview of the current lease period, including lease holders.
@@ -1046,8 +1042,6 @@ paths:
       tags:
       - paras
       summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
         Get the status of the current auction.
       description: |
         Returns an overview of the current of auction. There is only one auction
@@ -1073,8 +1067,6 @@ paths:
       tags:
       - paras
       summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
         List all stored crowdloans.
       description: |
         Returns a list of all the crowdloans and their associated paraIds.
@@ -1098,9 +1090,7 @@ paths:
     get:
       tags:
       - paras
-      summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler. 
+      summary: | 
         Get crowdloan information for a `paraId`.
       description: |
         Returns crowdloan's `fundInfo` and the set of `leasePeriods` the crowdloan`
@@ -1132,8 +1122,6 @@ paths:
       tags:
       - paras
       summary: |
-        This endpoint is no longer experimental, please migrate over to using `/paras/*`.
-        The `/experimental/*` endpoint will still be available for use to make the transition simpler.
         Get current and future leases as well as the lifecycle stage for a given `paraId`.
       description: |
         Returns a list of leases that belong to the `paraId` as well as the
