@@ -8,3 +8,7 @@ else
     echo "Fee debugging enabled"
     wasm-pack build --debug --target nodejs --scope substrate "$SCRIPT_DIR" -- --features debug
 fi
+# append a newline to pkg/package.json if it isn't there
+if [ "$(tail -c1 "$SCRIPT_DIR/pkg/package.json"; echo x)" != $'\nx' ]; then
+    echo "" >>"$SCRIPT_DIR/pkg/package.json"
+fi
