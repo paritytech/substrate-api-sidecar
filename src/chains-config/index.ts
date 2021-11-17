@@ -15,6 +15,7 @@ import { kiltControllers } from './kiltControllers';
 import { kulupuControllers } from './kulupuControllers';
 import { kusamaControllers } from './kusamaControllers';
 import { mandalaControllers } from './mandalaControllers';
+import { mantaControllers } from './mantaControllers';
 import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
 import { shidenControllers } from './shidenControllers';
@@ -43,6 +44,7 @@ const specToControllerMap = {
 	calamari: calamariControllers,
 	karura: karuraControllers,
 	acala: acalaControllers,
+	manta: mantaControllers,
 };
 
 /**

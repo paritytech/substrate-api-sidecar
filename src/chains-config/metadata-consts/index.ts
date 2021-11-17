@@ -15,6 +15,7 @@ import {
 } from './dockConsts';
 import { karuraDefinitions } from './karuraConsts';
 import { kusamaDefinitions } from './kusamaConsts';
+import { mantaDefinitions } from './mantaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
 import { shidenDefinitions } from './shidenConsts';
@@ -97,6 +98,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(karuraDefinitions);
 		case 'acala':
 			return generateBlockWeightStore(acalaDefinitions);
+		case 'manta':
+			return generateBlockWeightStore(mantaDefinitions);
 		default:
 			return {};
 	}
