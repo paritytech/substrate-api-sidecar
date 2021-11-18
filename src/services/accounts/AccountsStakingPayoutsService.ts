@@ -9,10 +9,10 @@ import {
 	BalanceOf,
 	BlockHash,
 	EraIndex,
-	EraRewardPoints,
 	Perbill,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import { PalletStakingEraRewardPoints } from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
@@ -27,7 +27,11 @@ import { AbstractService } from '../AbstractService';
  * General information about an era, in tuple form because we initially get it
  * by destructuring a Promise.all(...)
  */
-type IErasGeneral = [DeriveEraExposure, EraRewardPoints, Option<BalanceOf>];
+type IErasGeneral = [
+	DeriveEraExposure,
+	PalletStakingEraRewardPoints,
+	Option<BalanceOf>
+];
 
 /**
  * Commission and staking ledger of a validator
@@ -42,7 +46,7 @@ interface ICommissionAndLedger {
  */
 interface IEraData {
 	deriveEraExposure: DeriveEraExposure;
-	eraRewardPoints: EraRewardPoints;
+	eraRewardPoints: PalletStakingEraRewardPoints;
 	erasValidatorRewardOption: Option<BalanceOf>;
 	exposuresWithCommission?: (ICommissionAndLedger & {
 		validatorId: string;
@@ -404,7 +408,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * */
 	private extractTotalValidatorRewardPoints(
-		eraRewardPoints: EraRewardPoints,
+		eraRewardPoints: PalletStakingEraRewardPoints,
 		validatorId: string
 	) {
 		// Ideally we would just use the map's `get`, but that does not seem to be working here
