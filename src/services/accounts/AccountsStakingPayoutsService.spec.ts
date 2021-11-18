@@ -160,7 +160,7 @@ describe('AccountsStakingPayoutsService', () => {
 				rewards as unknown as PalletStakingEraRewardPoints,
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo'
 			);
-			expect(sanitizeNumbers(res)).toBe("3360");
+			expect(sanitizeNumbers(res)).toBe('3360');
 		});
 	});
 
