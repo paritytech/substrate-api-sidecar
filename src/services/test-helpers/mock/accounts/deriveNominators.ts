@@ -57,4 +57,10 @@ export const mockDeriveNominatedExposure = {
 			validatorIndex: '0',
 		},
 	],
+	'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo': [
+		{
+			validatorId: '1HDgY7vpDjafR5NM8dbwm1b3Rrs4zATuSCHHbe7YgpKUKFw',
+			validatorIndex: '0',
+		},
+	],
 };

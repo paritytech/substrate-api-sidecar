@@ -28,6 +28,8 @@ import {
 import stakingPayoutsResponse from '../test-helpers/responses/accounts/stakingPayout.json';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
+const era = polkadotRegistryV9110.createType('EraIndex', 532);
+
 const historyDepthAt = (): Promise<u32> =>
 	Promise.resolve().then(() => {
 		return polkadotRegistryV9110.createType('u32', 84);
@@ -86,7 +88,6 @@ const ledgerAt = (
 
 const deriveEraExposure = (_eraIndex: EraIndex): Promise<DeriveEraExposure> =>
 	Promise.resolve().then(() => {
-		const era = polkadotRegistryV9110.createType('EraIndex', 532);
 		return {
 			era,
 			nominators: mockDeriveNominatedExposure,
@@ -154,13 +155,38 @@ describe('AccountsStakingPayoutsService', () => {
 		});
 
 		it('Should return the correct era rewards for `extractTotalValidatorRewardPoints`', async () => {
-			const eraIndex = polkadotRegistryV9110.createType('EraIndex', 533);
-			const rewards = await erasRewardPointsAt(eraIndex);
+			const rewards = await erasRewardPointsAt(era);
 			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](
 				rewards as unknown as PalletStakingEraRewardPoints,
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo'
 			);
 			expect(sanitizeNumbers(res)).toBe('3360');
+		});
+
+		it('Should return the correct `extractExposure` when address is a nominator', async () => {
+			const derivedExposure = await deriveEraExposure(era);
+			const res = stakingPayoutsService['extractExposure'](
+				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				derivedExposure
+			);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '33223051661066608',
+				totalExposure: '33223251661066608',
+			});
+		});
+
+		it('Should return the correct `extractExposure` when address is a validator', async () => {
+			const derivedExposure = await deriveEraExposure(era);
+			const res = stakingPayoutsService['extractExposure'](
+				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				derivedExposure
+			);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '200000000000',
+				totalExposure: '33223251661066608',
+			});
 		});
 	});
 
