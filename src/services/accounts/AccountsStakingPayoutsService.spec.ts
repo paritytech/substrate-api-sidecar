@@ -14,6 +14,7 @@ import {
 	PalletStakingValidatorPrefs,
 } from '@polkadot/types/lookup';
 import { Codec } from '@polkadot/types/types';
+import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9110 } from '../../test-helpers/registries';
@@ -120,12 +121,13 @@ const mockApi = {
 const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
 
 describe('AccountsStakingPayoutsService', () => {
-	describe('', () => {
-		it('Should work with ApiPromise', async () => {
-			const blockHash = polkadotRegistryV9110.createType(
-				'BlockHash',
-				'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
-			);
+	const blockHash = polkadotRegistryV9110.createType(
+		'BlockHash',
+		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
+	);
+
+	describe('Correct succesful responses', () => {
+		it('Should work when ApiPromise works', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
 				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
@@ -136,6 +138,60 @@ describe('AccountsStakingPayoutsService', () => {
 			);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
+		});
+
+		it('Should work when unclaimed is false', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				1,
+				533,
+				false,
+				534
+			);
+
+			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
+		});
+	});
+
+	describe('Correct errors', () => {
+		it('Should throw an error when the depth is greater than the historyDepth', () => {
+			const serviceCall = async () => {
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+					85,
+					533,
+					true,
+					534
+				);
+			};
+
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(serviceCall()).rejects.toThrow(
+				new BadRequest('Must specify a depth less than history_depth')
+			);
+		});
+
+		it('Should throw an error inputted era and historydepth is invalid', () => {
+			const serviceCall = async () => {
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+					1,
+					400,
+					true,
+					534
+				);
+			};
+
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(serviceCall()).rejects.toThrow(
+				new BadRequest(
+					'Must specify era and depth such that era - (depth - 1) is less ' +
+						'than or equal to current_era - history_depth.'
+				)
+			);
 		});
 	});
 });
