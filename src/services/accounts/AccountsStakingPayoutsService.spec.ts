@@ -122,6 +122,11 @@ const mockApi = {
 const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
 
 describe('AccountsStakingPayoutsService', () => {
+	/**
+	 * These are the two addresses we test the validator and nominator cases on.
+	 */
+	const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
+	const validator = '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo';
 	const blockHash = polkadotRegistryV9110.createType(
 		'BlockHash',
 		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
@@ -136,7 +141,7 @@ describe('AccountsStakingPayoutsService', () => {
 		it('Should work when ApiPromise works', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
-				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				nominator,
 				1,
 				533,
 				true,
@@ -149,7 +154,7 @@ describe('AccountsStakingPayoutsService', () => {
 		it('Should work when unclaimed is false', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
-				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				nominator,
 				1,
 				533,
 				false,
@@ -163,15 +168,15 @@ describe('AccountsStakingPayoutsService', () => {
 			const rewards = await erasRewardPointsAt(era);
 			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](
 				rewards as unknown as PalletStakingEraRewardPoints,
-				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo'
+				validator
 			);
 			expect(sanitizeNumbers(res)).toBe('3360');
 		});
 
 		it('`extractExposure` should return the correct value when the address is a nominator', () => {
 			const res = stakingPayoutsService['extractExposure'](
-				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
-				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				nominator,
+				validator,
 				derivedExposure
 			);
 			expect(sanitizeNumbers(res)).toStrictEqual({
@@ -182,8 +187,8 @@ describe('AccountsStakingPayoutsService', () => {
 
 		it('`extractExposure` should return the correct value when the address is a validator', () => {
 			const res = stakingPayoutsService['extractExposure'](
-				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
-				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				validator,
+				validator,
 				derivedExposure
 			);
 			expect(sanitizeNumbers(res)).toStrictEqual({
@@ -212,13 +217,11 @@ describe('AccountsStakingPayoutsService', () => {
 
 		it('`deriveNominatedExposures` should return the correct value when the address is a nominator', () => {
 			const res = stakingPayoutsService['deriveNominatedExposures'](
-				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				nominator,
 				derivedExposure
 			);
 			expect(sanitizeNumbers(res)).toStrictEqual(
-				mockDeriveNominatedExposure[
-					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK'
-				]
+				mockDeriveNominatedExposure[nominator]
 			);
 		});
 	});
@@ -228,7 +231,7 @@ describe('AccountsStakingPayoutsService', () => {
 			const serviceCall = async () => {
 				await stakingPayoutsService.fetchAccountStakingPayout(
 					blockHash,
-					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+					nominator,
 					85,
 					533,
 					true,
@@ -246,7 +249,7 @@ describe('AccountsStakingPayoutsService', () => {
 			const serviceCall = async () => {
 				await stakingPayoutsService.fetchAccountStakingPayout(
 					blockHash,
-					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+					nominator,
 					1,
 					400,
 					true,
