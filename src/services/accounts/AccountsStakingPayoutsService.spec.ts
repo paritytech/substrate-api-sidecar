@@ -97,7 +97,7 @@ const mockHistoricApi = {
 	registry: polkadotRegistryV9110,
 	query: {
 		staking: {
-			ldeger: ledgerAt,
+			ledger: ledgerAt,
 			erasRewardPoints: erasRewardPointsAt,
 			erasValidatorReward: erasValidatorRewardAt,
 			historyDepth: historyDepthAt,
@@ -128,7 +128,7 @@ describe('AccountsStakingPayoutsService', () => {
 			);
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
-				'1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih',
+				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
 				1,
 				533,
 				true,
