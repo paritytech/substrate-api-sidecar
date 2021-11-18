@@ -62,6 +62,7 @@ impl Multiplier {
             ("dock-pos-test-runtime", _v) => V2(new_u128(inner)),
 
             ("calamari", _v) => V2(new_u128(inner)),
+            ("manta", _v) => V2(new_u128(inner)),
 
             ("karura", _v) => V2(new_u128(inner)),
             ("acala", _v) => V2(new_u128(inner)),
