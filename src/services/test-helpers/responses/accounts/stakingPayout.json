@@ -6,24 +6,24 @@
     "erasPayouts": [
         {
             "era": "533",
-            "totalEraRewardPoints": "9676380",
+            "totalEraRewardPoints": "968380",
             "totalEraPayout": "2426740332127971",
             "payouts": [
                 {
                     "claimed": false,
                     "nominatorExposure": "33223051661066608",
-                    "nominatorStakingPayout": "6544678845516",
+                    "nominatorStakingPayout": "8335838960366",
                     "totalValidatorExposure": "33223251661066608",
-                    "totalValidatorRewardPoints": "26360",
+                    "totalValidatorRewardPoints": "3360",
                     "validatorCommission": "10000000",
                     "validatorId": "12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo"
                 },
                 {
                     "claimed": false,
                     "nominatorExposure": "33223051661066608",
-                    "nominatorStakingPayout": "9047400398562",
+                    "nominatorStakingPayout": "11015277392614",
                     "totalValidatorExposure": "33223061661066608",
-                    "totalValidatorRewardPoints": "36440",
+                    "totalValidatorRewardPoints": "4440",
                     "validatorCommission": "10000000",
                     "validatorId": "1HDgY7vpDjafR5NM8dbwm1b3Rrs4zATuSCHHbe7YgpKUKFw"
             

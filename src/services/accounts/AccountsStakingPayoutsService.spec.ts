@@ -126,7 +126,7 @@ describe('AccountsStakingPayoutsService', () => {
 		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 	);
 
-	describe('Correct succesful responses', () => {
+	describe('Correct succesfull responses', () => {
 		it('Should work when ApiPromise works', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
@@ -151,6 +151,16 @@ describe('AccountsStakingPayoutsService', () => {
 			);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
+		});
+
+		it('Should return the correct era rewards for `extractTotalValidatorRewardPoints`', async () => {
+			const eraIndex = polkadotRegistryV9110.createType('EraIndex', 533);
+			const rewards = await erasRewardPointsAt(eraIndex);
+			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](
+				rewards as unknown as PalletStakingEraRewardPoints,
+				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo'
+			);
+			expect(sanitizeNumbers(res)).toBe("3360");
 		});
 	});
 
