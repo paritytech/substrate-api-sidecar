@@ -4,7 +4,7 @@ import { BTreeMap } from '@polkadot/types';
 export const mockEraRewardPoints = {
 	total: '968,380',
 	individual: {
-		'111B8CxcmnWbuDLyGvgUmRezDCK1brRZmvUuQ6SrFdMyc3S': 3280,
-		'114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5': 2600,
+		'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo': '3,360',
+		'1HDgY7vpDjafR5NM8dbwm1b3Rrs4zATuSCHHbe7YgpKUKFw': '4,440',
 	} as unknown as BTreeMap,
 };
