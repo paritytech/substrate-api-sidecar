@@ -127,6 +127,11 @@ describe('AccountsStakingPayoutsService', () => {
 		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 	);
 
+	let derivedExposure: DeriveEraExposure;
+	beforeAll(async () => {
+		derivedExposure = await deriveEraExposure(era);
+	});
+
 	describe('Correct succesfull responses', () => {
 		it('Should work when ApiPromise works', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
@@ -163,8 +168,7 @@ describe('AccountsStakingPayoutsService', () => {
 			expect(sanitizeNumbers(res)).toBe('3360');
 		});
 
-		it('Should return the correct `extractExposure` when address is a nominator', async () => {
-			const derivedExposure = await deriveEraExposure(era);
+		it('`extractExposure` should return the correct value when the address is a nominator', () => {
 			const res = stakingPayoutsService['extractExposure'](
 				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
@@ -176,8 +180,7 @@ describe('AccountsStakingPayoutsService', () => {
 			});
 		});
 
-		it('Should return the correct `extractExposure` when address is a validator', async () => {
-			const derivedExposure = await deriveEraExposure(era);
+		it('`extractExposure` should return the correct value when the address is a validator', () => {
 			const res = stakingPayoutsService['extractExposure'](
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
@@ -187,6 +190,36 @@ describe('AccountsStakingPayoutsService', () => {
 				nominatorExposure: '200000000000',
 				totalExposure: '33223251661066608',
 			});
+		});
+
+		it('`deriveNominatedExposures` should return the correct value when address is a validator', () => {
+			const res = stakingPayoutsService['deriveNominatedExposures'](
+				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+				derivedExposure
+			);
+			const expectedResult = [
+				{
+					validatorId: '1HDgY7vpDjafR5NM8dbwm1b3Rrs4zATuSCHHbe7YgpKUKFw',
+					validatorIndex: '0',
+				},
+				{
+					validatorId: '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
+					validatorIndex: '9999',
+				},
+			];
+			expect(sanitizeNumbers(res)).toStrictEqual(expectedResult);
+		});
+
+		it('`deriveNominatedExposures` should return the correct value when the address is a nominator', () => {
+			const res = stakingPayoutsService['deriveNominatedExposures'](
+				'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK',
+				derivedExposure
+			);
+			expect(sanitizeNumbers(res)).toStrictEqual(
+				mockDeriveNominatedExposure[
+					'15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK'
+				]
+			);
 		});
 	});
 
