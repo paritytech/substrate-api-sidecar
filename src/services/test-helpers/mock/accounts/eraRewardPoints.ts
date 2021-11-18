@@ -1,4 +1,4 @@
-import { BTreeMap } from '@polkadot/types'
+import { BTreeMap } from '@polkadot/types';
 
 /** Used for StakingPayouts */
 export const mockEraRewardPoints = {
