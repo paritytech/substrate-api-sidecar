@@ -31,7 +31,7 @@ import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 /**
  * Addresses and data below were taken from era 533 around block ~7,760,000,
  * on runtime v9122.
- * 
+ *
  * The real world data has been motified to scale to the unit tests to act as mock data.
  * This test sweet also uses polkadotRegistryV9122
  */
@@ -139,7 +139,7 @@ describe('AccountsStakingPayoutsService', () => {
 	 */
 	const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
 	const validator = '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo';
-	
+
 	const blockHash = polkadotRegistryV9122.createType(
 		'BlockHash',
 		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'

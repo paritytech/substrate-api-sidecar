@@ -62,6 +62,6 @@ export const polkadotRegistryV9110 = createPolkadotRegistry(
  * Polkadot v9122 TypeRegistry
  */
 export const polkadotRegistryV9122 = createPolkadotRegistry(
-	9122, 
+	9122,
 	polkadotMetadataRpcV9122
 );
