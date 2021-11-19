@@ -30,10 +30,10 @@ import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
 /**
  * Addresses and data below were taken from era 533 around block ~7,760,000,
- * on runtime v9122.
+ * on runtime v9122 Polkadot.
  *
- * The real world data has been motified to scale to the unit tests to act as mock data.
- * This test sweet also uses polkadotRegistryV9122
+ * The real world data has been modified to scale to the unit tests to act as mock data.
+ * This test suite also uses polkadotRegistryV9122
  */
 
 /**
