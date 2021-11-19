@@ -17,7 +17,7 @@ import { Codec } from '@polkadot/types/types';
 import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistryV9110 } from '../../test-helpers/registries';
+import { polkadotRegistryV9122 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
 import {
 	mockDeriveNominatedExposure,
@@ -28,18 +28,30 @@ import {
 import stakingPayoutsResponse from '../test-helpers/responses/accounts/stakingPayout.json';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
-const era = polkadotRegistryV9110.createType('EraIndex', 532);
+/**
+ * Addresses and data below were taken from era 533 around block ~7,760,000,
+ * on runtime v9122.
+ * 
+ * The real world data has been motified to scale to the unit tests to act as mock data.
+ * This test sweet also uses polkadotRegistryV9122
+ */
+
+/**
+ * Acts as a placement variable for some tests where the era isnt an instrumntal
+ * factor to the test logic.
+ */
+const era = polkadotRegistryV9122.createType('EraIndex', 532);
 
 const historyDepthAt = (): Promise<u32> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType('u32', 84);
+		return polkadotRegistryV9122.createType('u32', 84);
 	});
 
 const erasRewardPointsAt = (
 	_eraIndex: EraIndex
 ): Promise<PalletStakingEraRewardPoints | Codec> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType(
+		return polkadotRegistryV9122.createType(
 			'PalletStakingEraRewardPoints',
 			mockEraRewardPoints
 		);
@@ -49,7 +61,7 @@ const erasValidatorRewardAt = (
 	_eraIndex: EraIndex
 ): Promise<Option<BalanceOf>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType(
+		return polkadotRegistryV9122.createType(
 			'Option<BalanceOf>',
 			2426740332127971
 		);
@@ -60,7 +72,7 @@ const erasValidatorPrefsAt = (
 	_validatorId: string | AccountId32
 ): Promise<PalletStakingValidatorPrefs | Codec> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType('PalletStakingValidatorPrefs', {
+		return polkadotRegistryV9122.createType('PalletStakingValidatorPrefs', {
 			commission: 10000000,
 			blocked: false,
 		});
@@ -70,7 +82,7 @@ const bondedAt = (
 	_validatorId: string | AccountId32
 ): Promise<Option<AccountId32>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType(
+		return polkadotRegistryV9122.createType(
 			'Option<AccountId32>',
 			'1ZMbuCR3QiatxRsQdNnJYgydn3CWV4PELcTzpH4TNoNjxno'
 		);
@@ -80,7 +92,7 @@ const ledgerAt = (
 	_validatorId: string | AccountId32
 ): Promise<Option<PalletStakingStakingLedger | Codec>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9110.createType(
+		return polkadotRegistryV9122.createType(
 			'Option<PalletStakingStakingLedger>',
 			mockLedger
 		);
@@ -96,7 +108,7 @@ const deriveEraExposure = (_eraIndex: EraIndex): Promise<DeriveEraExposure> =>
 	});
 
 const mockHistoricApi = {
-	registry: polkadotRegistryV9110,
+	registry: polkadotRegistryV9122,
 	query: {
 		staking: {
 			ledger: ledgerAt,
@@ -127,7 +139,8 @@ describe('AccountsStakingPayoutsService', () => {
 	 */
 	const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
 	const validator = '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo';
-	const blockHash = polkadotRegistryV9110.createType(
+	
+	const blockHash = polkadotRegistryV9122.createType(
 		'BlockHash',
 		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
 	);
