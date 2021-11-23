@@ -17,5 +17,5 @@
 # - The latest matching rule, if multiple, takes precedence.
 
 # CI
-/.github/ @paritytech/ci @TarikGul
+/.github/ @paritytech/ci @paritytech/tools-team
 /.gitlab-ci.yml @paritytech/ci @arshamparity
