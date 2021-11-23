@@ -3,8 +3,8 @@
 
 <div align="center">
   <h1 align="center">@substrate/api-sidecar</h1>
-  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's 
-    <a href="https://substrate.dev/docs/en/knowledgebase/runtime/frame">FRAME</a>    
+  <h4 align="center"> REST service that makes it easy to interact with blockchain nodes built using Substrate's
+    <a href="https://substrate.dev/docs/en/knowledgebase/runtime/frame">FRAME</a>
     framework.</h4>
   <p align="center">
     <a href="https://www.npmjs.com/package/@substrate/api-sidecar">
@@ -131,14 +131,14 @@ For more information on our configuration manager visit its readme [here](https:
 
 ### Express server
 
--   `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
--   `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
--   `SAS_EXPRESS_LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by
+- `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
+- `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
+- `SAS_EXPRESS_LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by
     setting it to anything else. LOG_MODE defaults to only "errors".
 
 ### Substrate node
 
--   `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
+- `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`.
 
 #### Custom substrate types
@@ -295,7 +295,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions. 
+1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions.
 
 1. After updating the dependencies and resolutions (if applicable), the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. If you would like to test on an individual chain, you may run the same command followed by its chain, ex: `yarn test:init-e2e-tests:polkadot`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
@@ -303,7 +303,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
-1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`. 
+1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`.
 
 1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API.
 
