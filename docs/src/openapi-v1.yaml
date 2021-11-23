@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 11.3.0
+  version: 11.3.1
 tags:
 - name: accounts
 - name: blocks
@@ -26,9 +26,9 @@ paths:
       tags:
       - accounts
       summary: Get an array of asset-balances for an account.
-      description: Returns information about an account's asset-balances. This is 
+      description: Returns information about an account's asset-balances. This is
         specific to the assets pallet for parachains. If no `assets` query parameter
-        is provided, all asset-balances for the given account will be returned. 
+        is provided, all asset-balances for the given account will be returned.
       operationId: getAssetBalances
       parameters:
       - name: accountId
@@ -40,7 +40,7 @@ paths:
           format: SS58
       - name: at
         in: query
-        description: Block at which to query asset-balance info for the 
+        description: Block at which to query asset-balance info for the
           specified account.
         required: false
         schema:
@@ -56,12 +56,12 @@ paths:
         required: false
         schema:
           type: array
-          items: 
+          items:
             type: string
           description: An array of assetId numbers represented as strings
           format: Array of unsignedInteger's
       responses:
-        "200": 
+        "200":
           description: successfull operation
           content:
             application/json:
@@ -85,7 +85,7 @@ paths:
           format: SS58
       - name: at
         in: query
-        description: Block at which to query asset approval info for the 
+        description: Block at which to query asset approval info for the
           specified account.
         required: false
         schema:
@@ -109,7 +109,7 @@ paths:
           type: string
           format: SS58
       responses:
-        "200": 
+        "200":
           description: successfull operation
           content:
             application/json:
@@ -222,7 +222,7 @@ paths:
         specifying both the depth and era query params, this endpoint will
         return information for (era - depth) through era. (i.e. if depth=5 and
         era=20 information will be returned for eras 16 through 20). N.B. You
-        cannot query eras less then `current_era - HISTORY_DEPTH`. N.B. The 
+        cannot query eras less then `current_era - HISTORY_DEPTH`. N.B. The
         `nominator*` fields correspond to the address being queried, even if it
         is a validator's _Stash_ address. This is because a validator is technically
         nominating itself.
@@ -238,7 +238,7 @@ paths:
       - name: depth
         in: query
         description: The number of eras to query for payouts of. Must be less
-          than or equal to `HISTORY_DEPTH`. In cases where `era - (depth -1)` is 
+          than or equal to `HISTORY_DEPTH`. In cases where `era - (depth -1)` is
           less than 0, the first era queried will be 0.
         required: false
         schema:
@@ -331,14 +331,14 @@ paths:
       summary: Validate a given address.
       description: Returns whether the given address is valid ss58 format and the ss58 prefix if the address has one.
       operationId: getValidationByAccountId
-      parameters: 
+      parameters:
       - name: accountId
         in: path
         description: SS58 or Hex address of the account.
         required: true
         schema:
           format: SS58 or Hex
-          type: string 
+          type: string
       responses:
         "200":
           description: successfully retrieved address info
@@ -424,7 +424,7 @@ paths:
     get:
       tags:
       - blocks
-      summary: Get an extrinsic by its extrinsicIndex and block height or hash. 
+      summary: Get an extrinsic by its extrinsicIndex and block height or hash.
         The pair blockId, extrinsicIndex is sometimes referred to as a Timepoint.
       description: Returns a single extrinsic.
       operationId: getExtrinsicByTimepoint
@@ -440,7 +440,7 @@ paths:
         in: path
         description: The extrinsic's index within the block's body.
         required: true
-        schema: 
+        schema:
           type: string
       - name: eventDocs
         in: query
@@ -516,7 +516,7 @@ paths:
     get:
       tags:
       - blocks
-      summary: Get information about the header of the most recent finalized block. 
+      summary: Get information about the header of the most recent finalized block.
       description: Returns the most recently finalized block's header.
       operationId: getLatestBlockHeader
       parameters:
@@ -691,7 +691,7 @@ paths:
         in: query
         schema:
           type: string
-          description: Specifies the format of the metadata to be returned. Accepted values are 
+          description: Specifies the format of the metadata to be returned. Accepted values are
             'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
             When inputted it will override the `noMeta` query parameter.
       responses:
@@ -713,12 +713,12 @@ paths:
         - pallets
       summary: Get information and metadata associated with an asset.
       description: Returns information associated with an asset which includes
-        the assets `AssetDetails` and `AssetMetadata`. 
+        the assets `AssetDetails` and `AssetMetadata`.
       operationId: getAssetById
       parameters:
       - name: assetId
         in: path
-        description: The unsignedInteger Id of an asset.  
+        description: The unsignedInteger Id of an asset.
         required: true
         schema:
           type: string
@@ -858,8 +858,8 @@ paths:
           type: string
       - name: adjustMetadataV13
         in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
           It will be deprecated and then removed in the future.
         required: false
         schema:
@@ -926,8 +926,8 @@ paths:
           type: string
       - name: adjustMetadataV13
         in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata 
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate. 
+        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
+          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
           It will be deprecated and then removed in the future.
         required: false
         schema:
@@ -1090,7 +1090,7 @@ paths:
     get:
       tags:
       - paras
-      summary: | 
+      summary: |
         Get crowdloan information for a `paraId`.
       description: |
         Returns crowdloan's `fundInfo` and the set of `leasePeriods` the crowdloan`
@@ -1434,15 +1434,15 @@ components:
     AccountVestingInfo:
       type: object
       description: Sidecar version's <= v10.0.0 have a`vesting` return value that defaults to an object for
-        when there is no available vesting-info data. It also returns a `VestingInfo` as an object. 
-        For Sidecar >=11.0.0, that value will now default as an array when there is no value, and `Vec<PalletsPalletVestingInfo>` 
+        when there is no available vesting-info data. It also returns a `VestingInfo` as an object.
+        For Sidecar >=11.0.0, that value will now default as an array when there is no value, and `Vec<PalletsPalletVestingInfo>`
         is returned when there is.
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
         vesting:
           type: array
-          items: 
+          items:
             $ref: '#/components/schemas/VestingSchedule'
     AssetsBalance:
       type: object
@@ -1451,14 +1451,14 @@ components:
           type: string
           description: The identifier of the asset.
           format: unsignedInteger
-        balance: 
+        balance:
           type: string
           description: The balance of the asset.
           format: unsignedInteger
-        isFrozen: 
+        isFrozen:
           type: boolean
           description: Whether the asset is frozen for non-admin transfers.
-        isSufficient: 
+        isSufficient:
           type: boolean
           description: Whether a non-zero balance of this asset is a deposit of sufficient
             value to account for the state bloat associated with its balance storage. If set to
@@ -1472,43 +1472,43 @@ components:
           type: string
           description: Owner of the assets privileges.
           format: SS58
-        issuer: 
+        issuer:
           type: string
           description: The `AccountId` able to mint tokens.
           format: SS58
-        admin: 
+        admin:
           type: string
           description: The `AccountId` that can thaw tokens, force transfers and burn token from
             any account.
           format: SS58
-        freezer: 
+        freezer:
           type: string
           description: The `AccountId` that can freeze tokens.
           format: SS58
-        supply: 
+        supply:
           type: string
           description: The total supply across accounts.
           format: unsignedInteger
-        deposit: 
+        deposit:
           type: string
           description: The balance deposited for this. This pays for the data stored.
           format: unsignedInteger
-        minBalance: 
+        minBalance:
           type: string
           description: The ED for virtual accounts.
           format: unsignedInteger
-        isSufficient: 
+        isSufficient:
           type: boolean
           description: If `true`, then any account with this asset is given a provider reference. Otherwise, it
             requires a consumer reference.
-        accounts: 
+        accounts:
           type: string
           description: The total number of accounts.
           format: unsignedInteger
-        sufficients: 
+        sufficients:
           type: string
           description: The total number of accounts for which is placed a self-sufficient reference.
-        approvals: 
+        approvals:
           type: string
           description: The total number of approvals.
           format: unsignedInteger
@@ -1518,16 +1518,16 @@ components:
     AssetMetadata:
       type: object
       properties:
-        deposit: 
+        deposit:
           type: string
           description: The balance deposited for this metadata. This pays for the data
             stored in this struct.
           format: unsignedInteger
-        name: 
+        name:
           type: string
           description: The user friendly name of this asset.
           format: $hex
-        symbol: 
+        symbol:
           type: string
           description: The ticker symbol for this asset.
           format: $hex
@@ -1535,7 +1535,7 @@ components:
           type: string
           description: The number of decimals this asset uses to represent one unit.
           format: unsignedInteger
-        isFrozen: 
+        isFrozen:
           type: boolean
           description: Whether the asset metadata may be changed by a non Force origin.
     BalanceLock:
@@ -1603,7 +1603,7 @@ components:
         finalized:
           type: boolean
           description: >-
-            A boolean identifying whether the block is finalized or not. 
+            A boolean identifying whether the block is finalized or not.
             Note: on chains that do not have deterministic finality this field is omitted.
       description: >-
         Note: Block finalization does not correspond to consensus, i.e. whether
@@ -1639,7 +1639,7 @@ components:
           format: hex
         digest:
           type: object
-          properties: 
+          properties:
             logs:
               type: array
               items:
@@ -1700,9 +1700,9 @@ components:
             $ref: '#/components/schemas/Operation'
     ChainType:
       type: object
-      description: Type of the chain. It will return one of the following enum variants as a key. Live, Development, Local, or Custom. Each variant will have a value as null except when the ChainType is Custom, it will return a string. 
+      description: Type of the chain. It will return one of the following enum variants as a key. Live, Development, Local, or Custom. Each variant will have a value as null except when the ChainType is Custom, it will return a string.
       properties:
-        live: 
+        live:
           type: string
           nullable: true
           default: null
@@ -1710,7 +1710,7 @@ components:
           type: string
           nullable: true
           default: null
-        local: 
+        local:
           type: string
           nullable: true
           default: null
@@ -1857,17 +1857,17 @@ components:
     GenericExtrinsicEra:
       type: object
       description: |
-        The return value for era can either be `mortalEra`, or `immortalEra` and is represented as an enum in substrate. `immortalEra` meaning 
+        The return value for era can either be `mortalEra`, or `immortalEra` and is represented as an enum in substrate. `immortalEra` meaning
         the transaction is valid forever. `mortalEra` consists of a tuple containing a period and phase.
-        ex: `"{"mortalEra": ["64", "11"]}"`. The Period is the period of validity from the block hash found in the signing material. 
-        The Phase is the period that this transaction's lifetime begins (and, importantly, 
+        ex: `"{"mortalEra": ["64", "11"]}"`. The Period is the period of validity from the block hash found in the signing material.
+        The Phase is the period that this transaction's lifetime begins (and, importantly,
         implies which block hash is included in the signature material).
       properties:
-        mortalEra:  
+        mortalEra:
           type: array
-          items: 
+          items:
             type: string
-          description: Tuple of a Phase, and Period. Each item in the array will be a string formatted as an integer. 
+          description: Tuple of a Phase, and Period. Each item in the array will be a string formatted as an integer.
         immortalEra:
           type: string
           description: Hardcoded constant '0x00'.
@@ -2026,7 +2026,7 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         assetInfo:
           $ref: '#/components/schemas/AssetInfo'
-        assetMetadata: 
+        assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
     PalletStorage:
       type: object
@@ -2105,7 +2105,7 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are 
+      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are
         pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
         have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
         will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
@@ -2154,9 +2154,9 @@ components:
           description: |
             An auction can be in one of 4 phases. Both `startingPeriod` () and `endingPeriod` indicate
             an ongoing auction, while `vrfDelay` lines up with the `AuctionStatus::VrfDelay` . Finally, a value of `null`
-            indicates there is no ongoing auction. Keep in mind the that the `finishEnd` field is the block number the 
-            `endingPeriod` finishes and the `vrfDelay` period begins. The `vrfDelay` period is typically about an 
-            epoch long and no crowdloan contributions are accepted. 
+            indicates there is no ongoing auction. Keep in mind the that the `finishEnd` field is the block number the
+            `endingPeriod` finishes and the `vrfDelay` period begins. The `vrfDelay` period is typically about an
+            epoch long and no crowdloan contributions are accepted.
         auctionIndex:
           type: string
           format: unsignedInteger
@@ -2213,13 +2213,13 @@ components:
         leasePeriodIndex:
           type: string
           format: unsignedInteger
-          description: Current lease period index. This value may be null when the current block now, 
-            substracted by the leaseOffset is less then zero. 
+          description: Current lease period index. This value may be null when the current block now,
+            substracted by the leaseOffset is less then zero.
         endOfLeasePeriod:
           type: string
           format: unsignedInteger
-          description: Last block (number) of the current lease period. This value may be null when 
-            `leasePeriodIndex` is null. 
+          description: Last block (number) of the current lease period. This value may be null when
+            `leasePeriodIndex` is null.
         currentLeaseHolders:
           type: array
           items:
@@ -2491,10 +2491,10 @@ components:
             format: ss58
     StorageEntryTypeV13:
       type: object
-      properties: 
+      properties:
         hasher:
           type: string
-          description: Returns a string deonting the storage hasher. 
+          description: Returns a string deonting the storage hasher.
         key:
           type: string
           description: Key of the queried pallet storageId.
@@ -2505,13 +2505,13 @@ components:
           type: boolean
     StorageEntryTypeV14:
       type: object
-      properties: 
+      properties:
         hasher:
           type: array
           items:
             type: string
           description: Returns a string denoting the storage
-            hasher inside of an array. 
+            hasher inside of an array.
         key:
           type: string
           description: The SiLookupTypeId to identify the type.
@@ -2714,7 +2714,7 @@ components:
         metadata:
           type: string
           description: The chain's metadata. It's default return value is hex, but may be returned in
-            decoded json format. 
+            decoded json format.
           format: hex
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
