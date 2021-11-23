@@ -37,7 +37,7 @@ import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
  */
 
 /**
- * Acts as a placement variable for some tests where the era isn't an instrumental
+ * Acts as a placeholder variable for some tests where the era isn't an instrumental
  * factor to the test logic.
  */
 const era = polkadotRegistryV9122.createType('EraIndex', 532);
