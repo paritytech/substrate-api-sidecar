@@ -5,6 +5,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 import { polkadotMetadataRpcV16 } from '../metadata/polkadotV16Metadata';
 import { polkadotMetadataRpcV29 } from '../metadata/polkadotV29Metadata';
 import { polkadotMetadataRpcV9110 } from '../metadata/polkadotV9110Metadata';
+import { polkadotMetadataRpcV9122 } from '../metadata/polkadotV9122Metadata';
 
 /**
  * Create a type registry for Polkadot.
@@ -55,4 +56,12 @@ export const polkadotRegistryV29 = createPolkadotRegistry(
 export const polkadotRegistryV9110 = createPolkadotRegistry(
 	9110,
 	polkadotMetadataRpcV9110
+);
+
+/**
+ * Polkadot v9122 TypeRegistry
+ */
+export const polkadotRegistryV9122 = createPolkadotRegistry(
+	9122,
+	polkadotMetadataRpcV9122
 );
