@@ -3,7 +3,7 @@ import { extrinsicBaseWeight } from './substrateConsts';
 
 export const calamariDefinitions: MetadataConsts[] = [
 	{
-		runtimeVersions: [1, 2, 3, 4],
+		runtimeVersions: [1, 2, 3, 4, 3100],
 		extrinsicBaseWeight,
 	},
 ];
