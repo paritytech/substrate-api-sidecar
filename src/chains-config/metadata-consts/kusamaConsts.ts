@@ -12,7 +12,7 @@ export const kusamaDefinitions: MetadataConsts[] = [
 	{
 		runtimeVersions: [
 			2027, 2028, 2029, 2030, 9000, 9010, 9030, 9040, 9050, 9070, 9080, 9090,
-			9100, 9110, 9111, 9122,
+			9100, 9110, 9111, 9122, 9130,
 		],
 		perClass,
 	},
