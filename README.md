@@ -38,7 +38,7 @@ Compatibility:
 |     v17.x.x   |  Not Stable |
 |     v18.x.x   |   Pending   | 
 
-NOTE: Node LTS (`long term support`) version's start with an even number, and odd number version's are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.  
+NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.  
 
 ## Table of contents
 
