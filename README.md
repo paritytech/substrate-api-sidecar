@@ -28,7 +28,17 @@ learn more.
 
 ## Prerequisites
 
-This service requires Node version 14 or higher.
+This service requires Node versions 14 or higher.
+
+Compatibility:
+| Node Version  | Stablility  |
+|---------------|:-----------:|
+|     v14.x.x   |   Stable    |
+|     v16.x.x   |   Stable    |
+|     v17.x.x   |  Not Stable |
+|     v18.x.x   |   Pending   | 
+
+NOTE: Node LTS (`long term support`) version's start with an even number, and odd number version's begin with an odd number. It is recommended to use sidecar with a stable actively maintained version of node.  
 
 ## Table of contents
 
