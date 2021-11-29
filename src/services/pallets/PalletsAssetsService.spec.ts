@@ -125,7 +125,8 @@ Object.assign(assetsInfo, {
  * @param assetId options are 10, 20, 30
  */
 const assetsAccount = (assetId: number | AssetId, _address: string) => {
-	const id = typeof assetId === 'number' ? assetId : parseInt(assetId.toString());
+	const id =
+		typeof assetId === 'number' ? assetId : parseInt(assetId.toString());
 
 	switch (id) {
 		case 10:

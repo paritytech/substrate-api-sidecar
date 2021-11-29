@@ -1,7 +1,5 @@
-import {
-	TAssetDepositBalance,
-} from '@polkadot/types/interfaces';
-import {  } from '@polkadot/types'
+import {} from '@polkadot/types';
+import { TAssetDepositBalance } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
 import { bool, u128 } from '@polkadot/types/primitive';
 
