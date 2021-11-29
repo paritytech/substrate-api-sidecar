@@ -1,9 +1,7 @@
-import {
-	TAssetBalance,
-	TAssetDepositBalance,
-} from '@polkadot/types/interfaces';
+import {} from '@polkadot/types';
+import { TAssetDepositBalance } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
-import { bool } from '@polkadot/types/primitive';
+import { bool, u128 } from '@polkadot/types/primitive';
 
 import { IAt } from '.';
 
@@ -15,7 +13,7 @@ export interface IAssetBalance {
 	/**
 	 * The units in which substrate records balances.
 	 */
-	balance: TAssetBalance;
+	balance: u128;
 	/**
 	 * Whether this asset class is frozen except for permissioned/admin instructions.
 	 */
@@ -45,6 +43,6 @@ export interface IAccountAssetsBalances {
  */
 export interface IAccountAssetApproval {
 	at: IAt;
-	amount: TAssetBalance | null;
+	amount: u128 | null;
 	deposit: TAssetDepositBalance | null;
 }
