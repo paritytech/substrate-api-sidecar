@@ -26,7 +26,7 @@ export const defaultSasPackOpts = {
 
 export const config: Record<string, IChainConfig> = {
 	polkadot: {
-		wsUrl: 'wss://rpc.polkadot.io',
+		wsUrl: 'wss://polkadot.api.onfinality.io/public-ws',
 		JestProcOpts: {
 			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'polkadot'],
@@ -34,7 +34,7 @@ export const config: Record<string, IChainConfig> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	kusama: {
-		wsUrl: 'wss://kusama-rpc.polkadot.io',
+		wsUrl: 'wss://kusama.api.onfinality.io/public-ws',
 		JestProcOpts: {
 			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'kusama'],
@@ -42,7 +42,7 @@ export const config: Record<string, IChainConfig> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	westend: {
-		wsUrl: 'wss://westend-rpc.polkadot.io',
+		wsUrl: 'wss://westend.api.onfinality.io/public-ws',
 		JestProcOpts: {
 			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'westend'],
@@ -50,7 +50,7 @@ export const config: Record<string, IChainConfig> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	statemine: {
-		wsUrl: 'wss://kusama-statemine-rpc.paritytech.net',
+		wsUrl: 'wss://statemine.api.onfinality.io/public-ws',
 		JestProcOpts: {
 			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'statemine'],
