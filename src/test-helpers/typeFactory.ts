@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { StorageEntryBase } from '@polkadot/api/types/storage';
+import { StorageEntryBase } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
