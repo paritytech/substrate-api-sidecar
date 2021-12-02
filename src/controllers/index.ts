@@ -20,6 +20,7 @@ import {
 	TransactionFeeEstimate,
 	TransactionMaterial,
 	TransactionSubmit,
+	TransactionSubmitAndWatch,
 } from './transaction';
 
 /**
@@ -48,5 +49,6 @@ export const controllers = {
 	TransactionFeeEstimate,
 	TransactionMaterial,
 	TransactionSubmit,
+	TransactionSubmitAndWatch,
 	Paras,
 };

@@ -29,6 +29,7 @@ export const defaultControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
+		'TransactionSubmitAndWatch',
 	],
 	options: {
 		finalizes: true,
