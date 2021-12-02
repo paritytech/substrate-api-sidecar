@@ -13,7 +13,7 @@ export default class TransactionSubmitAndWatchController extends AbstractControl
 	protected initRoutes(): void {
 		this.router.post(
 			this.path,
-            TransactionSubmitAndWatchController.catchWrap(this.txSubmit)
+			TransactionSubmitAndWatchController.catchWrap(this.txSubmit)
 		);
 	}
 
