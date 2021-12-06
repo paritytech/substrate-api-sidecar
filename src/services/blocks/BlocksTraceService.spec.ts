@@ -43,7 +43,7 @@ afterAll(() => {
 
 describe('BlocksTraceService', () => {
 	describe('BlocksTraceService.traces', () => {
-		it.skip('works when ApiPromise works', async () => {
+		it('works when ApiPromise works', async () => {
 			expect(
 				sanitizeNumbers(await blocksTraceService.traces(blockHash789629))
 			).toStrictEqual(tracesResponse);
@@ -51,7 +51,7 @@ describe('BlocksTraceService', () => {
 	});
 
 	describe('BlocksTraceService.operations', () => {
-		it.skip('works when ApiPromise works (without `actions`)', async () => {
+		it('works when ApiPromise works (without `actions`)', async () => {
 			expect(
 				sanitizeNumbers(
 					await blocksTraceService.operations(blockHash789629, false)
