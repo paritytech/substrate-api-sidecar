@@ -146,21 +146,6 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		return mapTypeSanitizeKeyValue(data);
 	}
 
-	/**
-	 * With polkadot-js/api v6.11.1, the instanceOf `data` may not be a `BN`,
-	 * but the constructor.name represents its real value which is a BN.
-	 *
-	 * TODO: Find the root of the issue with BN and the bigInt updates to polkadot-js/common
-	 * try to reproduce if can too
-	 */
-	if (
-		typeof data === 'object' &&
-		data !== null &&
-		data.constructor.name === 'BN'
-	) {
-		return (data as BN).toString(10);
-	}
-
 	if (data instanceof BN || typeof data === 'number') {
 		return data.toString(10);
 	}
