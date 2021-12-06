@@ -147,9 +147,9 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 	}
 
 	/**
-	 * With polkadot-js/api v6.11.1, the instanceOf `data` may not be a `BN`, 
+	 * With polkadot-js/api v6.11.1, the instanceOf `data` may not be a `BN`,
 	 * but the constructor.name represents its real value which is a BN.
-	 * 
+	 *
 	 * TODO: Find the root of the issue with BN and the bigInt updates to polkadot-js/common
 	 * try to reproduce if can too
 	 */
