@@ -614,7 +614,7 @@ export class Trace {
 							field2: 'free',
 						},
 						amount: {
-							value: free.toNumber(),
+							value: free.toString(10),
 							currency,
 						},
 					});
@@ -627,7 +627,7 @@ export class Trace {
 							field2: 'reserved',
 						},
 						amount: {
-							value: reserved.toNumber(),
+							value: reserved.toString(10),
 							currency,
 						},
 					});
@@ -640,7 +640,7 @@ export class Trace {
 							field2: 'miscFrozen',
 						},
 						amount: {
-							value: miscFrozen.toNumber(),
+							value: miscFrozen.toString(10),
 							currency,
 						},
 					});
@@ -653,7 +653,7 @@ export class Trace {
 							field2: 'feeFrozen',
 						},
 						amount: {
-							value: feeFrozen.toNumber(),
+							value: feeFrozen.toString(10),
 							currency,
 						},
 					});

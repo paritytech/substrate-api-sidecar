@@ -182,7 +182,7 @@ export interface Operation {
 	address: Address;
 	storage: StorageResourceId;
 	amount: {
-		value: number;
+		value: string;
 		currency: CurrencyId;
 	};
 }
