@@ -84,6 +84,7 @@ export class BlocksTraceService extends AbstractService {
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
 			this.api.rpc.chain.getBlock(hash),
+			// TODO: investigate applying methods
 			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, ''),
 		]);
 
