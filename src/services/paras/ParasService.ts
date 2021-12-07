@@ -413,7 +413,7 @@ export class ParasService extends AbstractService {
 			return null;
 		}
 
-		return new BN(now.sub(offset).div(leasePeriod).toNumber());
+		return now.sub(offset).div(leasePeriod);
 	}
 
 	/**
