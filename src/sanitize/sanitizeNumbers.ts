@@ -146,15 +146,6 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 		return mapTypeSanitizeKeyValue(data);
 	}
 
-	/**
-	 * When the given data has a superclass of `BN`, we need to check the
-	 * constructor to see if the data is a subclass of `BN` since `instanceof`
-	 * will not check the complete prototype chain.
-	 */
-	if (typeof data === 'object' && data && data.constructor.name === 'BN') {
-		return (data as BN).toString(10);
-	}
-
 	if (data instanceof BN || typeof data === 'number') {
 		return data.toString(10);
 	}
