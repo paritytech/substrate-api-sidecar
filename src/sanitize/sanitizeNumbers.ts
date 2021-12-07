@@ -147,8 +147,8 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 	}
 
 	/**
-	 * When the given data has a superclass of `BN`, we need to check the 
-	 * constructor to see if the data is a subclass of `BN` since `instanceof` 
+	 * When the given data has a superclass of `BN`, we need to check the
+	 * constructor to see if the data is a subclass of `BN` since `instanceof`
 	 * will not check the complete prototype chain.
 	 */
 	if (typeof data === 'object' && data && data.constructor.name === 'BN') {
