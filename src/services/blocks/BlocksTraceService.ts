@@ -48,7 +48,7 @@ export class BlocksTraceService extends AbstractService {
 	async traces(hash: BlockHash): Promise<BlocksTrace> {
 		const [{ number }, traceResponse] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
@@ -84,7 +84,7 @@ export class BlocksTraceService extends AbstractService {
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
 			this.api.rpc.chain.getBlock(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
