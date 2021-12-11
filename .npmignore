@@ -1,4 +1,4 @@
-# NOTE: We use .npmignore instead of the `files` field in the pacakge.json so we  
+# NOTE: We use .npmignore instead of the `files` field in the package.json so we  
 # can ignore specific test helper directories
 
 # Ignore all directories 
