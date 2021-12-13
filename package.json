@@ -22,9 +22,6 @@
   "bugs": {
     "url": "https://github.com/paritytech/substrate-api-sidecar/issues"
   },
-  "files": [
-    "build"
-  ],
   "scripts": {
     "build": "substrate-exec-rimraf build/ && substrate-exec-tsc && echo Build Finished",
     "build:calc": "bash ./calc/build.sh",

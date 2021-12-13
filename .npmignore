@@ -1,5 +1,12 @@
-*.ts
-/src
-/config
-Dockerfile
-docker-compose.yml
+# NOTE: We use .npmignore instead of the `files` field in the package.json so we  
+# can ignore specific test helper directories
+
+# Ignore all directories 
+/*
+
+# Unignore the build directory
+!/build
+
+# Ignore specific paths within the build directory
+/build/src/test-helpers
+/build/src/services/test-helpers
