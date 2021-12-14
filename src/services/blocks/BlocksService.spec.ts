@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AugmentedConst } from '@polkadot/api/types';
-import { RpcPromiseResult } from '@polkadot/api/types/rpc';
+import { PromiseRpcResult } from '@polkadot/api/types/rpc';
 import { GenericExtrinsic, u128 } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
@@ -93,7 +93,7 @@ const mockApi = {
 /**
  * For type casting mock getBlock functions so tsc does not complain
  */
-type GetBlock = RpcPromiseResult<
+type GetBlock = PromiseRpcResult<
 	(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>
 >;
 
