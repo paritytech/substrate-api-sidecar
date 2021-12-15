@@ -13,7 +13,7 @@ import { polkadotMetadataRpcV9122 } from '../metadata/polkadotV9122Metadata';
  */
 function createPolkadotRegistry(
 	specVersion: number,
-	metadata: string
+	metadata: `0x${string}`
 ): TypeRegistry {
 	const registry = new TypeRegistry();
 
