@@ -19,6 +19,8 @@ import { mantaDefinitions } from './mantaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
 import { shidenDefinitions } from './shidenConsts';
+import { statemineDefinitions } from './statemineConsts';
+import { statemintDefinitions } from './statemintConsts';
 import { westendDefinitions } from './westendConsts';
 
 /**
@@ -84,6 +86,10 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(kusamaDefinitions);
 		case 'westend':
 			return generateBlockWeightStore(westendDefinitions);
+		case 'statemint':
+			return generateBlockWeightStore(statemintDefinitions);
+		case 'statemine':
+			return generateBlockWeightStore(statemineDefinitions);
 		case 'dock-main-runtime':
 			return generateBlockWeightStore(dockMainnetDefinitions);
 		case 'dock-pos-main-runtime':
