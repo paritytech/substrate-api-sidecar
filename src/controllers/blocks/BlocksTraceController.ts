@@ -44,10 +44,11 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 	): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 		const includeActions = actions === 'true';
+		const historicApi = await this.api.at(hash);
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.operations(hash, includeActions)
+			await this.service.operations(hash, historicApi, includeActions)
 		);
 	};
 
@@ -57,10 +58,11 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 		const includeActions = actions === 'true';
+		const historicApi = await this.api.at(hash);
 
 		BlocksController.sanitizedSend(
 			res,
-			await this.service.operations(hash, includeActions)
+			await this.service.operations(hash, historicApi, includeActions)
 		);
 	};
 }
