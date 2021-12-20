@@ -1,5 +1,4 @@
 import { Option } from '@polkadot/types/codec';
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId,
 	BalanceOf,
@@ -7,6 +6,7 @@ import {
 	ParaId,
 	ParaLifecycle,
 } from '@polkadot/types/interfaces';
+import { AbstractInt } from '@polkadot/types-codec/abstract';
 import BN from 'bn.js';
 
 import { IOption } from '../util';
