@@ -2,7 +2,7 @@
 
 This will serve as a guide to add fee calculation support for a given chain. 
 
-# @substrate/calc-fee
+## @substrate/calc-fee
 
 First, in order to get your chain to support fee calculation in sidecar you will need to add your chains calculation spec to `impl Multiplier` inside of `<ROOT>/calc/src/calc_fee.rs`. Specifically inside of the `fn new` functions `match` statement you will add your chains spec name, and the supported calculation method. See other chains configs as reference. 
 
@@ -18,7 +18,7 @@ cargo build --release
 `sh ./build.sh`
 ```
 
-# @substrate/api-sidecar blockWeightStore
+## @substrate/api-sidecar blockWeightStore
 
 First, we need to add your chain to the `<ROOT>/src/chains-config/metadata-consts` directory. Start by creating a file called `<chainName>Consts.ts`. There are currently two types of weights we support as can be seen in `<ROOT>/src/chains-config/metadata-consts/substrateConsts.ts`, ie. (`extrinsicBaseWeight`, and `perClass`). This file will map out what runtime versions belong to which weight. 
 
@@ -84,3 +84,12 @@ import { getBlockWeight } from './metadata-consts';
 `blockWeightStore`: This will call the `getBlockWeight` function we updated earlier and initialize an oject with your chains weight config. 
 
 `minCalcFeeRuntime`: This will set the minimum runtime that supports weights for your chain.  
+
+## Submitting your PR
+
+Before submitting your PR, run the following and make sure they pass:
+
+```bash
+yarn lint --fix
+yarn test
+```
