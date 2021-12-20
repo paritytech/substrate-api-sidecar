@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@polkadot/api": "^7.0.1",
-    "@polkadot/apps-config": "0.98.2-124",
+    "@polkadot/apps-config": "0.98.2-162",
     "@polkadot/util-crypto": "^8.2.2",
     "@polkadot/x-rxjs": "^6.11.1",
     "@substrate/calc": "^0.2.6",
