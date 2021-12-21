@@ -14,7 +14,7 @@ To run the tests against a single chain, you may use the following below. For mo
 
 `yarn test:init-e2e-tests:polkadot`
 
-Thats it! 
+That's it! 
 All the tests should come back with green checkmarks. If you find a bug file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
 ### Config
