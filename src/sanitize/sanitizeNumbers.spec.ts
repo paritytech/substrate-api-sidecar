@@ -25,8 +25,7 @@ import {
 	Vec,
 	VecFixed,
 } from '@polkadot/types';
-import { CodecDate } from '@polkadot/types/codec/Date';
-import { UInt } from '@polkadot/types/codec/UInt';
+import { CodecDate, UInt } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
 import {

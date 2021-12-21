@@ -6,10 +6,12 @@ import {
 	Set as CodecSet,
 	Struct,
 } from '@polkadot/types';
-import { AbstractArray } from '@polkadot/types/codec/AbstractArray';
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
-import { Json } from '@polkadot/types/codec/Json';
-import { CodecMap } from '@polkadot/types/codec/Map';
+import {
+	AbstractArray,
+	AbstractInt,
+	CodecMap,
+	Json,
+} from '@polkadot/types-codec';
 import { isObject, stringCamelCase } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';

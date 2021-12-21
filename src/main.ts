@@ -16,6 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Introduced via `@polkadot/api v7.0.1`.
+import '@polkadot/api-augment';
+
 import { ApiPromise } from '@polkadot/api';
 import * as apps from '@polkadot/apps-config/api';
 import { WsProvider } from '@polkadot/rpc-provider';

@@ -1,9 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Tuple, Vec } from '@polkadot/types';
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import { BlockNumber, Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
+import { AbstractInt } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';

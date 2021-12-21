@@ -1,3 +1,4 @@
+import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { BlockTrace as PdJsBlockTrace } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
@@ -74,10 +75,12 @@ export class BlocksTraceService extends AbstractService {
 	 * Get the balance changing operations induced by a block.
 	 *
 	 * @param hash `BlockHash` to get balance transfer operations at.
+	 * @param historicApi ApiDecoration used to retrieve the correct registry
 	 * @param includeActions whether or not to include `actions` field in the response.
 	 */
 	async operations(
 		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		includeActions: boolean
 	): Promise<BlocksTraceOperations> {
 		const [{ block }, traceResponse] = await Promise.all([
@@ -93,7 +96,7 @@ export class BlocksTraceService extends AbstractService {
 			const trace = new Trace(
 				this.api,
 				BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace),
-				block.registry
+				historicApi.registry
 			);
 
 			const { operations, actions } = trace.actionsAndOps();
