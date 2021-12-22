@@ -332,8 +332,9 @@ export class ParasService extends AbstractService {
 
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
 		const leasePeriodIndex = this.leasePeriodIndexAt(historicApi, blockNumber);
+		const leaseOffset = (historicApi.consts.slots.leaseOffset as BlockNumber) || BN_ZERO;
 		const endOfLeasePeriod = leasePeriodIndex
-			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod)
+			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod).add(leaseOffset)
 			: null;
 
 		return {
