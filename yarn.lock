@@ -1463,7 +1463,6 @@ __metadata:
     lru-cache: ^6.0.0
     standard-version: 9.3.2
     tsc-watch: ^4.4.0
-    typescript: ^4.4.3
     winston: ^3.3.3
   bin:
     substrate-api-sidecar: ./build/src/main.js
