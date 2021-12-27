@@ -60,6 +60,7 @@
     "express-winston": "^4.1.0",
     "http-errors": "^1.8.1",
     "lru-cache": "^6.0.0",
+    "typescript": "^4.4.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -86,7 +87,8 @@
     "bn.js": "4.12.0",
     "node-forge": ">=0.10.0",
     "node-fetch": ">=2.6.1",
-    "prismjs": ">=1.23.0"
+    "prismjs": ">=1.23.0",
+    "typescript": "4.4.3"
   },
   "keywords": [
     "substrate",
