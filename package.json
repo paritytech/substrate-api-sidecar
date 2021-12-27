@@ -60,7 +60,6 @@
     "express-winston": "^4.1.0",
     "http-errors": "^1.8.1",
     "lru-cache": "^6.0.0",
-    "typescript": "^4.4.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -73,7 +72,8 @@
     "@types/morgan": "1.9.3",
     "@types/triple-beam": "^1.3.2",
     "standard-version": "9.3.2",
-    "tsc-watch": "^4.4.0"
+    "tsc-watch": "^4.4.0",
+    "typescript": "^4.4.3"
   },
   "resolutions": {
     "@polkadot/api": "7.0.1",
