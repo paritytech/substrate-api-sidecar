@@ -33,5 +33,5 @@ export const polkadotBlockEndpoints = [
 	['/blocks/7217908', JSON.stringify(block7217908)], //v9100
 	['/blocks/7300000', JSON.stringify(block7300000)], //v9110
 	['/blocks/8000000', JSON.stringify(block8000000)], //v9122
-	['/blocks/8320000', JSON.stringify(block8320000)], //v9140
+	['/blocks/8320000', JSON.stringify(block8320000)], //v9130
 ];

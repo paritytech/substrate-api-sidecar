@@ -39,5 +39,5 @@ export const polkadotAccountStakingInfoEndpoints = [
 	[
 		'/accounts/16SpacegeUTft9v3ts27CEC3tJaxgvE4uZeCctThFH3Vb24p/staking-info?at=8320000',
 		JSON.stringify(accountsStakingInfo8320000),
-	], // v9140
+	], // v9130
 ];

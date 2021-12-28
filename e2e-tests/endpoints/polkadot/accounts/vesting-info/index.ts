@@ -49,5 +49,5 @@ export const polkadotAccountVestingInfoEndpoints = [
 	[
 		'/accounts/15aKvwRqGVAwuBMaogtQXhuz9EQqUWsZJSAzomyb5xYwgBXA/vesting-info?at=8320000',
 		JSON.stringify(accountVestingInfo8320000),
-	], // v9140
+	], // v9130
 ];
