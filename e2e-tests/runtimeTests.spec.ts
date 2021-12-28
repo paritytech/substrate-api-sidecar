@@ -26,15 +26,17 @@ describe('Runtime Tests for blocks', () => {
 	/**
 	 * Test runtimes for `/blocks`
 	 */
-	test.each(blocks)(
-		'Given path %p, it should return the correct JSON response',
-		async (blockPath, blockResponse) => {
-			const res = await request(blockPath, HOST, PORT);
-			const responseJson = JSON.parse(res) as IBlockResponse;
-
-			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
-		}
-	);
+	if (blocks.length) {
+		test.each(blocks)(
+			'Given path %p, it should return the correct JSON response',
+			async (blockPath, blockResponse) => {
+				const res = await request(blockPath, HOST, PORT);
+				const responseJson = JSON.parse(res) as IBlockResponse;
+	
+				expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
+			}
+		);
+	}
 });
 
 describe('Runtime Tests for accounts', () => {
@@ -46,15 +48,17 @@ describe('Runtime Tests for accounts', () => {
 	/**
 	 * Test runtiems for `/accounts/*`
 	 */
-	test.each(accounts)(
-		'Given path %p, it should return the correct JSON response',
-		async (accountsPath, accountsResponse) => {
-			const res = await request(accountsPath, HOST, PORT);
-			const responseJson = JSON.parse(res) as AccountsResponse;
-
-			expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
-		}
-	);
+	if (accounts.length) {
+		test.each(accounts)(
+			'Given path %p, it should return the correct JSON response',
+			async (accountsPath, accountsResponse) => {
+				const res = await request(accountsPath, HOST, PORT);
+				const responseJson = JSON.parse(res) as AccountsResponse;
+	
+				expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
+			}
+		);
+	}
 });
 
 describe('Runtime Tests for `/runtime/*`', () => {
@@ -63,15 +67,17 @@ describe('Runtime Tests for `/runtime/*`', () => {
 	 */
 	jest.setTimeout(30000);
 
-	test.each(runtime)(
-		'Given path %p, it should return the correct JSON response',
-		async (runtimePath, runtimeResponse) => {
-			const res = await request(runtimePath, HOST, PORT);
-			const responseJson = JSON.parse(res) as RuntimeResponse;
-
-			expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
-		}
-	);
+	if (runtime.length) {
+		test.each(runtime)(
+			'Given path %p, it should return the correct JSON response',
+			async (runtimePath, runtimeResponse) => {
+				const res = await request(runtimePath, HOST, PORT);
+				const responseJson = JSON.parse(res) as RuntimeResponse;
+	
+				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
+			}
+		);
+	}
 });
 
 describe('Runtime Tests for `/paras/*`', () => {
