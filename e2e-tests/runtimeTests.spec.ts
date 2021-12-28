@@ -74,7 +74,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 	);
 });
 
-describe('Runtime Tests for `/experimental/paras/*`', () => {
+describe('Runtime Tests for `/paras/*`', () => {
 	/**
 	 * Allows a timeout of 30 seconds for each response.
 	 */
