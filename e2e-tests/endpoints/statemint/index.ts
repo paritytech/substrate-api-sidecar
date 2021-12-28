@@ -1,6 +1,8 @@
+import { statemintBlockEndpoints } from './blocks';
+
 export const statemintEndpoints = {
     accounts: [],
-    blocks: [],
+    blocks: statemintBlockEndpoints,
     paras: [],
     runtime: [],
 };
