@@ -4,9 +4,13 @@ import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import {
+	assetApprovals,
+	assetsAccount,
+	assetsInfoKeysInjected,
+	assetsMetadata,
+} from '../test-helpers/mock/assets/mockAssetData';
 import { AccountsAssetsService } from './AccountsAssetsService';
-
-import { assetsInfoKeysInjected, assetApprovals, assetsAccount, assetsMetadata } from '../test-helpers/mock/assets/mockAssetData';
 
 const historicApi = {
 	query: {

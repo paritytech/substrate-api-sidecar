@@ -2,9 +2,13 @@ import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import {
+	assetApprovals,
+	assetsAccount,
+	assetsInfoKeysInjected,
+	assetsMetadata,
+} from '../test-helpers/mock/assets/mockAssetData';
 import { PalletsAssetsService } from './PalletsAssetsService';
-
-import { assetsInfoKeysInjected, assetApprovals, assetsAccount, assetsMetadata } from '../test-helpers/mock/assets/mockAssetData';
 
 const mockApi = {
 	...defaultMockApi,

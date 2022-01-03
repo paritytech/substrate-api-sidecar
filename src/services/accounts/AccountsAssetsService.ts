@@ -125,8 +125,8 @@ export class AccountsAssetsService extends AbstractService {
 					address
 				);
 
-				let balance = null, 
-					isFrozen =  null,
+				let balance = null,
+					isFrozen = null,
 					reason = null;
 				if (assetBalance.isSome) {
 					({ balance, isFrozen, reason } = assetBalance.unwrap());

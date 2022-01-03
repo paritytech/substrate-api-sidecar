@@ -1,7 +1,7 @@
 import { TAssetDepositBalance } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
+import { PalletAssetsExistenceReason } from '@polkadot/types/lookup';
 import { bool, u128 } from '@polkadot/types/primitive';
-import { PalletAssetsExistenceReason } from '@polkadot/types/lookup'
 
 import { IAt } from '.';
 
