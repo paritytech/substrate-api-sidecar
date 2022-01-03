@@ -1,5 +1,5 @@
 import { ApiDecoration } from '@polkadot/api/types';
-import { bool, StorageKey } from '@polkadot/types';
+import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
@@ -125,12 +125,18 @@ export class AccountsAssetsService extends AbstractService {
 					address
 				);
 
+				let balance = null, 
+					isFrozen =  null,
+					reason = null;
+				if (assetBalance.isSome) {
+					({ balance, isFrozen, reason } = assetBalance.unwrap());
+				}
+
 				return {
 					assetId,
-					balance: assetBalance.balance,
-					isFrozen: assetBalance.isFrozen,
-					isSufficient:
-						assetBalance.sufficient || (assetBalance['isSufficient'] as bool),
+					balance,
+					isFrozen,
+					reason,
 				};
 			})
 		);

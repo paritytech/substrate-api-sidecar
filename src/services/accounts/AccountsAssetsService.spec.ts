@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AssetId, Hash } from '@polkadot/types/interfaces';
-import { PalletAssetsAssetBalance } from '@polkadot/types/lookup';
+import { PalletAssetsAssetAccount } from '@polkadot/types/lookup';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { statemintV1 } from '../../test-helpers/metadata/statemintMetadata';
@@ -81,9 +81,9 @@ const assetBalanceObjThree = {
 };
 
 const assetBalanceFactory = {
-	'10': assetBalanceObjOne as unknown as PalletAssetsAssetBalance,
-	'20': assetBalanceObjTwo as unknown as PalletAssetsAssetBalance,
-	'30': assetBalanceObjThree as unknown as PalletAssetsAssetBalance,
+	'10': assetBalanceObjOne as unknown as PalletAssetsAssetAccount,
+	'20': assetBalanceObjTwo as unknown as PalletAssetsAssetAccount,
+	'30': assetBalanceObjThree as unknown as PalletAssetsAssetAccount,
 };
 
 const assetStorageKeyOne = statemintTypeFactory.storageKey(
