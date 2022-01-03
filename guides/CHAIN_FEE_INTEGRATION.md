@@ -66,7 +66,7 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 }
 ```
 
-Now that we officially added your chains weight config to `metadata-consts` we now need to add it to your chains controller `options`. Inside of `<ROOT>/src/chains-config`, go to your respected chains controller config, and update two fields inside of the `options` object. `blockWeightStore`, and `minCalcFeeRuntime`. 
+Now that we have added your chains weight config to `metadata-consts` we now need to add it to your chains controller `options`. Inside of `<ROOT>/src/chains-config`, go to your respected chains controller config, and update two fields inside of the `options` object. `blockWeightStore`, and `minCalcFeeRuntime`. 
 
 Example: 
 ```typescript
