@@ -86,7 +86,8 @@
     "bn.js": "4.12.0",
     "node-forge": ">=0.10.0",
     "node-fetch": ">=2.6.1",
-    "prismjs": ">=1.23.0"
+    "prismjs": ">=1.23.0",
+    "typescript": "4.4.3"
   },
   "keywords": [
     "substrate",
