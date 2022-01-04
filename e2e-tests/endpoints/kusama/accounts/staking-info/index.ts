@@ -4,6 +4,7 @@ import accountsStakingInfo5000000 from './5000000.json';
 import accountsStakingInfo8000000 from './8000000.json';
 import accountsStakingInfo9500000 from './9500000.json';
 import accountsStakingInfo9894877 from './9894877.json';
+import accountsStakingInfo10819301 from './10819301.json';
 
 export const kusamaAccountStakingInfoEndpoints = [
 	[
@@ -30,4 +31,8 @@ export const kusamaAccountStakingInfoEndpoints = [
 		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=9894877',
 		JSON.stringify(accountsStakingInfo9894877),
 	], // v9122
+	[
+		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=10819301',
+		JSON.stringify(accountsStakingInfo10819301),
+	],
 ];

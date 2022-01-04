@@ -4,6 +4,7 @@ import accountVestingInfo5626862 from './5626862.json';
 import accountVestingInfo7523076 from './7523076.json';
 import accountVestingInfo9123076 from './9123076.json';
 import accountVestingInfo9625129 from './9625129.json';
+import accountVestingInfo10819301 from './10819301.json';
 
 export const kusamaAccountVestingInfoEndpoints = [
 	[
@@ -30,4 +31,8 @@ export const kusamaAccountVestingInfoEndpoints = [
 		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=9625129',
 		JSON.stringify(accountVestingInfo9625129),
 	], // v9111
+	[
+		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=10819301',
+		JSON.stringify(accountVestingInfo10819301),
+	], // v9130
 ];
