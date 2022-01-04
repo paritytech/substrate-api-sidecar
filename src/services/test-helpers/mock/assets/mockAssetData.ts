@@ -104,7 +104,7 @@ export const assetsInfoKeysInjected = (): (() => Promise<AssetDetails>) => {
 	// Create a shallow copy of assetsInfo
 	const assetInfoCopy = Object.assign({}, assetsInfo);
 
-	// Inject the keys into assetsInfo
+	// Inject the keys into `assetsInfoCopy`
 	Object.assign(assetInfoCopy, {
 		keys: assetsAccountKeysAt,
 	});
