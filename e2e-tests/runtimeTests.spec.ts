@@ -32,7 +32,7 @@ describe('Runtime Tests for blocks', () => {
 			async (blockPath, blockResponse) => {
 				const res = await request(blockPath, HOST, PORT);
 				const responseJson = JSON.parse(res) as IBlockResponse;
-	
+
 				expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
 			}
 		);
@@ -54,7 +54,7 @@ describe('Runtime Tests for accounts', () => {
 			async (accountsPath, accountsResponse) => {
 				const res = await request(accountsPath, HOST, PORT);
 				const responseJson = JSON.parse(res) as AccountsResponse;
-	
+
 				expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
 			}
 		);
@@ -73,7 +73,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 			async (runtimePath, runtimeResponse) => {
 				const res = await request(runtimePath, HOST, PORT);
 				const responseJson = JSON.parse(res) as RuntimeResponse;
-	
+
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 			}
 		);

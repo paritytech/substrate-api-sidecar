@@ -1,7 +1,7 @@
 import parasLeasesCurrent8200000 from './8200000.json';
 import parasLeasesCurrent9000000 from './9000000.json';
 import parasLeasesCurrent9800000 from './9800000.json';
-import parasLeasesCurrent10119301 from './10119301.json'
+import parasLeasesCurrent10119301 from './10119301.json';
 import parasLeasesCurrent10819301 from './10819301.json';
 
 export const parasLeasesCurrentEndpoints = [

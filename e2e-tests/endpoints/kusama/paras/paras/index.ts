@@ -2,7 +2,7 @@ import parasParas8400000 from './8400000.json';
 import parasParas9400000 from './9400000.json';
 import parasParas9800000 from './9800000.json';
 import parasParas10119301 from './10119301.json';
-import parasParas10819301 from './10819301.json'
+import parasParas10819301 from './10819301.json';
 
 export const parasParasEndpoints = [
 	['/paras?at=8400000', JSON.stringify(parasParas8400000)], // v9070
