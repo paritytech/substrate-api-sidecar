@@ -56,5 +56,13 @@ export const config: Record<string, IChainConfig> = {
 			args: ['test:e2e-tests', '--chain', 'statemine'],
 		},
 		SasStartOpts: defaultSasStartOpts,
+	},
+	statemint: {
+		wsUrl: 'wss://statemint-rpc.polkadot.io',
+		JestProcOpts: {
+			...defaultJestOpts,
+			args: ['test:e2e-tests', '--chain', 'statemint'],
+		},
+		SasStartOpts: defaultSasStartOpts
 	}
 };

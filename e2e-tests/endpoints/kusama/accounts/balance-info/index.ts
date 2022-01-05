@@ -4,6 +4,7 @@ import accountBalance1455087 from './1455087.json';
 import accountBalance1655087 from './1655087.json';
 import accountBalance8990000 from './8990000.json';
 import accountBalance9625229 from './9625229.json';
+import accountBalance10819301 from './10819301.json';
 
 /**
  * When it comes to kusama there are 3 major storage formats we are testing.
@@ -20,21 +21,25 @@ export const kusamaAccountBalanceEndpoints = [
 	[
 		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=1355087',
 		JSON.stringify(accountBalance1355087),
-	], //v1045
+	], // v1045
 	[
 		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=1455087',
 		JSON.stringify(accountBalance1455087),
-	], //v1051
+	], // v1051
 	[
 		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=1655087',
 		JSON.stringify(accountBalance1655087),
-	], //v1055
+	], // v1055
 	[
 		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=8990000',
 		JSON.stringify(accountBalance8990000),
-	], //v9090
+	], // v9090
 	[
-		`/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=9625229`,
+		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=9625229',
 		JSON.stringify(accountBalance9625229),
-	], //v9110
+	], // v9110
+	[
+		'/accounts/CdA6gJUJRAZadvkZ2XHyaiunC7hhgY1MaWQ7A7b3dfLQHMk/balance-info?at=10819301',
+		JSON.stringify(accountBalance10819301),
+	], // v9130
 ];
