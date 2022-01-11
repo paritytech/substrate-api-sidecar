@@ -45,7 +45,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				historicApi.query.balances.locks(address),
 				historicApi.query.balances.reservedBalance(address) as Promise<Balance>,
 				historicApi.query.system.accountNonce(address) as Promise<Index>,
-			]);
+			]).catch((err: Error) => {
+				throw new BadRequest(err.message);
+			});
 
 			// Values dont exist for these historic runtimes
 			const miscFrozen = api.registry.createType('Balance', 0),
@@ -75,7 +77,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.system.account(address),
 				historicApi.query.balances.locks(address),
-			]);
+			]).catch((err: Error) => {
+				throw new BadRequest(err.message);
+			});
 
 			const {
 				data: { free, reserved, feeFrozen, miscFrozen },
@@ -112,7 +116,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.balances.locks(address),
 				historicApi.query.system.account(address),
-			]);
+			]).catch((err: Error) => {
+				throw new BadRequest(err.message);
+			});
 
 			accountData =
 				accountInfo.data != null
