@@ -26,6 +26,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 - fix: Update license with new year (2022) ([#810](https://github.com/paritytech/substrate-api-sidecar/pull/810)) ([2c0bd28](https://github.com/paritytech/substrate-api-sidecar/commit/2c0bd2883fa4bd6a9c6684954c86ed194d84738e))
 
+## Compatibility
+
+Tested against:
+- Polkadot v9130
+- Kusama v9130
+- Westend v9130
+
 
 ## [11.3.5](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.4..v11.3.5) (2021-12-21)
 
