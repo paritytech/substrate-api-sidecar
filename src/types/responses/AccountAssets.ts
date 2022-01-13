@@ -1,6 +1,5 @@
 import { TAssetDepositBalance } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
-import { PalletAssetsExistenceReason } from '@polkadot/types/lookup';
 import { bool, u128 } from '@polkadot/types/primitive';
 
 import { IAt } from '.';
@@ -19,9 +18,13 @@ export interface IAssetBalance {
 	 */
 	isFrozen: bool | null;
 	/**
-	 * The reason for the existence of the account.
+	 * Whether a non-zero balance of this asset is deposit of sufficient
+	 * value to account for the state bloat associated with its balance storage. If set to
+	 * `true`, then non-zero balances may be stored without a `consumer` reference (and thus
+	 * an ED in the Balances pallet or whatever else is used to control user-account state
+	 * growth).
 	 */
-	reason: PalletAssetsExistenceReason | null;
+	isSufficient?: bool | boolean | null;
 }
 
 /**
