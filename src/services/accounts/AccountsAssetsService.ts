@@ -1,4 +1,5 @@
 import { ApiDecoration } from '@polkadot/api/types';
+import { bool, Null, Struct, u128 } from '@polkadot/types';
 import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
@@ -9,6 +10,27 @@ import {
 	IAssetBalance,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+
+/**
+ * This is a type that is necessary for any runtime pre 9160. It excludes the
+ * `reason` field which 9160 introduces via the following PR.
+ * https://github.com/paritytech/substrate/pull/10382/files#diff-9acae09f48474b7f0b96e7a3d66644e0ce5179464cbb0e00671ad09aa3f73a5fR88
+ *
+ * Both `PalletAssetsAssetBalance`, and `LegacyPalletAssetsAssetBalance` have either,
+ * a `sufficient` or `isSufficient` field exposed instead.
+ */
+interface PalletAssetsAssetBalance extends Struct {
+	readonly balance: u128;
+	readonly isFrozen: bool;
+	readonly sufficient: bool;
+	readonly extra: Null;
+}
+
+interface LegacyPalletAssetsAssetBalance extends Struct {
+	readonly balance: u128;
+	readonly isFrozen: bool;
+	readonly isSufficient: bool;
+}
 
 export class AccountsAssetsService extends AbstractService {
 	/**
@@ -125,18 +147,47 @@ export class AccountsAssetsService extends AbstractService {
 					address
 				);
 
+				/**
+				 * The following checks for three different cases:
+				 *
+				 * 1. Via runtime v9160 the updated storage introduces a `reason` field,
+				 * and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
+				 *
+				 * 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
+				 * `sufficient` as a key.
+				 *
+				 * 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
+				 * of `sufficient`.
+				 *
+				 */
 				let balance = null,
 					isFrozen = null,
-					reason = null;
+					isSufficient = null;
 				if (assetBalance.isSome) {
+					let reason = null;
+
 					({ balance, isFrozen, reason } = assetBalance.unwrap());
+					isSufficient = reason.isSufficient;
+				} else if (
+					(assetBalance as unknown as PalletAssetsAssetBalance).sufficient
+				) {
+					const tempRef = assetBalance as unknown as PalletAssetsAssetBalance;
+
+					({ balance, isFrozen } = tempRef);
+					isSufficient = tempRef.sufficient;
+				} else if (assetBalance['isSufficient'] as bool) {
+					const tempRef =
+						assetBalance as unknown as LegacyPalletAssetsAssetBalance;
+
+					({ balance, isFrozen } = tempRef);
+					isSufficient = tempRef.isSufficient;
 				}
 
 				return {
 					assetId,
 					balance,
 					isFrozen,
-					reason,
+					isSufficient,
 				};
 			})
 		);
