@@ -1,4 +1,4 @@
-name: Substrate-Calc
+name: CI-Calc
 
 on:
   push:
@@ -29,4 +29,3 @@ jobs:
         with:
           command: test
           args: --manifest-path=calc/Cargo.toml
-          
