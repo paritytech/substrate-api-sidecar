@@ -24,9 +24,9 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.3.0
 
-      - run: cd calc
-
       - name: Cargo test
         uses: actions-rs/cargo@v1.0.3
         with:
           command: test
+          args: --manifest-path=calc/Cargo.toml
+          
