@@ -25,6 +25,7 @@
   },
   "resolutions": {
     "prismjs": "^1.23.0",
-    "ua-parser-js": "<= 0.7.21"
+    "ua-parser-js": "<= 0.7.21",
+    "node-forge": ">=1.0.0"
   }
 }
