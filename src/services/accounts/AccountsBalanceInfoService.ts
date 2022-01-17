@@ -174,8 +174,8 @@ export class AccountsBalanceInfoService extends AbstractService {
 	}
 
 	/**
-	 * Returns HttpError with the correct err message for querying accounts balances. 
-	 * 
+	 * Returns HttpError with the correct err message for querying accounts balances.
+	 *
 	 * @param address Address that was queried
 	 * @param err Error returned from the promise
 	 */
