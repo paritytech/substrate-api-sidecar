@@ -8,14 +8,14 @@
 #     - Runs on tags that match the pattern v1.0, v2.1rc1 (manual deployment)
 
 variables:
-  CONTAINER_REPO:             "docker.io/parity/substrate-api-sidecar"
-  HELM_NAMESPACE:             "substrate-api-sidecar"
-  HELM_RELEASE_NAME_1:        "kusama-sidecar"
-  HELM_RELEASE_NAME_2:        "polkadot-sidecar"
-  HELM_CUSTOM_VALUES_FILE_1:  "values-kusama.yaml"
-  HELM_CUSTOM_VALUES_FILE_2:  "values-polkadot.yaml"
-  HELM_REPO:                  "helm/"
-  DOCKERFILE_DIRECTORY:       "./"
+  CONTAINER_REPO:                  "docker.io/parity/substrate-api-sidecar"
+  HELM_NAMESPACE:                  "substrate-api-sidecar"
+  HELM_RELEASE_NAME_1:             "kusama-sidecar"
+  HELM_RELEASE_NAME_2:             "polkadot-sidecar"
+  HELM_CUSTOM_VALUES_FILE_1:       "values-kusama.yaml"
+  HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
+  HELM_REPO:                       "helm/"
+  DOCKERFILE_DIRECTORY:            "./"
 
 default:
   before_script:
@@ -32,9 +32,9 @@ stages:
   - deploy-staging
   - deploy-production
 
-.dockerize:               &dockerize
-  stage:                  build
-  image:                  quay.io/buildah/stable
+.dockerize:                        &dockerize
+  stage:                           build
+  image:                           quay.io/buildah/stable
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'         # # i.e. v1.0, v2.1rc1
       when: always
@@ -43,8 +43,8 @@ stages:
   tags:
     - kubernetes-parity-build
 
-.deploy-k8s:              &deploy-k8s
-  image:                  paritytech/kubetools:3.5.3
+.deploy-k8s:                       &deploy-k8s
+  image:                           paritytech/kubetools:3.5.3
   script:
     - |-
       kubectl get cm helm-custom-values -n $HELM_NAMESPACE -o jsonpath='{.data.values-kusama\.yaml}' > values-kusama.yaml
@@ -71,7 +71,7 @@ stages:
     - kubernetes-parity-build
 
 build:
-  <<:                     *dockerize
+  <<:                              *dockerize
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - |-
@@ -95,6 +95,21 @@ build:
       else
         buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
       fi
+
+build-bench:
+  stage: build
+  before_script:                   []
+  variables:
+    POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
+  image:                           "alvicsam/sidecar-bench:3.0"
+  script:
+    - export SAS_SUBSTRATE_WS_URL=$POLKADOT_ADDRESS
+    - yarn
+    - yarn build
+    - yarn run main &
+    - wrk -d2m -t4 -c12 --timeout 120s --latency -s /lightweight-bench.lua "http://127.0.0.1:8080"
+  tags:
+    - kubernetes-parity-build
 
 deploy-staging:
   stage:                  deploy-staging
