@@ -149,45 +149,54 @@ export class AccountsAssetsService extends AbstractService {
 
 				/**
 				 * The following checks for three different cases:
-				 *
-				 * 1. Via runtime v9160 the updated storage introduces a `reason` field,
-				 * and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
-				 *
-				 * 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
-				 * `sufficient` as a key.
-				 *
-				 * 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
-				 * of `sufficient`.
-				 *
 				 */
-				let balance = null,
-					isFrozen = null,
-					isSufficient = null;
+
+				// 1. Via runtime v9160 the updated storage introduces a `reason` field,
+				// and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
 				if (assetBalance.isSome) {
-					let reason = null;
+					const balanceProps = assetBalance.unwrap();
 
-					({ balance, isFrozen, reason } = assetBalance.unwrap());
-					isSufficient = reason.isSufficient;
-				} else if (
-					(assetBalance as unknown as PalletAssetsAssetBalance).sufficient
-				) {
-					const tempRef = assetBalance as unknown as PalletAssetsAssetBalance;
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.reason.isSufficient,
+					};
+				}
 
-					({ balance, isFrozen } = tempRef);
-					isSufficient = tempRef.sufficient;
-				} else if (assetBalance['isSufficient'] as bool) {
-					const tempRef =
+				// 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
+				// `sufficient` as a key.
+				if ((assetBalance as unknown as PalletAssetsAssetBalance).sufficient) {
+					const balanceProps =
+						assetBalance as unknown as PalletAssetsAssetBalance;
+
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.sufficient,
+					};
+				}
+
+				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
+				// of `sufficient`.
+				if (assetBalance['isSufficient'] as bool) {
+					const balanceProps =
 						assetBalance as unknown as LegacyPalletAssetsAssetBalance;
 
-					({ balance, isFrozen } = tempRef);
-					isSufficient = tempRef.isSufficient;
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.isSufficient,
+					};
 				}
 
 				return {
 					assetId,
-					balance,
-					isFrozen,
-					isSufficient,
+					balance: null,
+					isFrozen: null,
+					isSufficient: null,
 				};
 			})
 		);
