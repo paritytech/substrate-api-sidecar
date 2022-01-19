@@ -66,6 +66,7 @@ impl Multiplier {
 
             ("karura", _v) => V2(new_u128(inner)),
             ("acala", _v) => V2(new_u128(inner)),
+            ("crust", _v) => V2(new_u128(inner)),
 
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);

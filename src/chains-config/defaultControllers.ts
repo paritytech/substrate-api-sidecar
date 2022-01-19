@@ -32,7 +32,7 @@ export const defaultControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: null,
+		minCalcFeeRuntime: 1,
 		blockWeightStore: {},
 		blockStore: initLRUCache(),
 	},
