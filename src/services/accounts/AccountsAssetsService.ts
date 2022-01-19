@@ -192,11 +192,17 @@ export class AccountsAssetsService extends AbstractService {
 					};
 				}
 
+				/**
+				 * This return value wont ever be reached as polkadot-js defaults the
+				 * `balance` value to `0`, `isFrozen` to false, and `isSufficient` to false.
+				 * This ensures the the typescript compiler is happy, but we also follow with
+				 * its convention.
+				 */
 				return {
 					assetId,
-					balance: null,
-					isFrozen: null,
-					isSufficient: null,
+					balance: historicApi.registry.createType('u128', 0),
+					isFrozen: historicApi.registry.createType('bool', false),
+					isSufficient: historicApi.registry.createType('bool', false),
 				};
 			})
 		);

@@ -12,11 +12,11 @@ export interface IAssetBalance {
 	/**
 	 * The units in which substrate records balances.
 	 */
-	balance: u128 | null;
+	balance: u128;
 	/**
 	 * Whether this asset class is frozen except for permissioned/admin instructions.
 	 */
-	isFrozen: bool | null;
+	isFrozen: bool;
 	/**
 	 * Whether a non-zero balance of this asset is deposit of sufficient
 	 * value to account for the state bloat associated with its balance storage. If set to
@@ -24,7 +24,7 @@ export interface IAssetBalance {
 	 * an ED in the Balances pallet or whatever else is used to control user-account state
 	 * growth).
 	 */
-	isSufficient?: bool | boolean | null;
+	isSufficient: bool | boolean;
 }
 
 /**
