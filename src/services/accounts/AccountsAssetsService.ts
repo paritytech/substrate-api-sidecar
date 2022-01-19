@@ -17,7 +17,10 @@ import { AbstractService } from '../AbstractService';
  * https://github.com/paritytech/substrate/pull/10382/files#diff-9acae09f48474b7f0b96e7a3d66644e0ce5179464cbb0e00671ad09aa3f73a5fR88
  *
  * Both `PalletAssetsAssetBalance`, and `LegacyPalletAssetsAssetBalance` have either,
- * a `sufficient` or `isSufficient` field exposed instead.
+ * a `sufficient` or `isSufficient` field exposed instead and are the types used
+ * pre v9160.
+ *
+ * For v9160 and future runtimes, the returned type is `PalletAssetsAssetAccount`.
  */
 interface PalletAssetsAssetBalance extends Struct {
 	readonly balance: u128;
