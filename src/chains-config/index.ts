@@ -6,6 +6,7 @@ import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { calamariControllers } from './calamariControllers';
+import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockPoSMainnetControllers } from './dockPoSMainnetControllers';
@@ -45,6 +46,7 @@ const specToControllerMap = {
 	karura: karuraControllers,
 	acala: acalaControllers,
 	manta: mantaControllers,
+	crust: crustControllers
 };
 
 /**

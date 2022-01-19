@@ -181,7 +181,6 @@ export class BlocksService extends AbstractService {
 				parentHash,
 				block
 			);
-			console.log('createCalcFee', createCalcFee)
 			calcFee = createCalcFee.calcFee;
 			specName = createCalcFee.specName;
 			specVersion = createCalcFee.specVersion;
@@ -535,10 +534,6 @@ export class BlocksService extends AbstractService {
 				negative: c.negative,
 			};
 		});
-
-		console.log('coefficients', coefficients)
-		console.log('multiplier.toString(10)', multiplier.toString(10))
-		console.log('perByte.toString(10)', perByte.toString(10))
 
 		// Now that we know the exact runtime supports fee calcs, make sure we have
 		// the weights in the store
