@@ -80,6 +80,7 @@ blocks = {
       local errors = summary.errors.status -- http status is not at the beginning of 200,300
       local requests = summary.requests -- total requests
 
+      print("--------------------------\n")
       print("Total completed requests: ", summary.requests)
       print("Failed requests: ", summary.errors.status)
       print("Timeouts: ", summary.errors.status)
