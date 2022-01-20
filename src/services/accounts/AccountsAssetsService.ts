@@ -198,8 +198,8 @@ export class AccountsAssetsService extends AbstractService {
 				/**
 				 * This return value wont ever be reached as polkadot-js defaults the
 				 * `balance` value to `0`, `isFrozen` to false, and `isSufficient` to false.
-				 * This ensures the the typescript compiler is happy, but we also follow with
-				 * its convention.
+				 * This ensures that the typescript compiler is happy, but we also follow along
+				 * with polkadot-js/substrate convention.
 				 */
 				return {
 					assetId,
