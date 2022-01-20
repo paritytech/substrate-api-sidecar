@@ -1,5 +1,6 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
+import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for Acala collator
@@ -25,7 +26,7 @@ export const crustControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
-		blockWeightStore: {},
+		blockWeightStore: getBlockWeight('crust'),
 		blockStore: initLRUCache(),
 	},
 };

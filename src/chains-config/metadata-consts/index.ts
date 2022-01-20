@@ -8,6 +8,7 @@ import {
 } from '../../types/chains-config';
 import { acalaDefinitions } from './acalaConsts';
 import { calamariDefinitions } from './calamariConsts';
+import { crustDefinitions } from './crustConsts';
 import {
 	dockMainnetDefinitions,
 	dockPoSMainnetDefinitions,
@@ -106,6 +107,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(acalaDefinitions);
 		case 'manta':
 			return generateBlockWeightStore(mantaDefinitions);
+		case 'crust':
+			return generateBlockWeightStore(crustDefinitions);
 		default:
 			return {};
 	}

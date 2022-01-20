@@ -46,7 +46,7 @@ const specToControllerMap = {
 	karura: karuraControllers,
 	acala: acalaControllers,
 	manta: mantaControllers,
-	crust: crustControllers
+	crust: crustControllers,
 };
 
 /**
