@@ -108,15 +108,7 @@ build-bench:
     - yarn build
     - yarn run main &
     - sleep 10
-    - wrk -d2m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
-    - echo "------------------------------------------------------------------------------------------------"
-    - wrk -d2m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
-    - echo "------------------------------------------------------------------------------------------------"
-    - wrk -d2m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
-    - echo "------------------------------------------------------------------------------------------------"
-    - wrk -d2m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
-    - echo "------------------------------------------------------------------------------------------------"
-    - wrk -d2m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
+    - wrk -d10m -t4 -c12 --timeout 120s --latency -s ./ci/benchmarks/lightweight-bench.lua "http://127.0.0.1:8080"
   tags:
     - kubernetes-parity-build
 
