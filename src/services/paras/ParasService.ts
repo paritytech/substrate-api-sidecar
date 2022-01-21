@@ -478,6 +478,8 @@ export class ParasService extends AbstractService {
 				return BN_ZERO;
 			case 'endPeriod':
 				return afterEarlyEnd.div(sampleLength).sub(BN_ONE);
+			case 'vrfDelay':
+				return BN_ZERO;
 			default:
 				return null;
 		}
