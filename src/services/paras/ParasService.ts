@@ -257,13 +257,12 @@ export class ParasService extends AbstractService {
 				historicApi
 			);
 
-			const winningOpt = endingOffset
-				? await historicApi.query.auctions.winning<Option<WinningData>>(
-						endingOffset
-				  )
-				: { isSome: undefined };
-			if (winningOpt.isSome) {
+			if (endingOffset) {
 				const ranges = this.enumerateLeaseSets(historicApi, leasePeriodIndex);
+
+				const winningOpt = await historicApi.query.auctions.winning<
+					Option<WinningData>
+				>(endingOffset);
 
 				// zip the winning bids together with their enumerated `SlotRange` (aka `leaseSet`)
 				winning = winningOpt.unwrap().map((bid, idx) => {
