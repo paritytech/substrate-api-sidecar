@@ -209,7 +209,7 @@ export class ParasService extends AbstractService {
 
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
 			historicApi.query.auctions.auctionInfo<Option<Vec<BlockNumber>>>(),
-			this.api.rpc.chain.getHeader(),
+			this.api.rpc.chain.getHeader(hash),
 			historicApi.query.auctions.auctionCounter<BlockNumber>(),
 		]);
 		const blockNumber = number.unwrap();
