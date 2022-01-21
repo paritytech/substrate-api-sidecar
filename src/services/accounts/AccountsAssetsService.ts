@@ -12,13 +12,16 @@ import {
 import { AbstractService } from '../AbstractService';
 
 /**
- * This is a type that is necessary for any runtime pre 9160. It excludes the
- * `reason` field which 9160 introduces via the following PR.
+ * These two types (`PalletAssetsAssetBalance, LegacyPalletAssetsAssetBalance`) are necessary for any
+ * runtime pre 9160. It excludes the `reason` field which v9160 introduces via the following PR.
  * https://github.com/paritytech/substrate/pull/10382/files#diff-9acae09f48474b7f0b96e7a3d66644e0ce5179464cbb0e00671ad09aa3f73a5fR88
  *
- * Both `PalletAssetsAssetBalance`, and `LegacyPalletAssetsAssetBalance` have either,
- * a `sufficient` or `isSufficient` field exposed instead and are the types used
- * pre v9160.
+ * `LegacyPalletAssetsAssetBalance` which is the oldest historic type here had a `isSufficient`
+ * key. It was then updated to be `sufficient` which we represent here within `PalletAssetsAssetBalance`.
+ *
+ * v9160 removes the `sufficient` key typed as a boolean, and instead
+ * replaces it with a `reason` key. `reason` is an enum and has the following values
+ * in polkadot-js: (`isConsumer`, `isSufficient`, `isDepositHeld`, `asDepositHeld`, `isDepositRefunded`, `type`).
  *
  * For v9160 and future runtimes, the returned type is `PalletAssetsAssetAccount`.
  */
