@@ -1,5 +1,6 @@
 import { ApiDecoration } from '@polkadot/api/types';
-import { bool, StorageKey } from '@polkadot/types';
+import { bool, Null, Struct, u128 } from '@polkadot/types';
+import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
@@ -9,6 +10,33 @@ import {
 	IAssetBalance,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+
+/**
+ * These two types (`PalletAssetsAssetBalance, LegacyPalletAssetsAssetBalance`) are necessary for any
+ * runtime pre 9160. It excludes the `reason` field which v9160 introduces via the following PR.
+ * https://github.com/paritytech/substrate/pull/10382/files#diff-9acae09f48474b7f0b96e7a3d66644e0ce5179464cbb0e00671ad09aa3f73a5fR88
+ *
+ * `LegacyPalletAssetsAssetBalance` which is the oldest historic type here had a `isSufficient`
+ * key. It was then updated to be `sufficient` which we represent here within `PalletAssetsAssetBalance`.
+ *
+ * v9160 removes the `sufficient` key typed as a boolean, and instead
+ * replaces it with a `reason` key. `reason` is an enum and has the following values
+ * in polkadot-js: (`isConsumer`, `isSufficient`, `isDepositHeld`, `asDepositHeld`, `isDepositRefunded`, `type`).
+ *
+ * For v9160 and future runtimes, the returned type is `PalletAssetsAssetAccount`.
+ */
+interface PalletAssetsAssetBalance extends Struct {
+	readonly balance: u128;
+	readonly isFrozen: bool;
+	readonly sufficient: bool;
+	readonly extra: Null;
+}
+
+interface LegacyPalletAssetsAssetBalance extends Struct {
+	readonly balance: u128;
+	readonly isFrozen: bool;
+	readonly isSufficient: bool;
+}
 
 export class AccountsAssetsService extends AbstractService {
 	/**
@@ -125,12 +153,62 @@ export class AccountsAssetsService extends AbstractService {
 					address
 				);
 
+				/**
+				 * The following checks for three different cases:
+				 */
+
+				// 1. Via runtime v9160 the updated storage introduces a `reason` field,
+				// and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
+				if (assetBalance.isSome) {
+					const balanceProps = assetBalance.unwrap();
+
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.reason.isSufficient,
+					};
+				}
+
+				// 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
+				// `sufficient` as a key.
+				if ((assetBalance as unknown as PalletAssetsAssetBalance).sufficient) {
+					const balanceProps =
+						assetBalance as unknown as PalletAssetsAssetBalance;
+
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.sufficient,
+					};
+				}
+
+				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
+				// of `sufficient`.
+				if (assetBalance['isSufficient'] as bool) {
+					const balanceProps =
+						assetBalance as unknown as LegacyPalletAssetsAssetBalance;
+
+					return {
+						assetId,
+						balance: balanceProps.balance,
+						isFrozen: balanceProps.isFrozen,
+						isSufficient: balanceProps.isSufficient,
+					};
+				}
+
+				/**
+				 * This return value wont ever be reached as polkadot-js defaults the
+				 * `balance` value to `0`, `isFrozen` to false, and `isSufficient` to false.
+				 * This ensures that the typescript compiler is happy, but we also follow along
+				 * with polkadot-js/substrate convention.
+				 */
 				return {
 					assetId,
-					balance: assetBalance.balance,
-					isFrozen: assetBalance.isFrozen,
-					isSufficient:
-						assetBalance.sufficient || (assetBalance['isSufficient'] as bool),
+					balance: historicApi.registry.createType('u128', 0),
+					isFrozen: historicApi.registry.createType('bool', false),
+					isSufficient: historicApi.registry.createType('bool', false),
 				};
 			})
 		);
