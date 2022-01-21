@@ -226,7 +226,7 @@ export class ParasService extends AbstractService {
 			/**
 			 * AuctionInfo:::<T>:get() when Some, it returns a tuple where the first item is the
 			 * lease period index that the first of the four contiguous lease periods
-			 * on auction is for. The second is the block number when the auction will
+			 * an auction is for. The second is the block number when the auction will
 			 * 'being to end', i.e. the first block of the Ending Period of the auction
 			 */
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
