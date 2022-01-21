@@ -201,7 +201,7 @@ const slotsLeasesEntriesAt = () =>
  */
 export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
-		const beingEnd = rococoRegistry.createType('BlockNumber', 1000);
+		const beingEnd = rococoRegistry.createType('BlockNumber', 780000);
 		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
 		const vectorAuctions = rococoTypeFactory.vecOf([
 			leasePeriodIndex,
@@ -485,9 +485,9 @@ describe('ParasService', () => {
 
 			const expectedResponse = {
 				at: expectedAt,
-				beginEnd: '1000',
-				finishEnd: '21000',
-				phase: 'vrfDelay',
+				beginEnd: '780000',
+				finishEnd: '800000',
+				phase: 'endPeriod',
 				auctionIndex: '4',
 				leasePeriods: ['39', '40', '41', '42'],
 				winning: [
@@ -525,7 +525,7 @@ describe('ParasService', () => {
 			const overrideHeader = {
 				parentHash:
 					'0x3d489d71f8fd2e15259df5059a1497436e6b73497500a303b1a705993e25cb27',
-				number: 20000,
+				number: 800000,
 				stateRoot:
 					'0xa0089595e48850a8a00081dd987a4735d0e8f94ac98af89030521f23f6cb8e31',
 				extrinsicsRoot:
