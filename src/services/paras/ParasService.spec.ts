@@ -473,7 +473,7 @@ describe('ParasService', () => {
 		 * This allows us to change the expected block we are using here as our head
 		 * to test for a specific `phase` in an auction.
 		 *
-		 * @param blockNumber
+		 * @param blockNumber Current block head returned by header
 		 * @returns
 		 */
 		const generateOverrideHeader = (
