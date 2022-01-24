@@ -468,6 +468,10 @@ export class ParasService extends AbstractService {
 		 * A sample can be represented by `afterEarlyEnd` / `sampleLength`.
 		 * When we are in the endingPeriod, the offset is represented by:
 		 * `sample - 1`.
+		 *
+		 * If the current phase is in `vrfDelay`, and you are interested in
+		 * querying the winners of the auction that just finished, it is advised
+		 * to query the last block of the `endingPeriod`.
 		 */
 		const sampleLength = historicApi.consts.auctions
 			.sampleLength as BlockNumber;
@@ -477,8 +481,6 @@ export class ParasService extends AbstractService {
 				return BN_ZERO;
 			case 'endPeriod':
 				return afterEarlyEnd.div(sampleLength).sub(BN_ONE);
-			case 'vrfDelay':
-				return BN_ZERO;
 			default:
 				return null;
 		}
