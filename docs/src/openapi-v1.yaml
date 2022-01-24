@@ -1045,7 +1045,10 @@ paths:
         Get the status of the current auction.
       description: |
         Returns an overview of the current of auction. There is only one auction
-        at a time. If there is no auction most fields will be `null`.
+        at a time. If there is no auction most fields will be `null`. If the current
+        auction phase is in `vrfDelay` and you are looking to retrieve the winners,
+        it is advised to  query the last block of the `endingPeriod` phase for that 
+        auction.
       parameters:
       - name: at
         in: query
