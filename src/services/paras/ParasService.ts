@@ -13,7 +13,7 @@ import {
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
-import { BN_ONE, BN_ZERO } from '@polkadot/util';
+import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -239,7 +239,7 @@ export class ParasService extends AbstractService {
 			 * We determine what our phase is so we can decide how to calculate our
 			 * ending offset.
 			 */
-			if (finishEnd.lt(blockNumber)) {
+			if (finishEnd.lte(blockNumber)) {
 				phase = 'vrfDelay';
 			} else {
 				phase = beginEnd.gt(blockNumber) ? 'startPeriod' : 'endPeriod';
@@ -480,7 +480,7 @@ export class ParasService extends AbstractService {
 			case 'startPeriod':
 				return BN_ZERO;
 			case 'endPeriod':
-				return afterEarlyEnd.div(sampleLength).sub(BN_ONE);
+				return afterEarlyEnd.div(sampleLength);
 			default:
 				return null;
 		}
