@@ -1,21 +1,21 @@
 {
-    "name": "@substrate/calc",
-    "collaborators": [
-      "Parity Technologies <admin@parity.io>"
-    ],
-    "description": "Off-chain calculations for @substrate/api-sidecar.",
-    "version": "0.2.6",
-    "license": "Apache-2.0",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/paritytech/substrate-api-sidecar.git"
-    },
-    "files": [
-      "calc_bg.wasm",
-      "calc.js",
-      "calc.d.ts"
-    ],
-    "main": "calc.js",
-    "homepage": "https://github.com/paritytech/substrate-api-sidecar/tree/master/calc#readme",
-    "types": "calc.d.ts"
-  }
+  "name": "@substrate/calc",
+  "collaborators": [
+    "Parity Technologies <admin@parity.io>"
+  ],
+  "description": "Off-chain calculations for @substrate/api-sidecar.",
+  "version": "0.2.6",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paritytech/substrate-api-sidecar.git"
+  },
+  "files": [
+    "calc_bg.wasm",
+    "calc.js",
+    "calc.d.ts"
+  ],
+  "main": "calc.js",
+  "homepage": "https://github.com/paritytech/substrate-api-sidecar/tree/master/calc#readme",
+  "types": "calc.d.ts"
+}
