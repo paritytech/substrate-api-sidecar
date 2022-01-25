@@ -3,7 +3,7 @@ import { initLRUCache } from './cache/lruCache';
 import { getBlockWeight } from './metadata-consts';
 
 /**
- * Controllers for Acala collator
+ * Controllers for crust collator
  */
 export const crustControllers: ControllerConfig = {
 	controllers: [
