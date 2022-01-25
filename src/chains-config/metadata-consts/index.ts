@@ -7,6 +7,7 @@ import {
 	PerClassValue,
 } from '../../types/chains-config';
 import { acalaDefinitions } from './acalaConsts';
+import { astarDefinitions } from './astarConsts';
 import { calamariDefinitions } from './calamariConsts';
 import { crustDefinitions } from './crustConsts';
 import {
@@ -99,6 +100,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(dockPoSTestnetDefinitions);
 		case 'shiden':
 			return generateBlockWeightStore(shidenDefinitions);
+		case 'astar':
+			return generateBlockWeightStore(astarDefinitions);
 		case 'calamari':
 			return generateBlockWeightStore(calamariDefinitions);
 		case 'karura':

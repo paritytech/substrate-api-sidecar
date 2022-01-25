@@ -5,6 +5,7 @@ import { AbstractService } from 'src/services/AbstractService';
 import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
+import { astarControllers } from './astarControllers';
 import { calamariControllers } from './calamariControllers';
 import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
@@ -41,6 +42,7 @@ const specToControllerMap = {
 	westmine: statemineControllers,
 	westmint: statemintControllers,
 	shiden: shidenControllers,
+	astar: astarControllers,
 	sora: soraControllers,
 	calamari: calamariControllers,
 	karura: karuraControllers,
