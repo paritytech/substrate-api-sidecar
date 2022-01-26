@@ -1,6 +1,6 @@
 [package]
 name = "calc"
-version = "0.2.6"
+version = "0.2.7"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
