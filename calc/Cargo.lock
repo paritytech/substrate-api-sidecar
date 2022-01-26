@@ -91,7 +91,7 @@ checksum = "ae44d1a3d5a19df61dd0c8beb138458ac2a53a7ac09eba97d55592540004306b"
 
 [[package]]
 name = "calc"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "console_error_panic_hook",
  "console_log",

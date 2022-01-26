@@ -1,4 +1,3 @@
-import {} from '@polkadot/types';
 import { TAssetDepositBalance } from '@polkadot/types/interfaces';
 import { AssetId } from '@polkadot/types/interfaces/runtime';
 import { bool, u128 } from '@polkadot/types/primitive';
@@ -25,7 +24,7 @@ export interface IAssetBalance {
 	 * an ED in the Balances pallet or whatever else is used to control user-account state
 	 * growth).
 	 */
-	isSufficient: bool;
+	isSufficient: bool | boolean;
 }
 
 /**

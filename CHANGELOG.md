@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.7](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.6..v11.3.7) (2022-01-26)
+
+**Upgrade Priority** Low
+
+## Bug Fixes
+
+- fix: update polkadot-js api to 7.2.1 ([#809](https://github.com/paritytech/substrate-api-sidecar/pull/809)) ([3553fb8](https://github.com/paritytech/substrate-api-sidecar/commit/3553fb813cc54199482038eed2e236e76310c507))
+- fix: error handling on account balances ([#813](https://github.com/paritytech/substrate-api-sidecar/pull/813)) ([05f97bb](https://github.com/paritytech/substrate-api-sidecar/commit/05f97bbf65913ee11fd7bb6c2eaeec8cab57d6ee))
+- fix: add 9150, and 9151 to kusama blockWeightsStore ([#819](https://github.com/paritytech/substrate-api-sidecar/pull/819)) ([cda73a0](https://github.com/paritytech/substrate-api-sidecar/commit/cda73a0fdcd1d09f68c7298ce427d5a2be1aaa56))
+
+## Substrate/Calc
+
+- fix(tests): add tests for impl Multplier ([#802](https://github.com/paritytech/substrate-api-sidecar/pull/802)) ([0a53cbd](https://github.com/paritytech/substrate-api-sidecar/commit/0a53cbda5dbf06c3b03647fbfb38bbcdeb46e4b2))
+- fix: add fee calculation support and block weights for Astar network ([#820](https://github.com/paritytech/substrate-api-sidecar/pull/820)) ([1c5f16a](https://github.com/paritytech/substrate-api-sidecar/commit/1c5f16a8268ba8e152ef097e8676ed408214dcb8)) Contributed by: ([hoonsubin](https://github.com/hoonsubin))
+- fix: support crust calc ([#822](https://github.com/paritytech/substrate-api-sidecar/pull/822)) ([72be2df](https://github.com/paritytech/substrate-api-sidecar/commit/72be2df24e21eb7cc31a796571ed110730b8676b)) Contributed by: ([yashirooooo](https://github.com/yashirooooo))
+
+## Security
+
+- fix: cleanup unused dependencies, and sec updates for node-forge ([#817](https://github.com/paritytech/substrate-api-sidecar/pull/817)) ([7a8ba0f](https://github.com/paritytech/substrate-api-sidecar/commit/7a8ba0fbb90005d0a348a03471afcad8d380a3ac))
+- fix(security): Update follow-redirects ([#816](https://github.com/paritytech/substrate-api-sidecar/pull/816)) ([ed50064](https://github.com/paritytech/substrate-api-sidecar/commit/ed50064abc8a6d02fcd22343b40cc1227c08d2cc))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9151
+- Kusama v9151
+- Westend v9150
+
 ## [11.3.6](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.5..v11.3.6) (2022-01-12)
 
 **Upgrade Priority** Low (Important for users using `/paras/leases/current`, `/paras/{para-id}/lease-info`)
@@ -22,7 +50,7 @@ All notable changes to this project will be documented in this file. See [standa
 - fix: add chain fee calculation guide ([#797](https://github.com/paritytech/substrate-api-sidecar/pull/797)) ([0b7ef02](https://github.com/paritytech/substrate-api-sidecar/commit/0b7ef0252324288983142686eabd9deb652ba3d1))
 - fix: update readme for e2e-tests ([#799](https://github.com/paritytech/substrate-api-sidecar/pull/799)) ([583365a](https://github.com/paritytech/substrate-api-sidecar/commit/583365abf1200a33573e88c4e671215d723c5531))
 
-## Chore 
+## Chore
 
 - fix: Update license with new year (2022) ([#810](https://github.com/paritytech/substrate-api-sidecar/pull/810)) ([2c0bd28](https://github.com/paritytech/substrate-api-sidecar/commit/2c0bd2883fa4bd6a9c6684954c86ed194d84738e))
 
@@ -32,7 +60,6 @@ Tested against:
 - Polkadot v9130
 - Kusama v9130
 - Westend v9130
-
 
 ## [11.3.5](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.4..v11.3.5) (2021-12-21)
 
@@ -103,7 +130,7 @@ Tested against:
 
 - chore: Add CODEOWNERS file ([#770](https://github.com/paritytech/substrate-api-sidecar/pull/770)) ([0ed40ee](https://github.com/paritytech/substrate-api-sidecar/commit/0ed40ee1c7226809aa6e715169d5ae346e28c905)) Contributed by: [sergejparity](https://github.com/sergejparity)
 
-### Docs 
+### Docs
 
 - docs: Update readme with node compatibility chart ([#774](https://github.com/paritytech/substrate-api-sidecar/pull/774)) ([5a0430b](https://github.com/paritytech/substrate-api-sidecar/commit/5a0430b970348904a5b758bb9f0c125d34eb6ebb))
 
