@@ -50,9 +50,9 @@
     "test:test-release": "yarn start:test-release"
   },
   "dependencies": {
-    "@polkadot/api": "^7.2.1",
-    "@polkadot/apps-config": "0.98.2-164",
-    "@polkadot/util-crypto": "^8.2.2",
+    "@polkadot/api": "^7.5.2-2",
+    "@polkadot/apps-config": "0.103.1",
+    "@polkadot/util-crypto": "^8.3.3",
     "@polkadot/x-rxjs": "^6.11.1",
     "@substrate/calc": "^0.2.7",
     "argparse": "^2.0.1",
@@ -75,13 +75,13 @@
     "tsc-watch": "^4.4.0"
   },
   "resolutions": {
-    "@polkadot/api": "7.2.1",
-    "@polkadot/keyring": "8.2.2",
-    "@polkadot/networks": "8.2.2",
-    "@polkadot/types": "7.2.1",
-    "@polkadot/types-known": "7.2.1",
-    "@polkadot/util": "8.2.2",
-    "@polkadot/util-crypto": "8.2.2",
+    "@polkadot/api": "7.5.2-2",
+    "@polkadot/keyring": "8.3.3",
+    "@polkadot/networks": "8.3.3",
+    "@polkadot/types": "7.5.2-2",
+    "@polkadot/types-known": "7.5.2-2",
+    "@polkadot/util": "8.3.3",
+    "@polkadot/util-crypto": "8.3.3",
     "@polkadot/wasm-crypto": "4.5.1",
     "bn.js": "4.12.0",
     "node-fetch": ">=2.6.1",
