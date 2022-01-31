@@ -1046,9 +1046,9 @@ paths:
       description: |
         Returns an overview of the current auction. There is only one auction
         at a time. If there is no auction most fields will be `null`. If the current
-        auction phase is in `vrfDelay` and you are looking to retrieve the winners,
-        it is advised to  query the last block of the `endingPeriod` phase for that 
-        auction as there technically are no winners during the `vrfDelay` and thus 
+        auction phase is in `vrfDelay` and you are looking to retrieve the latest winning
+        bids, it is advised to query one block before `finishEnd` in the `endingPeriod` phase
+        for that auction as there technically are no winners during the `vrfDelay` and thus 
         the field is `null`.
       parameters:
       - name: at
