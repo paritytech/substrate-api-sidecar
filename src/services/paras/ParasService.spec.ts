@@ -569,7 +569,7 @@ describe('ParasService', () => {
 		});
 
 		it('Should return the correct data during a vrfDelay phase', async () => {
-			const overrideHeader = generateOverrideHeader(800001);
+			const overrideHeader = generateOverrideHeader(800000);
 			const header = polkadotRegistry.createType('Header', overrideHeader);
 
 			// Override the mockApi
@@ -579,7 +579,7 @@ describe('ParasService', () => {
 			const expectedResponse = {
 				at: {
 					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-					height: '800001',
+					height: '800000',
 				},
 				beginEnd: '780000',
 				finishEnd: '800000',
