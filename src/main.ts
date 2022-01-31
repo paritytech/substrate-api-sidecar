@@ -21,6 +21,7 @@ import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import * as apps from '@polkadot/apps-config/api';
+import { createWsEndpoints } from '@polkadot/apps-config/endpoints';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
@@ -102,26 +103,16 @@ async function main() {
 function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	const { logger } = Log;
 	const { config } = SidecarConfig;
-	/**
-	 * Best effort list of known public nodes that do not encourage high traffic
-	 * sidecar installations connecting to them for non - testing / development purposes.
-	 */
-	const publicWsUrls: string[] = [
-		'wss://rpc.polkadot.io',
-		'wss://cc1-1.polkadot.network',
-		'wss://kusama-rpc.polkadot.io',
-		'wss://cc3-5.kusama.network',
-		'wss://fullnode.centrifuge.io',
-		'wss://crab.darwinia.network',
-		'wss://mainnet-node.dock.io',
-		'wss://mainnet1.edgewa.re',
-		'wss://rpc.kulupu.corepaper.org/ws',
-		'wss://main1.nodleprotocol.io',
-		'wss://rpc.plasmnet.io/',
-		'wss://mainnet-rpc.stafi.io',
-		'wss://rpc.subsocial.network',
-		'wss://full-nodes-lb.kilt.io:443',
-	];
+
+  // Retrieving public endpoints from @polkadot/apps-config/endpoints 
+  const publicWsUrls: string[] = [];
+  const endpoints = createWsEndpoints(<T = string>(): T => ('' as unknown as T));
+  let count = 0;
+  while (count < endpoints.length) {
+    if (endpoints[count].value && endpoints[count].info != 'local')
+      publicWsUrls.push(endpoints[count].value);
+    count += 1;
+  }
 
 	logger.info(
 		`Connected to chain ${chainName} on the ${implName} client at ${config.SUBSTRATE.WS_URL}`
