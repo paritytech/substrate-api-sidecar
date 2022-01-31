@@ -200,11 +200,11 @@ const slotsLeasesEntriesAt = () =>
  */
 export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
-		const beingEnd = rococoRegistry.createType('BlockNumber', 780000);
+		const beginEnd = rococoRegistry.createType('BlockNumber', 780000);
 		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
 		const vectorAuctions = rococoTypeFactory.vecOf([
 			leasePeriodIndex,
-			beingEnd,
+			beginEnd,
 		]);
 		const optionAuctions = rococoTypeFactory.optionOf(vectorAuctions);
 
