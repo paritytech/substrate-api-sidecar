@@ -104,15 +104,16 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	const { logger } = Log;
 	const { config } = SidecarConfig;
 
-  // Retrieving public endpoints from @polkadot/apps-config/endpoints 
-  const publicWsUrls: string[] = [];
-  const endpoints = createWsEndpoints(<T = string>(): T => ('' as unknown as T));
-  let count = 0;
-  while (count < endpoints.length) {
-    if (endpoints[count].value && endpoints[count].info != 'local')
-      publicWsUrls.push(endpoints[count].value);
-    count += 1;
-  }
+	/**
+	 * Retrieving public endpoints from @polkadot/apps-config/endpoints
+	 */
+	const endpoints = createWsEndpoints(<T = string>(): T => '' as unknown as T);
+	const publicWsUrls: string[] = endpoints
+		.map(function (endpoint) {
+			if (endpoint.value && endpoint.info != 'local') return endpoint.value;
+			else return '';
+		})
+		.filter((x) => x !== '');
 
 	logger.info(
 		`Connected to chain ${chainName} on the ${implName} client at ${config.SUBSTRATE.WS_URL}`
