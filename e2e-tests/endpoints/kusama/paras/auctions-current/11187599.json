@@ -1,0 +1,326 @@
+{
+    "at": {
+        "hash": "0x9b4ff026ade2ea4e13ac8603560f08c3b014750cd19bde578d260765866f965c",
+        "height": "11187599"
+    },
+    "beginEnd": "11115600",
+    "finishEnd": "11187600",
+    "phase": "endPeriod",
+    "auctionIndex": "23",
+    "leasePeriods": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26"
+    ],
+    "winning": [
+        {
+            "bid": null,
+            "leaseSet": [
+                "19"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20",
+                "21"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20",
+                "21",
+                "22"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20",
+                "21",
+                "22",
+                "23"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": {
+                "accountId": "F3opxRbN5ZZRfqouubHLYMhqpy4XviZJXaEWUhdDMRepikC",
+                "paraId": "2106",
+                "amount": "10820583911061183"
+            },
+            "leaseSet": [
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21",
+                "22"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21",
+                "22",
+                "23"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21",
+                "22",
+                "23",
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21",
+                "22"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21",
+                "22",
+                "23"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21",
+                "22",
+                "23",
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21",
+                "22",
+                "23",
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "22"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "22",
+                "23"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "22",
+                "23",
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "22",
+                "23",
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "22",
+                "23",
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "23"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "23",
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "23",
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "23",
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "24"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "24",
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "24",
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "25"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "25",
+                "26"
+            ]
+        },
+        {
+            "bid": null,
+            "leaseSet": [
+                "26"
+            ]
+        }
+    ]
+}
