@@ -17,7 +17,6 @@ import {
 	TypeFactory,
 } from '../../test-helpers/typeFactory';
 import {
-	blockHash20000,
 	blockHash789629,
 	defaultMockApi,
 	mockBlock789629,
@@ -201,11 +200,11 @@ const slotsLeasesEntriesAt = () =>
  */
 export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
-		const beingEnd = rococoRegistry.createType('BlockNumber', 1000);
+		const beginEnd = rococoRegistry.createType('BlockNumber', 780000);
 		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
 		const vectorAuctions = rococoTypeFactory.vecOf([
 			leasePeriodIndex,
-			beingEnd,
+			beginEnd,
 		]);
 		const optionAuctions = rococoTypeFactory.optionOf(vectorAuctions);
 
@@ -469,7 +468,30 @@ describe('ParasService', () => {
 	});
 
 	describe('ParasService.auctionsCurrent', () => {
-		it('Should return the correct data during an ongoing auction', async () => {
+		/**
+		 * Helper function to generate a a header to use to override the current one.
+		 * This allows us to change the expected block we are using here as our head
+		 * to test for a specific `phase` in an auction.
+		 *
+		 * @param blockNumber Current block head returned by header
+		 * @returns
+		 */
+		const generateOverrideHeader = (
+			blockNumber: number
+		): Record<string, unknown> => {
+			return {
+				parentHash:
+					'0x205da5dba43bbecae52b44912249480aa9f751630872b6b6ba1a9d2aeabf0177',
+				number: blockNumber,
+				stateRoot:
+					'0x023b5bb1bc10a1a91a9ef683f46a8bb09666c50476d5592bd6575a73777eb173',
+				extrinsicsRoot:
+					'0x4c1d65bf6b57086f00d5df40aa0686ffbc581ef60878645613b1fc3303de5030',
+				digest: {},
+			};
+		};
+
+		it('Should return the correct data during an ongoing endPeriod phase', async () => {
 			const leasePeriodIndex = new BN(39);
 			const leaseIndexArray = parasService['enumerateLeaseSets'](
 				historicApi,
@@ -485,9 +507,9 @@ describe('ParasService', () => {
 
 			const expectedResponse = {
 				at: expectedAt,
-				beginEnd: '1000',
-				finishEnd: '21000',
-				phase: 'vrfDelay',
+				beginEnd: '780000',
+				finishEnd: '800000',
+				phase: 'endPeriod',
 				auctionIndex: '4',
 				leasePeriods: ['39', '40', '41', '42'],
 				winning: [
@@ -516,33 +538,60 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
-		/**
-		 * The goal of this test is to manipulate the number of the finalized block so that it is less than
-		 * the expected `finishHead`, but higher the `beginEnd` which would denote we are in the `endPeriod` phase
-		 * of the current auction.
-		 */
-		it('Should return the correct `ending` phase', async () => {
-			const overrideHeader = {
-				parentHash:
-					'0x3d489d71f8fd2e15259df5059a1497436e6b73497500a303b1a705993e25cb27',
-				number: 20000,
-				stateRoot:
-					'0xa0089595e48850a8a00081dd987a4735d0e8f94ac98af89030521f23f6cb8e31',
-				extrinsicsRoot:
-					'0x2d5d3fdb96b487d480b08b64ed69a65433c1713ae3579dd23704cb790aa3b2ae',
-				digest: {},
-			};
+		it('Should return the correct data during a startPeriod phase', async () => {
+			const overrideHeader = generateOverrideHeader(770000);
 			const header = polkadotRegistry.createType('Header', overrideHeader);
 
 			// Override the mockApi
 			(mockApi.rpc.chain.getHeader as unknown) = () =>
 				Promise.resolve().then(() => header);
 
-			const expectedResponse = 'endPeriod';
+			const expectedResponse = {
+				at: {
+					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+					height: '770000',
+				},
+				beginEnd: '780000',
+				finishEnd: '800000',
+				phase: 'startPeriod',
+				auctionIndex: '4',
+				leasePeriods: ['39', '40', '41', '42'],
+				winning: null,
+			};
 
-			const response = await parasService.auctionsCurrent(blockHash20000);
+			const response = await parasService.auctionsCurrent(blockHash789629);
 
-			expect(response.phase).toBe(expectedResponse);
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
+
+			// Set the MockApi back to its original self
+			(mockApi.rpc.chain.getHeader as unknown) = () =>
+				Promise.resolve().then(() => mockBlock789629.header);
+		});
+
+		it('Should return the correct data during a vrfDelay phase', async () => {
+			const overrideHeader = generateOverrideHeader(800000);
+			const header = polkadotRegistry.createType('Header', overrideHeader);
+
+			// Override the mockApi
+			(mockApi.rpc.chain.getHeader as unknown) = () =>
+				Promise.resolve().then(() => header);
+
+			const expectedResponse = {
+				at: {
+					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+					height: '800000',
+				},
+				beginEnd: '780000',
+				finishEnd: '800000',
+				phase: 'vrfDelay',
+				auctionIndex: '4',
+				leasePeriods: ['39', '40', '41', '42'],
+				winning: null,
+			};
+
+			const response = await parasService.auctionsCurrent(blockHash789629);
+
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 
 			// Set the MockApi back to its original self
 			(mockApi.rpc.chain.getHeader as unknown) = () =>
