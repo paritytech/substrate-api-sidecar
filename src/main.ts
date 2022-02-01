@@ -107,13 +107,13 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	/**
 	 * Retrieving public endpoints from @polkadot/apps-config/endpoints
 	 */
+	const publicWsUrls: string[] = [];
 	const endpoints = createWsEndpoints(<T = string>(): T => '' as unknown as T);
-	const publicWsUrls: string[] = endpoints
-		.map(function (endpoint) {
-			if (endpoint.value && endpoint.info != 'local') return endpoint.value;
-			else return '';
-		})
-		.filter((x) => x !== '');
+	for (const endpoint of endpoints) {
+		if (endpoint.value && endpoint.info != 'local') {
+			publicWsUrls.push(endpoint.value);
+		}
+	}
 
 	logger.info(
 		`Connected to chain ${chainName} on the ${implName} client at ${config.SUBSTRATE.WS_URL}`
