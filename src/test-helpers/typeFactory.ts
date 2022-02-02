@@ -8,7 +8,7 @@ import {
 	InterfaceTypes,
 	Registry,
 } from '@polkadot/types/types';
-import { Observable } from '@polkadot/x-rxjs';
+import { Observable } from 'rxjs';
 
 /**
  * Type to fulfill StorageEntryBase regarding storage keys
