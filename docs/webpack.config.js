@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const outputPath = path.resolve(__dirname, 'dist');
 
@@ -30,12 +30,14 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new CopyWebpackPlugin([
-      {
-        from: 'node_modules/swagger-ui/dist/oauth2-redirect.html',
-        to: './',
-      },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'node_modules/swagger-ui/dist/oauth2-redirect.html',
+          to: './',
+        } 
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
