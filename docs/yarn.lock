@@ -1235,12 +1235,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clean-webpack-plugin@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "clean-webpack-plugin@npm:1.0.1"
+"clean-webpack-plugin@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "clean-webpack-plugin@npm:4.0.0"
   dependencies:
-    rimraf: ^2.6.1
-  checksum: 6aeab0c86968d36f5b7a45fdb33fc48b92d439615b7f00269d9844c7dd464169a8f64521c74456135069320742b018926fea86447e934b3ab5d79febf7a7f63b
+    del: ^4.1.1
+  peerDependencies:
+    webpack: ">=4.0.0 <6.0.0"
+  checksum: 199425e87b8c4a24ea321ec8116408219930f2ef86e27dd4cdf0ed77ed7b8b3a6908ed5160e4e981c773e015ba1d79d3f53f2fdcfebc5dc0b68f1478dea08fff
   languageName: node
   linkType: hard
 
@@ -5704,7 +5706,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^2.5.4, rimraf@npm:^2.6.1, rimraf@npm:^2.6.2, rimraf@npm:^2.6.3":
+"rimraf@npm:^2.5.4, rimraf@npm:^2.6.2, rimraf@npm:^2.6.3":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
   dependencies:
@@ -6004,7 +6006,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "sidecar-swagger-ui@workspace:."
   dependencies:
-    clean-webpack-plugin: ^1.0.1
+    clean-webpack-plugin: ^4.0.0
     copy-webpack-plugin: ^4.6.0
     css-loader: ^2.1.1
     html-webpack-plugin: ^3.2.0

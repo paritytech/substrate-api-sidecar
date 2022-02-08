@@ -9,7 +9,7 @@
   "author": "Parity Technologies <admin@parity.io>",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "clean-webpack-plugin": "^1.0.1",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^4.6.0",
     "html-webpack-plugin": "^3.2.0",
     "webpack": "^4.46.0",
