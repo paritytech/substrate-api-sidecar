@@ -26,7 +26,7 @@ struct Coefficient {
     degree: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Multiplier {
     V0(Fixed128Legacy),
     V1((FixedI128, bool)),
@@ -50,6 +50,7 @@ impl Multiplier {
             ("westend", v) if 31 <= v => V2(new_u128(inner)),
 
             ("shiden", _v) => V2(new_u128(inner)),
+            ("astar", _v) => V2(new_u128(inner)),
 
             ("statemine", _v) => V2(new_u128(inner)),
             ("statemint", _v) => V2(new_u128(inner)),
@@ -66,6 +67,7 @@ impl Multiplier {
 
             ("karura", _v) => V2(new_u128(inner)),
             ("acala", _v) => V2(new_u128(inner)),
+            ("crust", _v) => V2(new_u128(inner)),
 
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);
@@ -219,4 +221,53 @@ fn new_u128(inner: &str) -> FixedU128 {
 
 fn new_legacy_128(inner: &str) -> Fixed128Legacy {
     Fixed128Legacy::from_parts(i128::from_str(inner).unwrap())
+}
+
+mod test_fees {
+    use super::Multiplier;
+    use super::Multiplier::{V2, V1, V0};
+    use super::new_u128;
+    use super::new_i128;
+    use super::new_legacy_128;
+
+    #[test]
+    fn multiplier_from_spec_name() {
+        let inner = "500000000";
+
+        // Polkadot Multipliers
+        assert_eq!(Multiplier::new(inner, "polkadot", 11).unwrap(), V2(new_u128(inner)));
+        assert_eq!(Multiplier::new(inner, "polkadot", 10).unwrap(), V1((new_i128(inner), false)));
+        assert_eq!(Multiplier::new(inner, "polkadot", 0).unwrap(), V1((new_i128(inner), true)));
+
+        // Kusama Multipliers
+        assert_eq!(Multiplier::new(inner, "kusama", 2020).unwrap(), V2(new_u128(inner)));
+        assert_eq!(Multiplier::new(inner, "kusama", 2000).unwrap(), V1((new_i128(inner), false)));
+        assert_eq!(Multiplier::new(inner, "kusama", 1062).unwrap(), V0(new_legacy_128(inner)));
+
+        // Westend Multipliers
+        assert_eq!(Multiplier::new(inner, "westend", 31).unwrap(), V2(new_u128(inner)));
+        assert_eq!(Multiplier::new(inner, "westend", 11).unwrap(), V1((new_i128(inner), false)));
+        assert_eq!(Multiplier::new(inner, "westend", 10).unwrap(), V0(new_legacy_128(inner)));
+
+        // Statemine Multipliers
+        assert_eq!(Multiplier::new(inner, "statemine", 1).unwrap(), V2(new_u128(inner)));
+
+        // Statemint Multipliers
+        assert_eq!(Multiplier::new(inner, "statemint", 1).unwrap(), V2(new_u128(inner)));
+    }
+
+    #[test]
+    fn multiplier_calc() {
+        let inner = "500000000";
+
+        // Test against V2 calc
+        assert_eq!(Multiplier::calc(&V2(new_u128(inner)), 1000000000000), 500);
+
+        // Test against V1 calc 
+        assert_eq!(Multiplier::calc(&V1((new_i128(inner), false)), 1000000000), 1000000000);
+        assert_eq!(Multiplier::calc(&V1((new_i128(inner), true)), 1000000000), 1000000000);
+
+        // Test against V0 calc
+        assert_eq!(Multiplier::calc(&V0(new_legacy_128(inner)), 1000000000), 1000000000);
+    }
 }

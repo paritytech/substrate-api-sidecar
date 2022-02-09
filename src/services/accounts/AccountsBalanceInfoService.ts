@@ -7,7 +7,8 @@ import {
 	BlockHash,
 	Index,
 } from '@polkadot/types/interfaces';
-import { BadRequest } from 'http-errors';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { BadRequest, HttpError } from 'http-errors';
 import { IAccountBalanceInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -45,7 +46,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				historicApi.query.balances.locks(address),
 				historicApi.query.balances.reservedBalance(address) as Promise<Balance>,
 				historicApi.query.system.accountNonce(address) as Promise<Index>,
-			]);
+			]).catch((err: Error) => {
+				throw this.createHttpError(address, err);
+			});
 
 			// Values dont exist for these historic runtimes
 			const miscFrozen = api.registry.createType('Balance', 0),
@@ -75,7 +78,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.system.account(address),
 				historicApi.query.balances.locks(address),
-			]);
+			]).catch((err: Error) => {
+				throw this.createHttpError(address, err);
+			});
 
 			const {
 				data: { free, reserved, feeFrozen, miscFrozen },
@@ -112,7 +117,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.balances.locks(address),
 				historicApi.query.system.account(address),
-			]);
+			]).catch((err: Error) => {
+				throw this.createHttpError(address, err);
+			});
 
 			accountData =
 				accountInfo.data != null
@@ -164,5 +171,19 @@ export class AccountsBalanceInfoService extends AbstractService {
 		} else {
 			throw new BadRequest('Account not found');
 		}
+	}
+
+	/**
+	 * Returns HttpError with the correct err message for querying accounts balances.
+	 *
+	 * @param address Address that was queried
+	 * @param err Error returned from the promise
+	 */
+	private createHttpError(address: string, err: Error): HttpError {
+		return isEthereumAddress(address)
+			? new BadRequest(
+					`Etheurem addresses may not be supported on this network: ${err.message}`
+			  )
+			: new BadRequest(err.message);
 	}
 }

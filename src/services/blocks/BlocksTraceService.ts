@@ -1,3 +1,4 @@
+import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { BlockTrace as PdJsBlockTrace } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
@@ -48,7 +49,7 @@ export class BlocksTraceService extends AbstractService {
 	async traces(hash: BlockHash): Promise<BlocksTrace> {
 		const [{ number }, traceResponse] = await Promise.all([
 			this.api.rpc.chain.getHeader(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
@@ -74,17 +75,19 @@ export class BlocksTraceService extends AbstractService {
 	 * Get the balance changing operations induced by a block.
 	 *
 	 * @param hash `BlockHash` to get balance transfer operations at.
+	 * @param historicApi ApiDecoration used to retrieve the correct registry
 	 * @param includeActions whether or not to include `actions` field in the response.
 	 */
 	async operations(
 		hash: BlockHash,
+		historicApi: ApiDecoration<'promise'>,
 		includeActions: boolean
 	): Promise<BlocksTraceOperations> {
 		const [{ block }, traceResponse] = await Promise.all([
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
 			this.api.rpc.chain.getBlock(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS),
+			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
@@ -93,7 +96,7 @@ export class BlocksTraceService extends AbstractService {
 			const trace = new Trace(
 				this.api,
 				BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace),
-				block.registry
+				historicApi.registry
 			);
 
 			const { operations, actions } = trace.actionsAndOps();

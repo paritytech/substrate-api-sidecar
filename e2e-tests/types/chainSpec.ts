@@ -28,4 +28,5 @@ export interface IChains {
 	polkadot: ChainEndpoints;
 	westend: ChainEndpoints;
 	statemine: ChainEndpoints;
+	statemint: ChainEndpoints;
 }

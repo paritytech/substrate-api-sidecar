@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 11.3.2
+  version: 11.3.8
 tags:
 - name: accounts
 - name: blocks
@@ -1044,8 +1044,12 @@ paths:
       summary: |
         Get the status of the current auction.
       description: |
-        Returns an overview of the current of auction. There is only one auction
-        at a time. If there is no auction most fields will be `null`.
+        Returns an overview of the current auction. There is only one auction
+        at a time. If there is no auction most fields will be `null`. If the current
+        auction phase is in `vrfDelay` and you are looking to retrieve the latest winning
+        bids, it is advised to query one block before `finishEnd` in the `endingPeriod` phase
+        for that auction as there technically are no winners during the `vrfDelay` and thus 
+        the field is `null`.
       parameters:
       - name: at
         in: query

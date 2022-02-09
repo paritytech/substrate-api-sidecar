@@ -7,7 +7,9 @@ import {
 	PerClassValue,
 } from '../../types/chains-config';
 import { acalaDefinitions } from './acalaConsts';
+import { astarDefinitions } from './astarConsts';
 import { calamariDefinitions } from './calamariConsts';
+import { crustDefinitions } from './crustConsts';
 import {
 	dockMainnetDefinitions,
 	dockPoSMainnetDefinitions,
@@ -19,6 +21,8 @@ import { mantaDefinitions } from './mantaConsts';
 import { polkadotDefinitions } from './polkadotConsts';
 import { polymeshDefinitions } from './polymeshConsts';
 import { shidenDefinitions } from './shidenConsts';
+import { statemineDefinitions } from './statemineConsts';
+import { statemintDefinitions } from './statemintConsts';
 import { westendDefinitions } from './westendConsts';
 
 /**
@@ -84,6 +88,10 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(kusamaDefinitions);
 		case 'westend':
 			return generateBlockWeightStore(westendDefinitions);
+		case 'statemint':
+			return generateBlockWeightStore(statemintDefinitions);
+		case 'statemine':
+			return generateBlockWeightStore(statemineDefinitions);
 		case 'dock-main-runtime':
 			return generateBlockWeightStore(dockMainnetDefinitions);
 		case 'dock-pos-main-runtime':
@@ -92,6 +100,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(dockPoSTestnetDefinitions);
 		case 'shiden':
 			return generateBlockWeightStore(shidenDefinitions);
+		case 'astar':
+			return generateBlockWeightStore(astarDefinitions);
 		case 'calamari':
 			return generateBlockWeightStore(calamariDefinitions);
 		case 'karura':
@@ -100,6 +110,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(acalaDefinitions);
 		case 'manta':
 			return generateBlockWeightStore(mantaDefinitions);
+		case 'crust':
+			return generateBlockWeightStore(crustDefinitions);
 		default:
 			return {};
 	}

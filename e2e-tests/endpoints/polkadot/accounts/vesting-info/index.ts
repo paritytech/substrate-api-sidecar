@@ -6,6 +6,8 @@ import accountVestingInfo2413527 from './2413527.json';
 import accountVestingInfo4353425 from './4353425.json';
 import accountVestingInfo6413249 from './6413249.json';
 import accountVestingInfo7232861 from './7232861.json';
+import accountVestingInfo8000000 from './8000000.json';
+import accountVestingInfo8320000 from './8320000.json';
 
 export const polkadotAccountVestingInfoEndpoints = [
 	[
@@ -40,4 +42,12 @@ export const polkadotAccountVestingInfoEndpoints = [
 		'/accounts/15aKvwRqGVAwuBMaogtQXhuz9EQqUWsZJSAzomyb5xYwgBXA/vesting-info?at=7232861',
 		JSON.stringify(accountVestingInfo7232861),
 	], // v9110
+	[
+		'/accounts/15aKvwRqGVAwuBMaogtQXhuz9EQqUWsZJSAzomyb5xYwgBXA/vesting-info?at=8000000',
+		JSON.stringify(accountVestingInfo8000000),
+	], // v9122
+	[
+		'/accounts/15aKvwRqGVAwuBMaogtQXhuz9EQqUWsZJSAzomyb5xYwgBXA/vesting-info?at=8320000',
+		JSON.stringify(accountVestingInfo8320000),
+	], // v9130
 ];

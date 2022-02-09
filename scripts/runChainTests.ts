@@ -96,7 +96,10 @@ const main = async (args: Namespace): Promise<void> => {
 		// Test the e2e tests against statemine
 		const statemineTest = await launchChainTest('statemine');
 
-		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest);
+		// Test the e2e tests against statemint
+		const statemintTest = await launchChainTest('statemint');
+
+		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
 	}
 };
 
@@ -106,7 +109,7 @@ const main = async (args: Namespace): Promise<void> => {
 const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'kusama', 'westend', 'statemine'],
+	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],

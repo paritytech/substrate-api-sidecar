@@ -2,6 +2,7 @@ import { IChains } from '../types';
 import { kusamaEndpoints } from './kusama';
 import { polkadotEndpoints } from './polkadot';
 import { statemineEndpoints } from './statemine';
+import { statemintEndpoints } from './statemint';
 import { westendEndpoints } from './westend';
 
 export const endpoints: IChains = {
@@ -9,4 +10,5 @@ export const endpoints: IChains = {
 	polkadot: polkadotEndpoints,
 	westend: westendEndpoints,
 	statemine: statemineEndpoints,
+	statemint: statemintEndpoints,
 };

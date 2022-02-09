@@ -13,7 +13,7 @@ import {
 	WinningData,
 } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
-import { BN_ONE, BN_ZERO } from '@polkadot/util';
+import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -223,20 +223,46 @@ export class ParasService extends AbstractService {
 			phase: IOption<AuctionPhase>,
 			winning;
 		if (auctionInfoOpt.isSome) {
+			/**
+			 * If `AuctionInfo:::<T>:get()` is `Some`, it returns a tuple where the first item is the
+			 * lease period index that the first of the four contiguous lease periods
+			 * of an auction is for. The second is the block number when the auction will
+			 * 'being to end', i.e. the first block of the Ending Period of the auction
+			 */
 			[leasePeriodIndex, beginEnd] = auctionInfoOpt.unwrap();
-			const endingOffset = this.endingOffset(blockNumber, beginEnd);
 
-			const winningOpt = endingOffset
-				? await historicApi.query.auctions.winning<Option<WinningData>>(
-						endingOffset
-				  )
-				: await historicApi.query.auctions.winning<Option<WinningData>>(
-						// when we are not in the ending phase of the auction winning bids are stored at 0
-						0
-				  );
+			/**
+			 * End of current auctions endPeriod.
+			 */
+			finishEnd = beginEnd.add(endingPeriod);
+			/**
+			 * We determine what our phase is so we can decide how to calculate our
+			 * ending offset.
+			 */
+			if (finishEnd.lte(blockNumber)) {
+				phase = 'vrfDelay';
+			} else {
+				phase = beginEnd.gt(blockNumber) ? 'startPeriod' : 'endPeriod';
+			}
 
-			if (winningOpt.isSome) {
+			/**
+			 * The endingOffset according to polkadot has two potential phases
+			 * where this will be a valid block number. Both `startPeriod`, and `endPeriod`
+			 * have valid offsets.
+			 */
+			const endingOffset = this.endingOffset(
+				blockNumber,
+				beginEnd,
+				phase,
+				historicApi
+			);
+
+			if (endingOffset) {
 				const ranges = this.enumerateLeaseSets(historicApi, leasePeriodIndex);
+
+				const winningOpt = await historicApi.query.auctions.winning<
+					Option<WinningData>
+				>(endingOffset);
 
 				// zip the winning bids together with their enumerated `SlotRange` (aka `leaseSet`)
 				winning = winningOpt.unwrap().map((bid, idx) => {
@@ -254,14 +280,6 @@ export class ParasService extends AbstractService {
 				});
 			} else {
 				winning = null;
-			}
-
-			finishEnd = beginEnd.add(endingPeriod);
-
-			if (finishEnd.lt(blockNumber)) {
-				phase = 'vrfDelay';
-			} else {
-				phase = beginEnd.gt(blockNumber) ? 'startPeriod' : 'endPeriod';
 			}
 		} else {
 			leasePeriodIndex = null;
@@ -332,8 +350,10 @@ export class ParasService extends AbstractService {
 
 		const leasePeriod = historicApi.consts.slots.leasePeriod as BlockNumber;
 		const leasePeriodIndex = this.leasePeriodIndexAt(historicApi, blockNumber);
+		const leaseOffset =
+			(historicApi.consts.slots.leaseOffset as BlockNumber) || BN_ZERO;
 		const endOfLeasePeriod = leasePeriodIndex
-			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod)
+			? leasePeriodIndex.mul(leasePeriod).add(leasePeriod).add(leaseOffset)
 			: null;
 
 		return {
@@ -424,8 +444,15 @@ export class ParasService extends AbstractService {
 	 *
 	 * @param now current block number
 	 * @param beginEnd block number of the start of the auction's ending period
+	 * @param phase Current phase the auction is in
+	 * @param historicApi api specific to the queried blocks runtime
 	 */
-	private endingOffset(now: BN, beginEnd: IOption<BN>): IOption<BN> {
+	private endingOffset(
+		now: BN,
+		beginEnd: IOption<BN>,
+		phase: string,
+		historicApi: ApiDecoration<'promise'>
+	): IOption<BN> {
 		if (isNull(beginEnd)) {
 			return null;
 		}
@@ -435,7 +462,28 @@ export class ParasService extends AbstractService {
 			return null;
 		}
 
-		return now.sub(new BN(beginEnd)).iadd(BN_ONE);
+		/**
+		 * The length of each sample to take during the ending period.
+		 *
+		 * A sample can be represented by `afterEarlyEnd` / `sampleLength`.
+		 * When we are in the endingPeriod, the offset is represented by:
+		 * `sample`.
+		 *
+		 * If the current phase is in `vrfDelay`, and you are interested in
+		 * querying the winners of the auction that just finished, it is advised
+		 * to query the last block of the `endingPeriod`.
+		 */
+		const sampleLength = historicApi.consts.auctions
+			.sampleLength as BlockNumber;
+
+		switch (phase) {
+			case 'startPeriod':
+				return BN_ZERO;
+			case 'endPeriod':
+				return afterEarlyEnd.div(sampleLength);
+			default:
+				return null;
+		}
 	}
 
 	/**

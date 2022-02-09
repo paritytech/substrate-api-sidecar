@@ -17,7 +17,7 @@ const argv = process.argv.slice(0, 2);
 const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'kusama', 'westend', 'statemine'],
+	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 	default: 'polkadot',
 });
 parser.add_argument('--config', { default: './runtime-tests/jest.config.js' });

@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AugmentedConst } from '@polkadot/api/types';
-import { RpcPromiseResult } from '@polkadot/api/types/rpc';
+import { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
 import { GenericExtrinsic, u128 } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
@@ -93,7 +93,7 @@ const mockApi = {
 /**
  * For type casting mock getBlock functions so tsc does not complain
  */
-type GetBlock = RpcPromiseResult<
+type GetBlock = PromiseRpcResult<
 	(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>
 >;
 
@@ -360,14 +360,14 @@ describe('BlocksService', () => {
 			expect(() =>
 				blocksService['parseGenericCall'](
 					{} as unknown as GenericCall,
-					mockBlock789629.registry
+					mockHistoricApi.registry
 				)
 			).toThrow());
 
 		it('parses a simple balances.transfer', () => {
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](transfer, mockBlock789629.registry)
+					blocksService['parseGenericCall'](transfer, mockHistoricApi.registry)
 				)
 			).toBe(JSON.stringify(transferOutput));
 		});
@@ -401,7 +401,7 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](batch4, mockBlock789629.registry)
+					blocksService['parseGenericCall'](batch4, mockHistoricApi.registry)
 				)
 			).toBe(
 				JSON.stringify({
@@ -461,7 +461,7 @@ describe('BlocksService', () => {
 
 			expect(
 				JSON.stringify(
-					blocksService['parseGenericCall'](batch, mockBlock789629.registry)
+					blocksService['parseGenericCall'](batch, mockHistoricApi.registry)
 				)
 			).toEqual(
 				JSON.stringify({

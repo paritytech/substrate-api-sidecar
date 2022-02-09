@@ -1,0 +1,23 @@
+{
+    "at": {
+        "height": "340000",
+        "hash": "0xc7d3b99e839a32dccec1a3076290229503b77283da2a03a2ae9b6b5bc434e59f"
+    },
+    "authoringVersion": "1",
+    "transactionVersion": "4",
+    "implVersion": "0",
+    "specName": "statemint",
+    "specVersion": "601",
+    "chainType": {
+        "live": null
+    },
+    "properties": {
+        "ss58Format": null,
+        "tokenDecimals": [
+            "10"
+        ],
+        "tokenSymbol": [
+            "DOT"
+        ]
+    }
+}

@@ -2,7 +2,6 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
-import { AbstractInt } from '@polkadot/types/codec/AbstractInt';
 import {
 	AccountId32,
 	Block,
@@ -15,6 +14,7 @@ import {
 	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
+import { AbstractInt } from '@polkadot/types-codec';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { CalcFee } from '@substrate/calc';
@@ -126,6 +126,7 @@ export class BlocksService extends AbstractService {
 		const nonSanitizedExtrinsics = this.extractExtrinsics(
 			block,
 			events,
+			historicApi.registry,
 			extrinsicDocs
 		);
 
@@ -353,21 +354,16 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param block Block
 	 * @param events events fetched by `fetchEvents`
+	 * @param regsitry The corresponding blocks runtime registry
+	 * @param extrinsicDocs To include the extrinsic docs or not
 	 */
 	private extractExtrinsics(
 		block: Block,
 		events: Vec<EventRecord> | string,
+		registry: Registry,
 		extrinsicDocs: boolean
 	) {
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		// Note, if events is a string then there was an issue getting them from the node.
-		// In this case we try and create the calls with the registry on `block`.
-		// The block from `api.derive.chain.getBlock` has the most recent registry,
-		// which could cause issues with historical querries.
-		// On the other hand, we know `events` will have the correctly dated query
-		// since it is a storage query.
-		const registry =
-			typeof events === 'string' ? block.registry : events.registry;
 
 		return block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip, era } =
