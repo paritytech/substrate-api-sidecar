@@ -15,60 +15,6 @@ interface ExtrinsicResult {
 	blockHash: ExtrinsicStatus;
 }
 
-
-export const subscribe = async (
-	apiFn: PromiseRpcResult<
-		AugmentedRpc<
-			(extrinsic: IExtrinsic<AnyTuple>) => Observable<ExtrinsicStatus>
-		>
-	>,
-	reqCounter: number,
-	tx: Extrinsic,
-	timeCounter = 30
-): Promise<ExtrinsicStatus> => {
-	let count = 0;
-	let whileCounter = 0;
-	let isSubscribed = true;
-
-	const arr: ExtrinsicStatus[] = [];
-	const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-	/**
-	 * Subscribe to an api call.
-	 */
-	const unsub = await apiFn(tx, (res: ExtrinsicStatus) => {
-		arr.push(res);
-
-		if (++count === reqCounter) {
-			isSubscribed = false;
-			unsub();
-		} else if (res.isInBlock && res.isFinalized) {
-			isSubscribed = false;
-			unsub();
-		}
-	});
-
-	/**
-	 * Timer: DEFAULT 30s
-	 *
-	 * This is a timer that keeps the subscription alive for a given maximum amount of time.
-	 * If the `reqCounter` does not equal the `count` in this given amount of time, then it will exit
-	 * the subscription with a fail.
-	 */
-	while (isSubscribed) {
-		await timer(1000);
-		whileCounter += 1;
-
-		// 30 Seconds has gone by so we exit the subscription
-		if (whileCounter === timeCounter) {
-			isSubscribed = false;
-			unsub();
-		}
-	}
-
-	return arr[arr.length - 1];
-};
-
 export class TransactionSubmitAndWatchService extends AbstractService {
 	async submitAndWatchTransaction(
 		transaction: string
