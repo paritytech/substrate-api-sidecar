@@ -84,7 +84,7 @@ blocks = {
       print("Total completed requests: ", summary.requests)
       print("Failed requests: ", summary.errors.status)
       print("Timeouts: ", summary.errors.status)
-      print("Average latency: ", (latency.mean/1000).."s")
+      print("Average latency: ", (latency.mean/1000).."ms")
       print("--------------------------\n")
       print("Total completed requests: " .. requests .. "\n")
       print("Failed requests: " .. errors .. "\n")
@@ -93,7 +93,8 @@ blocks = {
       print("Max RequestTime(Latency):          "..(latency.max / 1000).."ms".."\n")
       print("Min RequestTime(Latency):          "..(latency.min / 1000).."ms".."\n")
       print("--------------------------\n")
-
+      print("AvgRequestTime(Latency,ms):        "..string.format("%.2f",latency.mean / 1000).."\n")
+      print("--------------------------\n")
       -- Save to a local txt file
     --   local file = io.open("./benchmarks/gcp-instance/sidecar-bench-results.txt", "w")
     --   file:write("Total completed requests: " .. requests .. "\n")

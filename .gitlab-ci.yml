@@ -110,13 +110,13 @@ build-bench:
   before_script:                   []
   variables:
     POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
-    BENCHMARK_DURATION:            "10m"                                   # Tests duration
+    BENCHMARK_DURATION:            "15m"                                   # Tests duration
     BENCHMARK_THREADS:             4                                       # Total number of threads to use
     BENCHMARK_CONNECTIONS:         12                                      # Total number of HTTP connections to keep open with each thread handling N = connections/threads
     BENCHMARK_TIMEOUT:             "120s"                                  # Record a timeout if a response is not received within this amount of time
     BENCHMARK_OPTS:                "--latency"                             # Additional options, --latency:     print detailed latency statistics
     BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
-  image:                           "alvicsam/sidecar-bench:3.0"
+  image:                           "paritytech/node-wrk:latest"
   script:
     - export SAS_SUBSTRATE_WS_URL=$POLKADOT_ADDRESS
     - yarn
