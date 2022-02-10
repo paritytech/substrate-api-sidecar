@@ -21,7 +21,9 @@ export class AccountsStakingInfoService extends AbstractService {
 		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.staking.bonded(stash), // Option<AccountId> representing the controller
-		]);
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
 
 		const at = {
 			hash,
@@ -39,7 +41,9 @@ export class AccountsStakingInfoService extends AbstractService {
 				historicApi.query.staking.ledger(controller),
 				historicApi.query.staking.payee(stash),
 				historicApi.query.staking.slashingSpans(stash),
-			]);
+			]).catch((err: Error) => {
+				throw this.createHttpErrorForAddr(stash, err);
+			});
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 

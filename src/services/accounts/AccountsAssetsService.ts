@@ -113,7 +113,9 @@ export class AccountsAssetsService extends AbstractService {
 		const [{ number }, assetApproval] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.assets.approvals(assetId, address, delegate),
-		]);
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 
 		let amount = null,
 			deposit = null;
@@ -148,10 +150,11 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await historicApi.query.assets.account(
-					assetId,
-					address
-				);
+				const assetBalance = await historicApi.query.assets
+					.account(assetId, address)
+					.catch((err: Error) => {
+						throw this.createHttpErrorForAddr(address, err);
+					});
 
 				/**
 				 * The following checks for three different cases:

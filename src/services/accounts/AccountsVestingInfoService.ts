@@ -28,7 +28,9 @@ export class AccountsVestingInfoService extends AbstractService {
 		const [{ number }, vesting] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.vesting.vesting(address),
-		]);
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 
 		const at = {
 			hash,
