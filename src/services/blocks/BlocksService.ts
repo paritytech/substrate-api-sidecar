@@ -709,6 +709,30 @@ export class BlocksService extends AbstractService {
 					} catch {
 						newArgs[paramName] = argument;
 					}
+				} else if (
+					paramName === 'call' &&
+					argument?.toRawType() === 'WrapperKeepOpaque<Call>'
+				) {
+					// multiSig.asMulti.args.call is also an WrapperKeepOpaque<Call> (Vec<u8>) that we
+					// serialize to a polkadot-js Call and parse so it is not a hex blob.
+					try {
+						const call = registry.createType('Call', argument.toHex());
+						newArgs[paramName] = this.parseGenericCall(call, registry);
+					} catch {
+						newArgs[paramName] = argument;
+					}
+				} else if (
+					paramName === 'call' &&
+					argument?.toRawType() === 'WrapperOpaque<Call>'
+				) {
+					// multiSig.asMulti.args.call is also an WrapperKeepOpaque<Call> (Vec<u8>) that we
+					// serialize to a polkadot-js Call and parse so it is not a hex blob.
+					try {
+						const call = registry.createType('Call', argument.toHex());
+						newArgs[paramName] = this.parseGenericCall(call, registry);
+					} catch {
+						newArgs[paramName] = argument;
+					}
 				} else {
 					newArgs[paramName] = argument;
 				}
