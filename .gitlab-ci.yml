@@ -32,6 +32,14 @@ stages:
   - deploy-staging
   - deploy-production
 
+.collect-artifacts:                &collect-artifacts
+  artifacts:
+    name:                          "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    when:                          on_success
+    expire_in:                     1 days
+    paths:
+      - ./artifacts/
+
 .dockerize:                        &dockerize
   stage:                           build
   image:                           quay.io/buildah/stable
@@ -98,6 +106,7 @@ build:
 
 build-bench:
   stage: build
+  <<:                              *collect-artifacts
   before_script:                   []
   variables:
     POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
@@ -106,7 +115,7 @@ build-bench:
     BENCHMARK_CONNECTIONS:         12                                      # Total number of HTTP connections to keep open with each thread handling N = connections/threads
     BENCHMARK_TIMEOUT:             "120s"                                  # Record a timeout if a response is not received within this amount of time
     BENCHMARK_OPTS:                "--latency"                             # Additional options, --latency:     print detailed latency statistics
-    BENCHMARK_SCRIPT:              "./ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
+    BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
   image:                           "alvicsam/sidecar-bench:3.0"
   script:
     - export SAS_SUBSTRATE_WS_URL=$POLKADOT_ADDRESS
@@ -119,7 +128,10 @@ build-bench:
           -c${BENCHMARK_CONNECTIONS}
           --timeout ${BENCHMARK_TIMEOUT}
           ${BENCHMARK_OPTS}
-          -s ${BENCHMARK_SCRIPT} "http://127.0.0.1:8080"
+          -s ${BENCHMARK_SCRIPT} "http://127.0.0.1:8080" > result.txt
+    - cat result.txt
+    - mkdir artifacts/
+    - mv result.txt artifacts/
   tags:
     - kubernetes-parity-build
 
