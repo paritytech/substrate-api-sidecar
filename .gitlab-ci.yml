@@ -51,13 +51,13 @@ stages:
     paths:
       - ./artifacts/
 
-.test-pr-refs:                     &test-pr-refs
+.test-refs:                     &test-refs
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
       when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
-.test-pr-refs-manual:              &test-pr-refs-manual
+.test-refs-manual:              &test-refs-manual
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
       when: never
@@ -140,7 +140,7 @@ build:
 # checks that dockerimage can be built without publishing
 build-pr:
   <<:                              *dockerize
-  <<:                              *test-pr-refs
+  <<:                              *test-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - |-
@@ -212,7 +212,7 @@ benchmark:
 # manual step to run benchmarks in PR pipeline
 benchmark-manual-pr:
   <<:                              *benchmark-template
-  <<:                              *test-pr-refs
+  <<:                              *test-refs-manual
   needs:
     - build-pr
 
