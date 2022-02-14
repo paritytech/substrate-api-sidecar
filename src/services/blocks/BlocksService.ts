@@ -700,30 +700,16 @@ export class BlocksService extends AbstractService {
 					newArgs[paramName] = this.parseArrayGenericCalls(argument, registry);
 				} else if (argument instanceof GenericCall) {
 					newArgs[paramName] = this.parseGenericCall(argument, registry);
-				} else if (paramName === 'call' && argument?.toRawType() === 'Bytes') {
+				} else if (
+					argument &&
+					paramName === 'call' &&
+					['Bytes', 'WrapperKeepOpaque<Call>', 'WrapperOpaque<Call>'].includes(
+						argument?.toRawType()
+					)
+				) {
 					// multiSig.asMulti.args.call is either an OpaqueCall (Vec<u8>),
 					// WrapperKeepOpaque<Call>, or WrapperOpaque<Call> that we
 					// serialize to a polkadot-js Call and parse so it is not a hex blob.
-					try {
-						const call = registry.createType('Call', argument.toHex());
-						newArgs[paramName] = this.parseGenericCall(call, registry);
-					} catch {
-						newArgs[paramName] = argument;
-					}
-				} else if (
-					paramName === 'call' &&
-					argument?.toRawType() === 'WrapperKeepOpaque<Call>'
-				) {
-					try {
-						const call = registry.createType('Call', argument.toHex());
-						newArgs[paramName] = this.parseGenericCall(call, registry);
-					} catch {
-						newArgs[paramName] = argument;
-					}
-				} else if (
-					paramName === 'call' &&
-					argument?.toRawType() === 'WrapperOpaque<Call>'
-				) {
 					try {
 						const call = registry.createType('Call', argument.toHex());
 						newArgs[paramName] = this.parseGenericCall(call, registry);
