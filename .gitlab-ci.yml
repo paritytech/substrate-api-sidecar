@@ -133,6 +133,7 @@ build:
 # checks that dockerimage can be built without publishing
 build-pr:
   <<:                              *dockerize
+  <<:                              *test-pr-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - |-
@@ -167,8 +168,6 @@ deploy-production:
   stage: benchmark
   <<:                              *collect-artifacts
   <<:                              *kubernetes-env
-  needs:
-    - build-pr
   before_script:                   []
   variables:
     POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
@@ -199,16 +198,21 @@ deploy-production:
 
 benchmark:
   <<:                              *benchmark-template
-  <<:                              *test-pr-refs
+  <<:                              *publish-refs
+  needs:
+    - build
 
-# manual step to run in PR or master pipeline
-benchmark-manual:
+# manual step to run benchmarks in PR pipeline
+benchmark-manual-pr:
   <<:                              *benchmark-template
+  <<:                              *test-pr-refs
+  needs:
+    - build-pr
   when:                            manual
 
-push-benchmark:
-  stage: push-benchmark
-  <<:                              *test-pr-refs
+check-benchmark:
+  stage: check-benchmark
+  <<:                              *publish-refs
   <<:                              *kubernetes-env
   needs:
     - benchmark
@@ -216,14 +220,26 @@ push-benchmark:
     PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
+    - echo "TBD"
+
+push-benchmark:
+  stage: push-benchmark
+  <<:                              *publish-refs
+  <<:                              *kubernetes-env
+  needs:
+    - check-benchmark
+  variables:
+    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    CI_IMAGE:                      "paritytech/benchmarks:latest"
+  script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - push_bench_result -t test
+    - push_bench_result -t common
                         -p $CI_PROJECT_NAME
                         -n sidecar
                         -r $RESULT
                         -u ms
                         -s $PROMETHEUS_URL
-    - push_bench_result -t test
+    - push_bench_result -t specific
                         -p $CI_PROJECT_NAME
                         -n sidecar
                         -r $RESULT
