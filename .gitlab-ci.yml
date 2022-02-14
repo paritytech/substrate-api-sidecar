@@ -16,8 +16,16 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
+  CI_IMAGE:                        "quay.io/buildah/stable"
 
 default:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - unknown_failure
+      - api_failure
+  interruptible:                   true
   before_script:
     - |-
       if [[ $CI_COMMIT_TAG =~ ^v[0-9]+\.[0-9]+.*$ ]]; then
@@ -59,7 +67,12 @@ stages:
 
 .dockerize:                        &dockerize
   stage:                           build
-  image:                           quay.io/buildah/stable
+  image:                           $CI_IMAGE
+  tags:
+    - kubernetes-parity-build
+
+.kubernetes-env:                   &kubernetes-env
+  image:                           $CI_IMAGE
   tags:
     - kubernetes-parity-build
 
@@ -138,6 +151,7 @@ benchmark:
   stage: benchmark
   <<:                              *collect-artifacts
   <<:                              *test-pr-refs
+  <<:                              *kubernetes-env
   needs:
     - build-pr
   before_script:                   []
@@ -149,7 +163,7 @@ benchmark:
     BENCHMARK_TIMEOUT:             "120s"                                  # Record a timeout if a response is not received within this amount of time
     BENCHMARK_OPTS:                "--latency"                             # Additional options, --latency:     print detailed latency statistics
     BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
-  image:                           "paritytech/node-wrk:latest"
+    CI_IMAGE:                      "paritytech/node-wrk:latest"
   script:
     - export SAS_SUBSTRATE_WS_URL=$POLKADOT_ADDRESS
     - yarn
@@ -171,11 +185,12 @@ benchmark:
 push-benchmark:
   stage: push-benchmark
   <<:                              *test-pr-refs
+  <<:                              *kubernetes-env
   needs:
     - benchmark
-  image:                           "paritytech/benchmarks:latest"
   variables:
     PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
     - push_bench_result -t test
