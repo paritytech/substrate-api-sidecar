@@ -57,6 +57,13 @@ stages:
       when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
+.test-pr-refs-manual:              &test-pr-refs-manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      when: manual
+
 .publish-refs:                     &publish-refs
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
@@ -208,7 +215,6 @@ benchmark-manual-pr:
   <<:                              *test-pr-refs
   needs:
     - build-pr
-  when:                            manual
 
 check-benchmark:
   stage: check-benchmark
