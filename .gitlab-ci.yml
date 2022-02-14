@@ -31,6 +31,9 @@ stages:
   - build
   - deploy-staging
   - deploy-production
+  - benchmark
+  - check-benchmark
+  - push-benchmark
 
 .collect-artifacts:                &collect-artifacts
   artifacts:
@@ -40,14 +43,23 @@ stages:
     paths:
       - ./artifacts/
 
+.test-pr-refs:                     &test-pr-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+
+.publish-refs:                     &publish-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_REF_NAME == "master"
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
+
 .dockerize:                        &dockerize
   stage:                           build
   image:                           quay.io/buildah/stable
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'         # # i.e. v1.0, v2.1rc1
-      when: always
-    - if: '$CI_COMMIT_REF_NAME == "master"'
-      when: always
   tags:
     - kubernetes-parity-build
 
@@ -80,6 +92,7 @@ stages:
 
 build:
   <<:                              *dockerize
+  <<:                              *publish-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - |-
@@ -104,9 +117,29 @@ build:
         buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
       fi
 
-build-bench:
-  stage: build
+# checks that dockerimage can be built without publishing
+build-pr:
+  <<:                              *dockerize
+  script:
+    - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+    - |-
+      if [[ $BUILD_LATEST_IMAGE ]]; then
+        buildah bud \
+        --format=docker \
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" \
+        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY"
+      else
+        buildah bud \
+        --format=docker \
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY"
+      fi
+
+benchmark:
+  stage: benchmark
   <<:                              *collect-artifacts
+  <<:                              *test-pr-refs
+  needs:
+    - build-pr
   before_script:                   []
   variables:
     POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
@@ -135,14 +168,30 @@ build-bench:
   tags:
     - kubernetes-parity-build
 
+push-benchmark:
+  stage: push-benchmark
+  <<:                              *test-pr-refs
+  needs:
+    - benchmark
+  image:                           "paritytech/benchmarks:latest"
+  variables:
+    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+  script:
+    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
+    - push_bench_result -t test
+                        -p $CI_PROJECT_NAME
+                        -n sidecar
+                        -r $RESULT
+                        -u ms
+                        -s $PROMETHEUS_URL
+
+
 deploy-staging:
   stage:                           deploy-staging
   <<:                              *deploy-k8s
+  <<:                              *publish-refs
   environment:
     name:                          parity-stg
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'       # i.e. v1.0, v2.1rc1
-    - if: '$CI_COMMIT_REF_NAME == "master"'
 
 deploy-production:
   stage:                           deploy-production
@@ -150,5 +199,5 @@ deploy-production:
   environment:
     name:                          parity-chains
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'       # i.e. v1.0, v2.1rc1
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
       when: manual
