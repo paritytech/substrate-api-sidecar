@@ -115,26 +115,24 @@ build:
   <<:                              *publish-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-    - |-
-      if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud \
-        --format=docker \
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" \
-        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY"
+    - if [[ $BUILD_LATEST_IMAGE ]]; then
+        buildah bud
+        --format=docker
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud \
-        --format=docker \
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY"
+        buildah bud
+        --format=docker
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
     - echo ${Docker_Hub_Pass_Parity} |
         buildah login --username ${Docker_Hub_User_Parity} --password-stdin docker.io
     - echo pushing "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-    - |-
-      if [[ $BUILD_LATEST_IMAGE ]]; then
+    - if [[ $BUILD_LATEST_IMAGE ]]; then
         buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-        buildah push --format=v2s2 "$CONTAINER_REPO:latest"
+        buildah push --format=v2s2 "$CONTAINER_REPO:latest";
       else
-        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
       fi
 
 # checks that dockerimage can be built without publishing
@@ -143,16 +141,15 @@ build-pr:
   <<:                              *test-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-    - |-
-      if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud \
-        --format=docker \
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" \
-        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY"
+    - if [[ $BUILD_LATEST_IMAGE ]]; then
+        buildah bud
+        --format=docker
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud \
-        --format=docker \
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY"
+        buildah bud
+        --format=docker
+        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
 
 deploy-staging:
