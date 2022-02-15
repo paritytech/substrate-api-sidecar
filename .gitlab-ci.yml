@@ -217,6 +217,7 @@ check-benchmark:
   stage: check-benchmark
   <<:                              *publish-refs
   <<:                              *kubernetes-env
+  <<:                              *collect-artifacts
   needs:
     - benchmark
   variables:
@@ -230,7 +231,8 @@ push-benchmark:
   <<:                              *publish-refs
   <<:                              *kubernetes-env
   needs:
-    - check-benchmark
+    - job:                         check-benchmark
+      artifacts:                   true
   variables:
     PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
