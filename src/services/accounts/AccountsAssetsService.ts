@@ -113,7 +113,9 @@ export class AccountsAssetsService extends AbstractService {
 		const [{ number }, assetApproval] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.assets.approvals(assetId, address, delegate),
-		]);
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 
 		let amount = null,
 			deposit = null;
@@ -211,7 +213,9 @@ export class AccountsAssetsService extends AbstractService {
 					isSufficient: historicApi.registry.createType('bool', false),
 				};
 			})
-		);
+		).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 	}
 
 	/**
