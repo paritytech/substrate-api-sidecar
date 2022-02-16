@@ -150,11 +150,10 @@ export class AccountsAssetsService extends AbstractService {
 	): Promise<IAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await historicApi.query.assets
-					.account(assetId, address)
-					.catch((err: Error) => {
-						throw this.createHttpErrorForAddr(address, err);
-					});
+				const assetBalance = await historicApi.query.assets.account(
+					assetId,
+					address
+				);
 
 				/**
 				 * The following checks for three different cases:
@@ -214,7 +213,9 @@ export class AccountsAssetsService extends AbstractService {
 					isSufficient: historicApi.registry.createType('bool', false),
 				};
 			})
-		);
+		).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 	}
 
 	/**

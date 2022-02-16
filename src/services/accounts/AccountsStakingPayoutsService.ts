@@ -116,7 +116,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			startEra,
 			// Create an array of `DeriveEraExposure`
 			allErasGeneral.map((eraGeneral) => eraGeneral[0])
-		);
+		).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 
 		// Group together data by Era so we can easily associate parts that are used congruently downstream
 		const allEraData = allErasGeneral.map(
