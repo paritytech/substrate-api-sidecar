@@ -1781,7 +1781,7 @@ components:
       properties:
         pallet:
           type: string
-        methodName:
+        method:
           type: string
       description: Extrinsic method
     Extrinsic:
