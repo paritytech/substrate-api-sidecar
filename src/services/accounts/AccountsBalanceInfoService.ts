@@ -7,8 +7,7 @@ import {
 	BlockHash,
 	Index,
 } from '@polkadot/types/interfaces';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { BadRequest, HttpError } from 'http-errors';
+import { BadRequest } from 'http-errors';
 import { IAccountBalanceInfo } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -47,7 +46,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				historicApi.query.balances.reservedBalance(address) as Promise<Balance>,
 				historicApi.query.system.accountNonce(address) as Promise<Index>,
 			]).catch((err: Error) => {
-				throw this.createHttpError(address, err);
+				throw this.createHttpErrorForAddr(address, err);
 			});
 
 			// Values dont exist for these historic runtimes
@@ -79,7 +78,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				historicApi.query.system.account(address),
 				historicApi.query.balances.locks(address),
 			]).catch((err: Error) => {
-				throw this.createHttpError(address, err);
+				throw this.createHttpErrorForAddr(address, err);
 			});
 
 			const {
@@ -118,7 +117,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				historicApi.query.balances.locks(address),
 				historicApi.query.system.account(address),
 			]).catch((err: Error) => {
-				throw this.createHttpError(address, err);
+				throw this.createHttpErrorForAddr(address, err);
 			});
 
 			accountData =
@@ -171,19 +170,5 @@ export class AccountsBalanceInfoService extends AbstractService {
 		} else {
 			throw new BadRequest('Account not found');
 		}
-	}
-
-	/**
-	 * Returns HttpError with the correct err message for querying accounts balances.
-	 *
-	 * @param address Address that was queried
-	 * @param err Error returned from the promise
-	 */
-	private createHttpError(address: string, err: Error): HttpError {
-		return isEthereumAddress(address)
-			? new BadRequest(
-					`Etheurem addresses may not be supported on this network: ${err.message}`
-			  )
-			: new BadRequest(err.message);
 	}
 }

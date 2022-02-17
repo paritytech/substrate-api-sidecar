@@ -170,11 +170,7 @@ describe('BlocksService', () => {
 
 			await expect(
 				blocksService.fetchBlock(blockHash789629, mockHistoricApi, options)
-			).rejects.toThrow(
-				new Error(
-					`Cannot destructure property 'method' of 'extrinsic' as it is undefined.`
-				)
-			);
+			).rejects.toThrowError(TypeError);
 
 			mockApi.rpc.chain.getBlock = tempGetBlock as unknown as GetBlock;
 		});
