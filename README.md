@@ -289,15 +289,10 @@ Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](.
 
 All the commits in this repo follow the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#summary). When merging a PR, make sure 1) to use squash merge and 2) that the title of the PR follows the Conventional Commits spec.
 
-### Releases
+### Updating polkadot-js dependencies
 
-#### Preparation
-
-1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
-
-1. Checkout a branch with the format `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
-
-1. Ensure we have the latest polkadot-js dependencies. Note: Every monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, and read the release notes for any breaking changes, or high priority updates. You can use the following command `yarn upgrade-interactive` to find and update all available releases. Feel free to update other packages that are available for upgrade if reasonable. To upgrade just `@polkadot` scoped deps use `yarn up "@polkadot/*"`
+1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, 
+and read the release notes for any breaking changes or high priority updates.  You can use the following command `yarn upgrade-interactive` to find and update all available releases. To Upgrade just `@polkadot` scoped deps use `yarn up @polkadot/*`.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
@@ -305,9 +300,23 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions.
+1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions. You will have to run `yarn` again to ensure the dependency `cache`, and `yarn.lock` have the correct versions. 
 
-1. After updating the dependencies and resolutions (if applicable), the next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. If you would like to test on an individual chain, you may run the same command followed by its chain, ex: `yarn test:init-e2e-tests:polkadot`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+1. Ensure everything is working by running the following tests, `yarn build`, `yarn lint`, `yarn test`, `yarn test:init-e2e-tests`.
+
+1. Lastly, create a PR with the updates. 
+
+### Releases
+
+#### Preparation
+
+1. Make sure the polkadot-js dependencies are up to date. Refer to the "Updating polkadot-js dependencies" if they need to be updated.
+
+1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
+
+1. Checkout a branch with the format `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
+
+1. The next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:init-e2e-tests`. If you would like to test on an individual chain, you may run the same command followed by its chain, ex: `yarn test:init-e2e-tests:polkadot`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
     Note: that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running tests just for the chain that failed with something like `yarn test:init-e2e-tests:polkadot`.
 
@@ -315,7 +324,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`.
 
-1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API.
+1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API. It will also help to sort previous PR's by "recently updated" in order to see all PR's merged since the last release. 
 
     Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 
