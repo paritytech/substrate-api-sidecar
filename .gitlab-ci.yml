@@ -219,12 +219,18 @@ check-benchmark:
   <<:                              *kubernetes-env
   <<:                              *collect-artifacts
   needs:
-    - benchmark
+    - job:                         benchmark
+      artifacts:                   true
   variables:
-    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
+    THRESHOLD:                     13000
+    GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
   script:
-    - echo "TBD"
+    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
+    - check_single_bench_result.py -g $GITHUB_REPO
+                                   -c $THRESHOLD
+                                   -v $RESULT
 
 push-benchmark:
   stage: push-benchmark
