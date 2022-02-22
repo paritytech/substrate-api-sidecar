@@ -228,9 +228,9 @@ check-benchmark:
     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - check_single_bench_result.py -g $GITHUB_REPO
-                                   -c $THRESHOLD
-                                   -v $RESULT
+    - check_single_bench_result -g $GITHUB_REPO
+                                -c $THRESHOLD
+                                -v $RESULT
 
 push-benchmark:
   stage: push-benchmark
