@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Docs
 
 - docs: fix methodName -> method ([#848](https://github.com/paritytech/substrate-api-sidecar/pull/848)) ([10008c1](https://github.com/paritytech/substrate-api-sidecar/commit/10008c1f2260c92477e05d66f79a4cbffd039c11))
-- docs: docs: seperate the release process from updating polkadot-js deps ([#837](https://github.com/paritytech/substrate-api-sidecar/pull/837)) ([268de8d](https://github.com/paritytech/substrate-api-sidecar/commit/268de8d9902ec6ffe09b8ddd740247f6a89d167c))
+- docs: seperate the release process from updating polkadot-js deps ([#837](https://github.com/paritytech/substrate-api-sidecar/pull/837)) ([268de8d](https://github.com/paritytech/substrate-api-sidecar/commit/268de8d9902ec6ffe09b8ddd740247f6a89d167c))
 - docs: transition to webpack 5, and bump deps ([#839](https://github.com/paritytech/substrate-api-sidecar/pull/839)) ([248642d](https://github.com/paritytech/substrate-api-sidecar/commit/248642ddaa0cdb1373064e3c4dc16806683c6486))
 
 ### CI
