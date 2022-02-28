@@ -8,6 +8,7 @@ import {
 } from '../../types/chains-config';
 import { acalaDefinitions } from './acalaConsts';
 import { astarDefinitions } from './astarConsts';
+import { bifrostDefinitions } from './bifrostConsts';
 import { calamariDefinitions } from './calamariConsts';
 import { crustDefinitions } from './crustConsts';
 import {
@@ -112,6 +113,8 @@ export function getBlockWeight(specName: string): BlockWeightStore {
 			return generateBlockWeightStore(mantaDefinitions);
 		case 'crust':
 			return generateBlockWeightStore(crustDefinitions);
+		case 'bifrost':
+			return generateBlockWeightStore(bifrostDefinitions);
 		default:
 			return {};
 	}

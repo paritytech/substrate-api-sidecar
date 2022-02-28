@@ -6,6 +6,7 @@ import { controllers } from '../controllers';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { astarControllers } from './astarControllers';
+import { bifrostControllers } from './bifrostControllers';
 import { calamariControllers } from './calamariControllers';
 import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
@@ -49,6 +50,7 @@ const specToControllerMap = {
 	acala: acalaControllers,
 	manta: mantaControllers,
 	crust: crustControllers,
+	bifrost: bifrostControllers,
 };
 
 /**

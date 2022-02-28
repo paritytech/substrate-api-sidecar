@@ -69,6 +69,8 @@ impl Multiplier {
             ("acala", _v) => V2(new_u128(inner)),
             ("crust", _v) => V2(new_u128(inner)),
 
+            ("bifrost", _v) => V2(new_u128(inner)),
+
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);
                 return None;
@@ -263,7 +265,7 @@ mod test_fees {
         // Test against V2 calc
         assert_eq!(Multiplier::calc(&V2(new_u128(inner)), 1000000000000), 500);
 
-        // Test against V1 calc 
+        // Test against V1 calc
         assert_eq!(Multiplier::calc(&V1((new_i128(inner), false)), 1000000000), 1000000000);
         assert_eq!(Multiplier::calc(&V1((new_i128(inner), true)), 1000000000), 1000000000);
 
