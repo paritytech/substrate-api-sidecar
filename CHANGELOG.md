@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.12](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.11..v11.3.12) (2022-02-28)
+
+**Upgrade Priority** Low (Fixes Docker release, and CI Build. This is a mirror release of 11.3.11)
+
+## CI
+
+- fix(bug): fix build ([#855](https://github.com/paritytech/substrate-api-sidecar/pull/855)) ([daa35bf](https://github.com/paritytech/substrate-api-sidecar/commit/daa35bfbe650a54b849cdb0abf22353f5b5507eb))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9160
+- Kusama v9160
+- Westend v9160
+
 ## [11.3.11](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.10..v11.3.11) (2022-02-24)
 
 **Upgrade Priority** Low
