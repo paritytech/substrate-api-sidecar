@@ -56,7 +56,7 @@
     "@polkadot/api": "^7.10.1",
     "@polkadot/apps-config": "^0.107.1",
     "@polkadot/util-crypto": "^8.4.1",
-    "@substrate/calc": "^0.2.7",
+    "@substrate/calc": "^0.2.8",
     "argparse": "^2.0.1",
     "confmgr": "1.0.7",
     "express": "^4.17.1",
