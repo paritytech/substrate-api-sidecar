@@ -1466,7 +1466,7 @@ __metadata:
     "@polkadot/api": ^7.10.1
     "@polkadot/apps-config": ^0.107.1
     "@polkadot/util-crypto": ^8.4.1
-    "@substrate/calc": ^0.2.7
+    "@substrate/calc": ^0.2.8
     "@substrate/dev": ^0.5.7
     "@types/argparse": 2.0.10
     "@types/express": 4.17.13
@@ -1489,10 +1489,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@substrate/calc@npm:^0.2.7":
-  version: 0.2.7
-  resolution: "@substrate/calc@npm:0.2.7"
-  checksum: f886ca866e790a19d9c98223710abef97e57981bae093e1b26d9f7b887622616eaccd4c2bfc15ea8b372556d7cfc5e9b510888f2da640f4623fa3338794cfe20
+"@substrate/calc@npm:^0.2.8":
+  version: 0.2.8
+  resolution: "@substrate/calc@npm:0.2.8"
+  checksum: 92f9fe8fda4bfd9c02a5f56066568941aa18803c4a43a7891c993be70c0d33be7a178d121d8ced18c02dc02dbfa7cddea390de855ed0ac5d7fa82743f6bd075b
   languageName: node
   linkType: hard
 
