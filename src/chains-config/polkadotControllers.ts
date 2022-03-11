@@ -14,6 +14,7 @@ export const polkadotControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksTrace',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
