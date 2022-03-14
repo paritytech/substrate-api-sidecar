@@ -85,7 +85,7 @@
     "@polkadot/types-known": "7.12.1",
     "@polkadot/util": "8.5.1",
     "@polkadot/util-crypto": "8.5.1",
-    "@polkadot/wasm-crypto": "4.5.1",
+    "@polkadot/wasm-crypto": "4.6.1",
     "bn.js": "5.2.0",
     "node-fetch": "2.6.7",
     "prismjs": ">=1.23.0",
