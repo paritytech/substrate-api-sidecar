@@ -3,7 +3,7 @@ import { perClassCommonParachains } from './commonParachainsConsts';
 
 export const statemintDefinitions: MetadataConsts[] = [
 	{
-		runtimeVersions: [2, 601],
+		runtimeVersions: [2, 601, 700],
 		perClass: perClassCommonParachains,
 	},
 ];
