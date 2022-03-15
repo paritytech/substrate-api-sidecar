@@ -9,7 +9,7 @@ import { perClass } from './substrateConsts';
  */
 export const statemineDefinitions: MetadataConsts[] = [
 	{
-		runtimeVersions: [601],
+		runtimeVersions: [601, 700],
 		perClass: perClassCommonParachains,
 	},
 	{
