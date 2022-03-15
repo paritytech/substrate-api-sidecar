@@ -95,10 +95,10 @@ node_modules/.bin/substrate-api-sidecar
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
 In the full endpoints doc, you will also find the following `trace` related endpoints : 
-- /experimental/blocks/{blockId}/traces/operations?actions=false
-- /experimental/blocks/head/traces/operations?actions=false
-- /experimental/blocks/{blockId}/traces
-- /experimental/blocks/head/traces
+- `/experimental/blocks/{blockId}/traces/operations?actions=false`
+- `/experimental/blocks/head/traces/operations?actions=false`
+- `/experimental/blocks/{blockId}/traces`
+- `/experimental/blocks/head/traces`
 
 To have access to these endpoints you need to :
 1. Run your node with the flag `—unsafe-rpc-external`
