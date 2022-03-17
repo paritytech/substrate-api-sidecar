@@ -1,0 +1,168 @@
+{
+    "at": {
+        "hash": "0x7bac95c8d083d757b486e30a65b0eaf53d3d7ba283ccc1ba9c41c0f2d2fcced8",
+        "height": "11500000"
+    },
+    "paras": [
+        {
+            "paraId": "2096",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2094",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2100",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2009",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2086",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2021",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2106",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2085",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2001",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2089",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2084",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2080",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2008",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2000",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2105",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2077",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2048",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2092",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2024",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2108",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2015",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2018",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2011",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2004",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2019",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2007",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "1001",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2095",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "1000",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2087",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2102",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2016",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2107",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2090",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2023",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2012",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2078",
+            "paraLifecycle": "Parathread"
+        },
+        {
+            "paraId": "2088",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2101",
+            "paraLifecycle": "Parachain"
+        },
+        {
+            "paraId": "2013",
+            "paraLifecycle": "Parathread"
+        }
+    ]
+}

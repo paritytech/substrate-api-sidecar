@@ -5,6 +5,10 @@ import accountsStakingInfo8000000 from './8000000.json';
 import accountsStakingInfo9500000 from './9500000.json';
 import accountsStakingInfo9894877 from './9894877.json';
 import accountsStakingInfo10819301 from './10819301.json';
+import accountsStakingInfo11000000 from './11000000.json';
+import accountsStakingInfo11100000 from './11100000.json';
+import accountsStakingInfo11500000 from './11500000.json';
+import accountsStakingInfo11800000 from './11800000.json';
 
 export const kusamaAccountStakingInfoEndpoints = [
 	[
@@ -34,5 +38,21 @@ export const kusamaAccountStakingInfoEndpoints = [
 	[
 		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=10819301',
 		JSON.stringify(accountsStakingInfo10819301),
-	],
+	], // v9130
+	[
+		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=11000000',
+		JSON.stringify(accountsStakingInfo11000000),
+	], // v9150
+	[
+		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=11100000',
+		JSON.stringify(accountsStakingInfo11100000),
+	], // v9151
+	[
+		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=11500000',
+		JSON.stringify(accountsStakingInfo11500000),
+	], // v9160
+	[
+		'/accounts/HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK/staking-info?at=11800000',
+		JSON.stringify(accountsStakingInfo11800000),
+	], // v9170
 ];

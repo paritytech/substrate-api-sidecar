@@ -5,6 +5,10 @@ import accountVestingInfo7523076 from './7523076.json';
 import accountVestingInfo9123076 from './9123076.json';
 import accountVestingInfo9625129 from './9625129.json';
 import accountVestingInfo10819301 from './10819301.json';
+import accountVestingInfo11000000 from './11000000.json';
+import accountVestingInfo11100000 from './11100000.json';
+import accountVestingInfo11500000 from './11500000.json';
+import accountVestingInfo11800000 from './11800000.json';
 
 export const kusamaAccountVestingInfoEndpoints = [
 	[
@@ -35,4 +39,20 @@ export const kusamaAccountVestingInfoEndpoints = [
 		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=10819301',
 		JSON.stringify(accountVestingInfo10819301),
 	], // v9130
+	[
+		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=11000000',
+		JSON.stringify(accountVestingInfo11000000),
+	], // v9150
+	[
+		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=11100000',
+		JSON.stringify(accountVestingInfo11100000),
+	], // v9151
+	[
+		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=11500000',
+		JSON.stringify(accountVestingInfo11500000),
+	], // v9160
+	[
+		'/accounts/D3icRvk43Bj69ChTPkx5v4pEQKGqDY95hHXiBB1JBFVwtvP/vesting-info?at=11800000',
+		JSON.stringify(accountVestingInfo11800000),
+	], // v9170
 ];

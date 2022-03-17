@@ -1,0 +1,44 @@
+{
+    "at": {
+        "hash": "0xf74c318db32091a1460bf46842b95728e2dc61df7e6c6495cad8725cda14f48f",
+        "height": "11100000"
+    },
+    "paraLifecycle": "Parachain",
+    "leases": [
+        {
+            "leasePeriodIndex": "18",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "19",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "20",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "21",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "22",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "23",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        },
+        {
+            "leasePeriodIndex": "24",
+            "account": "F3opxRbN5ZZRfqouuYZvGupitD5xPhowpB913qGb6gN8Z7L",
+            "deposit": "140949890361938436"
+        }
+    ]
+}
