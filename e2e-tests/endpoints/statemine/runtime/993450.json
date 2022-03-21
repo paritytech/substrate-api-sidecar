@@ -12,7 +12,7 @@
         "live": null
     },
     "properties": {
-        "ss58Format": null,
+        "ss58Format": "2",
         "tokenDecimals": [
             "12"
         ],
