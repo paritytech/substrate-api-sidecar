@@ -1,5 +1,6 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromise } from '@polkadot/api';
 import { StorageEntryBase } from '@polkadot/api/types';
+import { WsProvider } from '@polkadot/rpc-provider/ws';
 import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
@@ -9,6 +10,8 @@ import {
 	Registry,
 } from '@polkadot/types/types';
 import { Observable } from 'rxjs';
+
+jest.mock('@polkadot/rpc-provider/ws'); // WsProvider is now a mock constructor
 
 /**
  * Type to fulfill StorageEntryBase regarding storage keys
@@ -29,11 +32,13 @@ export function createApiWithAugmentations(
 ): ApiPromise {
 	const registry = new TypeRegistry();
 	const expandedMetadata = new Metadata(registry, metadata);
+	const WsProviderMock = WsProvider as jest.MockedClass<typeof WsProvider>;
+	const provider = new WsProviderMock();
 
 	registry.setMetadata(expandedMetadata);
 
 	const api = new ApiPromise({
-		provider: new WsProvider('ws://', false),
+		provider,
 		registry,
 	});
 
