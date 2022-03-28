@@ -1,0 +1,14 @@
+{
+    "at": {
+        "hash": "0xa3c04d6812741314b6b089de8a25f36e4f28b04b651aa787653132becc2bb1ae",
+        "height": "1300000"
+    },
+    "assets": [
+        {
+            "assetId": "11",
+            "balance": "690000000000000",
+            "isFrozen": false,
+            "isSufficient": false
+        }
+    ]
+}

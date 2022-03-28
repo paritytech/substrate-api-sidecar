@@ -7,6 +7,9 @@ import accountBalance6574738 from './6574738.json';
 import accountBalance7241122 from './7241122.json';
 import accountBalance8000000 from './8000000.json';
 import accountBalance8320000 from './8320000.json';
+import accountBalance8500000 from './8500000.json';
+import accountBalance9000000 from './9000000.json';
+import accountBalance9500000 from './9500000.json';
 
 export const polkadotAccountBalanceEndpoints = [
 	[
@@ -45,4 +48,16 @@ export const polkadotAccountBalanceEndpoints = [
 		'/accounts/15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX/balance-info?at=8320000',
 		JSON.stringify(accountBalance8320000),
 	], // v9130
+	[
+		'/accounts/15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX/balance-info?at=8500000',
+		JSON.stringify(accountBalance8500000),
+	], // v9140
+	[
+		'/accounts/15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX/balance-info?at=9000000',
+		JSON.stringify(accountBalance9000000),
+	], // v9151
+	[
+		'/accounts/15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX/balance-info?at=9500000',
+		JSON.stringify(accountBalance9500000)
+	], // v9170
 ];
