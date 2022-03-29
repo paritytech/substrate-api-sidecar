@@ -1240,39 +1240,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-asmjs@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@polkadot/wasm-crypto-asmjs@npm:5.0.1"
+"@polkadot/wasm-crypto-asmjs@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@polkadot/wasm-crypto-asmjs@npm:5.1.1"
   dependencies:
     "@babel/runtime": ^7.17.8
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: c32208930de69759a14376b0c86d7944fe88cc89e34681819acaec3636e6b6725d41036de456d6becad45886e316a1be6c22c6621b7c9b791be1c3f06bc030b6
+  checksum: fd5906a45ba2fa7c5c9b12c761b4343bb91b21af9b1f854dabad190c822cbd4d8e090c75786f4869190fd0441204c5d225433928ef268b9ff1166875cd774e34
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-wasm@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@polkadot/wasm-crypto-wasm@npm:5.0.1"
+"@polkadot/wasm-crypto-wasm@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@polkadot/wasm-crypto-wasm@npm:5.1.1"
   dependencies:
     "@babel/runtime": ^7.17.8
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: 167f9e7c4afc82c307a88a3f40d49458f0b8b1eeac6aec501a26ecfe8ed63f3cfc4132f3b4c8894ec1ee664cb205fa2607264b6c84846231bc705eedfc25972e
+  checksum: 881c045e04dec8f01e97e62ee8061c5884283d7566d7cc45219c2c1605ffb85a225c800677f7e09896c37e38347817f471f5123e5bffba353efae3bf21b30cc1
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto@npm:5.0.1":
-  version: 5.0.1
-  resolution: "@polkadot/wasm-crypto@npm:5.0.1"
+"@polkadot/wasm-crypto@npm:5.1.1":
+  version: 5.1.1
+  resolution: "@polkadot/wasm-crypto@npm:5.1.1"
   dependencies:
     "@babel/runtime": ^7.17.8
-    "@polkadot/wasm-crypto-asmjs": ^5.0.1
-    "@polkadot/wasm-crypto-wasm": ^5.0.1
+    "@polkadot/wasm-crypto-asmjs": ^5.1.1
+    "@polkadot/wasm-crypto-wasm": ^5.1.1
   peerDependencies:
     "@polkadot/util": "*"
     "@polkadot/x-randomvalues": "*"
-  checksum: 4116a87c1a047de026b0feb6b68b2e46f4115f2ba7504104421ed240f111e1f5a609e954a1c1f8fd5f0b727eadabfacd1edd939197222988a889d7e40b3e30ef
+  checksum: 713a6a36b6cce8cf56d455fdfad09c2c13038f863592b746eafe8fa7919bf3f9af06266c8531265db06260bec00add7ee5f87431eb3ab71dbaa176f0417034f4
   languageName: node
   linkType: hard
 
