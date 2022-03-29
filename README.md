@@ -373,3 +373,4 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
 #### Publish Calc Package
 
 1. `cd` into `calc/pkg` and `npm login`, then `npm publish`.
+
