@@ -22,7 +22,6 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
 import {
-	BlockWeightStore,
 	IPerClass,
 	isExtBaseWeightValue,
 	isPerClassValue,
@@ -69,8 +68,7 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRU<string, IBlock>,
-		private blockWeightStore: BlockWeightStore = {}
+		private blockStore: LRU<string, IBlock>
 	) {
 		super(api);
 	}
@@ -167,7 +165,7 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		let calcFee, specName, specVersion;
+		let calcFee, specName, specVersion, weights;
 		if (this.minCalcFeeRuntime === null) {
 			// Don't bother with trying to create calcFee for a runtime where fee calcs are not supported
 			specVersion = -1;
@@ -184,6 +182,7 @@ export class BlocksService extends AbstractService {
 			calcFee = createCalcFee.calcFee;
 			specName = createCalcFee.specName;
 			specVersion = createCalcFee.specVersion;
+			weights = createCalcFee.weights;
 		}
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
@@ -260,13 +259,11 @@ export class BlocksService extends AbstractService {
 			 * https://github.com/polkadot-js/api/issues/2365
 			 */
 			// This makes the compiler happy for below type guards
-			const weightStored = this.blockWeightStore[specVersion];
 			let extrinsicBaseWeight;
-			if (isExtBaseWeightValue(weightStored)) {
-				extrinsicBaseWeight = weightStored.extrinsicBaseWeight;
-			} else if (isPerClassValue(weightStored)) {
-				extrinsicBaseWeight =
-					weightStored.perClass[weightInfoClass]?.baseExtrinsic;
+			if (isExtBaseWeightValue(weights)) {
+				extrinsicBaseWeight = weights.extrinsicBaseWeight;
+			} else if (isPerClassValue(weights)) {
+				extrinsicBaseWeight = weights.perClass[weightInfoClass]?.baseExtrinsic;
 			}
 
 			if (!extrinsicBaseWeight) {
@@ -537,7 +534,7 @@ export class BlocksService extends AbstractService {
 
 		// Now that we know the exact runtime supports fee calcs, make sure we have
 		// the weights in the store
-		this.blockWeightStore[specVersion] ||= this.getWeight(historicApi);
+		const weights = this.getWeight(historicApi);
 
 		const calcFee = CalcFee.from_params(
 			coefficients,
@@ -551,6 +548,7 @@ export class BlocksService extends AbstractService {
 			calcFee,
 			specName,
 			specVersion,
+			weights,
 		};
 	}
 

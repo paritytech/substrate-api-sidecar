@@ -12,7 +12,6 @@ interface ControllerOptions {
 	finalizes: boolean;
 	minCalcFeeRuntime: null | number;
 	blockStore: LRU<string, IBlock>;
-	blockWeightStore: {};
 }
 
 /**
@@ -79,12 +78,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		super(
 			api,
 			'/blocks',
-			new BlocksService(
-				api,
-				options.minCalcFeeRuntime,
-				options.blockStore,
-				options.blockWeightStore
-			)
+			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore)
 		);
 		this.initRoutes();
 	}

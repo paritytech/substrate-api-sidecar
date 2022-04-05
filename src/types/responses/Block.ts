@@ -4,6 +4,7 @@ import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { Codec } from '@polkadot/types/types';
 import { CalcFee } from '@substrate/calc';
 
+import { WeightValue } from '../chains-config';
 import { IExtrinsic, ISanitizedEvent } from '.';
 
 export interface IBlock {
@@ -34,4 +35,5 @@ export interface ICalcFee {
 	calcFee?: null | CalcFee;
 	specName: string;
 	specVersion: number;
+	weights?: WeightValue;
 }
