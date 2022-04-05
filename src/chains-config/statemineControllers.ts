@@ -25,7 +25,6 @@ export const statemineControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
-		blockWeightStore: {},
 		blockStore: initLRUCache(),
 	},
 };

@@ -30,7 +30,6 @@ export const mandalaControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: null,
-		blockWeightStore: {},
 		blockStore: initLRUCache(),
 	},
 };

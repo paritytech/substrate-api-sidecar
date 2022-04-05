@@ -1,6 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
-import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for Shiden collator
@@ -29,7 +28,6 @@ export const shidenControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
-		blockWeightStore: getBlockWeight('shiden'),
 		blockStore: initLRUCache(),
 	},
 };

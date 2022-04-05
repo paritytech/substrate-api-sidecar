@@ -26,7 +26,6 @@ export const kiltControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: null,
-		blockWeightStore: {},
 		blockStore: initLRUCache(),
 	},
 };

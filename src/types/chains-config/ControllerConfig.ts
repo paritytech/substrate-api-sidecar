@@ -3,7 +3,6 @@ import LRU from 'lru-cache';
 import { controllers } from '../../controllers';
 import { IBlock } from '../../types/responses';
 import { IOption } from '../util';
-import { BlockWeightStore } from './MetadataConsts';
 
 /**
  * Controller mounting configuration as an object where the keys are the
@@ -29,7 +28,6 @@ export interface ControllerConfig {
 		 */
 		finalizes: boolean;
 		minCalcFeeRuntime: IOption<number>;
-		blockWeightStore: BlockWeightStore;
 		blockStore: LRU<string, IBlock>;
 	};
 }
