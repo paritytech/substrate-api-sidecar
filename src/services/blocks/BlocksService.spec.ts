@@ -263,32 +263,6 @@ describe('BlocksService', () => {
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
 		});
-
-		it('Should store a new runtime specific extrinsicBaseWeight when it doesnt exist', async () => {
-			// Reset LRU cache
-			cache.reset();
-
-			const blocksServiceEmptyBlockStore = new BlocksService(mockApi, 0, cache);
-
-			(mockApi.runtimeVersion.specVersion as unknown) =
-				polkadotRegistry.createType('u32', 20);
-			(mockApi.runtimeVersion.specName as unknown) =
-				polkadotRegistry.createType('Text', 'westend');
-
-			await blocksServiceEmptyBlockStore['createCalcFee'](
-				mockApi,
-				mockHistoricApi,
-				'0xParentHash' as unknown as Hash,
-				mockBlock789629
-			);
-
-			expect(blocksServiceEmptyBlockStore['blockWeightStore'][20]).toBeTruthy();
-
-			(mockApi.runtimeVersion.specVersion as unknown) =
-				polkadotRegistry.createType('u32', 16);
-			(mockApi.runtimeVersion.specName as unknown) =
-				polkadotRegistry.createType('Text', 'polkadot');
-		});
 	});
 
 	describe('BlocksService.getWeight', () => {
