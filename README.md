@@ -393,7 +393,7 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
 Sidecar is a stateless program and thus should not use any disk space.
 
 ### Memory
-Memory wise the requirements follow the default of node.js processes which is an upper bound in HEAP memory of a little less than 2GB thus 4GB of memory should be sufficient.
+The requirements follow the default of node.js processes which is an upper bound in HEAP memory of a little less than 2GB thus 4GB of memory should be sufficient.
 
 ### Running sidecar and a node
 Please note that if you run sidecar next to a substrate node in a single machine then your system specifications should improve significantly. 
