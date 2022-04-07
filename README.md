@@ -49,7 +49,8 @@ NOTE: Node LTS (`long term support`) versions start with an even number, and odd
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
 - [Chain integration guide](./guides/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
-- [Note for maintainers](#note-for-maintainers)
+- [Notes for maintainers](#notes-for-maintainers)
+- [Hardware requirements](#hardware-requirements)
 
 ## NPM package installation and usage
 
@@ -92,6 +93,18 @@ node_modules/.bin/substrate-api-sidecar
 [Jump to the configuration section](#configuration) for more details on connecting to a node.
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
+
+In the full endpoints doc, you will also find the following `trace` related endpoints : 
+- `/experimental/blocks/{blockId}/traces/operations?actions=false`
+- `/experimental/blocks/head/traces/operations?actions=false`
+- `/experimental/blocks/{blockId}/traces`
+- `/experimental/blocks/head/traces`
+
+To have access to these endpoints you need to :
+1. Run your node with the flag `—unsafe-rpc-external`
+2. Check in sidecar if `BlocksTrace` controller is active for the chain you are running.
+
+Currently `BlocksTrace` controller is active in [Polkadot](https://github.com/paritytech/substrate-api-sidecar/blob/ff0cef5eaeeef74f9a931a0355d83fc5ebdea645/src/chains-config/polkadotControllers.ts#L17) and [Kusama](https://github.com/paritytech/substrate-api-sidecar/blob/ff0cef5eaeeef74f9a931a0355d83fc5ebdea645/src/chains-config/kusamaControllers.ts#L17).
 
 ## Source code installation and usage
 
@@ -373,3 +386,37 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
 #### Publish Calc Package
 
 1. `cd` into `calc/pkg` and `npm login`, then `npm publish`.
+
+## Hardware requirements
+
+### Disk Space
+Sidecar is a stateless program and thus should not use any disk space.
+
+### Memory
+The requirements follow the default of node.js processes which is an upper bound in HEAP memory of a little less than 2GB thus 4GB of memory should be sufficient.
+
+### Running sidecar and a node
+Please note that if you run sidecar next to a substrate node in a single machine then your system specifications should improve significantly. 
+- Our official specifications related to validator nodes can be found in the polkadot wiki [page](https://wiki.polkadot.network/docs/maintain-guides-how-to-validate-polkadot#standard-hardware).
+- Regarding archive nodes :
+  - again as mentioned in the polkadot wiki [page](https://wiki.polkadot.network/docs/maintain-sync#types-of-nodes), the space needed from an archive node depends on which block we are currently on (of the specific chain we are referring to).
+  - there are no other hardware requirements for an archive node since it is not time critical (archive nodes do not participate in the consensus).
+
+### Benchmarks
+During the benchmarks we performed, we concluded that sidecar would use a max of 1.1GB of RSS memory. 
+
+The benchmarks were:
+- using 4 threads over 12 open http connections and
+- were overloading the cache with every runtime possible on polkadot. 
+
+Hardware specs in which the benchmarks were performed:
+```
+Machine type:
+n2-standard-4 (4 vCPUs, 16 GB memory)
+
+CPU Platform:
+Intel Cascade Lake
+
+Hard-Disk:
+500GB
+```
