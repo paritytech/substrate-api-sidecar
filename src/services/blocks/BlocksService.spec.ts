@@ -10,12 +10,10 @@ import LRU from 'lru-cache';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
-import { polkadotMetadataV29 } from '../../test-helpers/metadata/metadata';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../test-helpers/registries';
-import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
@@ -309,11 +307,31 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.reset();
 
-			const historicApi = createApiWithAugmentations(
-				polkadotMetadataV29.toHex()
-			) as ApiDecoration<'promise'>;
+			/**
+			 * This is the mockApi adjusted to mock a runtime that uses
+			 * consts.system.blockWeights for its weight nomination.
+			 */
+			const mockHistoricApiAdjusted = {
+				consts: {
+					system: {
+						blockWeights: {
+							perClass: {
+								normal: {
+									baseExtrinsic: polkadotRegistry.createType('u64', 125000000),
+								},
+								operational: {
+									baseExtrinsic: polkadotRegistry.createType('u64', 125000000),
+								},
+								mandatory: {
+									baseExtrinsic: polkadotRegistry.createType('u64', 125000000),
+								},
+							},
+						},
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
 
-			const weightValue = blocksService['getWeight'](historicApi);
+			const weightValue = blocksService['getWeight'](mockHistoricApiAdjusted);
 
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.normal.baseExtrinsic
@@ -321,11 +339,11 @@ describe('BlocksService', () => {
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.operational
 					.baseExtrinsic
-			).toBe(BigInt(1));
+			).toBe(BigInt(125000000));
 			expect(
 				(weightValue as unknown as PerClassValue).perClass.mandatory
 					.baseExtrinsic
-			).toBe(BigInt(512000000000001));
+			).toBe(BigInt(125000000));
 		});
 	});
 
