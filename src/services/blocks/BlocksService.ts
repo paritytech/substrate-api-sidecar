@@ -7,7 +7,6 @@ import {
 	Block,
 	BlockHash,
 	BlockNumber,
-	BlockWeights,
 	DispatchInfo,
 	EventRecord,
 	Hash,
@@ -563,10 +562,8 @@ export class BlocksService extends AbstractService {
 		} = historicApi;
 
 		let weightValue;
-		if ((system.blockWeights as unknown as BlockWeights)?.perClass) {
-			const { normal, operational, mandatory } = (
-				system.blockWeights as unknown as BlockWeights
-			)?.perClass;
+		if (system.blockWeights?.perClass) {
+			const { normal, operational, mandatory } = system.blockWeights?.perClass;
 
 			const perClass = {
 				normal: {
