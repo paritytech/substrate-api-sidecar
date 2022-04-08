@@ -532,8 +532,6 @@ export class BlocksService extends AbstractService {
 			};
 		});
 
-		// Now that we know the exact runtime supports fee calcs, make sure we have
-		// the weights in the store
 		const weights = this.getWeight(historicApi);
 
 		const calcFee = CalcFee.from_params(
