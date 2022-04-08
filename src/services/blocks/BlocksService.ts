@@ -554,7 +554,6 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param api ApiPromise
 	 * @param blockHash Hash of a block in the runtime to get the extrinsic base weight(s) for
-	 * @returns formatted block weight store entry
 	 */
 	private getWeight(historicApi: ApiDecoration<'promise'>): WeightValue {
 		const {
