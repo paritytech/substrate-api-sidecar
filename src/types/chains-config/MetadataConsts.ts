@@ -1,24 +1,12 @@
-export type MetadataConsts =
-	| (PerClassValue & RuntimeVersions)
-	| (ExtBaseWeightValue & RuntimeVersions);
-
-interface RuntimeVersions {
-	/**
-	 * Runtimes that include their specific definition of extrinsicBaseWeight
-	 */
-	runtimeVersions: number[];
-}
-
 /**
- * Block weight store value types.
+ * Given an extrinsic that is going to be sanitized. It is given one of the
+ * weight types for calculating fees.
  */
 export type WeightValue = ExtBaseWeightValue | PerClassValue;
 
 /**
  * Polkadot runtime versions before v27
  * Kusama runtime versions before v2027
- *
- * Block weight store value type for extrinsicBaseWeight.
  */
 export interface ExtBaseWeightValue {
 	extrinsicBaseWeight?: BigInt;
@@ -33,8 +21,6 @@ export function isExtBaseWeightValue(
 /**
  * Polkadot runtime versions after v26
  * Kusama runtime versions after v2026
- *
- * Block weight store value type for blockweights.perClass.
  */
 export interface PerClassValue {
 	perClass: IPerClass;
@@ -60,5 +46,3 @@ export interface IPerClass {
 export interface IWeightPerClass {
 	baseExtrinsic: BigInt;
 }
-
-export type BlockWeightStore = Record<number, WeightValue>;

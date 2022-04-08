@@ -1,6 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
-import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for Dock's mainnet.
@@ -29,7 +28,6 @@ export const dockPoSMainnetControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 29,
-		blockWeightStore: getBlockWeight('dock-pos-main-runtime'),
 		blockStore: initLRUCache(),
 	},
 };

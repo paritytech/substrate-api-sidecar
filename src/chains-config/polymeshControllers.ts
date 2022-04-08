@@ -1,6 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
-import { getBlockWeight } from './metadata-consts';
 
 /**
  * Polymesh configuration for Sidecar.
@@ -28,7 +27,6 @@ export const polymeshControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
-		blockWeightStore: getBlockWeight('polymesh'),
 		blockStore: initLRUCache(),
 	},
 };

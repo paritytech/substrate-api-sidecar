@@ -1,6 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
-import { getBlockWeight } from './metadata-consts';
 
 /**
  * Kusama configuration for Sidecar.
@@ -32,7 +31,6 @@ export const kusamaControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1062,
-		blockWeightStore: getBlockWeight('kusama'),
 		blockStore: initLRUCache(),
 	},
 };

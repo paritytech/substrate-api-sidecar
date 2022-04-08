@@ -1,6 +1,5 @@
 import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache } from './cache/lruCache';
-import { getBlockWeight } from './metadata-consts';
 
 /**
  * Controllers for calamari collator
@@ -31,7 +30,6 @@ export const calamariControllers: ControllerConfig = {
 	options: {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
-		blockWeightStore: getBlockWeight('calamari'),
 		blockStore: initLRUCache(),
 	},
 };
