@@ -395,7 +395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.17.9, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.17.9, @babel/runtime@npm:^7.9.6":
   version: 7.17.9
   resolution: "@babel/runtime@npm:7.17.9"
   dependencies:
@@ -1015,12 +1015,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/apps-config@npm:^0.111.1":
-  version: 0.111.1
-  resolution: "@polkadot/apps-config@npm:0.111.1"
+"@polkadot/apps-config@npm:^0.112.1":
+  version: 0.112.1
+  resolution: "@polkadot/apps-config@npm:0.112.1"
   dependencies:
     "@acala-network/type-definitions": ^4.0.1
-    "@babel/runtime": ^7.17.8
+    "@babel/runtime": ^7.17.9
     "@bifrost-finance/type-definitions": 1.5.0
     "@crustio/type-definitions": 1.2.0
     "@darwinia/types": 2.7.2
@@ -1035,12 +1035,12 @@ __metadata:
     "@metaverse-network-sdk/type-definitions": ^0.0.1-13
     "@parallel-finance/type-definitions": 1.6.5
     "@phala/typedefs": 0.2.30
-    "@polkadot/api": ^7.15.1
-    "@polkadot/api-derive": ^7.15.1
-    "@polkadot/networks": ^8.7.1
-    "@polkadot/types": ^7.15.1
-    "@polkadot/util": ^8.7.1
-    "@polkadot/x-fetch": ^8.7.1
+    "@polkadot/api": ^8.0.1
+    "@polkadot/api-derive": ^8.0.1
+    "@polkadot/networks": ^9.0.1
+    "@polkadot/types": ^8.0.1
+    "@polkadot/util": ^9.0.1
+    "@polkadot/x-fetch": ^9.0.1
     "@polymathnetwork/polymesh-types": 0.0.2
     "@snowfork/snowbridge-types": 0.2.7
     "@sora-substrate/type-definitions": 1.8.6
@@ -1048,12 +1048,11 @@ __metadata:
     "@unique-nft/types": 0.3.1
     "@zeitgeistpm/type-defs": 0.4.5
     "@zeroio/type-definitions": 0.0.14
-    i18next: ^21.6.14
     lodash: ^4.17.21
     moonbeam-types-bundle: 2.0.3
     pontem-types-bundle: 1.0.15
     rxjs: ^7.5.5
-  checksum: 8b1e071c9680968e37be7fb777fe02a8103bd0c6fc8b2c07dd9b66d65f179acfbde0468fd76cd4e8eb2421b3513cec82c3ef3ff3adb13d062e5a6b98ca1ecd11
+  checksum: e4096bd9ba1807466570b67eb16b6532c0649e6d458070ea15f50a020b3a9ed7bec2802e2f6c719b62464084285baa0629379a76060af4d5104b66c1a8b62991
   languageName: node
   linkType: hard
 
@@ -1460,7 +1459,7 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@polkadot/api": ^8.0.1
-    "@polkadot/apps-config": ^0.111.1
+    "@polkadot/apps-config": ^0.112.1
     "@polkadot/util-crypto": ^9.0.1
     "@substrate/calc": ^0.2.8
     "@substrate/dev": ^0.5.7
@@ -4072,15 +4071,6 @@ fsevents@^2.3.2:
   dependencies:
     ms: ^2.0.0
   checksum: 9c7a74a2827f9294c009266c82031030eae811ca87b0da3dceb8d6071b9bde22c9f3daef0469c3c533cc67a97d8a167cd9fc0389350e5f415f61a79b171ded16
-  languageName: node
-  linkType: hard
-
-"i18next@npm:^21.6.14":
-  version: 21.6.14
-  resolution: "i18next@npm:21.6.14"
-  dependencies:
-    "@babel/runtime": ^7.17.2
-  checksum: bc6e117874d9b69a39d6ad322851d25f75908c7fa977c8771b98ba7b0273aceba96e82326ed0855b8db098b1490c5a0decbe62b4f61dac84fdc677c2fdc52bb8
   languageName: node
   linkType: hard
 
