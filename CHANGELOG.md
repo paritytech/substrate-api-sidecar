@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.16](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.15..v11.3.16) (2022-04-13)
+
+**Upgrade Priority** Low
+
+### Bug Fixes
+
+- fix(deps): update pjs common, api, wasm-crypto ([#895](https://github.com/paritytech/substrate-api-sidecar/pull/895)) ([c09a869](https://github.com/paritytech/substrate-api-sidecar/commit/c09a8690bb7f6fec4faecda9636f27584bd1e921))
+- fix: remove blockWeightsStore ([#891](https://github.com/paritytech/substrate-api-sidecar/pull/891)) ([ce701a0](https://github.com/paritytech/substrate-api-sidecar/commit/ce701a0a2d44a2a7febd0b23f50128c5ebab7378))
+- fix: update polkadot-js deps, adjust tests for getWeight ([#890](https://github.com/paritytech/substrate-api-sidecar/pull/890)) ([c348363](https://github.com/paritytech/substrate-api-sidecar/commit/c3483631775e10cd436e1b5b6175dbb4ea59798e))
+
+### Docs 
+
+- docs(release): abstract the release process into its own file ([#894](https://github.com/paritytech/substrate-api-sidecar/pull/894)) ([eece110](https://github.com/paritytech/substrate-api-sidecar/commit/eece110cbc5c9252109c31c2e7d7b850492fca1d))
+- docs: updated README with trace endpoints & requirements note ([#872](https://github.com/paritytech/substrate-api-sidecar/pull/872)) ([d323857](https://github.com/paritytech/substrate-api-sidecar/commit/d3238573a838a46a94684f7598684debd8959471)) Contributed by ([Imod7](https://github.com/Imod7))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9170
+- Kusama v9170
+- Westend v9170
+
+
 ## [11.3.15](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.14..v11.3.15) (2022-03-30)
 
 **Upgrade Priority** Low
@@ -15,6 +38,8 @@ All notable changes to this project will be documented in this file. See [standa
 ### Tests
 
 - fix: update e2e-tests ([#877](https://github.com/paritytech/substrate-api-sidecar/pull/877)) ([7382dca](https://github.com/paritytech/substrate-api-sidecar/commit/7382dcaa44f7dac0f908895ca1b56ab174713198))
+
+## Compatibility
 
 Tested against:
 - Polkadot v9180
