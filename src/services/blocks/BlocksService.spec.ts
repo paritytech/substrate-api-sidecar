@@ -2,9 +2,10 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AugmentedConst } from '@polkadot/api/types';
 import { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
-import { GenericExtrinsic, u128 } from '@polkadot/types';
+import { GenericExtrinsic, u128, Vec } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
+import { FrameSupportWeightsWeightToFeeCoefficient } from '@polkadot/types/lookup';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -13,7 +14,9 @@ import { createCall } from '../../test-helpers/createCall';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
+	polkadotRegistryV9190,
 } from '../../test-helpers/registries';
+import { TypeFactory } from '../../test-helpers/typeFactory';
 import { ExtBaseWeightValue, PerClassValue } from '../../types/chains-config';
 import { IBlock, IExtrinsic } from '../../types/responses/';
 import {
@@ -262,6 +265,55 @@ describe('BlocksService', () => {
 			expect(
 				calcFee?.calc_fee(BigInt(941325000000), 1247, BigInt(125000000))
 			).toBe('1257000075');
+		});
+	});
+
+	describe('getPerByte', () => {
+		it('Correctly handles LengthToFee', () => {
+			// Reset LRU cache
+			cache.reset();
+
+			/**
+			 * Setup a mockApiClone specific to v9190
+			 */
+			const mockHistoricApiClone = {
+				...mockHistoricApi,
+				registry: polkadotRegistryV9190,
+			} as unknown as ApiDecoration<'promise'>;
+
+			/**
+			 * Typecast here because the typefactory just needs the registry so this is safe.
+			 * It's a shortcut so that constructing a augmented api is not necessary.
+			 */
+			const polkadotV9190TypeFactory = new TypeFactory(
+				mockHistoricApiClone as ApiPromise
+			);
+
+			/**
+			 * Create a Vec<FrameSupportWeightsWeightToFeeCoefficient> type
+			 * The `coeffInteger` value here should be different from
+			 * `transactionByteFee` set in mockHistoricApi in order to properly
+			 * distinquish values.
+			 */
+			const lengthToFeeStruct = polkadotRegistryV9190.createType(
+				'FrameSupportWeightsWeightToFeeCoefficient',
+				{ coeffInteger: 12345678 }
+			);
+			const lengthToFee = polkadotV9190TypeFactory.vecOf([lengthToFeeStruct]);
+
+			/**
+			 * Remove TransactionByteFee from our clone and replace it with LengthToFee
+			 */
+			(mockHistoricApiClone.consts.transactionPayment[
+				'transactionByteFee'
+			] as unknown) = undefined;
+			mockHistoricApiClone.consts.transactionPayment['lengthToFee'] =
+				lengthToFee as unknown as Vec<FrameSupportWeightsWeightToFeeCoefficient> &
+					AugmentedConst<'promise'>;
+
+			const result = blocksService['getPerByte'](mockHistoricApiClone);
+
+			expect(sanitizeNumbers(result)).toEqual('12345678');
 		});
 	});
 

@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
+import { Compact, GenericCall, Struct, u128, Vec } from '@polkadot/types';
 import {
 	AccountId32,
 	Balance,
@@ -472,6 +472,7 @@ export class BlocksService extends AbstractService {
 	 * Create calcFee from params or return `null` if calcFee cannot be created.
 	 *
 	 * @param api ApiPromise
+	 * @param historicApi ApiDecoration to use for runtime specific querying
 	 * @param parentHash Hash of the parent block
 	 * @param block Block which the extrinsic is from
 	 */
@@ -506,8 +507,8 @@ export class BlocksService extends AbstractService {
 		const multiplier =
 			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
 
-		const perByte = historicApi.consts.transactionPayment
-			?.transactionByteFee as Balance;
+		const perByte = this.getPerByte(historicApi);
+
 		const extrinsicBaseWeightExists =
 			historicApi.consts.system.extrinsicBaseWeight ||
 			historicApi.consts.system.blockWeights.perClass.normal.baseExtrinsic;
@@ -549,6 +550,29 @@ export class BlocksService extends AbstractService {
 			specVersion,
 			weights,
 		};
+	}
+
+	/**
+	 * Retrieve the PerByte integer used to calculate fees.
+	 * TransactionByteFee has been replaced with LengthToFee via runtime 9190.
+	 * https://github.com/paritytech/polkadot/pull/5028
+	 *
+	 * @param historicApi ApiDecoration to use for runtime specific querying
+	 */
+	private getPerByte(
+		historicApi: ApiDecoration<'promise'>
+	): Balance | u128 | null {
+		const { transactionPayment } = historicApi.consts;
+
+		if (transactionPayment?.transactionByteFee) {
+			return transactionPayment?.transactionByteFee as Balance;
+		}
+
+		if (transactionPayment?.lengthToFee) {
+			return transactionPayment?.lengthToFee.toArray()[0].coeffInteger;
+		}
+
+		return null;
 	}
 
 	/**
