@@ -11,8 +11,9 @@ import {
 	AbstractInt,
 	CodecMap,
 	Json,
+	Bytes
 } from '@polkadot/types-codec';
-import { isObject, stringCamelCase } from '@polkadot/util';
+import { isObject, stringCamelCase, hexToBn, isHex, hexToU8a, u8aToBn } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -24,6 +25,18 @@ import {
 	isToJSONable,
 } from '../types/polkadot-js';
 
+function tracePrototypeChainOf(object: object) {
+
+	var proto = object.constructor.prototype;
+	var result = '';
+
+	while (proto) {
+		result += ' -> ' + proto.constructor.name;
+		proto = Object.getPrototypeOf(proto)
+	}
+
+	return result;
+}
 /**
  * Forcibly serialize all instances of AbstractInt to base 10. With Codec
  * based types we can provide a strong guarantee that the output will be of AnyJson
@@ -50,6 +63,27 @@ function sanitizeCodec(value: Codec): AnyJson {
 				return jsonStruct;
 			}
 			jsonStruct[key] = sanitizeNumbers(property);
+
+			// Check bagthresholds
+
+			// Check palletId
+			if (key === 'value') {
+				const value = jsonStruct[key];
+				if (isHex(value) && hexToU8a(value).byteLength <= 32 && hexToU8a(value).byteLength % 8 === 0) {
+					const u8a = hexToU8a(value);
+					console.log('\n')
+					console.log(`${jsonStruct.name}`)
+					console.log('Property:', tracePrototypeChainOf(property))
+					console.log('Bytelength: ', u8a.byteLength)
+					console.log('ByteOffset: ', u8a.byteOffset)
+					console.log(u8aToBn(u8a.subarray(0, u8a.byteLength), { isLe: true }).toString())
+					jsonStruct[key] = hexToBn(value, { isLe: true }).toString();
+				}
+			}
+
+			if (value instanceof Bytes) {
+				console.log('Instance of Bytes')
+			}
 
 			return jsonStruct;
 		}, {} as Record<string, AnyJson>);
@@ -106,6 +140,16 @@ function sanitizeCodec(value: Codec): AnyJson {
 	if (value instanceof AbstractInt) {
 		return value.toString(10);
 	}
+
+	// Lastly, check if the Codec value is represented as a u128 or above. Since
+	// anything above 53 bits is too large the value will be stored as a 
+	// little endian hex.
+	// if (isU8a(value) && value.toString().startsWith('0x')) {
+	// 	// console.log(value.toU8a())
+	// 	console.log(value.toJSON())
+	// 	console.log(u8aToBn(value, { isLe: true }).toString())
+	// 	return u8aToBn(value, { isLe: true }).toString();
+	// }
 
 	// All other codecs are not nested
 	return value.toJSON();
