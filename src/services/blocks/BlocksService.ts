@@ -576,7 +576,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 *	Get a formatted blockweight store value for the runtime corresponding to the given block hash.
+	 * Get a formatted weight constant for the runtime corresponding to the given block hash.
 	 *
 	 * @param api ApiPromise
 	 * @param blockHash Hash of a block in the runtime to get the extrinsic base weight(s) for
