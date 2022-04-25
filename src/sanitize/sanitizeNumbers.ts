@@ -9,11 +9,17 @@ import {
 import {
 	AbstractArray,
 	AbstractInt,
+	Bytes,
 	CodecMap,
 	Json,
-	Bytes
 } from '@polkadot/types-codec';
-import { isObject, stringCamelCase, hexToBn, isHex, hexToU8a, u8aToBn } from '@polkadot/util';
+import {
+	hexToU8a,
+	isHex,
+	isObject,
+	stringCamelCase,
+	u8aToBn,
+} from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
@@ -24,35 +30,24 @@ import {
 	isCodec,
 	isToJSONable,
 } from '../types/polkadot-js';
+import { ISanitizeOptions } from '../types/sanitize';
 
-function tracePrototypeChainOf(object: object) {
-
-	var proto = object.constructor.prototype;
-	var result = '';
-
-	while (proto) {
-		result += ' -> ' + proto.constructor.name;
-		proto = Object.getPrototypeOf(proto)
-	}
-
-	return result;
-}
 /**
  * Forcibly serialize all instances of AbstractInt to base 10. With Codec
  * based types we can provide a strong guarantee that the output will be of AnyJson
  *
  * @param value a type that implements polkadot-js Codec
  */
-function sanitizeCodec(value: Codec): AnyJson {
+function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 	// If objects have an overlapping prototype chain
 	// we check lower down the chain first. More specific before less specific.
 
 	if (value instanceof Option) {
-		return value.isSome ? sanitizeNumbers(value.unwrap()) : null;
+		return value.isSome ? sanitizeNumbers(value.unwrap(), options) : null;
 	}
 
 	if (value instanceof Compact) {
-		return sanitizeNumbers(value.unwrap());
+		return sanitizeNumbers(value.unwrap(), options);
 	}
 
 	if (value instanceof Struct) {
@@ -62,27 +57,11 @@ function sanitizeCodec(value: Codec): AnyJson {
 			if (!property) {
 				return jsonStruct;
 			}
-			jsonStruct[key] = sanitizeNumbers(property);
 
-			// Check bagthresholds
+			jsonStruct[key] = sanitizeNumbers(property, options);
 
-			// Check palletId
-			if (key === 'value') {
-				const value = jsonStruct[key];
-				if (isHex(value) && hexToU8a(value).byteLength <= 32 && hexToU8a(value).byteLength % 8 === 0) {
-					const u8a = hexToU8a(value);
-					console.log('\n')
-					console.log(`${jsonStruct.name}`)
-					console.log('Property:', tracePrototypeChainOf(property))
-					console.log('Bytelength: ', u8a.byteLength)
-					console.log('ByteOffset: ', u8a.byteOffset)
-					console.log(u8aToBn(u8a.subarray(0, u8a.byteLength), { isLe: true }).toString())
-					jsonStruct[key] = hexToBn(value, { isLe: true }).toString();
-				}
-			}
-
-			if (value instanceof Bytes) {
-				console.log('Instance of Bytes')
+			if (options?.isMetadata) {
+				sanitizeMetadataExceptions(key, jsonStruct, property);
 			}
 
 			return jsonStruct;
@@ -93,7 +72,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		// This is essentially a Map with [keys: strings]: any
 		const json: Record<string, AnyJson> = {};
 		value.forEach((element, prop) => {
-			json[prop] = sanitizeNumbers(element);
+			json[prop] = sanitizeNumbers(element, options);
 		});
 
 		return json;
@@ -107,7 +86,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		return {
 			// Replicating camelCaseing introduced in https://github.com/polkadot-js/api/pull/3024
 			// Specifically see: https://github.com/polkadot-js/api/blob/516fbd4a90652841d4e81636e74ca472e2dc5621/packages/types/src/codec/Enum.ts#L346
-			[stringCamelCase(value.type)]: sanitizeNumbers(value.value),
+			[stringCamelCase(value.type)]: sanitizeNumbers(value.value, options),
 		};
 	}
 
@@ -115,7 +94,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 		const jsonSet: AnyJson[] = [];
 
 		value.forEach((element: Codec) => {
-			jsonSet.push(sanitizeNumbers(element));
+			jsonSet.push(sanitizeNumbers(element, options));
 		});
 
 		return jsonSet;
@@ -133,7 +112,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 
 	// Should cover Vec, VecAny, VecFixed, Tuple
 	if (value instanceof AbstractArray) {
-		return value.map(sanitizeNumbers);
+		return value.map((val) => sanitizeNumbers(val, options));
 	}
 
 	// Should cover Uint, Int etc...
@@ -142,7 +121,7 @@ function sanitizeCodec(value: Codec): AnyJson {
 	}
 
 	// Lastly, check if the Codec value is represented as a u128 or above. Since
-	// anything above 53 bits is too large the value will be stored as a 
+	// anything above 53 bits is too large the value will be stored as a
 	// little endian hex.
 	// if (isU8a(value) && value.toString().startsWith('0x')) {
 	// 	// console.log(value.toU8a())
@@ -168,28 +147,31 @@ function sanitizeCodec(value: Codec): AnyJson {
  *
  * @param data - any arbitrary data that Sidecar might send
  */
-export function sanitizeNumbers(data: unknown): AnyJson {
+export function sanitizeNumbers(
+	data: unknown,
+	options: ISanitizeOptions = {}
+): AnyJson {
 	if (data !== 0 && !data) {
 		// All falsy values are valid AnyJson, but we want to force numbers to strings
 		return data as AnyJson;
 	}
 
 	if (isCodec(data)) {
-		return sanitizeCodec(data);
+		return sanitizeCodec(data, options);
 	}
 
 	if (data instanceof Set) {
 		const jsonSet = [];
 
 		for (const element of data) {
-			jsonSet.push(sanitizeNumbers(element));
+			jsonSet.push(sanitizeNumbers(element, options));
 		}
 
 		return jsonSet;
 	}
 
 	if (data instanceof Map) {
-		return mapTypeSanitizeKeyValue(data);
+		return mapTypeSanitizeKeyValue(data, options);
 	}
 
 	if (data instanceof BN || typeof data === 'number') {
@@ -197,18 +179,18 @@ export function sanitizeNumbers(data: unknown): AnyJson {
 	}
 
 	if (Array.isArray(data)) {
-		return data.map(sanitizeNumbers);
+		return data.map((val) => sanitizeNumbers(val, options));
 	}
 
 	if (isToJSONable(data)) {
 		// Handle non-codec types that have their own toJSON
-		return sanitizeNumbers(data.toJSON());
+		return sanitizeNumbers(data.toJSON(), options);
 	}
 
 	// Pretty much everything non-primitive is an object, so we need to check this last
 	if (isObject(data)) {
 		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
-			sanitizedObject[key] = sanitizeNumbers(value);
+			sanitizedObject[key] = sanitizeNumbers(value, options);
 
 			return sanitizedObject;
 		}, {} as { [prop: string]: AnyJson });
@@ -229,19 +211,52 @@ export function sanitizeNumbers(data: unknown): AnyJson {
  *
  * @param map Map | CodecMap
  */
-function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap) {
+function mapTypeSanitizeKeyValue(
+	map: Map<unknown, unknown> | CodecMap,
+	options: ISanitizeOptions = {}
+) {
 	const jsonMap: AnyJson = {};
 
 	map.forEach((value: unknown, key: unknown) => {
-		const nonCodecKey = sanitizeNumbers(key);
+		const nonCodecKey = sanitizeNumbers(key, options);
 		if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
 			throw new InternalServerError(
 				'Unexpected non-string and non-number key while sanitizing a Map-like type'
 			);
 		}
 
-		jsonMap[nonCodecKey] = sanitizeNumbers(value);
+		jsonMap[nonCodecKey] = sanitizeNumbers(value, options);
 	});
 
 	return jsonMap;
+}
+
+/**
+ * When metadata is being sanitized, we ensure arbitrary exceptions are sanitized
+ * properly.
+ *
+ * @param key Current key of an object
+ * @param struct Current struct being sanitized
+ * @param property Current value of the inputted key
+ */
+function sanitizeMetadataExceptions(
+	key: string,
+	struct: Record<string, AnyJson>,
+	property: Codec
+): void {
+	/**
+	 * Covers all integers between u8 to u128 that are encoded as the type
+	 * `Bytes`
+	 */
+	if (key === 'value' && property instanceof Bytes) {
+		const value = struct[key];
+		if (isHex(value)) {
+			const u8aValue = hexToU8a(value);
+			if (u8aValue.byteLength <= 16 && u8aValue.byteLength % 8 === 0) {
+				struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
+					isLe: true,
+				}).toString();
+			}
+		}
+	}
 }
