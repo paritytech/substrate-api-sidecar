@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.17](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.16..v11.3.17) (2022-04-21)
+
+**Upgrade Priority** High (For users querying chains using v9190, and need partialFee information)
+
+### Bug Fixes
+
+- fix(bug): handle lengthToFee given runtime v9190 ([#900](https://github.com/paritytech/substrate-api-sidecar/pull/900)) ([992b458](https://github.com/paritytech/substrate-api-sidecar/commit/992b458b91f95c43aeaa331130da1214e77f627c))
+- fix(deps): update pjs api ([#897](https://github.com/paritytech/substrate-api-sidecar/pull/897)) ([511fcf9](https://github.com/paritytech/substrate-api-sidecar/commit/511fcf96b033a7215aa84474a16561497cad5d19))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9190
+- Kusama v9190
+- Westend v9190
+
+
 ## [11.3.16](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.15..v11.3.16) (2022-04-13)
 
 **Upgrade Priority** Low
