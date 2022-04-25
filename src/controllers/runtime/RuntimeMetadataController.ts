@@ -43,7 +43,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		RuntimeMetadataController.sanitizedSend(
 			res,
 			await this.service.fetchMetadata(hash),
-			{ isMetadata: true }
+			{ isMetadata: true, registry: this.api.registry }
 		);
 	};
 }
