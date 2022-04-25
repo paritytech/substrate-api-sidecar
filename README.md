@@ -305,15 +305,13 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 ### Updating polkadot-js dependencies
 
 1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, 
-and read the release notes for any breaking changes or high priority updates.  You can use the following command `yarn upgrade-interactive` to find and update all available releases. To Upgrade just `@polkadot` scoped deps use `yarn up @polkadot/*`.
+and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps && yarn`. 
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
       - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers of sidecar and do a peer review of the changes in apps-config, and make sure no bugs will be inherited.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
-
-1. Next make sure the resolutions are up to date inside of the `package.json` for all `@polkadot/*` packages, please refer to the releases of each polkadot package we update as a dependency, and reach out to the maintainers for any questions. You will have to run `yarn` again to ensure the dependency `cache`, and `yarn.lock` have the correct versions. 
 
 1. Ensure everything is working by running the following tests, `yarn build`, `yarn lint`, `yarn test`, `yarn test:init-e2e-tests`.
 

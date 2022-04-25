@@ -1462,7 +1462,7 @@ __metadata:
     "@polkadot/apps-config": ^0.112.1
     "@polkadot/util-crypto": ^9.0.1
     "@substrate/calc": ^0.2.8
-    "@substrate/dev": ^0.5.7
+    "@substrate/dev": ^0.6.0
     "@types/argparse": 2.0.10
     "@types/express": 4.17.13
     "@types/express-serve-static-core": 4.17.25
@@ -1509,9 +1509,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@substrate/dev@npm:^0.5.7":
-  version: 0.5.7
-  resolution: "@substrate/dev@npm:0.5.7"
+"@substrate/dev@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@substrate/dev@npm:0.6.0"
   dependencies:
     "@babel/plugin-transform-modules-commonjs": ^7.16.5
     "@types/jest": ^27.0.3
@@ -1533,7 +1533,8 @@ __metadata:
     substrate-exec-jest: scripts/substrate-exec-jest.cjs
     substrate-exec-rimraf: scripts/substrate-exec-rimraf.cjs
     substrate-exec-tsc: scripts/substrate-exec-tsc.cjs
-  checksum: 18132681c142001d4c64ebd30eb432adf8594ebc5c7b968fd020ca7142645f41f9ea59d2daf49e808d19839be84a03589e0edecc7856be5aaccb94784222d5c7
+    substrate-update-pjs-deps: scripts/substrate-update-pjs-deps.cjs
+  checksum: a7e2cfe22d5d2e9aa78bc42647bb7a6887142379dc3ca0f1453c6de83ba6b9e682ccfb308102f874fddb93fea0828689a0eb161ab842aacde4c06c873981ecc5
   languageName: node
   linkType: hard
 
