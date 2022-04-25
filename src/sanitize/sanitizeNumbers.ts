@@ -243,7 +243,6 @@ function sanitizeMetadataExceptions(
 
 		if (isHex(value)) {
 			const u8aValue = hexToU8a(value);
-
 			/**
 			 * Get the lookup typedef. It is safe to assume that we have the struct
 			 * `type` field when `key === value` is true.
@@ -251,7 +250,6 @@ function sanitizeMetadataExceptions(
 			const typeDef = registry.lookup.getTypeDef(
 				parseFloat(struct.type as string)
 			);
-
 			/**
 			 * Checks u128, u64, u32, u16, u8
 			 */
@@ -260,7 +258,6 @@ function sanitizeMetadataExceptions(
 					isLe: true,
 				}).toString();
 			}
-
 			/**
 			 * The value is not an integer, and needs to be converted to its
 			 * correct type, then transformed to JSON.
