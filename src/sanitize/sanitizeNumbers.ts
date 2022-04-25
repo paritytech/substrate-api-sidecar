@@ -13,6 +13,7 @@ import {
 	CodecMap,
 	Json,
 } from '@polkadot/types-codec';
+import { Registry } from '@polkadot/types-codec/types';
 import {
 	hexToU8a,
 	isHex,
@@ -60,8 +61,8 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 
 			jsonStruct[key] = sanitizeNumbers(property, options);
 
-			if (options?.isMetadata) {
-				sanitizeMetadataExceptions(key, jsonStruct, property);
+			if (options?.isMetadata && options?.registry) {
+				sanitizeMetadataExceptions(key, jsonStruct, property, options.registry);
 			}
 
 			return jsonStruct;
@@ -232,7 +233,7 @@ function mapTypeSanitizeKeyValue(
 }
 
 /**
- * When metadata is being sanitized, we ensure arbitrary exceptions are sanitized
+ * When v14 metadata is being sanitized, we ensure arbitrary exceptions are sanitized
  * properly.
  *
  * @param key Current key of an object
@@ -242,20 +243,40 @@ function mapTypeSanitizeKeyValue(
 function sanitizeMetadataExceptions(
 	key: string,
 	struct: Record<string, AnyJson>,
-	property: Codec
+	property: Codec,
+	registry: Registry
 ): void {
-	/**
-	 * Covers all integers between u8 to u128 that are encoded as the type
-	 * `Bytes`
-	 */
+	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
+
 	if (key === 'value' && property instanceof Bytes) {
 		const value = struct[key];
+
 		if (isHex(value)) {
 			const u8aValue = hexToU8a(value);
-			if (u8aValue.byteLength <= 16 && u8aValue.byteLength % 8 === 0) {
+
+			/**
+			 * Get the lookup typedef. It is safe to assume that we have the struct
+			 * `type` field when `key === value` is true.
+			 */
+			const typeDef = registry.lookup.getTypeDef(
+				parseFloat(struct.type as string)
+			);
+
+			/**
+			 * Checks u128, u64, u32, u16, u8
+			 */
+			if (integerTypes.includes(typeDef.type)) {
 				struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
 					isLe: true,
 				}).toString();
+			}
+
+			/**
+			 * The value is not an integer, and needs to be converted to its
+			 * correct type, then transformed to JSON.
+			 */
+			if (isHex(struct[key]) && typeDef.lookupName) {
+				struct[key] = registry.createType(typeDef.lookupName, value).toJSON();
 			}
 		}
 	}
