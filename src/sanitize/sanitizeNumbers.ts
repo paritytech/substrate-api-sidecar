@@ -121,16 +121,6 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 		return value.toString(10);
 	}
 
-	// Lastly, check if the Codec value is represented as a u128 or above. Since
-	// anything above 53 bits is too large the value will be stored as a
-	// little endian hex.
-	// if (isU8a(value) && value.toString().startsWith('0x')) {
-	// 	// console.log(value.toU8a())
-	// 	console.log(value.toJSON())
-	// 	console.log(u8aToBn(value, { isLe: true }).toString())
-	// 	return u8aToBn(value, { isLe: true }).toString();
-	// }
-
 	// All other codecs are not nested
 	return value.toJSON();
 }
