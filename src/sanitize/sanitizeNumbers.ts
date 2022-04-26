@@ -256,14 +256,16 @@ function sanitizeMetadataExceptions(
 			if (integerTypes.includes(typeDef.type)) {
 				struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
 					isLe: true,
-				}).toString();
+				}).toString(10);
 			}
 			/**
 			 * The value is not an integer, and needs to be converted to its
 			 * correct type, then transformed to JSON.
 			 */
 			if (isHex(struct[key]) && typeDef.lookupName) {
-				struct[key] = registry.createType(typeDef.lookupName, value).toJSON();
+				struct[key] = sanitizeNumbers(
+					registry.createType(typeDef.lookupName, value).toJSON()
+				);
 			}
 		}
 	}
