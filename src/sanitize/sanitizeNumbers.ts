@@ -38,6 +38,7 @@ import { ISanitizeOptions } from '../types/sanitize';
  * based types we can provide a strong guarantee that the output will be of AnyJson
  *
  * @param value a type that implements polkadot-js Codec
+ * @param options - set of options specific to sanitization
  */
 function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 	// If objects have an overlapping prototype chain
@@ -137,6 +138,7 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
  * them to serialize to Hex.
  *
  * @param data - any arbitrary data that Sidecar might send
+ * @param options - set of options specific to sanitization
  */
 export function sanitizeNumbers(
 	data: unknown,
@@ -201,6 +203,7 @@ export function sanitizeNumbers(
  * is either a number or string.
  *
  * @param map Map | CodecMap
+ * @param options - set of options specific to sanitization
  */
 function mapTypeSanitizeKeyValue(
 	map: Map<unknown, unknown> | CodecMap,
@@ -229,6 +232,7 @@ function mapTypeSanitizeKeyValue(
  * @param key Current key of an object
  * @param struct Current struct being sanitized
  * @param property Current value of the inputted key
+ * @param registry Historic or Latest registry used to abstract and create types
  */
 function sanitizeMetadataExceptions(
 	key: string,
