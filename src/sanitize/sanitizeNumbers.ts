@@ -62,6 +62,10 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 
 			jsonStruct[key] = sanitizeNumbers(property, options);
 
+			/**
+			 * If the data we are sanitizing is metadata, ex: `/runtime/metadata`,
+			 * we want to sanitize all exceptions that arent caught using `sanitizeNumbers`
+			 */
 			if (options?.isMetadata && options?.registry) {
 				sanitizeMetadataExceptions(key, jsonStruct, property, options.registry);
 			}
