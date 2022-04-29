@@ -248,7 +248,7 @@ function sanitizeMetadataExceptions(
 	const value = struct[key];
 	/**
 	 * With V14 metadata the only key that is named 'value' lives inside of the
-	 * pallets key.
+	 * pallets key. The expected structure containing `{ type, value }`.
 	 */
 	if (key === 'value' && property instanceof Bytes && isHex(value)) {
 		const u8aValue = hexToU8a(value);
