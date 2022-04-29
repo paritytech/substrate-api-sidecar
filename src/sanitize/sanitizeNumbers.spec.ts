@@ -1172,7 +1172,7 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
 				{ type: 'Text', value: 'Bytes' },
-				{ type: '6', value: '0x00e87648170000000000000000000000' }
+				{ type: '6', value: '0x00e87648170000000000000000000000' } // u128
 			);
 
 			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
@@ -1185,7 +1185,7 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
 				{ type: 'Text', value: 'Bytes' },
-				{ type: '8', value: '0xc084666557010000' }
+				{ type: '8', value: '0xc084666557010000' } // u64
 			);
 
 			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
@@ -1198,7 +1198,7 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
 				{ type: 'Text', value: 'Bytes' },
-				{ type: '4', value: '0x00400000' }
+				{ type: '4', value: '0x00400000' } // u32
 			);
 
 			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
@@ -1211,7 +1211,7 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
 				{ type: 'Text', value: 'Bytes' },
-				{ type: '75', value: '0x0200' }
+				{ type: '75', value: '0x0200' } // u16
 			);
 
 			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
@@ -1224,7 +1224,7 @@ describe('sanitizeNumbers', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
 				{ type: 'Text', value: 'Bytes' },
-				{ type: '2', value: '0x05' }
+				{ type: '2', value: '0x05' } // u8
 			);
 
 			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
