@@ -1164,8 +1164,10 @@ describe('sanitizeNumbers', () => {
 
 	describe('handles metadata v14 correctly', () => {
 		const sanitizeOptions = {
-			isMetadata: true,
-			registry: polkadotRegistryV9190,
+			metadataOpts: {
+				registry: polkadotRegistryV9190,
+				version: 14,
+			},
 		};
 
 		it('handles unknown struct bytes correctly for Option<u128>', () => {

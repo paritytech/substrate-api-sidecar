@@ -13,7 +13,6 @@ import {
 	CodecMap,
 	Json,
 } from '@polkadot/types-codec';
-import { Registry } from '@polkadot/types-codec/types';
 import {
 	hexToU8a,
 	isHex,
@@ -31,7 +30,7 @@ import {
 	isCodec,
 	isToJSONable,
 } from '../types/polkadot-js';
-import { ISanitizeOptions } from '../types/sanitize';
+import { IMetadataOptions, ISanitizeOptions } from '../types/sanitize';
 
 /**
  * Forcibly serialize all instances of AbstractInt to base 10. With Codec
@@ -66,8 +65,13 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 			 * If the data we are sanitizing is metadata, ex: `/runtime/metadata`,
 			 * we want to sanitize all exceptions that arent caught using `sanitizeNumbers`
 			 */
-			if (options?.isMetadata && options?.registry) {
-				sanitizeMetadataExceptions(key, jsonStruct, property, options.registry);
+			if (options?.metadataOpts) {
+				sanitizeMetadataExceptions(
+					key,
+					jsonStruct,
+					property,
+					options.metadataOpts
+				);
 			}
 
 			return jsonStruct;
@@ -230,20 +234,45 @@ function mapTypeSanitizeKeyValue(
 }
 
 /**
+ * Based on the metadata version, we ensure arbitrary exceptions are sanitized
+ * properly.
+ *
+ * @param key Current key of an object
+ * @param struct Current struct being sanitized
+ * @param property Current value of the inputted key
+ * @param metadataOpts metadata specific options
+ */
+function sanitizeMetadataExceptions(
+	key: string,
+	struct: Record<string, AnyJson>,
+	property: Codec,
+	metadataOpts: IMetadataOptions
+): void {
+	switch (metadataOpts.version) {
+		case 14:
+			sanitizeMetadataExceptionsV14(key, struct, property, metadataOpts);
+			break;
+		default:
+			break;
+	}
+}
+
+/**
  * When v14 metadata is being sanitized, we ensure arbitrary exceptions are sanitized
  * properly.
  *
  * @param key Current key of an object
  * @param struct Current struct being sanitized
  * @param property Current value of the inputted key
- * @param registry Historic or Latest registry used to abstract and create types
+ * @param metadataOpts metadata specific options
  */
-function sanitizeMetadataExceptions(
+function sanitizeMetadataExceptionsV14(
 	key: string,
 	struct: Record<string, AnyJson>,
 	property: Codec,
-	registry: Registry
-): void {
+	metadataOpts: IMetadataOptions
+) {
+	const { registry } = metadataOpts;
 	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
 	const value = struct[key];
 	/**
@@ -276,7 +305,7 @@ function sanitizeMetadataExceptions(
 
 			struct[key] = sanitizeNumbers(
 				registry.createType(typeName, u8aValue).toJSON(),
-				{ isMetadata: true, registry }
+				{ metadataOpts }
 			);
 		}
 	}

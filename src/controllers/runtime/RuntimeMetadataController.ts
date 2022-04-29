@@ -46,11 +46,10 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		}
 
 		const registry = historicApi ? historicApi.registry : this.api.registry;
+		const metadata = await this.service.fetchMetadata(hash);
 
-		RuntimeMetadataController.sanitizedSend(
-			res,
-			await this.service.fetchMetadata(hash),
-			{ isMetadata: true, registry }
-		);
+		RuntimeMetadataController.sanitizedSend(res, metadata, {
+			metadataOpts: { registry, version: metadata.version },
+		});
 	};
 }
