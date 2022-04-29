@@ -1168,6 +1168,19 @@ describe('sanitizeNumbers', () => {
 			registry: polkadotRegistryV9190,
 		};
 
+		it('handles unknown struct bytes correctly for Option<u128>', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '535', value: '0x01005039278c0400000000000000000000' } // Option<u128>
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '535',
+				value: '5000000000000',
+			});
+		});
+
 		it('handles unknown struct bytes correctly for u128', () => {
 			const struct = new Struct(
 				polkadotRegistryV9190,
