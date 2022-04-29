@@ -15,6 +15,7 @@ import {
 
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
+import { ISanitizeOptions } from '../types/sanitize';
 
 type SidecarRequestHandler =
 	| RequestHandler<IAddressParam>
@@ -218,7 +219,11 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param res Response
 	 * @param body response body
 	 */
-	static sanitizedSend<T>(res: Response<AnyJson>, body: T): void {
-		res.send(sanitizeNumbers(body));
+	static sanitizedSend<T>(
+		res: Response<AnyJson>,
+		body: T,
+		options: ISanitizeOptions = {}
+	): void {
+		res.send(sanitizeNumbers(body, options));
 	}
 }

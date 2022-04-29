@@ -48,7 +48,11 @@ import {
 	MIN_I64,
 	MIN_I128,
 } from '../test-helpers/constants';
-import { kusamaRegistry, polkadotRegistry } from '../test-helpers/registries';
+import {
+	kusamaRegistry,
+	polkadotRegistry,
+	polkadotRegistryV9190,
+} from '../test-helpers/registries';
 import {
 	PRE_SANITIZED_BALANCE_LOCK,
 	PRE_SANITIZED_OPTION_VESTING_INFO,
@@ -1156,5 +1160,92 @@ describe('sanitizeNumbers', () => {
 			'5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
 			'5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
 		]);
+	});
+
+	describe('handles metadata v14 correctly', () => {
+		const sanitizeOptions = {
+			metadataOpts: {
+				registry: polkadotRegistryV9190,
+				version: 14,
+			},
+		};
+
+		it('handles unknown struct bytes correctly for Option<u128>', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '535', value: '0x01005039278c0400000000000000000000' } // Option<u128>
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '535',
+				value: '5000000000000',
+			});
+		});
+
+		it('handles unknown struct bytes correctly for u128', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '6', value: '0x00e87648170000000000000000000000' } // u128
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '6',
+				value: '100000000000',
+			});
+		});
+
+		it('handles unknown struct bytes correctly for u64', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '8', value: '0xc084666557010000' } // u64
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '8',
+				value: '1474875000000',
+			});
+		});
+
+		it('handles unknown struct bytes correctly for u32', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '4', value: '0x00400000' } // u32
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '4',
+				value: '16384',
+			});
+		});
+
+		it('handles unknown struct bytes correctly for u16', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '75', value: '0x0200' } // u16
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '75',
+				value: '2',
+			});
+		});
+
+		it('handles unknown struct bytes correctly for u8', () => {
+			const struct = new Struct(
+				polkadotRegistryV9190,
+				{ type: 'Text', value: 'Bytes' },
+				{ type: '2', value: '0x05' } // u8
+			);
+
+			expect(sanitizeNumbers(struct, sanitizeOptions)).toStrictEqual({
+				type: '2',
+				value: '5',
+			});
+		});
 	});
 });
