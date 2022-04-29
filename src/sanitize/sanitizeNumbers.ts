@@ -245,36 +245,39 @@ function sanitizeMetadataExceptions(
 	registry: Registry
 ): void {
 	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
+	const value = struct[key];
+	/**
+	 * With V14 metadata the only key that is named 'value' lives inside of the
+	 * pallets key.
+	 */
+	if (key === 'value' && property instanceof Bytes && isHex(value)) {
+		const u8aValue = hexToU8a(value);
+		/**
+		 * Get the lookup typedef. It is safe to assume that we have the struct
+		 * `type` field when `key === value` is true.
+		 */
+		const typeDef = registry.lookup.getTypeDef(
+			parseFloat(struct.type as string)
+		);
+		/**
+		 * Checks u128, u64, u32, u16, u8
+		 */
+		if (integerTypes.includes(typeDef.type)) {
+			struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
+				isLe: true,
+			}).toString(10);
+		}
+		/**
+		 * The value is not an integer, and needs to be converted to its
+		 * correct type, then transformed to JSON.
+		 */
+		if (isHex(struct[key]) && (typeDef.lookupName || typeDef.type)) {
+			const typeName = typeDef.lookupName || typeDef.type;
 
-	if (key === 'value' && property instanceof Bytes) {
-		const value = struct[key];
-
-		if (isHex(value)) {
-			const u8aValue = hexToU8a(value);
-			/**
-			 * Get the lookup typedef. It is safe to assume that we have the struct
-			 * `type` field when `key === value` is true.
-			 */
-			const typeDef = registry.lookup.getTypeDef(
-				parseFloat(struct.type as string)
+			struct[key] = sanitizeNumbers(
+				registry.createType(typeName, u8aValue).toJSON(),
+				{ isMetadata: true, registry }
 			);
-			/**
-			 * Checks u128, u64, u32, u16, u8
-			 */
-			if (integerTypes.includes(typeDef.type)) {
-				struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
-					isLe: true,
-				}).toString(10);
-			}
-			/**
-			 * The value is not an integer, and needs to be converted to its
-			 * correct type, then transformed to JSON.
-			 */
-			if (isHex(struct[key]) && typeDef.lookupName) {
-				struct[key] = sanitizeNumbers(
-					registry.createType(typeDef.lookupName, value).toJSON()
-				);
-			}
 		}
 	}
 }
