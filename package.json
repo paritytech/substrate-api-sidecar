@@ -51,7 +51,7 @@
     "lint:scripts": "cd scripts && substrate-dev-run-lint",
     "start:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js",
     "test:test-release": "yarn start:test-release",
-    "update-pjs-deps": "substrate-update-pjs-deps"
+    "update-pjs-deps": "substrate-update-pjs-deps && yarn"
   },
   "dependencies": {
     "@polkadot/api": "8.3.1",

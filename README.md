@@ -305,7 +305,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 ### Updating polkadot-js dependencies
 
 1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, 
-and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps && yarn`. 
+and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`. 
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
