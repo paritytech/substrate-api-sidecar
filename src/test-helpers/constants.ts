@@ -27,4 +27,4 @@ export const MAX_H512 =
 	'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const MAX_H256 =
 	'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-export const MAX_H160 = '0xffffffffffffffffffffffffffffffffffffffffffffffff';
+export const MAX_H160 = '0xffffffffffffffffffffffffffffffffffffffff';
