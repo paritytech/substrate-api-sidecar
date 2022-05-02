@@ -40,9 +40,16 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		RuntimeMetadataController.sanitizedSend(
-			res,
-			await this.service.fetchMetadata(hash)
-		);
+		let historicApi;
+		if (at) {
+			historicApi = await this.api.at(hash);
+		}
+
+		const registry = historicApi ? historicApi.registry : this.api.registry;
+		const metadata = await this.service.fetchMetadata(hash);
+
+		RuntimeMetadataController.sanitizedSend(res, metadata, {
+			metadataOpts: { registry, version: metadata.version },
+		});
 	};
 }
