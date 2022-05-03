@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.18](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.17..v11.3.18) (2022-05-03)
+
+**Upgrade Priority** Medium (For users querying `/runtime/metadata`. Fixes decoding all constants for V14)
+
+### Bug Fixes
+
+- fix(deps): update pjs api ([#906](https://github.com/paritytech/substrate-api-sidecar/pull/906)) ([528420c](https://github.com/paritytech/substrate-api-sidecar/commit/528420c29a1635b594730f781e01c6743082934a))
+- fix: decode Bytes types for /runtime/metadata correctly ([#907](https://github.com/paritytech/substrate-api-sidecar/pull/907)) ([ce48c14](https://github.com/paritytech/substrate-api-sidecar/commit/ce48c144a2ebc566e323a2a32df5a187ffd4aad4))
+- fix: update substrate-js-dev, add update-pjs script ([#904](https://github.com/paritytech/substrate-api-sidecar/pull/904)) ([59aabc3](https://github.com/paritytech/substrate-api-sidecar/commit/59aabc3006a5b7d2b11d7485ce0b53322b04815f))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9190
+- Kusama v9190
+- Westend v9190
+
+
 ## [11.3.17](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.16..v11.3.17) (2022-04-21)
 
 **Upgrade Priority** High (For users querying chains using v9190, and need partialFee information)
