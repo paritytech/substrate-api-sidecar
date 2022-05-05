@@ -588,7 +588,7 @@ export class BlocksService extends AbstractService {
 
 		let weightValue;
 		if (system.blockWeights?.perClass) {
-			const { normal, operational, mandatory } = system.blockWeights?.perClass;
+			const { normal, operational, mandatory } = system.blockWeights.perClass;
 
 			const perClass = {
 				normal: {
