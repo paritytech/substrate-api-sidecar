@@ -684,7 +684,7 @@ export class BlocksService extends AbstractService {
 	): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
-				return this.parseGenericCall(argument, registry);
+				return this.parseGenericCall(argument as GenericCall, registry);
 			}
 
 			return argument;
@@ -717,7 +717,10 @@ export class BlocksService extends AbstractService {
 				if (Array.isArray(argument)) {
 					newArgs[paramName] = this.parseArrayGenericCalls(argument, registry);
 				} else if (argument instanceof GenericCall) {
-					newArgs[paramName] = this.parseGenericCall(argument, registry);
+					newArgs[paramName] = this.parseGenericCall(
+						argument as GenericCall,
+						registry
+					);
 				} else if (
 					argument &&
 					paramName === 'call' &&
