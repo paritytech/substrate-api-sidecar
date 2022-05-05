@@ -27,7 +27,7 @@ import { statemineControllers } from './statemineControllers';
 import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
 
-const specToControllerMap = {
+const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
 	polymesh: polymeshControllers,
