@@ -12,6 +12,7 @@ export const nodeUtilFormat = winston.format(
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const args = info[SPLAT as unknown as string];
 		if (args) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			info.message = format(info.message, ...args);
 		}
 		return info;
