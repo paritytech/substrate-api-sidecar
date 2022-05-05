@@ -68,7 +68,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.6.0",
+    "@substrate/dev": "^0.6.1",
     "@types/argparse": "2.0.10",
     "@types/express": "4.17.13",
     "@types/express-serve-static-core": "4.17.25",
