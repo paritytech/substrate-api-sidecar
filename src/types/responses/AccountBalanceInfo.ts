@@ -7,7 +7,7 @@ export interface IAccountBalanceInfo {
 	at: IAt;
 	tokenSymbol: string;
 	nonce: Index;
-	free: Balance;
+	free: Balance | string;
 	reserved: Balance;
 	miscFrozen: Balance;
 	feeFrozen: Balance;
