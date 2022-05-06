@@ -80,7 +80,8 @@ describe('AccountsBalanceInfoService', () => {
 						blockHash789629,
 						mockHistoricApi,
 						testAddress,
-						'DOT'
+						'DOT',
+						false
 					)
 				)
 			).toStrictEqual(accountsBalanceInfo789629);
@@ -91,7 +92,8 @@ describe('AccountsBalanceInfoService', () => {
 				blockHash789629,
 				mockHistoricApi,
 				testAddress,
-				'DOT'
+				'DOT',
+				false
 			);
 
 			const expectedResponse = {
@@ -186,7 +188,8 @@ describe('AccountsBalanceInfoService', () => {
 								blockHash789629,
 								tokenHistoricApi,
 								testAddress,
-								'fOoToKeN'
+								'fOoToKeN',
+								false
 							)
 						) as any
 					).tokenSymbol
@@ -205,7 +208,8 @@ describe('AccountsBalanceInfoService', () => {
 								blockHash789629,
 								tokenHistoricApi,
 								testAddress,
-								'doT'
+								'doT',
+								false
 							)
 						) as any
 					).tokenSymbol
@@ -215,6 +219,24 @@ describe('AccountsBalanceInfoService', () => {
 				expect(mockTokenAccountAt).not.toBeCalled();
 				expect(mockBalancesLocksAt).toBeCalled();
 			});
+		});
+	});
+
+	describe('convertBalance', () => {
+		const balance = polkadotRegistry.createType('Balance', 12345);
+
+		it('Should correctly convert a balance when balance.length <= decimal', () => {
+			const ltValue = accountsBalanceInfoService['convertBalance'](balance, 7);
+			const etValue = accountsBalanceInfoService['convertBalance'](balance, 5);
+
+			expect(ltValue).toBe('.0012345');
+			expect(etValue).toBe('.12345');
+		});
+
+		it('Should correctly convert a balance when balance.length > decimal', () => {
+			const value = accountsBalanceInfoService['convertBalance'](balance, 3);
+
+			expect(value).toBe('12.345');
 		});
 	});
 });
