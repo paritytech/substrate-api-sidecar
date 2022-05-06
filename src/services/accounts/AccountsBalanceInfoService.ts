@@ -25,9 +25,11 @@ export class AccountsBalanceInfoService extends AbstractService {
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
 		address: string,
-		token: string
+		token: string,
+		balanceToHuman: boolean
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
+		const decimal = api.registry.chainDecimals[0];
 		/**
 		 * Check two different cases where a historicApi is needed in order
 		 * to have the correct runtime methods.
@@ -63,7 +65,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free,
+					free: balanceToHuman ? this.convertBalance(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -96,7 +98,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free,
+					free: balanceToHuman ? this.convertBalance(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -161,7 +163,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				at,
 				nonce,
 				tokenSymbol: token,
-				free,
+				free: balanceToHuman ? this.convertBalance(free, decimal) : free,
 				reserved,
 				miscFrozen,
 				feeFrozen,
@@ -169,6 +171,21 @@ export class AccountsBalanceInfoService extends AbstractService {
 			};
 		} else {
 			throw new BadRequest('Account not found');
+		}
+	}
+
+	private convertBalance(balance: Balance, dec: number): string {
+		const strBalance = balance.toString();
+
+		if (strBalance.length <= dec) {
+			return '.'.padEnd(dec - strBalance.length + 1, '0').concat(strBalance);
+		} else {
+			const lenDiff = strBalance.length - dec;
+			return (
+				strBalance.substring(0, lenDiff) +
+				'.' +
+				strBalance.substring(lenDiff, strBalance.length)
+			);
 		}
 	}
 }
