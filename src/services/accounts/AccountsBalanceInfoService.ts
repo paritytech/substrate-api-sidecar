@@ -26,7 +26,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		address: string,
 		token: string,
-		balanceToHuman: boolean
+		withDenomination: boolean
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
 		const decimal = api.registry.chainDecimals[0];
@@ -65,7 +65,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
+					free: withDenomination ? this.applyDenomination(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -98,7 +98,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
+					free: withDenomination ? this.applyDenomination(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -163,7 +163,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				at,
 				nonce,
 				tokenSymbol: token,
-				free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
+				free: withDenomination ? this.applyDenomination(free, decimal) : free,
 				reserved,
 				miscFrozen,
 				feeFrozen,
