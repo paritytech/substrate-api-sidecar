@@ -174,6 +174,12 @@ export class AccountsBalanceInfoService extends AbstractService {
 		}
 	}
 
+	/**
+	 * Apply a denomination to a balance depending on the chains decimal value.
+	 *
+	 * @param balance free balance available encoded as Balance
+	 * @param dec The chains given decimal value
+	 */
 	private applyDenomination(balance: Balance, dec: number): string {
 		const strBalance = balance.toString();
 
