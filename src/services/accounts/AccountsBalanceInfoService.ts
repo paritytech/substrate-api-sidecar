@@ -65,7 +65,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free: balanceToHuman ? this.convertBalance(free, decimal) : free,
+					free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -98,7 +98,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					at,
 					nonce,
 					tokenSymbol: token,
-					free: balanceToHuman ? this.convertBalance(free, decimal) : free,
+					free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
 					reserved,
 					miscFrozen,
 					feeFrozen,
@@ -163,7 +163,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				at,
 				nonce,
 				tokenSymbol: token,
-				free: balanceToHuman ? this.convertBalance(free, decimal) : free,
+				free: balanceToHuman ? this.applyDenomination(free, decimal) : free,
 				reserved,
 				miscFrozen,
 				feeFrozen,
@@ -174,7 +174,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		}
 	}
 
-	private convertBalance(balance: Balance, dec: number): string {
+	private applyDenomination(balance: Balance, dec: number): string {
 		const strBalance = balance.toString();
 
 		if (strBalance.length <= dec) {

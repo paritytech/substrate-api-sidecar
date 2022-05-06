@@ -222,19 +222,25 @@ describe('AccountsBalanceInfoService', () => {
 		});
 	});
 
-	describe('convertBalance', () => {
+	describe('applyDenomination', () => {
 		const balance = polkadotRegistry.createType('Balance', 12345);
 
-		it('Should correctly convert a balance when balance.length <= decimal', () => {
-			const ltValue = accountsBalanceInfoService['convertBalance'](balance, 7);
-			const etValue = accountsBalanceInfoService['convertBalance'](balance, 5);
+		it('Should correctly denominate a balance when balance.length <= decimal', () => {
+			const ltValue = accountsBalanceInfoService['applyDenomination'](
+				balance,
+				7
+			);
+			const etValue = accountsBalanceInfoService['applyDenomination'](
+				balance,
+				5
+			);
 
 			expect(ltValue).toBe('.0012345');
 			expect(etValue).toBe('.12345');
 		});
 
-		it('Should correctly convert a balance when balance.length > decimal', () => {
-			const value = accountsBalanceInfoService['convertBalance'](balance, 3);
+		it('Should correctly denominate a balance when balance.length > decimal', () => {
+			const value = accountsBalanceInfoService['applyDenomination'](balance, 3);
 
 			expect(value).toBe('12.345');
 		});
