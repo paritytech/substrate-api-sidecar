@@ -62,7 +62,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 * @param res Express Response
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, token } },
+		{ params: { address }, query: { at, token, convertBalance } },
 		res
 	): Promise<void> => {
 		const tokenArg =
@@ -70,6 +70,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 				? token.toUpperCase()
 				: // We assume the first token is the native token
 				  this.api.registry.chainTokens[0].toUpperCase();
+		const balanceToHuman = convertBalance === 'true';
 
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -80,7 +81,8 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 				hash,
 				historicApi,
 				address,
-				tokenArg
+				tokenArg,
+				balanceToHuman
 			)
 		);
 	};
