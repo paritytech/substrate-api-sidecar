@@ -193,8 +193,8 @@ describe('AccountsStakingPayoutsService', () => {
 				derivedExposure
 			);
 			expect(sanitizeNumbers(res)).toStrictEqual({
-				nominatorExposure: '33223051661066608',
-				totalExposure: '33223251661066608',
+				nominatorExposure: '33223051661066606',
+				totalExposure: '33223251661066606',
 			});
 		});
 
@@ -206,7 +206,7 @@ describe('AccountsStakingPayoutsService', () => {
 			);
 			expect(sanitizeNumbers(res)).toStrictEqual({
 				nominatorExposure: '200000000000',
-				totalExposure: '33223251661066608',
+				totalExposure: '33223251661066606',
 			});
 		});
 
