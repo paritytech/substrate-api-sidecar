@@ -1,5 +1,11 @@
 import { Vec } from '@polkadot/types';
-import { Balance, BalanceLock, Index } from '@polkadot/types/interfaces';
+import {
+	Balance,
+	BalanceLock,
+	Index,
+	LockIdentifier,
+	Reasons,
+} from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 
@@ -11,5 +17,11 @@ export interface IAccountBalanceInfo {
 	reserved: Balance | string;
 	miscFrozen: Balance | string;
 	feeFrozen: Balance | string;
-	locks: Vec<BalanceLock>;
+	locks: Vec<BalanceLock> | IBalanceLock[];
+}
+
+export interface IBalanceLock {
+	id: LockIdentifier;
+	amount: string;
+	reasons: Reasons;
 }
