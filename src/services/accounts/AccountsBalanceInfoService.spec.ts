@@ -255,4 +255,30 @@ describe('AccountsBalanceInfoService', () => {
 			expect(value).toBe('0');
 		});
 	});
+
+	describe('denominateLocks', () => {
+		it('Should correctly parse and denominate a Vec<BalanceLocks>', () => {
+			const balanceLock = polkadotRegistry.createType('BalanceLock', {
+				id: '0x7374616b696e6720',
+				amount: 12345,
+				reasons: 'All',
+			});
+			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', [
+				balanceLock,
+			]);
+			const value = accountsBalanceInfoService['denominateLocks'](vecLocks, 3);
+			const expectedValue = [
+				{ amount: '12.345', id: '0x7374616b696e6720', reasons: 'All' },
+			];
+
+			expect(sanitizeNumbers(value)).toStrictEqual(expectedValue);
+		});
+
+		it('Should handle an empty Vec correctly', () => {
+			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', []);
+			const value = accountsBalanceInfoService['denominateLocks'](vecLocks, 3);
+
+			expect(sanitizeNumbers(value)).toStrictEqual([]);
+		});
+	});
 });

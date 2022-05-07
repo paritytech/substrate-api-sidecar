@@ -8,7 +8,7 @@ import {
 	Index,
 } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
-import { IAccountBalanceInfo } from 'src/types/responses';
+import { IAccountBalanceInfo, IBalanceLock } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
@@ -75,7 +75,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 					feeFrozen: withDenomination
 						? this.applyDenomination(feeFrozen, decimal)
 						: feeFrozen,
-					locks,
+					locks: withDenomination
+						? this.denominateLocks(locks, decimal)
+						: locks,
 				};
 			} else {
 				throw new BadRequest('Account not found');
@@ -114,7 +116,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 					feeFrozen: withDenomination
 						? this.applyDenomination(feeFrozen, decimal)
 						: feeFrozen,
-					locks,
+					locks: withDenomination
+						? this.denominateLocks(locks, decimal)
+						: locks,
 				};
 			} else {
 				throw new BadRequest('Account not found');
@@ -185,7 +189,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				feeFrozen: withDenomination
 					? this.applyDenomination(feeFrozen, decimal)
 					: feeFrozen,
-				locks,
+				locks: withDenomination ? this.denominateLocks(locks, decimal) : locks,
 			};
 		} else {
 			throw new BadRequest('Account not found');
@@ -216,5 +220,24 @@ export class AccountsBalanceInfoService extends AbstractService {
 			'.' +
 			strBalance.substring(lenDiff, strBalance.length)
 		);
+	}
+
+	/**
+	 * Parse and denominate the `amount` key in each BalanceLock
+	 *
+	 * @param locks A vector containing BalanceLock objects
+	 * @param dec The chains given decimal value
+	 */
+	private denominateLocks(
+		locks: Vec<BalanceLock>,
+		dec: number
+	): IBalanceLock[] {
+		return locks.map((lock) => {
+			return {
+				id: lock.id,
+				amount: this.applyDenomination(lock.amount, dec),
+				reasons: lock.reasons,
+			};
+		});
 	}
 }
