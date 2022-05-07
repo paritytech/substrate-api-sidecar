@@ -66,9 +66,15 @@ export class AccountsBalanceInfoService extends AbstractService {
 					nonce,
 					tokenSymbol: token,
 					free: withDenomination ? this.applyDenomination(free, decimal) : free,
-					reserved,
-					miscFrozen,
-					feeFrozen,
+					reserved: withDenomination
+						? this.applyDenomination(reserved, decimal)
+						: reserved,
+					miscFrozen: withDenomination
+						? this.applyDenomination(miscFrozen, decimal)
+						: miscFrozen,
+					feeFrozen: withDenomination
+						? this.applyDenomination(feeFrozen, decimal)
+						: feeFrozen,
 					locks,
 				};
 			} else {
@@ -99,9 +105,15 @@ export class AccountsBalanceInfoService extends AbstractService {
 					nonce,
 					tokenSymbol: token,
 					free: withDenomination ? this.applyDenomination(free, decimal) : free,
-					reserved,
-					miscFrozen,
-					feeFrozen,
+					reserved: withDenomination
+						? this.applyDenomination(reserved, decimal)
+						: reserved,
+					miscFrozen: withDenomination
+						? this.applyDenomination(miscFrozen, decimal)
+						: miscFrozen,
+					feeFrozen: withDenomination
+						? this.applyDenomination(feeFrozen, decimal)
+						: feeFrozen,
 					locks,
 				};
 			} else {
@@ -164,9 +176,15 @@ export class AccountsBalanceInfoService extends AbstractService {
 				nonce,
 				tokenSymbol: token,
 				free: withDenomination ? this.applyDenomination(free, decimal) : free,
-				reserved,
-				miscFrozen,
-				feeFrozen,
+				reserved: withDenomination
+					? this.applyDenomination(reserved, decimal)
+					: reserved,
+				miscFrozen: withDenomination
+					? this.applyDenomination(miscFrozen, decimal)
+					: miscFrozen,
+				feeFrozen: withDenomination
+					? this.applyDenomination(feeFrozen, decimal)
+					: feeFrozen,
 				locks,
 			};
 		} else {

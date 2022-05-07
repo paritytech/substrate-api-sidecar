@@ -8,8 +8,8 @@ export interface IAccountBalanceInfo {
 	tokenSymbol: string;
 	nonce: Index;
 	free: Balance | string;
-	reserved: Balance;
-	miscFrozen: Balance;
-	feeFrozen: Balance;
+	reserved: Balance | string;
+	miscFrozen: Balance | string;
+	feeFrozen: Balance | string;
 	locks: Vec<BalanceLock>;
 }
