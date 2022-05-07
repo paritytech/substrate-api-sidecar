@@ -183,15 +183,20 @@ export class AccountsBalanceInfoService extends AbstractService {
 	private applyDenomination(balance: Balance, dec: number): string {
 		const strBalance = balance.toString();
 
+		// We dont want to denominate a zero balance
+		if (strBalance === '0') {
+			return strBalance;
+		}
+		// If the denominated value will be less then zero, pad it correctly
 		if (strBalance.length <= dec) {
 			return '.'.padEnd(dec - strBalance.length + 1, '0').concat(strBalance);
-		} else {
-			const lenDiff = strBalance.length - dec;
-			return (
-				strBalance.substring(0, lenDiff) +
-				'.' +
-				strBalance.substring(lenDiff, strBalance.length)
-			);
 		}
+
+		const lenDiff = strBalance.length - dec;
+		return (
+			strBalance.substring(0, lenDiff) +
+			'.' +
+			strBalance.substring(lenDiff, strBalance.length)
+		);
 	}
 }

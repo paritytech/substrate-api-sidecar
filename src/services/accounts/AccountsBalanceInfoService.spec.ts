@@ -244,5 +244,15 @@ describe('AccountsBalanceInfoService', () => {
 
 			expect(value).toBe('12.345');
 		});
+
+		it('Should correctly denominate a balance when balance is equal to zero', () => {
+			const zeroBalance = polkadotRegistry.createType('Balance', 0);
+			const value = accountsBalanceInfoService['applyDenomination'](
+				zeroBalance,
+				2
+			);
+
+			expect(value).toBe('0');
+		});
 	});
 });
