@@ -29,6 +29,13 @@ export class AccountsBalanceInfoService extends AbstractService {
 		withDenomination: boolean
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
+
+		if (withDenomination && api.registry.chainDecimals.length === 0) {
+			throw new BadRequest(
+				"Invalid use of the query parameter `denominated`. This chain doesn't have a valid chain decimal to denominate a value."
+			);
+		}
+
 		const decimal = api.registry.chainDecimals[0];
 		/**
 		 * Check two different cases where a historicApi is needed in order
