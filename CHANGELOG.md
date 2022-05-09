@@ -13,9 +13,9 @@ All notable changes to this project will be documented in this file. See [standa
 ## Compatibility
 
 Tested against:
-- Polkadot v9190
-- Kusama v9190
-- Westend v9190
+- Polkadot v9200
+- Kusama v9200
+- Westend v9200
 
 
 ## [11.3.18](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.17..v11.3.18) (2022-05-03)
