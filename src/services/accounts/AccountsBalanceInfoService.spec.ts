@@ -226,11 +226,11 @@ describe('AccountsBalanceInfoService', () => {
 		const balance = polkadotRegistry.createType('Balance', 12345);
 
 		it('Should correctly denominate a balance when balance.length <= decimal', () => {
-			const ltValue = accountsBalanceInfoService['applyDenomination'](
+			const ltValue = accountsBalanceInfoService['applyDenominationBalance'](
 				balance,
 				7
 			);
-			const etValue = accountsBalanceInfoService['applyDenomination'](
+			const etValue = accountsBalanceInfoService['applyDenominationBalance'](
 				balance,
 				5
 			);
@@ -240,14 +240,17 @@ describe('AccountsBalanceInfoService', () => {
 		});
 
 		it('Should correctly denominate a balance when balance.length > decimal', () => {
-			const value = accountsBalanceInfoService['applyDenomination'](balance, 3);
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				3
+			);
 
 			expect(value).toBe('12.345');
 		});
 
 		it('Should correctly denominate a balance when balance is equal to zero', () => {
 			const zeroBalance = polkadotRegistry.createType('Balance', 0);
-			const value = accountsBalanceInfoService['applyDenomination'](
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
 				zeroBalance,
 				2
 			);
@@ -266,7 +269,10 @@ describe('AccountsBalanceInfoService', () => {
 			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', [
 				balanceLock,
 			]);
-			const value = accountsBalanceInfoService['denominateLocks'](vecLocks, 3);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](
+				vecLocks,
+				3
+			);
 			const expectedValue = [
 				{ amount: '12.345', id: '0x7374616b696e6720', reasons: 'All' },
 			];
@@ -276,7 +282,10 @@ describe('AccountsBalanceInfoService', () => {
 
 		it('Should handle an empty Vec correctly', () => {
 			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', []);
-			const value = accountsBalanceInfoService['denominateLocks'](vecLocks, 3);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](
+				vecLocks,
+				3
+			);
 
 			expect(sanitizeNumbers(value)).toStrictEqual([]);
 		});
