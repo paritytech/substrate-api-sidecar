@@ -257,6 +257,15 @@ describe('AccountsBalanceInfoService', () => {
 
 			expect(value).toBe('0');
 		});
+
+		it('Should correctly denominate a balance when the decimal value is zero', () => {
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				0
+			);
+
+			expect(value).toBe('12345');
+		});
 	});
 
 	describe('denominateLocks', () => {

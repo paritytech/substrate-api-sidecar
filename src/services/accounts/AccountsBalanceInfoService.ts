@@ -190,8 +190,8 @@ export class AccountsBalanceInfoService extends AbstractService {
 	private applyDenominationBalance(balance: Balance, dec: number): string {
 		const strBalance = balance.toString();
 
-		// We dont want to denominate a zero balance
-		if (strBalance === '0') {
+		// We dont want to denominate a zero balance or zero decimal
+		if (strBalance === '0' || dec === 0) {
 			return strBalance;
 		}
 		// If the denominated value will be less then zero, pad it correctly
