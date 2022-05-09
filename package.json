@@ -35,7 +35,7 @@
     "start:log-rpc": "yarn run build && NODE_ENV=test yarn run main ",
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
-    "test:watch": "substrate-exec-jest --watch",
+    "test:watch": "NODE_ENV=test substrate-exec-jest --watch",
     "test:cov": "NODE_ENV=test substrate-exec-jest --detectOpenHandles --coverage",
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
     "build:e2e-tests": "(cd e2e-tests && substrate-exec-tsc)",
