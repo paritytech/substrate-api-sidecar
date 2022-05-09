@@ -14,7 +14,7 @@ const txErrorMiddlewareCatchesErrWithResponse =
 
 describe('txErrorMiddleware', () => {
 	beforeAll(() => {
-		jest.spyOn(console, 'log').mockImplementation(() => { });
+		jest.spyOn(console, 'log').mockImplementation(() => ({}));
 	});
 
 	txErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));

@@ -16,7 +16,7 @@ const httpErrorMiddlewareCatchesErrWithStatus =
 
 describe('httpErrorMiddleware', () => {
 	beforeAll(() => {
-		jest.spyOn(console, 'log').mockImplementation(() => { });
+		jest.spyOn(console, 'log').mockImplementation(() => ({}));
 	});
 
 	httpErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));

@@ -10,7 +10,7 @@ const internalErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 
 describe('internalErrorMiddleware', () => {
 	beforeAll(() => {
-		jest.spyOn(console, 'log').mockImplementation(() => { });
+		jest.spyOn(console, 'log').mockImplementation(() => ({}));
 	});
 
 	internalErrorMiddlewareCatchesErrWithResponse(
