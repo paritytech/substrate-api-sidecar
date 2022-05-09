@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.19](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.18..v11.3.19) (2022-05-09)
+
+**Upgrade Priority** Low
+
+### Bug Fixes
+
+- fix(deps): update pjs api ([#915](https://github.com/paritytech/substrate-api-sidecar/pull/915)) ([f089967](https://github.com/paritytech/substrate-api-sidecar/commit/f0899671f4c51ec9179183242c0ae5155b21d63b))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9190
+- Kusama v9190
+- Westend v9190
+
+
 ## [11.3.18](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.17..v11.3.18) (2022-05-03)
 
 **Upgrade Priority** Medium (For users querying `/runtime/metadata`. Fixes decoding all constants for V14)
