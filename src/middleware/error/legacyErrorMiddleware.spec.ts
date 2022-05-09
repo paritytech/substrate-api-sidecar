@@ -17,6 +17,10 @@ const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 );
 
 describe('legacyErrorMiddleware', () => {
+	beforeAll(() => {
+		jest.spyOn(console, 'log').mockImplementation(() => { });
+	});
+
 	legacyErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
 	legacyErrorMiddlewareCallsNextWithErr(

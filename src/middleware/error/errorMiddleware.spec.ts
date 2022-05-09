@@ -13,6 +13,10 @@ const errorMiddlewareCatchesErrWithStatus =
 	catchesErrWithStatus(errorMiddleware);
 
 describe('errorMiddleware', () => {
+	beforeAll(() => {
+		jest.spyOn(console, 'log').mockImplementation(() => { });
+	});
+
 	errorMiddlewareCallsNextWithErr('ILegacyError', {
 		error: 'legacy error',
 		statusCode: 500,
