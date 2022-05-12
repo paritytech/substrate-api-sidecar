@@ -36,7 +36,11 @@ export class AccountsBalanceInfoService extends AbstractService {
 			);
 		}
 
-		const decimal = historicApi.registry.chainDecimals[0];
+		const capitalizeTokens = historicApi.registry.chainTokens.map((token) =>
+			token.toUpperCase()
+		);
+		const tokenIdx = capitalizeTokens.indexOf(token);
+		const decimal = historicApi.registry.chainDecimals[tokenIdx];
 		/**
 		 * Check two different cases where a historicApi is needed in order
 		 * to have the correct runtime methods.
