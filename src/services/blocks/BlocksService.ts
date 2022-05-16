@@ -359,7 +359,7 @@ export class BlocksService extends AbstractService {
 		events: Vec<EventRecord> | string,
 		registry: Registry,
 		extrinsicDocs: boolean
-	) {
+	): IExtrinsic[] {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 
 		return block.extrinsics.map((extrinsic) => {
