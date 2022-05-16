@@ -188,8 +188,10 @@ export class AccountsBalanceInfoService extends AbstractService {
 	/**
 	 * Apply a denomination to a balance depending on the chains decimal value.
 	 *
-	 * @param balance free balance available encoded as Balance
-	 * @param dec The chains given decimal value
+	 * @param balance free balance available encoded as Balance. This will be
+	 * represented as an atomic value.
+	 * @param dec The chains given decimal token value. It must be > 0, and it
+	 * is applied to the given atomic value given by the `balance`.
 	 */
 	private applyDenominationBalance(balance: Balance, dec: number): string {
 		const strBalance = balance.toString();
