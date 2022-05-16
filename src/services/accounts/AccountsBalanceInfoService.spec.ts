@@ -80,7 +80,8 @@ describe('AccountsBalanceInfoService', () => {
 						blockHash789629,
 						mockHistoricApi,
 						testAddress,
-						'DOT'
+						'DOT',
+						false
 					)
 				)
 			).toStrictEqual(accountsBalanceInfo789629);
@@ -91,7 +92,8 @@ describe('AccountsBalanceInfoService', () => {
 				blockHash789629,
 				mockHistoricApi,
 				testAddress,
-				'DOT'
+				'DOT',
+				false
 			);
 
 			const expectedResponse = {
@@ -186,7 +188,8 @@ describe('AccountsBalanceInfoService', () => {
 								blockHash789629,
 								tokenHistoricApi,
 								testAddress,
-								'fOoToKeN'
+								'fOoToKeN',
+								false
 							)
 						) as any
 					).tokenSymbol
@@ -205,7 +208,8 @@ describe('AccountsBalanceInfoService', () => {
 								blockHash789629,
 								tokenHistoricApi,
 								testAddress,
-								'doT'
+								'doT',
+								false
 							)
 						) as any
 					).tokenSymbol
@@ -215,6 +219,84 @@ describe('AccountsBalanceInfoService', () => {
 				expect(mockTokenAccountAt).not.toBeCalled();
 				expect(mockBalancesLocksAt).toBeCalled();
 			});
+		});
+	});
+
+	describe('applyDenomination', () => {
+		const balance = polkadotRegistry.createType('Balance', 12345);
+
+		it('Should correctly denominate a balance when balance.length <= decimal', () => {
+			const ltValue = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				7
+			);
+			const etValue = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				5
+			);
+
+			expect(ltValue).toBe('.0012345');
+			expect(etValue).toBe('.12345');
+		});
+
+		it('Should correctly denominate a balance when balance.length > decimal', () => {
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				3
+			);
+
+			expect(value).toBe('12.345');
+		});
+
+		it('Should correctly denominate a balance when balance is equal to zero', () => {
+			const zeroBalance = polkadotRegistry.createType('Balance', 0);
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
+				zeroBalance,
+				2
+			);
+
+			expect(value).toBe('0');
+		});
+
+		it('Should correctly denominate a balance when the decimal value is zero', () => {
+			const value = accountsBalanceInfoService['applyDenominationBalance'](
+				balance,
+				0
+			);
+
+			expect(value).toBe('12345');
+		});
+	});
+
+	describe('denominateLocks', () => {
+		it('Should correctly parse and denominate a Vec<BalanceLocks>', () => {
+			const balanceLock = polkadotRegistry.createType('BalanceLock', {
+				id: '0x7374616b696e6720',
+				amount: 12345,
+				reasons: 'All',
+			});
+			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', [
+				balanceLock,
+			]);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](
+				vecLocks,
+				3
+			);
+			const expectedValue = [
+				{ amount: '12.345', id: '0x7374616b696e6720', reasons: 'All' },
+			];
+
+			expect(sanitizeNumbers(value)).toStrictEqual(expectedValue);
+		});
+
+		it('Should handle an empty Vec correctly', () => {
+			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', []);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](
+				vecLocks,
+				3
+			);
+
+			expect(sanitizeNumbers(value)).toStrictEqual([]);
 		});
 	});
 });

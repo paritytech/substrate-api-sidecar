@@ -162,6 +162,14 @@ paths:
         schema:
           type: string
           description: Token symbol
+      - name: denominated
+        in: query
+        description: When set to `true` it will denominate any balance's given atomic value
+          using the chains given decimal value.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
