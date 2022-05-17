@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-- fix(deps): update pjs common, api, type interfaces ([#918](https://github.com/paritytech/substrate-api-sidecar/pull/918)) ([6baf526](https://github.com/paritytech/substrate-api-sidecar/commit/6baf526b0627b3d5ac662946a9403db72b53a617))
+- fix(deps): update polkadot.js common, api, type interfaces ([#918](https://github.com/paritytech/substrate-api-sidecar/pull/918)) ([6baf526](https://github.com/paritytech/substrate-api-sidecar/commit/6baf526b0627b3d5ac662946a9403db72b53a617))
 
 ## Compatibility
 
