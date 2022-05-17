@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-- feat(balance-info): add query param to convert free balance to human ([#914](https://github.com/paritytech/substrate-api-sidecar/pull/914)) ([f1e03d6](https://github.com/paritytech/substrate-api-sidecar/commit/f1e03d6c771d74cd4848975c2ebdf42bd9ab8d8b))
+- feat(balance-info): add query param to convert free balance to human readable format ([#914](https://github.com/paritytech/substrate-api-sidecar/pull/914)) ([f1e03d6](https://github.com/paritytech/substrate-api-sidecar/commit/f1e03d6c771d74cd4848975c2ebdf42bd9ab8d8b))
 
 ### Bug Fixes
 
