@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [11.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.18..v11.3.19) (2022-05-18)
+## [11.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.19..v11.4.0) (2022-05-18)
 
 **Upgrade Priority** Low
 
