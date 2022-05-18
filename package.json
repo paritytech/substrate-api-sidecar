@@ -1,5 +1,5 @@
 {
-  "version": "11.4.0",
+  "version": "11.4.1",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -38,7 +38,7 @@
     "test:watch": "substrate-exec-jest --watch",
     "test:cov": "NODE_ENV=test substrate-exec-jest --detectOpenHandles --coverage",
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
-    "build:e2e-tests": "(cd e2e-tests && substrate-exec-tsc)",
+    "build:e2e-tests": "substrate-exec-tsc --project e2e-tests/tsconfig.json",
     "test:e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/index.js --config=./e2e-tests/jest.config.js",
     "test:init-e2e-tests": "yarn start:e2e-scripts --log-level=http",
     "test:init-e2e-tests:polkadot": "yarn test:init-e2e-tests --chain polkadot",
