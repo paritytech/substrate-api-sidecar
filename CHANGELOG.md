@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.0..v11.4.1) (2022-05-18)
+
+**Upgrade Priority** High (Required for users looking to update to 11.3.18, 11.3.19, or 11.4.0)
+
+### Bug Fixes
+
+- fix: revert apps-config to stable version ([#921](https://github.com/paritytech/substrate-api-sidecar/pull/921)) ([faf1595](https://github.com/paritytech/substrate-api-sidecar/commit/faf1595bd5b1dd3280c8e94a9cfdced96b53f5e6))
+
 ## [11.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.3.19..v11.4.0) (2022-05-18)
 
 **Upgrade Priority** low
