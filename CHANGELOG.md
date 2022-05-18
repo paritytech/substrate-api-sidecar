@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 - fix(deps): update polkadot.js common, api, type interfaces ([#918](https://github.com/paritytech/substrate-api-sidecar/pull/918)) ([6baf526](https://github.com/paritytech/substrate-api-sidecar/commit/6baf526b0627b3d5ac662946a9403db72b53a617))
+- fix(dev): updates substrate-js-dev, and fixes latest eslint rules ([#913](https://github.com/paritytech/substrate-api-sidecar/pull/913))([12c5914](https://github.com/paritytech/substrate-api-sidecar/commit/12c5914d99e5da646c9139bf1cc944edbdb34d78))
 
 ## Compatibility
 
