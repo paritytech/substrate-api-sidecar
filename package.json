@@ -55,7 +55,6 @@
   },
   "dependencies": {
     "@polkadot/api": "8.4.2",
-    "@polkadot/apps-config": "0.112.1",
     "@polkadot/util-crypto": "9.2.1",
     "@substrate/calc": "^0.2.8",
     "argparse": "^2.0.1",
