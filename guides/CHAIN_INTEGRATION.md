@@ -9,11 +9,7 @@ This guide aims to help chain builders integrate their Substrate FRAME based cha
 
 ## Polkadot-js API type definition support
 
-In order decode the SCALE encoded data from a substrate based node, polkadot-js needs to have a registry of type definitions. Sidecar pulls in chain type definitions from the [@polkadot/apps-config package hosted on NPM](https://www.npmjs.com/package/@polkadot/apps-config).
-
-If the chain's type definitions do not already exist in [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config) they will need to be added via PR to polkadot-js/apps by following their [instructions for API config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config#api).
-
-Before taking any other steps to integrate a chain with Sidecar, a chain's up-to-date type definitions must be included in a published version of @polkadot/apps-config.
+In order decode the SCALE encoded data from a substrate based node, polkadot-js needs to have a registry of type definitions. This information can be decorated via the metadata, but if there are any custom substrate types that must be added to sidecar you can via [Custom substrate types](../README.md/#custom-substrate-types).
 
 ## Controller configuration
 
