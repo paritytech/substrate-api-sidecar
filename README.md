@@ -167,12 +167,7 @@ For more information on our configuration manager visit its readme [here](https:
 #### Custom substrate types
 
 Some chains require custom type definitions in order for Sidecar to know how to decode the data
-retrieved from the node. Sidecar pulls types for chains from [@polkadot/apps-config](https://github.com/polkadot-js/apps/tree/master/packages/apps-config), but in some cases
-the types for the chain you are trying to connect to may be out of date or may simply not exist in
-@polkadot/apps-config.
-
-Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file
-that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
+retrieved from the node. Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
 the type formats (see `RegisteredTypes`).
 
 **N.B** Types set from environment variables will override the corresponding types pulled from

@@ -20,8 +20,6 @@
 import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
-import * as apps from '@polkadot/apps-config/api';
-import { createWsEndpoints } from '@polkadot/apps-config/endpoints';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
@@ -50,10 +48,10 @@ async function main() {
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
 			? (require(TYPES_BUNDLE) as OverrideBundleType)
-			: apps.typesBundle,
+			: undefined,
 		typesChain: TYPES_CHAIN
 			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
-			: apps.typesChain,
+			: undefined,
 		typesSpec: TYPES_SPEC
 			? (require(TYPES_SPEC) as Record<string, RegistryTypes>)
 			: undefined,
@@ -104,28 +102,9 @@ function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
 	const { logger } = Log;
 	const { config } = SidecarConfig;
 
-	/**
-	 * Retrieving public endpoints from @polkadot/apps-config/endpoints
-	 */
-	const publicWsUrls: string[] = [];
-	const endpoints = createWsEndpoints(<T = string>(): T => '' as unknown as T);
-	for (const endpoint of endpoints) {
-		if (endpoint.value && endpoint.info != 'local') {
-			publicWsUrls.push(endpoint.value);
-		}
-	}
-
 	logger.info(
 		`Connected to chain ${chainName} on the ${implName} client at ${config.SUBSTRATE.WS_URL}`
 	);
-
-	const isPublicUrl: boolean = publicWsUrls.includes(wsUrl);
-
-	if (isPublicUrl) {
-		logger.info(
-			`${wsUrl} is a public node. Too many users will overload this public endpoint. Switch to a privately hosted node when possible.`
-		);
-	}
 
 	// Split the Url to check for 2 things. Secure connection, and if its a local IP.
 	const splitUrl: string[] = wsUrl.split(':');
