@@ -852,7 +852,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/keyring@npm:9.2.1":
+"@polkadot/keyring@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/keyring@npm:9.2.1"
   dependencies:
@@ -866,7 +866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/networks@npm:9.2.1":
+"@polkadot/networks@npm:9.2.1, @polkadot/networks@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/networks@npm:9.2.1"
   dependencies:
@@ -998,7 +998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:9.2.1":
+"@polkadot/util-crypto@npm:9.2.1, @polkadot/util-crypto@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/util-crypto@npm:9.2.1"
   dependencies:
@@ -1019,7 +1019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util@npm:9.2.1":
+"@polkadot/util@npm:9.2.1, @polkadot/util@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/util@npm:9.2.1"
   dependencies:
@@ -1084,7 +1084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto@npm:6.1.1":
+"@polkadot/wasm-crypto@npm:^6.1.1":
   version: 6.1.1
   resolution: "@polkadot/wasm-crypto@npm:6.1.1"
   dependencies:
@@ -1121,7 +1121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/x-fetch@npm:9.2.1":
+"@polkadot/x-fetch@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/x-fetch@npm:9.2.1"
   dependencies:
@@ -1133,7 +1133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/x-global@npm:9.2.1":
+"@polkadot/x-global@npm:9.2.1, @polkadot/x-global@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/x-global@npm:9.2.1"
   dependencies:
@@ -1172,7 +1172,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/x-ws@npm:9.2.1":
+"@polkadot/x-ws@npm:^9.2.1":
   version: 9.2.1
   resolution: "@polkadot/x-ws@npm:9.2.1"
   dependencies:
@@ -2046,7 +2046,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bn.js@npm:5.2.0":
+"bn.js@npm:^5.2.0":
   version: 5.2.0
   resolution: "bn.js@npm:5.2.0"
   checksum: 6117170393200f68b35a061ecbf55d01dd989302e7b3c798a3012354fa638d124f0b2f79e63f77be5556be80322a09c40339eda6413ba7468524c0b6d4b4cb7a
