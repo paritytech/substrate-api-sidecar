@@ -1,5 +1,9 @@
 import { hexToU8a, isHex } from '@polkadot/util';
-import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
+import {
+	allNetworks,
+	base58Decode,
+	checkAddressChecksum,
+} from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 
 import { IValidateAddrResponse } from '../../types/responses/ValidateAddress';
@@ -26,16 +30,21 @@ export class AccountsValidateService extends AbstractService {
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
 			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
+			const networkName = allNetworks.filter(
+				(network) => network.prefix === ss58Prefix
+			)[0].network;
 
 			return {
 				isValid: isValid,
 				ss58Prefix,
+				networkName,
 			};
 		}
 
 		return {
 			isValid: false,
 			ss58Prefix: null,
+			networkName: null,
 		};
 	}
 }
