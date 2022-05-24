@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.1..v12.0.0) (2022-05-24)
+
+### Breaking Changes
+
+Notes: Substrate API Sidecar will no longer support pulling custom types from `@polkadot/apps-config`. For all of the current endpoint's in sidecar there should be no effect, but if there are any methods or types that can't be decorated from the metadata you will see warning's emitted from the logger. You may still apply your own custom types in sidecar, please refer to the [custom substrate types](https://github.com/paritytech/substrate-api-sidecar#custom-substrate-types) portion of the readme, and if you would like more information please refer the to PR below. If you see any issues, or need additional guidance feel free to file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+
+- fix(apps-config)!: remove apps-config from sidecar ([#924](https://github.com/paritytech/substrate-api-sidecar/pull/924)) ([e2e8b59](https://github.com/paritytech/substrate-api-sidecar/commit/e2e8b59780d5ffe16df61d02e7c113b252d7f714))
+
+
+### Bug Fixes
+
+- fix: update polkadot.js api ([#928](https://github.com/paritytech/substrate-api-sidecar/pull/928)) ([7ac2178](https://github.com/paritytech/substrate-api-sidecar/commit/7ac2178586881c41aa7f96dca30b3fdc6235a053))
+
 ## [11.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.0..v11.4.1) (2022-05-18)
 
 **Upgrade Priority** High (Required for users looking to update to 11.3.18, 11.3.19, or 11.4.0)
