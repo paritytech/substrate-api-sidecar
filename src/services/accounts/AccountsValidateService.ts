@@ -1,3 +1,4 @@
+import { TypeRegistry } from '@polkadot/types';
 import { hexToU8a, isHex } from '@polkadot/util';
 import {
 	allNetworks,
@@ -18,6 +19,7 @@ export class AccountsValidateService extends AbstractService {
 	 */
 	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
+		let accountId;
 		if (isHex(address)) {
 			u8Address = hexToU8a(address);
 		} else {
@@ -33,11 +35,17 @@ export class AccountsValidateService extends AbstractService {
 			const networkName = allNetworks.filter(
 				(network) => network.prefix === ss58Prefix
 			)[0].network;
-
+			if (isHex(address)) {
+				accountId = address;
+			} else {
+				const registry = new TypeRegistry();
+				accountId = registry.createType('AccountId', address).toHex();
+			}
 			return {
 				isValid: isValid,
 				ss58Prefix,
 				networkName,
+				accountId,
 			};
 		}
 
@@ -45,6 +53,7 @@ export class AccountsValidateService extends AbstractService {
 			isValid: false,
 			ss58Prefix: null,
 			networkName: null,
+			accountId: null,
 		};
 	}
 }
