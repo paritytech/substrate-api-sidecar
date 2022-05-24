@@ -1,5 +1,4 @@
-import { INodeTransactionPool } from 'src/types/responses';
-
+import { INodeTransactionPool } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
