@@ -584,6 +584,14 @@ paths:
       description: Returns the extrinsics that the node knows of that have not
         been included in a block.
       operationId: getNodeTransactionPool
+      paramaters:
+      - name: tip
+        in: query
+        description: Boolean representing whether or not to include tips in each extrinsic.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -2765,6 +2773,10 @@ components:
                   type: string
                   format: hex
                   description: Scale encoded extrinsic.
+                tip:
+                  type: string
+                  format: number
+                  description: The tip included in the extrinsic. Only included if the query param `tip` is set to true. 
     TransactionSuccess:
       type: object
       properties:
