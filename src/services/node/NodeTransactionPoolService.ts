@@ -3,20 +3,32 @@ import { INodeTransactionPool } from 'src/types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
-	async fetchTransactionPool(): Promise<INodeTransactionPool> {
+	async fetchTransactionPool(
+		includeTip: boolean
+	): Promise<INodeTransactionPool> {
 		const { api } = this;
 
 		const extrinsics = await api.rpc.author.pendingExtrinsics();
 
-		const pool = extrinsics.map((ext) => {
+		if (includeTip) {
 			return {
-				hash: ext.hash.toHex(),
-				encodedExtrinsic: ext.toHex(),
+				pool: extrinsics.map((ext) => {
+					return {
+						hash: ext.hash.toHex(),
+						encodedExtrinsic: ext.toHex(),
+						tip: ext.tip.toString(),
+					};
+				}),
 			};
-		});
-
-		return {
-			pool,
-		};
+		} else {
+			return {
+				pool: extrinsics.map((ext) => {
+					return {
+						hash: ext.hash.toHex(),
+						encodedExtrinsic: ext.toHex(),
+					};
+				}),
+			};
+		}
 	}
 }
