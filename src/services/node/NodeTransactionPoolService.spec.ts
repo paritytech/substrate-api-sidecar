@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotRegistryV9190 } from '../../test-helpers/registries';
 import {
 	// blockHash789629,
 	defaultMockApi,
 	pendingExtrinsics,
 } from '../test-helpers/mock';
 import transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
+import transactionPoolWithTipResponse from '../test-helpers/responses/node/transactionPoolWithTip.json';
 import { NodeTransactionPoolService } from '.';
 
 const nodeTranstionPoolService = new NodeTransactionPoolService(defaultMockApi);
@@ -16,10 +18,10 @@ describe('NodeTransactionPoolService', () => {
 		it('works when ApiPromiseWorks (no txs)', async () => {
 			expect(
 				sanitizeNumbers(
-					await nodeTranstionPoolService
-						.fetchTransactionPool
+					await nodeTranstionPoolService.fetchTransactionPool(
 						// blockHash789629
-						()
+						false
+					)
 				)
 			).toStrictEqual({ pool: [] });
 		});
@@ -36,12 +38,32 @@ describe('NodeTransactionPoolService', () => {
 
 			expect(
 				sanitizeNumbers(
-					await nodeTranstionPoolService
-						.fetchTransactionPool
+					await nodeTranstionPoolService.fetchTransactionPool(
 						// blockHash789629
-						()
+						false
+					)
 				)
 			).toStrictEqual(transactionPoolResponse);
+
+			(defaultMockApi.rpc.author as any).pendingExtrinsics = pendingExtrinsics;
+		});
+
+		it('works when query param `tip` is set to true', async () => {
+			// This test does not use the same metadata in defaultMockApi. It changes it to v9190,
+			// and sets it back to the default value after.
+			const ext = polkadotRegistryV9190.createType(
+				'Extrinsic',
+				'0x4d028400d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0196a6cd1652fc83c449884f67e8f444587b69c5874512f1d746ff6f062a097b2acedfe8d2e07915b4c93cc1c3b48a16ebccc1db8eb810146373ba53c9f42ab48e4500000284d717050300e281b7ec09fb8420ca7ba3fbd627fbe203ff04b2ba0777ae1d8a6942257af0230700e8764817'
+			);
+			const pool = polkadotRegistryV9190.createType('Vec<Extrinsic>', [ext]);
+			(defaultMockApi.rpc.author as any).pendingExtrinsics = () =>
+				Promise.resolve().then(() => pool);
+
+			expect(
+				sanitizeNumbers(
+					await nodeTranstionPoolService.fetchTransactionPool(true)
+				)
+			).toStrictEqual(transactionPoolWithTipResponse);
 
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = pendingExtrinsics;
 		});
