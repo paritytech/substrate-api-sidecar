@@ -11,6 +11,7 @@ import AbstractController from '../AbstractController';
  * - `pool`: array of
  * 		- `hash`: H256 hash of the extrinsic.
  * 		- `encodedExtrinsic`: Scale encoded extrinsic.
+ * 		- `tip`: Tip included into the extrinsic. Available when the `tip` query param is set to true.
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
 	constructor(api: ApiPromise) {
@@ -29,12 +30,14 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	 * @param res Express Response
 	 */
 	private getNodeTransactionPool: RequestHandler = async (
-		_req,
+		{ query: { tip } },
 		res
 	): Promise<void> => {
+		const includeTip = tip === 'true';
+
 		NodeTransactionPoolController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionPool()
+			await this.service.fetchTransactionPool(includeTip)
 		);
 	};
 }
