@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { INodeTransactionPool } from '../../types/responses';
-
 import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
