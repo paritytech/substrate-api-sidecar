@@ -4,13 +4,13 @@ import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
 	async fetchTransactionPool(
-		includeTip: boolean
+		includeFee: boolean
 	): Promise<INodeTransactionPool> {
 		const { api } = this;
 
 		const extrinsics = await api.rpc.author.pendingExtrinsics();
 
-		if (includeTip) {
+		if (includeFee) {
 			return {
 				pool: extrinsics.map((ext) => {
 					return {

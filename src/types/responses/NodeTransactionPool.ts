@@ -12,6 +12,8 @@ interface IPoolExtrinsic {
 	 * for `/node/transaction-pool` is set to true.
 	 */
 	tip?: string;
+	partialFee?: string;
+	totalFee?: string;
 }
 
 export interface INodeTransactionPool {
