@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import AbstractController from 'src/controllers/AbstractController';
-import { AbstractService } from 'src/services/AbstractService';
 
 import { controllers } from '../controllers';
+import AbstractController from '../controllers/AbstractController';
+import { AbstractService } from '../services/AbstractService';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { astarControllers } from './astarControllers';
