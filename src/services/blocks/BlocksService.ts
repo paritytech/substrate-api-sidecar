@@ -28,6 +28,7 @@ import {
 	EventRecord,
 	Hash,
 	Header,
+	WeightToFeeCoefficient,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { AbstractInt } from '@polkadot/types-codec';
@@ -539,16 +540,18 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		const coefficients = weightToFee.map((c) => {
-			return {
-				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
-				// to BigInt or string.
-				coeffInteger: c.coeffInteger.toString(10),
-				coeffFrac: c.coeffFrac.toNumber(),
-				degree: c.degree.toNumber(),
-				negative: c.negative,
-			};
-		});
+		const coefficients = (weightToFee as Vec<WeightToFeeCoefficient>).map(
+			(c) => {
+				return {
+					// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
+					// to BigInt or string.
+					coeffInteger: c.coeffInteger.toString(10),
+					coeffFrac: c.coeffFrac.toNumber(),
+					degree: c.degree.toNumber(),
+					negative: c.negative,
+				};
+			}
+		);
 
 		const weights = this.getWeight(historicApi);
 
@@ -585,7 +588,9 @@ export class BlocksService extends AbstractService {
 		}
 
 		if (transactionPayment?.lengthToFee) {
-			return transactionPayment?.lengthToFee.toArray()[0].coeffInteger;
+			const lengthToFee =
+				transactionPayment?.lengthToFee as Vec<WeightToFeeCoefficient>;
+			return lengthToFee[0].coeffInteger;
 		}
 
 		return null;

@@ -20,8 +20,12 @@ import { AugmentedConst } from '@polkadot/api/types';
 import { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
 import { GenericExtrinsic, u128, Vec } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
-import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
-import { FrameSupportWeightsWeightToFeeCoefficient } from '@polkadot/types/lookup';
+import {
+	BlockHash,
+	Hash,
+	SignedBlock,
+	WeightToFeeCoefficient,
+} from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -324,7 +328,7 @@ describe('BlocksService', () => {
 				'transactionByteFee'
 			] as unknown) = undefined;
 			mockHistoricApiClone.consts.transactionPayment['lengthToFee'] =
-				lengthToFee as unknown as Vec<FrameSupportWeightsWeightToFeeCoefficient> &
+				lengthToFee as unknown as Vec<WeightToFeeCoefficient> &
 					AugmentedConst<'promise'>;
 
 			const result = blocksService['getPerByte'](mockHistoricApiClone);
