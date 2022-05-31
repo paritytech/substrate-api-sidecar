@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CalcFee } from '@substrate/calc';
+import { Extrinsic } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
-import { BadRequest } from 'http-errors';
 
 import { INodeTransactionPool } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -26,36 +25,15 @@ export class NodeTransactionPoolService extends AbstractService {
 		includeFee: boolean
 	): Promise<INodeTransactionPool> {
 		const { api } = this;
-
 		const extrinsics = await api.rpc.author.pendingExtrinsics();
 
 		if (includeFee) {
-			const calcFeeWithParams = await this.getFromParams();
-			const weight = this.getWeight();
-
-			if (!calcFeeWithParams) {
-				throw new BadRequest(
-					'This runtime does not have the sufficient materials to calculate fees.'
-				);
-			}
+			const pool = await Promise.all(
+				extrinsics.map((ext) => this.extractExtrinsicInfo(ext))
+			);
 
 			return {
-				pool: extrinsics.map((ext) => {
-					const { hash, encodedLength, tip } = ext;
-					const partialFee = calcFeeWithParams.calc_fee(
-						// TODO This value comes from the success, failure events.
-						BigInt(0),
-						encodedLength,
-						weight.toBigInt()
-					);
-					return {
-						hash: hash.toHex(),
-						encodedExtrinsic: ext.toHex(),
-						tip: tip.toString(),
-						totalFee: new BN(tip.toString()).add(new BN(partialFee)).toString(),
-						partialFee,
-					};
-				}),
+				pool,
 			};
 		} else {
 			return {
@@ -69,48 +47,52 @@ export class NodeTransactionPoolService extends AbstractService {
 		}
 	}
 
-	private async getFromParams(): Promise<CalcFee | undefined> {
-		const { specName, specVersion } =
-			await this.api.rpc.state.getRuntimeVersion();
+	/**
+	 * tip * (max_block_{weight|length} / bounded_{weight|length})
+	 * ref: https://github.com/paritytech/substrate/blob/fe5bf49290d166b9552f65e751d46ec592173ebd/frame/transaction-payment/src/lib.rs#L610
+	 * @param ext
+	 * @returns
+	 */
+	private async extractExtrinsicInfo(ext: Extrinsic) {
+		const { hash, tip } = ext;
+		const {
+			class: c,
+			partialFee,
+			weight,
+		} = await this.api.rpc.payment.queryInfo(ext.toHex());
+		const len = ext.encodedLength; // TODO Confirm that this is correct
+		const BN_ONE = new BN(1);
 
-		const multiplier = await this.getMultiplier();
-		const perByte = this.getPerByte();
-		const weightToFee = this.getWeightToFee();
+		const { maxBlock } = this.api.consts.system.blockWeights;
+		const maxLength =
+			this.api.consts.system.blockLength.max[c.type.toLowerCase()];
+		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlock);
+		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
+		const maxTxPerBlockWeight = maxBlock.div(boundedWeight);
+		const maxTxPerBlockLength = maxLength.div(boundedLength);
 
-		const coefficients = weightToFee.map((c) => {
-			return {
-				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
-				// to BigInt or string.
-				coeffInteger: c.coeffInteger.toString(10),
-				coeffFrac: c.coeffFrac.toNumber(),
-				degree: c.degree.toNumber(),
-				negative: c.negative,
-			};
-		});
+		const maxTxPerBlock = BN.min(maxTxPerBlockWeight, maxTxPerBlockLength);
+		const saturatedTip = tip.toBn().add(BN_ONE);
+		const scaledTip = saturatedTip.mul(maxTxPerBlock);
 
-		return CalcFee.from_params(
-			coefficients,
-			multiplier.toString(10),
-			perByte.toString(10),
-			specName.toString(),
-			specVersion.toNumber()
-		);
-	}
+		let priority: string;
+		switch (c.type.toLowerCase()) {
+			case 'normal':
+				priority = scaledTip.toString();
+				break;
+			case 'operational':
 
-	private async getMultiplier() {
-		return await this.api.query.transactionPayment.nextFeeMultiplier();
-	}
+			default:
+				priority = '';
+				break;
+		}
 
-	private getPerByte() {
-		return this.api.consts.transactionPayment.lengthToFee.toArray()[0]
-			.coeffInteger;
-	}
-
-	private getWeight() {
-		return this.api.consts.system.blockWeights.perClass.normal.baseExtrinsic;
-	}
-
-	private getWeightToFee() {
-		return this.api.consts.transactionPayment.weightToFee;
+		return {
+			hash: hash.toHex(),
+			encodedExtrinsic: ext.toHex(),
+			tip: tip.toString(),
+			priority: priority, // TODO set it to a BN return type
+			partialFee: partialFee.toString(), // TODO remove toString(), and replace with Balance
+		};
 	}
 }

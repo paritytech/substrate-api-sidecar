@@ -28,8 +28,14 @@ interface IPoolExtrinsic {
 	 * for `/node/transaction-pool` is set to true.
 	 */
 	tip?: string;
+	/**
+	 * PartialFee for a transaction
+	 */
 	partialFee?: string;
-	totalFee?: string;
+	/**
+	 * Priority of the transaction. Calculated by tip / {Weight | Length}
+	 */
+	priority?: string;
 }
 
 export interface INodeTransactionPool {
