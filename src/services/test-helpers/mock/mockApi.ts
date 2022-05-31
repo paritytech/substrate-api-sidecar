@@ -148,17 +148,17 @@ const getBlockHashGenesis = (_zero: number) =>
 		)
 	);
 
-const queryFeeDetails = () => 
+const queryFeeDetails = () =>
 	Promise.resolve().then(() => {
 		const inclusionFee = polkadotRegistry.createType('Option<InclusionFee>', {
 			baseFee: 10000000,
 			lenFee: 143000000,
-			adjustedWeightFee: 20
+			adjustedWeightFee: 20,
 		});
 		return polkadotRegistry.createType('FeeDetails', {
 			inclusionFee,
-		})
-	})
+		});
+	});
 
 export const queryInfoBalancesTransfer = (
 	_extrinsic: string,
