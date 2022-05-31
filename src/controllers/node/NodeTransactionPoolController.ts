@@ -46,14 +46,14 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	 * @param res Express Response
 	 */
 	private getNodeTransactionPool: RequestHandler = async (
-		{ query: { totalFee } },
+		{ query: { includeFee } },
 		res
 	): Promise<void> => {
-		const includeFee = totalFee === 'true';
+		const shouldIncludeFee = includeFee === 'true';
 
 		NodeTransactionPoolController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionPool(includeFee)
+			await this.service.fetchTransactionPool(shouldIncludeFee)
 		);
 	};
 }
