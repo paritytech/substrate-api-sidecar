@@ -28,6 +28,7 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import {
@@ -224,6 +225,44 @@ const traceBlock = () =>
  */
 export const defaultMockApi = {
 	runtimeVersion,
+	consts: {
+		system: {
+			blockLength: {
+				max: {
+					normal: new BN(3932160),
+					operational: new BN(5242880),
+					mandatory: new BN(5242880),
+				},
+			},
+			blockWeights: {
+				baseBlock: new BN(5481991000),
+				maxBlock: new BN(2000000000000),
+				perClass: {
+					normal: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: new BN(1479914788000),
+						maxTotal: new BN(1500000000000),
+						reserved: new BN(0),
+					},
+					operational: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: new BN(1979914788000),
+						maxTotal: new BN(2000000000000),
+						reserved: new BN(500000000000),
+					},
+					mandatory: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: null,
+						maxTotal: null,
+						reserved: null,
+					},
+				},
+			},
+		},
+		transactionPayment: {
+			operationalFeeMultiplier: new BN(5),
+		},
+	},
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	tx,
