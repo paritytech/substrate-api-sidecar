@@ -31,6 +31,7 @@ import {
 import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
+// import { TypeFactory } from '../../../test-helpers/typeFactory';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
@@ -147,6 +148,18 @@ const getBlockHashGenesis = (_zero: number) =>
 		)
 	);
 
+const queryFeeDetails = () => 
+	Promise.resolve().then(() => {
+		const inclusionFee = polkadotRegistry.createType('Option<InclusionFee>', {
+			baseFee: 10000000,
+			lenFee: 143000000,
+			adjustedWeightFee: 20
+		});
+		return polkadotRegistry.createType('FeeDetails', {
+			inclusionFee,
+		})
+	})
+
 export const queryInfoBalancesTransfer = (
 	_extrinsic: string,
 	_hash: Hash
@@ -156,6 +169,18 @@ export const queryInfoBalancesTransfer = (
 			weight: 195000000,
 			class: 'Normal',
 			partialFee: 149000000,
+		})
+	);
+
+export const queryInfoCouncilVote = (
+	_extrinsic: string,
+	_hash: Hash
+): Promise<RuntimeDispatchInfo> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RuntimeDispatchInfo', {
+			weight: 158324000,
+			class: 'Operational',
+			partialFee: 153000018,
 		})
 	);
 
@@ -292,6 +317,7 @@ export const defaultMockApi = {
 		},
 		payment: {
 			queryInfo: queryInfoBalancesTransfer,
+			queryFeeDetails,
 		},
 		author: {
 			submitExtrinsic,
