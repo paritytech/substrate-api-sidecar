@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Extrinsic } from '@polkadot/types/interfaces';
+import { u32 } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
 import { INodeTransactionPool } from '../../types/responses';
@@ -64,7 +65,7 @@ export class NodeTransactionPoolService extends AbstractService {
 		const BN_ONE = new BN(1);
 
 		const { maxBlock } = this.api.consts.system.blockWeights;
-		const maxLength =
+		const maxLength: u32 =
 			this.api.consts.system.blockLength.max[c.type.toLowerCase()];
 		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlock);
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
@@ -80,8 +81,12 @@ export class NodeTransactionPoolService extends AbstractService {
 			case 'normal':
 				priority = scaledTip.toString();
 				break;
+			case 'mandatory': // This is not necessary as mandatories wont be in the pool
+				priority = scaledTip.toString();
+				break;
 			case 'operational':
-
+				priority = '';
+				break;
 			default:
 				priority = '';
 				break;
