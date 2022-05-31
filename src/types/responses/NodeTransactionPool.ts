@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Balance } from '@polkadot/types/interfaces';
+
 interface IPoolExtrinsic {
 	/**
 	 * H256 hash of the extrinsic
@@ -31,7 +33,7 @@ interface IPoolExtrinsic {
 	/**
 	 * PartialFee for a transaction
 	 */
-	partialFee?: string;
+	partialFee?: Balance;
 	/**
 	 * Priority of the transaction. Calculated by tip / {Weight | Length}
 	 */
