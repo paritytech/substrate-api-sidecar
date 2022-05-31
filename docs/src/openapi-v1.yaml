@@ -585,9 +585,9 @@ paths:
         been included in a block.
       operationId: getNodeTransactionPool
       paramaters:
-      - name: tip
+      - name: includeFee
         in: query
-        description: Boolean representing whether or not to include tips in each extrinsic.
+        description: Boolean representing whether or not to include tips, partialFee, and priority in each extrinsic.
         required: false
         schema:
           type: boolean
@@ -2775,8 +2775,16 @@ components:
                   description: Scale encoded extrinsic.
                 tip:
                   type: string
-                  format: number
-                  description: The tip included in the extrinsic. Only included if the query param `tip` is set to true. 
+                  format: unsignedInteger
+                  description: The tip included in the extrinsic. Only included if the query param `includeFee` is set to true.
+                priority:
+                  type: string
+                  format: unsignedInteger
+                  description: Computed priority of an extrinsic. Only included if the query param `includeFee` is set to true.
+                partialFee:
+                  type: string
+                  format: unsignedInteger
+                  description: Provided `partialFee` of an extrinsic. Only included if the query param `includeFee` is set to true.
     TransactionSuccess:
       type: object
       properties:
