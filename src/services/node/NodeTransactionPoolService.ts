@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Extrinsic } from '@polkadot/types/interfaces';
+import { DispatchClass, Extrinsic, Weight } from '@polkadot/types/interfaces';
 import { u32 } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
@@ -22,7 +22,13 @@ import { INodeTransactionPool } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class NodeTransactionPoolService extends AbstractService {
-	async fetchTransactionPool(
+	/**
+	 * Fetch the transaction pool, and provide relevant extrinsic information.
+	 *
+	 * @param includeFee Whether or not to include the fee's and priority of a extrinsic
+	 * in the transaction pool.
+	 */
+	public async fetchTransactionPool(
 		includeFee: boolean
 	): Promise<INodeTransactionPool> {
 		const { api } = this;
@@ -49,24 +55,57 @@ export class NodeTransactionPoolService extends AbstractService {
 	}
 
 	/**
-	 * tip * (max_block_{weight|length} / bounded_{weight|length})
-	 * ref: https://github.com/paritytech/substrate/blob/fe5bf49290d166b9552f65e751d46ec592173ebd/frame/transaction-payment/src/lib.rs#L610
-	 * @param ext
-	 * @returns
+	 * Extract all information related to the extrinsic, and compute it's
+	 * priority in the transaction pool.
+	 *
+	 * @param ext Extrinsic we want to provide all the information for.
 	 */
 	private async extractExtrinsicInfo(ext: Extrinsic) {
+		const { api } = this;
 		const { hash, tip } = ext;
 		const {
 			class: c,
 			partialFee,
 			weight,
-		} = await this.api.rpc.payment.queryInfo(ext.toHex());
-		const len = ext.encodedLength; // TODO Confirm that this is correct
+		} = await api.rpc.payment.queryInfo(ext.toHex());
+		const priority = await this.computeExtPriority(ext, c, weight);
+
+		return {
+			hash: hash.toHex(),
+			encodedExtrinsic: ext.toHex(),
+			tip: tip.toString(),
+			priority: priority,
+			partialFee: partialFee,
+		};
+	}
+
+	/**
+	 * We calculate the priority of an extrinsic in the transaction pool depending
+	 * on its dispatch class, ie. 'normal', 'operational', 'mandatory'.
+	 *
+	 * The following formula can summarize the below logic.
+	 * tip * (max_block_{weight|length} / bounded_{weight|length})
+	 *
+	 * Please reference this link for more information
+	 * ref: https://github.com/paritytech/substrate/blob/fe5bf49290d166b9552f65e751d46ec592173ebd/frame/transaction-payment/src/lib.rs#L610
+	 *
+	 * @param ext
+	 * @param c
+	 * @param weight
+	 */
+	private async computeExtPriority(
+		ext: Extrinsic,
+		dispatchClass: DispatchClass,
+		weight: Weight
+	): Promise<string> {
+		const { api } = this;
+		const { tip, encodedLength: len } = ext;
 		const BN_ONE = new BN(1);
+		const sanitizedClass = this.defineDispatchClassType(dispatchClass);
 
 		const { maxBlock } = this.api.consts.system.blockWeights;
 		const maxLength: u32 =
-			this.api.consts.system.blockLength.max[c.type.toLowerCase()];
+			this.api.consts.system.blockLength.max[sanitizedClass];
 		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlock);
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
 		const maxTxPerBlockWeight = maxBlock.div(boundedWeight);
@@ -74,30 +113,73 @@ export class NodeTransactionPoolService extends AbstractService {
 
 		const maxTxPerBlock = BN.min(maxTxPerBlockWeight, maxTxPerBlockLength);
 		const saturatedTip = tip.toBn().add(BN_ONE);
-		const scaledTip = saturatedTip.mul(maxTxPerBlock);
+		const scaledTip = this.maxReward(saturatedTip, maxTxPerBlock);
 
 		let priority: string;
-		switch (c.type.toLowerCase()) {
-			case 'normal':
+		switch (sanitizedClass) {
+			case 'normal': {
 				priority = scaledTip.toString();
 				break;
-			case 'mandatory': // This is not necessary as mandatories wont be in the pool
+			}
+			case 'mandatory': {
 				priority = scaledTip.toString();
 				break;
-			case 'operational':
-				priority = '';
+			}
+			case 'operational': {
+				const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+					ext.toHex()
+				);
+				const { operationalFeeMultiplier } = this.api.consts.transactionPayment;
+
+				if (inclusionFee.isNone) {
+					// This is an unsigned_extrinsic, and does not have priority
+					priority = '0';
+					break;
+				}
+
+				const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
+				const computedInclusionFee = baseFee.add(lenFee).add(adjustedWeightFee);
+				const finalFee = computedInclusionFee.add(tip.toBn());
+				const virtualTip = finalFee.mul(operationalFeeMultiplier);
+				const scaledVirtualTip = this.maxReward(virtualTip, maxTxPerBlock);
+
+				priority = scaledTip.add(scaledVirtualTip).toString();
 				break;
-			default:
-				priority = '';
+			}
+			default: {
+				priority = '0';
 				break;
+			}
 		}
 
-		return {
-			hash: hash.toHex(),
-			encodedExtrinsic: ext.toHex(),
-			tip: tip.toString(),
-			priority: priority, // TODO set it to a BN return type
-			partialFee: partialFee.toString(), // TODO remove toString(), and replace with Balance
-		};
+		return priority;
+	}
+
+	/**
+	 * Explicitly define the type of class an extrinsic is.
+	 *
+	 * @param c DispatchClass of an extrinsic
+	 */
+	private defineDispatchClassType(
+		c: DispatchClass
+	): 'normal' | 'mandatory' | 'operational' {
+		const cString = c.type.toLowerCase();
+		if (cString === 'normal') return 'normal';
+		if (cString === 'mandatory') return 'mandatory';
+		if (cString === 'operational') return 'operational';
+
+		// This will never be reached, but is here to satisfy the TS compiler.
+		return 'normal';
+	}
+
+	/**
+	 * Multiply a value (tip) by its maxTxPerBlock multiplier.
+	 * ref: https://github.com/paritytech/substrate/blob/fe5bf49290d166b9552f65e751d46ec592173ebd/frame/transaction-payment/src/lib.rs#L633
+	 *
+	 * @param val Value to be multiplied by the maxTxPerBlock. Usually a tip.
+	 * @param maxTxPerBlock The minimum value between maxTxPerBlockWeight and maxTxPerBlockLength
+	 */
+	private maxReward(val: BN, maxTxPerBlock: BN): BN {
+		return val.mul(maxTxPerBlock);
 	}
 }
