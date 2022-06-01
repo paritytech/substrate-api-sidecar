@@ -1,4 +1,3 @@
-import { TypeRegistry } from '@polkadot/types';
 import { hexToU8a, isHex } from '@polkadot/util';
 import {
 	allNetworks,
@@ -13,12 +12,15 @@ import { AbstractService } from '../AbstractService';
 export class AccountsValidateService extends AbstractService {
 	/**
 	 * Takes a given address and determines whether it is a ss58 formatted address,
-	 * and what the ss58 prefix for that address is.
+	 * what the ss58 prefix for that address is,
+	 * what is the network address format,
+	 * and what the account ID is for this address.
 	 *
 	 * @param address ss58 or hex address to validate
 	 */
 	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
+		let network;
 		let accountId;
 		if (isHex(address)) {
 			u8Address = hexToU8a(address);
@@ -32,19 +34,22 @@ export class AccountsValidateService extends AbstractService {
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
 			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
-			const networkName = allNetworks.filter(
-				(network) => network.prefix === ss58Prefix
-			)[0].network;
+			network = null;
+			for (const networkParams of allNetworks) {
+				if (networkParams['prefix'] === ss58Prefix) {
+					network = networkParams['network'];
+					break;
+				}
+			}
 			if (isHex(address)) {
 				accountId = address;
 			} else {
-				const registry = new TypeRegistry();
-				accountId = registry.createType('AccountId', address).toHex();
+				accountId = this.api.registry.createType('AccountId', address).toHex();
 			}
 			return {
 				isValid: isValid,
 				ss58Prefix,
-				networkName,
+				network,
 				accountId,
 			};
 		}
@@ -52,7 +57,7 @@ export class AccountsValidateService extends AbstractService {
 		return {
 			isValid: false,
 			ss58Prefix: null,
-			networkName: null,
+			network: null,
 			accountId: null,
 		};
 	}
