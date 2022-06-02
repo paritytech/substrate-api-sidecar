@@ -146,7 +146,9 @@
             "tip": "0",
             "hash": "0x3f5a8e3b5dae4e28252d98e8464f29b50b08a49a36cf71ac009c9a791c1ffa82",
             "info": {
-                "error": "Fee calculation not supported for 1062#kusama"
+                "weight": "195000000",
+                "class": "Normal",
+                "partialFee": "1000000000"
             },
             "era": {
                 "mortalEra": [
