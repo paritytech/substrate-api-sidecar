@@ -17,35 +17,24 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Struct, u128, Vec } from '@polkadot/types';
+import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import {
 	AccountId32,
-	Balance,
 	Block,
 	BlockHash,
 	BlockNumber,
 	DispatchInfo,
 	EventRecord,
-	Hash,
 	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
-import { AbstractInt } from '@polkadot/types-codec';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
-import { CalcFee } from '@substrate/calc';
 import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
 import {
-	IPerClass,
-	isExtBaseWeightValue,
-	isPerClassValue,
-	WeightValue,
-} from '../../types/chains-config';
-import {
 	IBlock,
-	ICalcFee,
 	IExtrinsic,
 	IExtrinsicIndex,
 	ISanitizedCall,
@@ -181,26 +170,6 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		let calcFee, specName, specVersion, weights;
-		if (this.minCalcFeeRuntime === null) {
-			// Don't bother with trying to create calcFee for a runtime where fee calcs are not supported
-			specVersion = -1;
-			specName = 'ERROR';
-			calcFee = undefined;
-		} else {
-			// This runtime supports fee calc
-			const createCalcFee = await this.createCalcFee(
-				api,
-				historicApi,
-				parentHash,
-				block
-			);
-			calcFee = createCalcFee.calcFee;
-			specName = createCalcFee.specName;
-			specVersion = createCalcFee.specVersion;
-			weights = createCalcFee.weights;
-		}
-
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
@@ -209,13 +178,6 @@ export class BlocksService extends AbstractService {
 			if (this.minCalcFeeRuntime === null) {
 				extrinsics[idx].info = {
 					error: `Fee calculation not supported for this network`,
-				};
-				continue;
-			}
-
-			if (calcFee === null || calcFee === undefined) {
-				extrinsics[idx].info = {
-					error: `Fee calculation not supported for ${specVersion}#${specName}`,
 				};
 				continue;
 			}
@@ -259,45 +221,20 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			// The Dispatch class used to key into `blockWeights.perClass`
-			// We set default to be normal.
-			let weightInfoClass: keyof IPerClass = 'normal';
-			if (weightInfo.class.isMandatory) {
-				weightInfoClass = 'mandatory';
-			} else if (weightInfo.class.isOperational) {
-				weightInfoClass = 'operational';
+			if (!api.rpc.payment.queryInfo) {
+				extrinsics[idx].info = {
+					error: 'Rpc method payment::queryInfo is not available',
+				};
+
+				continue;
 			}
 
-			/**
-			 * `extrinsicBaseWeight` changed from using system.extrinsicBaseWeight => system.blockWeights.perClass[weightInfoClass].baseExtrinsic
-			 * in polkadot v0.8.27 due to this pr: https://github.com/paritytech/substrate/pull/6629 .
-			 * https://github.com/paritytech/substrate-api-sidecar/issues/393 .
-			 * https://github.com/polkadot-js/api/issues/2365
-			 */
-			// This makes the compiler happy for below type guards
-			let extrinsicBaseWeight;
-			if (isExtBaseWeightValue(weights)) {
-				extrinsicBaseWeight = weights.extrinsicBaseWeight;
-			} else if (isPerClassValue(weights)) {
-				extrinsicBaseWeight = weights.perClass[weightInfoClass]?.baseExtrinsic;
-			}
-
-			if (!extrinsicBaseWeight) {
-				throw new InternalServerError('Could not find extrinsicBaseWeight');
-			}
-
-			const len = block.extrinsics[idx].encodedLength;
-			const weight = weightInfo.weight;
-
-			const partialFee = calcFee.calc_fee(
-				BigInt(weight.toString()),
-				len,
-				extrinsicBaseWeight
-			);
+			const { class: dispatchClass, partialFee } =
+				await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), hash);
 
 			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
-				weight,
-				class: weightInfo.class,
+				weight: weightInfo.weight,
+				class: dispatchClass,
 				partialFee: partialFee,
 			});
 		}
@@ -482,181 +419,6 @@ export class BlocksService extends AbstractService {
 			onInitialize,
 			onFinalize,
 		};
-	}
-
-	/**
-	 * Create calcFee from params or return `null` if calcFee cannot be created.
-	 *
-	 * @param api ApiPromise
-	 * @param historicApi ApiDecoration to use for runtime specific querying
-	 * @param parentHash Hash of the parent block
-	 * @param block Block which the extrinsic is from
-	 */
-	private async createCalcFee(
-		api: ApiPromise,
-		historicApi: ApiDecoration<'promise'>,
-		parentHash: Hash,
-		block: Block
-	): Promise<ICalcFee> {
-		const parentParentHash: Hash = await this.getParentParentHash(
-			api,
-			parentHash,
-			block
-		);
-
-		const version = await api.rpc.state.getRuntimeVersion(parentParentHash);
-
-		const specName = version.specName.toString();
-		const specVersion = version.specVersion.toNumber();
-
-		if (this.minCalcFeeRuntime && specVersion < this.minCalcFeeRuntime) {
-			return {
-				specVersion,
-				specName,
-			};
-		}
-
-		/**
-		 * This will remain using the original api.query.*.*.at to retrieve the multiplier
-		 * of the `parentHash` block.
-		 */
-		const multiplier =
-			await api.query.transactionPayment?.nextFeeMultiplier?.at(parentHash);
-
-		const perByte = this.getPerByte(historicApi);
-
-		const extrinsicBaseWeightExists =
-			historicApi.consts.system.extrinsicBaseWeight ||
-			historicApi.consts.system.blockWeights.perClass.normal.baseExtrinsic;
-		const { weightToFee } = historicApi.consts.transactionPayment;
-
-		if (!perByte || !extrinsicBaseWeightExists || !multiplier || !weightToFee) {
-			// This particular runtime version is not supported with fee calcs or
-			// does not have the necessay materials to build calcFee
-			return {
-				specVersion,
-				specName,
-			};
-		}
-
-		const coefficients = weightToFee.map((c) => {
-			return {
-				// Anything that could overflow Number.MAX_SAFE_INTEGER needs to be serialized
-				// to BigInt or string.
-				coeffInteger: c.coeffInteger.toString(10),
-				coeffFrac: c.coeffFrac.toNumber(),
-				degree: c.degree.toNumber(),
-				negative: c.negative,
-			};
-		});
-
-		const weights = this.getWeight(historicApi);
-
-		const calcFee = CalcFee.from_params(
-			coefficients,
-			multiplier.toString(10),
-			perByte.toString(10),
-			specName,
-			specVersion
-		);
-
-		return {
-			calcFee,
-			specName,
-			specVersion,
-			weights,
-		};
-	}
-
-	/**
-	 * Retrieve the PerByte integer used to calculate fees.
-	 * TransactionByteFee has been replaced with LengthToFee via runtime 9190.
-	 * https://github.com/paritytech/polkadot/pull/5028
-	 *
-	 * @param historicApi ApiDecoration to use for runtime specific querying
-	 */
-	private getPerByte(
-		historicApi: ApiDecoration<'promise'>
-	): Balance | u128 | null {
-		const { transactionPayment } = historicApi.consts;
-
-		if (transactionPayment?.transactionByteFee) {
-			return transactionPayment?.transactionByteFee as Balance;
-		}
-
-		if (transactionPayment?.lengthToFee) {
-			return transactionPayment?.lengthToFee.toArray()[0].coeffInteger;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get a formatted weight constant for the runtime corresponding to the given block hash.
-	 *
-	 * @param api ApiPromise
-	 * @param blockHash Hash of a block in the runtime to get the extrinsic base weight(s) for
-	 */
-	private getWeight(historicApi: ApiDecoration<'promise'>): WeightValue {
-		const {
-			consts: { system },
-		} = historicApi;
-
-		let weightValue;
-		if (system.blockWeights?.perClass) {
-			const { normal, operational, mandatory } = system.blockWeights.perClass;
-
-			const perClass = {
-				normal: {
-					baseExtrinsic: normal.baseExtrinsic.toBigInt(),
-				},
-				operational: {
-					baseExtrinsic: operational.baseExtrinsic.toBigInt(),
-				},
-				mandatory: {
-					baseExtrinsic: mandatory.baseExtrinsic.toBigInt(),
-				},
-			};
-
-			weightValue = { perClass };
-		} else if (system.extrinsicBaseWeight) {
-			weightValue = {
-				extrinsicBaseWeight: (
-					system.extrinsicBaseWeight as unknown as AbstractInt
-				).toBigInt(),
-			};
-		} else {
-			throw new InternalServerError(
-				'Could not find a extrinsic base weight in metadata'
-			);
-		}
-
-		return weightValue;
-	}
-
-	/**
-	 * The block where the runtime is deployed falsely proclaims it would
-	 * be already using the new runtime. This workaround therefore uses the
-	 * parent of the parent in order to determine the correct runtime under which
-	 * this block was produced.
-	 *
-	 * @param api ApiPromise to use for rpc call
-	 * @param parentHash Used to identify the runtime in a block
-	 * @param block Used to make sure we dont
-	 */
-	private async getParentParentHash(
-		api: ApiPromise,
-		parentHash: Hash,
-		block: Block
-	): Promise<Hash> {
-		let parentParentHash: Hash;
-		if (block.header.number.toNumber() > 1) {
-			parentParentHash = (await api.rpc.chain.getHeader(parentHash)).parentHash;
-		} else {
-			parentParentHash = parentHash;
-		}
-
-		return parentParentHash;
 	}
 
 	/**
