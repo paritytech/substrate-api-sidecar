@@ -104,8 +104,15 @@ export class BlocksService extends AbstractService {
 			return isBlockCached;
 		}
 
-		const [{ block }, validators, events, finalizedHead] = await Promise.all([
+		const [
+			{ block },
+			{ specName, specVersion },
+			validators,
+			events,
+			finalizedHead,
+		] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
+			api.rpc.state.getRuntimeVersion(hash),
 			this.fetchValidators(historicApi),
 			this.fetchEvents(historicApi),
 			queryFinalizedHead
@@ -178,6 +185,13 @@ export class BlocksService extends AbstractService {
 			if (this.minCalcFeeRuntime === null) {
 				extrinsics[idx].info = {
 					error: `Fee calculation not supported for this network`,
+				};
+				continue;
+			}
+
+			if (this.minCalcFeeRuntime > specVersion.toNumber()) {
+				extrinsics[idx].info = {
+					error: `Fee calculation not supported for runtime ${specVersion.toString()}::${specName.toString()}`,
 				};
 				continue;
 			}
