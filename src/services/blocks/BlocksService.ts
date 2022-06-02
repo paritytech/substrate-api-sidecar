@@ -191,7 +191,7 @@ export class BlocksService extends AbstractService {
 
 			if (this.minCalcFeeRuntime > specVersion.toNumber()) {
 				extrinsics[idx].info = {
-					error: `Fee calculation not supported for runtime ${specVersion.toString()}::${specName.toString()}`,
+					error: `Fee calculation not supported for ${specVersion.toString()}#${specName.toString()}`,
 				};
 				continue;
 			}
