@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.0.0..v12.0.1) (2022-06-03)
+
+### Bug Fixes
+
+- fix(calc): rework calculating fees ([#937](https://github.com/paritytech/substrate-api-sidecar/pull/937)) ([3306466](https://github.com/paritytech/substrate-api-sidecar/commit/330646699db4db6077eb7d14896dfccef4cde2b3))
+- fix(imports): chains-config imports ([#932](https://github.com/paritytech/substrate-api-sidecar/pull/932)) ([f4f531a](https://github.com/paritytech/substrate-api-sidecar/commit/f4f531aaf52487cdd8958cc92ee6cde20e7b65ca))
+- fix(imports): NodeTransactionPoolService response import ([#929](https://github.com/paritytech/substrate-api-sidecar/pull/929)) ([ad2fbaa](https://github.com/paritytech/substrate-api-sidecar/commit/ad2fbaaff2c3573b068110d1985a2ed4b7e8dd31))
+
+### Chore
+
+- chore(license): append the license to the top of each file ([#927](https://github.com/paritytech/substrate-api-sidecar/pull/927)) ([8906816](https://github.com/paritytech/substrate-api-sidecar/commit/8906816934b8e6bd5bf98393f83d55a6711d296e))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9230
+- Kusama v9230
+- Westend v9230
+
 ## [12.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.1..v12.0.0) (2022-05-24)
 
 ### Breaking Changes
