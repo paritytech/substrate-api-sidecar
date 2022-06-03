@@ -31,7 +31,6 @@ import {
 import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
-// import { TypeFactory } from '../../../test-helpers/typeFactory';
 import {
 	kusamaRegistry,
 	polkadotRegistry,
