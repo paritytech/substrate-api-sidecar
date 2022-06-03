@@ -103,12 +103,12 @@ export class NodeTransactionPoolService extends AbstractService {
 		const BN_ONE = new BN(1);
 		const sanitizedClass = this.defineDispatchClassType(dispatchClass);
 
-		const { maxBlock } = this.api.consts.system.blockWeights;
+		const maxBlockWeight = this.api.consts.system.blockWeights.maxBlock;
 		const maxLength: u32 =
 			this.api.consts.system.blockLength.max[sanitizedClass];
-		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlock);
+		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlockWeight);
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
-		const maxTxPerBlockWeight = maxBlock.div(boundedWeight);
+		const maxTxPerBlockWeight = maxBlockWeight.div(boundedWeight);
 		const maxTxPerBlockLength = maxLength.div(boundedLength);
 
 		const maxTxPerBlock = BN.min(maxTxPerBlockWeight, maxTxPerBlockLength);
