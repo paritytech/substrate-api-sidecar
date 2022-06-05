@@ -33,6 +33,11 @@ const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 );
 
 describe('legacyErrorMiddleware', () => {
+	// Necessary since the consolveOverride is called after the getter for the logger is launced
+	beforeAll(() => {
+		jest.spyOn(console, 'log').mockImplementation(() => ({}));
+	});
+
 	legacyErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
 	legacyErrorMiddlewareCallsNextWithErr(

@@ -68,6 +68,6 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		handleExceptions: true,
 		format: format.combine(...transformers),
 		// Silence using `jest --silent`
-		silent: process.argv.indexOf('--silent') >= 0,
+		silent: process.env.NODE_ENV === 'test',
 	});
 }

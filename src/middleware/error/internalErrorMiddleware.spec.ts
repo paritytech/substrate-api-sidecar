@@ -25,6 +25,11 @@ const internalErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
 );
 
 describe('internalErrorMiddleware', () => {
+	// Necessary since the consolveOverride is called after the getter for the logger is launced
+	beforeAll(() => {
+		jest.spyOn(console, 'log').mockImplementation(() => ({}));
+	});
+
 	internalErrorMiddlewareCatchesErrWithResponse(
 		'ITxLegacyError',
 		{
