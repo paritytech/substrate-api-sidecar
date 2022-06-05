@@ -13,6 +13,7 @@ const errorMiddlewareCatchesErrWithStatus =
 	catchesErrWithStatus(errorMiddleware);
 
 describe('errorMiddleware', () => {
+	// Necessary since the consolveOverride is called after the getter for the logger is launced
 	beforeAll(() => {
 		jest.spyOn(console, 'log').mockImplementation(() => ({}));
 	});
