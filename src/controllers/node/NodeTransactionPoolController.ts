@@ -27,7 +27,10 @@ import AbstractController from '../AbstractController';
  * - `pool`: array of
  * 		- `hash`: H256 hash of the extrinsic.
  * 		- `encodedExtrinsic`: Scale encoded extrinsic.
- * 		- `tip`: Tip included into the extrinsic. Available when the `tip` query param is set to true.
+ * 		- `tip`: Tip included into the extrinsic. Available when the `includeFee` query param is set to true.
+ * 		- `priority`: Priority of the transaction. Calculated by tip * (max_block_{weight|length} / bounded_{weight|length}).
+ * 			Available when the `includeFee` query param is set to true.
+ * 		- `partialFee`: PartialFee for a transaction. Available when the `includeFee` query param is set to true.
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
 	constructor(api: ApiPromise) {
