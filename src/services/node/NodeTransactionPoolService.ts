@@ -103,9 +103,8 @@ export class NodeTransactionPoolService extends AbstractService {
 		const BN_ONE = new BN(1);
 		const sanitizedClass = this.defineDispatchClassType(dispatchClass);
 
-		const maxBlockWeight = this.api.consts.system.blockWeights.maxBlock;
-		const maxLength: u32 =
-			this.api.consts.system.blockLength.max[sanitizedClass];
+		const maxBlockWeight = api.consts.system.blockWeights.maxBlock;
+		const maxLength: u32 = api.consts.system.blockLength.max[sanitizedClass];
 		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlockWeight);
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
 		const maxTxPerBlockWeight = maxBlockWeight.div(boundedWeight);
@@ -129,7 +128,7 @@ export class NodeTransactionPoolService extends AbstractService {
 				const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
 					ext.toHex()
 				);
-				const { operationalFeeMultiplier } = this.api.consts.transactionPayment;
+				const { operationalFeeMultiplier } = api.consts.transactionPayment;
 
 				if (inclusionFee.isNone) {
 					// This is an unsigned_extrinsic, and does not have priority
