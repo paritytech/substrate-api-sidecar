@@ -42,7 +42,7 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	/**
 	 * GET pending extrinsics from the Substrate node.
 	 *
-	 * @param req Express Request, accepts the query param `tip`
+	 * @param req Express Request, accepts the query param `includeFee`
 	 * @param res Express Response
 	 */
 	private getNodeTransactionPool: RequestHandler = async (
