@@ -28,6 +28,7 @@ import {
 	SessionIndex,
 	StakingLedger,
 } from '@polkadot/types/interfaces';
+import BN from 'bn.js';
 
 import { polkadotMetadata } from '../../../test-helpers/metadata/metadata';
 import {
@@ -146,6 +147,18 @@ const getBlockHashGenesis = (_zero: number) =>
 		)
 	);
 
+const queryFeeDetails = () =>
+	Promise.resolve().then(() => {
+		const inclusionFee = polkadotRegistry.createType('Option<InclusionFee>', {
+			baseFee: 10000000,
+			lenFee: 143000000,
+			adjustedWeightFee: 20,
+		});
+		return polkadotRegistry.createType('FeeDetails', {
+			inclusionFee,
+		});
+	});
+
 export const queryInfoBalancesTransfer = (
 	_extrinsic: string,
 	_hash: Hash
@@ -155,6 +168,18 @@ export const queryInfoBalancesTransfer = (
 			weight: 195000000,
 			class: 'Normal',
 			partialFee: 149000000,
+		})
+	);
+
+export const queryInfoCouncilVote = (
+	_extrinsic: string,
+	_hash: Hash
+): Promise<RuntimeDispatchInfo> =>
+	Promise.resolve().then(() =>
+		polkadotRegistry.createType('RuntimeDispatchInfo', {
+			weight: 158324000,
+			class: 'Operational',
+			partialFee: 153000018,
 		})
 	);
 
@@ -224,6 +249,44 @@ const traceBlock = () =>
  */
 export const defaultMockApi = {
 	runtimeVersion,
+	consts: {
+		system: {
+			blockLength: {
+				max: {
+					normal: new BN(3932160),
+					operational: new BN(5242880),
+					mandatory: new BN(5242880),
+				},
+			},
+			blockWeights: {
+				baseBlock: new BN(5481991000),
+				maxBlock: new BN(2000000000000),
+				perClass: {
+					normal: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: new BN(1479914788000),
+						maxTotal: new BN(1500000000000),
+						reserved: new BN(0),
+					},
+					operational: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: new BN(1979914788000),
+						maxTotal: new BN(2000000000000),
+						reserved: new BN(500000000000),
+					},
+					mandatory: {
+						baseExtrinsic: new BN(85212000),
+						maxExtrinsic: null,
+						maxTotal: null,
+						reserved: null,
+					},
+				},
+			},
+		},
+		transactionPayment: {
+			operationalFeeMultiplier: new BN(5),
+		},
+	},
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
 	tx,
@@ -253,6 +316,7 @@ export const defaultMockApi = {
 		},
 		payment: {
 			queryInfo: queryInfoBalancesTransfer,
+			queryFeeDetails,
 		},
 		author: {
 			submitExtrinsic,

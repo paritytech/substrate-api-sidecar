@@ -27,6 +27,10 @@ import AbstractController from '../AbstractController';
  * - `pool`: array of
  * 		- `hash`: H256 hash of the extrinsic.
  * 		- `encodedExtrinsic`: Scale encoded extrinsic.
+ * 		- `tip`: Tip included into the extrinsic. Available when the `includeFee` query param is set to true.
+ * 		- `priority`: Priority of the transaction. Calculated by tip * (max_block_{weight|length} / bounded_{weight|length}).
+ * 			Available when the `includeFee` query param is set to true.
+ * 		- `partialFee`: PartialFee for a transaction. Available when the `includeFee` query param is set to true.
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
 	constructor(api: ApiPromise) {
@@ -39,18 +43,20 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	}
 
 	/**
-	 ** GET pending extrinsics from the Substrate node.
+	 * GET pending extrinsics from the Substrate node.
 	 *
-	 * @param _req Express Request
+	 * @param req Express Request, accepts the query param `includeFee`
 	 * @param res Express Response
 	 */
 	private getNodeTransactionPool: RequestHandler = async (
-		_req,
+		{ query: { includeFee } },
 		res
 	): Promise<void> => {
+		const shouldIncludeFee = includeFee === 'true';
+
 		NodeTransactionPoolController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionPool()
+			await this.service.fetchTransactionPool(shouldIncludeFee)
 		);
 	};
 }
