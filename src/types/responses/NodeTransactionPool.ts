@@ -35,7 +35,7 @@ interface IPoolExtrinsic {
 	 */
 	partialFee?: Balance;
 	/**
-	 * Priority of the transaction. Calculated by tip / {Weight | Length}
+	 * Priority of the transaction. Calculated by tip * (max_block_{weight|length} / bounded_{weight|length})
 	 */
 	priority?: string;
 }
