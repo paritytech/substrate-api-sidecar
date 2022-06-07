@@ -107,7 +107,7 @@ export const launchProcess = (
 				jestStatus = Failed;
 			}
 
-			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
+			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
 				resolve(Failed);
 			}
 		});
