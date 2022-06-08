@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 11.4.1
+  version: 12.1.0
 tags:
 - name: accounts
 - name: blocks
@@ -585,6 +585,14 @@ paths:
       description: Returns the extrinsics that the node knows of that have not
         been included in a block.
       operationId: getNodeTransactionPool
+      paramaters:
+      - name: includeFee
+        in: query
+        description: Boolean representing whether or not to include tips, partialFee, and priority in each extrinsic.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -2772,6 +2780,18 @@ components:
                   type: string
                   format: hex
                   description: Scale encoded extrinsic.
+                tip:
+                  type: string
+                  format: unsignedInteger
+                  description: The tip included in the extrinsic. Only included if the query param `includeFee` is set to true.
+                priority:
+                  type: string
+                  format: unsignedInteger
+                  description: Computed priority of an extrinsic. Only included if the query param `includeFee` is set to true.
+                partialFee:
+                  type: string
+                  format: unsignedInteger
+                  description: Provided `partialFee` of an extrinsic. Only included if the query param `includeFee` is set to true.
     TransactionSuccess:
       type: object
       properties:

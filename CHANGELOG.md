@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.0.1..v12.1.0) (2022-06-07)
+
+### Features
+
+- feat: add query param to add a tip, partialFee, and priority field to each extrinsic for /node/transaction-pool ([#931](https://github.com/paritytech/substrate-api-sidecar/pull/931)) ([8241d34](https://github.com/paritytech/substrate-api-sidecar/commit/8241d340e494b86087b31ae7a3176a195e042c4e))
+
+### Bug Fixes
+
+- fix(polkadot-js): update api, and common deps ([#934](https://github.com/paritytech/substrate-api-sidecar/pull/934)) ([fd7021c](https://github.com/paritytech/substrate-api-sidecar/commit/fd7021ceed0ef722f3fbf585e373b4994e54bf61))
+
+### Test
+
+- test: silence unnecessary logging for tests ([#916](https://github.com/paritytech/substrate-api-sidecar/pull/916)) ([9633480](https://github.com/paritytech/substrate-api-sidecar/commit/96334802cefaf60474e2e6ff005c164bc434299f))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9230
+- Kusama v9230
+- Westend v9230
+
+## [12.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.0.0..v12.0.1) (2022-06-03)
+
+### Bug Fixes
+
+- fix(calc): rework calculating fees ([#937](https://github.com/paritytech/substrate-api-sidecar/pull/937)) ([3306466](https://github.com/paritytech/substrate-api-sidecar/commit/330646699db4db6077eb7d14896dfccef4cde2b3))
+- fix(imports): chains-config imports ([#932](https://github.com/paritytech/substrate-api-sidecar/pull/932)) ([f4f531a](https://github.com/paritytech/substrate-api-sidecar/commit/f4f531aaf52487cdd8958cc92ee6cde20e7b65ca))
+- fix(imports): NodeTransactionPoolService response import ([#929](https://github.com/paritytech/substrate-api-sidecar/pull/929)) ([ad2fbaa](https://github.com/paritytech/substrate-api-sidecar/commit/ad2fbaaff2c3573b068110d1985a2ed4b7e8dd31))
+
+### Chore
+
+- chore(license): append the license to the top of each file ([#927](https://github.com/paritytech/substrate-api-sidecar/pull/927)) ([8906816](https://github.com/paritytech/substrate-api-sidecar/commit/8906816934b8e6bd5bf98393f83d55a6711d296e))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9230
+- Kusama v9230
+- Westend v9230
+
+## [12.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.1..v12.0.0) (2022-05-24)
+
+### Breaking Changes
+
+Notes: Substrate API Sidecar will no longer support pulling custom types from `@polkadot/apps-config`. For all of the current endpoint's in sidecar there should be no effect, but if there are any methods or types that can't be decorated from the metadata you will see warning's emitted from the logger. You may still apply your own custom types in sidecar, please refer to the [custom substrate types](https://github.com/paritytech/substrate-api-sidecar#custom-substrate-types) portion of the readme, and if you would like more information please refer the to PR below. If you see any issues, or need additional guidance feel free to file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+
+- fix(apps-config)!: remove apps-config from sidecar ([#924](https://github.com/paritytech/substrate-api-sidecar/pull/924)) ([e2e8b59](https://github.com/paritytech/substrate-api-sidecar/commit/e2e8b59780d5ffe16df61d02e7c113b252d7f714))
+
+
+### Bug Fixes
+
+- fix: update polkadot.js api ([#928](https://github.com/paritytech/substrate-api-sidecar/pull/928)) ([7ac2178](https://github.com/paritytech/substrate-api-sidecar/commit/7ac2178586881c41aa7f96dca30b3fdc6235a053))
+
 ## [11.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v11.4.0..v11.4.1) (2022-05-18)
 
 **Upgrade Priority** High (Required for users looking to update to 11.3.18, 11.3.19, or 11.4.0)
