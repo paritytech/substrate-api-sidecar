@@ -41,11 +41,9 @@ export class AccountsValidateService extends AbstractService {
 					break;
 				}
 			}
-			if (isHex(address)) {
-				accountId = address;
-			} else {
-				accountId = this.api.registry.createType('AccountId', address).toHex();
-			}
+			accountId = isHex(address)
+				? address
+				: this.api.registry.createType('AccountId', address).toHex();
 			return {
 				isValid: isValid,
 				ss58Prefix,
