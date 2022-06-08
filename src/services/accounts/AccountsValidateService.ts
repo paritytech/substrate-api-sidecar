@@ -37,7 +37,6 @@ export class AccountsValidateService extends AbstractService {
 	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
 		let network;
-		let accountId;
 		if (isHex(address)) {
 			u8Address = hexToU8a(address);
 		} else {
@@ -57,7 +56,7 @@ export class AccountsValidateService extends AbstractService {
 					break;
 				}
 			}
-			accountId = isHex(address)
+			const accountId = isHex(address)
 				? address
 				: this.api.registry.createType('AccountId', address).toHex();
 			return {
