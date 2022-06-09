@@ -193,7 +193,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * Expected format ie: 0-999
 	 */
 	protected parseRangeOfNumbersOrThrow(n: string): number[] {
-		let splitRange =  n.split('-');
+		const splitRange = n.split('-');
 		if (splitRange.length !== 2) {
 			throw new BadRequest('Incorrect range format. Expected example: 0-999');
 		}
@@ -201,12 +201,11 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const min = Number(splitRange[0]);
 		const max = Number(splitRange[1]);
 
-
 		if (this.verifyInt(min) || this.verifyInt(max)) {
-			throw new BadRequest('Inputted range contains non integers.')
+			throw new BadRequest('Inputted range contains non integers.');
 		}
 
-		return [...Array(max).keys()].map(i => i + min);
+		return [...Array(max).keys()].map((i) => i + min);
 	}
 
 	protected parseQueryParamArrayOrThrow(n: string[]): number[] {
@@ -219,7 +218,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	private verifyInt(num: Number): boolean {
-		return (!Number.isInteger(num) || num < 0)
+		return !Number.isInteger(num) || num < 0;
 	}
 
 	protected verifyAndCastOr(

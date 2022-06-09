@@ -102,6 +102,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			['/', this.getBlocks],
 			['/head', this.getBlocks],
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
@@ -237,18 +238,25 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
-	 * 
-	 * @param req Express Request 
+	 *
+	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: RequestHandler<unknown, unknown, unknown, IRangeQueryParam> = async (
+	private getBlocks: RequestHandler<
+		unknown,
+		unknown,
+		unknown,
+		IRangeQueryParam
+	> = async (
 		{ query: { range, eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range);
-		const rangeOfNumsToHash = await Promise.all(rangeOfNums.map(async (n) => await this.getHashForBlock(n.toString())));
+		const rangeOfNumsToHash = await Promise.all(
+			rangeOfNums.map(async (n) => await this.getHashForBlock(n.toString()))
+		);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -262,16 +270,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
-		async function* raceAsyncIterators(iterators: Array<AsyncGenerator<IBlock, void, unknown>>) {
-			async function queueNext(iteratorResult: { iterator: AsyncGenerator<IBlock, void, unknown>, result?: IteratorResult<unknown, void> }) {
+		async function* raceAsyncIterators(
+			iterators: Array<AsyncGenerator<IBlock, void, unknown>>
+		) {
+			async function queueNext(iteratorResult: {
+				iterator: AsyncGenerator<IBlock, void, unknown>;
+				result?: IteratorResult<unknown, void>;
+			}) {
 				delete iteratorResult.result; // Release previous result ASAP
 				iteratorResult.result = await iteratorResult.iterator.next();
 				return iteratorResult;
-			};
-			const iteratorResults = new Map(iterators.map(iterator => [
-				iterator,
-				queueNext({ iterator })
-			]));
+			}
+			const iteratorResults = new Map(
+				iterators.map((iterator) => [iterator, queueNext({ iterator })])
+			);
 			while (iteratorResults.size) {
 				const winner = await Promise.race(iteratorResults.values());
 				if (winner.result && winner.result.done) {
@@ -279,46 +291,51 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				} else {
 					let value;
 					if (winner.result && winner.result.value) {
-						value = winner.result.value
+						value = winner.result.value;
 					}
 					iteratorResults.set(winner.iterator, queueNext(winner));
 					yield value;
 				}
 			}
 		}
-		
-		async function* runTasks(maxConcurrency: number, iterator: IterableIterator<() => Promise<IBlock>>) {
+
+		async function* runTasks(
+			maxConcurrency: number,
+			iterator: IterableIterator<() => Promise<IBlock>>
+		) {
 			// Each worker is an async generator that polls for tasks
 			// from the shared iterator.
 			// Sharing the iterator ensures that each worker gets unique tasks.
-			const workers: Array<AsyncGenerator<IBlock, void, unknown>> = new Array(maxConcurrency);
+			const workers: Array<AsyncGenerator<IBlock, void, unknown>> = new Array(
+				maxConcurrency
+			);
 			for (let i = 0; i < maxConcurrency; i++) {
-				workers[i] = (async function*() {
+				workers[i] = (async function* () {
 					for (const task of iterator) yield await task();
 				})();
 			}
-		
+
 			yield* raceAsyncIterators(workers);
 		}
-		
+
 		const tasks: Array<() => Promise<IBlock>> = [];
 		for (let i = 0; i < rangeOfNumsToHash.length; i++) {
 			tasks.push(async () => {
 				const historicApi = await this.api.at(rangeOfNumsToHash[i]);
-				return await this.service.fetchBlock(rangeOfNumsToHash[i], historicApi, options)
+				return await this.service.fetchBlock(
+					rangeOfNumsToHash[i],
+					historicApi,
+					options
+				);
 			});
 		}
-		
-		const blocks = [];
-		for await (let value of runTasks(3, tasks.values())) {
+
+		const blocks: IBlock[] = [];
+		for await (const value of runTasks(3, tasks.values())) {
 			console.log(`output ${value}`);
-			blocks.push(value);
+			blocks.push(value as IBlock);
 		}
 
-
-		BlocksController.sanitizedSend(
-			res,
-			blocks
-		);
-	}
+		BlocksController.sanitizedSend(res, blocks);
+	};
 }
