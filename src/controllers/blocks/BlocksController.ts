@@ -306,6 +306,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// Each worker is an async generator that polls for tasks
 			// from the shared iterator.
 			// Sharing the iterator ensures that each worker gets unique tasks.
+			/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 			const workers: Array<AsyncGenerator<IBlock, void, unknown>> = new Array(
 				maxConcurrency
 			);
@@ -318,6 +319,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			yield* raceAsyncIterators(workers);
 		}
 
+		// TODO: Sort the blocks being passed into the array.
 		const tasks: Array<() => Promise<IBlock>> = [];
 		for (let i = 0; i < rangeOfNumsToHash.length; i++) {
 			tasks.push(async () => {
@@ -332,7 +334,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const blocks: IBlock[] = [];
 		for await (const value of runTasks(3, tasks.values())) {
-			console.log(`output ${value}`);
 			blocks.push(value as IBlock);
 		}
 
