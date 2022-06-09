@@ -45,3 +45,7 @@ export interface IAddressNumberParams extends IAddressParam {
 export interface IParaIdParam extends ParamsDictionary {
 	paraId: string;
 }
+
+export interface IRangeQueryParam extends Query {
+	range: string;
+}
