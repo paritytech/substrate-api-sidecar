@@ -103,7 +103,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
-			['/head', this.getBlocks],
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
 			['/head/header', this.getLatestBlockHeader],
