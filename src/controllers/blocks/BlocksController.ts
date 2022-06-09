@@ -17,10 +17,11 @@
 import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
+import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
 import { BlocksService } from '../../services';
-import { INumberParam } from '../../types/requests';
+import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import AbstractController from '../AbstractController';
 
@@ -101,6 +102,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			['/head', this.getBlocks],
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
 			['/head/header', this.getLatestBlockHeader],
@@ -233,4 +235,90 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			await this.service.fetchBlockHeader(hash)
 		);
 	};
+
+	/**
+	 * 
+	 * @param req Express Request 
+	 * @param res Express Response
+	 */
+	private getBlocks: RequestHandler<unknown, unknown, unknown, IRangeQueryParam> = async (
+		{ query: { range, eventDocs, extrinsicDocs } },
+		res
+	): Promise<void> => {
+		if (!range) throw new BadRequest('range query parameter must be inputted.');
+
+		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range);
+		const rangeOfNumsToHash = await Promise.all(rangeOfNums.map(async (n) => await this.getHashForBlock(n.toString())));
+
+		const eventDocsArg = eventDocs === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const queryFinalizedHead = !this.options.finalizes ? false : true;
+		const omitFinalizedTag = !this.options.finalizes ? true : false;
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized: false,
+			queryFinalizedHead,
+			omitFinalizedTag,
+		};
+
+		async function* raceAsyncIterators(iterators: Array<AsyncGenerator<IBlock, void, unknown>>) {
+			async function queueNext(iteratorResult: { iterator: AsyncGenerator<IBlock, void, unknown>, result?: IteratorResult<unknown, void> }) {
+				delete iteratorResult.result; // Release previous result ASAP
+				iteratorResult.result = await iteratorResult.iterator.next();
+				return iteratorResult;
+			};
+			const iteratorResults = new Map(iterators.map(iterator => [
+				iterator,
+				queueNext({ iterator })
+			]));
+			while (iteratorResults.size) {
+				const winner = await Promise.race(iteratorResults.values());
+				if (winner.result && winner.result.done) {
+					iteratorResults.delete(winner.iterator);
+				} else {
+					let value;
+					if (winner.result && winner.result.value) {
+						value = winner.result.value
+					}
+					iteratorResults.set(winner.iterator, queueNext(winner));
+					yield value;
+				}
+			}
+		}
+		
+		async function* runTasks(maxConcurrency: number, iterator: IterableIterator<() => Promise<IBlock>>) {
+			// Each worker is an async generator that polls for tasks
+			// from the shared iterator.
+			// Sharing the iterator ensures that each worker gets unique tasks.
+			const workers: Array<AsyncGenerator<IBlock, void, unknown>> = new Array(maxConcurrency);
+			for (let i = 0; i < maxConcurrency; i++) {
+				workers[i] = (async function*() {
+					for (const task of iterator) yield await task();
+				})();
+			}
+		
+			yield* raceAsyncIterators(workers);
+		}
+		
+		const tasks: Array<() => Promise<IBlock>> = [];
+		for (let i = 0; i < rangeOfNumsToHash.length; i++) {
+			tasks.push(async () => {
+				const historicApi = await this.api.at(rangeOfNumsToHash[i]);
+				return await this.service.fetchBlock(rangeOfNumsToHash[i], historicApi, options)
+			});
+		}
+		
+		const blocks = [];
+		for await (let value of runTasks(3, tasks.values())) {
+			console.log(`output ${value}`);
+			blocks.push(value);
+		}
+
+
+		BlocksController.sanitizedSend(
+			res,
+			blocks
+		);
+	}
 }
