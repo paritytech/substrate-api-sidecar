@@ -278,7 +278,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		 */
 		async function* raceAsyncIterators(
 			iterators: Array<AsyncGenerator<IBlock, void, unknown>>
-		) {
+		): AsyncGenerator<unknown, void, unknown> {
 			const iteratorResults = new Map(
 				iterators.map((iterator) => [iterator, queueNext({ iterator })])
 			);
@@ -297,6 +297,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			}
 		}
 
+		type QueueNext = Promise<{
+			iterator: AsyncGenerator<IBlock, void, unknown>;
+			result?: IteratorResult<unknown, void> | undefined;
+		}>;
 		/**
 		 * Helper function to `raceAsyncIterators`.
 		 * Prioritize releasing the previous result, and assigning the
@@ -308,7 +312,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		async function queueNext(iteratorResult: {
 			iterator: AsyncGenerator<IBlock, void, unknown>;
 			result?: IteratorResult<unknown, void>;
-		}) {
+		}): QueueNext {
 			delete iteratorResult.result; // Release previous result ASAP
 			iteratorResult.result = await iteratorResult.iterator.next();
 			return iteratorResult;
@@ -324,7 +328,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		async function* runTasks(
 			maxConcurrency: number,
 			iterator: IterableIterator<() => Promise<IBlock>>
-		) {
+		): AsyncGenerator<unknown, void, unknown> {
 			// Each worker is an async generator that polls for tasks
 			// from the shared iterator.
 			// Sharing the iterator ensures that each worker gets unique tasks.
