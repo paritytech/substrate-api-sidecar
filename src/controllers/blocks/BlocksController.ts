@@ -299,7 +299,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		type QueueNext = Promise<{
 			iterator: AsyncGenerator<IBlock, void, unknown>;
-			result?: IteratorResult<unknown, void> | undefined;
+			result?: IteratorResult<unknown, void>;
 		}>;
 		/**
 		 * Helper function to `raceAsyncIterators`.
