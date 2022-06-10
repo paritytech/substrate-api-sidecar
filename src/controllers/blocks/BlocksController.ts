@@ -237,6 +237,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	};
 
 	/**
+	 * Return a collection of blocks, given a range.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
@@ -269,17 +270,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
+		/**
+		 * Given an array of iterators, call each iterator, and prioritize
+		 * the first value received and continue until all values are yielded.
+		 *
+		 * @param iterators
+		 */
 		async function* raceAsyncIterators(
 			iterators: Array<AsyncGenerator<IBlock, void, unknown>>
 		) {
-			async function queueNext(iteratorResult: {
-				iterator: AsyncGenerator<IBlock, void, unknown>;
-				result?: IteratorResult<unknown, void>;
-			}) {
-				delete iteratorResult.result; // Release previous result ASAP
-				iteratorResult.result = await iteratorResult.iterator.next();
-				return iteratorResult;
-			}
 			const iteratorResults = new Map(
 				iterators.map((iterator) => [iterator, queueNext({ iterator })])
 			);
@@ -298,6 +297,30 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			}
 		}
 
+		/**
+		 * Helper function to `raceAsyncIterators`.
+		 * Prioritize releasing the previous result, and assigning the
+		 * next result to the next iterator (queues the next iteratorResult).
+		 *
+		 * @param iteratorResult
+		 * @returns
+		 */
+		async function queueNext(iteratorResult: {
+			iterator: AsyncGenerator<IBlock, void, unknown>;
+			result?: IteratorResult<unknown, void>;
+		}) {
+			delete iteratorResult.result; // Release previous result ASAP
+			iteratorResult.result = await iteratorResult.iterator.next();
+			return iteratorResult;
+		}
+
+		/**
+		 * Run a set amount of tasks concurrently. The are prioritized by those
+		 * who finish first.
+		 *
+		 * @param maxConcurrency Max concurrent requests to make
+		 * @param iterator Iterators to run concurrently
+		 */
 		async function* runTasks(
 			maxConcurrency: number,
 			iterator: IterableIterator<() => Promise<IBlock>>
@@ -318,7 +341,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			yield* raceAsyncIterators(workers);
 		}
 
-		// TODO: Sort the blocks being passed into the array.
+		/**
+		 * Given a range of hashes, generate an array containing callbacks for
+		 * each query.
+		 */
 		const tasks: Array<() => Promise<IBlock>> = [];
 		for (let i = 0; i < rangeOfNumsToHash.length; i++) {
 			tasks.push(async () => {
@@ -331,10 +357,18 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			});
 		}
 
+		/**
+		 * Run our tasks, and collect our responses from each query.
+		 */
 		const blocks: IBlock[] = [];
 		for await (const value of runTasks(3, tasks.values())) {
 			blocks.push(value as IBlock);
 		}
+
+		/**
+		 * Sort blocks from least to greatest.
+		 */
+		blocks.sort((a, b) => a.number.toNumber() - b.number.toNumber());
 
 		BlocksController.sanitizedSend(res, blocks);
 	};
