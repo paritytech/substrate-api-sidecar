@@ -271,81 +271,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		};
 
 		/**
-		 * Given an array of iterators, call each iterator, and prioritize
-		 * the first value received and continue until all values are yielded.
-		 *
-		 * @param iterators
-		 */
-		async function* raceAsyncIterators(
-			iterators: Array<AsyncGenerator<IBlock, void, unknown>>
-		): AsyncGenerator<unknown, void, unknown> {
-			const iteratorResults = new Map(
-				iterators.map((iterator) => [iterator, queueNext({ iterator })])
-			);
-			while (iteratorResults.size) {
-				const winner = await Promise.race(iteratorResults.values());
-				if (winner.result && winner.result.done) {
-					iteratorResults.delete(winner.iterator);
-				} else {
-					let value;
-					if (winner.result && winner.result.value) {
-						value = winner.result.value;
-					}
-					iteratorResults.set(winner.iterator, queueNext(winner));
-					yield value;
-				}
-			}
-		}
-
-		type QueueNext = Promise<{
-			iterator: AsyncGenerator<IBlock, void, unknown>;
-			result?: IteratorResult<unknown, void>;
-		}>;
-		/**
-		 * Helper function to `raceAsyncIterators`.
-		 * Prioritize releasing the previous result, and assigning the
-		 * next result to the next iterator (queues the next iteratorResult).
-		 *
-		 * @param iteratorResult
-		 * @returns
-		 */
-		async function queueNext(iteratorResult: {
-			iterator: AsyncGenerator<IBlock, void, unknown>;
-			result?: IteratorResult<unknown, void>;
-		}): QueueNext {
-			delete iteratorResult.result; // Release previous result ASAP
-			iteratorResult.result = await iteratorResult.iterator.next();
-			return iteratorResult;
-		}
-
-		/**
-		 * Run a set amount of tasks concurrently. The are prioritized by those
-		 * who finish first.
-		 *
-		 * @param maxConcurrency Max concurrent requests to make
-		 * @param iterator Iterators to run concurrently
-		 */
-		async function* runTasks(
-			maxConcurrency: number,
-			iterator: IterableIterator<() => Promise<IBlock>>
-		): AsyncGenerator<unknown, void, unknown> {
-			// Each worker is an async generator that polls for tasks
-			// from the shared iterator.
-			// Sharing the iterator ensures that each worker gets unique tasks.
-			/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-			const workers: Array<AsyncGenerator<IBlock, void, unknown>> = new Array(
-				maxConcurrency
-			);
-			for (let i = 0; i < maxConcurrency; i++) {
-				workers[i] = (async function* () {
-					for (const task of iterator) yield await task();
-				})();
-			}
-
-			yield* raceAsyncIterators(workers);
-		}
-
-		/**
 		 * Given a range of hashes, generate an array containing callbacks for
 		 * each query.
 		 */
@@ -365,7 +290,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		 * Run our tasks, and collect our responses from each query.
 		 */
 		const blocks: IBlock[] = [];
-		for await (const value of runTasks(3, tasks.values())) {
+		for await (const value of this.runTasks(3, tasks.values())) {
 			blocks.push(value as IBlock);
 		}
 
