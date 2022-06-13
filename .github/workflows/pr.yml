@@ -41,5 +41,5 @@ jobs:
       - name: Linter.
         run: yarn lint:ci
         
-      - name: Unit tests Cov.
-        run: yarn test:cov
+      - name: Unit tests.
+        run: yarn test
