@@ -12,5 +12,7 @@ module.exports = {
 		}
 	},
 	testEnvironment: 'node',
+	maxConcurrency: 3,
+	maxWorkers: '50%',
 	testPathIgnorePatterns: ['/build/', '/node_modules/', '/docs/', '/e2e-tests/'],
 };
