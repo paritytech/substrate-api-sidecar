@@ -11,6 +11,7 @@ module.exports = {
 			statements: 85
 		}
 	},
+	coverageProvider: 'v8',
 	testEnvironment: 'node',
 	testPathIgnorePatterns: ['/build/', '/node_modules/', '/docs/', '/e2e-tests/'],
 };
