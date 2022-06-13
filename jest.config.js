@@ -11,7 +11,6 @@ module.exports = {
 			statements: 85
 		}
 	},
-	coverageProvider: 'v8',
 	testEnvironment: 'node',
 	maxConcurrency: 3,
 	maxWorkers: '50%',
