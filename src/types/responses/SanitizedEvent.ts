@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { GenericEventData } from '@polkadot/types';
+import { IEventData } from '@polkadot/types/types';
+import { Codec } from '@polkadot/types-codec/types';
 
 import { IFrameMethod } from '.';
 
 export interface ISanitizedEvent {
 	method: string | IFrameMethod;
-	data: GenericEventData;
+	data: Codec[] & IEventData;
+	docs?: string;
 }
