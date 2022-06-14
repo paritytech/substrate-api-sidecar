@@ -308,7 +308,7 @@ and read the release notes for any breaking changes or high priority updates. In
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. Ensure everything is uptodate and working by running the following:
+1. Ensure everything is up to date and working by running the following:
    ```
    yarn
    yarn dedupe
