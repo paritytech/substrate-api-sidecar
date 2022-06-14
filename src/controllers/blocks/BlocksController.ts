@@ -23,6 +23,7 @@ import LRU from 'lru-cache';
 import { BlocksService } from '../../services';
 import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
+import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
 
 interface ControllerOptions {
@@ -290,9 +291,23 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		 * Run our tasks, and collect our responses from each query.
 		 */
 		const blocks: IBlock[] = [];
-		for await (const value of this.runTasks(3, tasks.values())) {
-			blocks.push(value as IBlock);
+		// for await (const value of this.runTasks(3, tasks.values())) {
+		// 	blocks.push(value as IBlock);
+		// }
+
+		const pQueue = new PromiseQueue(4);
+		for (let i = 0; i < tasks.length; i++) {
+			pQueue.run(tasks[i]).then((a) => blocks.push(a as IBlock));
 		}
+
+		const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+		let x = 0;
+		while (x < 10) {
+			await sleep(1000)
+			x += 1;
+		}
+
+		console.log(blocks)
 
 		/**
 		 * Sort blocks from least to greatest.
