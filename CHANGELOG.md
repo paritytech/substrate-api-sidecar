@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.1.0..v12.1.1) (2022-06-14)
+
+### Bug Fixes
+
+- fix(deps): update pjs api ([#957](https://github.com/paritytech/substrate-api-sidecar/pull/957)) ([db4ae5e](https://github.com/paritytech/substrate-api-sidecar/commit/db4ae5ed2fcf423f94ccaf53864c263e656c579e))
+
+### Chore
+
+- chore(dev): update dev dep ([#955](https://github.com/paritytech/substrate-api-sidecar/pull/955)) ([1b27f03](https://github.com/paritytech/substrate-api-sidecar/commit/1b27f03f1f4f7b10d3fcd46c2a98efa0d53d236b))
+- chore(docs): update docs deps, and remove json-loader ([#950](https://github.com/paritytech/substrate-api-sidecar/pull/950)) ([8e3e408](https://github.com/paritytech/substrate-api-sidecar/commit/8e3e408376d0e8cbb268d715f339b17c31c1b404))
+- chore: bump yarn 3.2.1 ([#947](https://github.com/paritytech/substrate-api-sidecar/pull/947)) ([51f9e34](https://github.com/paritytech/substrate-api-sidecar/commit/51f9e34b0a5203c7518c23bac1c958b1dd49bea8))
+
+### Docs
+
+- docs(bug): revert docs update ([#958](https://github.com/paritytech/substrate-api-sidecar/pull/958)) ([eb0ec7f](https://github.com/paritytech/substrate-api-sidecar/commit/eb0ec7f26001fdbc753e8c03654c3101123462d9))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9230
+- Kusama v9230
+- Westend v9230
+
 ## [12.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.0.1..v12.1.0) (2022-06-07)
 
 ### Features
@@ -144,7 +167,7 @@ Tested against:
 - fix: remove blockWeightsStore ([#891](https://github.com/paritytech/substrate-api-sidecar/pull/891)) ([ce701a0](https://github.com/paritytech/substrate-api-sidecar/commit/ce701a0a2d44a2a7febd0b23f50128c5ebab7378))
 - fix: update polkadot-js deps, adjust tests for getWeight ([#890](https://github.com/paritytech/substrate-api-sidecar/pull/890)) ([c348363](https://github.com/paritytech/substrate-api-sidecar/commit/c3483631775e10cd436e1b5b6175dbb4ea59798e))
 
-### Docs 
+### Docs
 
 - docs(release): abstract the release process into its own file ([#894](https://github.com/paritytech/substrate-api-sidecar/pull/894)) ([eece110](https://github.com/paritytech/substrate-api-sidecar/commit/eece110cbc5c9252109c31c2e7d7b850492fca1d))
 - docs: updated README with trace endpoints & requirements note ([#872](https://github.com/paritytech/substrate-api-sidecar/pull/872)) ([d323857](https://github.com/paritytech/substrate-api-sidecar/commit/d3238573a838a46a94684f7598684debd8959471)) Contributed by ([Imod7](https://github.com/Imod7))
@@ -212,7 +235,7 @@ Tested against:
 - chore(release-calc): 0.2.8 ([#860](https://github.com/paritytech/substrate-api-sidecar/pull/860)) ([cf8297d](https://github.com/paritytech/substrate-api-sidecar/commit/cf8297dad4cfaf3ec4ccf5b7e79ff02f4ceda100))
 - fix: support fee calculation for Bifrost ([#853](https://github.com/paritytech/substrate-api-sidecar/pull/853)) ([cd33db7](https://github.com/paritytech/substrate-api-sidecar/commit/cd33db78849be9d3f229aefeccdc42d3a5c53b05)) Contributed by ([ark930](https://github.com/ark930))
 
-## Compatibility 
+## Compatibility
 
 Tested against:
 - Polkadot v9170
@@ -304,7 +327,7 @@ Tested against:
 
 ### Bug Fixes
 
-- fix: update polkadot-js/api, and rxjs ([#830](https://github.com/paritytech/substrate-api-sidecar/pull/830)) ([90083d1](https://github.com/paritytech/substrate-api-sidecar/commit/90083d1ef3ae0d336c4d9eefc9807efdd50416c8)) 
+- fix: update polkadot-js/api, and rxjs ([#830](https://github.com/paritytech/substrate-api-sidecar/pull/830)) ([90083d1](https://github.com/paritytech/substrate-api-sidecar/commit/90083d1ef3ae0d336c4d9eefc9807efdd50416c8))
 - fix: retrieving public endpoints with `createWsEndpoints` function ([#829](https://github.com/paritytech/substrate-api-sidecar/pull/829)) ([a019c8b](https://github.com/paritytech/substrate-api-sidecar/commit/a019c8b1ddf130e1f1405012996585ec18a0e243)) Contributed by: ([Imod7](https://github.com/Imod7))
 - fix: ?at bug and endingOffset conditionals ([#824](https://github.com/paritytech/substrate-api-sidecar/pull/824)) ([1774e90](https://github.com/paritytech/substrate-api-sidecar/commit/1774e900832aad3467130fba130fd7ab09940a31))
 - fix: update all polkadot-js deps ([#828](https://github.com/paritytech/substrate-api-sidecar/pull/828)) ([23d4cec](https://github.com/paritytech/substrate-api-sidecar/commit/23d4cec7cfe3dc4295f50afab58f06d72e52ce64))
