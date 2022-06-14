@@ -320,7 +320,7 @@ and read the release notes for any breaking changes or high priority updates. In
 
 1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.
 
-1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelgo and versions are bumped.
+1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
 
 ## Hardware requirements
 
