@@ -224,7 +224,7 @@ check-benchmark:
   variables:
     GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
-    THRESHOLD:                     13000
+    THRESHOLD:                     35000
     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
