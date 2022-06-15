@@ -92,7 +92,7 @@ describe('Validate addresses', () => {
 			ss58Prefix: '0',
 			network: 'polkadot',
 			accountId:
-				'0x002a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc592312',
+				'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59',
 		};
 		const polkadotHex =
 			'0x002a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc592312';
@@ -108,7 +108,7 @@ describe('Validate addresses', () => {
 			ss58Prefix: '2',
 			network: 'kusama',
 			accountId:
-				'0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9',
+				'0xce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b19529',
 		};
 		const kusamaHex =
 			'0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9';
@@ -124,7 +124,7 @@ describe('Validate addresses', () => {
 			ss58Prefix: '8',
 			network: 'karura',
 			accountId:
-				'0x086d6f646c6163612f6364707400000000000000000000000000000000000000008333',
+				'0x6d6f646c6163612f636470740000000000000000000000000000000000000000',
 		};
 		const karuraHex =
 			'0x086d6f646c6163612f6364707400000000000000000000000000000000000000008333';

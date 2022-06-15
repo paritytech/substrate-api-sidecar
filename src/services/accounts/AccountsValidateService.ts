@@ -57,7 +57,7 @@ export class AccountsValidateService extends AbstractService {
 				}
 			}
 			const accountId = isHex(address)
-				? address
+				? '0x' + address.slice(4, -4)
 				: this.api.registry.createType('AccountId', address).toHex();
 			return {
 				isValid: isValid,
