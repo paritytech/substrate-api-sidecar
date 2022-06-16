@@ -9,13 +9,10 @@
     #runningTasks: number = 0;
     // The queued tasks waiting to run
     #tasks: LinkedList<() => void>;
-    // Tasks results
-    #results: T[];
 
     constructor(maxTasks: number) {
         this.#maxTasks = maxTasks;
         this.#tasks = new LinkedList();
-        this.#results = [];
     }
 
     // Try to run the next task in the queue.
@@ -43,7 +40,6 @@
             let taskToRun = () => {
                 task()
                     .then((item) => {
-                        this.#results.push(item);
                         resolve(item);
                         onFinish();
                     })
@@ -54,7 +50,6 @@
             };
 
             this.#tasks.pushBack(taskToRun);
-            console.log('LinkedList', this.#tasks)
             this.tryRunNextTask();
         })
     }
