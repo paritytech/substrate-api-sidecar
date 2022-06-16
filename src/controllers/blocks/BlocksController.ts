@@ -294,7 +294,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			blocksPromise.push(pQueue.run(tasks[i]));
 		}
 
-		const blocks = await Promise.all(blocksPromise) as IBlock[];
+		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
 
 		/**
 		 * Sort blocks from least to greatest.
