@@ -150,7 +150,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`
 				);
 			}
-			console.log('Sending Request for: ', blockNumber);
+
 			return await this.api.rpc.chain.getBlockHash(blockNumber);
 		} catch (err) {
 			if (err instanceof HttpError) {
