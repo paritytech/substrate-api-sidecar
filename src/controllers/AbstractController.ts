@@ -150,7 +150,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`
 				);
 			}
-
+			console.log('Sending Request for: ', blockNumber)
 			return await this.api.rpc.chain.getBlockHash(blockNumber);
 		} catch (err) {
 			if (err instanceof HttpError) {
@@ -205,7 +205,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			throw new BadRequest('Inputted range contains non integers.');
 		}
 
-		return [...Array(max + 1).keys()].map((i) => i + min);
+		return [...Array(max - min + 1).keys()].map((i) => i + min);
 	}
 
 	protected parseQueryParamArrayOrThrow(n: string[]): number[] {
@@ -266,79 +266,5 @@ export default abstract class AbstractController<T extends AbstractService> {
 		options: ISanitizeOptions = {}
 	): void {
 		res.send(sanitizeNumbers(body, options));
-	}
-
-	/**
-	 * Run a set amount of tasks concurrently. The are prioritized by those
-	 * who finish first.
-	 *
-	 * @param maxConcurrency Max concurrent requests to make
-	 * @param iterator Iterators to run concurrently
-	 */
-	protected async *runTasks<T>(
-		maxConcurrency: number,
-		iterator: IterableIterator<() => Promise<T>>
-	): AsyncGenerator<unknown, void, unknown> {
-		// Each worker is an async generator that polls for tasks
-		// from the shared iterator.
-		// Sharing the iterator ensures that each worker gets unique tasks.
-		/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-		const workers: Array<AsyncGenerator<T, void, unknown>> = new Array(
-			maxConcurrency
-		);
-		for (let i = 0; i < maxConcurrency; i++) {
-			workers[i] = (async function* () {
-				for (const task of iterator) yield await task();
-			})();
-		}
-
-		yield* this.raceAsyncIterators(workers);
-	}
-
-	/**
-	 * Helper function to `raceAsyncIterators`.
-	 * Prioritize releasing the previous result, and assigning the
-	 * next result to the next iterator (queues the next iteratorResult).
-	 *
-	 * @param iteratorResult
-	 * @returns
-	 */
-	protected async queueNext<T>(iteratorResult: {
-		iterator: AsyncGenerator<T, void, unknown>;
-		result?: IteratorResult<unknown, void>;
-	}): Promise<{
-		iterator: AsyncGenerator<T, void, unknown>;
-		result?: IteratorResult<unknown, void>;
-	}> {
-		delete iteratorResult.result; // Release previous result ASAP
-		iteratorResult.result = await iteratorResult.iterator.next();
-		return iteratorResult;
-	}
-
-	/**
-	 * Given an array of iterators, call each iterator, and prioritize
-	 * the first value received and continue until all values are yielded.
-	 *
-	 * @param iterators
-	 */
-	protected async *raceAsyncIterators<T>(
-		iterators: Array<AsyncGenerator<T, void, unknown>>
-	): AsyncGenerator<unknown, void, unknown> {
-		const iteratorResults = new Map(
-			iterators.map((iterator) => [iterator, this.queueNext({ iterator })])
-		);
-		while (iteratorResults.size) {
-			const winner = await Promise.race(iteratorResults.values());
-			if (winner.result && winner.result.done) {
-				iteratorResults.delete(winner.iterator);
-			} else {
-				let value;
-				if (winner.result && winner.result.value) {
-					value = winner.result.value;
-				}
-				iteratorResults.set(winner.iterator, this.queueNext(winner));
-				yield value;
-			}
-		}
 	}
 }
