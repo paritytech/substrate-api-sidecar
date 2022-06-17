@@ -366,6 +366,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountValidation'
+  /blocks:
+    get:
+      tags:
+      - blocks
+      summary: Get a range of blocks by their height.
+      description: Given a range query parameter return an array of all the blocks within that range.
+      operationId: getBlock
+      parameters:
+      - name: range
+        in: query
+        description: A range of integers.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRange'
+        "400":
+          description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'      
   /blocks/{blockId}:
     get:
       tags:
@@ -1589,6 +1616,10 @@ components:
           - Fee = 0
           - Misc = 1
           - All = 2
+    BlockRange:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Block'
     Block:
       type: object
       properties:
