@@ -256,9 +256,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		// We set a max range to 500 blocks.
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
-		const rangeOfNumsToHash = await Promise.all(
-			rangeOfNums.map((n) => this.getHashForBlock(n.toString()))
-		);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -272,27 +269,19 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag,
 		};
 
-		/**
-		 * Given a range of hashes, generate an array containing callbacks for
-		 * each query.
-		 */
-		const tasks: Array<() => Promise<IBlock>> = [];
-		for (let i = 0; i < rangeOfNumsToHash.length; i++) {
-			tasks.push(async () => {
-				const historicApi = await this.api.at(rangeOfNumsToHash[i]);
-				return await this.service.fetchBlock(
-					rangeOfNumsToHash[i],
-					historicApi,
-					options
-				);
-			});
-		}
-
+		const pQueue = new PromiseQueue(4);
 		const blocksPromise: Promise<unknown>[] = [];
 
-		const pQueue = new PromiseQueue(4);
-		for (let i = 0; i < tasks.length; i++) {
-			blocksPromise.push(pQueue.run(tasks[i]));
+		for (let i = 0; i < rangeOfNums.length; i++) {
+			const result = pQueue.run(async () => {
+				// Get block hash:
+				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				// Get API at that hash:
+				const historicApi = await this.api.at(hash);
+				// Get block details using this API/hash:
+				return await this.service.fetchBlock(hash, historicApi, options);
+			});
+			blocksPromise.push(result);
 		}
 
 		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
