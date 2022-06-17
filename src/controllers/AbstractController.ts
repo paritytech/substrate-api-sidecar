@@ -33,6 +33,7 @@ import {
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
+import { verifyNonZeroUInt, verifyUInt } from '../util/integers/verifyInt';
 
 type SidecarRequestHandler =
 	| RequestHandler<unknown, unknown, unknown, IRangeQueryParam>
@@ -182,7 +183,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
-		if (!this.verifyInt(num)) {
+		if (!verifyNonZeroUInt(num)) {
 			throw new BadRequest(errorMessage);
 		}
 
@@ -201,8 +202,16 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const min = Number(splitRange[0]);
 		const max = Number(splitRange[1]);
 
-		if (!this.verifyInt(min) || !this.verifyInt(max)) {
-			throw new BadRequest('Inputted range contains non integers.');
+		if (!verifyUInt(min)) {
+			throw new BadRequest(
+				'Inputted min value for range must be an unsigned integer.'
+			);
+		}
+
+		if (!verifyNonZeroUInt(max)) {
+			throw new BadRequest(
+				'Inputted max value for range must be an unsigned non zero integer.'
+			);
 		}
 
 		if (min >= max) {
@@ -213,7 +222,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 		if (max - min > maxRange) {
 			throw new BadRequest(
-				`Inputted range is greater than the ${maxRange} range limit`
+				`Inputted range is greater than the ${maxRange} range limit.`
 			);
 		}
 
@@ -227,10 +236,6 @@ export default abstract class AbstractController<T extends AbstractService> {
 				`Incorrect AssetId format: ${str} is not a positive integer.`
 			)
 		);
-	}
-
-	private verifyInt(num: Number): boolean {
-		return Number.isInteger(num) && num > 0;
 	}
 
 	protected verifyAndCastOr(

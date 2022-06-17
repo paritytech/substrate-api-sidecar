@@ -328,21 +328,27 @@ describe('AbstractController', () => {
 			const badFormatRequest = new BadRequest(
 				'Incorrect range format. Expected example: 0-999'
 			);
-			const badIntRequest = new BadRequest(
-				'Inputted range contains non integers.'
+			const badMinRequest = new BadRequest(
+				'Inputted min value for range must be an unsigned integer.'
+			);
+			const badMaxRequest = new BadRequest(
+				'Inputted max value for range must be an unsigned non zero integer.'
 			);
 			const badMaxMinRequest = new BadRequest(
 				'Inputted min value cannot be greater than the max value.'
 			);
 			const badMaxRangeRequest = new BadRequest(
-				'Inputted range is greater than the 500 range limit'
+				'Inputted range is greater than the 500 range limit.'
 			);
 			expect(() =>
 				controller['parseRangeOfNumbersOrThrow']('100', 500)
 			).toThrow(badFormatRequest);
 			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('h-100', 500)
+			).toThrow(badMinRequest);
+			expect(() =>
 				controller['parseRangeOfNumbersOrThrow']('100-h', 500)
-			).toThrow(badIntRequest);
+			).toThrow(badMaxRequest);
 			expect(() =>
 				controller['parseRangeOfNumbersOrThrow']('100-1', 500)
 			).toThrow(badMaxMinRequest);
@@ -352,13 +358,6 @@ describe('AbstractController', () => {
 			expect(() =>
 				controller['parseRangeOfNumbersOrThrow']('2-503', 500)
 			).toThrow(badMaxRangeRequest);
-		});
-	});
-
-	describe('verifyInt', () => {
-		it('Should handle integers correctly', () => {
-			expect(controller['verifyInt'](10)).toBe(true);
-			expect(controller['verifyInt'](-1)).toBe(false);
 		});
 	});
 });
