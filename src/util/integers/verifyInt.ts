@@ -1,5 +1,5 @@
 /**
- * Verify all integers including zeroes
+ * Verify all integers including zeroes.
  * @param num
  */
 export const verifyUInt = (num: Number): boolean => {
