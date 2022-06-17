@@ -386,7 +386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRange'
+                $ref: '#/components/schemas/Blocks'
         "400":
           description: invalid Block identifier supplied
           content:
@@ -1616,10 +1616,6 @@ components:
           - Fee = 0
           - Misc = 1
           - All = 2
-    BlockRange:
-      type: array
-      items: 
-        $ref: '#/components/schemas/Block'
     Block:
       type: object
       properties:
@@ -1672,6 +1668,10 @@ components:
         Note: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
         _construction._
+    Blocks:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Block'
     BlockFinalize:
       type: object
       properties:
