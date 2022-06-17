@@ -257,7 +257,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// We set a max range to 500 blocks.
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
 		const rangeOfNumsToHash = await Promise.all(
-			rangeOfNums.map(async (n) => await this.getHashForBlock(n.toString()))
+			rangeOfNums.map((n) => this.getHashForBlock(n.toString()))
 		);
 
 		const eventDocsArg = eventDocs === 'true';
