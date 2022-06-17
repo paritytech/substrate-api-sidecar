@@ -17,11 +17,13 @@
 import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
+import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
 import { BlocksService } from '../../services';
-import { INumberParam } from '../../types/requests';
+import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
+import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
 
 interface ControllerOptions {
@@ -101,6 +103,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
 			['/:number', this.getBlockById],
 			['/head/header', this.getLatestBlockHeader],
@@ -232,5 +235,62 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			res,
 			await this.service.fetchBlockHeader(hash)
 		);
+	};
+
+	/**
+	 * Return a collection of blocks, given a range.
+	 *
+	 * @param req Express Request
+	 * @param res Express Response
+	 */
+	private getBlocks: RequestHandler<
+		unknown,
+		unknown,
+		unknown,
+		IRangeQueryParam
+	> = async (
+		{ query: { range, eventDocs, extrinsicDocs } },
+		res
+	): Promise<void> => {
+		if (!range) throw new BadRequest('range query parameter must be inputted.');
+
+		// We set a max range to 500 blocks.
+		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
+
+		const eventDocsArg = eventDocs === 'true';
+		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const queryFinalizedHead = !this.options.finalizes ? false : true;
+		const omitFinalizedTag = !this.options.finalizes ? true : false;
+		const options = {
+			eventDocs: eventDocsArg,
+			extrinsicDocs: extrinsicDocsArg,
+			checkFinalized: false,
+			queryFinalizedHead,
+			omitFinalizedTag,
+		};
+
+		const pQueue = new PromiseQueue(4);
+		const blocksPromise: Promise<unknown>[] = [];
+
+		for (let i = 0; i < rangeOfNums.length; i++) {
+			const result = pQueue.run(async () => {
+				// Get block hash:
+				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				// Get API at that hash:
+				const historicApi = await this.api.at(hash);
+				// Get block details using this API/hash:
+				return await this.service.fetchBlock(hash, historicApi, options);
+			});
+			blocksPromise.push(result);
+		}
+
+		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
+
+		/**
+		 * Sort blocks from least to greatest.
+		 */
+		blocks.sort((a, b) => a.number.toNumber() - b.number.toNumber());
+
+		BlocksController.sanitizedSend(res, blocks);
 	};
 }
