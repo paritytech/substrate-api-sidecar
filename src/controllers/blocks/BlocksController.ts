@@ -254,7 +254,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 
-		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range);
+		// We set a max range to 500 blocks.
+		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
 		const rangeOfNumsToHash = await Promise.all(
 			rangeOfNums.map(async (n) => await this.getHashForBlock(n.toString()))
 		);

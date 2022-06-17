@@ -319,7 +319,7 @@ describe('AbstractController', () => {
 
 	describe('parseRangeOfNumbersOrThrow', () => {
 		it('Should return the correct array given a range', () => {
-			const res = controller['parseRangeOfNumbersOrThrow']('100-103');
+			const res = controller['parseRangeOfNumbersOrThrow']('100-103', 500);
 
 			expect(res).toStrictEqual([100, 101, 102, 103]);
 		});
@@ -331,12 +331,27 @@ describe('AbstractController', () => {
 			const badIntRequest = new BadRequest(
 				'Inputted range contains non integers.'
 			);
-			expect(() => controller['parseRangeOfNumbersOrThrow']('100')).toThrow(
-				badFormatRequest
+			const badMaxMinRequest = new BadRequest(
+				'Inputted min value cannot be greater than the max value.'
 			);
-			expect(() => controller['parseRangeOfNumbersOrThrow']('100-h')).toThrow(
-				badIntRequest
+			const badMaxRangeRequest = new BadRequest(
+				'Inputted range is greater than the 500 range limit'
 			);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100', 500)
+			).toThrow(badFormatRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100-h', 500)
+			).toThrow(badIntRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100-1', 500)
+			).toThrow(badMaxMinRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('1-1', 500)
+			).toThrow(badMaxMinRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('2-503', 500)
+			).toThrow(badMaxRangeRequest);
 		});
 	});
 

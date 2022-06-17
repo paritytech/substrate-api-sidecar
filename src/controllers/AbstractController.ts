@@ -192,7 +192,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	/**
 	 * Expected format ie: 0-999
 	 */
-	protected parseRangeOfNumbersOrThrow(n: string): number[] {
+	protected parseRangeOfNumbersOrThrow(n: string, maxRange: number): number[] {
 		const splitRange = n.split('-');
 		if (splitRange.length !== 2) {
 			throw new BadRequest('Incorrect range format. Expected example: 0-999');
@@ -203,6 +203,18 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 		if (!this.verifyInt(min) || !this.verifyInt(max)) {
 			throw new BadRequest('Inputted range contains non integers.');
+		}
+
+		if (min >= max) {
+			throw new BadRequest(
+				'Inputted min value cannot be greater than the max value.'
+			);
+		}
+
+		if (max - min > maxRange) {
+			throw new BadRequest(
+				`Inputted range is greater than the ${maxRange} range limit`
+			);
 		}
 
 		return [...Array(max - min + 1).keys()].map((i) => i + min);
