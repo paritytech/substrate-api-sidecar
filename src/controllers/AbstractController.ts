@@ -182,7 +182,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
-		if (this.verifyInt(num)) {
+		if (!this.verifyInt(num)) {
 			throw new BadRequest(errorMessage);
 		}
 
@@ -201,7 +201,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const min = Number(splitRange[0]);
 		const max = Number(splitRange[1]);
 
-		if (this.verifyInt(min) || this.verifyInt(max)) {
+		if (!this.verifyInt(min) || !this.verifyInt(max)) {
 			throw new BadRequest('Inputted range contains non integers.');
 		}
 
@@ -218,7 +218,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	private verifyInt(num: Number): boolean {
-		return !Number.isInteger(num) || num < 0;
+		return Number.isInteger(num) && num > 0;
 	}
 
 	protected verifyAndCastOr(

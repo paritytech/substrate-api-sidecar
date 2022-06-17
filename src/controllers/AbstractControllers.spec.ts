@@ -339,4 +339,11 @@ describe('AbstractController', () => {
 			);
 		});
 	});
+
+	describe('verifyInt', () => {
+		it('Should handle integers correctly', () => {
+			expect(controller['verifyInt'](10)).toBe(true);
+			expect(controller['verifyInt'](-1)).toBe(false);
+		});
+	});
 });
