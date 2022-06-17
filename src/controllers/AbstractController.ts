@@ -183,7 +183,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
-		if (!verifyNonZeroUInt(num)) {
+		if (!verifyUInt(num)) {
 			throw new BadRequest(errorMessage);
 		}
 
