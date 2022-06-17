@@ -335,7 +335,7 @@ describe('AbstractController', () => {
 				'Inputted max value for range must be an unsigned non zero integer.'
 			);
 			const badMaxMinRequest = new BadRequest(
-				'Inputted min value cannot be greater than the max value.'
+				'Inputted min value cannot be greater than or equal to the max value.'
 			);
 			const badMaxRangeRequest = new BadRequest(
 				'Inputted range is greater than the 500 range limit.'

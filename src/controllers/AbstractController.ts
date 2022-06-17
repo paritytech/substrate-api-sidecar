@@ -216,7 +216,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 		if (min >= max) {
 			throw new BadRequest(
-				'Inputted min value cannot be greater than the max value.'
+				'Inputted min value cannot be greater than or equal to the max value.'
 			);
 		}
 
