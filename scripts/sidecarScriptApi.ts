@@ -83,12 +83,12 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{ proc, resolver, resolverStartupErr, args }: IProcOpts
+	{ proc, resolver, resolverJestErr, resolverStartupErr, args }: IProcOpts
 ): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;
-
 		const command = cmd || 'yarn';
+		let jestStatus = Success;
 
 		procs[proc] = spawn(command, args, { detached: true });
 
@@ -103,12 +103,17 @@ export const launchProcess = (
 		procs[proc].stderr.on('data', (data: Buffer) => {
 			console.error(data.toString().trim());
 
-			if (resolverStartupErr && data.toString().includes(resolverStartupErr)) {
+			if (resolverJestErr && data.toString().trim().includes(resolverJestErr)) {
+				jestStatus = Failed;
+			}
+
+			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
 				resolve(Failed);
 			}
 		});
 
 		procs[proc].on('close', () => {
+			if (jestStatus === Failed) resolve(Failed);
 			resolve(Success);
 		});
 

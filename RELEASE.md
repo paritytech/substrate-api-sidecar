@@ -2,7 +2,7 @@
 
 #### Preparation
 
-1. Make sure the polkadot-js dependencies are up to date. Refer to the "Updating polkadot-js dependencies" if they need to be updated.
+1. Make sure the polkadot-js dependencies are up to date. Refer to the "Updating polkadot-js dependencies" section in the [README](./README.md).
 
 1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
 
@@ -16,7 +16,7 @@
 
 1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`.
 
-1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API. It will also help to sort previous PR's by "recently updated" in order to see all PR's merged since the last release. 
+1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API. It will also help to sort previous PR's by "recently updated" in order to see all PR's merged since the last release.
 
     Make sure to note if it is a high upgrade priority (e.g. it has type definitions for an upcoming runtime upgrade to a Parity maintained network).
 

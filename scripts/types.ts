@@ -34,5 +34,6 @@ export interface IProcOpts {
 	proc: string;
 	resolver: string;
 	resolverStartupErr?: string;
+	resolverJestErr?: string;
 	args: string[];
 }
