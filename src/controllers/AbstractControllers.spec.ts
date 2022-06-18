@@ -316,4 +316,48 @@ describe('AbstractController', () => {
 			api.createType = kusamaRegistry.createType.bind(kusamaRegistry);
 		});
 	});
+
+	describe('parseRangeOfNumbersOrThrow', () => {
+		it('Should return the correct array given a range', () => {
+			const res = controller['parseRangeOfNumbersOrThrow']('100-103', 500);
+
+			expect(res).toStrictEqual([100, 101, 102, 103]);
+		});
+
+		it('Should throw an error when the inputted format is wrong', () => {
+			const badFormatRequest = new BadRequest(
+				'Incorrect range format. Expected example: 0-999'
+			);
+			const badMinRequest = new BadRequest(
+				'Inputted min value for range must be an unsigned integer.'
+			);
+			const badMaxRequest = new BadRequest(
+				'Inputted max value for range must be an unsigned non zero integer.'
+			);
+			const badMaxMinRequest = new BadRequest(
+				'Inputted min value cannot be greater than or equal to the max value.'
+			);
+			const badMaxRangeRequest = new BadRequest(
+				'Inputted range is greater than the 500 range limit.'
+			);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100', 500)
+			).toThrow(badFormatRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('h-100', 500)
+			).toThrow(badMinRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100-h', 500)
+			).toThrow(badMaxRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('100-1', 500)
+			).toThrow(badMaxMinRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('1-1', 500)
+			).toThrow(badMaxMinRequest);
+			expect(() =>
+				controller['parseRangeOfNumbersOrThrow']('2-503', 500)
+			).toThrow(badMaxRangeRequest);
+		});
+	});
 });

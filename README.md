@@ -36,9 +36,9 @@ Compatibility:
 |     v14.x.x   |   Stable    |
 |     v16.x.x   |   Stable    |
 |     v17.x.x   |  Not Stable |
-|     v18.x.x   |   Pending   | 
+|     v18.x.x   |   Pending   |
 
-NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.  
+NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.
 
 ## Table of contents
 
@@ -94,7 +94,7 @@ node_modules/.bin/substrate-api-sidecar
 
 [Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
 
-In the full endpoints doc, you will also find the following `trace` related endpoints : 
+In the full endpoints doc, you will also find the following `trace` related endpoints :
 - `/experimental/blocks/{blockId}/traces/operations?actions=false`
 - `/experimental/blocks/head/traces/operations?actions=false`
 - `/experimental/blocks/{blockId}/traces`
@@ -299,8 +299,8 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 ### Updating polkadot-js dependencies
 
-1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up, 
-and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`. 
+1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up,
+and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
@@ -308,9 +308,19 @@ and read the release notes for any breaking changes or high priority updates. In
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
-1. Ensure everything is working by running the following tests, `yarn build`, `yarn lint`, `yarn test`, `yarn test:init-e2e-tests`.
+1. Ensure everything is up to date and working by running the following:
+   ```
+   yarn
+   yarn dedupe
+   yarn build
+   yarn lint
+   yarn test
+   yarn test:init-e2e-tests
+   ```
 
-1. Lastly, create a PR with the updates. 
+1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.
+
+1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
 
 ## Hardware requirements
 
@@ -321,18 +331,18 @@ Sidecar is a stateless program and thus should not use any disk space.
 The requirements follow the default of node.js processes which is an upper bound in HEAP memory of a little less than 2GB thus 4GB of memory should be sufficient.
 
 ### Running sidecar and a node
-Please note that if you run sidecar next to a substrate node in a single machine then your system specifications should improve significantly. 
+Please note that if you run sidecar next to a substrate node in a single machine then your system specifications should improve significantly.
 - Our official specifications related to validator nodes can be found in the polkadot wiki [page](https://wiki.polkadot.network/docs/maintain-guides-how-to-validate-polkadot#standard-hardware).
 - Regarding archive nodes :
   - again as mentioned in the polkadot wiki [page](https://wiki.polkadot.network/docs/maintain-sync#types-of-nodes), the space needed from an archive node depends on which block we are currently on (of the specific chain we are referring to).
   - there are no other hardware requirements for an archive node since it is not time critical (archive nodes do not participate in the consensus).
 
 ### Benchmarks
-During the benchmarks we performed, we concluded that sidecar would use a max of 1.1GB of RSS memory. 
+During the benchmarks we performed, we concluded that sidecar would use a max of 1.1GB of RSS memory.
 
 The benchmarks were:
 - using 4 threads over 12 open http connections and
-- were overloading the cache with every runtime possible on polkadot. 
+- were overloading the cache with every runtime possible on polkadot.
 
 Hardware specs in which the benchmarks were performed:
 ```

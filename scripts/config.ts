@@ -19,6 +19,7 @@ import { IChainConfig } from './types';
 const defaultJestOpts = {
 	proc: 'jest',
 	resolver: 'PASS',
+	resolverJestErr: 'FAIL',
 };
 
 export const defaultSasStartOpts = {

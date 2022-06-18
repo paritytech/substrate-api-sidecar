@@ -27,13 +27,16 @@ import {
 	IAddressParam,
 	INumberParam,
 	IParaIdParam,
+	IRangeQueryParam,
 } from 'src/types/requests';
 
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
+import { verifyNonZeroUInt, verifyUInt } from '../util/integers/verifyInt';
 
 type SidecarRequestHandler =
+	| RequestHandler<unknown, unknown, unknown, IRangeQueryParam>
 	| RequestHandler<IAddressParam>
 	| RequestHandler<IAddressNumberParams>
 	| RequestHandler<INumberParam>
@@ -180,11 +183,50 @@ export default abstract class AbstractController<T extends AbstractService> {
 	protected parseNumberOrThrow(n: string, errorMessage: string): number {
 		const num = Number(n);
 
-		if (!Number.isInteger(num) || num < 0) {
+		if (!verifyUInt(num)) {
 			throw new BadRequest(errorMessage);
 		}
 
 		return num;
+	}
+
+	/**
+	 * Expected format ie: 0-999
+	 */
+	protected parseRangeOfNumbersOrThrow(n: string, maxRange: number): number[] {
+		const splitRange = n.split('-');
+		if (splitRange.length !== 2) {
+			throw new BadRequest('Incorrect range format. Expected example: 0-999');
+		}
+
+		const min = Number(splitRange[0]);
+		const max = Number(splitRange[1]);
+
+		if (!verifyUInt(min)) {
+			throw new BadRequest(
+				'Inputted min value for range must be an unsigned integer.'
+			);
+		}
+
+		if (!verifyNonZeroUInt(max)) {
+			throw new BadRequest(
+				'Inputted max value for range must be an unsigned non zero integer.'
+			);
+		}
+
+		if (min >= max) {
+			throw new BadRequest(
+				'Inputted min value cannot be greater than or equal to the max value.'
+			);
+		}
+
+		if (max - min > maxRange) {
+			throw new BadRequest(
+				`Inputted range is greater than the ${maxRange} range limit.`
+			);
+		}
+
+		return [...Array(max - min + 1).keys()].map((i) => i + min);
 	}
 
 	protected parseQueryParamArrayOrThrow(n: string[]): number[] {

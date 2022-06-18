@@ -1,5 +1,5 @@
 {
-  "version": "12.1.0",
+  "version": "12.1.1",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -54,8 +54,8 @@
     "update-pjs-deps": "substrate-update-pjs-deps && yarn"
   },
   "dependencies": {
-    "@polkadot/api": "^8.7.1",
-    "@polkadot/util-crypto": "^9.4.1",
+    "@polkadot/api": "8.8.2",
+    "@polkadot/util-crypto": "9.4.1",
     "@substrate/calc": "^0.2.8",
     "argparse": "^2.0.1",
     "confmgr": "1.0.7",
@@ -67,7 +67,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.6.1",
+    "@substrate/dev": "^0.6.2",
     "@types/argparse": "2.0.10",
     "@types/express": "4.17.13",
     "@types/express-serve-static-core": "4.17.25",
@@ -89,5 +89,5 @@
     "polkadot",
     "kusama"
   ],
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.1"
 }
