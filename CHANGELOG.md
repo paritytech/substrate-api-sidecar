@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.1.1..v12.2.0) (2022-06-22)
+
+### Features
+
+- feat: add /blocks that enforces range query param ([#954](https://github.com/paritytech/substrate-api-sidecar/pull/954)) ([f8ab1ec](https://github.com/paritytech/substrate-api-sidecar/commit/f8ab1ec965ae2fde9ab162371cf3163e6d4ff5b9))
+    - This Feature provides a new endpoints called `/blocks` which allows you to query a range of blocks maxing out at 500. An example query would be `/blocks?range=0-499`.
+
+### Bug Fixes
+
+- fix: set minCalcFee runtime to 1058 for kusama ([#966](https://github.com/paritytech/substrate-api-sidecar/pull/966)) ([e3adacc](https://github.com/paritytech/substrate-api-sidecar/commit/e3adaccd1d57b042942c46a0cbfe02ae42a8481f))
+- fix(scripts): jest pass-fail bug ([#944](https://github.com/paritytech/substrate-api-sidecar/pull/944)) ([44482aa](https://github.com/paritytech/substrate-api-sidecar/commit/44482aa93bc0d558e2642f85238396162d550dc4))
+
+### Chores
+
+- chore(deps): update polkadot-js api, and util-crypto ([#967](https://github.com/paritytech/substrate-api-sidecar/pull/967)) ([5dd8332](https://github.com/paritytech/substrate-api-sidecar/commit/5dd83329ed4f8c970ab2d88b59e559811e40e1be))
+
+### CI
+
+- ci: update node version in docker ([#956](https://github.com/paritytech/substrate-api-sidecar/pull/956)) ([a6a4bdb](https://github.com/paritytech/substrate-api-sidecar/commit/a6a4bdba8a29a7547a4a767dea537b678eebfe6a))
+- ci: increase benchmark threshold ([#962](https://github.com/paritytech/substrate-api-sidecar/pull/962)) ([bb5dea9](https://github.com/paritytech/substrate-api-sidecar/commit/bb5dea947790bce00af7b2794a83f23f53ab392a))
+
+### Docs
+
+- docs: fix includeFee query param ([#965](https://github.com/paritytech/substrate-api-sidecar/pull/965)) ([b7a5843](https://github.com/paritytech/substrate-api-sidecar/commit/b7a5843ec5f7a77f7dec10c7c469290a5cef6528))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9240
+- Kusama v9240
+- Westend v9240
+
 ## [12.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.1.0..v12.1.1) (2022-06-14)
 
 ### Bug Fixes
