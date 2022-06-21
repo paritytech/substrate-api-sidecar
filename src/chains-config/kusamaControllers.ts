@@ -46,7 +46,7 @@ export const kusamaControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 1062,
+		minCalcFeeRuntime: 1058,
 		blockStore: initLRUCache(),
 	},
 };
