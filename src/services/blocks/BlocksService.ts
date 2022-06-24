@@ -103,7 +103,7 @@ export class BlocksService extends AbstractService {
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
-		console.log(new BN(100).sub(new BN(200)));
+
 		// Before making any api calls check the cache if the queried block exists
 		const isBlockCached = this.blockStore.get(hash.toString());
 
