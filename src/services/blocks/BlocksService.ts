@@ -20,6 +20,7 @@ import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
 import {
 	AccountId32,
+	Balance,
 	Block,
 	BlockHash,
 	BlockNumber,
@@ -30,6 +31,7 @@ import {
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -43,6 +45,7 @@ import {
 } from '../../types/responses';
 import { IOption } from '../../types/util';
 import { isPaysFee } from '../../types/util';
+import { subIntegers } from '../../util/integers/compare';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -59,6 +62,7 @@ interface FetchBlockOptions {
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
+	getFeeByEvent: boolean;
 }
 
 /**
@@ -67,6 +71,8 @@ interface FetchBlockOptions {
 enum Event {
 	success = 'ExtrinsicSuccess',
 	failure = 'ExtrinsicFailed',
+	withdraw = 'Withdraw',
+	deposit = 'Deposit',
 }
 
 export class BlocksService extends AbstractService {
@@ -93,10 +99,11 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			getFeeByEvent,
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
-
+		console.log(new BN(100).sub(new BN(200)));
 		// Before making any api calls check the cache if the queried block exists
 		const isBlockCached = this.blockStore.get(hash.toString());
 
@@ -243,8 +250,20 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			const { class: dispatchClass, partialFee } =
-				await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), hash);
+			const { dispatchClass, partialFee, error } = await this.getPartialFeeInfo(
+				extrinsics[idx].events,
+				block.extrinsics[idx].toHex(),
+				hash,
+				getFeeByEvent
+			);
+
+			if (error) {
+				extrinsics[idx].info = {
+					error,
+				};
+
+				continue;
+			}
 
 			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 				weight: weightInfo.weight,
@@ -448,6 +467,123 @@ export class BlocksService extends AbstractService {
 		} catch {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}
+	}
+
+	private async getPartialFeeInfo(
+		events: ISanitizedEvent[],
+		extrinsicHex: string,
+		hash: BlockHash,
+		getFeeByEvent: boolean
+	) {
+		const { api } = this;
+		const { class: dispatchClass, partialFee } =
+			await api.rpc.payment.queryInfo(extrinsicHex, hash);
+
+		/**
+		 * Check if we should retrieve the partial_fee from the Events
+		 */
+		let fee: Balance | string = partialFee;
+		let error: string | undefined;
+		if (getFeeByEvent) {
+			// Event::Withdraw
+			const feeInfo = this.getPartialFeeByEvents(events, partialFee);
+			fee = feeInfo.partialFee;
+			error = feeInfo.error;
+		}
+
+		return {
+			partialFee: fee,
+			dispatchClass,
+			error,
+		};
+	}
+
+	private getPartialFeeByEvents(
+		events: ISanitizedEvent[],
+		partialFee: Balance
+	): { partialFee: string; error?: string } {
+		// Check Event:Withdraw event for the balances pallet
+		const withdrawEvent = events.find(
+			({ method }) =>
+				isFrameMethod(method) &&
+				method.method === Event.withdraw &&
+				method.pallet === 'balances'
+		);
+		if (withdrawEvent && withdrawEvent.data) {
+			const eventArr = withdrawEvent.data.toJSON();
+			if (Array.isArray(eventArr)) {
+				const fee = (eventArr as Array<number>)[eventArr.length - 1];
+				const diff = subIntegers(new BN(fee), partialFee).toString();
+
+				// The difference between values is 00.00001% or less so they are alike.
+				if (
+					fee.toString().length - diff.length > 5 &&
+					fee.toString().length === partialFee.toString().length
+				) {
+					return {
+						partialFee: fee.toString(),
+					};
+				}
+			}
+		}
+
+		// Check the Event::Deposit for the treasury pallet
+		const treasuryEvent = events.find(
+			({ method }) =>
+				isFrameMethod(method) &&
+				method.method === Event.deposit &&
+				method.pallet === 'treasury'
+		);
+		if (treasuryEvent && treasuryEvent.data) {
+			const eventArr = treasuryEvent.data.toJSON();
+			if (Array.isArray(eventArr)) {
+				const fee = (eventArr as Array<number>)[0];
+				const diff = subIntegers(new BN(fee), partialFee).toString();
+
+				// The difference between values is 00.00001% or less so they are alike.
+				if (
+					fee.toString().length - diff.length > 5 &&
+					fee.toString().length === partialFee.toString().length
+				) {
+					return {
+						partialFee: fee.toString(),
+					};
+				}
+			}
+		}
+
+		// Check Event::Deposit events for the balances pallet.
+		const depositEvents = events.filter(
+			({ method, data }) =>
+				isFrameMethod(method) &&
+				method.method === Event.deposit &&
+				method.pallet === 'balances' &&
+				data
+		);
+		if (depositEvents.length > 0) {
+			let sumOfFees = new BN(0);
+			depositEvents.forEach(
+				({ data }) =>
+					(sumOfFees = sumOfFees.add(new BN(data[data.length - 1].toString())))
+			);
+			const diff = subIntegers(new BN(sumOfFees), partialFee).toString();
+
+			// The difference between values is 00.00001% or less so they are alike.
+			if (
+				sumOfFees.toString().length - diff.length > 5 &&
+				sumOfFees.toString().length === partialFee.toString().length
+			) {
+				return {
+					partialFee: sumOfFees.toString(),
+				};
+			}
+		}
+
+		return {
+			partialFee: partialFee.toString(),
+			error:
+				'Could not find a reliable fee within the events data. `partialFee` is set to the value returned by payment::queryInfo',
+		};
 	}
 
 	/**

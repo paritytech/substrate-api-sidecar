@@ -128,6 +128,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				getFeeByEvent: false,
 			};
 
 			expect(
@@ -163,6 +164,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				getFeeByEvent: false,
 			};
 			const tempGetBlock = mockApi.rpc.chain.getBlock;
 			mockApi.rpc.chain.getBlock = (() =>
@@ -189,6 +191,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: true,
+				getFeeByEvent: false,
 			};
 
 			const block = await blocksService.fetchBlock(
@@ -413,6 +416,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			getFeeByEvent: false,
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
@@ -518,6 +522,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			getFeeByEvent: false,
 		};
 
 		it('Should correctly store the most recent queried blocks', async () => {
