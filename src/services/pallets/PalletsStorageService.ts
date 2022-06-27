@@ -265,7 +265,16 @@ export class PalletsStorageService extends AbstractService {
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(historicApi, pallets, palletId);
 
-		const filtered = pallets.filter((mod) => mod.storage.isSome);
+		let filtered: PalletMetadataV14[] | ModuleMetadataV13[];
+		if (metadataType.includes('MetadataV13')) {
+			filtered = (pallets as Vec<ModuleMetadataV13>).filter(
+				(mod) => mod.storage.isSome
+			);
+		} else {
+			filtered = (pallets as Vec<PalletMetadataV14>).filter(
+				(mod) => mod.storage.isSome
+			);
+		}
 
 		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
