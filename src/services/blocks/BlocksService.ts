@@ -245,6 +245,7 @@ export class BlocksService extends AbstractService {
 
 			const { class: dispatchClass, partialFee } =
 				await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), hash);
+
 			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 				weight: weightInfo.weight,
 				class: dispatchClass,
