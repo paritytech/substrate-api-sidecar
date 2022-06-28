@@ -26,6 +26,7 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Header,
+	Weight,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -243,13 +244,15 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			const { class: dispatchClass, partialFee } =
-				await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), hash);
-
+			const { dispatchClass, actualFee } = await this.calcFee(
+				block.extrinsics[idx].toHex(),
+				weightInfo.weight,
+				hash
+			);
 			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
 				weight: weightInfo.weight,
 				class: dispatchClass,
-				partialFee: partialFee,
+				partialFee: actualFee,
 			});
 		}
 
@@ -271,6 +274,38 @@ export class BlocksService extends AbstractService {
 		this.blockStore.set(hash.toString(), response);
 
 		return response;
+	}
+
+	private async calcFee(
+		extrinsic: string,
+		actualWeight: Weight,
+		hash: BlockHash
+	) {
+		const { api } = this;
+		const {
+			class: dispatchClass,
+			partialFee,
+			weight: estimatedWeight,
+		} = await api.rpc.payment.queryInfo(extrinsic, hash);
+		const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+			extrinsic,
+			hash
+		);
+
+		let fee = partialFee;
+		if (inclusionFee.isSome) {
+			const { adjustedWeightFee, baseFee, lenFee } = inclusionFee.unwrap();
+
+			const feeSum = baseFee.add(lenFee);
+			const mulWeights = estimatedWeight.mul(actualWeight);
+			const weightFee = adjustedWeightFee.div(mulWeights);
+			fee = api.registry.createType('Balance', feeSum.add(weightFee));
+		}
+
+		return {
+			dispatchClass,
+			actualFee: fee,
+		};
 	}
 
 	/**
