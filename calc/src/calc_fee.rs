@@ -239,6 +239,7 @@ fn new_legacy_128(inner: &str) -> Fixed128Legacy {
     Fixed128Legacy::from_parts(i128::from_str(inner).unwrap())
 }
 
+#[cfg(test)]
 mod test_fees {
     use super::Multiplier;
     use super::Multiplier::{V2, V1, V0};

@@ -26,6 +26,7 @@ pub struct CalcActualFee {
     fee: FixedU128,
 }
 
+/// 
 #[wasm_bindgen]
 impl CalcActualFee {
     pub fn calc(
@@ -58,6 +59,7 @@ fn new_u128(inner: &str) -> FixedU128 {
     FixedU128::from_inner(u128::from_str(inner).unwrap())
 }
 
+#[cfg(test)]
 mod test_fees {
     use sp_arithmetic::FixedPointNumber;
     use super::new_u128;
