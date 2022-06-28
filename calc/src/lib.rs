@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod calc_actual_fee;
 pub mod calc_fee;
 pub mod calc_payout;
 mod debug;
