@@ -256,16 +256,17 @@ export class PalletsStorageService extends AbstractService {
 		const metadataType = adjustedMetadata.toRawType();
 
 		let pallets: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>;
+		let filtered: PalletMetadataV14[] | ModuleMetadataV13[];
 		if (metadataType.includes('MetadataV13')) {
 			pallets = adjustedMetadata['modules'] as Vec<ModuleMetadataV13>;
+			filtered = pallets.filter((mod) => mod.storage.isSome);
 		} else {
 			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
+			filtered = pallets.filter((mod) => mod.storage.isSome);
 		}
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(historicApi, pallets, palletId);
-
-		const filtered = pallets.filter((mod) => mod.storage.isSome);
 
 		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
