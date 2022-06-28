@@ -42,7 +42,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 
 		this.initRoutes();
 		this.deprecationMsg =
-			'The adjustMetadataV13 query parameter has been deprecated. It will still be available for use for historic blocks.';
+			'The adjustMetadataV13 query parameter has been deprecated. It will still be available to use for historic blocks.';
 	}
 
 	protected initRoutes(): void {
