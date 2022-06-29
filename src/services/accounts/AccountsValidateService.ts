@@ -27,7 +27,8 @@ import { AbstractService } from '../AbstractService';
 
 export class AccountsValidateService extends AbstractService {
 	/**
-	 * Takes a given address and determines whether it is a ss58 formatted address,
+	 * Takes a given address and determines whether it is a ss58 or
+	 * a hex (from a u8 array) formatted address,
 	 * what the ss58 prefix for that address is,
 	 * what is the network address format,
 	 * and what the account ID is for this address.
@@ -49,22 +50,24 @@ export class AccountsValidateService extends AbstractService {
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
 			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
-			network = null;
-			for (const networkParams of allNetworks) {
-				if (networkParams['prefix'] === ss58Prefix) {
-					network = networkParams['network'];
-					break;
+			if (isValid == true) {
+				network = null;
+				for (const networkParams of allNetworks) {
+					if (networkParams['prefix'] === ss58Prefix) {
+						network = networkParams['network'];
+						break;
+					}
 				}
+				const accountId = isHex(address)
+					? '0x' + address.slice(4, -4)
+					: this.api.registry.createType('AccountId', address).toHex();
+				return {
+					isValid: isValid,
+					ss58Prefix,
+					network,
+					accountId,
+				};
 			}
-			const accountId = isHex(address)
-				? '0x' + address.slice(4, -4)
-				: this.api.registry.createType('AccountId', address).toHex();
-			return {
-				isValid: isValid,
-				ss58Prefix,
-				network,
-				accountId,
-			};
 		}
 
 		return {
