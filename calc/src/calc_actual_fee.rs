@@ -15,7 +15,7 @@
 use core::str::FromStr;
 use std::ops::Div;
 
-use sp_arithmetic::{FixedU128, FixedPointNumber};
+use sp_arithmetic::FixedU128;
 use sp_arithmetic::traits::Saturating;
 use wasm_bindgen::prelude::*;
 
@@ -53,6 +53,7 @@ impl CalcActualFee {
         }
     }
 
+    /// Handle (base_fee + len_fee)+((adjusted_weight_fee/estimated_weight)*actual_weight)
     fn calc_actual_fee(
         sum: FixedU128, 
         adj_weight: FixedU128, 
@@ -83,9 +84,8 @@ mod test_fees {
         let base_fee = "1000000000";
         let len_fee = "1490000000";
 
-        let expected_res = new_u128("2490128143");
         let actual_fee = CalcActualFee::calc(base_fee, len_fee, adjusted_weight_fee, estimated_weight, actual_weight);
 
-        assert_eq!(actual_fee.actual_fee.into_inner(), expected_res.into_inner());
+        assert_eq!(actual_fee.actual_fee.into_inner(), new_u128("2490128143").into_inner());
     }
 }
