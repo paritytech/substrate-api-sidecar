@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::debug;
 use core::str::FromStr;
 use std::ops::Div;
 
 use sp_arithmetic::{FixedU128, FixedPointNumber};
-use sp_arithmetic::traits::{Saturating};
+use sp_arithmetic::traits::Saturating;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -26,7 +25,9 @@ pub struct CalcActualFee {
     fee: FixedU128,
 }
 
+/// Uses the following formula to calculate an extrinsics `actual_fee`.
 /// 
+/// (base_fee + len_fee)+((adjusted_weight_fee/estimated_weight)*actual_weight)
 #[wasm_bindgen]
 impl CalcActualFee {
     pub fn calc(
@@ -36,8 +37,6 @@ impl CalcActualFee {
         estimated_weight: &str,
         actual_weight: &str
     ) -> Option<CalcActualFee> {
-        debug::setup();
-
         let fixed_base_fee = new_u128(base_fee);
         let fixed_len_fee = new_u128(len_fee);
         let fixed_adjusted_weight_fee = new_u128(adjusted_weight_fee);
