@@ -1,4 +1,4 @@
-FROM docker.io/library/node:15 as builder
+FROM docker.io/library/node:16.15.1-alpine as builder
 
 WORKDIR /opt/builder
 
@@ -9,7 +9,7 @@ RUN yarn install && \
 
 # ---------------------------------
 
-FROM docker.io/library/node:15-alpine
+FROM docker.io/library/node:16.15.1-alpine
 
 # metadata
 ARG VERSION=""
