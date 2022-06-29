@@ -22,7 +22,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
 pub struct CalcActualFee {
-    fee: FixedU128,
+    actual_fee: FixedU128,
 }
 
 /// Uses the following formula to calculate an extrinsics `actual_fee`.
@@ -36,22 +36,32 @@ impl CalcActualFee {
         adjusted_weight_fee: &str,
         estimated_weight: &str,
         actual_weight: &str
-    ) -> Option<CalcActualFee> {
+    ) -> CalcActualFee {
         let fixed_base_fee = new_u128(base_fee);
         let fixed_len_fee = new_u128(len_fee);
-        let fixed_adjusted_weight_fee = new_u128(adjusted_weight_fee);
-        let fixed_estimated_weight = new_u128(estimated_weight);
-        let fixed_actual_weight = new_u128(actual_weight);
 
         let fee_sum = fixed_base_fee.saturating_add(fixed_len_fee);
-        let div_weight = fixed_adjusted_weight_fee.div(fixed_estimated_weight);
-        let weight_fee = div_weight.saturating_mul(fixed_actual_weight);
-        println!("{}, {}, {}", fee_sum.into_inner(), div_weight.into_inner(), weight_fee.into_inner());
-        let result = Self {
-            fee: fee_sum.saturating_add(weight_fee)
-        };
-        Some(result)
+        let actual_fee = Self::calc_actual_fee(
+            fee_sum,
+            new_u128(adjusted_weight_fee),
+            new_u128(estimated_weight),
+            new_u128(actual_weight)
+        );
+
+        Self {
+            actual_fee
+        }
     }
+
+    fn calc_actual_fee(
+        sum: FixedU128, 
+        adj_weight: FixedU128, 
+        est_weight: FixedU128, 
+        weight: FixedU128) -> FixedU128 
+    {
+        adj_weight.div(est_weight).saturating_mul(weight).saturating_add(sum)
+    }
+    
 }
 
 fn new_u128(inner: &str) -> FixedU128 {
@@ -76,6 +86,6 @@ mod test_fees {
         let expected_res = new_u128("2490128143");
         let actual_fee = CalcActualFee::calc(base_fee, len_fee, adjusted_weight_fee, estimated_weight, actual_weight);
 
-        assert_eq!(actual_fee.unwrap().fee.into_inner(), expected_res.into_inner());
+        assert_eq!(actual_fee.actual_fee.into_inner(), expected_res.into_inner());
     }
 }
