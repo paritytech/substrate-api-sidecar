@@ -41,6 +41,7 @@ import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
 import {
 	balancesDepositEvent,
+	constructEvent,
 	treasuryEvent,
 	withdrawEvent,
 } from '../test-helpers/mock/data/mockEventData';
@@ -597,6 +598,42 @@ describe('BlocksService', () => {
 				);
 
 				expect(response).toStrictEqual(expectedResponseWithError);
+			});
+		});
+
+		describe('getPartialFeeInfo', () => {
+			const mockEvent = [
+				constructEvent('balances', 'Withdraw', ['0x', '149000011']),
+			];
+
+			it('Should correctly handle `getEventByFee` when true', async () => {
+				const response = await blocksService['getPartialFeeInfo'](
+					mockEvent,
+					'0x',
+					blockHash789629,
+					true
+				);
+
+				expect(sanitizeNumbers(response)).toStrictEqual({
+					dispatchClass: 'Normal',
+					partialFee: '149000011',
+					error: undefined,
+				});
+			});
+
+			it('Should correctly handle `getEventByFee` when false', async () => {
+				const response = await blocksService['getPartialFeeInfo'](
+					mockEvent,
+					'0x',
+					blockHash789629,
+					false
+				);
+
+				expect(sanitizeNumbers(response)).toStrictEqual({
+					dispatchClass: 'Normal',
+					partialFee: '149000000',
+					error: undefined,
+				});
 			});
 		});
 	});
