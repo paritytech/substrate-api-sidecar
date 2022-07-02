@@ -23,7 +23,7 @@ const constructCodecData = (data: string[]) => {
 /**
  *  Construct events for testing.
  */
-const constructEvent = (
+export const constructEvent = (
 	pallet: string,
 	method: string,
 	data: string[]
