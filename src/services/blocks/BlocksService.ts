@@ -603,8 +603,7 @@ export class BlocksService extends AbstractService {
 
 		return {
 			partialFee: partialFee.toString(),
-			error:
-				'Could not find a reliable fee within the events data. `partialFee` is set to the value returned by payment::queryInfo',
+			error: 'Could not find a reliable fee within the events data.',
 		};
 	}
 
