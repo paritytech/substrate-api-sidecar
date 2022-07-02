@@ -469,6 +469,15 @@ export class BlocksService extends AbstractService {
 		}
 	}
 
+	/**
+	 * This will check whether we should query the fee by `payment::queryInfo`
+	 * or by an extrinsics events.
+	 *
+	 * @param events The events to search through for a partialFee
+	 * @param extrinsicHex Hex of the given extrinsic
+	 * @param hash Blockhash we are querying
+	 * @param getFeeByEvent `FeeByEvent` query parameter
+	 */
 	private async getPartialFeeInfo(
 		events: ISanitizedEvent[],
 		extrinsicHex: string,
@@ -498,6 +507,19 @@ export class BlocksService extends AbstractService {
 		};
 	}
 
+	/**
+	 * This searches through an extrinsics given events to see if there is a partialFee
+	 * within the data. If the estimated partialFee is within a given difference of the
+	 * found fee within the data than we return that result.
+	 *
+	 * The order of the events we search through are:
+	 * 1.Balances::Event::Withdraw
+	 * 2.Treasury::Event::Deposit
+	 * 3.Balances::Event::Deposit
+	 *
+	 * @param events The events to search through for a partialFee
+	 * @param partialFee Estimated partialFee given by `payment::queryInfo`
+	 */
 	private getPartialFeeByEvents(
 		events: ISanitizedEvent[],
 		partialFee: Balance
