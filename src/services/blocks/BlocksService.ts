@@ -494,7 +494,6 @@ export class BlocksService extends AbstractService {
 		let fee: Balance | string = partialFee;
 		let error: string | undefined;
 		if (getFeeByEvent) {
-			// Event::Withdraw
 			const feeInfo = this.getPartialFeeByEvents(events, partialFee);
 			fee = feeInfo.partialFee;
 			error = feeInfo.error;
