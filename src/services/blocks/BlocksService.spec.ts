@@ -29,7 +29,7 @@ import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../test-helpers/registries';
-import { IBlock } from '../../types/responses/';
+import { IBlock, ISanitizedEvent } from '../../types/responses/';
 import {
 	blockHash20000,
 	blockHash100000,
@@ -39,6 +39,11 @@ import {
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
+import {
+	balancesDepositEvent,
+	treasuryEvent,
+	withdrawEvent,
+} from '../test-helpers/mock/data/mockEventData';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
@@ -545,6 +550,54 @@ describe('BlocksService', () => {
 
 			expect(cache.get(blockHash789629.toString())).toBe(undefined);
 			expect(cache.length).toBe(2);
+		});
+	});
+
+	describe('FeeByEvent', () => {
+		describe('getPartialFeeByEvents', () => {
+			const partialFee = polkadotRegistry.createType('Balance', '2490128143');
+			const expectedResponse = { partialFee: '2490128143' };
+
+			it('Should retrieve the correct fee for balances::withdraw events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					withdrawEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should retrieve the correct fee for treasury::deposit events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					treasuryEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should retrieve the correct fee for balances::deposit events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					balancesDepositEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should error correctly when there is no fee in the events', () => {
+				const expectedResponseWithError = {
+					...expectedResponse,
+					error: 'Could not find a reliable fee within the events data.',
+				};
+				const emptyArray = [] as unknown as ISanitizedEvent[];
+				const response = blocksService['getPartialFeeByEvents'](
+					emptyArray,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponseWithError);
+			});
 		});
 	});
 });
