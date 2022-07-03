@@ -381,6 +381,29 @@ paths:
         example: 0-499
         schema:
           type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs`
+          property with a string of the events documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs`
+          property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -422,6 +445,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
         required: false
         schema:
           type: boolean
@@ -506,6 +536,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -549,6 +586,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
         required: false
         schema:
           type: boolean
