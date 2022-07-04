@@ -36,7 +36,6 @@
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
     "test:watch": "NODE_ENV=test substrate-exec-jest --watch",
-    "test:cov": "NODE_ENV=test substrate-exec-jest --detectOpenHandles --coverage",
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
     "build:e2e-tests": "substrate-exec-tsc --project e2e-tests/tsconfig.json",
     "test:e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/index.js --config=./e2e-tests/jest.config.js",
@@ -67,7 +66,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@substrate/dev": "^0.6.2",
+    "@substrate/dev": "^0.6.3",
     "@types/argparse": "2.0.10",
     "@types/express": "4.17.13",
     "@types/express-serve-static-core": "4.17.25",
