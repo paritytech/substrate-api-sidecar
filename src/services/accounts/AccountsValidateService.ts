@@ -37,7 +37,7 @@ export class AccountsValidateService extends AbstractService {
 	 */
 	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
-    let addressIsHex = isHex(address);
+		const addressIsHex = isHex(address);
 		if (addressIsHex) {
 			u8Address = hexToU8a(address);
 		} else {
