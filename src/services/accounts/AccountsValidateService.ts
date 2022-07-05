@@ -37,8 +37,8 @@ export class AccountsValidateService extends AbstractService {
 	 */
 	validateAddress(address: string): IValidateAddrResponse {
 		let u8Address;
-		let network;
-		if (isHex(address)) {
+    let addressIsHex = isHex(address);
+		if (addressIsHex) {
 			u8Address = hexToU8a(address);
 		} else {
 			try {
@@ -50,15 +50,15 @@ export class AccountsValidateService extends AbstractService {
 
 		if (defaults.allowedEncodedLengths.includes(u8Address.length)) {
 			const [isValid, , , ss58Prefix] = checkAddressChecksum(u8Address);
-			if (isValid == true) {
-				network = null;
+			if (isValid) {
+				let network = null;
 				for (const networkParams of allNetworks) {
 					if (networkParams['prefix'] === ss58Prefix) {
 						network = networkParams['network'];
 						break;
 					}
 				}
-				const accountId = isHex(address)
+				const accountId = addressIsHex
 					? '0x' + address.slice(4, -4)
 					: this.api.registry.createType('AccountId', address).toHex();
 				return {
