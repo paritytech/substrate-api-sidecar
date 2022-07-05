@@ -524,16 +524,11 @@ export class BlocksService extends AbstractService {
 		partialFee: Balance
 	): { partialFee: string; error?: string } {
 		// Check Event:Withdraw event for the balances pallet
-		const withdrawEvent = events.find(
-			({ method }) =>
-				isFrameMethod(method) &&
-				method.method === Event.withdraw &&
-				method.pallet === 'balances'
-		);
-		if (withdrawEvent && withdrawEvent.data) {
-			const eventArr = withdrawEvent.data.toJSON();
-			if (Array.isArray(eventArr)) {
-				const fee = (eventArr as Array<number>)[eventArr.length - 1];
+		const withdrawEvent = this.findEvent(events, 'balances', Event.withdraw);
+		if (withdrawEvent.length > 0 && withdrawEvent[0].data) {
+			const dataArr = withdrawEvent[0].data.toJSON();
+			if (Array.isArray(dataArr)) {
+				const fee = (dataArr as Array<number>)[dataArr.length - 1];
 
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), partialFee)) {
@@ -545,16 +540,11 @@ export class BlocksService extends AbstractService {
 		}
 
 		// Check the Event::Deposit for the treasury pallet
-		const treasuryEvent = events.find(
-			({ method }) =>
-				isFrameMethod(method) &&
-				method.method === Event.deposit &&
-				method.pallet === 'treasury'
-		);
-		if (treasuryEvent && treasuryEvent.data) {
-			const eventArr = treasuryEvent.data.toJSON();
-			if (Array.isArray(eventArr)) {
-				const fee = (eventArr as Array<number>)[0];
+		const treasuryEvent = this.findEvent(events, 'treasury', Event.deposit);
+		if (treasuryEvent.length > 0 && treasuryEvent[0].data) {
+			const dataArr = treasuryEvent[0].data.toJSON();
+			if (Array.isArray(dataArr)) {
+				const fee = (dataArr as Array<number>)[0];
 
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), partialFee)) {
@@ -566,13 +556,7 @@ export class BlocksService extends AbstractService {
 		}
 
 		// Check Event::Deposit events for the balances pallet.
-		const depositEvents = events.filter(
-			({ method, data }) =>
-				isFrameMethod(method) &&
-				method.method === Event.deposit &&
-				method.pallet === 'balances' &&
-				data
-		);
+		const depositEvents = this.findEvent(events, 'balances', Event.deposit);
 		if (depositEvents.length > 0) {
 			let sumOfFees = new BN(0);
 			depositEvents.forEach(
@@ -592,6 +576,27 @@ export class BlocksService extends AbstractService {
 			partialFee: partialFee.toString(),
 			error: 'Could not find a reliable fee within the events data.',
 		};
+	}
+
+	/**
+	 * Find the corresponding events relevant to the passed in pallet, and method name.
+	 *
+	 * @param events The events to search through for a partialFee
+	 * @param palletName Pallet to search for
+	 * @param methodName Method to search for
+	 */
+	private findEvent(
+		events: ISanitizedEvent[],
+		palletName: string,
+		methodName: string
+	): ISanitizedEvent[] {
+		return events.filter(
+			({ method, data }) =>
+				isFrameMethod(method) &&
+				method.method === methodName &&
+				method.pallet === palletName &&
+				data
+		);
 	}
 
 	/**
