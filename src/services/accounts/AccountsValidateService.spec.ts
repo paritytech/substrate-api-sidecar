@@ -17,9 +17,12 @@
 import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize';
+import { defaultMockApi } from '../test-helpers/mock';
 import { AccountsValidateService } from './AccountsValidateService';
 
-const mockApi = {} as unknown as ApiPromise;
+const mockApi = {
+	...defaultMockApi,
+} as unknown as ApiPromise;
 const validateService = new AccountsValidateService(mockApi);
 
 describe('Validate addresses', () => {
@@ -27,6 +30,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '0',
+			network: 'polkadot',
+			accountId:
+				'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59',
 		};
 		const polkadotAddr = '1xN1Q5eKQmS5AzASdjt6R6sHF76611vKR4PFpFjy1kXau4m';
 
@@ -39,6 +45,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '2',
+			network: 'kusama',
+			accountId:
+				'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59',
 		};
 		const kusamaAddr = 'DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc';
 
@@ -51,6 +60,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '16',
+			network: 'kulupu',
+			accountId:
+				'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59',
 		};
 		const kulupuAddr = '2cYv9Gk6U4m4a7Taw9pG8qMfd1Pnxw6FLTvV6kYZNhGL6M9y';
 
@@ -63,6 +75,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '42',
+			network: 'substrate',
+			accountId:
+				'0x78b39b0b6dd87cb68009eb570511d21c229bdb5e94129ae570e9b79442ba2665',
 		};
 		const substrateAddr = '5EnxxUmEbw8DkENKiYuZ1DwQuMoB2UWEQJZZXrTsxoz7SpgG';
 
@@ -75,6 +90,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '0',
+			network: 'polkadot',
+			accountId:
+				'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59',
 		};
 		const polkadotHex =
 			'0x002a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc592312';
@@ -88,6 +106,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '2',
+			network: 'kusama',
+			accountId:
+				'0xce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b19529',
 		};
 		const kusamaHex =
 			'0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9';
@@ -101,6 +122,9 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: true,
 			ss58Prefix: '8',
+			network: 'karura',
+			accountId:
+				'0x6d6f646c6163612f636470740000000000000000000000000000000000000000',
 		};
 		const karuraHex =
 			'0x086d6f646c6163612f6364707400000000000000000000000000000000000000008333';
@@ -114,6 +138,8 @@ describe('Validate addresses', () => {
 		const expectedResponse = {
 			isValid: false,
 			ss58Prefix: null,
+			network: null,
+			accountId: null,
 		};
 		const invalidAddr =
 			'0x2a39366f6620a6c2e2fed5990a3d419e6a19dd127fc7a50b515cf17e2dc5cc59';
