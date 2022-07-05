@@ -534,13 +534,9 @@ export class BlocksService extends AbstractService {
 			const eventArr = withdrawEvent.data.toJSON();
 			if (Array.isArray(eventArr)) {
 				const fee = (eventArr as Array<number>)[eventArr.length - 1];
-				const diff = subIntegers(new BN(fee), partialFee).toString();
 
 				// The difference between values is 00.00001% or less so they are alike.
-				if (
-					fee.toString().length - diff.length > 5 &&
-					fee.toString().length === partialFee.toString().length
-				) {
+				if (this.areFeesSimilar(new BN(fee), partialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -559,13 +555,9 @@ export class BlocksService extends AbstractService {
 			const eventArr = treasuryEvent.data.toJSON();
 			if (Array.isArray(eventArr)) {
 				const fee = (eventArr as Array<number>)[0];
-				const diff = subIntegers(new BN(fee), partialFee).toString();
 
 				// The difference between values is 00.00001% or less so they are alike.
-				if (
-					fee.toString().length - diff.length > 5 &&
-					fee.toString().length === partialFee.toString().length
-				) {
+				if (this.areFeesSimilar(new BN(fee), partialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -587,13 +579,9 @@ export class BlocksService extends AbstractService {
 				({ data }) =>
 					(sumOfFees = sumOfFees.add(new BN(data[data.length - 1].toString())))
 			);
-			const diff = subIntegers(new BN(sumOfFees), partialFee).toString();
 
 			// The difference between values is 00.00001% or less so they are alike.
-			if (
-				sumOfFees.toString().length - diff.length > 5 &&
-				sumOfFees.toString().length === partialFee.toString().length
-			) {
+			if (this.areFeesSimilar(sumOfFees, partialFee)) {
 				return {
 					partialFee: sumOfFees.toString(),
 				};
@@ -604,6 +592,23 @@ export class BlocksService extends AbstractService {
 			partialFee: partialFee.toString(),
 			error: 'Could not find a reliable fee within the events data.',
 		};
+	}
+
+	/**
+	 * Checks to see if the value in an event is within 00.00001% accuracy of
+	 * the queried `partialFee` from `rpc::payment::queryInfo`.
+	 *
+	 * @param eventBalance Balance returned in the data of an event
+	 * @param partialFee Fee queried from `rpc::payment::queryInfo`
+	 * @param diff difference between the
+	 */
+	private areFeesSimilar(eventBalance: BN, partialFee: BN): boolean {
+		const diff = subIntegers(eventBalance, partialFee);
+
+		return (
+			eventBalance.toString().length - diff.toString().length > 5 &&
+			eventBalance.toString().length === partialFee.toString().length
+		);
 	}
 
 	/**
