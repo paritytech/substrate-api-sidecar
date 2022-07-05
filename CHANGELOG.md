@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-- feat: Added the network and accountId to the response of validate endpoint ([#926](https://github.com/paritytech/substrate-api-sidecar/pull/926)) ([ef513cc](https://github.com/paritytech/substrate-api-sidecar/commit/ef513cc7f26773df776b9fe77cef8046bcadcea6))
+- feat: Added the network and accountId to the response of validate endpoint ([#926](https://github.com/paritytech/substrate-api-sidecar/pull/926)) ([ef513cc](https://github.com/paritytech/substrate-api-sidecar/commit/ef513cc7f26773df776b9fe77cef8046bcadcea6)) Contributed by [Imod7](https://github.com/Imod7)
 
 ### Bug Fixes
 
