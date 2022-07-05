@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-- fix(pallets): deprecation warning adjustment ([#973](https://github.com/paritytech/substrate-api-sidecar/pull/973)) ([5514631](https://github.com/paritytech/substrate-api-sidecar/commit/55146315be366ea770339ef0f326c36d607a655a)) Contributed by [Imod7](https://github.com/Imod7)
+- fix(pallets): deprecation warning adjustment ([#973](https://github.com/paritytech/substrate-api-sidecar/pull/973)) ([5514631](https://github.com/paritytech/substrate-api-sidecar/commit/55146315be366ea770339ef0f326c36d607a655a))
 
 ### Chores
 
