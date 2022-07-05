@@ -344,15 +344,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /accounts/{accountId}/validate:
+  /accounts/{address}/validate:
     get:
       tags:
       - accounts
       summary: Validate a given address.
-      description: Returns whether the given address is valid ss58 format and the ss58 prefix if the address has one.
+      description: Returns whether the given address is valid ss58 format, the ss58 prefix if the address has one,
+        the network address format, and what the account ID is for this address.
       operationId: getValidationByAccountId
       parameters:
-      - name: accountId
+      - name: address
         in: path
         description: SS58 or Hex address of the account.
         required: true
@@ -1491,6 +1492,12 @@ components:
           description: SS58 prefix of the given address. If the address is a valid
             base58 format, but incorrect ss58, a prefix for the given address will still be returned.
           format: unsignedInteger
+        network:
+          type: string
+          description: The network based on which the given address is encoded.
+        accountId:
+          type: string
+          description: The account id of the given address.
     AccountVestingInfo:
       type: object
       description: Sidecar version's <= v10.0.0 have a`vesting` return value that defaults to an object for
