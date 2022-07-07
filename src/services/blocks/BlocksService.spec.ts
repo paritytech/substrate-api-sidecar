@@ -29,7 +29,7 @@ import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../test-helpers/registries';
-import { IBlock } from '../../types/responses/';
+import { IBlock, ISanitizedEvent } from '../../types/responses/';
 import {
 	blockHash20000,
 	blockHash100000,
@@ -39,6 +39,12 @@ import {
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
+import {
+	balancesDepositEvent,
+	constructEvent,
+	treasuryEvent,
+	withdrawEvent,
+} from '../test-helpers/mock/data/mockEventData';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
@@ -128,6 +134,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				getFeeByEvent: false,
 			};
 
 			expect(
@@ -163,6 +170,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				getFeeByEvent: false,
 			};
 			const tempGetBlock = mockApi.rpc.chain.getBlock;
 			mockApi.rpc.chain.getBlock = (() =>
@@ -189,6 +197,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: true,
+				getFeeByEvent: false,
 			};
 
 			const block = await blocksService.fetchBlock(
@@ -413,6 +422,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			getFeeByEvent: false,
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
@@ -518,6 +528,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			getFeeByEvent: false,
 		};
 
 		it('Should correctly store the most recent queried blocks', async () => {
@@ -540,6 +551,90 @@ describe('BlocksService', () => {
 
 			expect(cache.get(blockHash789629.toString())).toBe(undefined);
 			expect(cache.length).toBe(2);
+		});
+	});
+
+	describe('FeeByEvent', () => {
+		describe('getPartialFeeByEvents', () => {
+			const partialFee = polkadotRegistry.createType('Balance', '2490128143');
+			const expectedResponse = { partialFee: '2490128143' };
+
+			it('Should retrieve the correct fee for balances::withdraw events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					withdrawEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should retrieve the correct fee for treasury::deposit events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					treasuryEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should retrieve the correct fee for balances::deposit events', () => {
+				const response = blocksService['getPartialFeeByEvents'](
+					balancesDepositEvent,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should error correctly when there is no fee in the events', () => {
+				const expectedResponseWithError = {
+					...expectedResponse,
+					error: 'Could not find a reliable fee within the events data.',
+				};
+				const emptyArray = [] as unknown as ISanitizedEvent[];
+				const response = blocksService['getPartialFeeByEvents'](
+					emptyArray,
+					partialFee
+				);
+
+				expect(response).toStrictEqual(expectedResponseWithError);
+			});
+		});
+
+		describe('getPartialFeeInfo', () => {
+			const mockEvent = [
+				constructEvent('balances', 'Withdraw', ['0x', '149000011']),
+			];
+
+			it('Should correctly handle `getEventByFee` when true', async () => {
+				const response = await blocksService['getPartialFeeInfo'](
+					mockEvent,
+					'0x',
+					blockHash789629,
+					true
+				);
+
+				expect(sanitizeNumbers(response)).toStrictEqual({
+					dispatchClass: 'Normal',
+					partialFee: '149000011',
+					error: undefined,
+				});
+			});
+
+			it('Should correctly handle `getEventByFee` when false', async () => {
+				const response = await blocksService['getPartialFeeInfo'](
+					mockEvent,
+					'0x',
+					blockHash789629,
+					false
+				);
+
+				expect(sanitizeNumbers(response)).toStrictEqual({
+					dispatchClass: 'Normal',
+					partialFee: '149000000',
+					error: undefined,
+				});
+			});
 		});
 	});
 });

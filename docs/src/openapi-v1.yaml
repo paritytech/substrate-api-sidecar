@@ -382,6 +382,31 @@ paths:
         example: 0-499
         schema:
           type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs`
+          property with a string of the events documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs`
+          property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+          This query param will use a fee estimation via `rpc::payment::query_info` to accurately identify 
+          which event has the corresponding fee information that is closest to the value provided by `query_info`.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -423,6 +448,15 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+          This query param will use a fee estimation via `rpc::payment::query_info` to accurately identify 
+          which event has the corresponding fee information that is closest to the value provided by `query_info`.
         required: false
         schema:
           type: boolean
@@ -507,6 +541,15 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+          This query param will use a fee estimation via `rpc::payment::query_info` to accurately identify 
+          which event has the corresponding fee information that is closest to the value provided by `query_info`.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -550,6 +593,15 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: feeByEvent
+        in: query
+        description: When set to `true`, extrinsics will have their fees retrieved by their events.
+          This query param will use a fee estimation via `rpc::payment::query_info` to accurately identify 
+          which event has the corresponding fee information that is closest to the value provided by `query_info`.
         required: false
         schema:
           type: boolean
