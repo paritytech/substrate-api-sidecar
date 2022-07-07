@@ -43,7 +43,7 @@ export const defaultSasPackOpts = {
 
 export const config: Record<string, IChainConfig> = {
 	polkadot: {
-		wsUrl: 'wss://polkadot.api.onfinality.io/public-ws',
+		wsUrl: 'wss://rpc.polkadot.io',
 		JestProcOpts: {
 			...defaultJestOpts,
 			args: ['test:e2e-tests', '--chain', 'polkadot'],
