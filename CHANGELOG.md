@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.3.0..v12.4.0) (2022-07-13)
+
+### Features
+
+- feat: support for feeByEvent query param which will abstract the fees by events ([#970](https://github.com/paritytech/substrate-api-sidecar/pull/970)) ([92c155d](https://github.com/paritytech/substrate-api-sidecar/commit/92c155d86f4fc8aefec65a95c69836a81d7d3330))
+
+### Chores
+
+- chore(deps): update polkadot-js api, and util-crypto ([#982](https://github.com/paritytech/substrate-api-sidecar/pull/982)) ([c34bdde](https://github.com/paritytech/substrate-api-sidecar/commit/c34bddedbf55b26b83dcbfa8f7ef544bbedbcab1))
+
+### Tests
+
+- test(e2e): update validate endpoint ([#979](https://github.com/paritytech/substrate-api-sidecar/pull/979)) ([0a911de](https://github.com/paritytech/substrate-api-sidecar/commit/0a911de995d211116797d6355e11e74aa6ef7808))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9250
+- Kusama v9250
+- Westend v9250
+
 ## [12.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.2.0..v12.3.0) (2022-07-06)
 
 ### Features
