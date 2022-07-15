@@ -27,7 +27,7 @@ console_log = { version = "0.2", optional = true }
 log = "0.4"
 
 [dependencies.sp-arithmetic]
-version = "3"
+version = "5.0.0"
 default_features = false
 
 [dependencies.sp-arithmetic-legacy]
