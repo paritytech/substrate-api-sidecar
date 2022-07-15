@@ -13,16 +13,14 @@
 // limitations under the License.
 
 use core::str::FromStr;
-use std::ops::Div;
 
-use sp_arithmetic::FixedU128;
-use sp_arithmetic::traits::Saturating;
+use sp_arithmetic::Perbill;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
 pub struct CalcActualFee {
-    actual_fee: FixedU128,
+    actual_fee: u128,
 }
 
 /// Uses the following formula to calculate an extrinsics `actual_fee`.
@@ -37,10 +35,7 @@ impl CalcActualFee {
         estimated_weight: &str,
         actual_weight: &str
     ) -> CalcActualFee {
-        let fixed_base_fee = new_u128(base_fee);
-        let fixed_len_fee = new_u128(len_fee);
-
-        let fee_sum = fixed_base_fee.saturating_add(fixed_len_fee);
+        let fee_sum = new_u128(base_fee).saturating_add(new_u128(len_fee));
         let actual_fee = Self::calc_actual_fee(
             fee_sum,
             new_u128(adjusted_weight_fee),
@@ -55,23 +50,23 @@ impl CalcActualFee {
 
     /// Handle (base_fee + len_fee)+((adjusted_weight_fee/estimated_weight)*actual_weight)
     fn calc_actual_fee(
-        sum: FixedU128, 
-        adj_weight: FixedU128, 
-        est_weight: FixedU128, 
-        weight: FixedU128) -> FixedU128 
+        sum: u128, 
+        adj_weight: u128, 
+        est_weight: u128, 
+        weight: u128) -> u128 
     {
-        adj_weight.div(est_weight).saturating_mul(weight).saturating_add(sum)
+        let a = Perbill::from_rational(adj_weight, est_weight);
+        (a * weight) + sum
     }
     
 }
 
-fn new_u128(inner: &str) -> FixedU128 {
-    FixedU128::from_inner(u128::from_str(inner).unwrap())
+fn new_u128(inner: &str) -> u128 {
+    u128::from_str(inner).unwrap()
 }
 
 #[cfg(test)]
 mod test_fees {
-    use sp_arithmetic::FixedPointNumber;
     use super::new_u128;
 
     use super::CalcActualFee;
@@ -86,6 +81,6 @@ mod test_fees {
 
         let actual_fee = CalcActualFee::calc(base_fee, len_fee, adjusted_weight_fee, estimated_weight, actual_weight);
 
-        assert_eq!(actual_fee.actual_fee.into_inner(), new_u128("2490128143").into_inner());
+        assert_eq!(actual_fee.actual_fee, new_u128("2490128143"));
     }
 }
