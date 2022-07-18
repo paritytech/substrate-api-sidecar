@@ -562,7 +562,8 @@ describe('BlocksService', () => {
 			it('Should retrieve the correct fee for balances::withdraw events', () => {
 				const response = blocksService['getPartialFeeByEvents'](
 					withdrawEvent,
-					partialFee
+					partialFee,
+					null
 				);
 
 				expect(response).toStrictEqual(expectedResponse);
@@ -571,7 +572,8 @@ describe('BlocksService', () => {
 			it('Should retrieve the correct fee for treasury::deposit events', () => {
 				const response = blocksService['getPartialFeeByEvents'](
 					treasuryEvent,
-					partialFee
+					partialFee,
+					null
 				);
 
 				expect(response).toStrictEqual(expectedResponse);
@@ -580,7 +582,8 @@ describe('BlocksService', () => {
 			it('Should retrieve the correct fee for balances::deposit events', () => {
 				const response = blocksService['getPartialFeeByEvents'](
 					balancesDepositEvent,
-					partialFee
+					partialFee,
+					null
 				);
 
 				expect(response).toStrictEqual(expectedResponse);
@@ -594,7 +597,8 @@ describe('BlocksService', () => {
 				const emptyArray = [] as unknown as ISanitizedEvent[];
 				const response = blocksService['getPartialFeeByEvents'](
 					emptyArray,
-					partialFee
+					partialFee,
+					null
 				);
 
 				expect(response).toStrictEqual(expectedResponseWithError);
@@ -611,7 +615,8 @@ describe('BlocksService', () => {
 					mockEvent,
 					'0x',
 					blockHash789629,
-					true
+					true,
+					null
 				);
 
 				expect(sanitizeNumbers(response)).toStrictEqual({
@@ -626,7 +631,8 @@ describe('BlocksService', () => {
 					mockEvent,
 					'0x',
 					blockHash789629,
-					false
+					false,
+					null
 				);
 
 				expect(sanitizeNumbers(response)).toStrictEqual({

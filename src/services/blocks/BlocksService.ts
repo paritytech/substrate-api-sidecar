@@ -29,6 +29,7 @@ import {
 	Header,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
+import { ICompact, INumber } from '@polkadot/types-codec/types/interfaces';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import BN from 'bn.js';
@@ -254,7 +255,8 @@ export class BlocksService extends AbstractService {
 				extrinsics[idx].events,
 				block.extrinsics[idx].toHex(),
 				hash,
-				getFeeByEvent
+				getFeeByEvent,
+				extrinsics[idx].tip
 			);
 
 			if (error) {
@@ -482,7 +484,8 @@ export class BlocksService extends AbstractService {
 		events: ISanitizedEvent[],
 		extrinsicHex: string,
 		hash: BlockHash,
-		getFeeByEvent: boolean
+		getFeeByEvent: boolean,
+		tip: ICompact<INumber> | null
 	) {
 		const { api } = this;
 		const { class: dispatchClass, partialFee } =
@@ -494,7 +497,7 @@ export class BlocksService extends AbstractService {
 		let fee: Balance | string = partialFee;
 		let error: string | undefined;
 		if (getFeeByEvent) {
-			const feeInfo = this.getPartialFeeByEvents(events, partialFee);
+			const feeInfo = this.getPartialFeeByEvents(events, partialFee, tip);
 			fee = feeInfo.partialFee;
 			error = feeInfo.error;
 		}
@@ -521,7 +524,8 @@ export class BlocksService extends AbstractService {
 	 */
 	private getPartialFeeByEvents(
 		events: ISanitizedEvent[],
-		partialFee: Balance
+		partialFee: Balance,
+		tip: ICompact<INumber> | null
 	): { partialFee: string; error?: string } {
 		// Check Event:Withdraw event for the balances pallet
 		const withdrawEvent = this.findEvent(events, 'balances', Event.withdraw);
@@ -529,9 +533,9 @@ export class BlocksService extends AbstractService {
 			const dataArr = withdrawEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
 				const fee = (dataArr as Array<number>)[dataArr.length - 1];
-
+				const adjustedFee = tip ? tip.toBn().add(new BN(fee)) : new BN(fee);
 				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(new BN(fee), partialFee)) {
+				if (this.areFeesSimilar(adjustedFee, partialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -545,9 +549,9 @@ export class BlocksService extends AbstractService {
 			const dataArr = treasuryEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
 				const fee = (dataArr as Array<number>)[0];
-
+				const adjustedFee = tip ? tip.toBn().add(new BN(fee)) : new BN(fee);
 				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(new BN(fee), partialFee)) {
+				if (this.areFeesSimilar(adjustedFee, partialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -563,9 +567,9 @@ export class BlocksService extends AbstractService {
 				({ data }) =>
 					(sumOfFees = sumOfFees.add(new BN(data[data.length - 1].toString())))
 			);
-
+			const adjustedFee = tip ? tip.toBn().add(sumOfFees) : sumOfFees;
 			// The difference between values is 00.00001% or less so they are alike.
-			if (this.areFeesSimilar(sumOfFees, partialFee)) {
+			if (this.areFeesSimilar(adjustedFee, partialFee)) {
 				return {
 					partialFee: sumOfFees.toString(),
 				};
