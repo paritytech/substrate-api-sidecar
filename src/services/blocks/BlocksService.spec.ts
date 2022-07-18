@@ -20,6 +20,7 @@ import { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
 import { GenericExtrinsic } from '@polkadot/types';
 import { GenericCall } from '@polkadot/types/generic';
 import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
+import { Compact } from '@polkadot/types-codec/base';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -44,6 +45,7 @@ import {
 	constructEvent,
 	treasuryEvent,
 	withdrawEvent,
+	withdrawEventForTip,
 } from '../test-helpers/mock/data/mockEventData';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
@@ -584,6 +586,19 @@ describe('BlocksService', () => {
 					balancesDepositEvent,
 					partialFee,
 					null
+				);
+
+				expect(response).toStrictEqual(expectedResponse);
+			});
+
+			it('Should retrieve the correct fee for balances:withdraw events with a tip', () => {
+				const expectedResponse = { partialFee: '1681144907847007' };
+				const fee = polkadotRegistry.createType('Balance', '1675415067070856');
+				const tip = new Compact(polkadotRegistry, 'u64', 5729827274000);
+				const response = blocksService['getPartialFeeByEvents'](
+					withdrawEventForTip,
+					fee,
+					tip
 				);
 
 				expect(response).toStrictEqual(expectedResponse);

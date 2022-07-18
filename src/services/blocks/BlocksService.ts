@@ -533,9 +533,11 @@ export class BlocksService extends AbstractService {
 			const dataArr = withdrawEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
 				const fee = (dataArr as Array<number>)[dataArr.length - 1];
-				const adjustedFee = tip ? tip.toBn().add(new BN(fee)) : new BN(fee);
+				const adjustedPartialFee = tip
+					? tip.toBn().add(partialFee)
+					: partialFee;
 				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(adjustedFee, partialFee)) {
+				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -549,9 +551,11 @@ export class BlocksService extends AbstractService {
 			const dataArr = treasuryEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
 				const fee = (dataArr as Array<number>)[0];
-				const adjustedFee = tip ? tip.toBn().add(new BN(fee)) : new BN(fee);
+				const adjustedPartialFee = tip
+					? tip.toBn().add(partialFee)
+					: partialFee;
 				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(adjustedFee, partialFee)) {
+				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
 						partialFee: fee.toString(),
 					};
@@ -567,9 +571,9 @@ export class BlocksService extends AbstractService {
 				({ data }) =>
 					(sumOfFees = sumOfFees.add(new BN(data[data.length - 1].toString())))
 			);
-			const adjustedFee = tip ? tip.toBn().add(sumOfFees) : sumOfFees;
+			const adjustedPartialFee = tip ? tip.toBn().add(partialFee) : partialFee;
 			// The difference between values is 00.00001% or less so they are alike.
-			if (this.areFeesSimilar(adjustedFee, partialFee)) {
+			if (this.areFeesSimilar(sumOfFees, adjustedPartialFee)) {
 				return {
 					partialFee: sumOfFees.toString(),
 				};
