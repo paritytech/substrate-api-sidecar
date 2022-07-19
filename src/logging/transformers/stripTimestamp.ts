@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransformableInfo } from 'logform';
 import { format } from 'winston';
+
+import { ITransformableInfo } from '../../types/logging';
 
 /**
  * Regex that matches timestamps with the format of `YYYY-MM-DD HH:MM`
@@ -28,7 +29,7 @@ const timestampRegex =
  * timestamp. This is for the polkadot-js console statements.
  */
 export const stripTimestamp = format(
-	(info: TransformableInfo, _opts: unknown) => {
+	(info: ITransformableInfo, _opts: unknown) => {
 		if (timestampRegex.exec(info?.message)) {
 			info.message = info.message.slice(24).trim();
 		}
