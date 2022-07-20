@@ -30,7 +30,7 @@ import {
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { ICompact, INumber } from '@polkadot/types-codec/types/interfaces';
-import { u8aToHex } from '@polkadot/util';
+import { hexToNumber, isHex, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -532,7 +532,9 @@ export class BlocksService extends AbstractService {
 		if (withdrawEvent.length > 0 && withdrawEvent[0].data) {
 			const dataArr = withdrawEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
-				const fee = (dataArr as Array<number>)[dataArr.length - 1];
+				const fee = this.sanitizeFee(
+					(dataArr as Array<string>)[dataArr.length - 1]
+				);
 				const adjustedPartialFee = tip
 					? tip.toBn().add(partialFee)
 					: partialFee;
@@ -550,7 +552,7 @@ export class BlocksService extends AbstractService {
 		if (treasuryEvent.length > 0 && treasuryEvent[0].data) {
 			const dataArr = treasuryEvent[0].data.toJSON();
 			if (Array.isArray(dataArr)) {
-				const fee = (dataArr as Array<number>)[0];
+				const fee = this.sanitizeFee((dataArr as Array<string>)[0]);
 				const adjustedPartialFee = tip
 					? tip.toBn().add(partialFee)
 					: partialFee;
@@ -569,7 +571,9 @@ export class BlocksService extends AbstractService {
 			let sumOfFees = new BN(0);
 			depositEvents.forEach(
 				({ data }) =>
-					(sumOfFees = sumOfFees.add(new BN(data[data.length - 1].toString())))
+					(sumOfFees = sumOfFees.add(
+						new BN(this.sanitizeFee(data[data.length - 1].toString()))
+					))
 			);
 			const adjustedPartialFee = tip ? tip.toBn().add(partialFee) : partialFee;
 			// The difference between values is 00.00001% or less so they are alike.
@@ -605,6 +609,20 @@ export class BlocksService extends AbstractService {
 				method.pallet === palletName &&
 				data
 		);
+	}
+
+	/**
+	 * Sanitize a given fee
+	 *
+	 * @param fee
+	 */
+	private sanitizeFee(fee: string): string {
+		if (isHex(fee)) {
+			const numFee = hexToNumber(fee);
+			return numFee.toString(10);
+		}
+
+		return fee;
 	}
 
 	/**
