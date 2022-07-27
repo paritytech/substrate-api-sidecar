@@ -170,9 +170,6 @@ Some chains require custom type definitions in order for Sidecar to know how to 
 retrieved from the node. Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
 the type formats (see `RegisteredTypes`).
 
-**N.B** Types set from environment variables will override the corresponding types pulled from
-@polkadot/apps-config.
-
 - `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
     rpc definitions. Format: `OverrideBundleType` (see [`typesBundle`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L72)).
 - `SAS_SUBSTRATE_TYPES_CHAIN`: type definitions keyed by `chainName`. Format: `Record<string, RegistryTypes>` (see [`typesChain`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L76)).
@@ -303,8 +300,6 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
-    - @polkadot/apps-config [release notes](https://github.com/polkadot-js/apps/releases)
-      - If there are any major changes to this package that includes third party type packages, its worth noting to contact the maintainers of sidecar and do a peer review of the changes in apps-config, and make sure no bugs will be inherited.
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
     - @substrate/calc [npm release page](https://www.npmjs.com/package/@substrate/calc)
 
