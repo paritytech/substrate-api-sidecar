@@ -403,7 +403,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU());
+			const blocksService = new BlocksService(mockApi, 0, new LRU({ max: 2 }));
 			expect(
 				await blocksService['isFinalizedBlock'](
 					mockApi,

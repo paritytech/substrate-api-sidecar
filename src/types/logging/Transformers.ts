@@ -14,26 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { format } from 'winston';
-
-import { ITransformableInfo } from '../../types/logging';
-
 /**
- * Regex that matches timestamps with the format of `YYYY-MM-DD HH:MM`
+ * The logform package exports `TransformableInfo` but it sets the
+ * message type to `any`. Here we take that exact type and recreate it
+ * to have more specific type info.
  */
-const timestampRegex =
-	/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]/;
-
-/**
- * Slice out the timestamp from a message so it is not redundant with the winston
- * timestamp. This is for the polkadot-js console statements.
- */
-export const stripTimestamp = format(
-	(info: ITransformableInfo, _opts: unknown) => {
-		if (timestampRegex.exec(info?.message)) {
-			info.message = info.message.slice(24).trim();
-		}
-
-		return info;
-	}
-);
+export interface ITransformableInfo {
+	level: string;
+	message: string;
+	[key: string]: string;
+}
