@@ -34,7 +34,7 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		config: { LOG },
 	} = SidecarConfig;
 	/**
-	 * A simple printing format for how `TransformableInfo` shows up.
+	 * A simple printing format for how `ITransformableInfo` shows up.
 	 */
 	const simplePrint = format.printf((info: ITransformableInfo) => {
 		if (info?.stack) {
