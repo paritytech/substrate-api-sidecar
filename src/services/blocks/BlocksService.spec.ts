@@ -657,5 +657,15 @@ describe('BlocksService', () => {
 				});
 			});
 		});
+
+		describe('sanitizeFee', () => {
+			it('Should sanitize a hex value correctly', () => {
+				const response = blocksService['sanitizeFee'](
+					'0x000000000000000000119e2433bf11f3'
+				);
+
+				expect(response).toBe('4958952928252403');
+			});
+		});
 	});
 });
