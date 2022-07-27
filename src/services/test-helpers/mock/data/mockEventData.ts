@@ -41,6 +41,10 @@ export const withdrawEvent = [
 	constructEvent('balances', 'Withdraw', ['0x', '2490128143']),
 ];
 
+export const withdrawEventForTip = [
+	constructEvent('balances', 'Withdraw', ['0x', '1681144907847007']),
+];
+
 export const treasuryEvent = [
 	// Set the fee inside of the data for withdraw 1 decimal larger than expected.
 	constructEvent('balances', 'Withdraw', ['0x', '24901281430']),
