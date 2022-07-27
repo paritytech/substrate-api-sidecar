@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.0..v12.4.1) (2022-07-28)
+
+### Bug Fixes
+
+- fix(feeByEvent): fix tip inclusion for partialFee ([#986](https://github.com/paritytech/substrate-api-sidecar/pull/986)) ([91dda83](https://github.com/paritytech/substrate-api-sidecar/commit/91dda83972cec95405f9373e620221a2b0aaeef4))
+- fix(feeByEvent): sanitize fee for hex values ([#990](https://github.com/paritytech/substrate-api-sidecar/pull/990)) ([3f9a2c3](https://github.com/paritytech/substrate-api-sidecar/commit/3f9a2c386486d930dacabfe35ca8c9b7d93cb196))
+
+### Chores
+
+- chore(deps): update polkadot-js api, and util-crypto ([#987](https://github.com/paritytech/substrate-api-sidecar/pull/987)) ([f80666a](https://github.com/paritytech/substrate-api-sidecar/commit/f80666a959099305d28f5c5f296b5e4a41ad895c))
+- chore(deps): update all non polkadot-js deps ([#988](https://github.com/paritytech/substrate-api-sidecar/pull/988)) ([0facebf](https://github.com/paritytech/substrate-api-sidecar/commit/0facebfcc0eb174692358f89660535ec9a4cec3d))
+
+### Docs
+
+- docs(readme): remove mention of apps-config ([#985](https://github.com/paritytech/substrate-api-sidecar/pull/985)) ([e003e93](https://github.com/paritytech/substrate-api-sidecar/commit/e003e93022f5657c12b237a36e39a0189e2e8505))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9250
+- Kusama v9250
+- Westend v9250
+
 ## [12.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.3.0..v12.4.0) (2022-07-13)
 
 ### Features
