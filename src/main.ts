@@ -71,7 +71,7 @@ async function main() {
 		config.SUBSTRATE.WS_URL,
 		chainName.toString(),
 		implName.toString(),
-		config.SUBSTRATE.HTTP_URL,
+		config.SUBSTRATE.HTTP_URL
 	);
 
 	// Create our App
@@ -100,10 +100,15 @@ async function main() {
  * @param wsUrl websocket url of the node Sidecar is connected to
  * @param chainName chain name of the network Sidecar is connected to
  * @param implName implementation name of the node Sidecar is connected to
- * @param httpUrl http url of the node Sidecar is connected to. This is optional, 
- * but when used will override the ws url. 
+ * @param httpUrl http url of the node Sidecar is connected to. This is optional,
+ * but when used will override the ws url.
  */
-function startUpPrompt(wsUrl: string, chainName: string, implName: string, httpUrl?: string) {
+function startUpPrompt(
+	wsUrl: string,
+	chainName: string,
+	implName: string,
+	httpUrl?: string
+) {
 	const { logger } = Log;
 	const connectionAddr = httpUrl ? httpUrl : wsUrl;
 
