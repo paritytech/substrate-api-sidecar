@@ -97,6 +97,14 @@ export class Specs {
 			})
 		);
 
+		// HTTP
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.HTTP_URL, 'Websocket URL', {
+				mandatory: false,
+			})
+		);
+
 		// TYPES_BUNDLE
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
