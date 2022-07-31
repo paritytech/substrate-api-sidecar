@@ -20,7 +20,7 @@
 import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
-import { WsProvider } from '@polkadot/rpc-provider';
+import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
 import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
@@ -44,7 +44,9 @@ async function main() {
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
-		provider: new WsProvider(config.SUBSTRATE.WS_URL),
+		provider: config.SUBSTRATE.HTTP_URL
+			? new HttpProvider(config.SUBSTRATE.HTTP_URL)
+			: new WsProvider(config.SUBSTRATE.WS_URL),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
 			? (require(TYPES_BUNDLE) as OverrideBundleType)
@@ -68,7 +70,8 @@ async function main() {
 	startUpPrompt(
 		config.SUBSTRATE.WS_URL,
 		chainName.toString(),
-		implName.toString()
+		implName.toString(),
+		config.SUBSTRATE.HTTP_URL,
 	);
 
 	// Create our App
@@ -97,26 +100,28 @@ async function main() {
  * @param wsUrl websocket url of the node Sidecar is connected to
  * @param chainName chain name of the network Sidecar is connected to
  * @param implName implementation name of the node Sidecar is connected to
+ * @param httpUrl http url of the node Sidecar is connected to. This is optional, 
+ * but when used will override the ws url. 
  */
-function startUpPrompt(wsUrl: string, chainName: string, implName: string) {
+function startUpPrompt(wsUrl: string, chainName: string, implName: string, httpUrl?: string) {
 	const { logger } = Log;
-	const { config } = SidecarConfig;
+	const connectionAddr = httpUrl ? httpUrl : wsUrl;
 
 	logger.info(
-		`Connected to chain ${chainName} on the ${implName} client at ${config.SUBSTRATE.WS_URL}`
+		`Connected to chain ${chainName} on the ${implName} client at ${connectionAddr}`
 	);
 
 	// Split the Url to check for 2 things. Secure connection, and if its a local IP.
-	const splitUrl: string[] = wsUrl.split(':');
+	const splitUrl: string[] = connectionAddr.split(':');
 	// If its 'ws' its not a secure connection.
-	const isSecure: boolean = splitUrl[0] === 'wss';
+	const isSecure: boolean = splitUrl[0] === 'wss' || splitUrl[0] === 'https';
 	// Check if its a local IP.
 	const isLocal: boolean =
 		splitUrl[1] === '//127.0.0.1' || splitUrl[1] === '//localhost';
 
 	if (!isSecure && !isLocal) {
 		logger.warn(
-			`Using unencrypted connection to a public node (${wsUrl}); All traffic is sent over the internet in cleartext.`
+			`Using unencrypted connection to a public node (${connectionAddr}); All traffic is sent over the internet in cleartext.`
 		);
 	}
 }
