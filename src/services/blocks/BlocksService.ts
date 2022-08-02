@@ -541,7 +541,9 @@ export class BlocksService extends AbstractService {
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
-						partialFee: fee.toString(),
+						partialFee: tip
+							? new BN(fee).sub(tip.toBn()).toString()
+							: fee.toString(),
 					};
 				}
 			}
@@ -559,7 +561,9 @@ export class BlocksService extends AbstractService {
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
-						partialFee: fee.toString(),
+						partialFee: tip
+							? new BN(fee).sub(tip.toBn()).toString()
+							: fee.toString(),
 					};
 				}
 			}
@@ -579,7 +583,9 @@ export class BlocksService extends AbstractService {
 			// The difference between values is 00.00001% or less so they are alike.
 			if (this.areFeesSimilar(sumOfFees, adjustedPartialFee)) {
 				return {
-					partialFee: sumOfFees.toString(),
+					partialFee: tip
+						? new BN(sumOfFees).sub(tip.toBn()).toString()
+						: sumOfFees.toString(),
 				};
 			}
 		}
