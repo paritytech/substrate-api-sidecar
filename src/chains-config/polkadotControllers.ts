@@ -23,6 +23,7 @@ import { initLRUCache } from './cache/lruCache';
 export const polkadotControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsConvert',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
 		'AccountsValidate',

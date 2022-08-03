@@ -23,6 +23,7 @@ import { initLRUCache } from './cache/lruCache';
 export const westendControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsConvert',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
 		'AccountsValidate',
