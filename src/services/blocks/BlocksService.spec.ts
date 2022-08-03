@@ -592,7 +592,7 @@ describe('BlocksService', () => {
 			});
 
 			it('Should retrieve the correct fee for balances:withdraw events with a tip', () => {
-				const expectedResponse = { partialFee: '1681144907847007' };
+				const expectedResponse = { partialFee: '1675415080573007' };
 				const fee = polkadotRegistry.createType('Balance', '1675415067070856');
 				const tip = new Compact(polkadotRegistry, 'u64', 5729827274000);
 				const response = blocksService['getPartialFeeByEvents'](
