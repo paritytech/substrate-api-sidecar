@@ -59,7 +59,6 @@ export class AccountsConvertService extends AbstractService {
 
 		const keyring = new Keyring({ type: scheme, ss58Format: ss58Prefix });
 		const address = keyring.encodeAddress(accountId, ss58Prefix);
-		console.log(keyring.getPair(address));
 
 		return {
 			ss58Prefix,
