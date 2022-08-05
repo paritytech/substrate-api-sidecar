@@ -85,6 +85,9 @@ impl Multiplier {
 
             ("bifrost", _v) => V2(new_u128(inner)),
 
+            ("heiko", _v) => V2(new_u128(inner)),
+            ("parallel", _v) => V2(new_u128(inner)),
+
             _ => {
                 info!("Unsupported runtime: {}#{}", spec_name, spec_version);
                 return None;
