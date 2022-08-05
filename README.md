@@ -45,7 +45,7 @@ NOTE: Node LTS (`long term support`) versions start with an even number, and odd
 - [NPM package installation and usage](#npm-package-installation-and-usage)
 - [Source code installation and usage](#source-code-installation-and-usage)
 - [Configuration](#configuration)
-- [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
+- [Debugging staking payout calculations](#debugging-staking-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
 - [Chain integration guide](./guides/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
@@ -228,10 +228,10 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
-## Debugging fee and payout calculations
+## Debugging staking payout calculations
 
-It is possible to get more information about the fee and payout calculation process logged to
-the console. Because this fee calculation happens in the statically compiled web assembly part
+It is possible to get more information about the staking payout calculation process logged to
+the console. Because this payout calculation happens in the statically compiled web assembly part
 a re-compile with the proper environment variable set is necessary:
 
 ```bash
