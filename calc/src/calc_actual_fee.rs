@@ -111,7 +111,11 @@ mod test_fees {
         // From ExtrinsicSuccess event:
         let actual_weight: u128 = 152_822_000;
 
+        // From https://shiden.subscan.io/extrinsic/1820490-2
+        // Also seen in Balances.Withjdraw event associated with the tx,
+        // so we know this was the total fee amount taken.
         let expected_partial_fee = "1611916814889018";
+
         let actual_partial_fee = CalcActualFee::calc(
             &base_fee.to_string(),
             &len_fee.to_string(),
@@ -150,7 +154,11 @@ mod test_fees {
         // From ExtrinsicSuccess event:
         let actual_weight: u128 = 152_822_000;
 
+        // From https://shiden.subscan.io/extrinsic/1820341-2
+        // Also seen in Balances.Withjdraw event associated with the tx,
+        // so we know this was the total fee amount taken.
         let expected_partial_fee = "1611917528885264";
+
         let actual_partial_fee = CalcActualFee::calc(
             &base_fee.to_string(),
             &len_fee.to_string(),
