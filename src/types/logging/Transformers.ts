@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import validateWestendHex from './validateWestendHex.json';
-import validateWestendSS58 from './validateWestendSS58.json';
-
-export const westendAccountValidateEndpoints = [
-	[
-		'/accounts/5CdnmxQUfK6WPreBauvetcLh5PZL4RMPHrtd3nPQpQ9Z2qCS/validate',
-		JSON.stringify(validateWestendSS58),
-	],
-	[
-		'/accounts/0x2a193ba804b76499944080c91b8b38b749a482471c317ab8bfa43f52d5ff9c04c7f6bf/validate',
-		JSON.stringify(validateWestendHex),
-	],
-];
+/**
+ * The logform package exports `TransformableInfo` but it sets the
+ * message type to `any`. Here we take that exact type and recreate it
+ * to have more specific type info.
+ */
+export interface ITransformableInfo {
+	level: string;
+	message: string;
+	[key: string]: string;
+}

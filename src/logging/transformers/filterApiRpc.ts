@@ -14,14 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransformableInfo } from 'logform';
 import { format } from 'winston';
+
+import { ITransformableInfo } from '../../types/logging';
 
 /**
  * Ignore log messages that have `API-WS:`. (e.g. polkadot-js RPC logging)
  */
 export const filterApiRpc = format(
-	(info: TransformableInfo, _opts: unknown) => {
+	(info: ITransformableInfo, _opts: unknown) => {
 		if (
 			!info ||
 			(info?.message?.includes &&

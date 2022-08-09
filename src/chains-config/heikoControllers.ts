@@ -14,16 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import validateWestendHex from './validateWestendHex.json';
-import validateWestendSS58 from './validateWestendSS58.json';
+import { ControllerConfig } from '../types/chains-config';
+import { initLRUCache } from './cache/lruCache';
 
-export const westendAccountValidateEndpoints = [
-	[
-		'/accounts/5CdnmxQUfK6WPreBauvetcLh5PZL4RMPHrtd3nPQpQ9Z2qCS/validate',
-		JSON.stringify(validateWestendSS58),
+/**
+ * Controllers for Heiko collator
+ */
+export const heikoControllers: ControllerConfig = {
+	controllers: [
+		'AccountsAssets',
+		'AccountsBalanceInfo',
+		'AccountsValidate',
+		'AccountsVestingInfo',
+		'Blocks',
+		'BlocksExtrinsics',
+		'NodeNetwork',
+		'NodeTransactionPool',
+		'NodeVersion',
+		'PalletsAssets',
+		'PalletsStorage',
+		'Paras',
+		'RuntimeCode',
+		'RuntimeMetadata',
+		'RuntimeSpec',
+		'TransactionDryRun',
+		'TransactionFeeEstimate',
+		'TransactionMaterial',
+		'TransactionSubmit',
 	],
-	[
-		'/accounts/0x2a193ba804b76499944080c91b8b38b749a482471c317ab8bfa43f52d5ff9c04c7f6bf/validate',
-		JSON.stringify(validateWestendHex),
-	],
-];
+	options: {
+		finalizes: true,
+		minCalcFeeRuntime: 1,
+		blockStore: initLRUCache(),
+	},
+};

@@ -14,17 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import validKusama from './validKusama.json';
-
-const validKusamaStringify = JSON.stringify(validKusama);
+import validateKusamaHex from './validateKusamaHex.json';
+import validateKusamaSS58 from './validateKusamaSS58.json';
 
 export const kusamaAccountValidateEndpoints = [
 	[
 		'/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate',
-		validKusamaStringify,
+		JSON.stringify(validateKusamaSS58),
 	],
 	[
 		'/accounts/0x02ce046d43fc4c0fb8b3b754028515e5020f5f1d8d620b4ef0f983c5df34b1952909e9/validate',
-		validKusamaStringify,
+		JSON.stringify(validateKusamaHex),
 	],
 ];
