@@ -15,31 +15,37 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { RequestHandler } from 'express';
 
 import { ContractsInkService } from '../../services';
+import { IContract, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
-    constructor(api: ApiPromise) {
-        super(api, '/contracts/ink/:address', new ContractsInkService(api));
-        this,this.initRoutes();
-    }
+	constructor(api: ApiPromise) {
+		super(api, '/contracts/ink/:address', new ContractsInkService(api));
+		this.initRoutes();
+	}
 
-    protected initRoutes(): void {
-        this.safeMountAsyncGetHandlers([['', this.getAccountBalance]]);
-    }
+	protected initRoutes(): void {
+		this.router.post(
+			this.path,
+			ContractsInkController.catchWrap(this.getAccountBalance)
+		);
+	}
 
-    /**
-     * Get the account balance for a given contract.
-     * 
-     * @param _req 
-     * @param res 
-     */
-    private getAccountBalance: RequestHandler = async (
-        {params: { address } },
-        res
-    ): Promise<void> => {
-        ContractsInkController.sanitizedSend(res, await this.service.fetchAccountBalance(address))
-    }
+	/**
+	 * Get the account balance for a given contract.
+	 *
+	 * @param _req
+	 * @param res
+	 */
+	private getAccountBalance: IPostRequestHandler<IContract> = async (
+		{ params: { address }, body: { metadata } },
+		res
+	): Promise<void> => {
+		ContractsInkController.sanitizedSend(
+			res,
+			await this.service.fetchAccountBalance(address, metadata)
+		);
+	};
 }
