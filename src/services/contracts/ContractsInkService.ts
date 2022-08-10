@@ -15,32 +15,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ContractPromise } from '@polkadot/api-contract';
+import { ContractCallOutcome } from '@polkadot/api-contract/types';
+
 import { AbstractService } from '../AbstractService';
 
 interface IContractsInkAccountBalance {
-    balance: string;
+	response: ContractCallOutcome;
 }
 
 export class ContractsInkService extends AbstractService {
-    async fetchAccountBalance(
-        address: string
-    ): Promise<IContractsInkAccountBalance> {
-        const { api } = this;
+	async fetchAccountBalance(
+		address: string,
+		metadata: Record<string, unknown>
+	): Promise<IContractsInkAccountBalance> {
+		const { api } = this;
 
-        // TODO: determine where the ABI should come from.
-        const contract = new ContractPromise(api, {}, address);
-        const res = contract.query.get(
-            address,
-            {
-                gasLimit: -1,
-                storageDepositLimit: null
-            }
-        );
-        console.log(res);
+		const contract = new ContractPromise(api, metadata, address);
+		const res = await contract.query.get(address, {
+			// TODO both these values could be query params
+			gasLimit: -1,
+			storageDepositLimit: null,
+		});
+		console.log(res);
 
-        // TODO: What should the response be
-        return {
-            balance: ''
-        }
-    }
+		return {
+			response: res,
+		};
+	}
 }
