@@ -154,7 +154,7 @@ mod test_fees {
         let actual_weight: u128 = 152822000;
 
         // From https://shiden.subscan.io/extrinsic/1820490-2
-        // Also seen in Balances.Withjdraw event associated with the tx,
+        // Also seen in Balances.Withdraw event associated with the tx,
         // so we know this was the total fee amount taken. Also is the
         // actual partialFee, so we are really just testing that our calc
         // call returns this, too.
