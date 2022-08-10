@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use core::str::FromStr;
-
 use sp_arithmetic::Perbill;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
-pub struct CalcActualFee {
+pub struct CalcPartialFee {
     partial_fee: u128,
 }
 
 #[wasm_bindgen]
-impl CalcActualFee {
+impl CalcPartialFee {
     /// Uses the following formula to calculate an extrinsics `partial_fee` (ie the total fee
     /// minus any tip).
     ///
@@ -76,7 +74,7 @@ impl CalcActualFee {
         adjusted_weight_fee: &str,
         estimated_weight: &str,
         actual_weight: &str
-    ) -> CalcActualFee {
+    ) -> CalcPartialFee {
         let base_fee = new_u128(base_fee);
         let len_fee = new_u128(len_fee);
         let adjusted_weight_fee = new_u128(adjusted_weight_fee);
@@ -123,21 +121,7 @@ fn new_u128(inner: &str) -> u128 {
 
 #[cfg(test)]
 mod test_fees {
-    use super::new_u128;
-
-    use super::CalcActualFee;
-
-    //// [TODO] Need more details to fix up this test. Remove it?
-    // #[test]
-    // fn calc() {
-    //     let adjusted_weight_fee = "128142";
-    //     let estimated_weight = "152822000";
-    //     let actual_weight = "152822000";
-    //     let base_fee = "1000000000";
-    //     let len_fee = "1490000000";
-    //     let actual_fee = CalcActualFee::calc(base_fee, len_fee, adjusted_weight_fee, estimated_weight, actual_weight);
-    //     assert_eq!(actual_fee.actual_fee, new_u128("2490128143"));
-    // }
+    use super::CalcPartialFee;
 
     // Fee calculation example 1:
     //
@@ -176,7 +160,7 @@ mod test_fees {
         // call returns this, too.
         let expected_partial_fee = 1611916814889018;
 
-        let actual_partial_fee = CalcActualFee::calc(
+        let actual_partial_fee = CalcPartialFee::calc(
             &base_fee.to_string(),
             &len_fee.to_string(),
             &adjusted_weight_fee.to_string(),
@@ -215,11 +199,11 @@ mod test_fees {
         let actual_weight: u128 = 152822000;
 
         // From https://shiden.subscan.io/extrinsic/1820341-2
-        // Also seen in Balances.Withjdraw event associated with the tx,
+        // Also seen in Balances.Withdraw event associated with the tx,
         // so we know this was the total fee amount taken.
         let expected_partial_fee = 1611917528885264;
 
-        let actual_partial_fee = CalcActualFee::calc(
+        let actual_partial_fee = CalcPartialFee::calc(
             &base_fee.to_string(),
             &len_fee.to_string(),
             &adjusted_weight_fee.to_string(),
@@ -228,5 +212,48 @@ mod test_fees {
         );
 
         assert_eq!(expected_partial_fee, actual_partial_fee.partial_fee);
+    }
+
+    // Fee Calculation Example 3:
+    //
+    // Extrinsic Hex:
+    // 0x4d028400a9a38c06cfb948f7176027985ec9632a690a1f9e8a64f244f749c117f45aaec50053c5dc9b60c3b73ee49b08d35b79755556280520b2121ad795a0130ff1899d2ccdcc8bffc5ea606cb0e8c05138d336945b1c2d7be22c033b239d4c1dee802700c92ded56000a0300daa641169afddb7e3480071c91348155e9d5543f6dcfd8583667183103cbde0f0f003cc373933e01
+    //
+    // Network WS URL:     wss://acala-rpc-0.aca-api.network
+    // Block Number:       1285857
+    // Block Hash:         0x0a7ce4030de0d3d9629ca67381f96ca2936f57fa7a73440bc4a55fe2603e9dc1
+    // Actual Fee:         2490128143
+    #[test]
+    fn acala_block_1285857_tx() {
+        // NOTE: Whatever block number the tx comes from, we use $blockNumber-1 to get the values.
+        // It turns out that this is where the values we need should come from.
+
+        // From payment.queryFeeDetails:
+        let adjusted_weight_fee: u128 = 128143;
+        let base_fee: u128 = 1000000000;
+        let len_fee: u128 = 1490000000;
+
+        // From payment.queryInfo:
+        //    weight: 152822000
+        //    partialFee: 2490128142
+        let estimated_weight: u128 = 152822000;
+
+        // From ExtrinsicSuccess event:
+        let actual_weight: u128 = 152822000;
+
+        // From https://acala.subscan.io/extrinsic/1285857-2
+        // Also seen in Balances.Withdraw event associated with the tx,
+        // so we know this was the total fee amount taken.
+        let expected_partial_fee = 2490128143;
+
+        let actual_fee = CalcPartialFee::calc(
+            &base_fee.to_string(), 
+            &len_fee.to_string(), 
+            &adjusted_weight_fee.to_string(), 
+            &estimated_weight.to_string(), 
+            &actual_weight.to_string()
+        );
+
+        assert_eq!(expected_partial_fee, actual_fee.partial_fee);
     }
 }
