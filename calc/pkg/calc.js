@@ -1,15 +1,11 @@
 let imports = {};
 imports['__wbindgen_placeholder__'] = module.exports;
 let wasm;
-const { TextEncoder, TextDecoder } = require(String.raw`util`);
+const { TextDecoder, TextEncoder } = require(String.raw`util`);
 
-const heap = new Array(32).fill(undefined);
+let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
-heap.push(undefined, null, true, false);
-
-function getObject(idx) { return heap[idx]; }
-
-let WASM_VECTOR_LEN = 0;
+cachedTextDecoder.decode();
 
 let cachegetUint8Memory0 = null;
 function getUint8Memory0() {
@@ -18,6 +14,12 @@ function getUint8Memory0() {
     }
     return cachegetUint8Memory0;
 }
+
+function getStringFromWasm0(ptr, len) {
+    return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+}
+
+let WASM_VECTOR_LEN = 0;
 
 let cachedTextEncoder = new TextEncoder('utf-8');
 
@@ -79,97 +81,12 @@ function getInt32Memory0() {
     }
     return cachegetInt32Memory0;
 }
-
-function debugString(val) {
-    // primitive types
-    const type = typeof val;
-    if (type == 'number' || type == 'boolean' || val == null) {
-        return  `${val}`;
-    }
-    if (type == 'string') {
-        return `"${val}"`;
-    }
-    if (type == 'symbol') {
-        const description = val.description;
-        if (description == null) {
-            return 'Symbol';
-        } else {
-            return `Symbol(${description})`;
-        }
-    }
-    if (type == 'function') {
-        const name = val.name;
-        if (typeof name == 'string' && name.length > 0) {
-            return `Function(${name})`;
-        } else {
-            return 'Function';
-        }
-    }
-    // objects
-    if (Array.isArray(val)) {
-        const length = val.length;
-        let debug = '[';
-        if (length > 0) {
-            debug += debugString(val[0]);
-        }
-        for(let i = 1; i < length; i++) {
-            debug += ', ' + debugString(val[i]);
-        }
-        debug += ']';
-        return debug;
-    }
-    // Test for built-in
-    const builtInMatches = /\[object ([^\]]+)\]/.exec(toString.call(val));
-    let className;
-    if (builtInMatches.length > 1) {
-        className = builtInMatches[1];
-    } else {
-        // Failed to match the standard '[object ClassName]'
-        return toString.call(val);
-    }
-    if (className == 'Object') {
-        // we're a user defined class or Object
-        // JSON.stringify avoids problems with cycles, and is generally much
-        // easier than looping through ownProperties of `val`.
-        try {
-            return 'Object(' + JSON.stringify(val) + ')';
-        } catch (_) {
-            return 'Object';
-        }
-    }
-    // errors
-    if (val instanceof Error) {
-        return `${val.name}: ${val.message}\n${val.stack}`;
-    }
-    // TODO we could test for more things here, like `Set`s and `Map`s.
-    return className;
-}
-
-let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
-
-cachedTextDecoder.decode();
-
-function getStringFromWasm0(ptr, len) {
-    return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
-}
-
-let stack_pointer = 32;
-
-function addBorrowedObject(obj) {
-    if (stack_pointer == 1) throw new Error('out of js stack');
-    heap[--stack_pointer] = obj;
-    return stack_pointer;
-}
-
-const u32CvtShim = new Uint32Array(2);
-
-const uint64CvtShim = new BigUint64Array(u32CvtShim.buffer);
 /**
 */
-class CalcFee {
+class CalcPartialFee {
 
     static __wrap(ptr) {
-        const obj = Object.create(CalcFee.prototype);
+        const obj = Object.create(CalcPartialFee.prototype);
         obj.ptr = ptr;
 
         return obj;
@@ -179,46 +96,84 @@ class CalcFee {
         const ptr = this.ptr;
         this.ptr = 0;
 
-        wasm.__wbg_calcfee_free(ptr);
+        wasm.__wbg_calcpartialfee_free(ptr);
     }
     /**
-    * @param {any} polynomial
-    * @param {string} multiplier
-    * @param {string} per_byte_fee
-    * @param {string} spec_name
-    * @param {number} spec_version
-    * @returns {CalcFee | undefined}
+    * Uses the following formula to calculate an extrinsics `partial_fee` (ie the total fee
+    * minus any tip).
+    *
+    * ```
+    * partial_fee = base_fee + len_fee + ((adjusted_weight_fee/estimated_weight)*actual_weight)
+    * ```
+    *
+    * Where:
+    * - `base_fee` is a fixed base fee to include some transaction in a block. It accounts
+    *   for the work needed to verify the signature and such and is constant for any tx.
+    * - `len_fee` is a fee paid based on the size (length in bytes) of the transaction. Longer
+    *   transactions require more storage.
+    * - `adjusted_weight_fee` is a fee that is itself `estimated_weight * targeted_fee_adjustment`.
+    *   `targeted_fee_adjustment` is some adjustment made based on the network load and such, and is
+    *   an opaque internal value we have no access to.
+    * - `estimated_weight` is the "pre-dispatch" weight of the transaction. It's set based on the cost
+    *   of processing the transaction on reference hardware.
+    * - `actual_weight` is the weight that is found in the `ExtrinsicSuccess` event for the extrinsic in
+    *   a block (it's just called `weight` in the event), and is often the same as `estimated_weight`,
+    *   but the node has the opportunity to change it to whatever it likes, I think.
+    *
+    * The RPC endpoint `payment_queryFeeDetails` returns `base_fee`, `len_fee` and `adjusted_weight_fee`/
+    * The RPC endpoint `payment_queryInfo` returns `estimated_weight` (called `weight` in the response), and
+    * a `partialFee` value, which is our best guess at the inclusion fee for the tx without actually submitting
+    * it and seeing whether the node changes the weight/decides not to take a fee at all.
+    *
+    * To get the correct values for some extrinsic from both endpoints, provide the extrinsic bytes, and the
+    * block number **one before the block it made it into** (eg if the extrinsic was in block 100, you'd use
+    * block 99 as an argument). This is very important.
+    *
+    * Once you've called these endpoints, access the `ExtrinsicSuccess` event to find the `actual_weight`, but
+    * also a `paysFee` value which signals whether the extrinsic actually incurred a fee at all or not (a node
+    * has the opportunity to refund the fee entirely if it likes by setting this).
+    *
+    * With all of those values to hand, the equation above calculates the correct Fee. Why? Well, the basic
+    * way to calculate a pre-dispatch fee is:
+    *
+    * ```
+    * partial_fee = base_fee + len_fee + adjusted_weight_fee
+    * ```
+    *
+    * We can do this from just the RPC methods. But then once it's in a block, we need to swap out the weight used
+    * to calculate that `adjusted_weight_fee` with the actual weight that was used from the `ExtrinsicSuccess` event.
+    * In the end, the maths is simple and gathering the details needed is the main difficulty. We do this all in
+    * Rust simply to limit any precision loss.
+    * @param {string} base_fee
+    * @param {string} len_fee
+    * @param {string} adjusted_weight_fee
+    * @param {string} estimated_weight
+    * @param {string} actual_weight
+    * @returns {CalcPartialFee}
     */
-    static from_params(polynomial, multiplier, per_byte_fee, spec_name, spec_version) {
-        try {
-            var ptr0 = passStringToWasm0(multiplier, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            var len0 = WASM_VECTOR_LEN;
-            var ptr1 = passStringToWasm0(per_byte_fee, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            var len1 = WASM_VECTOR_LEN;
-            var ptr2 = passStringToWasm0(spec_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            var len2 = WASM_VECTOR_LEN;
-            var ret = wasm.calcfee_from_params(addBorrowedObject(polynomial), ptr0, len0, ptr1, len1, ptr2, len2, spec_version);
-            return ret === 0 ? undefined : CalcFee.__wrap(ret);
-        } finally {
-            heap[stack_pointer++] = undefined;
-        }
+    static calc(base_fee, len_fee, adjusted_weight_fee, estimated_weight, actual_weight) {
+        var ptr0 = passStringToWasm0(base_fee, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len0 = WASM_VECTOR_LEN;
+        var ptr1 = passStringToWasm0(len_fee, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len1 = WASM_VECTOR_LEN;
+        var ptr2 = passStringToWasm0(adjusted_weight_fee, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len2 = WASM_VECTOR_LEN;
+        var ptr3 = passStringToWasm0(estimated_weight, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len3 = WASM_VECTOR_LEN;
+        var ptr4 = passStringToWasm0(actual_weight, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len4 = WASM_VECTOR_LEN;
+        var ret = wasm.calcpartialfee_calc(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+        return CalcPartialFee.__wrap(ret);
     }
     /**
-    * @param {BigInt} weight
-    * @param {number} len
-    * @param {BigInt} extrinsic_base_weight
+    * Return the calculated partial fee as a string, to avoid any precision
+    * loss as it crosses the boundary back to JS land.
     * @returns {string}
     */
-    calc_fee(weight, len, extrinsic_base_weight) {
+    partial_fee_as_string() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            uint64CvtShim[0] = weight;
-            const low0 = u32CvtShim[0];
-            const high0 = u32CvtShim[1];
-            uint64CvtShim[0] = extrinsic_base_weight;
-            const low1 = u32CvtShim[0];
-            const high1 = u32CvtShim[1];
-            wasm.calcfee_calc_fee(retptr, this.ptr, low0, high0, len, low1, high1);
+            wasm.calcpartialfee_partial_fee_as_string(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -228,7 +183,7 @@ class CalcFee {
         }
     }
 }
-module.exports.CalcFee = CalcFee;
+module.exports.CalcPartialFee = CalcPartialFee;
 /**
 */
 class CalcPayout {
@@ -283,23 +238,6 @@ class CalcPayout {
     }
 }
 module.exports.CalcPayout = CalcPayout;
-
-module.exports.__wbindgen_json_serialize = function(arg0, arg1) {
-    const obj = getObject(arg1);
-    var ret = JSON.stringify(obj === undefined ? null : obj);
-    var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len0 = WASM_VECTOR_LEN;
-    getInt32Memory0()[arg0 / 4 + 1] = len0;
-    getInt32Memory0()[arg0 / 4 + 0] = ptr0;
-};
-
-module.exports.__wbindgen_debug_string = function(arg0, arg1) {
-    var ret = debugString(getObject(arg1));
-    var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len0 = WASM_VECTOR_LEN;
-    getInt32Memory0()[arg0 / 4 + 1] = len0;
-    getInt32Memory0()[arg0 / 4 + 0] = ptr0;
-};
 
 module.exports.__wbindgen_throw = function(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
