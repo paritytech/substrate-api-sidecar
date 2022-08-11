@@ -15,16 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { defaultMockApi } from '../test-helpers/mock';
-import { ContractsInkService } from '.';
-import { m } from './metadata';
+// import { defaultMockApi } from '../test-helpers/mock';
+// import { metadataFlipper } from '../test-helpers/mock/contracts/metadataFlipper';
+// import { ContractsInkService } from '.';
 
-const contractInkService = new ContractsInkService(defaultMockApi);
+// const contractInkService = new ContractsInkService(defaultMockApi);
 
 describe('ContractsInkService', () => {
-	it('fetchContractCall', async () => {
-		const address = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
-		await contractInkService.fetchContractCall(address, m);
+	it('fetchContractCall', () => {
+		// const address = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+		// await contractInkService.fetchContractCall(address, metadataFlipper);
 		expect(sanitizeNumbers({})).toStrictEqual({});
 	});
 });
