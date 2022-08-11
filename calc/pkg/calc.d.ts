@@ -1,10 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-*/
-export class CalcPartialFee {
-  free(): void;
-/**
 * Uses the following formula to calculate an extrinsics `partial_fee` (ie the total fee
 * minus any tip).
 *
@@ -55,16 +51,9 @@ export class CalcPartialFee {
 * @param {string} adjusted_weight_fee
 * @param {string} estimated_weight
 * @param {string} actual_weight
-* @returns {CalcPartialFee}
-*/
-  static calc(base_fee: string, len_fee: string, adjusted_weight_fee: string, estimated_weight: string, actual_weight: string): CalcPartialFee;
-/**
-* Return the calculated partial fee as a string, to avoid any precision
-* loss as it crosses the boundary back to JS land.
 * @returns {string}
 */
-  partial_fee_as_string(): string;
-}
+export function calc_partial_fee(base_fee: string, len_fee: string, adjusted_weight_fee: string, estimated_weight: string, actual_weight: string): string;
 /**
 */
 export class CalcPayout {
