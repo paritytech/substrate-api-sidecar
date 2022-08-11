@@ -17,7 +17,11 @@
 import { ApiPromise } from '@polkadot/api';
 
 import { ContractsInkService } from '../../services';
-import { IContract, IPostRequestHandler } from '../../types/requests';
+import {
+	IBodyContractMetadata,
+	IContractQueryParam,
+	IPostRequestHandler,
+} from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
@@ -29,7 +33,8 @@ export default class ContractsInkController extends AbstractController<Contracts
 	protected initRoutes(): void {
 		this.router.post(
 			this.path,
-			ContractsInkController.catchWrap(this.getAccountBalance)
+			// TODO: expand type safety for AbstractController.catchwrap
+			this.getContractCall
 		);
 	}
 
@@ -39,13 +44,21 @@ export default class ContractsInkController extends AbstractController<Contracts
 	 * @param _req
 	 * @param res
 	 */
-	private getAccountBalance: IPostRequestHandler<IContract> = async (
-		{ params: { address }, body: { metadata } },
+	private getContractCall: IPostRequestHandler<
+		IBodyContractMetadata,
+		IContractQueryParam
+	> = async (
+		{ params: { address }, body, query: { gasLimit, storageDepositLimit } },
 		res
 	): Promise<void> => {
 		ContractsInkController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalance(address, metadata)
+			await this.service.fetchContractCall(
+				address,
+				body,
+				gasLimit,
+				storageDepositLimit
+			)
 		);
 	};
 }
