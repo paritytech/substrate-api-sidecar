@@ -19,27 +19,47 @@ import { ContractCallOutcome } from '@polkadot/api-contract/types';
 
 import { AbstractService } from '../AbstractService';
 
-interface IContractsInkAccountBalance {
-	response: ContractCallOutcome;
-}
-
 export class ContractsInkService extends AbstractService {
-	async fetchAccountBalance(
+	/**
+	 * Query the GET message from a contract.
+	 *
+	 * @param address AccountId associated with the contract.
+	 * @param metadata ABI metadata associated with the contract.
+	 */
+	public async fetchContractCall(
 		address: string,
-		metadata: Record<string, unknown>
-	): Promise<IContractsInkAccountBalance> {
+		metadata: Record<string, unknown>,
+		gasLimit?: string,
+		storageDepositLimit?: string
+	): Promise<ContractCallOutcome> {
 		const { api } = this;
 
 		const contract = new ContractPromise(api, metadata, address);
-		const res = await contract.query.get(address, {
+
+		if (!contract.query.get) {
+			throw Error('Contract does not have the given GET message.');
+		}
+
+		const {
+			debugMessage,
+			gasConsumed,
+			gasRequired,
+			output,
+			result,
+			storageDeposit,
+		} = await contract.query.get(address, {
 			// TODO both these values could be query params
-			gasLimit: -1,
-			storageDepositLimit: null,
+			gasLimit: gasLimit || -1,
+			storageDepositLimit: storageDepositLimit || null,
 		});
-		console.log(res);
 
 		return {
-			response: res,
+			debugMessage,
+			gasConsumed,
+			gasRequired,
+			output,
+			result,
+			storageDeposit,
 		};
 	}
 }
