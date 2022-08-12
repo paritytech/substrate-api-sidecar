@@ -131,7 +131,7 @@ export class ValidatorsService extends AbstractService {
 				validator,
 				identities[index],
 				rewards,
-				elected,
+				electedIds,
 				detailed
 			)
 		);
@@ -161,7 +161,8 @@ export class ValidatorsService extends AbstractService {
 			this.identitiesService.fetchIdentity(accountId),
 		]);
 
-		return this.formatValidator(validator, identity, rewards, elected, true);
+		const electedIds = elected.map((s) => s.toString());
+		return this.formatValidator(validator, identity, rewards, electedIds, true);
 	}
 
 	private async fetchRewardsPoints(
@@ -183,9 +184,10 @@ export class ValidatorsService extends AbstractService {
 		validator: DeriveStakingQuery,
 		identity: IIdentity,
 		rewards: Map<String, RewardPoint>,
-		elected: AccountId[],
+		electedIds: string[],
 		detailed = false
 	): IValidator {
+		const validatorId = validator.accountId.toString();
 		const maxNominatorRewardedPerValidator =
 			this.api.consts?.staking?.maxNominatorRewardedPerValidator;
 
@@ -198,8 +200,8 @@ export class ValidatorsService extends AbstractService {
 			nominatorsCount: validator.exposure.others.length,
 			nominators: detailed ? validator.exposure.others : undefined,
 			commission: validator.validatorPrefs.commission,
-			rewardsPoints: rewards.get(validator.accountId.toString()) || null,
-			isElected: elected.includes(validator.accountId),
+			rewardsPoints: rewards.get(validatorId) || null,
+			isElected: electedIds.includes(validatorId),
 			isOversubscribed: maxNominatorRewardedPerValidator
 				? validator.exposure.others.length >
 				  Number(maxNominatorRewardedPerValidator)
