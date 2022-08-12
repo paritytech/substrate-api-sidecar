@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
+import { Compact, GenericCall, Option, Struct, Vec } from '@polkadot/types';
 import {
 	AccountId32,
 	Block,
@@ -26,10 +26,14 @@ import {
 	DispatchInfo,
 	EventRecord,
 	Header,
+	InclusionFee,
+	Weight,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import { calc_partial_fee } from '@substrate/calc';
+import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
@@ -177,6 +181,7 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
+		let queryFeeDetailsExists = true;
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
@@ -243,15 +248,47 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			// Change hash to blockHash - 1
-			const { class: dispatchClass, partialFee } =
-				await api.rpc.payment.queryInfo(block.extrinsics[idx].toHex(), hash);
+			const previousBlockHash = await this.fetchPreviousBlockHash(number);
 
-			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
+			const {
+				class: dispatchClass,
+				partialFee,
+				weight,
+			} = await api.rpc.payment.queryInfo(
+				block.extrinsics[idx].toHex(),
+				previousBlockHash
+			);
+
+			let finalPartialFee = partialFee.toString(),
+				dispatchFeeType = 'preDispatch';
+			// The RPC method payment queryFeeDetails might not be accesible in the runtime,
+			// so we need to try the call.
+			if (queryFeeDetailsExists) {
+				try {
+					const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+						block.extrinsics[idx].toHex(),
+						previousBlockHash
+					);
+					finalPartialFee = this.calcPartialFee(
+						weightInfo.weight,
+						weight,
+						inclusionFee
+					);
+					dispatchFeeType = 'postDispatch';
+				} catch {
+					console.warn(
+						`payment_queryFeeDetails is not available for block-${number.toString()}. The returned partialFee will be a preDispatchFee return from payment_queryInfo.`
+					);
+					queryFeeDetailsExists = false;
+				}
+			}
+
+			extrinsics[idx].info = {
 				weight: weightInfo.weight,
 				class: dispatchClass,
-				partialFee: partialFee,
-			});
+				partialFee: api.registry.createType('Balance', finalPartialFee),
+				kind: dispatchFeeType,
+			};
 		}
 
 		const response = {
@@ -272,6 +309,52 @@ export class BlocksService extends AbstractService {
 		this.blockStore.set(hash.toString(), response);
 
 		return response;
+	}
+
+	/**
+	 * Retrieve the blockHash for the previous block to the one getting queried.
+	 * If the block is the geneisis hash it will return the same blockHash.
+	 *
+	 * @param blockNumber The blockId being queried
+	 */
+	private async fetchPreviousBlockHash(
+		blockNumber: Compact<BlockNumber>
+	): Promise<BlockHash> {
+		const { api } = this;
+
+		const num = blockNumber.toBn();
+		return num.isZero()
+			? await api.rpc.chain.getBlockHash(num)
+			: await api.rpc.chain.getBlockHash(num.sub(new BN(1)));
+	}
+
+	/**
+	 * Calculate the partialFee for an extrinsic. This uses `calc_partial_fee` from `@substrate/calc`.
+	 * Please reference
+	 *
+	 * @param extrinsicSuccessWeight
+	 * @param estWeight
+	 * @param inclusionFee
+	 */
+	private calcPartialFee(
+		extrinsicSuccessWeight: Weight,
+		estWeight: Weight,
+		inclusionFee: Option<InclusionFee>
+	): string {
+		if (inclusionFee.isSome) {
+			const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
+
+			return calc_partial_fee(
+				baseFee.toString(),
+				lenFee.toString(),
+				adjustedWeightFee.toString(),
+				estWeight.toString(),
+				extrinsicSuccessWeight.toString()
+			);
+		} else {
+			// When the inlcusion fee isNone we are dealing with a unsigned extrinsic.
+			return '0';
+		}
 	}
 
 	/**
