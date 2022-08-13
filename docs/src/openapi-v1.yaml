@@ -2432,6 +2432,11 @@ components:
           type: string
           description: The _inclusion fee_ of a transaction, i.e. the minimum fee required for a transaction. Includes weight and encoded length fees, but does not have access to any signed extensions, e.g. the `tip`.
           format: unsignedInteger
+        kind:
+          type: string
+          description: Information on the partialFee that is collected. Can be either `preDispatch` or `postDispatch`.
+            `preDispatch` means the information used to collect the fee was from `payment_queryInfo`, and `postDispatch` means
+            the information used to calculate the fee was from finalized weights for the extrinsic. 
       description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
     RuntimeSpec:
       type: object
