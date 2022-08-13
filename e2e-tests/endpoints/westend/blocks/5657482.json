@@ -190,7 +190,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -257,7 +258,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -324,7 +326,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -391,7 +394,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -458,7 +462,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -525,7 +530,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -592,7 +598,8 @@
             "info": {
                 "weight": "198207000",
                 "class": "Normal",
-                "partialFee": "15600001585"
+                "partialFee": "15600001585",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"

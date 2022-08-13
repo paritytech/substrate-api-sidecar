@@ -84,7 +84,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -151,7 +152,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -218,7 +220,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -285,7 +288,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15900001612"
+                "partialFee": "15900001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -347,7 +351,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -414,7 +419,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -481,7 +487,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -548,7 +555,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -615,7 +623,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -682,7 +691,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15600001612"
+                "partialFee": "15600001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
@@ -749,7 +759,8 @@
             "info": {
                 "weight": "201538000",
                 "class": "Normal",
-                "partialFee": "15900001612"
+                "partialFee": "15900001612",
+                "kind": "postDispatch"
             },
             "era": {
                 "immortalEra": "0x00"
