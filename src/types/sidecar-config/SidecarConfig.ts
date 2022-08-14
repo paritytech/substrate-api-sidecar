@@ -24,8 +24,7 @@ export interface ISidecarConfig {
 }
 
 interface ISidecarConfigSubstrate {
-	WS_URL: string;
-	HTTP_URL: string;
+	URL: string;
 	TYPES_BUNDLE: string;
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;

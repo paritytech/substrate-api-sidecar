@@ -44,9 +44,9 @@ async function main() {
 	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
-		provider: config.SUBSTRATE.HTTP_URL
-			? new HttpProvider(config.SUBSTRATE.HTTP_URL)
-			: new WsProvider(config.SUBSTRATE.WS_URL),
+		provider: config.SUBSTRATE.URL.startsWith('http')
+			? new HttpProvider(config.SUBSTRATE.URL)
+			: new WsProvider(config.SUBSTRATE.URL),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
 			? (require(TYPES_BUNDLE) as OverrideBundleType)
@@ -68,10 +68,9 @@ async function main() {
 	]);
 
 	startUpPrompt(
-		config.SUBSTRATE.WS_URL,
+		config.SUBSTRATE.URL,
 		chainName.toString(),
-		implName.toString(),
-		config.SUBSTRATE.HTTP_URL
+		implName.toString()
 	);
 
 	// Create our App
