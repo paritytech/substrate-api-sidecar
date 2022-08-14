@@ -30,7 +30,7 @@ import {
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { ICompact, INumber } from '@polkadot/types-codec/types/interfaces';
-import { hexToNumber, isHex, u8aToHex } from '@polkadot/util';
+import { isHex, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -541,7 +541,9 @@ export class BlocksService extends AbstractService {
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
-						partialFee: fee.toString(),
+						partialFee: tip
+							? new BN(fee).sub(tip.toBn()).toString()
+							: fee.toString(),
 					};
 				}
 			}
@@ -559,7 +561,9 @@ export class BlocksService extends AbstractService {
 				// The difference between values is 00.00001% or less so they are alike.
 				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
 					return {
-						partialFee: fee.toString(),
+						partialFee: tip
+							? new BN(fee).sub(tip.toBn()).toString()
+							: fee.toString(),
 					};
 				}
 			}
@@ -579,7 +583,9 @@ export class BlocksService extends AbstractService {
 			// The difference between values is 00.00001% or less so they are alike.
 			if (this.areFeesSimilar(sumOfFees, adjustedPartialFee)) {
 				return {
-					partialFee: sumOfFees.toString(),
+					partialFee: tip
+						? new BN(sumOfFees).sub(tip.toBn()).toString()
+						: sumOfFees.toString(),
 				};
 			}
 		}
@@ -618,8 +624,8 @@ export class BlocksService extends AbstractService {
 	 */
 	private sanitizeFee(fee: string): string {
 		if (isHex(fee)) {
-			const numFee = hexToNumber(fee);
-			return numFee.toString(10);
+			const feeType = this.api.registry.createType('Balance', fee);
+			return feeType.toString(10);
 		}
 
 		return fee;

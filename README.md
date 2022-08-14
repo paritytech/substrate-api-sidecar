@@ -170,7 +170,7 @@ will always be the `ws://127.0.0.1:9944` url unless an http url is specified.
 
 Some chains require custom type definitions in order for Sidecar to know how to decode the data
 retrieved from the node. Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
-the type formats (see `RegisteredTypes`).
+the type formats (see `RegisteredTypes`). There is a helper CLI tool called [generate-type-bundle](https://github.com/paritytech/generate-type-bundle) that can generate a `typesBundle.json` file for you using chain information from [`@polkadot/apps-config`](https://github.com/polkadot-js/apps/tree/master/packages/apps-config). The generated json file from this tool will work directly with the `SAS_SUBSTRATE_TYPES_BUNDLE` ENV variable. 
 
 - `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
     rpc definitions. Format: `OverrideBundleType` (see [`typesBundle`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L72)).
