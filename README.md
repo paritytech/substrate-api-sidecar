@@ -161,8 +161,8 @@ For more information on our configuration manager visit its readme [here](https:
 
 ### Substrate node
 
-- `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
-    `ws://127.0.0.1:9944`.
+- `SAS_SUBSTRATE_URL`: URL to which the RPC proxy will attempt to connect to, defaults to
+    `ws://127.0.0.1:9944`. Accepts both a websocket, and http URL.
 
 #### Custom substrate types
 
