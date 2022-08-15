@@ -93,7 +93,7 @@ export class Specs {
 			this._specs.getSpec(CONFIG.URL, 'Websocket or HTTP URL', {
 				default: 'ws://127.0.0.1:9944',
 				mandatory: true,
-				regexp: /^(ws|wss|http)?:\/\/.*/,
+				regexp: /^(ws|wss|http|https)?:\/\/.*/,
 			})
 		);
 
