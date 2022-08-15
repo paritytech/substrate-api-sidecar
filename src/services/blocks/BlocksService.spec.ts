@@ -62,6 +62,9 @@ const nextFeeMultiplierAt = (_hash: Hash) =>
 
 const mockHistoricApi = {
 	registry: polkadotRegistry,
+	call: {
+		transactionPaymentApi: {},
+	},
 	consts: {
 		transactionPayment: {
 			transactionByteFee: polkadotRegistry.createType('Balance', 1000000),

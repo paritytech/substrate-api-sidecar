@@ -181,7 +181,8 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
-		let queryFeeDetailsExists = true;
+		const previousBlockHash = await this.fetchPreviousBlockHash(number);
+
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
@@ -248,8 +249,6 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			const previousBlockHash = await this.fetchPreviousBlockHash(number);
-
 			const {
 				class: dispatchClass,
 				partialFee,
@@ -259,28 +258,23 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
+			const apiAtPreviousBlock = await api.at(previousBlockHash);
+			const {
+				call: { transactionPaymentApi },
+			} = apiAtPreviousBlock;
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
-			// The RPC method payment queryFeeDetails might not be accesible in the runtime,
-			// so we need to try the call.
-			if (queryFeeDetailsExists) {
-				try {
-					const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
-						block.extrinsics[idx].toHex(),
-						previousBlockHash
-					);
-					finalPartialFee = this.calcPartialFee(
-						weightInfo.weight,
-						weight,
-						inclusionFee
-					);
-					dispatchFeeType = 'postDispatch';
-				} catch {
-					console.warn(
-						`payment_queryFeeDetails is not available for block-${number.toString()}. The returned partialFee will be a preDispatchFee return from payment_queryInfo.`
-					);
-					queryFeeDetailsExists = false;
-				}
+			if (transactionPaymentApi) {
+				const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+					block.extrinsics[idx].toHex(),
+					previousBlockHash
+				);
+				finalPartialFee = this.calcPartialFee(
+					weightInfo.weight,
+					weight,
+					inclusionFee
+				);
+				dispatchFeeType = 'postDispatch';
 			}
 
 			extrinsics[idx].info = {
