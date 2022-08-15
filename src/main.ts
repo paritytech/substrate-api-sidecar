@@ -96,11 +96,9 @@ async function main() {
  * Prompt the user with some basic info about the node and the network they have
  * connected Sidecar to.
  *
- * @param wsUrl websocket url of the node Sidecar is connected to
+ * @param url Url of the node Sidecar is connected to, can be a websocket or http address
  * @param chainName chain name of the network Sidecar is connected to
  * @param implName implementation name of the node Sidecar is connected to
- * @param httpUrl http url of the node Sidecar is connected to. This is optional,
- * but when used will override the ws url.
  */
 function startUpPrompt(url: string, chainName: string, implName: string) {
 	const { logger } = Log;
