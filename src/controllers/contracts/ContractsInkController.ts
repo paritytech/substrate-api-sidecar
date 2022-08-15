@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { RequestHandler } from 'express';
 
 import { ContractsInkService } from '../../services';
 import {
@@ -33,8 +34,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 	protected initRoutes(): void {
 		this.router.post(
 			this.path,
-			// TODO: expand type safety for AbstractController.catchwrap
-			this.getContractCall
+			AbstractController.catchWrap(this.getContractCall as RequestHandler)
 		);
 	}
 
@@ -48,14 +48,22 @@ export default class ContractsInkController extends AbstractController<Contracts
 		IBodyContractMetadata,
 		IContractQueryParam
 	> = async (
-		{ params: { address }, body, query: { gasLimit, storageDepositLimit } },
+		{
+			params: { address },
+			body,
+			query: { method = 'get', gasLimit, storageDepositLimit, args },
+		},
 		res
 	): Promise<void> => {
+		const argsArray = Array.isArray(args) ? args : [];
+
 		ContractsInkController.sanitizedSend(
 			res,
 			await this.service.fetchContractCall(
 				address,
 				body,
+				method,
+				argsArray,
 				gasLimit,
 				storageDepositLimit
 			)

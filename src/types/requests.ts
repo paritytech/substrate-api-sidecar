@@ -61,6 +61,8 @@ export interface IRangeQueryParam extends Query {
 }
 
 export interface IContractQueryParam extends Query {
+	method: string;
+	args: string[];
 	gasLimit: string;
 	storageDepositLimit: string;
 }

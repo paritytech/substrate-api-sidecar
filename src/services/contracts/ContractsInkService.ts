@@ -29,6 +29,8 @@ export class ContractsInkService extends AbstractService {
 	public async fetchContractCall(
 		address: string,
 		metadata: Record<string, unknown>,
+		method: string,
+		args: unknown[],
 		gasLimit?: string,
 		storageDepositLimit?: string
 	): Promise<ContractCallOutcome> {
@@ -47,11 +49,14 @@ export class ContractsInkService extends AbstractService {
 			output,
 			result,
 			storageDeposit,
-		} = await contract.query.get(address, {
-			// TODO both these values could be query params
-			gasLimit: gasLimit || -1,
-			storageDepositLimit: storageDepositLimit || null,
-		});
+		} = await contract.query[method](
+			address,
+			{
+				gasLimit: gasLimit || -1,
+				storageDepositLimit: storageDepositLimit || null,
+			},
+			args
+		);
 
 		return {
 			debugMessage,
