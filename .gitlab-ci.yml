@@ -183,7 +183,7 @@ deploy-production:
     BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
     CI_IMAGE:                      "paritytech/node-wrk:latest"
   script:
-    - export SAS_SUBSTRATE_WS_URL=$POLKADOT_ADDRESS
+    - export SAS_SUBSTRATE_URL=$POLKADOT_ADDRESS
     - yarn
     - yarn build
     - yarn run main &

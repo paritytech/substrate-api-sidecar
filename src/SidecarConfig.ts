@@ -57,7 +57,7 @@ export class SidecarConfig {
 				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
 			},
 			SUBSTRATE: {
-				WS_URL: config.Get(MODULES.SUBSTRATE, CONFIG.WS_URL) as string,
+				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,
 				TYPES_BUNDLE: config.Get(
 					MODULES.SUBSTRATE,
 					CONFIG.TYPES_BUNDLE
