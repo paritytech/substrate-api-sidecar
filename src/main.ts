@@ -102,21 +102,15 @@ async function main() {
  * @param httpUrl http url of the node Sidecar is connected to. This is optional,
  * but when used will override the ws url.
  */
-function startUpPrompt(
-	wsUrl: string,
-	chainName: string,
-	implName: string,
-	httpUrl?: string
-) {
+function startUpPrompt(url: string, chainName: string, implName: string) {
 	const { logger } = Log;
-	const connectionAddr = httpUrl ? httpUrl : wsUrl;
 
 	logger.info(
-		`Connected to chain ${chainName} on the ${implName} client at ${connectionAddr}`
+		`Connected to chain ${chainName} on the ${implName} client at ${url}`
 	);
 
 	// Split the Url to check for 2 things. Secure connection, and if its a local IP.
-	const splitUrl: string[] = connectionAddr.split(':');
+	const splitUrl: string[] = url.split(':');
 	// If its 'ws' its not a secure connection.
 	const isSecure: boolean = splitUrl[0] === 'wss' || splitUrl[0] === 'https';
 	// Check if its a local IP.
@@ -125,7 +119,7 @@ function startUpPrompt(
 
 	if (!isSecure && !isLocal) {
 		logger.warn(
-			`Using unencrypted connection to a public node (${connectionAddr}); All traffic is sent over the internet in cleartext.`
+			`Using unencrypted connection to a public node (${url}); All traffic is sent over the internet in cleartext.`
 		);
 	}
 }
