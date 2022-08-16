@@ -17,6 +17,7 @@
 import { Keyring } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { allNetworks } from '@polkadot/util-crypto';
+import { blake2AsHex } from '@polkadot/util-crypto';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { BadRequest } from 'http-errors';
 
@@ -57,8 +58,10 @@ export class AccountsConvertService extends AbstractService {
 			);
 		}
 
+		const accountId2Encode = publicKey ? blake2AsHex(accountId) : accountId;
+
 		const keyring = new Keyring({ type: scheme, ss58Format: ss58Prefix });
-		const address = keyring.encodeAddress(accountId, ss58Prefix);
+		const address = keyring.encodeAddress(accountId2Encode, ss58Prefix);
 
 		return {
 			ss58Prefix,
