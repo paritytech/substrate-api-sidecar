@@ -26,6 +26,7 @@ import AbstractController from '../AbstractController';
 interface ControllerOptions {
 	minCalcFeeRuntime: null | number;
 	blockStore: LRU<string, IBlock>;
+	queryFeeErrCache: string[];
 }
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
@@ -33,7 +34,12 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore)
+			new BlocksService(
+				api,
+				options.minCalcFeeRuntime,
+				options.blockStore,
+				options.queryFeeErrCache
+			)
 		);
 		this.initRoutes();
 	}

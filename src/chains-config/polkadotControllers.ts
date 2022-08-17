@@ -48,5 +48,6 @@ export const polkadotControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

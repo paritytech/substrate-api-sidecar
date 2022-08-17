@@ -50,5 +50,6 @@ export const defaultControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

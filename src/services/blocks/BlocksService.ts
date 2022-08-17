@@ -77,7 +77,8 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRU<string, IBlock>
+		private blockStore: LRU<string, IBlock>,
+		private queryFeeErrCache: string[]
 	) {
 		super(api);
 	}
@@ -227,7 +228,7 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+			// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
 			// types as their final arg
 			const weightInfo = completedData[
 				completedData.length - 1
@@ -264,17 +265,24 @@ export class BlocksService extends AbstractService {
 			} = apiAtPreviousBlock;
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
-			if (transactionPaymentApi) {
-				const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
-					block.extrinsics[idx].toHex(),
-					previousBlockHash
-				);
-				finalPartialFee = this.calcPartialFee(
-					weightInfo.weight,
-					weight,
-					inclusionFee
-				);
-				dispatchFeeType = 'postDispatch';
+
+			if (!this.queryFeeErrCache.includes(specVersion.toString())) {
+				try {
+					const { inclusionFee } = await transactionPaymentApi.queryFeeDetails(
+						block.extrinsics[idx].toHex(),
+						previousBlockHash
+					);
+					finalPartialFee = this.calcPartialFee(
+						weightInfo.weight,
+						weight,
+						inclusionFee
+					);
+					dispatchFeeType = 'postDispatch';
+				} catch (e) {
+					this.queryFeeErrCache.push(specVersion.toString());
+					// Set a proper warning to explain the above error!
+					console.warn(e);
+				}
 			}
 
 			extrinsics[idx].info = {

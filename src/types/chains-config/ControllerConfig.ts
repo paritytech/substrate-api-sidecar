@@ -45,5 +45,6 @@ export interface ControllerConfig {
 		finalizes: boolean;
 		minCalcFeeRuntime: IOption<number>;
 		blockStore: LRU<string, IBlock>;
+		queryFeeErrCache: string[];
 	};
 }

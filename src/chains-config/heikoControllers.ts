@@ -46,5 +46,6 @@ export const heikoControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

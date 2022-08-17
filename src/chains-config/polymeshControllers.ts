@@ -44,5 +44,6 @@ export const polymeshControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 0,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

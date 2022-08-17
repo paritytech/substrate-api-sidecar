@@ -43,5 +43,6 @@ export const kiltControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

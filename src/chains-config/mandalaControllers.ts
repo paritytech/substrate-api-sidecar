@@ -47,5 +47,6 @@ export const mandalaControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

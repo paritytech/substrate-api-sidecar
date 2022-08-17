@@ -116,7 +116,7 @@ type GetBlock = PromiseRpcResult<
 const cache = new LRU({ max: 2 }) as LRU<string, IBlock>;
 
 // Block Service
-const blocksService = new BlocksService(mockApi, 0, cache);
+const blocksService = new BlocksService(mockApi, 0, cache, []);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
@@ -395,7 +395,12 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU({ max: 2 }));
+			const blocksService = new BlocksService(
+				mockApi,
+				0,
+				new LRU({ max: 2 }),
+				[]
+			);
 			expect(
 				await blocksService['isFinalizedBlock'](
 					mockApi,

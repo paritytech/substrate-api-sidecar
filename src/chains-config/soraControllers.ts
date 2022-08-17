@@ -47,5 +47,6 @@ export const soraControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

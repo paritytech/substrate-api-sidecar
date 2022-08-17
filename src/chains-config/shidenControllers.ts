@@ -45,5 +45,6 @@ export const shidenControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

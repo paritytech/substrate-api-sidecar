@@ -42,5 +42,6 @@ export const dockMainnetControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

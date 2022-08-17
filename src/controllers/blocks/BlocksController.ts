@@ -30,6 +30,7 @@ interface ControllerOptions {
 	finalizes: boolean;
 	minCalcFeeRuntime: null | number;
 	blockStore: LRU<string, IBlock>;
+	queryFeeErrCache: string[];
 }
 
 /**
@@ -96,7 +97,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		super(
 			api,
 			'/blocks',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore)
+			new BlocksService(
+				api,
+				options.minCalcFeeRuntime,
+				options.blockStore,
+				options.queryFeeErrCache
+			)
 		);
 		this.initRoutes();
 	}

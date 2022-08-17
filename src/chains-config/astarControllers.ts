@@ -45,5 +45,6 @@ export const astarControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };

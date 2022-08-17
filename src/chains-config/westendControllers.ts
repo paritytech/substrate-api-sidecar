@@ -47,5 +47,6 @@ export const westendControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 6,
 		blockStore: initLRUCache(),
+		queryFeeErrCache: [],
 	},
 };
