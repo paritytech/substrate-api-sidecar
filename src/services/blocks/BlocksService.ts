@@ -252,7 +252,7 @@ export class BlocksService extends AbstractService {
 
 			/**
 			 * Grab the initial partialFee, and information required for calculating a partialFee
-			 * if queryFeeDetails is available in the runtime. 
+			 * if queryFeeDetails is available in the runtime.
 			 */
 			const {
 				class: dispatchClass,
@@ -268,7 +268,7 @@ export class BlocksService extends AbstractService {
 			/**
 			 * Call queryFeeDetails. It may not be available in the runtime and will
 			 * error automatically when we try to call it. We cache the runtimes it will error so we
-			 * don't try to call it again given a specVersion.  
+			 * don't try to call it again given a specVersion.
 			 */
 			if (!this.queryFeeErrCache.includes(specVersion.toString())) {
 				try {
@@ -281,7 +281,6 @@ export class BlocksService extends AbstractService {
 						weight,
 						inclusionFee
 					);
-					console.log('here: ', finalPartialFee);
 					dispatchFeeType = 'postDispatch';
 				} catch (e) {
 					this.queryFeeErrCache.push(specVersion.toString());
