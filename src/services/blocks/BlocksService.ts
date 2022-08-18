@@ -250,6 +250,10 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
+			/**
+			 * Grab the initial partialFee, and information required for calculating a partialFee
+			 * if queryFeeDetails is available in the runtime. 
+			 */
 			const {
 				class: dispatchClass,
 				partialFee,
@@ -259,16 +263,16 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
-			const apiAtPreviousBlock = await api.at(previousBlockHash);
-			const {
-				call: { transactionPaymentApi },
-			} = apiAtPreviousBlock;
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
-
+			/**
+			 * Call queryFeeDetails. It may not be available in the runtime and will
+			 * error automatically when we try to call it. We cache the runtimes it will error so we
+			 * don't try to call it again given a specVersion.  
+			 */
 			if (!this.queryFeeErrCache.includes(specVersion.toString())) {
 				try {
-					const { inclusionFee } = await transactionPaymentApi.queryFeeDetails(
+					const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
 						block.extrinsics[idx].toHex(),
 						previousBlockHash
 					);
@@ -277,11 +281,13 @@ export class BlocksService extends AbstractService {
 						weight,
 						inclusionFee
 					);
+					console.log('here: ', finalPartialFee);
 					dispatchFeeType = 'postDispatch';
 				} catch (e) {
 					this.queryFeeErrCache.push(specVersion.toString());
-					// Set a proper warning to explain the above error!
-					console.warn(e);
+					console.warn(
+						'The error above is automatically emmitted from polkadot-js, and there is no inherit error from your request.'
+					);
 				}
 			}
 
