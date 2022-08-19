@@ -52,7 +52,7 @@ export class QueryFeeDetailsCache {
 		if (this._versionWithoutCall === null) {
 			this._versionWithoutCall = specVersion;
 		}
-		if (this._versionWithoutCall < specVersion) {
+		if (specVersion > this._versionWithoutCall) {
 			this._versionWithoutCall = specVersion;
 		}
 	}
@@ -61,7 +61,7 @@ export class QueryFeeDetailsCache {
 		if (this._versionWithCall === null) {
 			this._versionWithCall = specVersion;
 		}
-		if (specVersion > this._versionWithCall) {
+		if (specVersion < this._versionWithCall) {
 			this._versionWithCall = specVersion;
 		}
 	}

@@ -1,2 +1,2 @@
 export * from './lruCache';
-export * from './QueryFeeErrCache';
+export * from './QueryFeeDetailsCache';
