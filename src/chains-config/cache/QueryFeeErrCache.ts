@@ -20,46 +20,49 @@ export class QueryFeeDetailsCache {
 	/**
 	 * Highest known runtime that doesn't have queryFeeDetails.
 	 */
-	private _highestKnown;
+	private _versionWithoutCall;
 	/**
 	 * Lowest known runtime that has queryFeeDetails
 	 */
-	private _lowestKnown;
+	private _versionWithCall;
 
-	constructor(highestKnown: number | null, lowestKnown: number | null) {
-		this._highestKnown = highestKnown;
-		this._lowestKnown = lowestKnown;
+	constructor(
+		versionWithoutCall: number | null,
+		versionWithCall: number | null
+	) {
+		this._versionWithoutCall = versionWithoutCall;
+		this._versionWithCall = versionWithCall;
 	}
 
 	public isQueryFeeDetailsAvail(specVersion: number) {
 		const { available, notAvailable, unknown } = QueryFee;
 
-		if (this._lowestKnown && specVersion >= this._lowestKnown) {
+		if (this._versionWithCall && specVersion >= this._versionWithCall) {
 			return available;
 		}
 
-		if (this._highestKnown && specVersion <= this._highestKnown) {
+		if (this._versionWithoutCall && specVersion <= this._versionWithoutCall) {
 			return notAvailable;
 		}
 
 		return unknown;
 	}
 
-	public setHighestKnownUnavailRuntime(specVersion: number) {
-		if (!this._highestKnown) {
-			this._highestKnown = specVersion;
+	public setVersionWithoutCall(specVersion: number) {
+		if (this._versionWithoutCall === null) {
+			this._versionWithoutCall = specVersion;
 		}
-		if (this._highestKnown && this._highestKnown < specVersion) {
-			this._highestKnown = specVersion;
+		if (this._versionWithoutCall < specVersion) {
+			this._versionWithoutCall = specVersion;
 		}
 	}
 
-	public setLowestKnownAvailRuntime(specVersion: number) {
-		if (!this._lowestKnown) {
-			this._lowestKnown = specVersion;
+	public setVersionWithCall(specVersion: number) {
+		if (this._versionWithCall === null) {
+			this._versionWithCall = specVersion;
 		}
-		if (this._lowestKnown && specVersion > this._lowestKnown) {
-			this._lowestKnown = specVersion;
+		if (specVersion > this._versionWithCall) {
+			this._versionWithCall = specVersion;
 		}
 	}
 }

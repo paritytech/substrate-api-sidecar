@@ -291,13 +291,9 @@ export class BlocksService extends AbstractService {
 						weight
 					);
 					dispatchFeeType = 'postDispatch';
-					this.queryFeeErrCache.setLowestKnownAvailRuntime(
-						specVersion.toNumber()
-					);
+					this.queryFeeErrCache.setVersionWithCall(specVersion.toNumber());
 				} catch {
-					this.queryFeeErrCache.setHighestKnownUnavailRuntime(
-						specVersion.toNumber()
-					);
+					this.queryFeeErrCache.setVersionWithoutCall(specVersion.toNumber());
 					console.warn(
 						'The error above is automatically emmitted from polkadot-js, and there is no inherit error from your request.'
 					);
