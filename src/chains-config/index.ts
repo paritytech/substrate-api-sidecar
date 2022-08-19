@@ -23,6 +23,7 @@ import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { astarControllers } from './astarControllers';
 import { bifrostControllers } from './bifrostControllers';
+import { bifrostPolkadotControllers } from './bifrostPolkadotControllers';
 import { calamariControllers } from './calamariControllers';
 import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
@@ -69,6 +70,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	manta: mantaControllers,
 	crust: crustControllers,
 	bifrost: bifrostControllers,
+	bifrost_polkadot: bifrostPolkadotControllers,
 	heiko: heikoControllers,
 	parallel: parallelControllers,
 };
