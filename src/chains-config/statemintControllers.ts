@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache } from './cache/lruCache';
+import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
  * Statemint configuration for Sidecar.
@@ -42,6 +42,6 @@ export const statemintControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 601,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: [],
+		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
 	},
 };

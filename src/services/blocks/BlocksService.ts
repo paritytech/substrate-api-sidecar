@@ -37,6 +37,7 @@ import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
+import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
 	IBlock,
 	IExtrinsic,
@@ -78,7 +79,7 @@ export class BlocksService extends AbstractService {
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
 		private blockStore: LRU<string, IBlock>,
-		private queryFeeErrCache: string[]
+		private queryFeeErrCache: QueryFeeDetailsCache
 	) {
 		super(api);
 	}
@@ -263,6 +264,8 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
+			const doesQueryFeeDetailsExist =
+				this.queryFeeErrCache.isQueryFeeDetailsAvail(specVersion.toNumber());
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
 			/**
@@ -270,20 +273,31 @@ export class BlocksService extends AbstractService {
 			 * error automatically when we try to call it. We cache the runtimes it will error so we
 			 * don't try to call it again given a specVersion.
 			 */
-			if (!this.queryFeeErrCache.includes(specVersion.toString())) {
+			if (doesQueryFeeDetailsExist === 'available') {
+				finalPartialFee = await this.fetchQueryFeeDetails(
+					block.extrinsics[idx].toHex(),
+					previousBlockHash,
+					weightInfo.weight,
+					weight
+				);
+
+				dispatchFeeType = 'postDispatch';
+			} else if (doesQueryFeeDetailsExist === 'unknown') {
 				try {
-					const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+					finalPartialFee = await this.fetchQueryFeeDetails(
 						block.extrinsics[idx].toHex(),
-						previousBlockHash
-					);
-					finalPartialFee = this.calcPartialFee(
+						previousBlockHash,
 						weightInfo.weight,
-						weight,
-						inclusionFee
+						weight
 					);
 					dispatchFeeType = 'postDispatch';
-				} catch (e) {
-					this.queryFeeErrCache.push(specVersion.toString());
+					this.queryFeeErrCache.setLowestKnownAvailRuntime(
+						specVersion.toNumber()
+					);
+				} catch {
+					this.queryFeeErrCache.setHighestKnownUnavailRuntime(
+						specVersion.toNumber()
+					);
 					console.warn(
 						'The error above is automatically emmitted from polkadot-js, and there is no inherit error from your request.'
 					);
@@ -316,6 +330,34 @@ export class BlocksService extends AbstractService {
 		this.blockStore.set(hash.toString(), response);
 
 		return response;
+	}
+
+	/**
+	 * Fetch `payment_queryFeeDetails`.
+	 * 
+	 * @param extHex 
+	 * @param previousBlockHash 
+	 * @param extrinsicSuccessWeight 
+	 * @param estWeight 
+	 */
+	private async fetchQueryFeeDetails(
+		extHex: `0x${string}`,
+		previousBlockHash: BlockHash,
+		extrinsicSuccessWeight: Weight,
+		estWeight: Weight
+	): Promise<string> {
+		const { api } = this;
+		const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+			extHex,
+			previousBlockHash
+		);
+		const finalPartialFee = this.calcPartialFee(
+			extrinsicSuccessWeight,
+			estWeight,
+			inclusionFee
+		);
+
+		return finalPartialFee;
 	}
 
 	/**

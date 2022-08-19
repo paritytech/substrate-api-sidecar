@@ -23,6 +23,7 @@ import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
+import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
 import {
@@ -116,7 +117,12 @@ type GetBlock = PromiseRpcResult<
 const cache = new LRU({ max: 2 }) as LRU<string, IBlock>;
 
 // Block Service
-const blocksService = new BlocksService(mockApi, 0, cache, []);
+const blocksService = new BlocksService(
+	mockApi,
+	0,
+	cache,
+	new QueryFeeDetailsCache(null, null)
+);
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
@@ -399,7 +405,7 @@ describe('BlocksService', () => {
 				mockApi,
 				0,
 				new LRU({ max: 2 }),
-				[]
+				new QueryFeeDetailsCache(null, null)
 			);
 			expect(
 				await blocksService['isFinalizedBlock'](

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache } from './cache/lruCache';
+import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 export const kulupuControllers: ControllerConfig = {
 	controllers: [
@@ -39,6 +39,6 @@ export const kulupuControllers: ControllerConfig = {
 		finalizes: false,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: [],
+		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
 	},
 };

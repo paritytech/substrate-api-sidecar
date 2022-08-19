@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache } from './cache/lruCache';
+import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
  * Kusama configuration for Sidecar.
@@ -48,6 +48,6 @@ export const kusamaControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1058,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: [],
+		queryFeeErrCache: new QueryFeeDetailsCache(2025, 2026),
 	},
 };

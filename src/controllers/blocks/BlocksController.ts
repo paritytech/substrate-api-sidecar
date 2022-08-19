@@ -18,20 +18,13 @@ import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
-import LRU from 'lru-cache';
 
 import { BlocksService } from '../../services';
+import { ControllerOptions } from '../../types/chains-config';
 import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
-
-interface ControllerOptions {
-	finalizes: boolean;
-	minCalcFeeRuntime: null | number;
-	blockStore: LRU<string, IBlock>;
-	queryFeeErrCache: string[];
-}
 
 /**
  * GET a block.

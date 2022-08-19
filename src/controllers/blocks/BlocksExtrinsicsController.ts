@@ -16,18 +16,11 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import LRU from 'lru-cache';
-import { IBlock } from 'src/types/responses';
 
 import { BlocksService } from '../../services';
+import { ControllerOptions } from '../../types/chains-config';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
-
-interface ControllerOptions {
-	minCalcFeeRuntime: null | number;
-	blockStore: LRU<string, IBlock>;
-	queryFeeErrCache: string[];
-}
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
 	constructor(api: ApiPromise, options: ControllerOptions) {
