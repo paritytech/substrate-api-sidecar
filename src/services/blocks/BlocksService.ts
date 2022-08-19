@@ -334,11 +334,11 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * Fetch `payment_queryFeeDetails`.
-	 * 
-	 * @param extHex 
-	 * @param previousBlockHash 
-	 * @param extrinsicSuccessWeight 
-	 * @param estWeight 
+	 *
+	 * @param extHex
+	 * @param previousBlockHash
+	 * @param extrinsicSuccessWeight
+	 * @param estWeight
 	 */
 	private async fetchQueryFeeDetails(
 		extHex: `0x${string}`,
