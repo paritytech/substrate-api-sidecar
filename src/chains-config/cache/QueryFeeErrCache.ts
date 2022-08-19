@@ -58,7 +58,7 @@ export class QueryFeeDetailsCache {
 		if (!this._lowestKnown) {
 			this._lowestKnown = specVersion;
 		}
-		if (this._lowestKnown && this._lowestKnown > this._lowestKnown) {
+		if (this._lowestKnown && specVersion > this._lowestKnown) {
 			this._lowestKnown = specVersion;
 		}
 	}
