@@ -20,6 +20,7 @@ import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 
+import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
@@ -102,6 +103,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateBoolean);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],

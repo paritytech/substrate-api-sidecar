@@ -19,16 +19,16 @@ import { BadRequest } from 'http-errors';
 
 // Query Params used in controllers
 const queryParams = [
-	'eventDocs',
-	'extrinsicDocs',
-	'finalized',
-	'denominated',
-	'unclaimedOnly',
-	'actions',
-	'includeFee',
-	'adjustMetadataV13',
-	'currentLeaseHolders',
-	'noMeta',
+	'eventDocs', // BlocksController
+	'extrinsicDocs', // BlocksController
+	'finalized', // BlocksController
+	'denominated', // AccountsBalanceController
+	'unclaimedOnly', // AccountsStakingPayoutsController
+	'actions', // BlocksTraceController
+	'includeFee', // NodeTransactionPoolController
+	'adjustMetadataV13', // PalletsStorageController
+	'currentLeaseHolders', // ParasController
+	'noMeta', // TransactionMaterialController
 ];
 
 export const validateBooleanMiddleware: RequestHandler = (req, _res, next) => {
