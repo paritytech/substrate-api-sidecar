@@ -30,7 +30,7 @@ export class ContractsInkService extends AbstractService {
 		contract: ContractPromise,
 		address: string,
 		method: string,
-		args: unknown[],
+		args?: unknown[],
 		gasLimit?: string,
 		storageDepositLimit?: string
 	): Promise<ContractCallOutcome> {
