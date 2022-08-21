@@ -27,21 +27,13 @@ export class ContractsInkService extends AbstractService {
 	 * @param metadata ABI metadata associated with the contract.
 	 */
 	public async fetchContractCall(
+		contract: ContractPromise,
 		address: string,
-		metadata: Record<string, unknown>,
 		method: string,
 		args: unknown[],
 		gasLimit?: string,
 		storageDepositLimit?: string
 	): Promise<ContractCallOutcome> {
-		const { api } = this;
-
-		const contract = new ContractPromise(api, metadata, address);
-
-		if (!contract.query.get) {
-			throw Error('Contract does not have the given GET message.');
-		}
-
 		const {
 			debugMessage,
 			gasConsumed,

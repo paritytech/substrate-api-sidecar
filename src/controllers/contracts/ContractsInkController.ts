@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { ContractPromise } from '@polkadot/api-contract';
 import { RequestHandler } from 'express';
 
 import { validateAddress } from '../../middleware';
@@ -57,13 +58,19 @@ export default class ContractsInkController extends AbstractController<Contracts
 		},
 		res
 	): Promise<void> => {
+		const { api } = this;
 		const argsArray = Array.isArray(args) ? args : [];
+		const contract = new ContractPromise(api, body, address);
+
+		if (!contract.query[method]) {
+			throw Error(`Contract does not have the given ${method} message.`);
+		}
 
 		ContractsInkController.sanitizedSend(
 			res,
 			await this.service.fetchContractCall(
+				contract,
 				address,
-				body,
 				method,
 				argsArray,
 				gasLimit,
