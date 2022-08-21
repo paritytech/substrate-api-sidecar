@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
 import {
 	IBodyContractMetadata,
@@ -32,6 +33,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateAddress);
 		this.router.post(
 			this.path,
 			AbstractController.catchWrap(this.getContractCall as RequestHandler)
