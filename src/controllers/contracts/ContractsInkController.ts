@@ -39,7 +39,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 	}
 
 	/**
-	 * Get the account balance for a given contract.
+	 * Send a message call to a contract. It defaults to get if nothing is inputted.
 	 *
 	 * @param _req
 	 * @param res
