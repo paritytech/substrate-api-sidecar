@@ -15,7 +15,7 @@ tags:
 - name: node
   description: node connected to sidecar
 - name: pallets
-  description: pallets employed in the runtimex
+  description: pallets employed in the runtime
 - name: runtime
 - name: transaction
 - name: paras
