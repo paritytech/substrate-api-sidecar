@@ -397,7 +397,7 @@ export class BlocksService extends AbstractService {
 				extrinsicSuccessWeight.toString()
 			);
 		} else {
-			// When the inlcusion fee isNone we are dealing with a unsigned extrinsic.
+			// When the inclusion fee isNone we are dealing with a unsigned extrinsic.
 			return '0';
 		}
 	}
