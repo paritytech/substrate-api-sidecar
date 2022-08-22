@@ -44,7 +44,7 @@ export interface ControllerConfig {
 
 export interface ControllerOptions {
 	/**
-	 * Wether or not the chain finalizes blocks
+	 * Whether or not the chain finalizes blocks
 	 */
 	finalizes?: boolean;
 	/**
