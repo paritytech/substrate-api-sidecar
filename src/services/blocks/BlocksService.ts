@@ -295,7 +295,7 @@ export class BlocksService extends AbstractService {
 				} catch {
 					this.queryFeeErrCache.setVersionWithoutCall(specVersion.toNumber());
 					console.warn(
-						'The error above is automatically emmitted from polkadot-js, and there is no inherit error from your request.'
+						'The error above is automatically emitted from polkadot-js, and can be ignored.'
 					);
 				}
 			}
