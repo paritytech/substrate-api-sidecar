@@ -57,8 +57,7 @@ export class QueryFeeDetailsCache {
 	public setVersionWithoutCall(specVersion: number) {
 		if (this._versionWithoutCall === null) {
 			this._versionWithoutCall = specVersion;
-		}
-		if (specVersion > this._versionWithoutCall) {
+		} else if (specVersion > this._versionWithoutCall) {
 			this._versionWithoutCall = specVersion;
 		}
 	}
@@ -66,8 +65,7 @@ export class QueryFeeDetailsCache {
 	public setVersionWithCall(specVersion: number) {
 		if (this._versionWithCall === null) {
 			this._versionWithCall = specVersion;
-		}
-		if (specVersion < this._versionWithCall) {
+		} else if (specVersion < this._versionWithCall) {
 			this._versionWithCall = specVersion;
 		}
 	}
