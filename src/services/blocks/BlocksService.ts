@@ -375,7 +375,7 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * Calculate the partialFee for an extrinsic. This uses `calc_partial_fee` from `@substrate/calc`.
-	 * Please reference
+	 * Please reference the rust code in `@substrate/calc` too see docs on the algorithm.
 	 *
 	 * @param extrinsicSuccessWeight
 	 * @param estWeight
