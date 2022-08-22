@@ -37,11 +37,17 @@ export class QueryFeeDetailsCache {
 	public isQueryFeeDetailsAvail(specVersion: number) {
 		const { available, notAvailable, unknown } = QueryFee;
 
-		if (this._versionWithCall && specVersion >= this._versionWithCall) {
+		if (
+			this._versionWithCall !== null &&
+			specVersion >= this._versionWithCall
+		) {
 			return available;
 		}
 
-		if (this._versionWithoutCall && specVersion <= this._versionWithoutCall) {
+		if (
+			this._versionWithoutCall !== null &&
+			specVersion <= this._versionWithoutCall
+		) {
 			return notAvailable;
 		}
 
