@@ -18,7 +18,6 @@ import { Keyring } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { allNetworks } from '@polkadot/util-crypto';
 import { blake2AsHex } from '@polkadot/util-crypto';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { BadRequest } from 'http-errors';
 
 import { IAccountConvert } from '../../types/responses/AccountConvert';
@@ -37,7 +36,7 @@ export class AccountsConvertService extends AbstractService {
 	 */
 	accountConvert(
 		accountId: string,
-		scheme: KeypairType,
+		scheme: 'ed25519' | 'sr25519' | 'ecdsa',
 		ss58Prefix: number,
 		publicKey: boolean
 	): IAccountConvert {

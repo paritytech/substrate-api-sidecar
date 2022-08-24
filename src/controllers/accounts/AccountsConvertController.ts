@@ -15,11 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
 import { AccountsConvertService } from '../../services/accounts';
+import { IAddressParam, IConvertQueryParams } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class AccountsConvertController extends AbstractController<AccountsConvertService> {
@@ -32,14 +32,14 @@ export default class AccountsConvertController extends AbstractController<Accoun
 		this.safeMountAsyncGetHandlers([['', this.accountConvert]]);
 	}
 
-	private accountConvert: RequestHandler = (
-		{ params: { address }, query: { scheme, prefix, publicKey } },
-		res
-	) => {
+	private accountConvert: RequestHandler<
+		IAddressParam,
+		unknown,
+		unknown,
+		IConvertQueryParams
+	> = ({ params: { address }, query: { scheme, prefix, publicKey } }, res) => {
 		// Validation of the `scheme` query param
-		const cryptoScheme = (
-			typeof scheme !== 'string' ? 'sr25519' : scheme
-		) as KeypairType;
+		const cryptoScheme = !scheme ? 'sr25519' : scheme;
 		if (
 			!(
 				cryptoScheme === 'ed25519' ||
@@ -53,7 +53,7 @@ export default class AccountsConvertController extends AbstractController<Accoun
 		}
 
 		// Validation of the `prefix` query param
-		const networkPrefix = typeof prefix !== 'string' ? '42' : prefix;
+		const networkPrefix = !prefix ? '42' : prefix;
 		const ss58Prefix = this.parseNumberOrThrow(
 			networkPrefix,
 			'`prefix` provided is not a number.'
@@ -64,14 +64,14 @@ export default class AccountsConvertController extends AbstractController<Accoun
 			!(
 				String(publicKey).toLowerCase() === 'true' ||
 				String(publicKey).toLowerCase() === 'false' ||
-				publicKey === undefined
+				!publicKey
 			)
 		) {
 			throw new BadRequest(
 				'`publicKey` can be either true or false (boolean value)'
 			);
 		}
-		const pubKey = typeof publicKey !== 'string' ? true : publicKey === 'true';
+		const pubKey = !publicKey ? true : publicKey === 'true';
 
 		AccountsConvertController.sanitizedSend(
 			res,
