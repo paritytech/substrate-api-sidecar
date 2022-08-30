@@ -12,6 +12,7 @@ info:
 tags:
 - name: accounts
 - name: blocks
+- name: contracts
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -643,6 +644,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /contracts/ink/{address}/query:
+    post:
+      tags:
+      - contracts
+      summary: Query an !Ink contract with a given message (method).
+      description: Will return a valid or invalid result. 
+      operationId: callContractQuery
+      requestBody:
+        $ref: '#/components/requestBodies/ContractMetadata'
+      parameters:
+      - name: address
+        in: path
+        description: SS58 or Hex address of the account associated with the contract.
+        required: true
+        schema:
+          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          type: string
+      - name: method
+        in: query
+        description: The message or method used to query.
+        required: false
+        schema:
+          type: string
+          default: 'get'
+      - name: gasLimit
+        in: query
+        description: The gas limit to be used as an option for the queried message.
+        required: false
+        schema:
+          default: -1
+          type: number
+      - name: storageDepositLimit
+        in: query
+        description: The storage deposit limit to be used as an option for the queried message.
+        required: false
+        schema:
+          deafult: null
+          type: number
+      - name: args
+        in: query
+        description: Abi params used as args specified in the metadata to be passed into a query. 
+          The format to use this query param is ?args[]=1&args[]=2&args[]=3.
+        required: false
+      responses:
+        "200":
+          description: succesful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractsInkQuery'
   /node/network:
     get:
       tags:
@@ -1840,6 +1891,27 @@ components:
         custom:
           type: string
       example: "{\"live\": null}"
+    ContractsInkQuery:
+      type: object
+      description: Result from calling a query to a Ink contract.
+      properties:
+        debugMessage:
+          type: string
+        gasConsumed:
+          type: string
+        gasRequired:
+          type: string
+        output:
+          type: boolean
+        result:
+          type: object
+          description: Will result in an Ok or Err object depending on the result of the query.
+        storageDeposit:
+          type: object
+    ContractMetata:
+      type: object
+      description: Metadata used to instantiate a ContractPromise. This metadata can be generated
+        by compiling the contract you are querying.
     DigestItem:
       type: object
       properties:
@@ -2956,3 +3028,9 @@ components:
           schema:
             $ref: '#/components/schemas/Transaction'
       required: true
+    ContractMetadata:
+      content:
+        application/json:
+          scehma:
+            $ref: '#/components/schemas/ContractMetadata'
+
