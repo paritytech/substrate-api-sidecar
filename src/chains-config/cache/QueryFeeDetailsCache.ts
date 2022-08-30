@@ -16,6 +16,12 @@ enum QueryFee {
 	unknown = 'unknown',
 }
 
+/**
+ * Note: This cache is necessary as a work around since there is no way to find out
+ * if TransactionPaymentApi::query_feeDetails is an available call. The runtimeApi version
+ * was not bumped when query_feeDetails was added, therefore polkadot-js will error if it
+ * is called when it doesn't exist.
+ */
 export class QueryFeeDetailsCache {
 	/**
 	 * Highest known runtime that doesn't have queryFeeDetails.
