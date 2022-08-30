@@ -264,8 +264,9 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
-			const doesQueryFeeDetailsExist =
-				this.queryFeeErrCache.isQueryFeeDetailsAvail(specVersion.toNumber());
+			const doesQueryFeeDetailsExist = this.queryFeeErrCache.hasQueryFeeDetails(
+				specVersion.toNumber()
+			);
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
 			/**

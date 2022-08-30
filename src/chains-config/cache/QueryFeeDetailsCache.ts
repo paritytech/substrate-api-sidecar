@@ -34,7 +34,12 @@ export class QueryFeeDetailsCache {
 		this._registerWithCall = registerWithCall;
 	}
 
-	public isQueryFeeDetailsAvail(specVersion: number) {
+	/**
+	 * Checks whether the current runtime version has access to the runtime API: `TransactionPaymentApi`
+	 *
+	 * @param specVersion Current specVersion to check.
+	 */
+	public hasQueryFeeDetails(specVersion: number) {
 		const { available, notAvailable, unknown } = QueryFee;
 
 		if (

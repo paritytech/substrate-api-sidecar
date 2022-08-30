@@ -9,16 +9,16 @@ describe('QueryFeeDetails', () => {
 
 	it('Should return the correct QueryFee enum value', () => {
 		// For values in between `registerWithCall` and `registerWithoutCall`
-		const unknownRes = cache.isQueryFeeDetailsAvail(21);
+		const unknownRes = cache.hasQueryFeeDetails(21);
 		expect(unknownRes).toBe('unknown');
 
-		const availableRes = cache.isQueryFeeDetailsAvail(26);
-		const availableEqRes = cache.isQueryFeeDetailsAvail(25);
+		const availableRes = cache.hasQueryFeeDetails(26);
+		const availableEqRes = cache.hasQueryFeeDetails(25);
 		expect(availableRes).toBe('available');
 		expect(availableEqRes).toBe('available');
 
-		const notAvailableRes = cache.isQueryFeeDetailsAvail(19);
-		const notAvailableEqRes = cache.isQueryFeeDetailsAvail(20);
+		const notAvailableRes = cache.hasQueryFeeDetails(19);
+		const notAvailableEqRes = cache.hasQueryFeeDetails(20);
 		expect(notAvailableRes).toBe('notAvailable');
 		expect(notAvailableEqRes).toBe('notAvailable');
 	});
