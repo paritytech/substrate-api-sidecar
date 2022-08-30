@@ -43,6 +43,6 @@ export const acalaControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 2000,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };

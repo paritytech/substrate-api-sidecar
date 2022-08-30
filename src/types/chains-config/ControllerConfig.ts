@@ -58,5 +58,5 @@ export interface ControllerOptions {
 	/**
 	 * Cache for storing runtime versions that either have queryFeeDetails, or dont.
 	 */
-	queryFeeErrCache: QueryFeeDetailsCache;
+	hasQueryFeeApi: QueryFeeDetailsCache;
 }

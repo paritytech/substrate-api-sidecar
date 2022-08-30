@@ -39,6 +39,6 @@ export const kulupuControllers: ControllerConfig = {
 		finalizes: false,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };

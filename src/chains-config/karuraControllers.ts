@@ -43,6 +43,6 @@ export const karuraControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 1000,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };

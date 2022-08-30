@@ -79,7 +79,7 @@ export class BlocksService extends AbstractService {
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
 		private blockStore: LRU<string, IBlock>,
-		private queryFeeErrCache: QueryFeeDetailsCache
+		private hasQueryFeeApi: QueryFeeDetailsCache
 	) {
 		super(api);
 	}
@@ -264,7 +264,7 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
-			const doesQueryFeeDetailsExist = this.queryFeeErrCache.hasQueryFeeDetails(
+			const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
 				specVersion.toNumber()
 			);
 			let finalPartialFee = partialFee.toString(),
@@ -292,9 +292,9 @@ export class BlocksService extends AbstractService {
 						weight
 					);
 					dispatchFeeType = 'postDispatch';
-					this.queryFeeErrCache.setRegisterWithCall(specVersion.toNumber());
+					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
 				} catch {
-					this.queryFeeErrCache.setRegisterWithoutCall(specVersion.toNumber());
+					this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
 					console.warn(
 						'The error above is automatically emitted from polkadot-js, and can be ignored.'
 					);

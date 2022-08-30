@@ -94,7 +94,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				api,
 				options.minCalcFeeRuntime,
 				options.blockStore,
-				options.queryFeeErrCache
+				options.hasQueryFeeApi
 			)
 		);
 		this.initRoutes();

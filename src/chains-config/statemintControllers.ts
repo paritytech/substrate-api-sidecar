@@ -42,6 +42,6 @@ export const statemintControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 601,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };

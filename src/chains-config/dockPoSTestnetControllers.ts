@@ -45,6 +45,6 @@ export const dockTestnetControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: 26,
 		blockStore: initLRUCache(),
-		queryFeeErrCache: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };
