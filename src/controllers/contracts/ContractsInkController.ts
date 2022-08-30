@@ -60,18 +60,17 @@ export default class ContractsInkController extends AbstractController<Contracts
 		const { api } = this;
 		const argsArray = Array.isArray(args) ? args : [];
 		const contract = new ContractPromise(api, body, address);
-		const callMeta = contract.query[method].meta;
+		if (!contract.query[method]) {
+			throw Error(`Contract does not have the given ${method} message.`);
+		}
 
+		const callMeta = contract.query[method].meta;
 		if (callMeta.isPayable || callMeta.isMutating) {
 			throw Error(
 				`${
 					this.path + `/query`
 				} does not handle mutating or payable calls. Use ${this.path} + /tx`
 			);
-		}
-
-		if (!contract.query[method]) {
-			throw Error(`Contract does not have the given ${method} message.`);
 		}
 
 		ContractsInkController.sanitizedSend(
@@ -86,21 +85,4 @@ export default class ContractsInkController extends AbstractController<Contracts
 			)
 		);
 	};
-
-	// private callContractTx: IPostRequestHandler<
-	// 	IBodyContractMetadata,
-	// 	IContractQueryParam
-	// > = async (
-	// 	{
-	// 		params: { address },
-	// 		body,
-	// 		query: { method = 'get', gasLimit, storageDepositLimit, args, value },
-	// 	},
-	// 	res
-	// ): Promise<void> => {
-	// 	const txValue = this.parseBnOrThrow(
-	// 		value,
-	// 		`The inputted query parameter for value: ${value} is not a valid integer`
-	// 	);
-	// }
 }

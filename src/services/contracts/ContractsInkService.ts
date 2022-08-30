@@ -21,10 +21,14 @@ import { AbstractService } from '../AbstractService';
 
 export class ContractsInkService extends AbstractService {
 	/**
-	 * Query the GET message from a contract.
+	 * Query a given message method.
 	 *
-	 * @param address AccountId associated with the contract.
-	 * @param metadata ABI metadata associated with the contract.
+	 * @param contract ContractPromise that has decorated querys.
+	 * @param address Address to query with the contract.
+	 * @param method Message that will be queried.
+	 * @param args Args to attach to the query.
+	 * @param gasLimit Gas limit which will default to -1.
+	 * @param storageDepositLimit Storage Deposit Limit that will default to null.
 	 */
 	public async fetchContractCall(
 		contract: ContractPromise,
@@ -34,16 +38,15 @@ export class ContractsInkService extends AbstractService {
 		gasLimit?: string,
 		storageDepositLimit?: string
 	): Promise<ContractCallOutcome> {
-		let callResult: ContractCallOutcome;
 		const options = {
 			gasLimit: gasLimit || -1,
 			storageDepositLimit: storageDepositLimit || null,
 		};
-		if (args && args.length > 0) {
-			callResult = await contract.query[method](address, options, args);
-		} else {
-			callResult = await contract.query[method](address, options);
-		}
+
+		const callResult =
+			args && args.length > 0
+				? await contract.query[method](address, options, args)
+				: await contract.query[method](address, options);
 
 		const {
 			debugMessage,

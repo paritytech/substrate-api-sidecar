@@ -65,5 +65,4 @@ export interface IContractQueryParam extends Query {
 	args: string[];
 	gasLimit: string;
 	storageDepositLimit: string;
-	value: string;
 }
