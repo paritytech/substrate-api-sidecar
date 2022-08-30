@@ -8,7 +8,7 @@ describe('QueryFeeDetails', () => {
 	});
 
 	it('Should return the correct QueryFee enum value', () => {
-		// For values in between `versionWithCall` and `versionWithoutCall`
+		// For values in between `registerWithCall` and `registerWithoutCall`
 		const unknownRes = cache.isQueryFeeDetailsAvail(21);
 		expect(unknownRes).toBe('unknown');
 
@@ -23,33 +23,33 @@ describe('QueryFeeDetails', () => {
 		expect(notAvailableEqRes).toBe('notAvailable');
 	});
 
-	it('Should correctly `setVersionWithoutCall`', () => {
-		// Ensure it doesn't change the _versionWithoutCall when its less than the current
-		cache.setVersionWithoutCall(10);
-		expect(cache['_versionWithoutCall']).toBe(20);
+	it('Should correctly `setRegisterWithoutCall`', () => {
+		// Ensure it doesn't change the _registerWithoutCall when its less than the current
+		cache.setRegisterWithoutCall(10);
+		expect(cache['_registerWithoutCall']).toBe(20);
 
-		cache.setVersionWithoutCall(22);
-		expect(cache['_versionWithoutCall']).toBe(22);
+		cache.setRegisterWithoutCall(22);
+		expect(cache['_registerWithoutCall']).toBe(22);
 	});
 
-	it('Should correctly `setVersionWithCall`', () => {
-		// Ensure it doesn't change the _versionWithCall when its greater than the current
-		cache.setVersionWithCall(30);
-		expect(cache['_versionWithCall']).toBe(25);
+	it('Should correctly `setRegisterWithCall`', () => {
+		// Ensure it doesn't change the _registerWithCall when its greater than the current
+		cache.setRegisterWithCall(30);
+		expect(cache['_registerWithCall']).toBe(25);
 
-		cache.setVersionWithCall(24);
-		expect(cache['_versionWithCall']).toBe(24);
+		cache.setRegisterWithCall(24);
+		expect(cache['_registerWithCall']).toBe(24);
 	});
 
 	it('Should handle null and 0 values correctly', () => {
 		const nullCache = new QueryFeeDetailsCache(null, null);
 
 		// Check if it handles 0 values correctly against the null check
-		nullCache.setVersionWithoutCall(0);
-		expect(nullCache['_versionWithoutCall']).toBe(0);
+		nullCache.setRegisterWithoutCall(0);
+		expect(nullCache['_registerWithoutCall']).toBe(0);
 
 		// Check if it handles 0 values correctly against the null check
-		nullCache.setVersionWithCall(0);
-		expect(nullCache['_versionWithCall']).toBe(0);
+		nullCache.setRegisterWithCall(0);
+		expect(nullCache['_registerWithCall']).toBe(0);
 	});
 });
