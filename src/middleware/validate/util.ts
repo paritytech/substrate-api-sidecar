@@ -18,10 +18,10 @@ import { Request, Response } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
 
 /**
- * Assert that a middleware does not error with a the given `req`.
+ * Assert that a middleware does not error with the given request.
  *
- * @param name thing it does not error on
- * @param req Express Request containing thing it errors on
+ * @param name String for tests to log.
+ * @param req Express Request containing thing it errors on.
  */
 export const doesNotErrorWith = (
 	name: string,
@@ -40,9 +40,9 @@ export const doesNotErrorWith = (
  * Assert that a middleware passes `err` to next with the given
  * `req`.
  *
- * @param name thing it errors on
- * @param req Express Request containing thing it errors on
- * @param err expected error that it passes to next
+ * @param name String for tests to log.
+ * @param req Express Request containing thing it errors on.
+ * @param err Expected error that it passes to next.
  */
 export const errorsWith = (
 	name: string,
