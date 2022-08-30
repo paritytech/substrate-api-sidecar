@@ -34,6 +34,17 @@ export class ContractsInkService extends AbstractService {
 		gasLimit?: string,
 		storageDepositLimit?: string
 	): Promise<ContractCallOutcome> {
+		let callResult: ContractCallOutcome;
+		const options = {
+			gasLimit: gasLimit || -1,
+			storageDepositLimit: storageDepositLimit || null,
+		};
+		if (args && args.length > 0) {
+			callResult = await contract.query[method](address, options, args);
+		} else {
+			callResult = await contract.query[method](address, options);
+		}
+
 		const {
 			debugMessage,
 			gasConsumed,
@@ -41,14 +52,7 @@ export class ContractsInkService extends AbstractService {
 			output,
 			result,
 			storageDeposit,
-		} = await contract.query[method](
-			address,
-			{
-				gasLimit: gasLimit || -1,
-				storageDepositLimit: storageDepositLimit || null,
-			},
-			args
-		);
+		} = callResult;
 
 		return {
 			debugMessage,

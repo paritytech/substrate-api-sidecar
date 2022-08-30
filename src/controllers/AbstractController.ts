@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
+import BN from 'bn.js';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
@@ -84,6 +85,26 @@ export default abstract class AbstractController<T extends AbstractService> {
 		for (const pathAndHandler of pathsAndHandlers) {
 			const [pathSuffix, handler] = pathAndHandler;
 			this.router.get(
+				`${this.path}${pathSuffix}`,
+				AbstractController.catchWrap(handler as RequestHandler)
+			);
+		}
+	}
+
+	/**
+	 * Safely mount async POST routes by wrapping them with an express
+	 * handler friendly try / catch block and then mounting on the controllers
+	 * router.
+	 *
+	 * @param pathsAndHandlers array of tuples containing the suffix to the controller
+	 * base path (use empty string if no suffix) and the get request handler function.
+	 */
+	protected safeMountAsyncPostHandlers(
+		pathsAndHandlers: [string, SidecarRequestHandler][]
+	): void {
+		for (const pathAndHandler of pathsAndHandlers) {
+			const [pathSuffix, handler] = pathAndHandler;
+			this.router.post(
 				`${this.path}${pathSuffix}`,
 				AbstractController.catchWrap(handler as RequestHandler)
 			);
@@ -187,6 +208,16 @@ export default abstract class AbstractController<T extends AbstractService> {
 			throw new BadRequest(errorMessage);
 		}
 
+		return num;
+	}
+
+	protected parseBnOrThrow(n: string, errorMessage: string): BN {
+		let num: BN;
+		try {
+			num = new BN(n);
+		} catch {
+			throw new BadRequest(errorMessage);
+		}
 		return num;
 	}
 
