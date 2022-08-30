@@ -17,7 +17,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
-import BN from 'bn.js';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
@@ -208,16 +207,6 @@ export default abstract class AbstractController<T extends AbstractService> {
 			throw new BadRequest(errorMessage);
 		}
 
-		return num;
-	}
-
-	protected parseBnOrThrow(n: string, errorMessage: string): BN {
-		let num: BN;
-		try {
-			num = new BN(n);
-		} catch {
-			throw new BadRequest(errorMessage);
-		}
 		return num;
 	}
 
