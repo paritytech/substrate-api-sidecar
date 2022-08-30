@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import { RequestHandler } from 'express';
+import { BadRequest } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
@@ -61,15 +62,15 @@ export default class ContractsInkController extends AbstractController<Contracts
 		const argsArray = Array.isArray(args) ? args : [];
 		const contract = new ContractPromise(api, body, address);
 		if (!contract.query[method]) {
-			throw Error(`Contract does not have the given ${method} message.`);
+			throw new BadRequest(
+				`Invalid Method: Contract does not have the given ${method} message.`
+			);
 		}
 
 		const callMeta = contract.query[method].meta;
 		if (callMeta.isPayable || callMeta.isMutating) {
-			throw Error(
-				`${
-					this.path + `/query`
-				} does not handle mutating or payable calls. Use ${this.path} + /tx`
+			throw new BadRequest(
+				`Invalid Method: This endpoint does not handle mutating or payable calls.`
 			);
 		}
 

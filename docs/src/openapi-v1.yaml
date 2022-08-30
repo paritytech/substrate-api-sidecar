@@ -694,6 +694,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContractsInkQuery'
+        "400":
+          description: Invalid Method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /node/network:
     get:
       tags:
