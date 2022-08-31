@@ -33,7 +33,7 @@ All notable changes to this project will be documented in this file. See [standa
 Tested against:
 - Polkadot v9270
 - Kusama v9270
-- Westend v9270
+- Westend v9280
 
 
 ## [12.4.3](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.2..v12.4.3) (2022-08-09)
