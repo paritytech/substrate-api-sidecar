@@ -386,7 +386,7 @@ paths:
       - name: scheme
         in: query
         description: The cryptographic scheme to be used in order to convert the AccountId to 
-          an SS58 address. It can take one of those three values [sr25519, ed25519, ecdsa].
+          an SS58 address. It can take one of three values [sr25519, ed25519, ecdsa].
           The default scheme that is used is `sr25519` (if it is not set in the query parameter).
         required: false
         schema:

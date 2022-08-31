@@ -39,7 +39,7 @@ export default class AccountsConvertController extends AbstractController<Accoun
 		IConvertQueryParams
 	> = ({ params: { address }, query: { scheme, prefix, publicKey } }, res) => {
 		// Validation of the `scheme` query param
-		const cryptoScheme = !scheme ? 'sr25519' : scheme;
+		const cryptoScheme = scheme ? scheme : 'sr25519';
 		if (
 			!(
 				cryptoScheme === 'ed25519' ||
@@ -48,15 +48,15 @@ export default class AccountsConvertController extends AbstractController<Accoun
 			)
 		) {
 			throw new BadRequest(
-				'`scheme` can have one of those 3 values [ed25519, sr25519, ecdsa]'
+				'The `scheme` query parameter provided can be one of the following three values : [ed25519, sr25519, ecdsa]'
 			);
 		}
 
 		// Validation of the `prefix` query param
-		const networkPrefix = !prefix ? '42' : prefix;
+		const networkPrefix = prefix ? prefix : '42';
 		const ss58Prefix = this.parseNumberOrThrow(
 			networkPrefix,
-			'`prefix` provided is not a number.'
+			'The `prefix` query parameter provided is not a number.'
 		);
 
 		// Validation of the `publicKey` query param
@@ -68,10 +68,10 @@ export default class AccountsConvertController extends AbstractController<Accoun
 			)
 		) {
 			throw new BadRequest(
-				'`publicKey` can be either true or false (boolean value)'
+				'The `publicKey` query parameter provided can be either true or false (boolean value)'
 			);
 		}
-		const pubKey = !publicKey ? true : publicKey === 'true';
+		const pubKey = publicKey ? publicKey === 'true' : true;
 
 		AccountsConvertController.sanitizedSend(
 			res,

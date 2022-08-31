@@ -26,7 +26,7 @@ const mockApi = {
 const validateService = new AccountsConvertService(mockApi);
 
 describe('Convert accounts', () => {
-	it('Should convert a Substrate accountId to a SS58 Address with scheme=ecdsa', () => {
+	it('Should convert a Substrate AccountId to an SS58 Address when `scheme` equals `ecdsa`', () => {
 		const expectedResponse = {
 			ss58Prefix: '42',
 			network: 'substrate',
@@ -46,7 +46,7 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should convert a Kusama accountId to a SS58 Address with scheme=sr25519', () => {
+	it('Should convert a Kusama AccountId to an SS58 Address when `scheme` equals `sr25519`', () => {
 		const expectedResponse = {
 			ss58Prefix: '2',
 			network: 'kusama',
@@ -66,7 +66,7 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should convert an Acala accountId to a SS58 Address with scheme=ed25519', () => {
+	it('Should convert an Acala AccountId to an SS58 Address when `scheme` equals `ed25519`', () => {
 		const expectedResponse = {
 			ss58Prefix: '10',
 			network: 'acala',
@@ -86,7 +86,7 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	it('Should convert a valid Astar AccountId to a SS58 Address', () => {
+	it('Should convert a valid Astar AccountId to an SS58 Address', () => {
 		const expectedResponse = {
 			ss58Prefix: '5',
 			network: 'astar',
@@ -106,9 +106,9 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	// Since the input parameter is a Public key (hex) (and not an Account ID),
-	// if we set the publicKey=true the output is a SS58 Address.
-	it('Should convert a valid Polkadot Public key (hex) to a SS58 Address with publicKey=true', () => {
+	// Since the input parameter is a Public key (hex) (and not an AccountId),
+	// if we set the publicKey=true the output is an SS58 Address.
+	it('Should convert a valid Polkadot Public key (hex) to an SS58 Address when `publicKey` equals `true`', () => {
 		const expectedResponse = {
 			ss58Prefix: '0',
 			network: 'polkadot',
@@ -128,9 +128,9 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	// Since the input parameter is a Public key (hex) (and not an Account ID), if we
-	// set the publicKey=false the output is the Public key (SS58) and not a SS58 Address.
-	it('Should convert a valid Polkadot Public key (hex) to a Public key (SS58) because publicKey=false', () => {
+	// Since the input parameter is a Public key (hex) (and not an AccountId), if we
+	// set the publicKey=false, the output is the Public key (SS58) and not an SS58 Address.
+	it('Should convert a valid Polkadot Public key (hex) to a Public key (SS58) when `publicKey` equals `false`', () => {
 		const expectedResponse = {
 			ss58Prefix: '0',
 			network: 'polkadot',
@@ -150,11 +150,11 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
-	// We try to convert a Polkadot Account ID to a SS58 Address by setting the publicKey=true
-	// which is not correct and that is why we get an invelid address.
-	// If we would like to convert it correctly and have the expected
-	// SS58 address then we should set the publicKey=false.
-	it('Should convert a valid AccountId to an invalid address because publicKey=true', () => {
+	// We try to convert a Polkadot AccountId to an SS58 Address by setting the publicKey=true
+	// which is not correct and that is why in the response we have an invalid address.
+	// If we would like to convert it correctly and have the expected SS58 address
+	// then we should set the publicKey=false.
+	it('Should convert a valid AccountId to an invalid address when `publicKey` equals `true`', () => {
 		const expectedResponse = {
 			ss58Prefix: '0',
 			network: 'polkadot',
@@ -181,7 +181,7 @@ describe('Convert accounts', () => {
 			sanitizeNumbers(
 				validateService.accountConvert(invalidAccountId, 'sr25519', 42, true)
 			)
-		).toThrow('`accountId` is not a valid hex value.');
+		).toThrow('The `accountId` parameter provided is not a valid hex value.');
 	});
 
 	it('Should correctly throw an error for an invalid prefix', () => {
@@ -196,6 +196,8 @@ describe('Convert accounts', () => {
 					true
 				)
 			)
-		).toThrow('`prefix` does not correspond to a existing network.');
+		).toThrow(
+			'The given `prefix` query parameter does not correspond to an existing network.'
+		);
 	});
 });

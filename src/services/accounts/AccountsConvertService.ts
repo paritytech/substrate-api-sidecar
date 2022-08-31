@@ -25,16 +25,16 @@ import { AbstractService } from '../AbstractService';
 
 export class AccountsConvertService extends AbstractService {
 	/**
-	 * Takes a given accountId and converts it to a SS58 address
-	 * based on the values of the variables scheme, ss58Prefix & publicKey.
+	 * Takes a given AccountId or Public Key (hex) and converts it to an SS58 address.
+	 * The conversion is based on the values of the variables scheme, ss58Prefix & publicKey.
 	 * It also returns the network name.
 	 *
-	 * @param address ss58 or hex address to validate
+	 * @param accountId or Public Key (hex) to convert
 	 * @param scheme
 	 * @param ss58Prefix
 	 * @param publicKey
 	 */
-	accountConvert(
+	public accountConvert(
 		accountId: string,
 		scheme: 'ed25519' | 'sr25519' | 'ecdsa',
 		ss58Prefix: number,
@@ -42,7 +42,9 @@ export class AccountsConvertService extends AbstractService {
 	): IAccountConvert {
 		const accountIdIsHex = isHex(accountId);
 		if (!accountIdIsHex) {
-			throw new BadRequest('`accountId` is not a valid hex value.');
+			throw new BadRequest(
+				'The `accountId` parameter provided is not a valid hex value.'
+			);
 		}
 		let network = null;
 		for (const networkParams of allNetworks) {
@@ -53,7 +55,7 @@ export class AccountsConvertService extends AbstractService {
 		}
 		if (network === null) {
 			throw new BadRequest(
-				'`prefix` does not correspond to a existing network.'
+				'The given `prefix` query parameter does not correspond to an existing network.'
 			);
 		}
 
