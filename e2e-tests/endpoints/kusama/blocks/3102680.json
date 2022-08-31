@@ -156,7 +156,8 @@
             "info": {
                 "weight": "30010000",
                 "class": "Normal",
-                "partialFee": "3033332186"
+                "partialFee": "3033332186",
+                "kind": "preDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -242,7 +243,8 @@
             "info": {
                 "weight": "195000000",
                 "class": "Normal",
-                "partialFee": "2583332366"
+                "partialFee": "2583332366",
+                "kind": "preDispatch"
             },
             "era": {
                 "mortalEra": [

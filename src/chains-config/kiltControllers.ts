@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache } from './cache/lruCache';
+import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
  * Controllers for KILT's mashnet.
@@ -43,5 +43,6 @@ export const kiltControllers: ControllerConfig = {
 		finalizes: true,
 		minCalcFeeRuntime: null,
 		blockStore: initLRUCache(),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };
