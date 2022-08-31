@@ -29,7 +29,7 @@ export class AccountsConvertService extends AbstractService {
 	 * The conversion is based on the values of the variables scheme, ss58Prefix & publicKey.
 	 * It also returns the network name.
 	 *
-	 * @param accountId or Public Key (hex) to convert
+	 * @param accountId or Public Key (hex)
 	 * @param scheme
 	 * @param ss58Prefix
 	 * @param publicKey
