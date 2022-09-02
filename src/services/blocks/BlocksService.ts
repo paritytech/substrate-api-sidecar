@@ -274,7 +274,7 @@ export class BlocksService extends AbstractService {
 				dispatchFeeType = 'preDispatch';
 			if (transactionPaidFeeEvent) {
 				finalPartialFee = transactionPaidFeeEvent.data[1].toString();
-				dispatchFeeType = 'postDispatch';
+				dispatchFeeType = 'fromEvent';
 			} else {
 				/**
 				 * Call queryFeeDetails. It may not be available in the runtime and will

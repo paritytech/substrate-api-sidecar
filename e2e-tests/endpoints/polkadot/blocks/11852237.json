@@ -2150,7 +2150,7 @@
 				"weight": "133682000",
 				"class": "Normal",
 				"partialFee": "161568816",
-				"kind": "postDispatch"
+				"kind": "fromEvent"
 			},
 			"era": {
 				"mortalEra": [

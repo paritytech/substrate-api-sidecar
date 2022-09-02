@@ -2434,9 +2434,10 @@ components:
           format: unsignedInteger
         kind:
           type: string
-          description: Information on the partialFee that is collected. Can be either `preDispatch` or `postDispatch`.
-            `preDispatch` means the information used to collect the fee was from `payment_queryInfo`, and `postDispatch` means
-            the information used to calculate the fee was from finalized weights for the extrinsic. 
+          description: Information on the partialFee that is collected. Can be either `preDispatch`, `postDispatch` or `fromEvent`.
+            `preDispatch` means the information used to collect the fee was from `payment_queryInfo`, `postDispatch` means
+            the information used to calculate the fee was from finalized weights for the extrinsic, and `fromEvent` means that the partialFee was
+            abstracted from the `TransactionPayment::TransactionPaidFee` event. 
       description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
     RuntimeSpec:
       type: object
