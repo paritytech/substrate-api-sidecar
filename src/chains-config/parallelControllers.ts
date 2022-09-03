@@ -18,21 +18,22 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Controllers for Dock's test network.
+ * Controllers for Parallel collator
  */
-export const dockTestnetControllers: ControllerConfig = {
+export const parallelControllers: ControllerConfig = {
 	controllers: [
+		'AccountsAssets',
 		'AccountsBalanceInfo',
-		'AccountsStakingInfo',
-		'AccountsStakingPayouts',
 		'AccountsValidate',
+		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
-		'PalletsStakingProgress',
+		'PalletsAssets',
 		'PalletsStorage',
+		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
@@ -43,7 +44,7 @@ export const dockTestnetControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 26,
+		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
 		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},

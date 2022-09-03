@@ -18,21 +18,19 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Controllers for Dock's test network.
+ * Controllers for Bifrost collator
  */
-export const dockTestnetControllers: ControllerConfig = {
+export const bifrostPolkadotControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
-		'AccountsStakingInfo',
-		'AccountsStakingPayouts',
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
-		'PalletsStakingProgress',
 		'PalletsStorage',
+		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
@@ -43,7 +41,7 @@ export const dockTestnetControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 26,
+		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
 		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},

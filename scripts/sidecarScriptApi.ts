@@ -24,7 +24,7 @@ import { IProcOpts, ProcsType, StatusCode } from './types';
  * @param url ws url used in sidecar
  */
 export const setWsUrl = (url: string): void => {
-	process.env.SAS_SUBSTRATE_WS_URL = url;
+	process.env.SAS_SUBSTRATE_URL = url;
 };
 
 /**

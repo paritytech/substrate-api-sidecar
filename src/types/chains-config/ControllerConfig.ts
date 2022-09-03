@@ -16,6 +16,7 @@
 
 import LRU from 'lru-cache';
 
+import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { controllers } from '../../controllers';
 import { IBlock } from '../../types/responses';
 import { IOption } from '../util';
@@ -38,12 +39,24 @@ export interface ControllerConfig {
 	/**
 	 * Options relating to how the controllers are configured.
 	 */
-	options: {
-		/**
-		 * Wether or not the chain finalizes blocks
-		 */
-		finalizes: boolean;
-		minCalcFeeRuntime: IOption<number>;
-		blockStore: LRU<string, IBlock>;
-	};
+	options: ControllerOptions;
+}
+
+export interface ControllerOptions {
+	/**
+	 * Whether or not the chain finalizes blocks
+	 */
+	finalizes?: boolean;
+	/**
+	 * The minimum runtime that supports fee's.
+	 */
+	minCalcFeeRuntime: IOption<number>;
+	/**
+	 * LRU cache that stores the 2 most recent queries.
+	 */
+	blockStore: LRU<string, IBlock>;
+	/**
+	 * Cache for storing runtime versions that either have queryFeeDetails, or dont.
+	 */
+	hasQueryFeeApi: QueryFeeDetailsCache;
 }

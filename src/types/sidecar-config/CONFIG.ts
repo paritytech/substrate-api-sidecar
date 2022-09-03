@@ -20,7 +20,7 @@
 export enum CONFIG {
 	BIND_HOST = 'BIND_HOST',
 	PORT = 'PORT',
-	WS_URL = 'WS_URL',
+	URL = 'URL',
 	LEVEL = 'LEVEL',
 	JSON = 'JSON',
 	FILTER_RPC = 'FILTER_RPC',

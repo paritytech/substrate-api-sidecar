@@ -80,7 +80,8 @@
             "info": {
                 "weight": "189060000",
                 "class": "Normal",
-                "partialFee": "154000000"
+                "partialFee": "154000000",
+                "kind": "preDispatch"
             },
             "era": {
                 "immortalEra": "0x00"

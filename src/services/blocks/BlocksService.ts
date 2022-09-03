@@ -17,25 +17,27 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Struct, Vec } from '@polkadot/types';
+import { Compact, GenericCall, Option, Struct, Vec } from '@polkadot/types';
 import {
 	AccountId32,
-	Balance,
 	Block,
 	BlockHash,
 	BlockNumber,
 	DispatchInfo,
 	EventRecord,
 	Header,
+	InclusionFee,
+	Weight,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
-import { ICompact, INumber } from '@polkadot/types-codec/types/interfaces';
-import { isHex, u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
+import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
+import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
 	IBlock,
 	IExtrinsic,
@@ -46,7 +48,6 @@ import {
 } from '../../types/responses';
 import { IOption } from '../../types/util';
 import { isPaysFee } from '../../types/util';
-import { subIntegers } from '../../util/integers/compare';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -63,7 +64,6 @@ interface FetchBlockOptions {
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
-	getFeeByEvent: boolean;
 }
 
 /**
@@ -72,15 +72,14 @@ interface FetchBlockOptions {
 enum Event {
 	success = 'ExtrinsicSuccess',
 	failure = 'ExtrinsicFailed',
-	withdraw = 'Withdraw',
-	deposit = 'Deposit',
 }
 
 export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRU<string, IBlock>
+		private blockStore: LRU<string, IBlock>,
+		private hasQueryFeeApi: QueryFeeDetailsCache
 	) {
 		super(api);
 	}
@@ -100,7 +99,6 @@ export class BlocksService extends AbstractService {
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			getFeeByEvent,
 		}: FetchBlockOptions
 	): Promise<IBlock> {
 		const { api } = this;
@@ -185,6 +183,8 @@ export class BlocksService extends AbstractService {
 			};
 		}
 
+		const previousBlockHash = await this.fetchPreviousBlockHash(number);
+
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
@@ -229,7 +229,7 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			// both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+			// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
 			// types as their final arg
 			const weightInfo = completedData[
 				completedData.length - 1
@@ -251,27 +251,62 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			const { dispatchClass, partialFee, error } = await this.getPartialFeeInfo(
-				extrinsics[idx].events,
+			/**
+			 * Grab the initial partialFee, and information required for calculating a partialFee
+			 * if queryFeeDetails is available in the runtime.
+			 */
+			const {
+				class: dispatchClass,
+				partialFee,
+				weight,
+			} = await api.rpc.payment.queryInfo(
 				block.extrinsics[idx].toHex(),
-				hash,
-				getFeeByEvent,
-				extrinsics[idx].tip
+				previousBlockHash
 			);
 
-			if (error) {
-				extrinsics[idx].info = {
-					error,
-				};
+			const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
+				specVersion.toNumber()
+			);
+			let finalPartialFee = partialFee.toString(),
+				dispatchFeeType = 'preDispatch';
+			/**
+			 * Call queryFeeDetails. It may not be available in the runtime and will
+			 * error automatically when we try to call it. We cache the runtimes it will error so we
+			 * don't try to call it again given a specVersion.
+			 */
+			if (doesQueryFeeDetailsExist === 'available') {
+				finalPartialFee = await this.fetchQueryFeeDetails(
+					block.extrinsics[idx].toHex(),
+					previousBlockHash,
+					weightInfo.weight,
+					weight
+				);
 
-				continue;
+				dispatchFeeType = 'postDispatch';
+			} else if (doesQueryFeeDetailsExist === 'unknown') {
+				try {
+					finalPartialFee = await this.fetchQueryFeeDetails(
+						block.extrinsics[idx].toHex(),
+						previousBlockHash,
+						weightInfo.weight,
+						weight
+					);
+					dispatchFeeType = 'postDispatch';
+					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
+				} catch {
+					this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
+					console.warn(
+						'The error above is automatically emitted from polkadot-js, and can be ignored.'
+					);
+				}
 			}
 
-			extrinsics[idx].info = api.createType('RuntimeDispatchInfo', {
+			extrinsics[idx].info = {
 				weight: weightInfo.weight,
 				class: dispatchClass,
-				partialFee: partialFee,
-			});
+				partialFee: api.registry.createType('Balance', finalPartialFee),
+				kind: dispatchFeeType,
+			};
 		}
 
 		const response = {
@@ -292,6 +327,80 @@ export class BlocksService extends AbstractService {
 		this.blockStore.set(hash.toString(), response);
 
 		return response;
+	}
+
+	/**
+	 * Fetch `payment_queryFeeDetails`.
+	 *
+	 * @param extHex
+	 * @param previousBlockHash
+	 * @param extrinsicSuccessWeight
+	 * @param estWeight
+	 */
+	private async fetchQueryFeeDetails(
+		extHex: `0x${string}`,
+		previousBlockHash: BlockHash,
+		extrinsicSuccessWeight: Weight,
+		estWeight: Weight
+	): Promise<string> {
+		const { api } = this;
+		const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
+			extHex,
+			previousBlockHash
+		);
+		const finalPartialFee = this.calcPartialFee(
+			extrinsicSuccessWeight,
+			estWeight,
+			inclusionFee
+		);
+
+		return finalPartialFee;
+	}
+
+	/**
+	 * Retrieve the blockHash for the previous block to the one getting queried.
+	 * If the block is the geneisis hash it will return the same blockHash.
+	 *
+	 * @param blockNumber The blockId being queried
+	 */
+	private async fetchPreviousBlockHash(
+		blockNumber: Compact<BlockNumber>
+	): Promise<BlockHash> {
+		const { api } = this;
+
+		const num = blockNumber.toBn();
+		return num.isZero()
+			? await api.rpc.chain.getBlockHash(num)
+			: await api.rpc.chain.getBlockHash(num.sub(new BN(1)));
+	}
+
+	/**
+	 * Calculate the partialFee for an extrinsic. This uses `calc_partial_fee` from `@substrate/calc`.
+	 * Please reference the rust code in `@substrate/calc` too see docs on the algorithm.
+	 *
+	 * @param extrinsicSuccessWeight
+	 * @param estWeight
+	 * @param inclusionFee
+	 */
+	private calcPartialFee(
+		extrinsicSuccessWeight: Weight,
+		estWeight: Weight,
+		inclusionFee: Option<InclusionFee>
+	): string {
+		if (inclusionFee.isSome) {
+			const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
+
+			return calc_partial_fee(
+				baseFee.toString(),
+				lenFee.toString(),
+				adjustedWeightFee.toString(),
+				estWeight.toString(),
+				extrinsicSuccessWeight.toString()
+			);
+		} else {
+			// When the inclusion fee isNone we are dealing with a unsigned extrinsic.
+			return '0';
+		}
 	}
 
 	/**
@@ -469,183 +578,6 @@ export class BlocksService extends AbstractService {
 		} catch {
 			return 'Unable to fetch Events, cannot confirm extrinsic status. Check pruning settings on the node.';
 		}
-	}
-
-	/**
-	 * This will check whether we should query the fee by `payment::queryInfo`
-	 * or by an extrinsics events.
-	 *
-	 * @param events The events to search through for a partialFee
-	 * @param extrinsicHex Hex of the given extrinsic
-	 * @param hash Blockhash we are querying
-	 * @param getFeeByEvent `FeeByEvent` query parameter
-	 */
-	private async getPartialFeeInfo(
-		events: ISanitizedEvent[],
-		extrinsicHex: string,
-		hash: BlockHash,
-		getFeeByEvent: boolean,
-		tip: ICompact<INumber> | null
-	) {
-		const { api } = this;
-		const { class: dispatchClass, partialFee } =
-			await api.rpc.payment.queryInfo(extrinsicHex, hash);
-
-		/**
-		 * Check if we should retrieve the partial_fee from the Events
-		 */
-		let fee: Balance | string = partialFee;
-		let error: string | undefined;
-		if (getFeeByEvent) {
-			const feeInfo = this.getPartialFeeByEvents(events, partialFee, tip);
-			fee = feeInfo.partialFee;
-			error = feeInfo.error;
-		}
-
-		return {
-			partialFee: fee,
-			dispatchClass,
-			error,
-		};
-	}
-
-	/**
-	 * This searches through an extrinsics given events to see if there is a partialFee
-	 * within the data. If the estimated partialFee is within a given difference of the
-	 * found fee within the data than we return that result.
-	 *
-	 * The order of the events we search through are:
-	 * 1.Balances::Event::Withdraw
-	 * 2.Treasury::Event::Deposit
-	 * 3.Balances::Event::Deposit
-	 *
-	 * @param events The events to search through for a partialFee
-	 * @param partialFee Estimated partialFee given by `payment::queryInfo`
-	 */
-	private getPartialFeeByEvents(
-		events: ISanitizedEvent[],
-		partialFee: Balance,
-		tip: ICompact<INumber> | null
-	): { partialFee: string; error?: string } {
-		// Check Event:Withdraw event for the balances pallet
-		const withdrawEvent = this.findEvent(events, 'balances', Event.withdraw);
-		if (withdrawEvent.length > 0 && withdrawEvent[0].data) {
-			const dataArr = withdrawEvent[0].data.toJSON();
-			if (Array.isArray(dataArr)) {
-				const fee = this.sanitizeFee(
-					(dataArr as Array<string>)[dataArr.length - 1]
-				);
-				const adjustedPartialFee = tip
-					? tip.toBn().add(partialFee)
-					: partialFee;
-				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
-					return {
-						partialFee: tip
-							? new BN(fee).sub(tip.toBn()).toString()
-							: fee.toString(),
-					};
-				}
-			}
-		}
-
-		// Check the Event::Deposit for the treasury pallet
-		const treasuryEvent = this.findEvent(events, 'treasury', Event.deposit);
-		if (treasuryEvent.length > 0 && treasuryEvent[0].data) {
-			const dataArr = treasuryEvent[0].data.toJSON();
-			if (Array.isArray(dataArr)) {
-				const fee = this.sanitizeFee((dataArr as Array<string>)[0]);
-				const adjustedPartialFee = tip
-					? tip.toBn().add(partialFee)
-					: partialFee;
-				// The difference between values is 00.00001% or less so they are alike.
-				if (this.areFeesSimilar(new BN(fee), adjustedPartialFee)) {
-					return {
-						partialFee: tip
-							? new BN(fee).sub(tip.toBn()).toString()
-							: fee.toString(),
-					};
-				}
-			}
-		}
-
-		// Check Event::Deposit events for the balances pallet.
-		const depositEvents = this.findEvent(events, 'balances', Event.deposit);
-		if (depositEvents.length > 0) {
-			let sumOfFees = new BN(0);
-			depositEvents.forEach(
-				({ data }) =>
-					(sumOfFees = sumOfFees.add(
-						new BN(this.sanitizeFee(data[data.length - 1].toString()))
-					))
-			);
-			const adjustedPartialFee = tip ? tip.toBn().add(partialFee) : partialFee;
-			// The difference between values is 00.00001% or less so they are alike.
-			if (this.areFeesSimilar(sumOfFees, adjustedPartialFee)) {
-				return {
-					partialFee: tip
-						? new BN(sumOfFees).sub(tip.toBn()).toString()
-						: sumOfFees.toString(),
-				};
-			}
-		}
-
-		return {
-			partialFee: partialFee.toString(),
-			error: 'Could not find a reliable fee within the events data.',
-		};
-	}
-
-	/**
-	 * Find the corresponding events relevant to the passed in pallet, and method name.
-	 *
-	 * @param events The events to search through for a partialFee
-	 * @param palletName Pallet to search for
-	 * @param methodName Method to search for
-	 */
-	private findEvent(
-		events: ISanitizedEvent[],
-		palletName: string,
-		methodName: string
-	): ISanitizedEvent[] {
-		return events.filter(
-			({ method, data }) =>
-				isFrameMethod(method) &&
-				method.method === methodName &&
-				method.pallet === palletName &&
-				data
-		);
-	}
-
-	/**
-	 * Sanitize a given fee
-	 *
-	 * @param fee
-	 */
-	private sanitizeFee(fee: string): string {
-		if (isHex(fee)) {
-			const feeType = this.api.registry.createType('Balance', fee);
-			return feeType.toString(10);
-		}
-
-		return fee;
-	}
-
-	/**
-	 * Checks to see if the value in an event is within 00.00001% accuracy of
-	 * the queried `partialFee` from `rpc::payment::queryInfo`.
-	 *
-	 * @param eventBalance Balance returned in the data of an event
-	 * @param partialFee Fee queried from `rpc::payment::queryInfo`
-	 * @param diff difference between the
-	 */
-	private areFeesSimilar(eventBalance: BN, partialFee: BN): boolean {
-		const diff = subIntegers(eventBalance, partialFee);
-
-		return (
-			eventBalance.toString().length - diff.toString().length > 5 &&
-			eventBalance.toString().length === partialFee.toString().length
-		);
 	}
 
 	/**
