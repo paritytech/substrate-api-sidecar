@@ -33,6 +33,7 @@ export const westendControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsStakingProgress',
+		'PalletsStakingValidators',
 		'PalletsStorage',
 		'Paras',
 		'RuntimeCode',

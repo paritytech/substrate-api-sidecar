@@ -31,6 +31,7 @@ export * from './NodeTransactionPool';
 export * from './NodeVersion';
 export * from './Pallet';
 export * from './PalletStakingProgress';
+export * from './PalletStakingValidators';
 export * from './PalletStorage';
 export * from './PalletStorageItem';
 export * from './Paras';

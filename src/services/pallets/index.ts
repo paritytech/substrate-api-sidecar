@@ -16,4 +16,5 @@
 
 export * from './PalletsAssetsService';
 export * from './PalletsStakingProgressService';
+export * from './PalletsStakingValidatorsService';
 export * from './PalletsStorageService';

@@ -27,6 +27,7 @@ import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
@@ -53,6 +54,7 @@ export const controllers = {
 	AccountsStakingPayouts,
 	PalletsAssets,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 	NodeNetwork,
 	NodeTransactionPool,
