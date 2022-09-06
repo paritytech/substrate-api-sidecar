@@ -209,10 +209,11 @@ benchmark:
 
 benchmark-test-new-argo-managed-node:
   <<:                              *benchmark-template
+  <<:                              *test-refs-manual
   variables:
     POLKADOT_ADDRESS:              "ws://substrate-api-sidecar-benchmark-node.nodes:9944"
   needs:
-    - build
+    - build-pr
 
 # manual step to run benchmarks in PR pipeline
 benchmark-manual-pr:
