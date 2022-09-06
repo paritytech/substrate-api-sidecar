@@ -72,6 +72,7 @@ interface FetchBlockOptions {
 enum Event {
 	success = 'ExtrinsicSuccess',
 	failure = 'ExtrinsicFailed',
+	transactionPaidFee = 'TransactionFeePaid',
 }
 
 export class BlocksService extends AbstractService {
@@ -264,40 +265,50 @@ export class BlocksService extends AbstractService {
 				previousBlockHash
 			);
 
-			const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
-				specVersion.toNumber()
+			const transactionPaidFeeEvent = xtEvents.find(
+				({ method }) =>
+					isFrameMethod(method) && method.method === Event.transactionPaidFee
 			);
+
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
-			/**
-			 * Call queryFeeDetails. It may not be available in the runtime and will
-			 * error automatically when we try to call it. We cache the runtimes it will error so we
-			 * don't try to call it again given a specVersion.
-			 */
-			if (doesQueryFeeDetailsExist === 'available') {
-				finalPartialFee = await this.fetchQueryFeeDetails(
-					block.extrinsics[idx].toHex(),
-					previousBlockHash,
-					weightInfo.weight,
-					weight
+			if (transactionPaidFeeEvent) {
+				finalPartialFee = transactionPaidFeeEvent.data[1].toString();
+				dispatchFeeType = 'fromEvent';
+			} else {
+				/**
+				 * Call queryFeeDetails. It may not be available in the runtime and will
+				 * error automatically when we try to call it. We cache the runtimes it will error so we
+				 * don't try to call it again given a specVersion.
+				 */
+				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
+					specVersion.toNumber()
 				);
-
-				dispatchFeeType = 'postDispatch';
-			} else if (doesQueryFeeDetailsExist === 'unknown') {
-				try {
+				if (doesQueryFeeDetailsExist === 'available') {
 					finalPartialFee = await this.fetchQueryFeeDetails(
 						block.extrinsics[idx].toHex(),
 						previousBlockHash,
 						weightInfo.weight,
 						weight
 					);
+
 					dispatchFeeType = 'postDispatch';
-					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
-				} catch {
-					this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
-					console.warn(
-						'The error above is automatically emitted from polkadot-js, and can be ignored.'
-					);
+				} else if (doesQueryFeeDetailsExist === 'unknown') {
+					try {
+						finalPartialFee = await this.fetchQueryFeeDetails(
+							block.extrinsics[idx].toHex(),
+							previousBlockHash,
+							weightInfo.weight,
+							weight
+						);
+						dispatchFeeType = 'postDispatch';
+						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
+					} catch {
+						this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
+						console.warn(
+							'The error above is automatically emitted from polkadot-js, and can be ignored.'
+						);
+					}
 				}
 			}
 
