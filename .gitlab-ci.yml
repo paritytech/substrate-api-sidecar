@@ -206,7 +206,6 @@ benchmark:
   needs:
     - build
 
-
 # manual step to run benchmarks in PR pipeline
 benchmark-manual-pr:
   <<:                              *benchmark-template
