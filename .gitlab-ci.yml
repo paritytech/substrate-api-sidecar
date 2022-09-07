@@ -210,6 +210,8 @@ benchmark:
 benchmark-test-new-argo-managed-node:
   <<:                              *benchmark-template
   <<:                              *test-refs-manual
+  needs:
+    - build-pr
   variables:
     POLKADOT_ADDRESS:              "ws://substrate-api-sidecar-benchmark-node.nodes:9944"
     BENCHMARK_DURATION:            "15m"                                   # Tests duration
@@ -219,8 +221,6 @@ benchmark-test-new-argo-managed-node:
     BENCHMARK_OPTS:                "--latency"                             # Additional options, --latency:     print detailed latency statistics
     BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
     CI_IMAGE:                      "paritytech/node-wrk:latest"
-  needs:
-    - build-pr
 
 # manual step to run benchmarks in PR pipeline
 benchmark-manual-pr:
