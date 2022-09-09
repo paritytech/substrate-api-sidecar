@@ -11,3 +11,6 @@ Endpoints in Sidecar that are benchmarked against a archive node:
 
 ### Blocks
 `/blocks/{blockId}`
+
+### Pallets
+`/pallets/staking/progress?at={blockId}`
