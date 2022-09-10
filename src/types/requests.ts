@@ -49,3 +49,14 @@ export interface IParaIdParam extends ParamsDictionary {
 export interface IRangeQueryParam extends Query {
 	range: string;
 }
+
+export interface IPalletsStorageParam extends ParamsDictionary {
+	palletId: string;
+	storageItemId: string;
+}
+
+export interface IPalletsStorageQueryParam extends Query {
+	keys: string[];
+	metadata: string;
+	adjustMetadataV13: string;
+}
