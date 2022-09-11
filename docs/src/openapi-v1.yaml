@@ -1005,19 +1005,17 @@ paths:
         required: false
         schema:
           type: boolean
-      - name: key1
+      - name: keys
         in: query
-        description: Key for a map, or first key for a double map. Required for querying
-          a map.
+        description: Set of N keys used for querying a storage map. It should be queried using the 
+          following format - ?keys[]=key1&keys[]=key2. Order matters, as it will determine the 
+          order the keys are passed into the storage calls.
         required: false
         schema:
-          type: string
-      - name: key2
-        in: query
-        description: Second key for a double map. Required for querying a double map.
-        required: false
-        schema:
-          type: string
+          type: array
+          items:
+            type: string
+          description: An array of storage keys.
       - name: at
         in: query
         description: Block at which to query the storage item at.
@@ -2148,14 +2146,10 @@ components:
           type: string
           description: Name of the storage item.
           example: "referendumInfoOf"
-        key1:
-          type: string
-          description: Key1 query param. Will not show up in response unless it was passed as part of the URI.
-          example: "2"
-        key2:
-          type: string
-          description: Key2 query param. Will not show up in response if not defined in URI.
-          example: ""
+        keys:
+          type: array
+          description: N Storage keys passed in as the `keys` query param. 
+          example: ["0x00", "0x01"]
         value:
           type: object
           description: Value returned by this storage query.
