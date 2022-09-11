@@ -1,4 +1,4 @@
-local parasAuctionsCurrent = {
+local parasCrowdloans = {
     '8500000',
     '8750000',
     '9000000',
@@ -8,12 +8,16 @@ local parasAuctionsCurrent = {
     '10000000',
     '10250000',
     '10500000',
+    '10557215',
     '10750000',
+    '10868888',
     '11000000',
     '11250000',
+    '11329453',
     '11500000',
+    '11606929',
     '11750000',
     '12000000',
 }
 
-return parasAuctionsCurrent
+return parasCrowdloans
