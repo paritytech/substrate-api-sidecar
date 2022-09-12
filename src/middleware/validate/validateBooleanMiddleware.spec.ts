@@ -47,7 +47,7 @@ describe('validaeBooleanMiddleware', () => {
 				invalid: 'truee',
 			},
 		} as unknown as Request,
-		validateBooleanMiddleware(['invalid'])
+		validateBooleanMiddleware([])
 	);
 
 	errorsWith(
