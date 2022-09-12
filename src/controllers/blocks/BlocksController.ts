@@ -103,7 +103,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean);
+		this.router.use(
+			this.path,
+			validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],

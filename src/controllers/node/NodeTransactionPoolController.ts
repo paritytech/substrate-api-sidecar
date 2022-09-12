@@ -40,7 +40,7 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean);
+		this.router.use(this.path, validateBoolean(['includeFee']));
 		this.safeMountAsyncGetHandlers([['', this.getNodeTransactionPool]]);
 	}
 

@@ -61,7 +61,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean);
+		this.router.use(this.path, validateBoolean(['noMeta']));
 		this.safeMountAsyncGetHandlers([['', this.getTransactionMaterial]]);
 	}
 

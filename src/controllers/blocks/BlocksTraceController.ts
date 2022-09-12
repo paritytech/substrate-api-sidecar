@@ -29,7 +29,7 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean);
+		this.router.use(this.path, validateBoolean(['actions']));
 		this.safeMountAsyncGetHandlers([
 			['/head/traces', this.getLatestBlockTraces],
 			['/:number/traces', this.getBlockTraces],

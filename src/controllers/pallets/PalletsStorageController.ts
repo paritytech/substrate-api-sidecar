@@ -47,7 +47,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean);
+		this.router.use(this.path, validateBoolean(['adjustMetadataV13']));
 		this.safeMountAsyncGetHandlers([
 			['/:storageItemId', this.getStorageItem],
 			['/', this.getStorage],

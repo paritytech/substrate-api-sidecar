@@ -87,7 +87,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean);
+		this.router.use(
+			this.path,
+			validateAddress,
+			validateBoolean(['unclaimedOnly'])
+		);
 
 		this.safeMountAsyncGetHandlers([['', this.getStakingPayoutsByAccountId]]);
 	}

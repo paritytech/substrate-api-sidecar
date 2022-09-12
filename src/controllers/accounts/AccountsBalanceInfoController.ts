@@ -66,7 +66,11 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean);
+		this.router.use(
+			this.path,
+			validateAddress,
+			validateBoolean(['denominated'])
+		);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}

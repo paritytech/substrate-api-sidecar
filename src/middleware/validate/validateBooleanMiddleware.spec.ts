@@ -26,7 +26,7 @@ describe('validaeBooleanMiddleware', () => {
 		{
 			query: {},
 		} as unknown as Request,
-		validateBooleanMiddleware
+		validateBooleanMiddleware([])
 	);
 
 	doesNotErrorWith(
@@ -37,7 +37,7 @@ describe('validaeBooleanMiddleware', () => {
 				eventDocs: 'false',
 			},
 		} as unknown as Request,
-		validateBooleanMiddleware
+		validateBooleanMiddleware(['finalized', 'eventDocs'])
 	);
 
 	doesNotErrorWith(
@@ -47,7 +47,7 @@ describe('validaeBooleanMiddleware', () => {
 				invalid: 'truee',
 			},
 		} as unknown as Request,
-		validateBooleanMiddleware
+		validateBooleanMiddleware(['invalid'])
 	);
 
 	errorsWith(
@@ -60,7 +60,7 @@ describe('validaeBooleanMiddleware', () => {
 		new BadRequest(
 			'Query parameter: finalized has an invalid boolean value of truee'
 		),
-		validateBooleanMiddleware
+		validateBooleanMiddleware(['finalized'])
 	);
 
 	errorsWith(
@@ -73,7 +73,7 @@ describe('validaeBooleanMiddleware', () => {
 		new BadRequest(
 			'Query parameter: finalized has an invalid boolean value of falsee'
 		),
-		validateBooleanMiddleware
+		validateBooleanMiddleware(['finalized'])
 	);
 
 	errorsWith(
@@ -87,6 +87,6 @@ describe('validaeBooleanMiddleware', () => {
 		new BadRequest(
 			'Query parameter: finalized has an invalid boolean value of notTrue - Query parameter: eventDocs has an invalid boolean value of notFalse'
 		),
-		validateBooleanMiddleware
+		validateBooleanMiddleware(['finalized', 'eventDocs'])
 	);
 });

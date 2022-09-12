@@ -29,7 +29,10 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path + '/paras/leases/current', validateBoolean);
+		this.router.use(
+			this.path + '/paras/leases/current',
+			validateBoolean(['currentLeaseHolders'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/paras', this.getParas],
 			['/paras/crowdloans', this.getCrowdloans],
