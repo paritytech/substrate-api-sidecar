@@ -21,4 +21,5 @@ Endpoints in Sidecar that are benchmarked against a archive node:
 `/paras?at={blockId}`
 `/paras/leases/current?at={blockId}`
 `/paras/auctions/current?at={blockId}`
-`/paras/crowdloans`
+`/paras/crowdloans?at={blockId}`
+`/paras/{paraId}/crowdloan-info?at={blockId}`
