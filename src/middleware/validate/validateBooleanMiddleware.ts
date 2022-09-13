@@ -29,16 +29,18 @@ export const validateBooleanMiddleware = (
 		const errQueryParams: string[] = [];
 
 		for (const key of queryParams) {
-			const queryParamVal =
-				typeof req.query[key] === 'string'
-					? (req.query[key] as string).toLowerCase()
-					: '';
-			if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
-				errQueryParams.push(
-					`Query parameter: ${key} has an invalid boolean value of ${
-						req.query[key] as string
-					}`
-				);
+			if (req.query[key]) {
+				const queryParamVal =
+					typeof req.query[key] === 'string'
+						? (req.query[key] as string).toLowerCase()
+						: '';
+				if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
+					errQueryParams.push(
+						`Query parameter: ${key} has an invalid boolean value of ${
+							req.query[key] as string
+						}`
+					);
+				}
 			}
 		}
 
