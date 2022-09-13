@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { validateBoolean } from '../../middleware';
 import { NodeTransactionPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -39,6 +40,7 @@ export default class NodeTransactionPoolController extends AbstractController<No
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateBoolean(['includeFee']));
 		this.safeMountAsyncGetHandlers([['', this.getNodeTransactionPool]]);
 	}
 
