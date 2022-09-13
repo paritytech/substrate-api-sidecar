@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
+import { validateBoolean } from '../../middleware';
 import { AccountsConvertService } from '../../services/accounts';
 import { IAddressParam, IConvertQueryParams } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -29,6 +30,7 @@ export default class AccountsConvertController extends AbstractController<Accoun
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateBoolean(['publicKey']));
 		this.safeMountAsyncGetHandlers([['', this.accountConvert]]);
 	}
 
@@ -59,19 +61,7 @@ export default class AccountsConvertController extends AbstractController<Accoun
 			'The `prefix` query parameter provided is not a number.'
 		);
 
-		// Validation of the `publicKey` query param
-		if (
-			!(
-				String(publicKey).toLowerCase() === 'true' ||
-				String(publicKey).toLowerCase() === 'false' ||
-				!publicKey
-			)
-		) {
-			throw new BadRequest(
-				'The `publicKey` query parameter provided can be either true or false (boolean value)'
-			);
-		}
-		const pubKey = publicKey ? publicKey === 'true' : true;
+		const pubKey = publicKey === 'true';
 
 		AccountsConvertController.sanitizedSend(
 			res,
