@@ -26,23 +26,21 @@ export const validateBooleanMiddleware = (
 	queryParams: string[]
 ): RequestHandler => {
 	return (req, _res, next) => {
-		const queryKeys = Object.keys(req.query);
 		const errQueryParams: string[] = [];
-		queryKeys
-			.filter((queryParam) => queryParams.includes(queryParam))
-			.forEach((queryParam) => {
-				const queryParamVal =
-					typeof req.query[queryParam] === 'string'
-						? (req.query[queryParam] as string).toLowerCase()
-						: '';
-				if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
-					errQueryParams.push(
-						`Query parameter: ${queryParam} has an invalid boolean value of ${
-							req.query[queryParam] as string
-						}`
-					);
-				}
-			});
+
+		for (const key of queryParams) {
+			const queryParamVal =
+				typeof req.query[key] === 'string'
+					? (req.query[key] as string).toLowerCase()
+					: '';
+			if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
+				errQueryParams.push(
+					`Query parameter: ${key} has an invalid boolean value of ${
+						req.query[key] as string
+					}`
+				);
+			}
+		}
 
 		if (errQueryParams.length > 0) {
 			return next(new BadRequest(errQueryParams.join(' - ')));
