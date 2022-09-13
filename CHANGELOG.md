@@ -2,6 +2,79 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.3..v13.0.0) (2022-08-31)
+
+### ⚠ BREAKING CHANGES ⚠
+
+- fix!: integrate @substrate/calc@0.3.0 for partial fees ([#1017](https://github.com/paritytech/substrate-api-sidecar/pull/1017)) ([92e3e1d](https://github.com/paritytech/substrate-api-sidecar/commit/92e3e1daba43bbefb1159fa84ceee0362380ac49))
+    - Note: This removes the query param `feeByEvent` for all `/blocks/*` endpoints. Fee's are correctly calculated by default and dont require a secondary way of retrieving the `partialFee`. For historical blocks, an error might be logged and emitted for chains that don't have `TransactionPaymentApi::query_feeDetails` in their runtime API. The error is emitted by polkadot-js regardless of catching it, but it does not affect fee calculation as also logged by a follow up warning. Please refer to the PR for more information.
+- feat!: add support for http provider using SAS_SUBSTRATE_URL ([#1001](https://github.com/paritytech/substrate-api-sidecar/pull/1001)) ([b12daa8](https://github.com/paritytech/substrate-api-sidecar/commit/b12daa8784a55e6dce587898d7d41ce46c8c191f))
+    - Note: This replaces the standard `SAS_SUBSTRATE_WS_URL` with `SAS_SUBSTRATE_URL`. It's important when updating to sidecar v13.0.0 to replace all instances of the env variable with the new one. 
+
+### Bug Fixes
+
+- fix: current leases undefined bug ([#1034](https://github.com/paritytech/substrate-api-sidecar/pull/1034)) ([ae340ed](https://github.com/paritytech/substrate-api-sidecar/commit/ae340edcdbc812372fdd4f22871d349052ffd037))
+- fix: remove deprecated reset for lru cache and replace with clear ([#1021](https://github.com/paritytech/substrate-api-sidecar/pull/1021)) ([55ef00d](https://github.com/paritytech/substrate-api-sidecar/commit/55ef00d365088855393babc143b82ddd347aadf4))
+- fix: add bifrost_polkadot controller config ([#1009](https://github.com/paritytech/substrate-api-sidecar/pull/1009)) ([2fdbe31](https://github.com/paritytech/substrate-api-sidecar/commit/2fdbe319610651761a7f67f0141ba012cdf8b2a9)) Contributed by ([hqwangningbo](https://github.com/hqwangningbo))
+
+### CI
+
+- ci: pin gha versions add dependabot ([#1026](https://github.com/paritytech/substrate-api-sidecar/pull/1026)) ([b421c65](https://github.com/paritytech/substrate-api-sidecar/commit/b421c6582e4ae8c23e898934e812f38944d65b08))
+
+### Chores
+
+- chore(deps): update polkadot-js api and util-crypto ([#1030](https://github.com/paritytech/substrate-api-sidecar/pull/1030)) ([f59b7db](https://github.com/paritytech/substrate-api-sidecar/commit/f59b7dbeae430019ba3b115393b2fe8edb4dc241))
+- chore(deps): update @substrate/dev ([#1028](https://github.com/paritytech/substrate-api-sidecar/pull/1028)) ([4443924](https://github.com/paritytech/substrate-api-sidecar/commit/4443924a6f136fd1cf903f0f5858e84854f9b304))
+- chore(deps): update polkadot api, and util-crypto ([#1024](https://github.com/paritytech/substrate-api-sidecar/pull/1024)) ([62b028e](https://github.com/paritytech/substrate-api-sidecar/commit/62b028e4eb3fd7136ffcd13f44ec7fceb3122bfa))
+- chore(deps): update api, and util-crypto ([#1019](https://github.com/paritytech/substrate-api-sidecar/pull/1019)) ([d12b2f7](https://github.com/paritytech/substrate-api-sidecar/commit/d12b2f7e50a5e160e7e1e05568976251fd7a2b22))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9270
+- Kusama v9270
+- Westend v9280
+
+
+## [12.4.3](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.2..v12.4.3) (2022-08-09)
+
+### Bug Fixes
+
+- fix: add support for Parallel and Heiko ([#1012](https://github.com/paritytech/substrate-api-sidecar/pull/1012)) ([8770f3a](https://github.com/paritytech/substrate-api-sidecar/commit/8770f3a70b2156f5a9c2610a2f3f32c2e08f5e33))
+
+### Chores
+
+- chore(deps): update polkadot-js api, and util-crypto ([8164281](https://github.com/paritytech/substrate-api-sidecar/commit/81642815c42e330f7f5d49f3b8808465f90552cf))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9270
+- Kusama v9270
+- Westend v9270
+
+## [12.4.2](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.1..v12.4.2) (2022-08-03)
+
+### Bug Fixes
+
+- fix(logging): replace TransformableInfo with ITransformableInfo type ([#994](https://github.com/paritytech/substrate-api-sidecar/pull/994)) ([c058904](https://github.com/paritytech/substrate-api-sidecar/commit/c058904aec5f63c61284240fc77bec928db9254e))
+- fix(feeByEvent): use registry to convert hex to string ([#997](https://github.com/paritytech/substrate-api-sidecar/pull/997)) ([13ca62f](https://github.com/paritytech/substrate-api-sidecar/commit/13ca62f1c1cd8fa697f39cccabe3d1d1de0ea5b1))
+- fix(feeByEvent): handle tip for partialFee ([#1003](https://github.com/paritytech/substrate-api-sidecar/pull/1003)) ([6e60aa9](https://github.com/paritytech/substrate-api-sidecar/commit/6e60aa9b39abf9b51b770c8e6e2d33bc2afac94d))
+
+### Chores
+
+- chore(dep): update polkadot-js api ([#998](https://github.com/paritytech/substrate-api-sidecar/pull/998)) ([fedfaee](https://github.com/paritytech/substrate-api-sidecar/commit/fedfaee0b9f965b39e20cf3714b96f30e9f0332a))
+- chore(README): update readme with generate-type-bundle tool ([#1004](https://github.com/paritytech/substrate-api-sidecar/pull/1004)) ([45b25bf](https://github.com/paritytech/substrate-api-sidecar/commit/45b25bf15f17367d1cb9642b4a495d5ecd06ed59))
+- chore: clean up resolutions ([#1000](https://github.com/paritytech/substrate-api-sidecar/pull/1000)) ([0545454](https://github.com/paritytech/substrate-api-sidecar/commit/0545454a74b5afa215180b8cee6062d7ae2fa32f))
+- chore(yarn): bump yarn ([#996](https://github.com/paritytech/substrate-api-sidecar/pull/996)) ([cefa3f9](https://github.com/paritytech/substrate-api-sidecar/commit/cefa3f9652ed0f8506eb555ec87db98442ade962))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9250
+- Kusama v9250
+- Westend v9250
+
 ## [12.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.0..v12.4.1) (2022-07-28)
 
 ### Bug Fixes

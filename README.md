@@ -45,7 +45,7 @@ NOTE: Node LTS (`long term support`) versions start with an even number, and odd
 - [NPM package installation and usage](#npm-package-installation-and-usage)
 - [Source code installation and usage](#source-code-installation-and-usage)
 - [Configuration](#configuration)
-- [Debugging fee and payout calculations](#debugging-fee-and-payout-calculations)
+- [Debugging fee and staking payout calculations](#debugging-staking-payout-calculations)
 - [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
 - [Chain integration guide](./guides/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
@@ -161,14 +161,14 @@ For more information on our configuration manager visit its readme [here](https:
 
 ### Substrate node
 
-- `SAS_SUBSTRATE_WS_URL`: WebSocket URL to which the RPC proxy will attempt to connect to, defaults to
-    `ws://127.0.0.1:9944`.
+- `SAS_SUBSTRATE_URL`: URL to which the RPC proxy will attempt to connect to, defaults to
+    `ws://127.0.0.1:9944`. Accepts both a websocket, and http URL.
 
 #### Custom substrate types
 
 Some chains require custom type definitions in order for Sidecar to know how to decode the data
 retrieved from the node. Sidecar affords environment variables which allow the user to specify an absolute path to a JSON file that contains type definitions in the corresponding formats. Consult polkadot-js/api for more info on
-the type formats (see `RegisteredTypes`).
+the type formats (see `RegisteredTypes`). There is a helper CLI tool called [generate-type-bundle](https://github.com/paritytech/generate-type-bundle) that can generate a `typesBundle.json` file for you using chain information from [`@polkadot/apps-config`](https://github.com/polkadot-js/apps/tree/master/packages/apps-config). The generated json file from this tool will work directly with the `SAS_SUBSTRATE_TYPES_BUNDLE` ENV variable. 
 
 - `SAS_SUBSTRATE_TYPES_BUNDLE`: a bundle of types with versioning info, type aliases, derives, and
     rpc definitions. Format: `OverrideBundleType` (see [`typesBundle`](https://github.com/polkadot-js/api/blob/21039dec1fcad36061a96bf5526248c5fab38780/packages/types/src/types/registry.ts#L72)).
@@ -228,10 +228,10 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
-## Debugging fee and payout calculations
+## Debugging fee and staking payout calculations
 
-It is possible to get more information about the fee and payout calculation process logged to
-the console. Because this fee calculation happens in the statically compiled web assembly part
+It is possible to get more information about the fee and staking payout calculation process logged to
+the console. Because these calculations happens in the statically compiled web assembly part,
 a re-compile with the proper environment variable set is necessary:
 
 ```bash

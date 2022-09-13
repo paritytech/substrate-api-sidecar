@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { validateBoolean } from '../../middleware';
 import { ParasService } from '../../services';
 import { IParaIdParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -28,6 +29,10 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	protected initRoutes(): void {
+		this.router.use(
+			this.path + '/paras/leases/current',
+			validateBoolean(['currentLeaseHolders'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/paras', this.getParas],
 			['/paras/crowdloans', this.getCrowdloans],

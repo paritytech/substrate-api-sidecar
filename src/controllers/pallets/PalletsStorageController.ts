@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { validateBoolean } from '../..//middleware';
 import { Log } from '../../logging/Log';
 import { PalletsStorageService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -46,7 +47,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	}
 
 	protected initRoutes(): void {
-		// TODO look into middleware validation of in path IDs. https://github.com/paritytech/substrate-api-sidecar/issues/281
+		this.router.use(this.path, validateBoolean(['adjustMetadataV13']));
 		this.safeMountAsyncGetHandlers([
 			['/:storageItemId', this.getStorageItem],
 			['/', this.getStorage],

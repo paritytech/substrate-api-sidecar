@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { Log } from '../../logging/Log';
+import { validateBoolean } from '../../middleware';
 import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -60,6 +61,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateBoolean(['noMeta']));
 		this.safeMountAsyncGetHandlers([['', this.getTransactionMaterial]]);
 	}
 

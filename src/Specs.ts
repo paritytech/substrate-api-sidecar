@@ -87,13 +87,13 @@ export class Specs {
 			throw APPEND_SPEC_ERROR;
 		}
 
-		// WS
+		// WS OR HTTP
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
-			this._specs.getSpec(CONFIG.WS_URL, 'Websocket URL', {
+			this._specs.getSpec(CONFIG.URL, 'Websocket or HTTP URL', {
 				default: 'ws://127.0.0.1:9944',
 				mandatory: true,
-				regexp: /^wss?:\/\/.*(:\d{4,5})?$/,
+				regexp: /^(ws|wss|http|https)?:\/\/.*/,
 			})
 		);
 

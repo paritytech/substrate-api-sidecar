@@ -24,7 +24,7 @@ serviceAccount:
   name: ""
 
 envVars:
-  SAS_SUBSTRATE_WS_URL: "ws://<polkadot-or-kusama-archive-node>:<port>"
+  SAS_SUBSTRATE_URL: "ws://<polkadot-or-kusama-archive-node>:<port>"
 
 podAnnotations: {}
 

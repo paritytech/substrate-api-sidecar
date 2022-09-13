@@ -84,7 +84,8 @@
             "info": {
                 "weight": "182428000",
                 "class": "Normal",
-                "partialFee": "2599999269"
+                "partialFee": "2599999269",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -152,7 +153,8 @@
             "info": {
                 "weight": "63399913000",
                 "class": "Normal",
-                "partialFee": "2566750239"
+                "partialFee": "2566750239",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -251,7 +253,8 @@
             "info": {
                 "weight": "627217000",
                 "class": "Normal",
-                "partialFee": "4033332622"
+                "partialFee": "4033332622",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -348,7 +351,8 @@
             "info": {
                 "weight": "63399913000",
                 "class": "Normal",
-                "partialFee": "2566750239"
+                "partialFee": "2566750239",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -447,7 +451,8 @@
             "info": {
                 "weight": "423471000",
                 "class": "Normal",
-                "partialFee": "4033332622"
+                "partialFee": "4033332622",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -510,7 +515,8 @@
             "info": {
                 "weight": "63399913000",
                 "class": "Normal",
-                "partialFee": "2566750239"
+                "partialFee": "2566750239",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -597,7 +603,8 @@
             "info": {
                 "weight": "423471000",
                 "class": "Normal",
-                "partialFee": "3349999290"
+                "partialFee": "3349999290",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -683,7 +690,8 @@
             "info": {
                 "weight": "63399913000",
                 "class": "Normal",
-                "partialFee": "2566750239"
+                "partialFee": "2566750239",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -782,7 +790,8 @@
             "info": {
                 "weight": "423471000",
                 "class": "Normal",
-                "partialFee": "4033332622"
+                "partialFee": "4033332622",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -845,7 +854,8 @@
             "info": {
                 "weight": "63399913000",
                 "class": "Normal",
-                "partialFee": "2550083579"
+                "partialFee": "2550083579",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
@@ -932,7 +942,8 @@
             "info": {
                 "weight": "423471000",
                 "class": "Normal",
-                "partialFee": "3333332630"
+                "partialFee": "3333332630",
+                "kind": "postDispatch"
             },
             "era": {
                 "mortalEra": [
