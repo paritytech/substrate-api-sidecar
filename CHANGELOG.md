@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v13.0.0..v13.1.0) (2022-09-19)
+
+### Features
+
+- feat: validateBooleanMiddleware for controllers ([#1023](https://github.com/paritytech/substrate-api-sidecar/pull/1023)) ([fc74d4a](https://github.com/paritytech/substrate-api-sidecar/commit/fc74d4ac1678553f2bcdc20902e576a5c586112c))
+
+### Chores
+
+- chore(deps): updated polkadot-js deps ([#1059](https://github.com/paritytech/substrate-api-sidecar/pull/1059)) ([90131ee](https://github.com/paritytech/substrate-api-sidecar/commit/90131eeee4bc14353a40c3e3f56a7f03b0d592c9))
+- chore(yarn): bum yarn to 3.2.3 ([#1054](https://github.com/paritytech/substrate-api-sidecar/pull/1054)) ([bc5b2d0](https://github.com/paritytech/substrate-api-sidecar/commit/bc5b2d0eccc71615bdae053ab761f3e95ab815dc))
+- chore(deps): update polkadot-js api, util-crypto ([#1048](https://github.com/paritytech/substrate-api-sidecar/pull/1048)) ([1719d8b](https://github.com/paritytech/substrate-api-sidecar/commit/1719d8bbc6e48b86496bdffbf3c7fc75be9a810a))
+
+### CI
+
+- ci: use polkadot node managed by argo-cd ([#1051](https://github.com/paritytech/substrate-api-sidecar/pull/1051)) ([d67d3a5](https://github.com/paritytech/substrate-api-sidecar/commit/d67d3a5027c684257ee7a8bed0c2d49904cdb2d7))
+
+### Bug Fixes
+
+- fix: add TransactionPayment::TransactionPaidFee support ([#1040](https://github.com/paritytech/substrate-api-sidecar/pull/1040)) ([108a93b](https://github.com/paritytech/substrate-api-sidecar/commit/108a93b1c3a23539a5be635c918d7cffd2b8be68))
+
+### Tests
+
+- test: fix deprecated lruCache.size deprecation ([#1042](https://github.com/paritytech/substrate-api-sidecar/pull/1042)) ([4820342](https://github.com/paritytech/substrate-api-sidecar/commit/4820342978855eaab212ef3eeae1e51013963bed))
+
+### Docs
+
+- docs: remove fee integration guide ([#1010](https://github.com/paritytech/substrate-api-sidecar/pull/1010)) ([66f57b5](https://github.com/paritytech/substrate-api-sidecar/commit/66f57b56c0a81d201fd2832603cf6d150aa48c23))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9290
+- Kusama v9290
+- Westend v9290
+
+
 ## [13.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v12.4.3..v13.0.0) (2022-08-31)
 
 ### ⚠ BREAKING CHANGES ⚠
