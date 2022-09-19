@@ -53,8 +53,8 @@
     "update-pjs-deps": "substrate-update-pjs-deps && yarn"
   },
   "dependencies": {
-    "@polkadot/api": "^9.3.3",
-    "@polkadot/util-crypto": "^10.1.7",
+    "@polkadot/api": "^9.4.1",
+    "@polkadot/util-crypto": "^10.1.8",
     "@substrate/calc": "^0.3.0",
     "argparse": "^2.0.1",
     "confmgr": "1.0.9",
