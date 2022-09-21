@@ -49,3 +49,9 @@ export interface IParaIdParam extends ParamsDictionary {
 export interface IRangeQueryParam extends Query {
 	range: string;
 }
+
+export interface IConvertQueryParams extends Query {
+	scheme: string;
+	prefix: string;
+	publicKey: string;
+}

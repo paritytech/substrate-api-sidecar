@@ -367,6 +367,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountValidation'
+  /accounts/{accountId}/convert:
+    get:
+      tags:
+      - accounts
+      summary: Convert a given AccountId to an SS58 address.
+      description: Returns the SS58 prefix, the network address format, the SS58 address, and the AccountId
+        that was given as input parameter, the scheme that was used and if it is a public key or not (boolean).
+      operationId: accountConvert
+      parameters:
+      - name: accountId
+        in: path
+        description: AccountId or Public Key (hex).
+        required: true
+        schema:
+          format: AccountId or Hex
+          type: string
+      - name: scheme
+        in: query
+        description: The cryptographic scheme to be used in order to convert the AccountId to 
+          an SS58 address. It can take one of three values [sr25519, ed25519, ecdsa].
+          The default scheme that is used is `sr25519` (if it is not set in the query parameter).
+        required: false
+        schema:
+          type: string
+          format: string
+          default: 'sr25519'
+      - name: prefix
+        in: query
+        description: The address prefix which can be one of the values found in the SS58-registry.
+        required: false
+        schema:
+          type: string
+          format: number
+          default: 42
+      - name: publicKey
+        in: query
+        description: Defines if the given value in the path parameter is a Public Key (hex)
+          or not (hence AccountId).
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
+      responses:
+        "200":
+          description: successfully converted the AccountId and retrieved the address info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountConvert'
+        "400":
+          description: Invalid AccountId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: AccountId not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks:
     get:
       tags:

@@ -17,6 +17,7 @@
 import {
 	AccountsAssets,
 	AccountsBalanceInfo,
+	AccountsConvert,
 	AccountsStakingInfo,
 	AccountsStakingPayouts,
 	AccountsValidate,
@@ -47,6 +48,7 @@ export const controllers = {
 	BlocksTrace,
 	AccountsAssets,
 	AccountsBalanceInfo,
+	AccountsConvert,
 	AccountsStakingInfo,
 	AccountsValidate,
 	AccountsVestingInfo,

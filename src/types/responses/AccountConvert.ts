@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as AccountsAssets } from './AccountsAssetsController';
-export { default as AccountsBalanceInfo } from './AccountsBalanceInfoController';
-export { default as AccountsConvert } from './AccountsConvertController';
-export { default as AccountsStakingInfo } from './AccountsStakingInfoController';
-export { default as AccountsStakingPayouts } from './AccountsStakingPayoutsController';
-export { default as AccountsValidate } from './AccountsValidateController';
-export { default as AccountsVestingInfo } from './AccountsVestingInfoController';
+export interface IAccountConvert {
+	ss58Prefix: number | null;
+	network: string | null;
+	address: string | null;
+	accountId: string | null;
+	scheme: string | null;
+	publicKey: boolean;
+}
