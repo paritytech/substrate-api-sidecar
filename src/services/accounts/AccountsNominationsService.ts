@@ -17,11 +17,7 @@ export class AccountsNominationsService extends AbstractService {
 	): Promise<INominations | null> {
 		const { api } = this;
 
-		const [
-			activeEraOption,
-			nominationsOpt,
-			{ number },
-		] = await Promise.all([
+		const [activeEraOption, nominationsOpt, { number }] = await Promise.all([
 			api.query.staking.activeEra.at(hash),
 			api.query.staking.nominators.at(hash, address),
 			api.rpc.chain.getHeader(hash),
@@ -68,9 +64,7 @@ export class AccountsNominationsService extends AbstractService {
 				const individualExposure = exposure?.others.find(
 					(o) => o.who.toString() === address
 				);
-				const value = individualExposure
-					? individualExposure.value
-					: null;
+				const value = individualExposure ? individualExposure.value : null;
 
 				const status = exposure.others.length
 					? individualExposure
