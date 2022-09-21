@@ -16,7 +16,7 @@ const QUERY_OPTS = {
 
 const validatorsCache = new LRU<string, Promise<IValidator[]>>({
 	max: 10,
-	maxAge: 1000 * 60 * 60,
+	ttl: 1000 * 60 * 60,
 });
 
 export class ValidatorsService extends AbstractService {
@@ -61,7 +61,7 @@ export class ValidatorsService extends AbstractService {
 		validatorsCache.set(cacheKey, newValue);
 
 		// Clear failed promise from cache
-		newValue.catch(() => validatorsCache.del(cacheKey));
+		newValue.catch(() => validatorsCache.delete(cacheKey));
 
 		return newValue;
 	}

@@ -39,11 +39,7 @@ export class IdentitiesService extends AbstractService {
 			unwrappedSuperOf,
 		]);
 
-		return this.extractIdentity(
-			identity,
-			unwrappedSuperOf,
-			parentIdentities
-		);
+		return this.extractIdentity(identity, unwrappedSuperOf, parentIdentities);
 	}
 
 	/**
@@ -57,9 +53,7 @@ export class IdentitiesService extends AbstractService {
 		const { api } = this;
 
 		const [identities, superOfOpts] = await Promise.all([
-			api.query.identity.identityOf.multi<Option<Registration>>(
-				addresses
-			),
+			api.query.identity.identityOf.multi<Option<Registration>>(addresses),
 			api.query.identity.superOf.multi<Option<ITuple<[AccountId, Data]>>>(
 				addresses
 			),
@@ -74,11 +68,7 @@ export class IdentitiesService extends AbstractService {
 		);
 
 		return identities.map((identity, index) =>
-			this.extractIdentity(
-				identity,
-				unwrappedSuperOfs[index],
-				parentIdentities
-			)
+			this.extractIdentity(identity, unwrappedSuperOfs[index], parentIdentities)
 		);
 	}
 
@@ -101,10 +91,7 @@ export class IdentitiesService extends AbstractService {
 		>(uniqAddresses);
 
 		const map = new Map<String, Option<Registration>>(
-			addresses.map((addr, index) => [
-				addr.toString(),
-				parentIdentities[index],
-			])
+			addresses.map((addr, index) => [addr.toString(), parentIdentities[index]])
 		);
 
 		return map;
@@ -138,9 +125,7 @@ export class IdentitiesService extends AbstractService {
 		const topDisplay = dataAsString(info.display);
 
 		return {
-			display: superOf
-				? dataAsString(superOf[1]) || topDisplay
-				: topDisplay,
+			display: superOf ? dataAsString(superOf[1]) || topDisplay : topDisplay,
 			displayParent: superOf ? topDisplay : undefined,
 			email: dataAsString(info.email),
 			image: dataAsString(info.image),
