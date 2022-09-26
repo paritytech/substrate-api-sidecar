@@ -20,7 +20,7 @@ import {
 	DeriveEraExposure,
 	DeriveEraExposureNominating,
 } from '@polkadot/api-derive/staking/types';
-import { Option } from '@polkadot/types';
+import { Option, u32 } from '@polkadot/types';
 import {
 	BalanceOf,
 	BlockHash,
@@ -38,6 +38,7 @@ import {
 	IPayout,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+
 
 /**
  * General information about an era, in tuple form because we initially get it
@@ -97,10 +98,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		]);
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
-		if (depth > historyDepth.toNumber()) {
+		if (depth > (historyDepth as u32).toNumber()) {
 			throw new BadRequest('Must specify a depth less than history_depth');
 		}
-		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {
+		if (era - (depth - 1) < currentEra - (historyDepth as u32).toNumber()) {
 			// In scenarios where depth is not > historyDepth, but the user specifies an era
 			// and historyDepth combo that would lead to querying eras older than history depth
 			throw new BadRequest(
