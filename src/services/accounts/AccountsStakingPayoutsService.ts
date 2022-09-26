@@ -39,7 +39,6 @@ import {
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
-
 /**
  * General information about an era, in tuple form because we initially get it
  * by destructuring a Promise.all(...)
