@@ -94,14 +94,14 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		const [{ number }, historyDepth] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			historicApi.query.staking.historyDepth(),
+			historicApi.query.staking.historyDepth<u32>(),
 		]);
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
-		if (depth > (historyDepth as u32).toNumber()) {
+		if (depth > historyDepth.toNumber()) {
 			throw new BadRequest('Must specify a depth less than history_depth');
 		}
-		if (era - (depth - 1) < currentEra - (historyDepth as u32).toNumber()) {
+		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {
 			// In scenarios where depth is not > historyDepth, but the user specifies an era
 			// and historyDepth combo that would lead to querying eras older than history depth
 			throw new BadRequest(
