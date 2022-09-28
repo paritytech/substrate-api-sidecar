@@ -50,6 +50,7 @@ export interface IRangeQueryParam extends Query {
 	range: string;
 }
 
+<<<<<<< HEAD
 export interface IPalletsStorageParam extends ParamsDictionary {
 	palletId: string;
 	storageItemId: string;
@@ -59,4 +60,10 @@ export interface IPalletsStorageQueryParam extends Query {
 	keys: string[];
 	metadata: string;
 	adjustMetadataV13: string;
+=======
+export interface IConvertQueryParams extends Query {
+	scheme: string;
+	prefix: string;
+	publicKey: string;
+>>>>>>> 1e09ae78f99052c5e30b43f71fe71b3c2bfbf970
 }

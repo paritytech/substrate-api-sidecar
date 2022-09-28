@@ -19,6 +19,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
+import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
 import { INumberParam, IRangeQueryParam } from '../../types/requests';
@@ -101,6 +102,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	}
 
 	protected initRoutes(): void {
+		this.router.use(
+			this.path,
+			validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],

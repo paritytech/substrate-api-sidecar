@@ -20,7 +20,7 @@ import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { validateAddress } from '../../middleware';
+import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -87,7 +87,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress);
+		this.router.use(
+			this.path,
+			validateAddress,
+			validateBoolean(['unclaimedOnly'])
+		);
 
 		this.safeMountAsyncGetHandlers([['', this.getStakingPayoutsByAccountId]]);
 	}
