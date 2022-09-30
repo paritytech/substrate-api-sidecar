@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v13.1.0..v14.0.0) (2022-10-03)
+
+### Features 
+
+- feat!: support for NStorageMaps ([#1053](https://github.com/paritytech/substrate-api-sidecar/pull/1053)) ([a00a6b0](https://github.com/paritytech/substrate-api-sidecar/commit/a00a6b060cb4a9671fef6d831ffd67536d7b25d5))
+- feat: add /accounts/:accountId/convert endpoint ([#1007](https://github.com/paritytech/substrate-api-sidecar/pull/1007)) ([e2d6fae](https://github.com/paritytech/substrate-api-sidecar/commit/e2d6fae40d6369bde67c39f30baf70f247145017))
+
+### Chores
+- chore(deps): updated polkadot-js deps ([#1067](https://github.com/paritytech/substrate-api-sidecar/pull/1067)) ([1e09ae7](https://github.com/paritytech/substrate-api-sidecar/commit/1e09ae78f99052c5e30b43f71fe71b3c2bfbf970))
+
+
 ## [13.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v13.0.0..v13.1.0) (2022-09-19)
 
 ### Features
