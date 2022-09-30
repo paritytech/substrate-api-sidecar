@@ -13,6 +13,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 - chore(deps): updated polkadot-js deps ([#1067](https://github.com/paritytech/substrate-api-sidecar/pull/1067)) ([1e09ae7](https://github.com/paritytech/substrate-api-sidecar/commit/1e09ae78f99052c5e30b43f71fe71b3c2bfbf970))
 
+## Compatibility
+
+Tested against:
+- Polkadot v9290
+- Kusama v9290
+- Westend v9290
+
 
 ## [13.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v13.0.0..v13.1.0) (2022-09-19)
 
