@@ -66,3 +66,20 @@ export interface IContractQueryParam extends Query {
 	gasLimit: string;
 	storageDepositLimit: string;
 }
+
+export interface IPalletsStorageParam extends ParamsDictionary {
+	palletId: string;
+	storageItemId: string;
+}
+
+export interface IPalletsStorageQueryParam extends Query {
+	keys: string[];
+	metadata: string;
+	adjustMetadataV13: string;
+}
+
+export interface IConvertQueryParams extends Query {
+	scheme: string;
+	prefix: string;
+	publicKey: string;
+}

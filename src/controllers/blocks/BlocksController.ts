@@ -18,19 +18,14 @@ import { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
-import LRU from 'lru-cache';
 
+import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
+import { ControllerOptions } from '../../types/chains-config';
 import { INumberParam, IRangeQueryParam } from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
-
-interface ControllerOptions {
-	finalizes: boolean;
-	minCalcFeeRuntime: null | number;
-	blockStore: LRU<string, IBlock>;
-}
 
 /**
  * GET a block.
@@ -96,12 +91,21 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		super(
 			api,
 			'/blocks',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore)
+			new BlocksService(
+				api,
+				options.minCalcFeeRuntime,
+				options.blockStore,
+				options.hasQueryFeeApi
+			)
 		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
+		this.router.use(
+			this.path,
+			validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -118,12 +122,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, feeByEvent } },
+		{ query: { eventDocs, extrinsicDocs, finalized } },
 		res
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const getFeeByEvent = feeByEvent === 'true';
 
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!this.options.finalizes) {
@@ -150,7 +153,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			getFeeByEvent,
 		};
 
 		const historicApi = await this.api.at(hash);
@@ -168,7 +170,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, feeByEvent } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -177,7 +179,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const getFeeByEvent = feeByEvent === 'true';
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
@@ -188,7 +189,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			getFeeByEvent,
 		};
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -253,7 +253,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		unknown,
 		IRangeQueryParam
 	> = async (
-		{ query: { range, eventDocs, extrinsicDocs, feeByEvent } },
+		{ query: { range, eventDocs, extrinsicDocs } },
 		res
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
@@ -263,7 +263,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const getFeeByEvent = feeByEvent === 'true';
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
 		const options = {
@@ -272,7 +271,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			getFeeByEvent,
 		};
 
 		const pQueue = new PromiseQueue(4);

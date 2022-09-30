@@ -25,6 +25,7 @@ import { AnyJson } from 'src/types/polkadot-js';
 import {
 	IAddressNumberParams,
 	IAddressParam,
+	IConvertQueryParams,
 	INumberParam,
 	IParaIdParam,
 	IRangeQueryParam,
@@ -37,6 +38,7 @@ import { verifyNonZeroUInt, verifyUInt } from '../util/integers/verifyInt';
 
 type SidecarRequestHandler =
 	| RequestHandler<unknown, unknown, unknown, IRangeQueryParam>
+	| RequestHandler<IAddressParam, unknown, unknown, IConvertQueryParams>
 	| RequestHandler<IAddressParam>
 	| RequestHandler<IAddressNumberParams>
 	| RequestHandler<INumberParam>

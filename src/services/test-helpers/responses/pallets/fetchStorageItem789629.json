@@ -6,5 +6,5 @@
   "pallet": "democracy",
   "palletIndex": "15",
   "storageItem": "referendumInfoOf",
-  "key1": "0"
+  "keys": ["0"]
 }

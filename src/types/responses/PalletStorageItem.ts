@@ -19,8 +19,7 @@ import { IPallet, ISanitizedStorageItemMetadata } from '.';
 
 export interface IPalletStorageItem extends IPallet {
 	storageItem: string;
-	key1: string | undefined;
-	key2: string | undefined;
+	keys: string[];
 	value: Codec;
 	metadata: ISanitizedStorageItemMetadata | undefined;
 }
