@@ -41,12 +41,14 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 	 * @param res Express Response
 	 */
 	private getPalletStakingValidators: RequestHandler = async (
-		_req,
+		{ query: { at } },
 		res
 	): Promise<void> => {
+    const hash = await this.getHashFromAt(at);
+
 		PalletsStakingValidatorsController.sanitizedSend(
 			res,
-			await this.service.derivePalletStakingValidators()
+			await this.service.derivePalletStakingValidators(hash)
 		);
 	};
 }

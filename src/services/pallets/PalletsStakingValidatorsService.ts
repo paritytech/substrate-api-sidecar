@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { IPalletStakingValidator, IValidator } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
@@ -27,17 +28,18 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 *
 	 * @returns all the validators addresses and their corresponding status
 	 */
-	async derivePalletStakingValidators(): Promise<IPalletStakingValidator> {
+	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
 		const { api } = this;
+    const historicApi = await api.at(hash);
 
 		// Validators in the active set
-		const validatorSession = await api.query.session.validators();
+		const validatorSession = await historicApi.query.session.validators();
 		let validatorSet: string[] = [];
 		validatorSet = validatorSession.map((address) => address.toString());
 
 		// All Validators : active & waiting
 		const validatorAll: string[] = [];
-		const validatorsEntries = await api.query.staking.validators.entries();
+		const validatorsEntries = await historicApi.query.staking.validators.entries();
 		validatorsEntries.forEach(([key]) => {
 			validatorAll.push(key.args.map((k) => k.toHuman())[0]);
 		});
