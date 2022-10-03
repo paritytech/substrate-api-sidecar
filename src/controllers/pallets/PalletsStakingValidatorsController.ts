@@ -44,7 +44,7 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 		{ query: { at } },
 		res
 	): Promise<void> => {
-    const hash = await this.getHashFromAt(at);
+		const hash = await this.getHashFromAt(at);
 
 		PalletsStakingValidatorsController.sanitizedSend(
 			res,

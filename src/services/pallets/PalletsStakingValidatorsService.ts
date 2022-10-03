@@ -28,9 +28,11 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 *
 	 * @returns all the validators addresses and their corresponding status
 	 */
-	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
+	async derivePalletStakingValidators(
+		hash: BlockHash
+	): Promise<IPalletStakingValidator> {
 		const { api } = this;
-    const historicApi = await api.at(hash);
+		const historicApi = await api.at(hash);
 
 		// Validators in the active set
 		const validatorSession = await historicApi.query.session.validators();
@@ -39,7 +41,8 @@ export class PalletsStakingValidatorsService extends AbstractService {
 
 		// All Validators : active & waiting
 		const validatorAll: string[] = [];
-		const validatorsEntries = await historicApi.query.staking.validators.entries();
+		const validatorsEntries =
+			await historicApi.query.staking.validators.entries();
 		validatorsEntries.forEach(([key]) => {
 			validatorAll.push(key.args.map((k) => k.toHuman())[0]);
 		});
