@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress } from '../../middleware';
+import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsBalanceInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -66,7 +66,11 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress);
+		this.router.use(
+			this.path,
+			validateAddress,
+			validateBoolean(['denominated'])
+		);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}

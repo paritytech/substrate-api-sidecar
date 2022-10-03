@@ -541,7 +541,7 @@ describe('BlocksService', () => {
 			await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
 			await blocksService.fetchBlock(blockHash20000, mockHistoricApi, options);
 
-			expect(cache.length).toBe(2);
+			expect(cache.size).toBe(2);
 		});
 
 		it('Should have a max of 2 blocks within the LRUcache, and should save the most recent and remove the oldest block', async () => {
@@ -553,7 +553,7 @@ describe('BlocksService', () => {
 			await blocksService.fetchBlock(blockHash100000, mockHistoricApi, options);
 
 			expect(cache.get(blockHash789629.toString())).toBe(undefined);
-			expect(cache.length).toBe(2);
+			expect(cache.size).toBe(2);
 		});
 	});
 });
