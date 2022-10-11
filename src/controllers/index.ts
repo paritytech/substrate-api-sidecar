@@ -27,6 +27,7 @@ import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
+	PalletsNominationPools,
 	PalletsStakingProgress,
 	PalletsStorage,
 } from './pallets';
@@ -54,6 +55,7 @@ export const controllers = {
 	AccountsVestingInfo,
 	AccountsStakingPayouts,
 	PalletsAssets,
+	PalletsNominationPools,
 	PalletsStakingProgress,
 	PalletsStorage,
 	NodeNetwork,
