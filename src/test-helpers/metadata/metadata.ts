@@ -20,11 +20,12 @@ import { kusamaRegistry } from '../registries/kusamaRegistry';
 import {
 	polkadotRegistry,
 	polkadotRegistryV29,
+	polkadotRegistryV9300,
 } from '../registries/polkadotRegistry';
 import { kusamaMetadataV2008 } from './kusamaV2008Metadata';
 import { polkadotMetadataRpcV16 } from './polkadotV16Metadata';
 import { polkadotMetadataRpcV29 } from './polkadotV29Metadata';
-
+import { polkadotMetadataRpcV9300 } from './polkadotV9300Metadata';
 /**
  * Metadata of the polkadotRegistry (v16).
  */
@@ -44,4 +45,12 @@ export const kusamaMetadata = new Metadata(kusamaRegistry, kusamaMetadataV2008);
 export const polkadotMetadataV29 = new Metadata(
 	polkadotRegistryV29,
 	polkadotMetadataRpcV29
+);
+
+/**
+ * Metadata of polkadotRegistry (v9300)
+ */
+export const polkadotMetadataV9300 = new Metadata(
+	polkadotRegistryV9300,
+	polkadotMetadataRpcV9300
 );
