@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DispatchClass, Extrinsic, Weight } from '@polkadot/types/interfaces';
-import { u32 } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
 import { INodeTransactionPool } from '../../types/responses';
@@ -103,11 +102,14 @@ export class NodeTransactionPoolService extends AbstractService {
 		const BN_ONE = new BN(1);
 		const sanitizedClass = this.defineDispatchClassType(dispatchClass);
 
-		const maxBlockWeight = api.consts.system.blockWeights.maxBlock;
-		const maxLength: u32 = api.consts.system.blockLength.max[sanitizedClass];
+		const maxBlockWeight =
+			api.consts.system.blockWeights.maxBlock.refTime.unwrap();
+		const maxLength: BN = new BN(
+			api.consts.system.blockLength.max[sanitizedClass]
+		);
 		const boundedWeight = BN.min(BN.max(weight.toBn(), BN_ONE), maxBlockWeight);
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
-		const maxTxPerBlockWeight = maxBlockWeight.div(boundedWeight);
+		const maxTxPerBlockWeight = maxBlockWeight.toBn().div(boundedWeight);
 		const maxTxPerBlockLength = maxLength.div(boundedLength);
 
 		const maxTxPerBlock = BN.min(maxTxPerBlockWeight, maxTxPerBlockLength);
@@ -137,7 +139,10 @@ export class NodeTransactionPoolService extends AbstractService {
 				}
 
 				const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
-				const computedInclusionFee = baseFee.add(lenFee).add(adjustedWeightFee);
+				const computedInclusionFee = baseFee
+					.toBn()
+					.add(lenFee)
+					.add(adjustedWeightFee);
 				const finalFee = computedInclusionFee.add(tip.toBn());
 				const virtualTip = finalFee.mul(operationalFeeMultiplier);
 				const scaledVirtualTip = this.maxReward(virtualTip, maxTxPerBlock);
