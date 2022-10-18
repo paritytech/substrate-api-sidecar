@@ -261,7 +261,7 @@ export const defaultMockApi = {
 			blockWeights: {
 				baseBlock: new BN(5481991000),
 				maxBlock: {
-					refTime: polkadotRegistry.createType('Compact<u64>', 10),
+					refTime: polkadotRegistry.createType('Compact<u64>', 15),
 				},
 				perClass: {
 					normal: {
