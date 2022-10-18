@@ -8,11 +8,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 - chore(yarn): bump yarn ([#1079](https://github.com/paritytech/substrate-api-sidecar/pull/1079)) ([eb368ae](https://github.com/paritytech/substrate-api-sidecar/commit/eb368aeec34b7c8a85802ff0e3e01c94553aca2f))
 
-- chore(deps): bump Swatinem/rust-cache from 2.0.0 to 2.0.1 ([#1084](https://github.com/paritytech/substrate-api-sidecar/pull/1084)) ([aa2c9cb](https://github.com/paritytech/substrate-api-sidecar/commit/aa2c9cb5b525f97661b6a649d2fd716e2a78e445))
-
-- chore(metrics): push metrics to prometheus-pushgateway ([#1086](https://github.com/paritytech/substrate-api-sidecar/pull/1086)) ([9284bd1](https://github.com/paritytech/substrate-api-sidecar/commit/9284bd1240ae4c0fcaa63f760dc17feeb1ceaaeb))
-
 - chore(deps): updated polkadot-js deps ([#1090](https://github.com/paritytech/substrate-api-sidecar/pull/1090)) ([e6a70a3](https://github.com/paritytech/substrate-api-sidecar/commit/e6a70a35689956a53b9bec7a1297a82825faa49f))
+
+### CI
+
+- ci: bump Swatinem/rust-cache from 2.0.0 to 2.0.1 ([#1084](https://github.com/paritytech/substrate-api-sidecar/pull/1084)) ([aa2c9cb](https://github.com/paritytech/substrate-api-sidecar/commit/aa2c9cb5b525f97661b6a649d2fd716e2a78e445))
+
+- ci: push metrics to prometheus-pushgateway ([#1086](https://github.com/paritytech/substrate-api-sidecar/pull/1086)) ([9284bd1](https://github.com/paritytech/substrate-api-sidecar/commit/9284bd1240ae4c0fcaa63f760dc17feeb1ceaaeb))
 
 ### Docs
 
