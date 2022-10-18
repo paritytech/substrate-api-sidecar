@@ -43,7 +43,10 @@ import {
 } from '.';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import traceBlockRPC from './data/traceBlock.json';
-import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
+import {  
+	counterForBondedPools,
+	getMetadata as mockMetaData,
+} from './data/mockNonimationPoolResponseData';
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -262,7 +265,7 @@ export const defaultMockApi = {
 			blockWeights: {
 				baseBlock: new BN(5481991000),
 				maxBlock: {
-					refTime: polkadotRegistry.createType('Compact<u64>', 10),
+					refTime: polkadotRegistry.createType('Compact<u64>', 15),
 				},
 				perClass: {
 					normal: {
@@ -335,6 +338,7 @@ export const defaultMockApi = {
 	query: {
 		nominationPools: {
 			metadata: mockMetaData,
+			counterForBondedPools: mockBondedPoolsCounter,
 		}
 	}
 } as unknown as ApiPromise;

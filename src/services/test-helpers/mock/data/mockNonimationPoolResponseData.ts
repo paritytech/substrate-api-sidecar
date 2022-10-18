@@ -1,13 +1,7 @@
 
 import { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsRewardPool } from '@polkadot/types/lookup';
-import { Codec } from '@polkadot/types/types';
-
-import { IPalletNominationPool } from '../../../../types/responses/';
-// import { bool, Null, Struct, u128 } from '@polkadot/types';
-// import BN from 'bn.js';
+import { u32 } from '@polkadot/types/';
 import { polkadotRegistryV9300 } from '../../../../test-helpers/registries';
-// import { polkadotRegistryV9122 } from '../../../../test-helpers/registries';
-// import { PalletsNominationPools } from 'src/controllers/pallets';
 
 
 export const getBondedPools = (): Promise<PalletNominationPoolsBondedPoolInner> =>
@@ -43,22 +37,62 @@ export const getMetadata = (): string => {
 }
 
 
-export const nominationPoolResponseData = (): Promise<Codec | IPalletNominationPool> =>
-    Promise.resolve().then(async () => {
-        const bondedPoolData = await getBondedPools();
-        const rewardPoolData = await getRewardPools();
-        const hash = polkadotRegistryV9300.createType("BlockHash", "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84");
-        const height = "12890587";
-        const at = {
-            hash,
-            height,
-        };
-        const metadata: string = getMetadata();
+export const counterForBondedPools = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 96);
+    });
 
-        return polkadotRegistryV9300.createType("IPalletNominationPool", {
-            at: at,
-            bondedPool: bondedPoolData,
-            rewardPool: rewardPoolData,
-            metadata: metadata,
-        });
+export const counterForMetadata = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 93);
+    });
+
+export const counterForPoolMembers = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 228);
+    });
+
+export const counterForReversePoolIdLookup = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 96);
+    });
+
+export const counterForSubPoolsStorage = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 96);
+    });
+
+export const counterForRewardPools = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 39);
+    });
+
+export const lastPoolId = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 122);
+    });
+
+export const maxPoolMembers = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 524288);
+    });
+
+export const maxPoolMembersPerPool = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", null);
+    });
+
+export const maxPools = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 512);
+    });
+
+export const minCreateBond = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 1000000000000);
+    });
+
+export const minJoinBond = (): Promise<u32> =>
+    Promise.resolve().then(() => {
+        return polkadotRegistryV9300.createType("u32", 100000000000);
     });

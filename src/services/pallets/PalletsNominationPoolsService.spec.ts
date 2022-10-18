@@ -129,4 +129,35 @@ describe('palletsNominationPoolService', () => {
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
 	});
+
+	describe('palletsNominationPoolService.fetchNominationPoolInfo', () => {
+		it('Should return the correct response for nomination pool info', async () => {
+			const expectedResponse = {
+				at: {
+					hash: "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84",
+					height: "12832882"
+				},
+				counterForBondedPools: "96",
+				counterForMetadata: "93",
+				counterForPoolMembers: "228",
+				counterForReversePoolIdLookup: "96",
+				counterForRewardPools: "96",
+				counterForSubPoolsStorage: "39",
+				lastPoolId: "122",
+				maxPoolMembers: "524288",
+				maxPoolMembersPerPool: null,
+				maxPools: "512",
+				minCreateBond: "1000000000000",
+				minJoinBond: "100000000000",
+			};
+			const blockHashAt = polkadotRegistry.createType("BlockHash", "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84");
+
+			const response = await palletsNominationPoolService.fetchNominationPoolInfo(
+				blockHashAt,
+                mockHistoricApi,
+			);
+
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
+		});
+	});
 });
