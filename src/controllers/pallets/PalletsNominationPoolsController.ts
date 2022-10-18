@@ -27,7 +27,8 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-            ['/:poolId', this.getNominationPoolById]
+			['/info', this.getNominationPoolInfo],
+            ['/:poolId', this.getNominationPoolById],
         ]);
 	}
 
@@ -36,7 +37,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 		res
 	): Promise<void> => {
 		/**
-		 * Verify our param `assetId` is an integer represented as a string, and return
+		 * Verify our param `poolId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(
@@ -56,6 +57,20 @@ export default class PalletsNominationPoolController extends AbstractController<
 		PalletsNominationPoolController.sanitizedSend(
 			res,
 			await this.service.fetchNominationPoolById(index, hash, metaData, historicApi)
+		);
+	};
+
+	private getNominationPoolInfo: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+
+		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
+
+		PalletsNominationPoolController.sanitizedSend(
+			res,
+			await this.service.fetchNominationPoolInfo(hash, historicApi)
 		);
 	};
 }

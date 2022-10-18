@@ -43,6 +43,7 @@ import {
 } from '.';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import traceBlockRPC from './data/traceBlock.json';
+import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -331,4 +332,9 @@ export const defaultMockApi = {
 			getBlock: deriveGetBlock,
 		},
 	},
+	query: {
+		nominationPools: {
+			metadata: mockMetaData,
+		}
+	}
 } as unknown as ApiPromise;

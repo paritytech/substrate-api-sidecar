@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import { IPalletNominationPool } from '../../types/responses/';
+import { IPalletNominationPool, IPalletNominationPoolInfo } from '../../types/responses/';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsNominationPoolService extends AbstractService {
@@ -33,7 +33,6 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 
-	// TODO: add optional metadata
 	async fetchNominationPoolById(
 		poolId: number,
 		hash: BlockHash,
@@ -61,11 +60,78 @@ export class PalletsNominationPoolService extends AbstractService {
 			height: number.unwrap().toString(10),
 		};
 
-		return {
-			at,
-			bondedPool,
-			rewardPool,
-			metadata,
-		};
+		if(metadata.length > 0) {
+			return {
+				at,
+				bondedPool,
+				rewardPool,
+				metadata,
+			}
+		} else {
+			return  {
+				at,
+				bondedPool,
+				rewardPool,
+			}
+		}
+}
+
+
+async fetchNominationPoolInfo(
+	hash: BlockHash,
+	historicApi: ApiDecoration<"promise">
+): Promise<IPalletNominationPoolInfo> {
+	const { api } = this;
+
+	const [
+		{ number }, 
+		counterForBondedPools,
+		counterForMetadata,
+		counterForPoolMembers,
+		counterForReversePoolIdLookup,
+		counterForRewardPools,
+		counterForSubPoolsStorage,
+		lastPoolId,
+		maxPoolMembers,
+		maxPoolMembersPerPool,
+		maxPools,
+		minCreateBond,
+		minJoinBond,
+	] = await Promise.all([
+		api.rpc.chain.getHeader(hash),
+		historicApi.query.nominationPools.counterForBondedPools(),
+		historicApi.query.nominationPools.counterForMetadata(),
+		historicApi.query.nominationPools.counterForPoolMembers(),
+		historicApi.query.nominationPools.counterForReversePoolIdLookup(),
+		historicApi.query.nominationPools.counterForRewardPools(),
+		historicApi.query.nominationPools.counterForSubPoolsStorage(),
+		historicApi.query.nominationPools.lastPoolId(),
+		historicApi.query.nominationPools.maxPoolMembers(),
+		historicApi.query.nominationPools.maxPoolMembersPerPool(),
+		historicApi.query.nominationPools.maxPools(),
+		historicApi.query.nominationPools.minCreateBond(),
+		historicApi.query.nominationPools.minJoinBond(),
+	]);
+
+	const at = {
+		hash,
+		height: number.unwrap().toString(10),
+	};
+
+	return {
+		at,
+		counterForBondedPools,
+		counterForMetadata,
+		counterForPoolMembers,
+		counterForReversePoolIdLookup,
+		counterForRewardPools,
+		counterForSubPoolsStorage,
+		lastPoolId,
+		maxPoolMembers,
+		maxPoolMembersPerPool,
+		maxPools,
+		minCreateBond,
+		minJoinBond,
 	}
+	} 
 }

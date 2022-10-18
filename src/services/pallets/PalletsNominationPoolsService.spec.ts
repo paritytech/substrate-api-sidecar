@@ -19,6 +19,11 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
 
+import {
+	getBondedPools,
+	getRewardPools,
+	// getMetadata,
+} from '../test-helpers/mock/data/mockNonimationPoolResponseData';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { polkadotRegistry } from '../../test-helpers/registries';
@@ -36,9 +41,9 @@ const mockHistoricApi = {
 			referendumInfoOf: referendumInfoOfAt,
 		},
         nominationPools: {
-            bondedPools: (): Promise<void> => { return Promise.resolve()},
-            rewardPools: (): Promise<void> => { return Promise.resolve()},
-        }
+            bondedPools: getBondedPools,
+            rewardPools: getRewardPools,
+        },
 	},
 } as unknown as ApiDecoration<'promise'>;
 
@@ -53,32 +58,27 @@ const palletsNominationPoolService = new PalletsNominationPoolService(mockApi);
 
 describe('palletsNominationPoolService', () => {
 	describe('palletsNominationPoolService.fetchNominationPoolById', () => {
-		it('Should return the correct response for an AssetId', async () => {
+		it('Should return the correct response for a nomination pool without metadata', async () => {
 			const expectedResponse = {
 				at: {
-					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-					height: '789629',
+					hash: "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+					height: "789629"
 				},
 				bondedPool: {
-					owner: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
-					issuer: '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
-					admin: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
-					freezer: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
-					supply: '10000000',
-					deposit: '2000000',
-					minBalance: '10000',
-					isSufficient: true,
-					accounts: '10',
-					sufficients: '15',
-					approvals: '20',
-					isFrozen: false,
+					points: "2000000000000",
+					state: "Destroying",
+					memberCounter: "1",
+					roles: {
+						depositor: "15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9",
+						root: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
+						nominator: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
+						stateToggler: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR"
+					}
 				},
 				rewardPool: {
-					deposit: '2000000',
-					name: '0x73746174656d696e74',
-					symbol: '0x444f54',
-					decimals: '10',
-					isFrozen: false,
+					"lastRecordedRewardCounter": "0",
+					"lastRecordedTotalPayouts": "0",
+					"totalRewardsClaimed": "0"
 				},
 			};
 
@@ -86,6 +86,43 @@ describe('palletsNominationPoolService', () => {
                 122,
 				blockHash789629,
 				false,
+                mockHistoricApi,
+			);
+
+			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
+		});
+
+		it('Should return the correct response for a nomination pool with metadata', async () => {
+			const expectedResponse = {
+				at: {
+					hash: "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84",
+					height: "789629"
+				},
+				bondedPool: {
+					points: "2000000000000",
+					state: "Destroying",
+					memberCounter: "1",
+					roles: {
+						depositor: "15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9",
+						root: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
+						nominator: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
+						stateToggler: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR"
+					}
+				},
+				rewardPool: {
+					"lastRecordedRewardCounter": "0",
+					"lastRecordedTotalPayouts": "0",
+					"totalRewardsClaimed": "0"
+				},
+				metadata: "0x4a757374204174652053746f6d61636861636865",
+			};
+
+			const blockHashAt = polkadotRegistry.createType("BlockHash", "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84");
+
+			const response = await palletsNominationPoolService.fetchNominationPoolById(
+                122,
+				blockHashAt,
+				true,
                 mockHistoricApi,
 			);
 
