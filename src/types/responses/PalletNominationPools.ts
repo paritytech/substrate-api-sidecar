@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import { u32, u128 } from '@polkadot/types-codec';
 import { Option } from '@polkadot/types/codec';
-import { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsRewardPool } from '@polkadot/types/lookup';
+import {
+	PalletNominationPoolsBondedPoolInner,
+	PalletNominationPoolsRewardPool,
+} from '@polkadot/types/lookup';
+import { u32, u128 } from '@polkadot/types-codec';
 
 import { IAt } from '.';
 
@@ -25,7 +27,7 @@ export interface IPalletNominationPool {
 	at: IAt;
 	bondedPool: Option<PalletNominationPoolsBondedPoolInner>;
 	rewardPool: Option<PalletNominationPoolsRewardPool>;
-    metadata?: string | null;
+	metadata?: string | null;
 }
 
 export interface IPalletNominationPoolInfo {

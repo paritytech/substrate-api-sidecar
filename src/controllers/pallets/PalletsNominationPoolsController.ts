@@ -28,8 +28,8 @@ export default class PalletsNominationPoolController extends AbstractController<
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/info', this.getNominationPoolInfo],
-            ['/:poolId', this.getNominationPoolById],
-        ]);
+			['/:poolId', this.getNominationPoolById],
+		]);
 	}
 
 	private getNominationPoolById: RequestHandler = async (
@@ -56,7 +56,12 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNominationPoolById(index, hash, metaData, historicApi)
+			await this.service.fetchNominationPoolById(
+				index,
+				hash,
+				metaData,
+				historicApi
+			)
 		);
 	};
 
@@ -64,7 +69,6 @@ export default class PalletsNominationPoolController extends AbstractController<
 		{ query: { at } },
 		res
 	): Promise<void> => {
-
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
 

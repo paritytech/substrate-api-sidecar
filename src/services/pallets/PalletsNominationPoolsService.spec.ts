@@ -18,15 +18,25 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
-
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotRegistry } from '../../test-helpers/registries';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import {
+	counterForBondedPools,
+	counterForMetadata,
+	counterForPoolMembers,
+	counterForReversePoolIdLookup,
+	counterForRewardPools,
+	counterForSubPoolsStorage,
 	getBondedPools,
 	getRewardPools,
-	// getMetadata,
+	lastPoolId,
+	maxPoolMembers,
+	maxPoolMembersPerPool,
+	maxPools,
+	minCreateBond,
+	minJoinBond,
 } from '../test-helpers/mock/data/mockNonimationPoolResponseData';
-import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
-import { polkadotRegistry } from '../../test-helpers/registries';
 import { PalletsNominationPoolService } from './PalletsNominationPoolsService';
 
 const referendumInfoOfAt = () =>
@@ -40,10 +50,22 @@ const mockHistoricApi = {
 		democracy: {
 			referendumInfoOf: referendumInfoOfAt,
 		},
-        nominationPools: {
-            bondedPools: getBondedPools,
-            rewardPools: getRewardPools,
-        },
+		nominationPools: {
+			bondedPools: getBondedPools,
+			rewardPools: getRewardPools,
+			counterForBondedPools,
+			counterForMetadata,
+			counterForPoolMembers,
+			counterForReversePoolIdLookup,
+			counterForSubPoolsStorage,
+			counterForRewardPools,
+			lastPoolId,
+			maxPoolMembers,
+			maxPoolMembersPerPool,
+			maxPools,
+			minCreateBond,
+			minJoinBond,
+		},
 	},
 } as unknown as ApiDecoration<'promise'>;
 
@@ -52,8 +74,6 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-
-
 const palletsNominationPoolService = new PalletsNominationPoolService(mockApi);
 
 describe('palletsNominationPoolService', () => {
@@ -61,33 +81,34 @@ describe('palletsNominationPoolService', () => {
 		it('Should return the correct response for a nomination pool without metadata', async () => {
 			const expectedResponse = {
 				at: {
-					hash: "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
-					height: "789629"
+					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+					height: '789629',
 				},
 				bondedPool: {
-					points: "2000000000000",
-					state: "Destroying",
-					memberCounter: "1",
+					points: '2000000000000',
+					state: 'Destroying',
+					memberCounter: '1',
 					roles: {
-						depositor: "15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9",
-						root: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
-						nominator: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
-						stateToggler: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR"
-					}
+						depositor: '15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9',
+						root: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+						nominator: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+						stateToggler: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+					},
 				},
 				rewardPool: {
-					"lastRecordedRewardCounter": "0",
-					"lastRecordedTotalPayouts": "0",
-					"totalRewardsClaimed": "0"
+					lastRecordedRewardCounter: '0',
+					lastRecordedTotalPayouts: '0',
+					totalRewardsClaimed: '0',
 				},
 			};
 
-			const response = await palletsNominationPoolService.fetchNominationPoolById(
-                122,
-				blockHash789629,
-				false,
-                mockHistoricApi,
-			);
+			const response =
+				await palletsNominationPoolService.fetchNominationPoolById(
+					122,
+					blockHash789629,
+					false,
+					mockHistoricApi
+				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -95,36 +116,40 @@ describe('palletsNominationPoolService', () => {
 		it('Should return the correct response for a nomination pool with metadata', async () => {
 			const expectedResponse = {
 				at: {
-					hash: "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84",
-					height: "789629"
+					hash: '0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84',
+					height: '789629',
 				},
 				bondedPool: {
-					points: "2000000000000",
-					state: "Destroying",
-					memberCounter: "1",
+					points: '2000000000000',
+					state: 'Destroying',
+					memberCounter: '1',
 					roles: {
-						depositor: "15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9",
-						root: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
-						nominator: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR",
-						stateToggler: "15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR"
-					}
+						depositor: '15uHYQkvPf3iBQn7mLYbdrf1fYFpE77zVR5hsKGSGYKm5rU9',
+						root: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+						nominator: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+						stateToggler: '15LkJX3hcxnHkaTdzq3n3HfKKgRcPJZA7VMNEqtMSfm8xgjR',
+					},
 				},
 				rewardPool: {
-					"lastRecordedRewardCounter": "0",
-					"lastRecordedTotalPayouts": "0",
-					"totalRewardsClaimed": "0"
+					lastRecordedRewardCounter: '0',
+					lastRecordedTotalPayouts: '0',
+					totalRewardsClaimed: '0',
 				},
-				metadata: "0x4a757374204174652053746f6d61636861636865",
+				metadata: '0x4a757374204174652053746f6d61636861636865',
 			};
 
-			const blockHashAt = polkadotRegistry.createType("BlockHash", "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84");
-
-			const response = await palletsNominationPoolService.fetchNominationPoolById(
-                122,
-				blockHashAt,
-				true,
-                mockHistoricApi,
+			const blockHashAt = polkadotRegistry.createType(
+				'BlockHash',
+				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84'
 			);
+
+			const response =
+				await palletsNominationPoolService.fetchNominationPoolById(
+					122,
+					blockHashAt,
+					true,
+					mockHistoricApi
+				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -134,28 +159,32 @@ describe('palletsNominationPoolService', () => {
 		it('Should return the correct response for nomination pool info', async () => {
 			const expectedResponse = {
 				at: {
-					hash: "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84",
-					height: "12832882"
+					hash: '0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84',
+					height: '789629',
 				},
-				counterForBondedPools: "96",
-				counterForMetadata: "93",
-				counterForPoolMembers: "228",
-				counterForReversePoolIdLookup: "96",
-				counterForRewardPools: "96",
-				counterForSubPoolsStorage: "39",
-				lastPoolId: "122",
-				maxPoolMembers: "524288",
+				counterForBondedPools: '96',
+				counterForMetadata: '93',
+				counterForPoolMembers: '228',
+				counterForReversePoolIdLookup: '96',
+				counterForRewardPools: '96',
+				counterForSubPoolsStorage: '39',
+				lastPoolId: '122',
+				maxPoolMembers: '524288',
 				maxPoolMembersPerPool: null,
-				maxPools: "512",
-				minCreateBond: "1000000000000",
-				minJoinBond: "100000000000",
+				maxPools: '512',
+				minCreateBond: '1000000000000',
+				minJoinBond: '100000000000',
 			};
-			const blockHashAt = polkadotRegistry.createType("BlockHash", "0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84");
-
-			const response = await palletsNominationPoolService.fetchNominationPoolInfo(
-				blockHashAt,
-                mockHistoricApi,
+			const blockHashAt = polkadotRegistry.createType(
+				'BlockHash',
+				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84'
 			);
+
+			const response =
+				await palletsNominationPoolService.fetchNominationPoolInfo(
+					blockHashAt,
+					mockHistoricApi
+				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});

@@ -240,7 +240,7 @@ push-benchmark:
     - job:                         check-benchmark
       artifacts:                   true
   variables:
-    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
