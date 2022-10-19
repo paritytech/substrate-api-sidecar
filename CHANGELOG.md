@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.0.0..v14.0.1) (2022-10-19)
+
+### Chores
+
+- chore(yarn): bump yarn ([#1079](https://github.com/paritytech/substrate-api-sidecar/pull/1079)) ([eb368ae](https://github.com/paritytech/substrate-api-sidecar/commit/eb368aeec34b7c8a85802ff0e3e01c94553aca2f))
+- chore(deps): updated polkadot-js deps ([#1090](https://github.com/paritytech/substrate-api-sidecar/pull/1090)) ([e6a70a3](https://github.com/paritytech/substrate-api-sidecar/commit/e6a70a35689956a53b9bec7a1297a82825faa49f))
+
+### CI
+
+- ci: bump Swatinem/rust-cache from 2.0.0 to 2.0.1 ([#1084](https://github.com/paritytech/substrate-api-sidecar/pull/1084)) ([aa2c9cb](https://github.com/paritytech/substrate-api-sidecar/commit/aa2c9cb5b525f97661b6a649d2fd716e2a78e445))
+- ci: push metrics to prometheus-pushgateway ([#1086](https://github.com/paritytech/substrate-api-sidecar/pull/1086)) ([9284bd1](https://github.com/paritytech/substrate-api-sidecar/commit/9284bd1240ae4c0fcaa63f760dc17feeb1ceaaeb))
+
+### Docs
+
+- docs: Changes in schema & guide ([#1080](https://github.com/paritytech/substrate-api-sidecar/pull/1080)) ([3fa9689](https://github.com/paritytech/substrate-api-sidecar/commit/3fa968941cf3bfeca140febe0cbbc502effde7e7))
+
+### Tests
+
+- test(e2e): cleanup timeout ms ([#1072](https://github.com/paritytech/substrate-api-sidecar/pull/1072)) ([935905d](https://github.com/paritytech/substrate-api-sidecar/commit/935905d4cc419eacc389516518bf9a74ff7c7123))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9290
+- Kusama v9290
+- Westend v9300
+
 ## [14.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v13.1.0..v14.0.0) (2022-10-03)
 
 ### ⚠ BREAKING CHANGES ⚠
