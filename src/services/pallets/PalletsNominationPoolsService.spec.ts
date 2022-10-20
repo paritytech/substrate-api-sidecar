@@ -156,7 +156,7 @@ describe('palletsNominationPoolService', () => {
 	});
 
 	describe('palletsNominationPoolService.fetchNominationPoolInfo', () => {
-		it('Should return the correct response for nomination pool info', async () => {
+		it('Should return the correct response for nomination pools info', async () => {
 			const expectedResponse = {
 				at: {
 					hash: '0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84',
