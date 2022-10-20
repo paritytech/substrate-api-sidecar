@@ -30,19 +30,20 @@ export class PalletsNominationPoolService extends AbstractService {
 	}
 
 	/**
-	 * Fetch an asset's `AssetDetails` and `AssetMetadata` with its `AssetId`.
+	 * Fetch a nomination pool's details with its `poolId`.
 	 *
 	 * @param poolId `poolId` used to get info and metadata for an asset
 	 * @param hash `BlockHash` to make call at
+	 * @param getMetaData `getMetaData` used to determine if metadata is included in call
 	 */
 
 	async fetchNominationPoolById(
 		poolId: number,
 		hash: BlockHash,
 		getMetaData: boolean,
-		historicApi: ApiDecoration<'promise'>
 	): Promise<IPalletNominationPool> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 		let metadata = '';
 
 		const [{ number }, bondedPool, rewardPool] = await Promise.all([

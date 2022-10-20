@@ -52,7 +52,6 @@ export default class PalletsNominationPoolController extends AbstractController<
 		}
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
@@ -60,7 +59,6 @@ export default class PalletsNominationPoolController extends AbstractController<
 				index,
 				hash,
 				metaData,
-				historicApi
 			)
 		);
 	};

@@ -107,7 +107,6 @@ describe('palletsNominationPoolService', () => {
 					122,
 					blockHash789629,
 					false,
-					mockHistoricApi
 				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -148,7 +147,6 @@ describe('palletsNominationPoolService', () => {
 					122,
 					blockHashAt,
 					true,
-					mockHistoricApi
 				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
