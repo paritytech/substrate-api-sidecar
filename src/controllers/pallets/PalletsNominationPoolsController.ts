@@ -68,11 +68,10 @@ export default class PalletsNominationPoolController extends AbstractController<
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNominationPoolInfo(hash, historicApi)
+			await this.service.fetchNominationPoolInfo(hash)
 		);
 	};
 }

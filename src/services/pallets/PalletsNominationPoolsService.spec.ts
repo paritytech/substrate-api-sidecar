@@ -181,7 +181,6 @@ describe('palletsNominationPoolService', () => {
 			const response =
 				await palletsNominationPoolService.fetchNominationPoolInfo(
 					blockHashAt,
-					mockHistoricApi
 				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);

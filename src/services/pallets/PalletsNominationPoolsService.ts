@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import {
@@ -80,11 +79,18 @@ export class PalletsNominationPoolService extends AbstractService {
 		return response;
 	}
 
+
+	/**
+	 * Fetch info on nomination pools.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
+
 	async fetchNominationPoolInfo(
 		hash: BlockHash,
-		historicApi: ApiDecoration<'promise'>
 	): Promise<IPalletNominationPoolInfo> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
 
 		const [
 			{ number },
