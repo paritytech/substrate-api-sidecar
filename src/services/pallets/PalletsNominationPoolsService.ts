@@ -51,31 +51,32 @@ export class PalletsNominationPoolService extends AbstractService {
 			historicApi.query.nominationPools.rewardPools(poolId),
 		]);
 
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
 		// get metadata if user requested
 		if (getMetaData) {
 			const data = await api.query.nominationPools.metadata(poolId);
 			metadata = data.toString();
 		}
 
-		const at = {
-			hash,
-			height: number.unwrap().toString(10),
-		};
+		const response = getMetaData ?
+		 {
+			at,
+			bondedPool,
+			rewardPool,
+			metadata,
+		 }
+		 : 
+		 {
+			at,
+			bondedPool,
+			rewardPool,
+		 };
 
-		if (metadata.length > 0) {
-			return {
-				at,
-				bondedPool,
-				rewardPool,
-				metadata,
-			};
-		} else {
-			return {
-				at,
-				bondedPool,
-				rewardPool,
-			};
-		}
+		return response;
 	}
 
 	async fetchNominationPoolInfo(
