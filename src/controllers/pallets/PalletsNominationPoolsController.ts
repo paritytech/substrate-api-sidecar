@@ -11,7 +11,7 @@ import AbstractController from '../AbstractController';
  * - `poolId`: The identifier of the nomination pool.
  *
  * Query Params:
-    at: (Optional) blockId or hash (Note: it is important to use api.at for any queries (Not RPC methods), when we want to query at a specific blockHash, we call this the historicApi in Sidecar and you can reference other controllers and services for exampels).
+    at: (Optional) blockId or hash (Note: it is important to use api.at for any queries (Not RPC methods), when we want to query at a specific blockHash, we call this the historicApi in Sidecar and you can reference other controllers and services for examples).
     metadata: (Optional) This will be optional for the user and should be a boolean. So either true or false, and will deefault to false
  */
 
@@ -58,6 +58,13 @@ export default class PalletsNominationPoolController extends AbstractController<
 			await this.service.fetchNominationPoolById(index, hash, metaData)
 		);
 	};
+
+	/**
+	 * * GET nomination pools info
+	 *
+	 * Query Params:
+		at: blockId or hash (Note: it is important to use api.at for any queries (Not RPC methods), when we want to query at a specific blockHash, we call this the historicApi in Sidecar and you can reference other controllers and services for examples).
+	*/
 
 	private getNominationPoolInfo: RequestHandler = async (
 		{ query: { at } },
