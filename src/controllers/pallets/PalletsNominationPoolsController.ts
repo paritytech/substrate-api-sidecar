@@ -55,11 +55,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNominationPoolById(
-				index,
-				hash,
-				metaData,
-			)
+			await this.service.fetchNominationPoolById(index, hash, metaData)
 		);
 	};
 

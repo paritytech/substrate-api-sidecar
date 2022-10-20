@@ -39,7 +39,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	async fetchNominationPoolById(
 		poolId: number,
 		hash: BlockHash,
-		getMetaData: boolean,
+		getMetaData: boolean
 	): Promise<IPalletNominationPool> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
@@ -62,23 +62,21 @@ export class PalletsNominationPoolService extends AbstractService {
 			metadata = data.toString();
 		}
 
-		const response = getMetaData ?
-		 {
-			at,
-			bondedPool,
-			rewardPool,
-			metadata,
-		 }
-		 : 
-		 {
-			at,
-			bondedPool,
-			rewardPool,
-		 };
+		const response = getMetaData
+			? {
+					at,
+					bondedPool,
+					rewardPool,
+					metadata,
+			  }
+			: {
+					at,
+					bondedPool,
+					rewardPool,
+			  };
 
 		return response;
 	}
-
 
 	/**
 	 * Fetch info on nomination pools.
@@ -87,7 +85,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 */
 
 	async fetchNominationPoolInfo(
-		hash: BlockHash,
+		hash: BlockHash
 	): Promise<IPalletNominationPoolInfo> {
 		const { api } = this;
 		const historicApi = await api.at(hash);

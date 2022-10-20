@@ -106,7 +106,7 @@ describe('palletsNominationPoolService', () => {
 				await palletsNominationPoolService.fetchNominationPoolById(
 					122,
 					blockHash789629,
-					false,
+					false
 				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -146,7 +146,7 @@ describe('palletsNominationPoolService', () => {
 				await palletsNominationPoolService.fetchNominationPoolById(
 					122,
 					blockHashAt,
-					true,
+					true
 				);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -179,9 +179,7 @@ describe('palletsNominationPoolService', () => {
 			);
 
 			const response =
-				await palletsNominationPoolService.fetchNominationPoolInfo(
-					blockHashAt,
-				);
+				await palletsNominationPoolService.fetchNominationPoolInfo(blockHashAt);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
