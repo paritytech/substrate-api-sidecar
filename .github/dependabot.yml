@@ -4,3 +4,23 @@ updates:
     directory: '/'
     schedule:
       interval: daily
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      # EST timezone
+      timezone: "America/New_York"
+    rebase-strategy: "auto"
+    open-pull-requests-limit: 20
+    commit-message:
+      # Prefix all commit messages with "chore"
+      # include a list of updated dependencies
+      prefix: "chore:"
+      include: "scope"
+    allow:
+      - dependency-name: "@polkadot/api"
+      - dependency-name: "@polkadot/util-crypto"
+    labels:
+      - "dependencies"
