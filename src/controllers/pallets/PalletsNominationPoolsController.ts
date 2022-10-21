@@ -4,17 +4,6 @@ import { RequestHandler } from 'express';
 import { PalletsNominationPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
-/**
- * * GET nomination pool information by pool Id.
- *
- * Paths:
- * - `poolId`: The identifier of the nomination pool.
- *
- * Query Params:
-    at: (Optional) blockId or hash (Note: it is important to use api.at for any queries (Not RPC methods), when we want to query at a specific blockHash, we call this the historicApi in Sidecar and you can reference other controllers and services for examples).
-    metadata: (Optional) This will be optional for the user and should be a boolean. So either true or false, and will deefault to false
- */
-
 export default class PalletsNominationPoolController extends AbstractController<PalletsNominationPoolService> {
 	constructor(api: ApiPromise) {
 		super(
@@ -45,26 +34,15 @@ export default class PalletsNominationPoolController extends AbstractController<
 			'`poolId` path param is not a number'
 		);
 
-		let metaData = false;
-
-		if (metadata) {
-			metaData = metadata === 'true' ? true : false;
-		}
+		const metadataArg = metadata === 'true';
 
 		const hash = await this.getHashFromAt(at);
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNominationPoolById(index, hash, metaData)
+			await this.service.fetchNominationPoolById(index, hash, metadataArg)
 		);
 	};
-
-	/**
-	 * * GET nomination pools info
-	 *
-	 * Query Params:
-		at: blockId or hash (Note: it is important to use api.at for any queries (Not RPC methods), when we want to query at a specific blockHash, we call this the historicApi in Sidecar and you can reference other controllers and services for examples).
-	*/
 
 	private getNominationPoolInfo: RequestHandler = async (
 		{ query: { at } },

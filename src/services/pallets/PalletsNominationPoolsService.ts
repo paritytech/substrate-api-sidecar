@@ -28,14 +28,6 @@ export class PalletsNominationPoolService extends AbstractService {
 		super(api);
 	}
 
-	/**
-	 * Fetch a nomination pool's details with its `poolId`.
-	 *
-	 * @param poolId `poolId` used to get info and metadata for an asset
-	 * @param hash `BlockHash` to make call at
-	 * @param getMetaData `getMetaData` used to determine if metadata is included in call
-	 */
-
 	async fetchNominationPoolById(
 		poolId: number,
 		hash: BlockHash,
@@ -77,12 +69,6 @@ export class PalletsNominationPoolService extends AbstractService {
 
 		return response;
 	}
-
-	/**
-	 * Fetch info on nomination pools.
-	 *
-	 * @param hash `BlockHash` to make call at
-	 */
 
 	async fetchNominationPoolInfo(
 		hash: BlockHash
