@@ -19,8 +19,5 @@ updates:
       # include a list of updated dependencies
       prefix: "chore:"
       include: "scope"
-    allow:
-      - dependency-name: "@polkadot/api"
-      - dependency-name: "@polkadot/util-crypto"
     labels:
       - "dependencies"
