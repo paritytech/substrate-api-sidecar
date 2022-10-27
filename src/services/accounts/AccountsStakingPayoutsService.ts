@@ -20,7 +20,7 @@ import {
 	DeriveEraExposure,
 	DeriveEraExposureNominating,
 } from '@polkadot/api-derive/staking/types';
-import { Option, u32 } from '@polkadot/types';
+import { Option } from '@polkadot/types';
 import {
 	BalanceOf,
 	BlockHash,
@@ -91,10 +91,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		const [{ number }, historyDepth] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			historicApi.query.staking.historyDepth<u32>(),
-		]);
+		const { number } = await api.rpc.chain.getHeader(hash);
+		const historyDepth = historicApi.consts.staking.historyDepth;
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
 		if (depth > historyDepth.toNumber()) {
