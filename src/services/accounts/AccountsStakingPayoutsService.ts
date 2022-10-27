@@ -91,10 +91,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		const [{ number }, historyDepth] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			historicApi.query.staking.historyDepth<u32>(),
-		]);
+		const { number } = await api.rpc.chain.getHeader(hash);
+
+		/**
+		 * Given https://github.com/polkadot-js/api/issues/5232,
+		 * polkadot-js, and substrate treats historyDepth as a consts. In order
+		 * to maintain historical integrity we need to make a check to cover both the
+		 * storage query and the consts.
+		 */
+		let historyDepth: u32;
+		if (historicApi.consts.staking.historyDepth) {
+			historyDepth = historicApi.consts.staking.historyDepth;
+		} else {
+			historyDepth = await historicApi.query.staking.historyDepth<u32>();
+		}
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
 		if (depth > historyDepth.toNumber()) {
