@@ -13,7 +13,8 @@ updates:
       # EST timezone
       timezone: "America/New_York"
     rebase-strategy: "auto"
-    open-pull-requests-limit: 20
+    # Disable versioned updates, and only allow security updates
+    open-pull-requests-limit: 0
     commit-message:
       # Prefix all commit messages with "chore"
       # include a list of updated dependencies
