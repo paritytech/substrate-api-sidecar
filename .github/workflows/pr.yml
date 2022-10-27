@@ -34,6 +34,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      
+      - name: Install JS dependencies
+        run: yarn install
 
       - name: Linter.
         run: yarn lint:ci
@@ -92,6 +95,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
+      - name: Install JS dependencies
+        run: yarn install
         
       - name: Build
         run: yarn build
@@ -120,6 +126,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
+      - name: Install JS dependencies
+        run: yarn install
         
       - name: Build Docs
         run: yarn build:docs
