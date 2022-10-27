@@ -1235,7 +1235,7 @@ __metadata:
     "@types/argparse": 2.0.10
     "@types/express": 4.17.13
     "@types/express-serve-static-core": 4.17.30
-    "@types/http-errors": 1.8.2
+    "@types/http-errors": 2.0.0
     "@types/lru-cache": ^7.10.10
     "@types/morgan": 1.9.3
     "@types/triple-beam": ^1.3.2
@@ -1439,10 +1439,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-errors@npm:1.8.2":
-  version: 1.8.2
-  resolution: "@types/http-errors@npm:1.8.2"
-  checksum: ecc365eea98d7eca650d593e742571acc3003742f0dd0fbbb15b8fce286e0f7421644b4140fb9bf701bbb7f1b744aea3967ebe025f0f0811aa5ab2c3d40fe111
+"@types/http-errors@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@types/http-errors@npm:2.0.0"
+  checksum: dd69ee85a3312e2067ed543042d5812a5f39a158724122406f4804acd45bd4c86cd69325045b5087dfa92354a44f9fc8c599d9f0bb22e9e35b841be15e6719f2
   languageName: node
   linkType: hard
 
