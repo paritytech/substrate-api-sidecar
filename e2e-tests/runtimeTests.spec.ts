@@ -30,14 +30,12 @@ const config = JSON.parse(
 ) as IEnvChainConfig;
 
 const chain = config.chain as ChainSpec;
+const TIMEOUT_MS = 60000;
 
 const { blocks, accounts, runtime, paras } = endpoints[chain];
 
 describe('Runtime Tests for blocks', () => {
-	/**
-	 * Allows a timeout of 30 seconds for each response.
-	 */
-	jest.setTimeout(30000);
+	jest.setTimeout(TIMEOUT_MS);
 
 	/**
 	 * Test runtimes for `/blocks`
@@ -56,10 +54,7 @@ describe('Runtime Tests for blocks', () => {
 });
 
 describe('Runtime Tests for accounts', () => {
-	/**
-	 * Allows a timeout of 30 seconds for each response.
-	 */
-	jest.setTimeout(30000);
+	jest.setTimeout(TIMEOUT_MS);
 
 	/**
 	 * Test runtiems for `/accounts/*`
@@ -78,10 +73,7 @@ describe('Runtime Tests for accounts', () => {
 });
 
 describe('Runtime Tests for `/runtime/*`', () => {
-	/**
-	 * Allows a timeout of 30 seconds for each response.
-	 */
-	jest.setTimeout(30000);
+	jest.setTimeout(TIMEOUT_MS);
 
 	if (runtime.length) {
 		test.each(runtime)(
@@ -97,10 +89,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 });
 
 describe('Runtime Tests for `/paras/*`', () => {
-	/**
-	 * Allows a timeout of 30 seconds for each response.
-	 */
-	jest.setTimeout(30000);
+	jest.setTimeout(TIMEOUT_MS);
 
 	if (paras.length) {
 		test.each(paras)(

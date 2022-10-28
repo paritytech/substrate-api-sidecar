@@ -58,10 +58,7 @@ import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
  */
 const era = polkadotRegistryV9122.createType('EraIndex', 532);
 
-const historyDepthAt = (): Promise<u32> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('u32', 84);
-	});
+const historyDepthAt = polkadotRegistryV9122.createType('u32', 84);
 
 const erasRewardPointsAt = (
 	_eraIndex: EraIndex
@@ -125,12 +122,16 @@ const deriveEraExposure = (_eraIndex: EraIndex): Promise<DeriveEraExposure> =>
 
 const mockHistoricApi = {
 	registry: polkadotRegistryV9122,
+	consts: {
+		staking: {
+			historyDepth: historyDepthAt,
+		},
+	},
 	query: {
 		staking: {
 			ledger: ledgerAt,
 			erasRewardPoints: erasRewardPointsAt,
 			erasValidatorReward: erasValidatorRewardAt,
-			historyDepth: historyDepthAt,
 			erasValidatorPrefs: erasValidatorPrefsAt,
 			bonded: bondedAt,
 		},
