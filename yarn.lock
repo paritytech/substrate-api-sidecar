@@ -1279,8 +1279,8 @@ __metadata:
   linkType: hard
 
 "@substrate/dev@npm:^0.6.4":
-  version: 0.6.4
-  resolution: "@substrate/dev@npm:0.6.4"
+  version: 0.6.5
+  resolution: "@substrate/dev@npm:0.6.5"
   dependencies:
     "@babel/plugin-transform-modules-commonjs": ^7.18.6
     "@types/jest": ^27.5.2
@@ -1294,16 +1294,16 @@ __metadata:
     prettier: ^2.7.1
     rimraf: ^3.0.2
     ts-jest: ^27.1.5
-    typescript: 4.7.4
+    typescript: ^4.8.2
     yargs: ^17.5.1
   bin:
-    substrate-dev-run-lint: scripts/substrate-dev-run-lint.cjs
-    substrate-exec-eslint: scripts/substrate-exec-eslint.cjs
-    substrate-exec-jest: scripts/substrate-exec-jest.cjs
-    substrate-exec-rimraf: scripts/substrate-exec-rimraf.cjs
-    substrate-exec-tsc: scripts/substrate-exec-tsc.cjs
-    substrate-update-pjs-deps: scripts/substrate-update-pjs-deps.cjs
-  checksum: 63c9e4f17f484d5ea4c7481bf9a71c7ae0a51511341f67599f00afd66bcea01bab6e8d7b5dda0aab2001ac22af7fde4e45866a097ad678d2cc5658af3086082c
+    substrate-dev-run-lint: ./scripts/substrate-dev-run-lint.cjs
+    substrate-exec-eslint: ./scripts/substrate-exec-eslint.cjs
+    substrate-exec-jest: ./scripts/substrate-exec-jest.cjs
+    substrate-exec-rimraf: ./scripts/substrate-exec-rimraf.cjs
+    substrate-exec-tsc: ./scripts/substrate-exec-tsc.cjs
+    substrate-update-pjs-deps: ./scripts/substrate-update-pjs-deps.cjs
+  checksum: 29db8c60976aed92ad610e2e8a0d9d3ebb8ace2428bcf85fb70dfd74fc5567266e7322edc09bb203b8d7693a9530b78570713b0d5fd67f141ad151134c56283b
   languageName: node
   linkType: hard
 
