@@ -23,6 +23,7 @@ import { initLRUCache, QueryFeeDetailsCache } from './cache';
 export const statemineControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
+		'AccountsBalanceInfo',
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
