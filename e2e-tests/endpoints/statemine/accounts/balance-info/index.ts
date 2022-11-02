@@ -31,17 +31,14 @@ export const statemineAccountBalanceEndpoints = [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=650000',
         JSON.stringify(accountBalance650000),
     ], // v3
-
     [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=960000',
         JSON.stringify(accountBalance960000),
     ], // v4
-
     [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=986791',
         JSON.stringify(accountBalance986791),
     ], // v5
-
     [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=1100000',
         JSON.stringify(accountBalance1100000),
@@ -50,7 +47,6 @@ export const statemineAccountBalanceEndpoints = [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=1300000',
         JSON.stringify(accountBalance1300000),
     ], // v601
-
     [
         '/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/balance-info?at=1800000',
         JSON.stringify(accountBalance1800000),
