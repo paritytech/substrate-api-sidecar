@@ -33,6 +33,13 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 - fix: adjust historyDepth to a consts ([#1115](https://github.com/paritytech/substrate-api-sidecar/pull/1115)) ([bc3c2a5](https://github.com/paritytech/substrate-api-sidecar/commit/bc3c2a5bd66232c9c40cc849b1ad03031a71c7e3))
 
+## Compatibility
+
+Tested against:
+- Polkadot v9390
+- Kusama v9390
+- Westend v9300
+
 ## [14.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.0.0..v14.0.1) (2022-10-19)
 
 ### Chores
