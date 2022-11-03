@@ -16,8 +16,10 @@
 
 import { statemineAccountsApprovalsEndpoints } from './asset-approvals';
 import { statemineAccountAssetBalanceEndpoints } from './asset-balances';
+import { statemineAccountBalanceEndpoints } from './balance-info';
 
 export const statemineAccountAssetEndpoints = [
+	...statemineAccountBalanceEndpoints,
 	...statemineAccountAssetBalanceEndpoints,
 	...statemineAccountsApprovalsEndpoints,
 ];
