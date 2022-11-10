@@ -71,7 +71,7 @@ jobs:
       - name: Unit tests.
         run: yarn test
 
-  builds:
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -102,7 +102,7 @@ jobs:
       - name: Build
         run: yarn build
 
-  builds-docs:
+  build-docs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
