@@ -34,6 +34,7 @@ export const polkadotControllers: ControllerConfig = {
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
+		'PalletsNominationPools',
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',
