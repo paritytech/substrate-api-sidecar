@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.0..v14.1.1) (2022-11-11)
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.0.1 to 2.1.0 ([#1129](https://github.com/paritytech/substrate-api-sidecar/pull/1129)) ([4007a21](https://github.com/paritytech/substrate-api-sidecar/commit/4007a21b5469ff6ff2d325fee90374420af378aa))
+- chore: bump follow-redirects from 1.14.7 to 1.15.2 in /docs ([#1118](https://github.com/paritytech/substrate-api-sidecar/pull/1118)) ([b5a991b](https://github.com/paritytech/substrate-api-sidecar/commit/b5a991b18604f73b3e4028613e66145e52ed080a))
+- chore:(deps): bump tmpl from 1.0.4 to 1.0.5 ([#1122](https://github.com/paritytech/substrate-api-sidecar/pull/1122)) ([927c88f](https://github.com/paritytech/substrate-api-sidecar/commit/927c88f449a55c0cee6339b0e4c3bf44762e2b22))
+- chore: bump Swatinem/rust-cache from 2.1.0 to 2.2.0 ([#1131](https://github.com/paritytech/substrate-api-sidecar/pull/1131)) ([cf272f1](https://github.com/paritytech/substrate-api-sidecar/commit/cf272f196468261362b4c0ccc5811eaa4ffe7734))
+- chore: bump loader-utils from 1.4.0 to 1.4.1 in /docs ([#1130](https://github.com/paritytech/substrate-api-sidecar/pull/1130)) ([8b5c4f7](https://github.com/paritytech/substrate-api-sidecar/commit/8b5c4f78265238342898f277a6aa9673ecc529e3))
+- chore(deps): update polkadot-js deps ([#1133](https://github.com/paritytech/substrate-api-sidecar/pull/1133)) ([9300c63](https://github.com/paritytech/substrate-api-sidecar/commit/9300c63936a6c355b551af7d789e3262c5d1cd89))
+
+### CI
+
+- ci: break checks ci job into separate jobs ([#1114](https://github.com/paritytech/substrate-api-sidecar/pull/1114)) ([e687e79](https://github.com/paritytech/substrate-api-sidecar/commit/e687e79a662aefa2d831e63c657a05d0af3ba55d))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9320
+- Kusama v9320
+- Westend v9320
+
+
 ## [14.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.0.1..v14.1.0) (2022-11-03)
 
 ### Features
