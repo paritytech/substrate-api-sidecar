@@ -16,6 +16,7 @@
 
 export * from './AccountAssets';
 export * from './AccountBalanceInfo';
+export * from './AccountConvert';
 export * from './AccountStakingInfo';
 export * from './AccountStakingPayouts';
 export * from './AccountVestingInfo';
