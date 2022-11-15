@@ -16,7 +16,7 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable"
+  CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
 
 default:
   retry:
