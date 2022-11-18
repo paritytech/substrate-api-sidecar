@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.0..v14.1.1) (2022-11-11)
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.0.1 to 2.1.0 ([#1129](https://github.com/paritytech/substrate-api-sidecar/pull/1129)) ([4007a21](https://github.com/paritytech/substrate-api-sidecar/commit/4007a21b5469ff6ff2d325fee90374420af378aa))
+- chore: bump follow-redirects from 1.14.7 to 1.15.2 in /docs ([#1118](https://github.com/paritytech/substrate-api-sidecar/pull/1118)) ([b5a991b](https://github.com/paritytech/substrate-api-sidecar/commit/b5a991b18604f73b3e4028613e66145e52ed080a))
+- chore:(deps): bump tmpl from 1.0.4 to 1.0.5 ([#1122](https://github.com/paritytech/substrate-api-sidecar/pull/1122)) ([927c88f](https://github.com/paritytech/substrate-api-sidecar/commit/927c88f449a55c0cee6339b0e4c3bf44762e2b22))
+- chore: bump Swatinem/rust-cache from 2.1.0 to 2.2.0 ([#1131](https://github.com/paritytech/substrate-api-sidecar/pull/1131)) ([cf272f1](https://github.com/paritytech/substrate-api-sidecar/commit/cf272f196468261362b4c0ccc5811eaa4ffe7734))
+- chore: bump loader-utils from 1.4.0 to 1.4.1 in /docs ([#1130](https://github.com/paritytech/substrate-api-sidecar/pull/1130)) ([8b5c4f7](https://github.com/paritytech/substrate-api-sidecar/commit/8b5c4f78265238342898f277a6aa9673ecc529e3))
+- chore(deps): update polkadot-js deps ([#1133](https://github.com/paritytech/substrate-api-sidecar/pull/1133)) ([9300c63](https://github.com/paritytech/substrate-api-sidecar/commit/9300c63936a6c355b551af7d789e3262c5d1cd89))
+
+### CI
+
+- ci: break checks ci job into separate jobs ([#1114](https://github.com/paritytech/substrate-api-sidecar/pull/1114)) ([e687e79](https://github.com/paritytech/substrate-api-sidecar/commit/e687e79a662aefa2d831e63c657a05d0af3ba55d))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9320
+- Kusama v9320
+- Westend v9320
+
+
+## [14.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.0.1..v14.1.0) (2022-11-03)
+
+### Features
+
+- feat: include balance-info support for statemine and statemint ([#1126](https://github.com/paritytech/substrate-api-sidecar/pull/1126)) ([a171305](https://github.com/paritytech/substrate-api-sidecar/commit/a171305185e07df953ae4ed767f82e99085b847c))
+
+### Chores
+
+- chore(deps): bump @polkadot/api from 9.5.2 to 9.6.1 ([#1098](https://github.com/paritytech/substrate-api-sidecar/pull/1098)) ([35ea356](https://github.com/paritytech/substrate-api-sidecar/commit/35ea356a5480d729902d4b2a8448594ea0521c2d))
+- chore(deps): dedupe deps ([#1100](https://github.com/paritytech/substrate-api-sidecar/pull/1100)) ([0307ee7a](https://github.com/paritytech/substrate-api-sidecar/commit/0307ee7a334080b0a37082152c29dd9a2490a97e))
+- chore: bump terser from 5.10.0 to 5.15.1 in /docs ([#1117](https://github.com/paritytech/substrate-api-sidecar/pull/1117)) ([799e1a5](https://github.com/paritytech/substrate-api-sidecar/commit/799e1a571cca18691097d660b52dd8e7d3e5bea5))
+- chore(deps): bump minimist from 1.2.5 to 1.2.7 ([#1113](https://github.com/paritytech/substrate-api-sidecar/pull/1113)) ([27cd745](https://github.com/paritytech/substrate-api-sidecar/commit/27cd7458878a7098c8cfa8eae673cb830ae5910d))
+- chore(deps-dev): bump @types/express-serve-static-core ([#1111](https://github.com/paritytech/substrate-api-sidecar/pull/1111)) ([77db77a](https://github.com/paritytech/substrate-api-sidecar/commit/77db77adbb786d9e6e199de95f8447e78c7b435d))
+- chore(deps): bump winston from 3.8.1 to 3.8.2 ([#1109](https://github.com/paritytech/substrate-api-sidecar/pull/1109)) ([1c8cfc2](https://github.com/paritytech/substrate-api-sidecar/commit/1c8cfc2bdf29606db0281cbb8343afd871831b3c))
+- chore(deps): bump lru-cache from 7.13.1 to 7.14.0 ([#1107](https://github.com/paritytech/substrate-api-sidecar/pull/1107)) ([5cbc2d5](https://github.com/paritytech/substrate-api-sidecar/commit/5cbc2d51b7d0dba1d1e40f247903f406f5aee6eb))
+- chore(deps-dev): bump @substrate/dev from 0.6.4 to 0.6.5 ([#1106](https://github.com/paritytech/substrate-api-sidecar/pull/1106)) ([5a20fdf](https://github.com/paritytech/substrate-api-sidecar/commit/5a20fdfd57473a935f57e407028c5f75360bd250))
+- chore(deps): bump express and @types/express ([#1105](https://github.com/paritytech/substrate-api-sidecar/pull/1105)) ([7187a15](https://github.com/paritytech/substrate-api-sidecar/commit/7187a1568144cb3756bb72b032a8a559acb3840c))
+- chore(deps): bump path-parse from 1.0.6 to 1.0.7 ([#1120](https://github.com/paritytech/substrate-api-sidecar/pull/1120)) ([a0e69dc](https://github.com/paritytech/substrate-api-sidecar/commit/a0e69dcdad99c576f9ff7640d918df0620f9509b))
+- chore(deps): bump tar from 6.1.0 to 6.1.11 ([#1119](https://github.com/paritytech/substrate-api-sidecar/pull/1119)) ([c6ca7b1](https://github.com/paritytech/substrate-api-sidecar/commit/c6ca7b11401fb26c14341b20d471442c757061a5))
+- chore(deps): update polkadot-js deps ([#1124](https://github.com/paritytech/substrate-api-sidecar/pull/1124)) ([8cd3084](https://github.com/paritytech/substrate-api-sidecar/commit/8cd3084e79b06103122b9ea3ef46be54a935722f))
+
+### CI
+
+- ci: add dependabot for yarn ([#1096](https://github.com/paritytech/substrate-api-sidecar/pull/1096) ([24f4f26] (https://github.com/paritytech/substrate-api-sidecar/commit/24f4f26617baebdf355f84bf1f9be3070d1f4143))
+- ci: remove allow from dependabot yml ([#1101](https://github.com/paritytech/substrate-api-sidecar/pull/1101)) ([41ded6c](https://github.com/paritytech/substrate-api-sidecar/commit/41ded6cf1143594f61f45c6f8ca09606497a4b5f))
+- ci: increase bench threshold ([#1102](https://github.com/paritytech/substrate-api-sidecar/pull/1102)) ([d0defe0](https://github.com/paritytech/substrate-api-sidecar/commit/d0defe00b58cc4b13f15d01b2c45046b226ea1b0))
+- ci: allow only security updates ([#1116](https://github.com/paritytech/substrate-api-sidecar/pull/1116)) ([6f8c334](https://github.com/paritytech/substrate-api-sidecar/commit/6f8c33449ee0911078f8dc5a6e6b0a452d1ddd1a))
+
+### Bug Fixes
+- fix: adjust historyDepth to a consts ([#1115](https://github.com/paritytech/substrate-api-sidecar/pull/1115)) ([bc3c2a5](https://github.com/paritytech/substrate-api-sidecar/commit/bc3c2a5bd66232c9c40cc849b1ad03031a71c7e3))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9300
+- Kusama v9300
+- Westend v9310
+
 ## [14.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.0.0..v14.0.1) (2022-10-19)
 
 ### Chores

@@ -16,7 +16,7 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable"
+  CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
 
 default:
   retry:
@@ -224,7 +224,7 @@ check-benchmark:
   variables:
     GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
-    THRESHOLD:                     35000
+    THRESHOLD:                     60000
     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
