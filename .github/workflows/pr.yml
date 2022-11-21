@@ -69,7 +69,7 @@ jobs:
         run: yarn install
 
       - name: Unit tests.
-        run: yarn test
+        run: yarn test:ci
 
   build:
     # The type of runner that the job will run on
