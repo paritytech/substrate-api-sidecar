@@ -34,27 +34,25 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		// Validators in the active set
+		// Querying to get the validators from the active set and populating
+    // the `validatorsActiveSet` Set.
 		const validatorSession = await historicApi.query.session.validators();
-		let validatorSet: string[] = [];
-		validatorSet = validatorSession.map((address) => address.toString());
+    let validatorsActiveSet: Set<string> = new Set();
+    for (const address of validatorSession) validatorsActiveSet.add(address.toString());
 
-		// All Validators : active & waiting
-		const validatorAll: string[] = [];
+		// Populating the returned array with the Validator address and its
+    // status. If the address is found in the `validatorsActiveSet` then 
+    // status is `active` otherwise is set to `waiting`
+    const validators: IValidator[] = [];
 		const validatorsEntries =
 			await historicApi.query.staking.validators.entries();
 		validatorsEntries.forEach(([key]) => {
-			validatorAll.push(key.args.map((k) => k.toHuman())[0]);
+      const address = key.args.map((k) => k.toHuman())[0];
+      const status: string = validatorsActiveSet.has(address)
+        ? 'active'
+        : 'waiting';
+        validators.push({ address, status });
 		});
-
-		// Populates the list/array with the validators info that will be returned
-		const validators: IValidator[] = [];
-		for (const address of validatorAll) {
-			const status: string = validatorSet.includes(address)
-				? 'active'
-				: 'waiting';
-			validators.push({ address, status });
-		}
 
 		return {
 			validators,
