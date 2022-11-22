@@ -822,6 +822,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/api-contract@npm:^9.9.1":
+  version: 9.9.1
+  resolution: "@polkadot/api-contract@npm:9.9.1"
+  dependencies:
+    "@babel/runtime": ^7.20.1
+    "@polkadot/api": 9.9.1
+    "@polkadot/types": 9.9.1
+    "@polkadot/types-codec": 9.9.1
+    "@polkadot/types-create": 9.9.1
+    "@polkadot/util": ^10.1.13
+    "@polkadot/util-crypto": ^10.1.13
+    rxjs: ^7.5.7
+  checksum: fdd8d3f07973584ef0a7ef0288922037257e19a8b9ec16edb79786a2c9eb188ce2a1173379b52a3c55a7c9979807e236fa6f782e38a86441f20df7e6a6d62b50
+  languageName: node
+  linkType: hard
+
 "@polkadot/api-derive@npm:9.9.1":
   version: 9.9.1
   resolution: "@polkadot/api-derive@npm:9.9.1"
@@ -1229,6 +1245,7 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@polkadot/api": ^9.9.1
+    "@polkadot/api-contract": ^9.9.1
     "@polkadot/util-crypto": ^10.1.13
     "@substrate/calc": ^0.3.0
     "@substrate/dev": ^0.6.4
