@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.1.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.1..v14.1.2) (2022-11-21)
+
+### Bug Fixes
+
+- fix: update polkadot-js api, and util-crypto ([#1139](https://github.com/paritytech/substrate-api-sidecar/pull/1139)) ([9cf2597](https://github.com/paritytech/substrate-api-sidecar/commit/9cf25978bf286e82bfd82c9f47f2bc5da4323979))
+    - Note: This resolves an issue when querying a node with 0.9.32 ex: `Struct: Cannot decode value <number> (typeof number), expected an input object, map or array`. See the tracking issue [here](https://github.com/paritytech/substrate-api-sidecar/issues/1138)
+
+### CI
+
+- ci: fix buildah image ([#1137](https://github.com/paritytech/substrate-api-sidecar/pull/1137)) ([ec5c86b](https://github.com/paritytech/substrate-api-sidecar/commit/ec5c86b7650aab20e0ce35a19049373eee9b0e60))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9320
+- Kusama v9320
+- Westend v9320
+
 ## [14.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.0..v14.1.1) (2022-11-11)
 
 ### Chores
