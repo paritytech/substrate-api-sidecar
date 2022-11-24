@@ -16,7 +16,7 @@
 
 import { ArgumentParser } from 'argparse';
 
-import { IParser } from './types';
+import { IParser } from './historical/types';
 
 const config = {
 	chain: 'polkadot',
@@ -36,7 +36,7 @@ parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 	default: 'polkadot',
 });
-parser.add_argument('--config', { default: './runtime-tests/jest.config.js' });
+parser.add_argument('--config', { default: './e2e-tests/jest.config.js' });
 
 const args = parser.parse_args() as IParser;
 
