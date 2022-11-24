@@ -20,3 +20,11 @@ All the tests should come back with green checkmarks. If you find a bug file an 
 ### Config
 
 If you are looking to update the e2e-tests config, the file to do so exists in `<ROOT>/scripts/config.ts`.
+
+### Errors
+
+`0`: The process has finished succesfully and all tests have passed.
+
+`1`: The process has finished succesfully but the tests did not come back all successful. Either one or many have failed.
+
+`2`: The process has exited with an error, and building sidecar has failed. 
