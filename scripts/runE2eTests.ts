@@ -92,7 +92,7 @@ const main = async (args: Namespace): Promise<void> => {
 		// Kill all processes
 		killAll(procs);
 		// Exit program
-		process.exit();
+		process.exit(2);
 	}
 
 	if (args.chain) {
