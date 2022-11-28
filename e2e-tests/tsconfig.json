@@ -11,7 +11,7 @@
       "../node_modules/@types"
     ],
     "include": [
-        "./historical", "./helpers",
+        "./historical", "./helpers", "./latest",
     ],
     "exclude": [
         "./historical-e2e-tests.spec.ts"

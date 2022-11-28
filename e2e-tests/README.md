@@ -21,7 +21,7 @@ All the tests should come back with green checkmarks. If you find a bug file an 
 
 If you are looking to update the e2e-tests config, the file to do so exists in `<ROOT>/scripts/config.ts`.
 
-### Errors
+### Errors (This comment should be in scripts)
 
 `0`: The process has finished succesfully and all tests have passed.
 

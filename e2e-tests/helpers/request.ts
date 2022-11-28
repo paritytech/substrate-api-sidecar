@@ -18,6 +18,7 @@ import http from 'http';
 
 export interface IRequest {
 	data: string;
+	path: string;
 	statusCode?: number;
 }
 
@@ -30,7 +31,7 @@ export const request = (
 		http.get({ path, hostname, port }, (response) => {
 			let data = '';
 			response.on('data', (_data) => (data += _data));
-			response.on('end', () => resolve({ data, statusCode: response.statusCode }));
+			response.on('end', () => resolve({ data, statusCode: response.statusCode, path }));
 		});
 	});
 };

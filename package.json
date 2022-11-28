@@ -40,6 +40,7 @@
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
     "build:e2e-tests": "substrate-exec-rimraf e2e-tests/build/ && substrate-exec-tsc --project e2e-tests/tsconfig.json",
     "test:e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/historical/historical.js --config=./e2e-tests/jest.config.js",
+    "test:latest-e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/latest/index.js",
     "test:historical-e2e-tests": "yarn start:e2e-scripts --log-level=http",
     "test:historical-e2e-tests:polkadot": "yarn test:historical-e2e-tests --chain polkadot",
     "test:historical-e2e-tests:kusama": "yarn test:historical-e2e-tests --chain kusama",
