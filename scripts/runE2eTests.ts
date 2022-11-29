@@ -16,7 +16,7 @@
 
 import { ArgumentParser, Namespace } from 'argparse';
 
-import { config, defaultSasBuildOpts } from './config';
+import { historicalE2eConfig, defaultSasBuildOpts } from './config';
 import {
 	killAll,
 	launchProcess,
@@ -35,7 +35,7 @@ const procs: ProcsType = {};
  * @param chain The chain in which to target the e2e tests too.
  */
 const launchChainTest = async (chain: string): Promise<boolean> => {
-	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
+	const { wsUrl, SasStartOpts, JestProcOpts } = historicalE2eConfig[chain];
 	const { Success } = StatusCode;
 
 	// Set the ws url env var
