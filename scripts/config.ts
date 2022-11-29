@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IChainConfig } from './types';
+import { IChainConfigLatestE2E, IChainConfigJest } from './types';
 
 const defaultJestOpts = {
 	proc: 'jest',
@@ -41,7 +41,7 @@ export const defaultSasPackOpts = {
 	args: ['pack'],
 };
 
-export const historicalE2eConfig: Record<string, IChainConfig> = {
+export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
 		JestProcOpts: {
@@ -83,3 +83,24 @@ export const historicalE2eConfig: Record<string, IChainConfig> = {
 		SasStartOpts: defaultSasStartOpts
 	}
 };
+
+export const latestE2eConfig: Record<string, IChainConfigLatestE2E> = {
+	polkadot: {
+		wsUrl: 'wss://rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of',
+			args: ['start:latest-e2e-tests', '--chain', 'polkadot']
+		}
+	},
+	statemint: {
+		wsUrl: 'wss://statemint-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of',
+			args: ['start:latest-e2e-tests', '--chain', 'statemint']
+		}
+	}
+}

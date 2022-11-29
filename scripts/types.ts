@@ -25,8 +25,15 @@ export enum StatusCode {
 
 export interface IChainConfig {
 	wsUrl: string;
-	JestProcOpts: IProcOpts;
 	SasStartOpts: IProcOpts;
+}
+
+export interface IChainConfigJest extends IChainConfig {
+	JestProcOpts: IProcOpts;
+}
+
+export interface IChainConfigLatestE2E extends IChainConfig {
+	e2eStartOpts: IProcOpts;
 }
 
 // Process options

@@ -14,6 +14,8 @@ interface ILatestE2eParser {
 }
 
 const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
+    const { Success, Failed } = StatusCode;
+
     let config: IConfig;
     switch(args.chain) {
         case 'polkadot':
@@ -64,12 +66,25 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
             errors.push(res)
         }
     })
+    logErrors(errors);
 
     if (errors.length > 0) {
-        return StatusCode.Failed
+        console.log(`Finished with a status code of ${Failed}`)
+        return Failed
     } else {
-        return StatusCode.Success
+        console.log(`Finished with a status code of ${Failed}`)
+        return Success
     }
+}
+
+const logErrors = (errors: IRequest[]) => {
+    console.log('Received the following errors:');
+    errors.forEach((err) => {
+        console.log('----------------------------------------------');
+        console.log(`Queried Endpoint: ${err.path}`);
+        console.log(`Status Code: ${err.statusCode}`);
+        console.log(`Received logging: ${err.data}`);
+    });
 }
 
 const parser = new ArgumentParser();
