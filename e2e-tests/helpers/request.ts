@@ -31,7 +31,11 @@ export const request = (
 		http.get({ path, hostname, port }, (response) => {
 			let data = '';
 			response.on('data', (_data) => (data += _data));
-			response.on('end', () => resolve({ data, statusCode: response.statusCode, path }));
+			response.on('end', () => resolve({
+				data, 
+				path,
+				statusCode: response.statusCode, 
+			}));
 		});
 	});
 };

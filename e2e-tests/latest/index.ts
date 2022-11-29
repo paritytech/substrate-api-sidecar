@@ -46,7 +46,7 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
         const formattedPath = path.replace('{blockId}', blockId)
         // Base endpoint with no query params attached
         urls.push(formattedPath);
-        // Attacheach of the query params to their own base path
+        // Attach each of the query params to their own base path
         if (queryParams.length) {
             const tempPath = formattedPath.concat('?')
             const urlsWithParams = queryParams.map((param) => {
