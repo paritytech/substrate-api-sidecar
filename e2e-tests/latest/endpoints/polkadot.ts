@@ -25,7 +25,7 @@ export const polkadot: IConfig = {
         ]
     },
     '/accounts/{accountId}/staking-payouts': {
-        path: '/accounts/12BnVhXxGBZXoq9QAkSv9UtVcdBs1k38yNx6sHUJWasTgYrm/staking-info',
+        path: '/accounts/12BnVhXxGBZXoq9QAkSv9UtVcdBs1k38yNx6sHUJWasTgYrm/staking-payouts',
         queryParams: [
             'at={blockId}',
             'unclaimedOnly=false',
