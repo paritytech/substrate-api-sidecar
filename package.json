@@ -48,7 +48,7 @@
     "test:historical-e2e-tests:statemint": "yarn test:historical-e2e-tests --chain statemint",
     "start:historical-e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/historical/historical.js --config=./e2e-tests/jest.config.js",
     "start:latest-e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/latest/index.js",
-    "start:historical-e2e-scripts": "yarn build:scripts && node scripts/build/runE2eTests.js",
+    "start:historical-e2e-scripts": "yarn build:scripts && node scripts/build/runHistoricalE2eTests.js",
     "state:latest-e2e-scripts": "yarn build:scripts && node scripts/build/runLatestE2eTests.js",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && substrate-exec-tsc --project scripts/tsconfig.json",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",
