@@ -16,7 +16,7 @@
 
 import { ArgumentParser, Namespace } from 'argparse';
 
-import { historicalE2eConfig, defaultSasBuildOpts } from './config';
+import { historicalE2eConfig, defaultSasBuildOpts, localWsUrl } from './config';
 import {
 	killAll,
 	launchProcess,
@@ -35,12 +35,12 @@ const procs: ProcsType = {};
  *
  * @param chain The chain in which to target the e2e tests too.
  */
-const launchChainTest = async (chain: string): Promise<boolean> => {
+const launchChainTest = async (chain: string, isLocal: boolean): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, JestProcOpts } = historicalE2eConfig[chain];
 	const { Success } = StatusCode;
 
 	// Set the ws url env var
-	setWsUrl(wsUrl);
+	isLocal ? setWsUrl(localWsUrl) : setWsUrl(wsUrl);
 
 	console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
@@ -66,6 +66,7 @@ const launchChainTest = async (chain: string): Promise<boolean> => {
 
 const main = async (args: Namespace): Promise<void> => {
 	const { Failed } = StatusCode;
+	const isLocal = args.local ? true : false;
 
 	if (args.log_level) {
 		setLogLevel(args.log_level);
@@ -85,24 +86,24 @@ const main = async (args: Namespace): Promise<void> => {
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(args.chain);
+		const selectedChain = await launchChainTest(args.chain, isLocal);
 
 		checkTests(selectedChain);
 	} else {
 		// Test the e2e tests against polkadot
-		const polkadotTest = await launchChainTest('polkadot');
+		const polkadotTest = await launchChainTest('polkadot', isLocal);
 
 		// Test the e2e tests against kusama
-		const kusamaTest = await launchChainTest('kusama');
+		const kusamaTest = await launchChainTest('kusama', isLocal);
 
 		// Test the e2e tests against westend
-		const westendTest = await launchChainTest('westend');
+		const westendTest = await launchChainTest('westend', isLocal);
 
 		// Test the e2e tests against statemine
-		const statemineTest = await launchChainTest('statemine');
+		const statemineTest = await launchChainTest('statemine', isLocal);
 
 		// Test the e2e tests against statemint
-		const statemintTest = await launchChainTest('statemint');
+		const statemintTest = await launchChainTest('statemint', isLocal);
 
 		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
 	}
@@ -113,6 +114,9 @@ const main = async (args: Namespace): Promise<void> => {
  */
 const parser = new ArgumentParser();
 
+parser.add_argument('--local', {
+	required: false,
+})
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 });
