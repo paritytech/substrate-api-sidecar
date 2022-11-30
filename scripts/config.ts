@@ -41,6 +41,8 @@ export const defaultSasPackOpts = {
 	args: ['pack'],
 };
 
+export const localWsUrl = 'ws://127.0.0.1:8080'
+
 export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',

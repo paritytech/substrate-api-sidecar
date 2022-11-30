@@ -24,6 +24,7 @@ import {
 	setWsUrl,
 } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
+import { checkTests } from './e2eHelpers';
 
 // Stores all the processes
 const procs: ProcsType = {};
@@ -59,19 +60,7 @@ const launchChainTest = async (chain: string): Promise<boolean> => {
 	} else {
 		console.error('Error launching sidecar... exiting...');
 		killAll(procs);
-		process.exit(1);
-	}
-};
-
-const checkTests = (...args: boolean[]) => {
-	const testStatus = args.every((test) => test);
-
-	if (testStatus) {
-		console.log('[PASSED] All Tests Passed!');
-		process.exit(0);
-	} else {
-		console.log('[FAILED] Some Tests Failed!');
-		process.exit(1);
+		process.exit(2);
 	}
 };
 
