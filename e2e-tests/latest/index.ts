@@ -88,7 +88,7 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
         console.log(`Finished with a status code of ${Failed}`)
         return Failed
     } else {
-        console.log(`Finished with a status code of ${Failed}`)
+        console.log(`Finished with a status code of ${Success}`)
         return Success
     }
 }

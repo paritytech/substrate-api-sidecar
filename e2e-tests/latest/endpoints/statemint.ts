@@ -14,4 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export const statemint = {}; 
+export const statemint = {
+    '/accounts/{accountId}/asset-balances': {
+        path: '/accounts/1ULZhwpUPLLg5VRYiq6rBHY8XaShAmBW7kqGBfvHBqrgBcN/asset-balances',
+        queryParams: [
+            'at={blockId}',
+            'assets[]=100&assets[]=123'
+        ]
+    }
+}; 

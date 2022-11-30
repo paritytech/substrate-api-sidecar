@@ -34,7 +34,7 @@ const launchChainTest = async (chain: string, isLocal: boolean) => {
     const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
 
     if (sidecarStart === Success) {
-        console.log('Launching Latest e2e-tests');
+        console.log('Launching latest e2e-tests...');
         const e2e = await launchProcess('yarn', procs, e2eStartOpts);
 
         if (e2e === Success) {
@@ -68,13 +68,14 @@ const main = async (args: Namespace) => {
         process.exit(2);
     }
 
+    // CheckTests will either return a success exit code of 0, or a failed exit code of 1.
     if (args.chain) {
         const selectedChain = await launchChainTest(args.chain, isLocal);
 
         checkTests(selectedChain);
     } else {
-        const polkadotTest = await launchChainTest(args.chain, isLocal);
-        const statemintTest = await launchChainTest(args.chain, isLocal);
+        const polkadotTest = await launchChainTest('polkadot', isLocal);
+        const statemintTest = await launchChainTest('statemint', isLocal);
 
         checkTests(polkadotTest, statemintTest);
     }
