@@ -24,6 +24,12 @@ import { ProcsType, StatusCode } from './types';
 // Stores all the processes
 const procs: ProcsType = {};
 
+/**
+ * Starts the api service, and will run the e2e tests against it. 
+ * 
+ * @param chain The chain to test against
+ * @param isLocal Is this a local wsUrl.
+ */
 const launchChainTest = async (chain: string, isLocal: boolean) => {
     const { wsUrl, SasStartOpts, e2eStartOpts } = latestE2eConfig[chain];
     const { Success } = StatusCode;
@@ -84,7 +90,8 @@ const main = async (args: Namespace) => {
 const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
-    required: false
+    required: false,
+    action: 'store_true'
 });
 parser.add_argument('--chain', {
     choices: ['polkadot', 'statemint']
@@ -94,5 +101,23 @@ parser.add_argument('--log-level', {
 });
 
 const args = parser.parse_args() as Namespace;
+
+/**
+ * Signal interrupt
+ */
+ process.on('SIGINT', function () {
+	console.log('Caught interrupt signal');
+	killAll(procs);
+	process.exit();
+});
+
+/**
+ * Signal hangup terminal
+ */
+process.on('SIGHUP', function () {
+	console.log('Caught terminal termination');
+	killAll(procs);
+	process.exit();
+});
 
 main(args).finally(() => process.exit());

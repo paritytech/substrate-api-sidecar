@@ -41,7 +41,7 @@ export const defaultSasPackOpts = {
 	args: ['pack'],
 };
 
-export const localWsUrl = 'ws://127.0.0.1:8080'
+export const localWsUrl = 'ws://127.0.0.1:9944'
 
 export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	polkadot: {
@@ -92,7 +92,8 @@ export const latestE2eConfig: Record<string, IChainConfigLatestE2E> = {
 		SasStartOpts: defaultSasStartOpts,
 		e2eStartOpts: {
 			proc: 'latest-e2e',
-			resolver: 'Finished with a status code of',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
 			args: ['start:latest-e2e-tests', '--chain', 'polkadot']
 		}
 	},
@@ -101,7 +102,8 @@ export const latestE2eConfig: Record<string, IChainConfigLatestE2E> = {
 		SasStartOpts: defaultSasStartOpts,
 		e2eStartOpts: {
 			proc: 'latest-e2e',
-			resolver: 'Finished with a status code of',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
 			args: ['start:latest-e2e-tests', '--chain', 'statemint']
 		}
 	}

@@ -42,5 +42,6 @@ export interface IProcOpts {
 	resolver: string;
 	resolverStartupErr?: string;
 	resolverJestErr?: string;
+	resolverFailed?: string;
 	args: string[];
 }
