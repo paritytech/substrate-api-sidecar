@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IChainConfigLatestE2E, IChainConfigJest } from './types';
+import { IChainConfigE2E } from './types';
 
 const defaultJestOpts = {
 	proc: 'jest',
@@ -43,10 +43,10 @@ export const defaultSasPackOpts = {
 
 export const localWsUrl = 'ws://127.0.0.1:9944'
 
-export const historicalE2eConfig: Record<string, IChainConfigJest> = {
+export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'polkadot'],
 		},
@@ -54,7 +54,7 @@ export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	},
 	kusama: {
 		wsUrl: 'wss://kusama.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'kusama'],
 		},
@@ -62,7 +62,7 @@ export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	},
 	westend: {
 		wsUrl: 'wss://westend.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'westend'],
 		},
@@ -70,7 +70,7 @@ export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	},
 	statemine: {
 		wsUrl: 'wss://statemine.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'statemine'],
 		},
@@ -78,7 +78,7 @@ export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	},
 	statemint: {
 		wsUrl: 'wss://statemint-rpc.polkadot.io',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'statemint'],
 		},
@@ -86,7 +86,7 @@ export const historicalE2eConfig: Record<string, IChainConfigJest> = {
 	}
 };
 
-export const latestE2eConfig: Record<string, IChainConfigLatestE2E> = {
+export const latestE2eConfig: Record<string, IChainConfigE2E> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
 		SasStartOpts: defaultSasStartOpts,

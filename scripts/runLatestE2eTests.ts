@@ -15,47 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ArgumentParser, Namespace } from 'argparse';
-import { launchProcess, setLogLevel, killAll, setWsUrl } from './sidecarScriptApi';
-import { latestE2eConfig, defaultSasBuildOpts, localWsUrl } from './config';
-import { checkTests } from './e2eHelpers';
+import { launchProcess, setLogLevel, killAll } from './sidecarScriptApi';
+import { latestE2eConfig, defaultSasBuildOpts } from './config';
+import { checkTests, launchChainTest } from './e2eHelpers';
 
 import { ProcsType, StatusCode } from './types';
 
 // Stores all the processes
 const procs: ProcsType = {};
-
-/**
- * Starts the api service, and will run the e2e tests against it. 
- * 
- * @param chain The chain to test against
- * @param isLocal Is this a local wsUrl.
- */
-const launchChainTest = async (chain: string, isLocal: boolean) => {
-    const { wsUrl, SasStartOpts, e2eStartOpts } = latestE2eConfig[chain];
-    const { Success } = StatusCode;
-
-    isLocal ? setWsUrl(localWsUrl) : setWsUrl(wsUrl);
-
-    console.log('Launching Sidecar...');
-    const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
-
-    if (sidecarStart === Success) {
-        console.log('Launching latest e2e-tests...');
-        const e2e = await launchProcess('yarn', procs, e2eStartOpts);
-
-        if (e2e === Success) {
-            killAll(procs);
-            return true
-        } else {
-            killAll(procs);
-            return false
-        }
-    } else {
-        console.error('Error launching sidecar... exiting...');
-        killAll(procs);
-        process.exit(2);
-    }
-}
 
 const main = async (args: Namespace) => {
     const { Failed } = StatusCode;
@@ -81,12 +48,12 @@ const main = async (args: Namespace) => {
 
     // CheckTests will either return a success exit code of 0, or a failed exit code of 1.
     if (args.chain) {
-        const selectedChain = await launchChainTest(args.chain, isLocal);
+        const selectedChain = await launchChainTest(args.chain, latestE2eConfig, isLocal, procs);
 
         checkTests(selectedChain);
     } else {
-        const polkadotTest = await launchChainTest('polkadot', false);
-        const statemintTest = await launchChainTest('statemint', false);
+        const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, false, procs);
+        const statemintTest = await launchChainTest('statemint', latestE2eConfig, false, procs);
 
         checkTests(polkadotTest, statemintTest);
     }

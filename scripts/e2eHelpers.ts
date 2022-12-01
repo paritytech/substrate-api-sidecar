@@ -13,8 +13,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { IChainConfigE2E, ProcsType, StatusCode } from './types';
+import { localWsUrl } from './config';
+import {
+	killAll,
+	launchProcess,
+	setWsUrl,
+} from './sidecarScriptApi';
 
-export const checkTests = (...args: boolean[]) => {
+/**
+ * Check each chain test returned by `launchChainTest`, and exit the program
+ * with the correct process.
+ * 
+ * @param args The results of each test.
+ */
+export const checkTests = (...args: boolean[]): void => {
 	const testStatus = args.every((test) => test);
 
 	if (testStatus) {
@@ -25,3 +38,45 @@ export const checkTests = (...args: boolean[]) => {
 		process.exit(1);
 	}
 };
+
+/**
+ * Launch a e2e test for a chain. 
+ * 
+ * @param chain The chain to test against.
+ * @param config The config specific to a chain. 
+ * @param isLocal Boolean declaring if this chain is local.
+ * @param procs Object containing all the processes.
+ */
+export const launchChainTest = async (
+    chain: string, 
+    config: Record<string, IChainConfigE2E>, 
+    isLocal: boolean,
+    procs: ProcsType,
+): Promise<boolean> => {
+    const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
+    const { Success } = StatusCode;
+
+    // Set the ws url env var
+	isLocal ? setWsUrl(localWsUrl) : setWsUrl(wsUrl);
+
+    console.log('Launching Sidecar...');
+	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
+
+    if (sidecarStart === Success) {
+		// Sidecar successfully launched, and jest will now get called
+		console.log('Launching jest...');
+		const jest = await launchProcess('yarn', procs, e2eStartOpts);
+
+		if (jest === Success) {
+			killAll(procs);
+			return true;
+		} else {
+			killAll(procs);
+			return false;
+		}
+	} else {
+		console.error('Error launching sidecar... exiting...');
+		killAll(procs);
+		process.exit(2);
+	}
+}

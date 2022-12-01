@@ -28,11 +28,7 @@ export interface IChainConfig {
 	SasStartOpts: IProcOpts;
 }
 
-export interface IChainConfigJest extends IChainConfig {
-	JestProcOpts: IProcOpts;
-}
-
-export interface IChainConfigLatestE2E extends IChainConfig {
+export interface IChainConfigE2E extends IChainConfig {
 	e2eStartOpts: IProcOpts;
 }
 
