@@ -60,6 +60,11 @@ const launchChainTest = async (chain: string, isLocal: boolean) => {
 const main = async (args: Namespace) => {
     const { Failed } = StatusCode;
     const isLocal = args.local ? true : false;
+
+    if (isLocal && !args.chain) {
+		console.error('error: `--local` must be used in conjunction with `--chain`');
+		process.exit(3);
+	}
     
     if (args.log_level) {
         setLogLevel(args.log_level);
@@ -80,8 +85,8 @@ const main = async (args: Namespace) => {
 
         checkTests(selectedChain);
     } else {
-        const polkadotTest = await launchChainTest('polkadot', isLocal);
-        const statemintTest = await launchChainTest('statemint', isLocal);
+        const polkadotTest = await launchChainTest('polkadot', false);
+        const statemintTest = await launchChainTest('statemint', false);
 
         checkTests(polkadotTest, statemintTest);
     }

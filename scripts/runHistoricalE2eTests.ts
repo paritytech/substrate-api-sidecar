@@ -68,6 +68,11 @@ const main = async (args: Namespace): Promise<void> => {
 	const { Failed } = StatusCode;
 	const isLocal = args.local ? true : false;
 
+	if (isLocal && !args.chain) {
+		console.error('error: `--local` must be used in conjunction with `--chain`');
+		process.exit(3);
+	}
+
 	if (args.log_level) {
 		setLogLevel(args.log_level);
 	}
@@ -91,19 +96,19 @@ const main = async (args: Namespace): Promise<void> => {
 		checkTests(selectedChain);
 	} else {
 		// Test the e2e tests against polkadot
-		const polkadotTest = await launchChainTest('polkadot', isLocal);
+		const polkadotTest = await launchChainTest('polkadot', false);
 
 		// Test the e2e tests against kusama
-		const kusamaTest = await launchChainTest('kusama', isLocal);
+		const kusamaTest = await launchChainTest('kusama', false);
 
 		// Test the e2e tests against westend
-		const westendTest = await launchChainTest('westend', isLocal);
+		const westendTest = await launchChainTest('westend', false);
 
 		// Test the e2e tests against statemine
-		const statemineTest = await launchChainTest('statemine', isLocal);
+		const statemineTest = await launchChainTest('statemine', false);
 
 		// Test the e2e tests against statemint
-		const statemintTest = await launchChainTest('statemint', isLocal);
+		const statemintTest = await launchChainTest('statemint', false);
 
 		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
 	}
@@ -116,6 +121,7 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
 	required: false,
+	action: 'store_true'
 })
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
