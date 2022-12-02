@@ -311,6 +311,7 @@ and read the release notes for any breaking changes or high priority updates. In
    yarn lint
    yarn test
    yarn test:historical-e2e-tests
+   yarn test:latest-e2e-tests
    ```
 
 1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.
