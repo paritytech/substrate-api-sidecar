@@ -21,5 +21,15 @@ export const statemint = {
             'at={blockId}',
             'assets[]=100&assets[]=123'
         ]
-    }
+    },
+    '/accounts/{accountId}/asset-approvals': {
+        path: '/accounts/13zCwRqhAj4D33czsm1G82EgHBNq58CCcWRsbwABaby64p1A/asset-approvals?at={blockId}&assetId=1984&delegate=12jU3Wn96uJgfiAe7Zk9s1vKWDz8SBNnqQ8t7s8kj1hDxMMc',
+        queryParams: [],
+    },
+    '/pallets/assets/{assetId}/asset-info': {
+        path: '/pallets/assets/123/asset-info',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
 }; 
