@@ -8,9 +8,9 @@
 
 1. Checkout a branch with the format `name-v5-0-1`. When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
 
-1. The next step is making sure the release will work against all relevant runtimes for Polkadot, Kusama, and Westend. This can be handled by running `yarn test:historical-e2e-tests`. If you would like to test on an individual chain, you may run the same command followed by its chain, ex: `yarn test:historical-e2e-tests:polkadot`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+1. The next step is to run the e2e tests. There are two types of e2e tests: `yarn test:historical-e2e-tests`, and `yarn test:latest-e2e-tests`. If you would like to run either tests against a single chain you may use the flag `--chain` to specify the chain. If you would also like to test against a local node you may use the `--local` flag in conjunction with `--chain`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
 
-    Note: that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running tests just for the chain that failed with something like `yarn test:historical-e2e-tests:polkadot`.
+    Note: that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running tests the tests again.
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
