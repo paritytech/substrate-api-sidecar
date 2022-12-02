@@ -70,7 +70,7 @@ $ yarn remove @substrate/api-sidecar
 $ rm -rf ./package.tgz
 ```
 
-## Errors (This comment should be in scripts)
+## Errors
 
 `0`: The process has finished succesfully and all tests have passed.
 
