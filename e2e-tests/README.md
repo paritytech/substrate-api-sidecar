@@ -1,22 +1,36 @@
 ## Summary
 
-This is a helper library for Sidecar to run e2e tests against specific chains, at certain blocks. 
+This is a helper library to run e2e tests. There are two types of tests to run:
 
-## Testing
+1. Historical: Tests that focus on the integrity of the api service with older runtimes. 
 
-The below instructions are specific to running the e2e-tests against one chain. 
-If you are looking to run the e2e-tests against all chains (Polkadot, Kusama, Westend, Statemine) then run `yarn test:historical-e2e-tests` in 
-the root directory of sidecar.
+2. Latest: Tests that focus on the integrity of the api service with the current runtime, and most recent block. 
 
-### Polkadot 
+### Historical
 
-To run the tests against a single chain, you may use the following below. For more examples, reference the `<ROOT>/package.json`
+Historical tests use jest to run the api service at specific blocks where the result is known. Jest compares the known result to what we receive, and operates like any other test. It requires having the api service running against a live chain (Archive nodes are preferred). 
 
-`yarn test:historical-e2e-tests:polkadot`
+To run the tests locally:
 
-That's it! 
-All the tests should come back with green checkmarks. If you find a bug file an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+```bash
+$ yarn build:e2e-tests
+$ node ./e2e-tests/build/historical/historical.js --config=./e2e-tests/jest.config.js
+```
 
-### Config
+`--chain`: The chain you would like to test against. It defaults to `polkadot`.
+`--config`: The path to the jest config.
 
-If you are looking to update the e2e-tests config, the file to do so exists in `<ROOT>/scripts/config.ts`.
+### Latest
+
+Latest tests run a set of known endpoints with the latest block against the chain. The tests will pass as long as all the responses are succesfull. If any test is 400 or above it will fail, and log each failed query along with its error. 
+
+To run the tests locally:
+
+```bash
+$ yarn build:e2e-tests
+$ node ./e2e-tests/build/latest/index.js
+```
+
+#### Flags
+
+`--chain`: The chain you would like to test against. It defaults to `polkadot`.
