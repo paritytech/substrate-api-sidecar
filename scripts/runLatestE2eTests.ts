@@ -17,7 +17,7 @@
 import { ArgumentParser, Namespace } from 'argparse';
 import { launchProcess, setLogLevel, killAll } from './sidecarScriptApi';
 import { latestE2eConfig, defaultSasBuildOpts } from './config';
-import { checkTests, launchChainTest } from './e2eHelpers';
+import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
 
 import { ProcsType, StatusCode } from './types';
 
@@ -26,9 +26,9 @@ const procs: ProcsType = {};
 
 const main = async (args: Namespace) => {
     const { Failed } = StatusCode;
-    const isLocal = args.local ? true : false;
+    const localUrl: string | undefined = args.local ? args.local : undefined;
 
-    if (isLocal && !args.chain) {
+    if (localUrl && !args.chain) {
 		console.error('error: `--local` must be used in conjunction with `--chain`');
 		process.exit(3);
 	}
@@ -48,12 +48,12 @@ const main = async (args: Namespace) => {
 
     // CheckTests will either return a success exit code of 0, or a failed exit code of 1.
     if (args.chain) {
-        const selectedChain = await launchChainTest(args.chain, latestE2eConfig, isLocal, procs);
+        const selectedChain = await launchChainTest(args.chain, latestE2eConfig, procs, localUrl);
 
         checkTests(selectedChain);
     } else {
-        const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, false, procs);
-        const statemintTest = await launchChainTest('statemint', latestE2eConfig, false, procs);
+        const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, procs);
+        const statemintTest = await launchChainTest('statemint', latestE2eConfig, procs);
 
         checkTests(polkadotTest, statemintTest);
     }
@@ -63,7 +63,8 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
     required: false,
-    action: 'store_true',
+    nargs: '?',
+    type: checkWsType
 });
 parser.add_argument('--chain', {
     choices: ['polkadot', 'statemint'],

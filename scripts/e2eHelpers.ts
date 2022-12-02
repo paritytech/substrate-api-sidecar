@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { IChainConfigE2E, ProcsType, StatusCode } from './types';
-import { localWsUrl } from './config';
 import {
 	killAll,
 	launchProcess,
@@ -50,14 +49,14 @@ export const checkTests = (...args: boolean[]): void => {
 export const launchChainTest = async (
     chain: string, 
     config: Record<string, IChainConfigE2E>, 
-    isLocal: boolean,
     procs: ProcsType,
+    localUrl?: string,
 ): Promise<boolean> => {
     const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
     const { Success } = StatusCode;
 
     // Set the ws url env var
-	isLocal ? setWsUrl(localWsUrl) : setWsUrl(wsUrl);
+	localUrl ? setWsUrl(localUrl) : setWsUrl(wsUrl);
 
     console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
@@ -79,4 +78,13 @@ export const launchChainTest = async (
 		killAll(procs);
 		process.exit(2);
 	}
+}
+
+export const checkWsType = (arg: string) => {
+    const res = /^(wss?:\/\/)([0-9]{1,3}(?:\.[0-9]{1,3}){3}|[a-zA-Z]+):([0-9]{1,5})$/.test(arg);
+    if (!res) {
+        console.error('Invalid Ws Url format');
+        process.exit(3);
+    }
+    return arg
 }

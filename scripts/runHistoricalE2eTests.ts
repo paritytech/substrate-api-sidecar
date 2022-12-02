@@ -23,16 +23,16 @@ import {
 	setLogLevel,
 } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
-import { checkTests, launchChainTest } from './e2eHelpers';
+import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
 
 // Stores all the processes
 const procs: ProcsType = {};
 
 const main = async (args: Namespace): Promise<void> => {
 	const { Failed } = StatusCode;
-	const isLocal = args.local ? true : false;
+	const localUrl: string | undefined = args.local ? args.local : undefined;
 
-	if (isLocal && !args.chain) {
+	if (localUrl && !args.chain) {
 		console.error('error: `--local` must be used in conjunction with `--chain`');
 		process.exit(3);
 	}
@@ -51,15 +51,15 @@ const main = async (args: Namespace): Promise<void> => {
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, isLocal, procs);
+		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, procs, localUrl);
 
 		checkTests(selectedChain);
 	} else {
-		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, false, procs);
-		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, false, procs);
-		const westendTest = await launchChainTest('westend', historicalE2eConfig, false, procs);
-		const statemineTest = await launchChainTest('statemine', historicalE2eConfig, false, procs);
-		const statemintTest = await launchChainTest('statemint', historicalE2eConfig, false, procs);
+		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, procs);
+		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, procs);
+		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
+		const statemineTest = await launchChainTest('statemine', historicalE2eConfig, procs);
+		const statemintTest = await launchChainTest('statemint', historicalE2eConfig, procs);
 
 		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
 	}
@@ -72,7 +72,8 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
 	required: false,
-	action: 'store_true'
+	nargs: '?',
+	type: checkWsType
 })
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
