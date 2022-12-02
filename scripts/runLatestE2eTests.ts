@@ -63,13 +63,14 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
     required: false,
-    action: 'store_true'
+    action: 'store_true',
 });
 parser.add_argument('--chain', {
-    choices: ['polkadot', 'statemint']
+    choices: ['polkadot', 'statemint'],
 });
 parser.add_argument('--log-level', {
-    choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']
+    choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+    default: 'http',
 });
 
 const args = parser.parse_args() as Namespace;

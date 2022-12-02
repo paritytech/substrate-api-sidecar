@@ -79,6 +79,7 @@ parser.add_argument('--chain', {
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+	default: 'http',
 });
 
 const args = parser.parse_args() as Namespace;
