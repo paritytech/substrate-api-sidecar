@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Install wasm-pack
-      uses: jetli/wasm-pack-action@f98777369a49686b132a9e8f0fdd59837bf3c3fd # v0.3.0
+      uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
       with:
         version: v0.10.0
     - uses: actions/checkout@v3
