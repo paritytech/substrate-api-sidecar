@@ -16,9 +16,9 @@
 #   eyou can use them for mentioning unlike an email.
 # - The latest matching rule, if multiple, takes precedence.
 
-# main codeowner @paritytech/tools-team
-* @paritytech/tools-team
+# main codeowner @paritytech/integrations-tools-js-ts
+* @paritytech/integrations-tools-js-ts
 
 # CI
-/.github/ @paritytech/ci @paritytech/tools-team
-/.gitlab-ci.yml @paritytech/ci @arshamparity
+/.github/ @paritytech/ci @paritytech/integrations-tools-js-ts
+/.gitlab-ci.yml @paritytech/ci
