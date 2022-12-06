@@ -21,4 +21,4 @@
 
 # CI
 /.github/ @paritytech/ci @paritytech/integrations-tools-js-ts
-/.gitlab-ci.yml @paritytech/ci @arshamparity
+/.gitlab-ci.yml @paritytech/ci
