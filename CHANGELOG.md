@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.2..v14.2.0) (2022-12-07)
+
+### Features
+
+- feat: add support for ink! contracts ([1015](https://github.com/paritytech/substrate-api-sidecar/pull/1015)) ([f6499fa](https://github.com/paritytech/substrate-api-sidecar/commit/f6499fae96b2c3f787c63657ba793803b7f735a9))
+
+### Bug Fixes
+
+- fix(calc): remove sp-arithmetic-legacy ([1146](https://github.com/paritytech/substrate-api-sidecar/pull/1146)) ([92f02dc](https://github.com/paritytech/substrate-api-sidecar/commit/92f02dcbb40c4ae3c55b6457de5ec151e7f9f906))
+
+### Chores
+
+- chore: bump loader-utils from 1.4.1 to 1.4.2 in /docs ([1140](https://github.com/paritytech/substrate-api-sidecar/pull/1140)) ([71456c4](https://github.com/paritytech/substrate-api-sidecar/commit/71456c4d3748c8d449b0a44b5e0cc9536bf973cf))
+- chore: bump minimatch from 3.0.4 to 3.1.2 in /docs ([1148](https://github.com/paritytech/substrate-api-sidecar/pull/1148)) ([442e045](https://github.com/paritytech/substrate-api-sidecar/commit/442e045d8340024a3838eac87858d758af2a57ef))
+- chore: bump tar from 6.1.0 to 6.1.12 in /docs ([1149](https://github.com/paritytech/substrate-api-sidecar/pull/1149)) ([e319b88](https://github.com/paritytech/substrate-api-sidecar/commit/e319b88697e9e05e6cc92ace1343ad6d3fd0cb41))
+- chore: bump jetli/wasm-pack-action from 0.3.0 to 0.4.0 ([1156](https://github.com/paritytech/substrate-api-sidecar/pull/1156)) ([21894e6](https://github.com/paritytech/substrate-api-sidecar/commit/21894e6dcc7cb89c1ad26bbaee97dd85f581631a))
+- chore(release-calc): 0.3.1 ([1157](https://github.com/paritytech/substrate-api-sidecar/pull/1157)) ([af85128](https://github.com/paritytech/substrate-api-sidecar/commit/af851282392a1b427d533ea67ed714500bb96f3b))
+- chore: change main code owner integrations-tools-js-ts ([1159](https://github.com/paritytech/substrate-api-sidecar/pull/1159)) ([bbbe90b](https://github.com/paritytech/substrate-api-sidecar/commit/bbbe90b7b7dd7babfed66c13e47121188a43886f))
+- chore(deps): update substrate/calc and polkadot-js deps ([1158](https://github.com/paritytech/substrate-api-sidecar/pull/1158)) ([dc50726](https://github.com/paritytech/substrate-api-sidecar/commit/dc507264f879416e0b05b121df0ab2cfafed5908))
+
+### Docs
+
+- docs: fix docs ([1145](https://github.com/paritytech/substrate-api-sidecar/pull/1145)) ([17f00d6](https://github.com/paritytech/substrate-api-sidecar/commit/17f00d6431e963bc1f9bed400557981697d5b933))
+
+### Tests
+
+- test: optimize test runner for e2e-tests and ci ([1142](https://github.com/paritytech/substrate-api-sidecar/pull/1142)) ([f635d59](https://github.com/paritytech/substrate-api-sidecar/commit/f635d592f12fe422196cfbc2830c779397bbd40f))
+- test(e2e-tests): reorg the e2e-tests to be under a historic folder to prepare for current tests ([1147](https://github.com/paritytech/substrate-api-sidecar/pull/1147)) ([6a4249e](https://github.com/paritytech/substrate-api-sidecar/commit/6a4249e71d8d1790e5b1fe57bf09cb8321060cc5))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9330
+- Kusama v9330
+- Westend v9330
+
+
 ## [14.1.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.1..v14.1.2) (2022-11-21)
 
 ### Bug Fixes
