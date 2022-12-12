@@ -14,35 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache, QueryFeeDetailsCache } from './cache';
+import { statemineAccountsApprovalsEndpoints } from './asset-approvals';
+import { statemineAccountAssetBalanceEndpoints } from './asset-balances';
+import { statemineAccountBalanceEndpoints } from './balance-info';
 
-/**
- * Statemine configuration for Sidecar.
- */
-export const statemineControllers: ControllerConfig = {
-	controllers: [
-		'AccountsAssets',
-		'AccountsBalanceInfo',
-		'AccountsValidate',
-		'Blocks',
-		'BlocksExtrinsics',
-		'NodeNetwork',
-		'NodeTransactionPool',
-		'NodeVersion',
-		'PalletsAssets',
-		'RuntimeCode',
-		'RuntimeMetadata',
-		'RuntimeSpec',
-		'TransactionDryRun',
-		'TransactionFeeEstimate',
-		'TransactionMaterial',
-		'TransactionSubmit',
-	],
-	options: {
-		finalizes: true,
-		minCalcFeeRuntime: 1,
-		blockStore: initLRUCache(),
-		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
-	},
-};
+export const statemineAccountAssetEndpoints = [
+	...statemineAccountBalanceEndpoints,
+	...statemineAccountAssetBalanceEndpoints,
+	...statemineAccountsApprovalsEndpoints,
+];

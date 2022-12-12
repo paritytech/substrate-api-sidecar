@@ -93,6 +93,26 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	/**
+	 * Safely mount async POST routes by wrapping them with an express
+	 * handler friendly try / catch block and then mounting on the controllers
+	 * router.
+	 *
+	 * @param pathsAndHandlers array of tuples containing the suffix to the controller
+	 * base path (use empty string if no suffix) and the get request handler function.
+	 */
+	protected safeMountAsyncPostHandlers(
+		pathsAndHandlers: [string, SidecarRequestHandler][]
+	): void {
+		for (const pathAndHandler of pathsAndHandlers) {
+			const [pathSuffix, handler] = pathAndHandler;
+			this.router.post(
+				`${this.path}${pathSuffix}`,
+				AbstractController.catchWrap(handler as RequestHandler)
+			);
+		}
+	}
+
+	/**
 	 * Wrapper for any asynchronous RequestHandler function. Pipes errors
 	 * to downstream error handling middleware.
 	 *

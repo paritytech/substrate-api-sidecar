@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { endpoints } from './endpoints';
+import { endpoints } from './historical/endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
 import {
@@ -23,7 +23,7 @@ import {
 	IBlockResponse,
 	IEnvChainConfig,
 	RuntimeResponse,
-} from './types';
+} from './historical/types';
 
 const config = JSON.parse(
 	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string

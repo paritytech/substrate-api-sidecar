@@ -1,5 +1,5 @@
 {
-  "version": "14.0.0",
+  "version": "14.2.0",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -36,6 +36,7 @@
     "dev": "tsc-watch --onSuccess \"yarn run main\"",
     "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
     "test:watch": "NODE_ENV=test substrate-exec-jest --watch",
+    "test:ci": "NODE_ENV=test substrate-exec-jest --runInBand",
     "lint:e2e-tests": "cd e2e-tests && substrate-dev-run-lint",
     "build:e2e-tests": "substrate-exec-tsc --project e2e-tests/tsconfig.json",
     "test:e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/index.js --config=./e2e-tests/jest.config.js",
@@ -45,7 +46,7 @@
     "test:init-e2e-tests:westend": "yarn test:init-e2e-tests --chain westend",
     "test:init-e2e-tests:statemine": "yarn test:init-e2e-tests --chain statemine",
     "test:init-e2e-tests:statemint": "yarn test:init-e2e-tests --chain statemint",
-    "start:e2e-scripts": "yarn build:scripts && node scripts/build/runChainTests.js",
+    "start:e2e-scripts": "yarn build:scripts && node scripts/build/runE2eTests.js",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && substrate-exec-tsc --project scripts/tsconfig.json",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",
     "start:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js",
@@ -53,9 +54,10 @@
     "update-pjs-deps": "substrate-update-pjs-deps && yarn"
   },
   "dependencies": {
-    "@polkadot/api": "^9.4.2",
-    "@polkadot/util-crypto": "^10.1.9",
-    "@substrate/calc": "^0.3.0",
+    "@polkadot/api": "^9.10.1",
+    "@polkadot/api-contract": "^9.10.1",
+    "@polkadot/util-crypto": "^10.2.1",
+    "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",
     "confmgr": "1.0.9",
     "express": "^4.18.1",
@@ -68,8 +70,8 @@
   "devDependencies": {
     "@substrate/dev": "^0.6.4",
     "@types/argparse": "2.0.10",
-    "@types/express": "4.17.13",
-    "@types/express-serve-static-core": "4.17.30",
+    "@types/express": "4.17.14",
+    "@types/express-serve-static-core": "4.17.31",
     "@types/http-errors": "1.8.2",
     "@types/lru-cache": "^7.10.10",
     "@types/morgan": "1.9.3",
@@ -86,5 +88,5 @@
     "polkadot",
     "kusama"
   ],
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.4"
 }

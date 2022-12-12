@@ -8,10 +8,11 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.0.0
+  version: 14.2.0
 tags:
 - name: accounts
 - name: blocks
+- name: contracts
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -185,6 +186,68 @@ paths:
                 $ref: '#/components/schemas/Error'
         "404":
           description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/convert:
+    get:
+      tags:
+      - accounts
+      summary: Convert a given AccountId to an SS58 address.
+      description: Returns the SS58 prefix, the network address format, the SS58 address, and the AccountId
+        that was given as input parameter, the scheme that was used and if it is a public key or not (boolean).
+      operationId: accountConvert
+      parameters:
+      - name: accountId
+        in: path
+        description: AccountId or Public Key (hex).
+        required: true
+        schema:
+          format: AccountId or Hex
+          type: string
+      - name: scheme
+        in: query
+        description: The cryptographic scheme to be used in order to convert the AccountId to
+          an SS58 address. It can take one of three values [sr25519, ed25519, ecdsa].
+          The default scheme that is used is `sr25519` (if it is not set in the query parameter).
+        required: false
+        schema:
+          type: string
+          format: string
+          default: 'sr25519'
+      - name: prefix
+        in: query
+        description: The address prefix which can be one of the values found in the SS58-registry.
+        required: false
+        schema:
+          type: string
+          format: number
+          default: 42
+      - name: publicKey
+        in: query
+        description: Defines if the given value in the path parameter is a Public Key (hex)
+          or not (hence AccountId).
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
+      responses:
+        "200":
+          description: successfully converted the AccountId and retrieved the address info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountConvert'
+        "400":
+          description: Invalid AccountId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: AccountId not found
           content:
             application/json:
               schema:
@@ -367,68 +430,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountValidation'
-  /accounts/{accountId}/convert:
-    get:
-      tags:
-      - accounts
-      summary: Convert a given AccountId to an SS58 address.
-      description: Returns the SS58 prefix, the network address format, the SS58 address, and the AccountId
-        that was given as input parameter, the scheme that was used and if it is a public key or not (boolean).
-      operationId: accountConvert
-      parameters:
-      - name: accountId
-        in: path
-        description: AccountId or Public Key (hex).
-        required: true
-        schema:
-          format: AccountId or Hex
-          type: string
-      - name: scheme
-        in: query
-        description: The cryptographic scheme to be used in order to convert the AccountId to 
-          an SS58 address. It can take one of three values [sr25519, ed25519, ecdsa].
-          The default scheme that is used is `sr25519` (if it is not set in the query parameter).
-        required: false
-        schema:
-          type: string
-          format: string
-          default: 'sr25519'
-      - name: prefix
-        in: query
-        description: The address prefix which can be one of the values found in the SS58-registry.
-        required: false
-        schema:
-          type: string
-          format: number
-          default: 42
-      - name: publicKey
-        in: query
-        description: Defines if the given value in the path parameter is a Public Key (hex)
-          or not (hence AccountId).
-        required: false
-        schema:
-          type: string
-          format: boolean
-          default: true
-      responses:
-        "200":
-          description: successfully converted the AccountId and retrieved the address info.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountConvert'
-        "400":
-          description: Invalid AccountId
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: AccountId not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /blocks:
     get:
       tags:
@@ -665,6 +666,62 @@ paths:
                 $ref: '#/components/schemas/BlockHeader'
         "400":
           description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contracts/ink/{address}/query:
+    post:
+      tags:
+      - contracts
+      summary: Query an !Ink contract with a given message (method).
+      description: Will return a valid or invalid result. 
+      operationId: callContractQuery
+      requestBody:
+        $ref: '#/components/requestBodies/ContractMetadata'
+      parameters:
+      - name: address
+        in: path
+        description: SS58 or Hex address of the account associated with the contract.
+        required: true
+        schema:
+          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          type: string
+      - name: method
+        in: query
+        description: The message or method used to query.
+        required: false
+        schema:
+          type: string
+          default: 'get'
+      - name: gasLimit
+        in: query
+        description: The gas limit to be used as an option for the queried message.
+        required: false
+        schema:
+          default: -1
+          type: number
+      - name: storageDepositLimit
+        in: query
+        description: The storage deposit limit to be used as an option for the queried message.
+        required: false
+        schema:
+          deafult: null
+          type: number
+      - name: args
+        in: query
+        description: Abi params used as args specified in the metadata to be passed into a query. 
+          The format to use this query param is ?args[]=1&args[]=2&args[]=3.
+        required: false
+      responses:
+        "200":
+          description: succesful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractsInkQuery'
+        "400":
+          description: Invalid Method
           content:
             application/json:
               schema:
@@ -1500,6 +1557,30 @@ components:
             locks
           items:
             $ref: '#/components/schemas/BalanceLock'
+    AccountConvert:
+      type: object
+      properties:
+        ss58Prefix:
+          type: string
+          description: SS58 prefix based on which the account ID or Public Key (hex) is converted to an SS58 address.
+          format: unsignedInteger
+        network:
+          type: string
+          description: The network based on which the returned address is encoded. It depends on the prefix
+            that was given as a query param.
+        address:
+          type: string
+          description: The returned SS58 address which is the result of the conversion
+            of the account ID or Public Key (hex).
+        accountId:
+          type: string
+          description: The given account ID or Public Key (hex) that is converted to an SS58 address.
+        scheme:
+          type: string
+          description: The cryptographic scheme/algorithm used to encode the given account ID or Public Key (hex).
+        publicKey:
+          type: boolean
+          description: Whether the given path parameter is a Public Key (hex) or not.
     AccountStakingInfo:
       type: object
       properties:
@@ -1864,6 +1945,27 @@ components:
         custom:
           type: string
       example: "{\"live\": null}"
+    ContractsInkQuery:
+      type: object
+      description: Result from calling a query to a Ink contract.
+      properties:
+        debugMessage:
+          type: string
+        gasConsumed:
+          type: string
+        gasRequired:
+          type: string
+        output:
+          type: boolean
+        result:
+          type: object
+          description: Will result in an Ok or Err object depending on the result of the query.
+        storageDeposit:
+          type: object
+    ContractMetata:
+      type: object
+      description: Metadata used to instantiate a ContractPromise. This metadata can be generated
+        by compiling the contract you are querying.
     DigestItem:
       type: object
       properties:
@@ -2210,6 +2312,8 @@ components:
           example: "referendumInfoOf"
         keys:
           type: array
+          items:
+            type: string
           description: N Storage keys passed in as the `keys` query param. 
           example: ["0x00", "0x01"]
         value:
@@ -2982,3 +3086,9 @@ components:
           schema:
             $ref: '#/components/schemas/Transaction'
       required: true
+    ContractMetadata:
+      content:
+        application/json:
+          scehma:
+            $ref: '#/components/schemas/ContractMetadata'
+

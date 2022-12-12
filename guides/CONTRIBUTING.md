@@ -20,7 +20,9 @@ where reviewers will be able to review your changes made.
 -   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
     automatically fix some of those errors.
 -   `yarn test`: Make sure all tests pass.
--   `yarn build:docs`: If any changes are made to the OpenApi specs make sure to rebuild the UI.
+-   If any changes are made to the OpenApi specs :
+    - Verify the changes with an editor such as swagger as mentioned in the [README](https://github.com/paritytech/substrate-api-sidecar/tree/master/docs).
+    - Run `yarn build:docs` to make sure to rebuild the UI.
 
 ## Rules
 
