@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.0..v14.2.1) (2022-12-14)
+
+### Bug Fixes
+
+- chore(deps): update polkadot-js deps ([1163](https://github.com/paritytech/substrate-api-sidecar/pull/1163)) ([ca97b2c](https://github.com/paritytech/substrate-api-sidecar/commit/ca97b2cbae909bad24869ea15bb9ab6fa2005f97))
+    - This fixes an issue where unapplies slashes will not appear in  `/pallets/staking/progress` when necessary. 
+
+### Docs
+
+- docs: update node stability for versions ([1162](https://github.com/paritytech/substrate-api-sidecar/pull/1162)) ([e4305b6](https://github.com/paritytech/substrate-api-sidecar/commit/e4305b668e30984635f2718f83fabc6b594faf42))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9330
+- Kusama v9330
+- Westend v9330
+
 ## [14.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.1.2..v14.2.0) (2022-12-07)
 
 ### Features
