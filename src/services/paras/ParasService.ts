@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { u32 } from '@polkadot/types';
+import { Map, u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -427,6 +427,39 @@ export class ParasService extends AbstractService {
 			},
 			paras: await Promise.all(parasPromises),
 		};
+	}
+
+	async parasHead(hash: BlockHash): Promise<{}> {
+		const { api } = this;
+		const block = await api.rpc.chain.getBlock(hash);
+
+		const extrinsic = block.block.extrinsics.find(
+			(ext) => ext.method.section === 'paraInherent'
+		);
+
+		if (!extrinsic) {
+			throw Error('Error searching for paraInherent call data.');
+		}
+
+		const call = api.createType('Call', extrinsic.method);
+		const callArgs = call.get('args');
+		const callArgsData: Map = callArgs?.['data'];
+		const backedCandidates: Map = callArgsData['backedCandidates'];
+
+		const paraHeaders = {};
+		backedCandidates.forEach((backed) => {
+			const candidate: Map = backed['candidate'];
+			const commitments: Map = candidate['commitments'];
+			const descriptor: Map = candidate['descriptor'];
+			const paraId: string = descriptor['paraId'].toString();
+			const header = api.createType('Header', commitments['headData']);
+
+			paraHeaders[paraId] = header;
+		});
+
+		console.log(paraHeaders);
+
+		return {};
 	}
 
 	/**

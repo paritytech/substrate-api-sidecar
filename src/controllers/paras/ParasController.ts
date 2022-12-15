@@ -40,6 +40,7 @@ export default class ParasController extends AbstractController<ParasService> {
 			['/paras/:paraId/lease-info', this.getLeaseInfo],
 			['/paras/leases/current', this.getLeasesCurrent],
 			['/paras/auctions/current', this.getAuctionsCurrent],
+			['/paras/head', this.getParasHead],
 			['/experimental/paras/', this.getParas],
 			['/experimental/paras/crowdloans', this.getCrowdloans],
 			['/experimental/paras/:paraId/crowdloan-info', this.getCrowdloanInfo],
@@ -58,6 +59,17 @@ export default class ParasController extends AbstractController<ParasService> {
 		const hash = await this.getHashFromAt(at);
 
 		ParasController.sanitizedSend(res, await this.service.paras(hash));
+	};
+
+	private getParasHead: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		this.checkParasModule();
+
+		const hash = await this.getHashFromAt(at);
+
+		ParasController.sanitizedSend(res, await this.service.parasHead(hash));
 	};
 
 	private getCrowdloanInfo: RequestHandler<IParaIdParam> = async (
