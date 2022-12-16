@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { u32 } from '@polkadot/types';
+import { Bytes, u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -28,6 +28,10 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
+import {
+	PolkadotPrimitivesV2CandidateReceipt,
+	PolkadotPrimitivesV2InherentData,
+} from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -38,11 +42,10 @@ import {
 	IAuctionsCurrent,
 	ICrowdloans,
 	ICrowdloansInfo,
-	IInherentData,
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
-	IParasBackedCandidates,
+	IParasHeaders,
 	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
@@ -431,7 +434,7 @@ export class ParasService extends AbstractService {
 		};
 	}
 
-	async parasHead(hash: BlockHash): Promise<{}> {
+	async parasHead(hash: BlockHash): Promise<IParasHeaders> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
@@ -441,14 +444,26 @@ export class ParasService extends AbstractService {
 			return record.event.section === 'paraInclusion';
 		});
 
-		console.log(paraInclusion.length);
+		const paraHeaders: IParasHeaders = {};
+		paraInclusion.forEach(({ event }) => {
+			const { data } = event;
+			const inclusionParaData = data[0] as PolkadotPrimitivesV2CandidateReceipt;
+			const inclusionHeaderData = data[1] as Bytes;
+			const { paraHead, paraId } = inclusionParaData.descriptor;
+			const header = api.createType('Header', inclusionHeaderData);
+			const { parentHash, number, stateRoot, extrinsicsRoot, digest } = header;
 
-		return {};
+			paraHeaders[paraId.toString()] = Object.assign(
+				{},
+				{ hash: paraHead },
+				{ parentHash, number, stateRoot, extrinsicsRoot, digest }
+			);
+		});
+
+		return paraHeaders;
 	}
 
-	async parasHeadBackedCandidates(
-		hash: BlockHash
-	): Promise<IParasBackedCandidates> {
+	async parasHeadBackedCandidates(hash: BlockHash): Promise<IParasHeaders> {
 		const { api } = this;
 		const block = await api.rpc.chain.getBlock(hash);
 
@@ -460,11 +475,11 @@ export class ParasService extends AbstractService {
 			throw Error('Error searching for paraInherent call data.');
 		}
 
-		const paraHeaders: IParasBackedCandidates = {};
+		const paraHeaders: IParasHeaders = {};
 		const call = api.createType('Call', extrinsic.method);
 		const callArgs = call.get('args');
 		if (callArgs) {
-			const callArgsData = callArgs['data'] as IInherentData;
+			const callArgsData = callArgs['data'] as PolkadotPrimitivesV2InherentData;
 			const backedCandidates = callArgsData.backedCandidates;
 
 			backedCandidates.forEach((backed) => {
