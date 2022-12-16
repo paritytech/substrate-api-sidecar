@@ -460,7 +460,7 @@ export class ParasService extends AbstractService {
 			throw Error('Error searching for paraInherent call data.');
 		}
 
-		const paraHeaders = {};
+		const paraHeaders: IParasBackedCandidates = {};
 		const call = api.createType('Call', extrinsic.method);
 		const callArgs = call.get('args');
 		if (callArgs) {
