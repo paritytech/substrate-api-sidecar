@@ -483,11 +483,10 @@ export class ParasService extends AbstractService {
 			const backedCandidates = callArgsData.backedCandidates;
 
 			backedCandidates.forEach((backed) => {
-				const candidate = backed.candidate;
-				const commitments = candidate.commitments;
-				const descriptor = candidate.descriptor;
+				const { commitments, descriptor } = backed.candidate;
+				const { headData } = commitments;
 				const { paraId, paraHead } = descriptor;
-				const header = api.createType('Header', commitments.headData);
+				const header = api.createType('Header', headData);
 				const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
 					header;
 
