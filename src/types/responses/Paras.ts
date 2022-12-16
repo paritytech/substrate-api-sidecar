@@ -14,21 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Vec, Option } from '@polkadot/types/codec';
+import { Compact, Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
 	BalanceOf,
+	BlockNumber,
+	Digest,
 	FundInfo,
+	H256,
+	Hash,
 	ParaId,
 	ParaLifecycle,
 } from '@polkadot/types/interfaces';
-import { AbstractInt } from '@polkadot/types-codec/abstract';
-import { 
-	PolkadotPrimitivesV2SignedUncheckedSigned, 
-	PolkadotPrimitivesV2BackedCandidate ,
+import {
+	PolkadotPrimitivesV2BackedCandidate,
 	PolkadotPrimitivesV2DisputeStatementSet,
-	SpRuntimeHeader
+	PolkadotPrimitivesV2SignedUncheckedSigned,
+	SpRuntimeHeader,
 } from '@polkadot/types/lookup';
+import { AbstractInt } from '@polkadot/types-codec/abstract';
 import BN from 'bn.js';
 
 import { IOption } from '../util';
@@ -194,8 +198,35 @@ export interface IParas {
 	paras: IPara[];
 }
 
-export interface IBackedCandidates {
-	[x: string]: {}
+export interface IParasBackedCandidates {
+	[x: string]: IParasHeaderData;
+}
+
+export interface IParasHeaderData {
+	/**
+	 * ParaHead of the parachain.
+	 */
+	hash: H256;
+	/**
+	 * Parent hash of the current block in the parachain.
+	 */
+	parentHash: Hash;
+	/**
+	 * The current block number.
+	 */
+	number: Compact<BlockNumber>;
+	/**
+	 * The state root after executing this block.
+	 */
+	stateRoot: Hash;
+	/**
+	 * The Merkle root of the extrinsics.
+	 */
+	extrinsicsRoot: Hash;
+	/**
+	 * `DigestItem`s associated with the block.
+	 */
+	digest: Digest;
 }
 
 export interface IInherentData {

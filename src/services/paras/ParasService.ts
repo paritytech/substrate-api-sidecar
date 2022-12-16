@@ -42,6 +42,7 @@ import {
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
+	IParasBackedCandidates,
 	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
@@ -432,6 +433,23 @@ export class ParasService extends AbstractService {
 
 	async parasHead(hash: BlockHash): Promise<{}> {
 		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		const events = await historicApi.query.system.events();
+
+		const paraInclusion = events.filter((record) => {
+			return record.event.section === 'paraInclusion';
+		});
+
+		console.log(paraInclusion.length);
+
+		return {};
+	}
+
+	async parasHeadBackedCandidates(
+		hash: BlockHash
+	): Promise<IParasBackedCandidates> {
+		const { api } = this;
 		const block = await api.rpc.chain.getBlock(hash);
 
 		const extrinsic = block.block.extrinsics.find(
@@ -453,16 +471,20 @@ export class ParasService extends AbstractService {
 				const candidate = backed.candidate;
 				const commitments = candidate.commitments;
 				const descriptor = candidate.descriptor;
-				const paraId = descriptor.paraId.toString();
+				const { paraId, paraHead } = descriptor;
 				const header = api.createType('Header', commitments.headData);
+				const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
+					header;
 
-				paraHeaders[paraId] = header;
+				paraHeaders[paraId.toString()] = Object.assign(
+					{},
+					{ hash: paraHead },
+					{ parentHash, number, stateRoot, extrinsicsRoot, digest }
+				);
 			});
 		}
 
-		console.log(Object.keys(paraHeaders).length)
-
-		return {};
+		return paraHeaders;
 	}
 
 	/**
