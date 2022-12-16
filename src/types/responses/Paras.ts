@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types/codec';
+import { Vec, Option } from '@polkadot/types/codec';
 import {
 	AccountId,
 	BalanceOf,
@@ -23,6 +23,12 @@ import {
 	ParaLifecycle,
 } from '@polkadot/types/interfaces';
 import { AbstractInt } from '@polkadot/types-codec/abstract';
+import { 
+	PolkadotPrimitivesV2SignedUncheckedSigned, 
+	PolkadotPrimitivesV2BackedCandidate ,
+	PolkadotPrimitivesV2DisputeStatementSet,
+	SpRuntimeHeader
+} from '@polkadot/types/lookup';
 import BN from 'bn.js';
 
 import { IOption } from '../util';
@@ -186,4 +192,15 @@ export interface IParas {
 	 * All registered paras.
 	 */
 	paras: IPara[];
+}
+
+export interface IBackedCandidates {
+	[x: string]: {}
+}
+
+export interface IInherentData {
+	bitfields: Vec<PolkadotPrimitivesV2SignedUncheckedSigned>;
+	backedCandidates: Vec<PolkadotPrimitivesV2BackedCandidate>;
+	disputes: Vec<PolkadotPrimitivesV2DisputeStatementSet>;
+	parentHeader: SpRuntimeHeader;
 }

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { Map, u32 } from '@polkadot/types';
+import { u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -38,6 +38,7 @@ import {
 	IAuctionsCurrent,
 	ICrowdloans,
 	ICrowdloansInfo,
+	IInherentData,
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
@@ -441,23 +442,25 @@ export class ParasService extends AbstractService {
 			throw Error('Error searching for paraInherent call data.');
 		}
 
+		const paraHeaders = {};
 		const call = api.createType('Call', extrinsic.method);
 		const callArgs = call.get('args');
-		const callArgsData: Map = callArgs?.['data'];
-		const backedCandidates: Map = callArgsData['backedCandidates'];
+		if (callArgs) {
+			const callArgsData = callArgs['data'] as IInherentData;
+			const backedCandidates = callArgsData.backedCandidates;
 
-		const paraHeaders = {};
-		backedCandidates.forEach((backed) => {
-			const candidate: Map = backed['candidate'];
-			const commitments: Map = candidate['commitments'];
-			const descriptor: Map = candidate['descriptor'];
-			const paraId: string = descriptor['paraId'].toString();
-			const header = api.createType('Header', commitments['headData']);
+			backedCandidates.forEach((backed) => {
+				const candidate = backed.candidate;
+				const commitments = candidate.commitments;
+				const descriptor = candidate.descriptor;
+				const paraId = descriptor.paraId.toString();
+				const header = api.createType('Header', commitments.headData);
 
-			paraHeaders[paraId] = header;
-		});
+				paraHeaders[paraId] = header;
+			});
+		}
 
-		console.log(paraHeaders);
+		console.log(Object.keys(paraHeaders).length)
 
 		return {};
 	}
