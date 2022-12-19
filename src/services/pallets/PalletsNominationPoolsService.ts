@@ -27,7 +27,13 @@ export class PalletsNominationPoolService extends AbstractService {
 	constructor(api: ApiPromise) {
 		super(api);
 	}
-
+	/**
+	 * Fetch nomination pool information at a given block and pool Id.
+	 *
+	 * @param poolId `Id` of the pool being queried
+	 * @param hash `BlockHash` to make call at
+	 * @param getMetaData boolean determining whether to query pool metadata
+	 */
 	async fetchNominationPoolById(
 		poolId: number,
 		hash: BlockHash,
@@ -70,6 +76,11 @@ export class PalletsNominationPoolService extends AbstractService {
 		return response;
 	}
 
+	/**
+	 * Fetch generalized nomination pool information at a given block.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
 	async fetchNominationPoolInfo(
 		hash: BlockHash
 	): Promise<IPalletNominationPoolInfo> {
