@@ -1264,6 +1264,7 @@ __metadata:
     lru-cache: ^7.13.1
     rxjs: ^7.5.6
     tsc-watch: ^4.6.2
+    wasm-pack: ^0.10.3
     winston: ^3.8.1
   bin:
     substrate-api-sidecar: ./build/src/main.js
@@ -1970,6 +1971,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.21.1":
+  version: 0.21.4
+  resolution: "axios@npm:0.21.4"
+  dependencies:
+    follow-redirects: ^1.14.0
+  checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
+  languageName: node
+  linkType: hard
+
 "babel-jest@npm:^27.5.1":
   version: 27.5.1
   resolution: "babel-jest@npm:27.5.1"
@@ -2060,6 +2070,17 @@ __metadata:
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
   checksum: 9706c088a283058a8a99e0bf91b0a2f75497f185980d9ffa8b304de1d9e58ebda7c72c07ebf01dadedaac5b2907b2c6f566f660d62bd336c3468e960403b9d65
+  languageName: node
+  linkType: hard
+
+"binary-install@npm:^0.1.0":
+  version: 0.1.1
+  resolution: "binary-install@npm:0.1.1"
+  dependencies:
+    axios: ^0.21.1
+    rimraf: ^3.0.2
+    tar: ^6.1.0
+  checksum: a3df9c07a3ab81533cff610527263181c4c34a44efb115555be910b6011ac047bf875ad57469cc2259dfaba58e971c7ba2958038e9d222c546eef7b58b826ecc
   languageName: node
   linkType: hard
 
@@ -3311,6 +3332,16 @@ __metadata:
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
   checksum: e357144f48cfc9a7f52a82bbc6c23df7c8de639fce049cac41d41d62cabb740cdb9f14eddc6485e29c933104455bdd7a69bb14a9012cef9cd4fa252a4d0cf293
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.0":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -6458,6 +6489,17 @@ resolve@^1.20.0:
   dependencies:
     makeerror: 1.0.x
   checksum: 4038fcf92f6ab0288267ad05008aec9e089a759f1bd32e1ea45cc2eb498eb12095ec43cf8ca2bf23a465f4580a0d33b25b89f450ba521dd27083cbc695ee6bf5
+  languageName: node
+  linkType: hard
+
+"wasm-pack@npm:^0.10.3":
+  version: 0.10.3
+  resolution: "wasm-pack@npm:0.10.3"
+  dependencies:
+    binary-install: ^0.1.0
+  bin:
+    wasm-pack: run.js
+  checksum: b980b33fc8adcd208556a1f5c4656b02d1ae584792259874f09ab5647dd52d0cdd3179d970ba99eed72ac1a422445c3c81122a3e9d7c05ebb2a3ff83bd7ec7db
   languageName: node
   linkType: hard
 
