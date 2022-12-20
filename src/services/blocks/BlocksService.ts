@@ -285,7 +285,7 @@ export class BlocksService extends AbstractService {
 				);
 				if (doesQueryFeeDetailsExist === 'available') {
 					finalPartialFee = await this.fetchQueryFeeDetails(
-						block.extrinsics[idx].toHex(),
+						block.extrinsics[idx],
 						previousBlockHash,
 						weightInfo.weight,
 						weight
@@ -295,7 +295,7 @@ export class BlocksService extends AbstractService {
 				} else if (doesQueryFeeDetailsExist === 'unknown') {
 					try {
 						finalPartialFee = await this.fetchQueryFeeDetails(
-							block.extrinsics[idx].toHex(),
+							block.extrinsics[idx],
 							previousBlockHash,
 							weightInfo.weight,
 							weight
@@ -342,22 +342,36 @@ export class BlocksService extends AbstractService {
 	/**
 	 * Fetch `payment_queryFeeDetails`.
 	 *
-	 * @param extHex
+	 * @param ext
 	 * @param previousBlockHash
 	 * @param extrinsicSuccessWeight
 	 * @param estWeight
 	 */
 	private async fetchQueryFeeDetails(
-		extHex: `0x${string}`,
+		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
 		estWeight: Weight
 	): Promise<string> {
 		const { api } = this;
-		const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
-			extHex,
-			previousBlockHash
-		);
+		const apiAt = await api.at(previousBlockHash);
+
+		let inclusionFee;
+		if (apiAt.call.transactionPaymentApi.queryFeeDetails) {
+			const u8a = ext.toU8a();
+			const result = await apiAt.call.transactionPaymentApi.queryFeeDetails(
+				u8a,
+				u8a.length
+			);
+			inclusionFee = result.inclusionFee;
+		} else {
+			const result = await api.rpc.payment.queryFeeDetails(
+				ext.toHex(),
+				previousBlockHash
+			);
+			inclusionFee = result.inclusionFee;
+		}
+
 		const finalPartialFee = this.calcPartialFee(
 			extrinsicSuccessWeight,
 			estWeight,
