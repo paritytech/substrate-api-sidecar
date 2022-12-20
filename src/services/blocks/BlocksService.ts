@@ -380,7 +380,12 @@ export class BlocksService extends AbstractService {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
 		const u8a = ext.toU8a();
-		return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
+		if (apiAt.call.transactionPaymentApi.queryInfo) {
+			return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
+		} else {
+			// fallback to rpc call
+			return api.rpc.payment.queryInfo(ext.toHex(), previousBlockHash);
+		}
 	}
 
 	/**
