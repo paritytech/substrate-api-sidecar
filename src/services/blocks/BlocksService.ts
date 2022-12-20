@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Option, Struct, Vec } from '@polkadot/types';
+import { GenericExtrinsic } from '@polkadot/types/extrinsic';
 import {
 	AccountId32,
 	Block,
@@ -27,6 +28,7 @@ import {
 	EventRecord,
 	Header,
 	InclusionFee,
+	RuntimeDispatchInfo,
 	Weight,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
@@ -260,10 +262,7 @@ export class BlocksService extends AbstractService {
 				class: dispatchClass,
 				partialFee,
 				weight,
-			} = await api.rpc.payment.queryInfo(
-				block.extrinsics[idx].toHex(),
-				previousBlockHash
-			);
+			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
 
 			const transactionPaidFeeEvent = xtEvents.find(
 				({ method }) =>
@@ -366,6 +365,22 @@ export class BlocksService extends AbstractService {
 		);
 
 		return finalPartialFee;
+	}
+
+	/**
+	 * Fetch `payment_queryInfo`.
+	 *
+	 * @param ext
+	 * @param previousBlockHash
+	 */
+	private async fetchQueryInfo(
+		ext: GenericExtrinsic,
+		previousBlockHash: BlockHash
+	): Promise<RuntimeDispatchInfo> {
+		const { api } = this;
+		const apiAt = await api.at(previousBlockHash);
+		const u8a = ext.toU8a();
+		return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
 	}
 
 	/**
