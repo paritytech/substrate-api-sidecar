@@ -379,8 +379,8 @@ export class BlocksService extends AbstractService {
 	): Promise<RuntimeDispatchInfo> {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
-		const u8a = ext.toU8a();
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
+			const u8a = ext.toU8a();
 			return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
 		} else {
 			// fallback to rpc call
