@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.1..v14.2.2) (2022-12-27)
+
+### Bug Fixes
+
+- fix: use local version of wasm-pack ([#1168](https://github.com/paritytech/substrate-api-sidecar/pull/1168)) ([f922247](https://github.com/paritytech/substrate-api-sidecar/commit/f922247ac84e7dcf11de0ed2f622ffea13684230)) Contributed by: [xlc](https://github.com/xlc)
+- fix: avoid use queryInfo rpc call ([#1169](https://github.com/paritytech/substrate-api-sidecar/pull/1169)) ([907ba92](https://github.com/paritytech/substrate-api-sidecar/commit/907ba927b35157bbf793ec3e1d5e1c99a721c217)) Contributed by: [xlc](https://github.com/xlc)
+- fix: set rpc to call for queryInfo in transaction/fee-estimate ([#1170](https://github.com/paritytech/substrate-api-sidecar/pull/1170)) ([7334599](https://github.com/paritytech/substrate-api-sidecar/commit/7334599519f56b4331ad246e8a74277e205a1c2d))
+- fix: revert polkadot-js deps to 9.10.3 ([#1173](https://github.com/paritytech/substrate-api-sidecar/pull/1173)) ([df6bc32](https://github.com/paritytech/substrate-api-sidecar/commit/df6bc3298441e802731b02e8af175855b2b277cd))
+
+### Chores
+
+- chore(deps): update polkadot-js api, and api-contracts ([#1171](https://github.com/paritytech/substrate-api-sidecar/pull/1171)) ([97b427c](https://github.com/paritytech/substrate-api-sidecar/commit/97b427c7a4ad40f8b4d2230d0b82a65dd792bb41))
+
+### Test
+
+- test(e2e-tests): add e2e-tests for latest runtimes, and blocks ([#1155](https://github.com/paritytech/substrate-api-sidecar/pull/1155)) ([095f57f](https://github.com/paritytech/substrate-api-sidecar/commit/095f57f93f3c34df58ab6565aa70aa8d254fcbde))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9360
+- Kusama v9360
+- Westend v9360
+
 ## [14.2.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.0..v14.2.1) (2022-12-14)
 
 ### Bug Fixes
