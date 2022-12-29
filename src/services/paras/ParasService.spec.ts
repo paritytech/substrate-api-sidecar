@@ -26,6 +26,7 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { rococoMetadataV228 } from '../../test-helpers/metadata/rococoMetadata';
 import {
 	polkadotRegistry,
+	polkadotRegistryV9300,
 	rococoRegistry,
 } from '../../test-helpers/registries';
 import {
@@ -37,6 +38,8 @@ import {
 	defaultMockApi,
 	mockBlock789629,
 } from '../test-helpers/mock';
+import { eventsHex } from '../test-helpers/mock/paras/eventsHex';
+import parasHeadResponse from '../test-helpers/responses/paras/parasHead.json';
 import { ParasService } from './ParasService';
 
 /**
@@ -268,6 +271,14 @@ const auctionsWinningsAt = () =>
 		return optionWinnings;
 	});
 
+/**
+ * Used for parachain ParasHeads
+ */
+const eventsAt = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV9300.createType('Vec<FrameSystemEventRecord>', eventsHex)
+	);
+
 const historicApi = {
 	consts: {
 		auctions: {
@@ -295,6 +306,9 @@ const historicApi = {
 		},
 		slots: {
 			leases: slotsLeasesAt,
+		},
+		system: {
+			events: eventsAt,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
@@ -632,6 +646,13 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
 			(historicApi.query.auctions.auctionInfo as unknown) = auctionsInfoAt;
+		});
+	});
+	describe('ParasService.parasHead', () => {
+		it('Should return the correct response', async () => {
+			const response = await parasService.parasHead(blockHash789629);
+
+			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadResponse);
 		});
 	});
 });

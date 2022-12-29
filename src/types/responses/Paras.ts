@@ -193,7 +193,7 @@ export interface IParas {
 }
 
 export interface IParasHeaders {
-	[x: string]: IParasHeaderData;
+	[x: string]: IParasHeaderData | IAt;
 }
 
 export interface IParasHeaderData {

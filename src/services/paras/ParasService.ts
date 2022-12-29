@@ -438,7 +438,10 @@ export class ParasService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		const events = await historicApi.query.system.events();
+		const [{ number }, events] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.system.events(),
+		]);
 
 		const paraInclusion = events.filter((record) => {
 			return record.event.section === 'paraInclusion';
@@ -460,14 +463,20 @@ export class ParasService extends AbstractService {
 			);
 		});
 
-		return paraHeaders;
+		return {
+			at: {
+				hash,
+				height: number.unwrap().toString(10),
+			},
+			...paraHeaders,
+		};
 	}
 
 	async parasHeadBackedCandidates(hash: BlockHash): Promise<IParasHeaders> {
 		const { api } = this;
-		const block = await api.rpc.chain.getBlock(hash);
+		const { block } = await api.rpc.chain.getBlock(hash);
 
-		const extrinsic = block.block.extrinsics.find(
+		const extrinsic = block.extrinsics.find(
 			(ext) => ext.method.section === 'paraInherent'
 		);
 
@@ -498,7 +507,13 @@ export class ParasService extends AbstractService {
 			});
 		}
 
-		return paraHeaders;
+		return {
+			at: {
+				hash,
+				height: block.header.number.unwrap().toString(10),
+			},
+			...paraHeaders,
+		};
 	}
 
 	/**
