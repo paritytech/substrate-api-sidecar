@@ -14,30 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChildProcessWithoutNullStreams } from 'child_process';
-
-export type ProcsType = { [key: string]: ChildProcessWithoutNullStreams };
-
-export enum StatusCode {
-	Success = '0',
-	Failed = '1',
+export type IConfig = {
+    [key: string]: IEndpoints
 }
 
-export interface IChainConfig {
-	wsUrl: string;
-	SasStartOpts: IProcOpts;
-}
-
-export interface IChainConfigE2E extends IChainConfig {
-	e2eStartOpts: IProcOpts;
-}
-
-// Process options
-export interface IProcOpts {
-	proc: string;
-	resolver: string;
-	resolverStartupErr?: string;
-	resolverJestErr?: string;
-	resolverFailed?: string;
-	args: string[];
+interface IEndpoints {
+    path: string;
+    queryParams: string[] 
 }

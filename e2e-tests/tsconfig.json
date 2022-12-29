@@ -1,9 +1,19 @@
 {
     "extends": "@substrate/dev/config/tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "build",
-        "suppressImplicitAnyIndexErrors": true,
-        "resolveJsonModule": true,
+      "baseUrl": ".",
+      "outDir": "build",
+      "rootDirs": ["./src"],
+      "suppressImplicitAnyIndexErrors": true,
+      "resolveJsonModule": true,
     },
-}
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "include": [
+        "./historical", "./helpers", "./latest",
+    ],
+    "exclude": [
+        "./historical-e2e-tests.spec.ts"
+    ]
+  }
