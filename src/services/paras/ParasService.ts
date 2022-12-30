@@ -434,6 +434,11 @@ export class ParasService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Retrieve all the headers of the parachains connected to the relay chain.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
 	async parasHead(hash: BlockHash): Promise<IParasHeaders> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
@@ -472,6 +477,12 @@ export class ParasService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Grab the parachain backedCandidates data from the parasInherent extrinsic, and returns the paraId, headData,
+	 * and paraHead in a digestable way.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
 	async parasHeadBackedCandidates(hash: BlockHash): Promise<IParasHeaders> {
 		const { api } = this;
 		const { block } = await api.rpc.chain.getBlock(hash);
