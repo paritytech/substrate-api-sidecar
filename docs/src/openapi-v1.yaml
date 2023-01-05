@@ -1347,7 +1347,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get the heads of all the current included candidate parachains.
+        Get the heads of all the current included candidate parachains at the most recent finalized head.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
       parameters:
@@ -1371,7 +1371,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get the heads of all the current backed candidate parachains.
+        Get the heads of all the current backed candidate parachains at the most recent finalized head.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
       parameters:
