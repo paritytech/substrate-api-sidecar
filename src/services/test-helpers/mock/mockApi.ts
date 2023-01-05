@@ -249,6 +249,12 @@ const traceBlock = () =>
  */
 export const defaultMockApi = {
 	runtimeVersion,
+	call: {
+		transactionPaymentApi: {
+			queryInfo: queryInfoBalancesTransfer,
+			queryFeeDetails,
+		},
+	},
 	consts: {
 		system: {
 			blockLength: {
@@ -260,9 +266,7 @@ export const defaultMockApi = {
 			},
 			blockWeights: {
 				baseBlock: new BN(5481991000),
-				maxBlock: {
-					refTime: polkadotRegistry.createType('Compact<u64>', 15),
-				},
+				maxBlock: polkadotRegistry.createType('u64', 15),
 				perClass: {
 					normal: {
 						baseExtrinsic: new BN(85212000),
