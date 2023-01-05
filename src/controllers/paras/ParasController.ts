@@ -40,7 +40,7 @@ export default class ParasController extends AbstractController<ParasService> {
 			['/paras/:paraId/lease-info', this.getLeaseInfo],
 			['/paras/leases/current', this.getLeasesCurrent],
 			['/paras/auctions/current', this.getAuctionsCurrent],
-			['/paras/head', this.getParasHead],
+			['/paras/head/included-candidates', this.getParasHeadIncludedCandidates],
 			['/paras/head/backed-candidates', this.getParasHeadBackedCandidates],
 			['/experimental/paras/', this.getParas],
 			['/experimental/paras/crowdloans', this.getCrowdloans],
@@ -62,13 +62,16 @@ export default class ParasController extends AbstractController<ParasService> {
 		ParasController.sanitizedSend(res, await this.service.paras(hash));
 	};
 
-	private getParasHead: RequestHandler = async (
+	private getParasHeadIncludedCandidates: RequestHandler = async (
 		{ query: { at } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		ParasController.sanitizedSend(res, await this.service.parasHead(hash));
+		ParasController.sanitizedSend(
+			res,
+			await this.service.parasHead(hash, 'CandidateIncluded')
+		);
 	};
 
 	private getParasHeadBackedCandidates: RequestHandler = async (
@@ -79,7 +82,7 @@ export default class ParasController extends AbstractController<ParasService> {
 
 		ParasController.sanitizedSend(
 			res,
-			await this.service.parasHeadBackedCandidates(hash)
+			await this.service.parasHead(hash, 'CandidateBacked')
 		);
 	};
 

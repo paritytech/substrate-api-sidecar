@@ -28,10 +28,7 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
-import {
-	PolkadotPrimitivesV2CandidateReceipt,
-	PolkadotPrimitivesV2InherentData,
-} from '@polkadot/types/lookup';
+import { PolkadotPrimitivesV2CandidateReceipt } from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -435,11 +432,12 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 * Retrieve all the headers of the parachains connected to the relay chain.
+	 * Retrieve all the headers of the parachains connected to the relay chain given
+	 * a specific `paraInclusion` method.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
-	async parasHead(hash: BlockHash): Promise<IParasHeaders> {
+	async parasHead(hash: BlockHash, method: string): Promise<IParasHeaders> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
@@ -449,16 +447,19 @@ export class ParasService extends AbstractService {
 		]);
 
 		const paraInclusion = events.filter((record) => {
-			return record.event.section === 'paraInclusion';
+			return (
+				record.event.section === 'paraInclusion' &&
+				record.event.method === method
+			);
 		});
 
 		const paraHeaders: IParasHeaders = {};
 		paraInclusion.forEach(({ event }) => {
 			const { data } = event;
-			const inclusionParaData = data[0] as PolkadotPrimitivesV2CandidateReceipt;
-			const inclusionHeaderData = data[1] as Bytes;
-			const { paraHead, paraId } = inclusionParaData.descriptor;
-			const header = api.createType('Header', inclusionHeaderData);
+			const paraData = data[0] as PolkadotPrimitivesV2CandidateReceipt;
+			const headerData = data[1] as Bytes;
+			const { paraHead, paraId } = paraData.descriptor;
+			const header = api.createType('Header', headerData);
 			const { parentHash, number, stateRoot, extrinsicsRoot, digest } = header;
 
 			paraHeaders[paraId.toString()] = Object.assign(
@@ -472,56 +473,6 @@ export class ParasService extends AbstractService {
 			at: {
 				hash,
 				height: number.unwrap().toString(10),
-			},
-			...paraHeaders,
-		};
-	}
-
-	/**
-	 * Grab the parachain backedCandidates data from the parasInherent extrinsic, and returns the paraId, headData,
-	 * and paraHead in a digestable way.
-	 *
-	 * @param hash `BlockHash` to make call at
-	 */
-	async parasHeadBackedCandidates(hash: BlockHash): Promise<IParasHeaders> {
-		const { api } = this;
-		const { block } = await api.rpc.chain.getBlock(hash);
-
-		const extrinsic = block.extrinsics.find(
-			(ext) => ext.method.section === 'paraInherent'
-		);
-
-		if (!extrinsic) {
-			throw Error('Error searching for paraInherent call data.');
-		}
-
-		const paraHeaders: IParasHeaders = {};
-		const call = api.createType('Call', extrinsic.method);
-		const callArgs = call.get('args');
-		if (callArgs) {
-			const callArgsData = callArgs['data'] as PolkadotPrimitivesV2InherentData;
-			const backedCandidates = callArgsData.backedCandidates;
-
-			backedCandidates.forEach((backed) => {
-				const { commitments, descriptor } = backed.candidate;
-				const { headData } = commitments;
-				const { paraId, paraHead } = descriptor;
-				const header = api.createType('Header', headData);
-				const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
-					header;
-
-				paraHeaders[paraId.toString()] = Object.assign(
-					{},
-					{ hash: paraHead },
-					{ parentHash, number, stateRoot, extrinsicsRoot, digest }
-				);
-			});
-		}
-
-		return {
-			at: {
-				hash,
-				height: block.header.number.unwrap().toString(10),
 			},
 			...paraHeaders,
 		};

@@ -36,13 +36,11 @@ import {
 import {
 	blockHash789629,
 	defaultMockApi,
-	getBlock,
 	mockBlock789629,
 } from '../test-helpers/mock';
-import { signedBlockHex } from '../test-helpers/mock/paras/blocksHex';
 import { eventsHex } from '../test-helpers/mock/paras/eventsHex';
-import parasHeadResponse from '../test-helpers/responses/paras/parasHead.json';
 import parasHeadBackedCandidatesResponse from '../test-helpers/responses/paras/parasHeadBackedCandidates.json';
+import parasHeadIncludedCandidatesResponse from '../test-helpers/responses/paras/parasHeadIncludedCandidates.json';
 import { ParasService } from './ParasService';
 
 /**
@@ -280,14 +278,6 @@ const auctionsWinningsAt = () =>
 const eventsAt = () =>
 	Promise.resolve().then(() =>
 		polkadotRegistryV9300.createType('Vec<FrameSystemEventRecord>', eventsHex)
-	);
-
-/**
- * Used for parachain ParasHeadBackedCandidates
- */
-const getBlockAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistryV9300.createType('SignedBlock', signedBlockHex)
 	);
 
 const historicApi = {
@@ -660,28 +650,26 @@ describe('ParasService', () => {
 		});
 	});
 	describe('ParasService.parasHead', () => {
-		it('Should return the correct response', async () => {
-			const response = await parasService.parasHead(blockHash789629);
-
-			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadResponse);
-		});
-	});
-	describe('ParasService.parasHeadBackedCandidates', () => {
-		it('Should return the correct response', async () => {
-			(mockApi.rpc.chain.getBlock as unknown) = getBlockAt;
-			(mockApi.createType as unknown) = polkadotRegistryV9300.createType.bind(
-				polkadotRegistryV9300
+		it('Should return the correct response for CandidateIncluded methods', async () => {
+			const response = await parasService.parasHead(
+				blockHash789629,
+				'CandidateIncluded'
 			);
-			const response = await parasService.parasHeadBackedCandidates(
-				blockHash789629
+
+			expect(sanitizeNumbers(response)).toStrictEqual(
+				parasHeadIncludedCandidatesResponse
+			);
+		});
+
+		it('Should return the correct response for CandidateBacked methods', async () => {
+			const response = await parasService.parasHead(
+				blockHash789629,
+				'CandidateBacked'
 			);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(
 				parasHeadBackedCandidatesResponse
 			);
-			(mockApi.rpc.chain.getBlock as unknown) = getBlock;
-			(mockApi.createType as unknown) =
-				polkadotRegistry.createType.bind(polkadotRegistry);
 		});
 	});
 });

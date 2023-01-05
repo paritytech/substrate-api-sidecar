@@ -1342,12 +1342,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeaseInfo'
-  /paras/head:
+  /paras/head/included-candidates:
     get:
       tags:
       - paras
       summary: |
-        Get the heads of the all the current parachains for a relay chain.
+        Get the heads of all the current included candidate parachains.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
       parameters:
@@ -1371,7 +1371,7 @@ paths:
       tags:
       - paras
       summary: |
-        This grabs the parachain backedCandidates data from the parasInherent extrinsic, and returns the paraId, headData, and paraHead in a digestable way
+        Get the heads of all the current backed candidate parachains.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
       parameters:
