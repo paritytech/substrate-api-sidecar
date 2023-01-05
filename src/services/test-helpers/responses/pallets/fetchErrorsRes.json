@@ -1,0 +1,37 @@
+{
+	"at": {
+		"hash": "0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655",
+		"height": "789629"
+	},
+	"pallet": "democracy",
+	"palletIndex": "14",
+	"items": [
+		{
+			"name": "ValueLow",
+			"fields": [],
+			"index": "0",
+			"docs": [
+				"Value too low"
+			],
+			"args": []
+		},
+		{
+			"name": "ProposalMissing",
+			"fields": [],
+			"index": "1",
+			"docs": [
+				"Proposal does not exist"
+			],
+			"args": []
+		},
+		{
+			"name": "InsufficientFunds",
+			"fields": [],
+			"index": "26",
+			"docs": [
+				"Too high a balance was provided that the account cannot afford."
+			],
+			"args": []
+		}
+	]
+}

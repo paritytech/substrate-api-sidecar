@@ -14,7 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './PalletsAssetsService';
-export * from './PalletsErrorsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStorageService';
+import { Text } from '@polkadot/types';
+import { ErrorMetadataLatest } from '@polkadot/types/interfaces';
+
+import { IAt } from '.';
+import { IPallet } from './Pallet';
+
+export interface IPalletErrors extends IPallet {
+	at: IAt;
+	pallet: string;
+	palletIndex: number;
+	items: ErrorMetadataLatest[] | Text[];
+}

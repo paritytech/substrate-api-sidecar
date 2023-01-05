@@ -962,6 +962,114 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of errors for a pallet.
+      description: Returns a list of error item metadata for error items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read error metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the error items instead of all of each error
+          item's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's error items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of errorItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletErrors'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors/{errorItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of an error item.
+      description: Returns the value stored under the errorItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read error metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: errorItemId
+        in: path
+        description: Id of the error item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the error item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the error items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletErrorItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /runtime/metadata:
     get:
       tags:
@@ -2277,6 +2385,62 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+    PalletErrors:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up errors.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletErrorItemMetadata'
+          description: Array containing metadata for each error entry of the pallet.
+    PalletErrorsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up errors.
+          example: "14"
+        errorItem:
+          type: string
+          description: Name of the error item.
+          example: "ValueLow"
+        metadata:
+          $ref: '#/components/schemas/PalletErrorItemMetadata'
+    PalletErrorItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "InsufficientFunds"
+          description: The error item's name (which is the same as the error item's ID).
+        fields:
+          type: array
+          example: "[]"
+        index:
+         type: string
+         example: "0"
+         description: The index of the error item in the lists of pallet errors
+        docs:
+          type: string
+          example: " Information concerning any given error.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          example: "[]"
+      description: Metadata of an error item from a FRAME pallet.
     PalletStorage:
       type: object
       properties:
