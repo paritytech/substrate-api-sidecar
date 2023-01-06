@@ -27,7 +27,7 @@ import {
 	balancesTransferValid,
 	blockHash789629,
 	defaultMockApi,
-	queryInfoBalancesTransfer,
+	queryInfoAt,
 } from '../test-helpers/mock';
 import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
 import validRpcResponse from '../test-helpers/responses/transaction/feeEstimateValidRpcCall.json';
@@ -112,7 +112,7 @@ describe('TransactionFeeEstimateService', () => {
 				)
 			).rejects.toStrictEqual(invalidResponse);
 
-			(mockApi.rpc.payment as any).queryInfo = queryInfoBalancesTransfer;
+			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
 				queryInfoCallAt;
 		});
