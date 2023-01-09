@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { Vec } from '@polkadot/types';
+import { GenericExtrinsic, Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -159,29 +159,23 @@ const queryFeeDetails = () =>
 		});
 	});
 
-export const queryInfoBalancesTransfer = (
-	_extrinsic: string,
-	_hash: Hash
-): Promise<RuntimeDispatchInfo> =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('RuntimeDispatchInfo', {
-			weight: 195000000,
-			class: 'Normal',
-			partialFee: 149000000,
-		})
-	);
+const runtimeDispatchInfo = polkadotRegistry.createType('RuntimeDispatchInfo', {
+	weight: 195000000,
+	class: 'Normal',
+	partialFee: 149000000,
+});
 
-export const queryInfoCouncilVote = (
+export const queryInfoCall = (
+	_extrinsic: GenericExtrinsic,
+	_length: Uint8Array
+): Promise<RuntimeDispatchInfo> =>
+	Promise.resolve().then(() => runtimeDispatchInfo);
+
+export const queryInfoAt = (
 	_extrinsic: string,
 	_hash: Hash
 ): Promise<RuntimeDispatchInfo> =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('RuntimeDispatchInfo', {
-			weight: 158324000,
-			class: 'Operational',
-			partialFee: 153000018,
-		})
-	);
+	Promise.resolve().then(() => runtimeDispatchInfo);
 
 export const submitExtrinsic = (_extrinsic: string): Promise<Hash> =>
 	Promise.resolve().then(() => polkadotRegistry.createType('Hash'));
@@ -249,6 +243,12 @@ const traceBlock = () =>
  */
 export const defaultMockApi = {
 	runtimeVersion,
+	call: {
+		transactionPaymentApi: {
+			queryInfo: queryInfoCall,
+			queryFeeDetails,
+		},
+	},
 	consts: {
 		system: {
 			blockLength: {
@@ -260,9 +260,7 @@ export const defaultMockApi = {
 			},
 			blockWeights: {
 				baseBlock: new BN(5481991000),
-				maxBlock: {
-					refTime: polkadotRegistry.createType('Compact<u64>', 15),
-				},
+				maxBlock: polkadotRegistry.createType('u64', 15),
 				perClass: {
 					normal: {
 						baseExtrinsic: new BN(85212000),
@@ -317,7 +315,7 @@ export const defaultMockApi = {
 			properties,
 		},
 		payment: {
-			queryInfo: queryInfoBalancesTransfer,
+			queryInfo: queryInfoAt,
 			queryFeeDetails,
 		},
 		author: {
