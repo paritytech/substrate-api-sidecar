@@ -1354,7 +1354,7 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Block at which to retrieve para's leases at.
+        description: Block at which to retrieve para's heads at.
         required: false
         schema:
           type: string
@@ -1378,7 +1378,7 @@ paths:
       parameters:
       - name: at
         in: query
-        description: Block at which to retrieve para's leases at.
+        description: Block at which to retrieve para's heads at.
         required: false
         schema:
           type: string
