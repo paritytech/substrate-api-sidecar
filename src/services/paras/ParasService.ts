@@ -432,8 +432,8 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
-	 * Retrieve all the headers of the parachains connected to the relay chain given
-	 * a specific `paraInclusion` method.
+	 * Get the heads of the included (backed or considered available) parachain candidates
+	 * at the specified block height or at the most recent finalized head otherwise.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
