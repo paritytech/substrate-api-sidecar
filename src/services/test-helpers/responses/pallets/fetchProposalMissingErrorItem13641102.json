@@ -10,7 +10,7 @@
 		"name": "ProposalMissing",
 		"fields": [],
 		"index": "1",
-		"docs": "Proposal does not exist",
+		"docs": ["Proposal does not exist"],
 		"args": []
 	}
 }

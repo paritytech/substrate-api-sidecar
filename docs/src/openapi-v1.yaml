@@ -979,8 +979,7 @@ paths:
           type: string
       - name: onlyIds
         in: query
-        description: Only return the names (IDs) of the error items instead of all of each error
-          item's metadata.
+        description: Only return the names (IDs) of the error items instead of every error's metadata.
         required: false
         schema:
           type: boolean
