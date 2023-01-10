@@ -178,5 +178,17 @@ export const polkadot: IConfig = {
         queryParams: [
             'at={blockId}',
         ],
-    }
+    },
+    '/paras/head/included-candidates': {
+        path: '/paras/head/included-candidates',
+        queryParams: [
+            'at={blockId}',
+        ]
+    },
+    '/paras/head/backed-candidates': {
+        path: '/paras/head/backed-candidates',
+        queryParams: [
+            'at={blockId}',
+        ]
+    },
 }
