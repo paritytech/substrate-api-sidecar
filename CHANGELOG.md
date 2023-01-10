@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.2..v14.2.3) (2022-01-10)
+
+### Bug Fixes
+
+- fix: replace rpc calls for fees and give support for weight v1 and v2 ([1177](https://github.com/paritytech/substrate-api-sidecar/pull/1177)) ([9bdaf45](https://github.com/paritytech/substrate-api-sidecar/commit/9bdaf4502505585f08dccd9d34c218c830dbff83))
+    Note: This fixes a current bug where the `includeFee` queryParam was no longer working, and compatible with WeightsV2.
+
+### Chores
+
+- chore: bump json5 from 1.0.1 to 1.0.2 in /docs ([1178](https://github.com/paritytech/substrate-api-sidecar/pull/1178)) ([94a2ed9](https://github.com/paritytech/substrate-api-sidecar/commit/94a2ed943a63ab9a99fc362e8a715db83dfa40c2))
+- chore: bump fast-json-patch from 3.1.0 to 3.1.1 in /docs ([1175](https://github.com/paritytech/substrate-api-sidecar/pull/1175)) ([76629d3](https://github.com/paritytech/substrate-api-sidecar/commit/76629d32eea38f1b86797661f82ce4b2da1c3dd8))
+- chore:(deps): bump json5 from 2.2.0 to 2.2.3 ([1179](https://github.com/paritytech/substrate-api-sidecar/pull/1179)) ([d05f716](https://github.com/paritytech/substrate-api-sidecar/commit/d05f716678acd7409e52f5fdabdd1b57d021f724))
+- chore(deps): update polkadot-js api, and util-crypto ([1181](https://github.com/paritytech/substrate-api-sidecar/pull/1181)) ([7ccec7a](https://github.com/paritytech/substrate-api-sidecar/commit/7ccec7af8b6c28779bef77f042821a9f73b0d8cc))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9360
+- Kusama v9360
+- Westend v9360
+
 ## [14.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.1..v14.2.2) (2022-12-27)
 
 ### Bug Fixes
