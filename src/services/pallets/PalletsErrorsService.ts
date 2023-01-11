@@ -14,24 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiDecoration, ModuleErrors } from '@polkadot/api/types';
+import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
 import {
 	BlockHash,
 	ErrorMetadataLatest,
-	ModuleMetadataV13,
 	PalletErrorMetadataV14,
-	PalletMetadataV14,
 } from '@polkadot/types/interfaces';
 import { IsError } from '@polkadot/types/metadata/decorate/types';
 import { stringCamelCase } from '@polkadot/util';
-import { InternalServerError } from 'http-errors';
-import {
-	IPalletErrors,
-	IPalletErrorsItem,
-} from 'src/types/responses';
+import { IPalletErrors, IPalletErrorsItem } from 'src/types/responses';
 
-import { PalletsService } from './PalletsService';
+import { AbstractPalletsService } from '../AbstractPalletsService';
 
 interface IFetchPalletArgs {
 	hash: BlockHash;
@@ -43,47 +37,37 @@ interface IFetchErrorItemArgs extends IFetchPalletArgs {
 	metadata: boolean;
 }
 
-export class PalletsErrorService extends PalletsService {
+export class PalletsErrorService extends AbstractPalletsService {
 	async fetchErrorItem(
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, errorItemId, metadata }: IFetchErrorItemArgs
 	): Promise<IPalletErrorsItem> {
-		const palletType = 'errors';
+		const metadataFieldType = 'errors';
 		const palletMetadata = historicApi.registry.metadata;
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			palletMetadata,
 			historicApi,
 			palletId,
-			palletType
+			metadataFieldType
 		);
-
-		const palletName = stringCamelCase(palletMeta.name);
-		const errors = historicApi.errors[palletName];
 
 		// Even if `errorItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the error item not existing are that `findErrorItemMeta` will throw.
-		const errorItemMetadata = this.findErrorItemMeta(
+		const errorItemMetadata = this.findPalletItemMeta(
+			historicApi,
 			palletMeta,
 			errorItemId,
-			errors
-		);
+			metadataFieldType
+		) as PalletErrorMetadataV14;
 
-		// let normalizedErrorItemMeta;
-		// if (metadata) {
-		// 	normalizedErrorItemMeta = this.normalizeErrorItemMeta(
-		// 		(errorItemMetadata[1] as IsError).meta
-		// 	);
-		// }
-		let palletErrorMetadata; 
+		let palletErrorMetadata: ErrorMetadataLatest | undefined;
 		if (metadata) {
-			palletErrorMetadata = (errorItemMetadata[1] as IsError).meta
+			palletErrorMetadata = (errorItemMetadata[1] as IsError).meta;
 		}
 
-		console.log("pallet error metadata---", palletErrorMetadata);
-
 		const { number } = await this.api.rpc.chain.getHeader(hash);
-	
+
 		return {
 			at: {
 				hash: hash,
@@ -92,7 +76,7 @@ export class PalletsErrorService extends PalletsService {
 			pallet: stringCamelCase(palletMeta.name),
 			palletIndex: palletMetaIdx,
 			errorItem: errorItemId,
-			metadata: palletErrorMetadata
+			metadata: palletErrorMetadata,
 		};
 	}
 
@@ -100,13 +84,13 @@ export class PalletsErrorService extends PalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletErrors> {
-		const palletType = 'errors';
+		const metadataFieldType = 'errors';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			metadata,
 			historicApi,
 			palletId,
-			palletType
+			metadataFieldType
 		);
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -136,40 +120,5 @@ export class PalletsErrorService extends PalletsService {
 			palletIndex: palletMetaIdx,
 			items,
 		};
-	}
-
-	/**
-	 * Find the error item's metadata within the pallets's metadata.
-	 *
-	 * @param palletMeta the metadata of the pallet that contains the error item
-	 * @param errorId name of the error item in camel or pascal case
-	 */
-	private findErrorItemMeta(
-		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
-		errorItemId: string,
-		errors: ModuleErrors<'promise'>
-	): PalletErrorMetadataV14 {
-		if ((palletMeta.errors as unknown as PalletErrorMetadataV14).isEmpty) {
-			throw new InternalServerError(
-				`No error items found in ${palletMeta.name.toString()}'s metadata`
-			);
-		}
-
-		let errorItemMetaIdx = -1;
-		for (const [, value] of Object.entries(errors)) {
-			if (value.meta.name.toLowerCase() === errorItemId.toLowerCase()) {
-				errorItemMetaIdx = value.meta.index.toNumber();
-			}
-		}
-
-		if (errorItemMetaIdx === -1) {
-			throw new InternalServerError(
-				`Could not find error item ("${errorItemId}") in metadata. Error item names are expected to be in camel case, e.g. 'errorItemId'`
-			);
-		}
-
-		return Object.entries(errors)[
-			errorItemMetaIdx
-		] as unknown as PalletErrorMetadataV14;
 	}
 }

@@ -23,25 +23,29 @@ import {
 	PalletErrorMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
+	StorageEntryMetadataV13,
+	StorageEntryMetadataV14,
 	StorageMetadataV13,
 } from '@polkadot/types/interfaces';
+import { stringCamelCase } from '@polkadot/util';
 import { BadRequest } from 'http-errors';
+import { InternalServerError } from 'http-errors';
 
-import { AbstractService } from '../AbstractService';
+import { AbstractService } from './AbstractService';
 
-export class PalletsService extends AbstractService {
-	private getMetadataType(
+export abstract class AbstractPalletsService extends AbstractService {
+	private getPalletMetadataType(
 		meta: ModuleMetadataV13 | PalletMetadataV14,
-		palletType: string
+		metadataFieldType: string
 	):
 		| Option<StorageMetadataV13>
 		| Option<PalletStorageMetadataV14>
 		| Option<PalletErrorMetadataV14> {
-		if (palletType === 'storage') {
+		if (metadataFieldType === 'storage') {
 			if (meta.toRawType().includes('MetadataV13')) {
-				return this.getProperty(meta as ModuleMetadataV13, 'storage');
+				return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
 			} else {
-				return this.getProperty(meta as PalletMetadataV14, 'storage');
+				return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 			}
 		} else {
 			return this.getProperty(meta as PalletMetadataV14, 'errors');
@@ -62,7 +66,7 @@ export class PalletsService extends AbstractService {
 		adjustedMetadata: MetadataV13 | MetadataV14,
 		historicApi: ApiDecoration<'promise'>,
 		palletId: string,
-		palletType: string
+		metadataFieldType: string
 	): [PalletMetadataV14 | ModuleMetadataV13, number] {
 		const metadataType = adjustedMetadata.toRawType();
 
@@ -70,15 +74,21 @@ export class PalletsService extends AbstractService {
 		let filtered: PalletMetadataV14[] | ModuleMetadataV13[];
 		if (metadataType.includes('MetadataV13')) {
 			pallets = adjustedMetadata['modules'] as Vec<ModuleMetadataV13>;
-			const palletMetaType = this.getMetadataType(pallets[0], palletType);
+			const palletMetaType = this.getPalletMetadataType(
+				pallets[0],
+				metadataFieldType
+			);
 			filtered = pallets.filter(
-				(mod) => (mod[palletType] as typeof palletMetaType).isSome
+				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
 			);
 		} else {
 			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
-			const palletMetaType = this.getMetadataType(pallets[0], palletType);
+			const palletMetaType = this.getPalletMetadataType(
+				pallets[0],
+				metadataFieldType
+			);
 			filtered = pallets.filter(
-				(mod) => (mod[palletType] as typeof palletMetaType).isSome
+				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
 			);
 		}
 
@@ -90,9 +100,9 @@ export class PalletsService extends AbstractService {
 
 		if (isValidPalletIndex) {
 			palletIdx = parsedPalletId as number;
-			for (const [_sectionIdx, section] of filtered.entries()) {
+			for (const [sectionIdx, section] of filtered.entries()) {
 				const idx = section.index.eqn(255)
-					? _sectionIdx
+					? sectionIdx
 					: section.index.toNumber();
 
 				if (idx === palletIdx) {
@@ -101,7 +111,7 @@ export class PalletsService extends AbstractService {
 				}
 			}
 		} else if (isValidPalletName) {
-			for (const [_sectionIdx, section] of filtered.entries()) {
+			for (const [sectionIdx, section] of filtered.entries()) {
 				if (section.name.toLowerCase() === palletId.toLowerCase()) {
 					// ModuleMetadataV11 and lower have an `index` but they use 255 as a reserve value to signify
 					// that they are meaningless. So if the index is 255 we use its index in the filtered array
@@ -113,7 +123,7 @@ export class PalletsService extends AbstractService {
 					// https://github.com/paritytech/substrate/pull/6969
 					// https://github.com/polkadot-js/api/issues/2596
 					palletIdx = section.index.eqn(255)
-						? _sectionIdx
+						? sectionIdx
 						: section.index.toNumber();
 					palletMeta = section;
 					break;
@@ -140,7 +150,7 @@ export class PalletsService extends AbstractService {
 		parsedPalletId: string | number;
 	} {
 		// Either a pallet name (string) or a pallet index (number)
-		const parsedPalletId = PalletsService.palletIdxOrName(palletId);
+		const parsedPalletId = AbstractPalletsService.palletIdxOrName(palletId);
 
 		const isValidPalletName =
 			typeof parsedPalletId === 'string' && !!historicApi.query[palletId];
@@ -174,5 +184,101 @@ export class PalletsService extends AbstractService {
 		}
 
 		return palletId;
+	}
+
+	/**
+	 * Find the an item's metadata within a given pallets' metadata based on a provided type.
+	 *
+	 * @param historicApi Decorated historic api
+	 * @param palletMeta the metadata of the pallet that contains the error item
+	 * @param palletItemId name of the error item in camel or pascal case
+	 * @param metadataFieldType name of the metadata field to be queried
+	 *
+	 */
+	public findPalletItemMeta(
+		historicApi: ApiDecoration<'promise'>,
+		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		palletItemId: string,
+		metadataFieldType: string
+	):
+		| PalletErrorMetadataV14
+		| StorageEntryMetadataV13
+		| StorageEntryMetadataV14 {
+		let palletItemIdx = -1;
+		let palletItemMeta:
+			| PalletErrorMetadataV14
+			| StorageEntryMetadataV13
+			| StorageEntryMetadataV14;
+
+		if (metadataFieldType === 'storage') {
+			[palletItemIdx, palletItemMeta] = this.getStorageItemMeta(
+				palletMeta,
+				palletItemIdx,
+				palletItemId
+			);
+		} else {
+			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
+				historicApi,
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		}
+
+		if (palletItemIdx === -1) {
+			throw new InternalServerError(
+				`Could not find ${metadataFieldType} item ("${palletItemId}") in metadata. ${metadataFieldType} item names are expected to be in camel case, e.g. 'storageItemId'`
+			);
+		}
+
+		return palletItemMeta;
+	}
+
+	private getErrorItemMeta(
+		historicApi: ApiDecoration<'promise'>,
+		palletMeta: PalletMetadataV14,
+		errorItemMetaIdx: number,
+		errorItemId: string
+	): [number, PalletErrorMetadataV14] {
+		const palletName = stringCamelCase(palletMeta.name);
+		const errors = historicApi.errors[palletName];
+
+		if ((palletMeta.errors as unknown as PalletErrorMetadataV14).isEmpty) {
+			throw new InternalServerError(
+				`No error items found in ${palletMeta.name.toString()}'s metadadta`
+			);
+		}
+
+		for (const [, val] of Object.entries(errors)) {
+			const item = val.meta;
+			if (item.name.toLowerCase() === errorItemId.toLowerCase()) {
+				errorItemMetaIdx = val.meta.index.toNumber();
+			}
+		}
+
+		return [
+			errorItemMetaIdx,
+			Object.entries(errors)[
+				errorItemMetaIdx
+			] as unknown as PalletErrorMetadataV14,
+		];
+	}
+
+	private getStorageItemMeta(
+		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		storageItemMetaIdx: number,
+		storageItemId: string
+	): [number, StorageEntryMetadataV13 | StorageEntryMetadataV14] {
+		if (palletMeta.storage.isNone) {
+			throw new InternalServerError(
+				`No storage items found in ${palletMeta.name.toString()}'s metadata`
+			);
+		}
+		const palletMetaStorage = palletMeta.storage.unwrap().items;
+		storageItemMetaIdx = palletMetaStorage.findIndex(
+			(item) => item.name.toLowerCase() === storageItemId.toLowerCase()
+		);
+
+		return [storageItemMetaIdx, palletMetaStorage[storageItemMetaIdx]];
 	}
 }

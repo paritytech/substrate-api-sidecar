@@ -20,13 +20,10 @@ import {
 	BlockHash,
 	MetadataV13,
 	MetadataV14,
-	ModuleMetadataV13,
-	PalletMetadataV14,
 	StorageEntryMetadataV13,
 	StorageEntryMetadataV14,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
-import { InternalServerError } from 'http-errors';
 import {
 	IPalletStorage,
 	IPalletStorageItem,
@@ -34,7 +31,7 @@ import {
 } from 'src/types/responses';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { PalletsService } from './PalletsService';
+import { AbstractPalletsService } from '../AbstractPalletsService';
 
 interface IFetchPalletArgs {
 	hash: BlockHash;
@@ -58,7 +55,7 @@ const upgradeBlocks = {
 	westend: 7766392,
 };
 
-export class PalletsStorageService extends PalletsService {
+export class PalletsStorageService extends AbstractPalletsService {
 	async fetchStorageItem(
 		historicApi: ApiDecoration<'promise'>,
 		{
@@ -70,7 +67,7 @@ export class PalletsStorageService extends PalletsService {
 			adjustMetadataV13Arg,
 		}: IFetchStorageItemArgs
 	): Promise<IPalletStorageItem> {
-		const palletType = 'storage';
+		const metadataFieldType = 'storage';
 		const chosenMetadata = await this.chooseMetadataVersion(
 			historicApi,
 			hash,
@@ -80,15 +77,20 @@ export class PalletsStorageService extends PalletsService {
 			chosenMetadata,
 			historicApi,
 			palletId,
-			palletType
+			metadataFieldType
 		);
 		const palletName = stringCamelCase(palletMeta.name);
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the storage item not existing are that `findStorageItemMeta` will throw.
-		const storageItemMeta = this.findStorageItemMeta(palletMeta, storageItemId);
+		// of the storage item not existing are that `findPalletItemMeta` will throw.
+		const storageItemMeta = this.findPalletItemMeta(
+			historicApi,
+			palletMeta,
+			storageItemId,
+			metadataFieldType
+		) as StorageEntryMetadataV13 | StorageEntryMetadataV14;
 
-		let normalizedStorageItemMeta;
+		let normalizedStorageItemMeta: ISanitizedStorageItemMetadata | undefined;
 		if (metadata) {
 			normalizedStorageItemMeta =
 				this.normalizeStorageItemMeta(storageItemMeta);
@@ -122,7 +124,7 @@ export class PalletsStorageService extends PalletsService {
 			adjustMetadataV13Arg,
 		}: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletStorage> {
-		const palletType = 'storage';
+		const metadataFieldType = 'storage';
 		const chosenMetadata = await this.chooseMetadataVersion(
 			historicApi,
 			hash,
@@ -132,7 +134,7 @@ export class PalletsStorageService extends PalletsService {
 			chosenMetadata,
 			historicApi,
 			palletId,
-			palletType
+			metadataFieldType
 		);
 
 		let items: [] | ISanitizedStorageItemMetadata[] | Text[];
@@ -212,35 +214,5 @@ export class PalletsStorageService extends PalletsService {
 		normalizedStorageItemMeta.docs = this.sanitizeDocs(storageItemMeta.docs);
 
 		return normalizedStorageItemMeta;
-	}
-
-	/**
-	 * Find the storage item's metadata within the pallets's metadata.
-	 *
-	 * @param palletMeta the metadata of the pallet that contains the storage item
-	 * @param storageId name of the storage item in camel or pascal case
-	 */
-	private findStorageItemMeta(
-		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
-		storageItemId: string
-	): StorageEntryMetadataV14 | StorageEntryMetadataV13 {
-		if (palletMeta.storage.isNone) {
-			throw new InternalServerError(
-				`No storage items found in ${palletMeta.name.toString()}'s metadata`
-			);
-		}
-
-		const palletMetaStorage = palletMeta.storage.unwrap().items;
-		const storageItemMetaIdx = palletMetaStorage.findIndex(
-			(item) => item.name.toLowerCase() === storageItemId.toLowerCase()
-		);
-
-		if (storageItemMetaIdx === -1) {
-			throw new InternalServerError(
-				`Could not find storage item ("${storageItemId}") in metadata. Storage item names are expected to be in camel case, e.g. 'storageItemId'`
-			);
-		}
-
-		return palletMetaStorage[storageItemMetaIdx];
 	}
 }
