@@ -16,104 +16,50 @@
 
 import { ArgumentParser, Namespace } from 'argparse';
 
-import { config, defaultSasBuildOpts } from './config';
+import { historicalE2eConfig, defaultSasBuildOpts } from './config';
 import {
 	killAll,
 	launchProcess,
 	setLogLevel,
-	setWsUrl,
 } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
+import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
 
 // Stores all the processes
 const procs: ProcsType = {};
 
-/**
- * Launches Sidecar, and if successful it will launch the jest runner. This operation
- * handles killing all the processes after the jest runner is done.
- *
- * @param chain The chain in which to target the e2e tests too.
- */
-const launchChainTest = async (chain: string): Promise<boolean> => {
-	const { wsUrl, SasStartOpts, JestProcOpts } = config[chain];
-	const { Success } = StatusCode;
-
-	// Set the ws url env var
-	setWsUrl(wsUrl);
-
-	console.log('Launching Sidecar...');
-	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
-
-	if (sidecarStart === Success) {
-		// Sidecar successfully launched, and jest will now get called
-		console.log('Launching jest...');
-		const jest = await launchProcess('yarn', procs, JestProcOpts);
-
-		if (jest === Success) {
-			killAll(procs);
-			return true;
-		} else {
-			killAll(procs);
-			return false;
-		}
-	} else {
-		console.error('Error launching sidecar... exiting...');
-		killAll(procs);
-		process.exit(1);
-	}
-};
-
-const checkTests = (...args: boolean[]) => {
-	const testStatus = args.every((test) => test);
-
-	if (testStatus) {
-		console.log('[PASSED] All Tests Passed!');
-		process.exit(0);
-	} else {
-		console.log('[FAILED] Some Tests Failed!');
-		process.exit(1);
-	}
-};
-
 const main = async (args: Namespace): Promise<void> => {
 	const { Failed } = StatusCode;
+	const localUrl: string | undefined = args.local ? args.local : undefined;
+
+	if (localUrl && !args.chain) {
+		console.error('error: `--local` must be used in conjunction with `--chain`');
+		process.exit(3);
+	}
 
 	if (args.log_level) {
 		setLogLevel(args.log_level);
 	}
 
-	// Build sidecar
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
-	// When sidecar fails to build, we kill all process's and exit
 	if (sidecarBuild === Failed) {
 		console.error('Sidecar failed to build, exiting...');
-		// Kill all processes
 		killAll(procs);
-		// Exit program
-		process.exit();
+		process.exit(2);
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(args.chain);
+		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, procs, localUrl);
 
 		checkTests(selectedChain);
 	} else {
-		// Test the e2e tests against polkadot
-		const polkadotTest = await launchChainTest('polkadot');
-
-		// Test the e2e tests against kusama
-		const kusamaTest = await launchChainTest('kusama');
-
-		// Test the e2e tests against westend
-		const westendTest = await launchChainTest('westend');
-
-		// Test the e2e tests against statemine
-		const statemineTest = await launchChainTest('statemine');
-
-		// Test the e2e tests against statemint
-		const statemintTest = await launchChainTest('statemint');
+		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, procs);
+		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, procs);
+		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
+		const statemineTest = await launchChainTest('statemine', historicalE2eConfig, procs);
+		const statemintTest = await launchChainTest('statemint', historicalE2eConfig, procs);
 
 		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
 	}
@@ -124,11 +70,17 @@ const main = async (args: Namespace): Promise<void> => {
  */
 const parser = new ArgumentParser();
 
+parser.add_argument('--local', {
+	required: false,
+	nargs: '?',
+	type: checkWsType
+})
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+	default: 'http',
 });
 
 const args = parser.parse_args() as Namespace;

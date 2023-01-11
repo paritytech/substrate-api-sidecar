@@ -14,11 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types/codec';
+import { Compact, Option } from '@polkadot/types/codec';
 import {
 	AccountId,
 	BalanceOf,
+	BlockNumber,
+	Digest,
 	FundInfo,
+	H256,
+	Hash,
 	ParaId,
 	ParaLifecycle,
 } from '@polkadot/types/interfaces';
@@ -186,4 +190,35 @@ export interface IParas {
 	 * All registered paras.
 	 */
 	paras: IPara[];
+}
+
+export interface IParasHeaders {
+	[x: string]: IParasHeaderData | IAt;
+}
+
+export interface IParasHeaderData {
+	/**
+	 * ParaHead of the parachain.
+	 */
+	hash: H256;
+	/**
+	 * Parent hash of the current block in the parachain.
+	 */
+	parentHash: Hash;
+	/**
+	 * The current block number.
+	 */
+	number: Compact<BlockNumber>;
+	/**
+	 * The state root after executing this block.
+	 */
+	stateRoot: Hash;
+	/**
+	 * The Merkle root of the extrinsics.
+	 */
+	extrinsicsRoot: Hash;
+	/**
+	 * `DigestItem`s associated with the block.
+	 */
+	digest: Digest;
 }

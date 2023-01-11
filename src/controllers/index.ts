@@ -24,6 +24,7 @@ import {
 	AccountsVestingInfo,
 } from './accounts';
 import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
+import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
@@ -54,6 +55,7 @@ export const controllers = {
 	AccountsValidate,
 	AccountsVestingInfo,
 	AccountsStakingPayouts,
+	ContractsInk,
 	PalletsAssets,
 	PalletsNominationPools,
 	PalletsStakingProgress,

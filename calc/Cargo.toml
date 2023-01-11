@@ -1,6 +1,6 @@
 [package]
 name = "calc"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -8,9 +8,6 @@ publish = false
 repository = "git+https://github.com/paritytech/substrate-api-sidecar.git"
 description = "Off-chain calculations for @substrate/api-sidecar."
 homepage = "https://github.com/paritytech/substrate-api-sidecar/tree/master/calc#readme"
-
-[workspace]
-members = [".", "sp-arithmetic-legacy"]
 
 [lib]
 crate-type = ["cdylib"]
@@ -28,11 +25,6 @@ log = "0.4"
 
 [dependencies.sp-arithmetic]
 version = "5.0.0"
-default_features = false
-
-[dependencies.sp-arithmetic-legacy]
-package = "sp-arithmetic"
-path = "./sp-arithmetic-legacy"
 default_features = false
 
 [profile.release]

@@ -32,9 +32,20 @@ export class TransactionFeeEstimateService extends AbstractService {
 		transaction: string
 	): Promise<RuntimeDispatchInfo> {
 		const { api } = this;
+		const apiAt = await api.at(hash);
 
 		try {
-			return await api.rpc.payment.queryInfo(transaction, hash);
+			if (apiAt.call.transactionPaymentApi.queryInfo) {
+				const ext = api.registry.createType('Extrinsic', transaction);
+				const u8a = ext.toU8a();
+
+				return await apiAt.call.transactionPaymentApi.queryInfo(
+					ext,
+					u8a.length
+				);
+			} else {
+				return await api.rpc.payment.queryInfo(transaction, hash);
+			}
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);
 

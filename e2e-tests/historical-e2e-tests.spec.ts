@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { endpoints } from './endpoints';
+import { endpoints } from './historical/endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
 import {
@@ -23,7 +23,7 @@ import {
 	IBlockResponse,
 	IEnvChainConfig,
 	RuntimeResponse,
-} from './types';
+} from './historical/types';
 
 const config = JSON.parse(
 	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
@@ -45,7 +45,7 @@ describe('Runtime Tests for blocks', () => {
 			'Given path %p, it should return the correct JSON response',
 			async (blockPath, blockResponse) => {
 				const res = await request(blockPath, HOST, PORT);
-				const responseJson = JSON.parse(res) as IBlockResponse;
+				const responseJson = JSON.parse(res.data) as IBlockResponse;
 
 				expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
 			}
@@ -64,7 +64,7 @@ describe('Runtime Tests for accounts', () => {
 			'Given path %p, it should return the correct JSON response',
 			async (accountsPath, accountsResponse) => {
 				const res = await request(accountsPath, HOST, PORT);
-				const responseJson = JSON.parse(res) as AccountsResponse;
+				const responseJson = JSON.parse(res.data) as AccountsResponse;
 
 				expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
 			}
@@ -80,7 +80,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 			'Given path %p, it should return the correct JSON response',
 			async (runtimePath, runtimeResponse) => {
 				const res = await request(runtimePath, HOST, PORT);
-				const responseJson = JSON.parse(res) as RuntimeResponse;
+				const responseJson = JSON.parse(res.data) as RuntimeResponse;
 
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 			}
@@ -97,7 +97,7 @@ describe('Runtime Tests for `/paras/*`', () => {
 			async (runtimePath, runtimeResponse) => {
 				const res = await request(runtimePath, HOST, PORT);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const responseJson = JSON.parse(res);
+				const responseJson = JSON.parse(res.data);
 
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
 			}
