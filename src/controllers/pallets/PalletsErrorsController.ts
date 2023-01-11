@@ -72,7 +72,6 @@ export default class PalletsErrorsController extends AbstractController<PalletsE
 		{ params: { palletId }, query: { at, onlyIds } },
 		res
 	): Promise<void> => {
-		console.log('PALLET ID IN CONTROLLER---', palletId);
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
