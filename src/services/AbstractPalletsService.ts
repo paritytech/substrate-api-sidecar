@@ -62,7 +62,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
 
-	public findPalletMeta(
+	protected findPalletMeta(
 		adjustedMetadata: MetadataV13 | MetadataV14,
 		historicApi: ApiDecoration<'promise'>,
 		palletId: string,
@@ -195,7 +195,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param metadataFieldType name of the metadata field to be queried
 	 *
 	 */
-	public findPalletItemMeta(
+	protected findPalletItemMeta(
 		historicApi: ApiDecoration<'promise'>,
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
