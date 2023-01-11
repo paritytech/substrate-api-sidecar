@@ -195,7 +195,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param metadataFieldType name of the metadata field to be queried
 	 *
 	 */
-	protected findPalletItemMeta(
+	protected findPalletFieldItemMeta(
 		historicApi: ApiDecoration<'promise'>,
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,

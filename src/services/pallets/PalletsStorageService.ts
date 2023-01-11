@@ -83,7 +83,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the storage item not existing are that `findPalletItemMeta` will throw.
-		const storageItemMeta = this.findPalletItemMeta(
+		const storageItemMeta = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,
 			storageItemId,
