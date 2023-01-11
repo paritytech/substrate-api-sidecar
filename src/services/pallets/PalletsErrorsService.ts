@@ -37,7 +37,7 @@ interface IFetchErrorItemArgs extends IFetchPalletArgs {
 	metadata: boolean;
 }
 
-export class PalletsErrorService extends AbstractPalletsService {
+export class PalletsErrorsService extends AbstractPalletsService {
 	async fetchErrorItem(
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, errorItemId, metadata }: IFetchErrorItemArgs

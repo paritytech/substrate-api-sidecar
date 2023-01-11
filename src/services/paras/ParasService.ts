@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { u32 } from '@polkadot/types';
+import { Bytes, u32 } from '@polkadot/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -28,6 +28,7 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
+import { PolkadotPrimitivesV2CandidateReceipt } from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -41,6 +42,7 @@ import {
 	ILeaseInfo,
 	ILeasesCurrent,
 	IParas,
+	IParasHeaders,
 	LeaseFormatted,
 	ParaType,
 } from '../../types/responses';
@@ -426,6 +428,53 @@ export class ParasService extends AbstractService {
 				height: number.unwrap().toString(10),
 			},
 			paras: await Promise.all(parasPromises),
+		};
+	}
+
+	/**
+	 * Get the heads of the included (backed or considered available) parachain candidates
+	 * at the specified block height or at the most recent finalized head otherwise.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
+	async parasHead(hash: BlockHash, method: string): Promise<IParasHeaders> {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+
+		const [{ number }, events] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.system.events(),
+		]);
+
+		const paraInclusion = events.filter((record) => {
+			return (
+				record.event.section === 'paraInclusion' &&
+				record.event.method === method
+			);
+		});
+
+		const paraHeaders: IParasHeaders = {};
+		paraInclusion.forEach(({ event }) => {
+			const { data } = event;
+			const paraData = data[0] as PolkadotPrimitivesV2CandidateReceipt;
+			const headerData = data[1] as Bytes;
+			const { paraHead, paraId } = paraData.descriptor;
+			const header = api.createType('Header', headerData);
+			const { parentHash, number, stateRoot, extrinsicsRoot, digest } = header;
+
+			paraHeaders[paraId.toString()] = Object.assign(
+				{},
+				{ hash: paraHead },
+				{ parentHash, number, stateRoot, extrinsicsRoot, digest }
+			);
+		});
+
+		return {
+			at: {
+				hash,
+				height: number.unwrap().toString(10),
+			},
+			...paraHeaders,
 		};
 	}
 

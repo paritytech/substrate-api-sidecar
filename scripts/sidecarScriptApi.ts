@@ -83,7 +83,14 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{ proc, resolver, resolverJestErr, resolverStartupErr, args }: IProcOpts
+	{ 
+		proc, 
+		resolver, 
+		resolverJestErr, 
+		resolverStartupErr, 
+		resolverFailed, 
+		args 
+	}: IProcOpts
 ): Promise<StatusCode> => {
 	return new Promise<StatusCode>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;
@@ -97,6 +104,10 @@ export const launchProcess = (
 
 			if (data.toString().includes(resolver)) {
 				resolve(Success);
+			}
+
+			if (resolverFailed && data.toString().includes(resolverFailed)) {
+				resolve(Failed);
 			}
 		});
 

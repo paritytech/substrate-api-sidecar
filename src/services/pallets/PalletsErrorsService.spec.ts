@@ -27,7 +27,7 @@ import fetchErrorRes from '../test-helpers/responses/pallets/fetchErrorsRes.json
 import fetchInsufficientFundsRes from '../test-helpers/responses/pallets/fetchInsufficientFundsErrorItem13641356.json';
 import fetchProposalMissingRes from '../test-helpers/responses/pallets/fetchProposalMissingErrorItem13641102.json';
 import fetchValueLowRes from '../test-helpers/responses/pallets/fetchValueLowErrorItem13641102.json';
-import { PalletsErrorService } from './PalletsErrorsService';
+import { PalletsErrorsService } from './PalletsErrorsService';
 
 const referendumInfoOfAt = () =>
 	Promise.resolve().then(() => {
@@ -50,16 +50,16 @@ const mockApi = {
 } as unknown as ApiPromise;
 
 /**
- * Mock PalletsErrorService instance.
+ * Mock PalletsErrorsService instance.
  */
-const palletsErrorService = new PalletsErrorService(mockApi);
+const palletsErrorsService = new PalletsErrorsService(mockApi);
 
 describe('PalletErrorService', () => {
 	describe('fetchErrorItem', () => {
 		it('works with a query to a single error item id', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorService.fetchErrorItem(mockHistoricApi, {
+					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						errorItemId: 'ValueLow',
@@ -72,7 +72,7 @@ describe('PalletErrorService', () => {
 		it('works with an index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorService.fetchErrorItem(mockHistoricApi, {
+					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: '14',
 						errorItemId: 'InsufficientFunds',
@@ -85,7 +85,7 @@ describe('PalletErrorService', () => {
 		it('appropriately uses metadata params', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorService.fetchErrorItem(mockHistoricApi, {
+					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						errorItemId: 'ProposalMissing',
@@ -100,7 +100,7 @@ describe('PalletErrorService', () => {
 		it('work with a index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorService.fetchErrors(mockHistoricApi, {
+					await palletsErrorsService.fetchErrors(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: '14',
 						onlyIds: false,
@@ -112,7 +112,7 @@ describe('PalletErrorService', () => {
 		it('only list error item ids when onlyIds is true', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorService.fetchErrors(mockHistoricApi, {
+					await palletsErrorsService.fetchErrors(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						onlyIds: true,

@@ -22,8 +22,6 @@ import {
 	// blockHash789629,
 	defaultMockApi,
 	pendingExtrinsics,
-	queryInfoBalancesTransfer,
-	queryInfoCouncilVote,
 } from '../test-helpers/mock';
 import transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
 import transactionPoolWithTipResponse from '../test-helpers/responses/node/transactionPoolWithTip.json';
@@ -99,7 +97,6 @@ describe('NodeTransactionPoolService', () => {
 			]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () =>
 				Promise.resolve().then(() => pool);
-			(defaultMockApi.rpc.payment as any).queryInfo = queryInfoCouncilVote;
 
 			expect(
 				sanitizeNumbers(
@@ -108,7 +105,6 @@ describe('NodeTransactionPoolService', () => {
 			).toStrictEqual(transactionPoolWithTipOperationalResponse);
 
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = pendingExtrinsics;
-			(defaultMockApi.rpc.payment as any).queryInfo = queryInfoBalancesTransfer;
 		});
 	});
 });

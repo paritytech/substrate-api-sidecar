@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { PalletsErrorService } from '../../services';
+import { PalletsErrorsService } from '../../services';
 import { IPalletsErrorsParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -33,9 +33,9 @@ import AbstractController from '../AbstractController';
  *
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
-export default class PalletsErrorsController extends AbstractController<PalletsErrorService> {
+export default class PalletsErrorsController extends AbstractController<PalletsErrorsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/errors', new PalletsErrorService(api));
+		super(api, '/pallets/:palletId/errors', new PalletsErrorsService(api));
 
 		this.initRoutes();
 	}
@@ -72,6 +72,7 @@ export default class PalletsErrorsController extends AbstractController<PalletsE
 		{ params: { palletId }, query: { at, onlyIds } },
 		res
 	): Promise<void> => {
+		console.log('PALLET ID IN CONTROLLER---', palletId);
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);

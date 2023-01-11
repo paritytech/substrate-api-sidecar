@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.2.1
+  version: 14.2.3
 tags:
 - name: accounts
 - name: blocks
@@ -706,7 +706,7 @@ paths:
         description: The storage deposit limit to be used as an option for the queried message.
         required: false
         schema:
-          deafult: null
+          default: null
           type: number
       - name: args
         in: query
@@ -1056,7 +1056,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletErrorItem'
+                $ref: '#/components/schemas/PalletErrorsItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1449,6 +1449,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeaseInfo'
+  /paras/head/included-candidates:
+    get:
+      tags:
+      - paras
+      summary: |
+        Get the heads of the included (backed and considered available) parachain candidates at the 
+        specified block height or at the most recent finalized head otherwise.
+      description: |
+        Returns an object with all the parachain id's as keys, and their headers as values.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve para's heads at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasHeaders'
+  /paras/head/backed-candidates:
+    get:
+      tags:
+      - paras
+      summary: |
+        Get the heads of the backed parachain candidates at the specified block height or at the most recent finalized head otherwise.
+      description: |
+        Returns an object with all the parachain id's as keys, and their headers as values.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve para's heads at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasHeaders'
   /experimental/blocks/head/traces:
     get:
       tags:
@@ -2400,7 +2449,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/PalletErrorItemMetadata'
+            $ref: '#/components/schemas/PalletErrorsItemMetadata'
           description: Array containing metadata for each error entry of the pallet.
     PalletErrorsItem:
       type: object
@@ -2418,8 +2467,8 @@ components:
           description: Name of the error item.
           example: "ValueLow"
         metadata:
-          $ref: '#/components/schemas/PalletErrorItemMetadata'
-    PalletErrorItemMetadata:
+          $ref: '#/components/schemas/PalletErrorsItemMetadata'
+    PalletErrorsItemMetadata:
       type: object
       properties:
         name:
@@ -2428,7 +2477,8 @@ components:
           description: The error item's name (which is the same as the error item's ID).
         fields:
           type: array
-          example: "[]"
+          items:
+            type: string
         index:
          type: string
          example: "0"
@@ -2438,7 +2488,8 @@ components:
           example: " Information concerning any given error.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
         args:
           type: array
-          example: "[]"
+          items:
+            type: string
       description: Metadata of an error item from a FRAME pallet.
     PalletStorage:
       type: object
@@ -2615,6 +2666,44 @@ components:
             type: string
             format: unsignedInteger
           description: Lease periods the crowdloan can bid on.
+    ParasHeaders:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        paraId:
+          type: object
+          description: |
+            The key is not named `paraId` and will be the number of the parachain. There is technically no limit to the number of paraId keys there can be. 
+          properties:
+            hash:
+              type: string
+              description: The block's hash.
+              format: hex
+            number:
+              type: string
+              description: The block's height.
+              format: unsignedInteger
+            parentHash:
+              type: string
+              description: The hash of the parent block.
+              format: hex
+            stateRoot:
+              type: string
+              description: The state root after executing this block.
+              format: hex
+            extrinsicsRoot:
+              type: string
+              description: The Merkle root of the extrinsics.
+              format: hex
+            digest:
+              type: object
+              properties:
+                logs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DigestItem'
+                  description: Array of `DigestItem`s associated with the block.
     ParasLeasesCurrent:
       type: object
       properties:
@@ -2742,8 +2831,8 @@ components:
       type: object
       properties:
         weight:
-          type: string
-          description: Extrinsic weight.
+          $ref: '#/components/schemas/WeightsV2'
+          description: Weights represented as WeightsV2 (two dimensional weights). When querying historical blocks that use WeightsV1, the weight will be returned as a weight key that points to a number represented as a string.
         class:
           type: string
           description: Extrinsic class.
@@ -3061,8 +3150,8 @@ components:
       type: object
       properties:
         weight:
-          type: string
-          description: Extrinsic weight.
+          $ref: '#/components/schemas/WeightsV2'
+          description: Weights represented as WeightsV2 (two dimensional weights). When querying historical blocks that use WeightsV1, the weight will be returned as a weight key that points to a number represented as a string.
         class:
           type: string
           description: Extrinsic class.
@@ -3219,6 +3308,15 @@ components:
           description: Starting block for unlocking (vesting).
           format: unsignedInteger
       description: Vesting schedule for an account.
+    WeightsV2:
+      type: object
+      properties:
+        refTime:
+          type: string
+          description: The weight of computational time used based on some reference hardware.
+        proofSize:
+          type: string
+          description: The weight of storage space used by proof of validity.
     WinningData:
       type: object
       properties:
@@ -3252,6 +3350,6 @@ components:
     ContractMetadata:
       content:
         application/json:
-          scehma:
+          schema:
             $ref: '#/components/schemas/ContractMetadata'
 
