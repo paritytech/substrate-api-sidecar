@@ -61,7 +61,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 *
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
-
 	protected findPalletMeta(
 		adjustedMetadata: MetadataV13 | MetadataV14,
 		historicApi: ApiDecoration<'promise'>,

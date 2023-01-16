@@ -26,7 +26,7 @@ export const mockBlock13641102 = polkadotRegistryV9300.createType(
 );
 
 /**
- * BlockHash for polkadot block #789629.
+ * BlockHash for polkadot block #13641102.
  */
 export const blockHash13641102 = polkadotRegistryV9300.createType(
 	'BlockHash',
