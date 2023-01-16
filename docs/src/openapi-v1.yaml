@@ -930,6 +930,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
+  /pallets/nominationPools/{poolId}:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with a nomination pool.
+      description: Returns information associated with a nomination pool which includes
+        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
+      operationId: getNominationPoolById
+      parameters:
+      - name: poolId
+        in: path
+        description: The unsignedInteger Id of a nomination pool.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPool'
+  /pallets/nominationPools/info:
+    get:
+      tags:
+        - pallets
+      summary: Get information associated with nomination pools.
+      description: Returns information and metadata for nomination pools including pool counters and limits.
+      operationId: getNominationPoolInfo
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool info.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
   /pallets/staking/progress:
     get:
       tags:
@@ -1975,6 +2029,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    BondedPool:
+      type: object
+      properties:
+        points:
+          type: number
+        state:
+          type: string
+        memberCounter:
+          type: number
+        roles:
+          type: object
+          properties:
+            depositor:
+              type: string
+            root:
+              type: string
+            nominator:
+              type: string
+            stateToggler:
+              type: string
     ChainType:
       type: object
       description: Type of the chain. It will return one of the following enum variants as a key. Live, Development, Local, or Custom. Each variant will have a value as null except when the ChainType is Custom, it will return a string.
@@ -2326,6 +2400,45 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+    PalletsNominationPool:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        bondedPool:
+          $ref: '#/components/schemas/BondedPool'
+        rewardPool:
+          $ref: '#/components/schemas/RewardPool'
+    PalletsNominationPoolsInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        counterForBondedPools: 
+            type: number
+        counterForMetadata:
+            type: number
+        counterForPoolMembers:
+            type: number
+        counterForReversePoolIdLookup:
+            type: number
+        counterForRewardPools:
+            type: number
+        counterForSubPoolsStorage:
+            type: number
+        lastPoolId:
+            type: number
+        maxPoolMembers:
+            type: number
+        maxPoolMembersPerPool:
+            type: number
+            nullable: true
+        maxPools:
+            type: number
+        minCreateBond:
+            type: number
+        minJoinBond:
+            type: number
     PalletStorage:
       type: object
       properties:
@@ -2654,6 +2767,15 @@ components:
           type: string
           description: Height of the best block on the peer's canon chain.
           format: unsignedInteger
+    RewardPool:
+      type: object
+      properties:
+        lastRecordedRewardCounter: 
+          type: number
+        lastRecordedTotalPayouts:
+          type: number
+        totalRewardsClaimed:
+          type: number
     RuntimeCode:
       type: object
       properties:

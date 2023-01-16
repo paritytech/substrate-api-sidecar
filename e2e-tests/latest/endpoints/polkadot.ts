@@ -191,4 +191,17 @@ export const polkadot: IConfig = {
             'at={blockId}',
         ]
     },
+    '/pallets/nominationPoools/info': {
+        path: '/pallets/nominationPools/info',
+        queryParams: [
+            'at={blockId}',
+        ]
+    },
+    '/pallets/nominationPoools/{poolId}': {
+        path: '/pallets/nominationPools/122',
+        queryParams: [
+            'at={blockId}',
+            'metadata=true',
+        ]
+    },
 }

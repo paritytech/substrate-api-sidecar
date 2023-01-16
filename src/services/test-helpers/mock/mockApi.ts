@@ -42,6 +42,7 @@ import {
 	testAddressController,
 } from '.';
 import { localListenAddressesHex } from './data/localListenAddresses';
+import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
 import traceBlockRPC from './data/traceBlock.json';
 
 const chain = () =>
@@ -327,6 +328,11 @@ export const defaultMockApi = {
 		chain: {
 			getHeader: deriveGetHeader,
 			getBlock: deriveGetBlock,
+		},
+	},
+	query: {
+		nominationPools: {
+			metadata: mockMetaData,
 		},
 	},
 } as unknown as ApiPromise;
