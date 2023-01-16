@@ -33,6 +33,7 @@ export * from './NodeVersion';
 export * from './Pallet';
 export * from './PalletErrors';
 export * from './PalletErrorsItem';
+export * from './PalletNominationPools';
 export * from './PalletStakingProgress';
 export * from './PalletStorage';
 export * from './PalletStorageItem';
