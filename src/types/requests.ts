@@ -25,10 +25,20 @@ export interface ITx {
 }
 
 /**
+ * Body for the RequestHandlerContract. In other words, the body of the POST route that a message to a contract.
+ */
+export type IBodyContractMetadata = Record<string, unknown>;
+
+/**
  * Post Request - assuming no url params
  */
 // eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any
-export type IPostRequestHandler<T> = RequestHandler<{}, any, T, Query>;
+export type IPostRequestHandler<T, P = Query> = RequestHandler<
+	ParamsDictionary,
+	unknown,
+	T,
+	P
+>;
 
 export interface INumberParam extends ParamsDictionary {
 	number: string;
@@ -48,4 +58,28 @@ export interface IParaIdParam extends ParamsDictionary {
 
 export interface IRangeQueryParam extends Query {
 	range: string;
+}
+
+export interface IContractQueryParam extends Query {
+	method: string;
+	args: string[];
+	gasLimit: string;
+	storageDepositLimit: string;
+}
+
+export interface IPalletsStorageParam extends ParamsDictionary {
+	palletId: string;
+	storageItemId: string;
+}
+
+export interface IPalletsStorageQueryParam extends Query {
+	keys: string[];
+	metadata: string;
+	adjustMetadataV13: string;
+}
+
+export interface IConvertQueryParams extends Query {
+	scheme: string;
+	prefix: string;
+	publicKey: string;
 }

@@ -44,8 +44,7 @@ interface IFetchPalletArgs {
 
 interface IFetchStorageItemArgs extends IFetchPalletArgs {
 	storageItemId: string;
-	key1?: string;
-	key2?: string;
+	keys: string[];
 	metadata: boolean;
 	adjustMetadataV13Arg: boolean;
 }
@@ -66,8 +65,7 @@ export class PalletsStorageService extends AbstractService {
 			hash,
 			palletId,
 			storageItemId,
-			key1,
-			key2,
+			keys,
 			metadata,
 			adjustMetadataV13Arg,
 		}: IFetchStorageItemArgs
@@ -95,7 +93,7 @@ export class PalletsStorageService extends AbstractService {
 		}
 
 		const [value, { number }] = await Promise.all([
-			historicApi.query[palletName][storageItemId](key1, key2),
+			historicApi.query[palletName][storageItemId](...keys),
 			this.api.rpc.chain.getHeader(hash),
 		]);
 
@@ -107,8 +105,7 @@ export class PalletsStorageService extends AbstractService {
 			pallet: palletName,
 			palletIndex: palletMetaIdx,
 			storageItem: storageItemId,
-			key1,
-			key2,
+			keys,
 			value,
 			metadata: normalizedStorageItemMeta,
 		};

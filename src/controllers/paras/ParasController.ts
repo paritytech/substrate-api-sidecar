@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { validateBoolean } from '../../middleware';
 import { ParasService } from '../../services';
 import { IParaIdParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -28,6 +29,10 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	protected initRoutes(): void {
+		this.router.use(
+			this.path + '/paras/leases/current',
+			validateBoolean(['currentLeaseHolders'])
+		);
 		this.safeMountAsyncGetHandlers([
 			['/paras', this.getParas],
 			['/paras/crowdloans', this.getCrowdloans],
@@ -35,6 +40,8 @@ export default class ParasController extends AbstractController<ParasService> {
 			['/paras/:paraId/lease-info', this.getLeaseInfo],
 			['/paras/leases/current', this.getLeasesCurrent],
 			['/paras/auctions/current', this.getAuctionsCurrent],
+			['/paras/head/included-candidates', this.getParasHeadIncludedCandidates],
+			['/paras/head/backed-candidates', this.getParasHeadBackedCandidates],
 			['/experimental/paras/', this.getParas],
 			['/experimental/paras/crowdloans', this.getCrowdloans],
 			['/experimental/paras/:paraId/crowdloan-info', this.getCrowdloanInfo],
@@ -53,6 +60,30 @@ export default class ParasController extends AbstractController<ParasService> {
 		const hash = await this.getHashFromAt(at);
 
 		ParasController.sanitizedSend(res, await this.service.paras(hash));
+	};
+
+	private getParasHeadIncludedCandidates: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.parasHead(hash, 'CandidateIncluded')
+		);
+	};
+
+	private getParasHeadBackedCandidates: RequestHandler = async (
+		{ query: { at } },
+		res
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		ParasController.sanitizedSend(
+			res,
+			await this.service.parasHead(hash, 'CandidateBacked')
+		);
 	};
 
 	private getCrowdloanInfo: RequestHandler<IParaIdParam> = async (

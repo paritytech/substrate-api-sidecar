@@ -35,8 +35,9 @@ Compatibility:
 |---------------|:-----------:|
 |     v14.x.x   |   Stable    |
 |     v16.x.x   |   Stable    |
-|     v17.x.x   |  Not Stable |
-|     v18.x.x   |   Pending   |
+|     v17.x.x   |   Stable    |
+|     v18.x.x   |   Stable    |
+|     v19.x.x   |   Pending   |
 
 NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.
 
@@ -310,7 +311,8 @@ and read the release notes for any breaking changes or high priority updates. In
    yarn build
    yarn lint
    yarn test
-   yarn test:init-e2e-tests
+   yarn test:historical-e2e-tests
+   yarn test:latest-e2e-tests
    ```
 
 1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.

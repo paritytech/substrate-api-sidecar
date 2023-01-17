@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { validateBoolean } from '../../middleware';
 import { BlocksTraceService } from '../../services';
 import AbstractController from '../AbstractController';
 import BlocksController from './BlocksController';
@@ -28,6 +29,7 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateBoolean(['actions']));
 		this.safeMountAsyncGetHandlers([
 			['/head/traces', this.getLatestBlockTraces],
 			['/:number/traces', this.getBlockTraces],

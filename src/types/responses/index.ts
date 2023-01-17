@@ -16,6 +16,7 @@
 
 export * from './AccountAssets';
 export * from './AccountBalanceInfo';
+export * from './AccountConvert';
 export * from './AccountStakingInfo';
 export * from './AccountStakingPayouts';
 export * from './AccountVestingInfo';
@@ -30,6 +31,7 @@ export * from './NodeNetwork';
 export * from './NodeTransactionPool';
 export * from './NodeVersion';
 export * from './Pallet';
+export * from './PalletNominationPools';
 export * from './PalletStakingProgress';
 export * from './PalletStakingValidators';
 export * from './PalletStorage';

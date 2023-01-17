@@ -59,8 +59,7 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						storageItemId: 'referendumInfoOf',
-						key1: '0',
-						key2: undefined,
+						keys: ['0'],
 						metadata: false,
 						adjustMetadataV13Arg: true,
 					})
@@ -75,8 +74,7 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: '15',
 						storageItemId: 'referendumInfoOf',
-						key1: '0',
-						key2: undefined,
+						keys: ['0'],
 						metadata: false,
 						adjustMetadataV13Arg: true,
 					})
@@ -91,8 +89,7 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						storageItemId: 'referendumInfoOf',
-						key1: '0',
-						key2: undefined,
+						keys: ['0'],
 						metadata: true,
 						adjustMetadataV13Arg: true,
 					})

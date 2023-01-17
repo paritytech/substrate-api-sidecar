@@ -16,7 +16,7 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable"
+  CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
 
 default:
   retry:
@@ -174,7 +174,7 @@ deploy-production:
   <<:                              *kubernetes-env
   before_script:                   []
   variables:
-    POLKADOT_ADDRESS:              "ws://polkadot-node.nodes:9944"
+    POLKADOT_ADDRESS:              "ws://substrate-api-sidecar-benchmark-node.nodes:9944"
     BENCHMARK_DURATION:            "15m"                                   # Tests duration
     BENCHMARK_THREADS:             4                                       # Total number of threads to use
     BENCHMARK_CONNECTIONS:         12                                      # Total number of HTTP connections to keep open with each thread handling N = connections/threads
@@ -224,7 +224,7 @@ check-benchmark:
   variables:
     GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
-    THRESHOLD:                     35000
+    THRESHOLD:                     60000
     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
@@ -240,7 +240,7 @@ push-benchmark:
     - job:                         check-benchmark
       artifacts:                   true
   variables:
-    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')

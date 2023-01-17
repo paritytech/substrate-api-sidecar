@@ -18,21 +18,45 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { ApiPromise } from '@polkadot/api';
+import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
 	balancesTransferValid,
 	blockHash789629,
 	defaultMockApi,
-	queryInfoBalancesTransfer,
+	queryInfoAt,
 } from '../test-helpers/mock';
 import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
-import validResponse from '../test-helpers/responses/transaction/feeEstimateValid.json';
+import validRpcResponse from '../test-helpers/responses/transaction/feeEstimateValidRpcCall.json';
+import validRuntimeResponse from '../test-helpers/responses/transaction/feeEstimateValidRuntimeCall.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
+
+const queryInfoCallAt = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV9300.createType('RuntimeDispatchInfoV2', {
+			weight: {
+				refTime: '133179000',
+				proofSize: '0',
+			},
+			class: 'Normal',
+			partialFee: '171607466',
+		})
+	);
+
+const mockApiAt = {
+	call: {
+		transactionPaymentApi: {
+			queryInfo: queryInfoCallAt,
+		},
+	},
+};
 
 const mockApi = {
 	...defaultMockApi,
+	at: (_hash: Hash) => mockApiAt,
 } as unknown as ApiPromise;
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(
@@ -41,7 +65,7 @@ const transactionFeeEstimateService = new TransactionFeeEstimateService(
 
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
-		it('works with a valid a transaction', async () => {
+		it('Works with a valid a transaction', async () => {
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
@@ -49,16 +73,33 @@ describe('TransactionFeeEstimateService', () => {
 						balancesTransferValid
 					)
 				)
-			).toStrictEqual(validResponse);
+			).toStrictEqual(validRuntimeResponse);
 		});
 
-		it('catches ApiPromise throws and then throws the correct error format', async () => {
+		it("Should default to the rpc call when the runtime call doesn't exist", async () => {
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = undefined;
+
+			expect(
+				sanitizeNumbers(
+					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
+						blockHash789629,
+						balancesTransferValid
+					)
+				)
+			).toStrictEqual(validRpcResponse);
+
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
+				queryInfoCallAt;
+		});
+
+		it('Catches ApiPromise throws and then throws the correct error format', async () => {
 			const err = new Error(
 				'2: Unable to query dispatch info.: Invalid transaction version'
 			);
 			err.stack =
 				'Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock';
 
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = undefined;
 			(mockApi.rpc.payment as any).queryInfo = () =>
 				Promise.resolve().then(() => {
 					throw err;
@@ -71,7 +112,9 @@ describe('TransactionFeeEstimateService', () => {
 				)
 			).rejects.toStrictEqual(invalidResponse);
 
-			(mockApi.rpc.payment as any).queryInfo = queryInfoBalancesTransfer;
+			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
+				queryInfoCallAt;
 		});
 	});
 });

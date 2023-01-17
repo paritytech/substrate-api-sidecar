@@ -18,8 +18,13 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { validateBoolean } from '../..//middleware';
 import { Log } from '../../logging/Log';
 import { PalletsStorageService } from '../../services';
+import {
+	IPalletsStorageParam,
+	IPalletsStorageQueryParam,
+} from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
@@ -46,22 +51,26 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	}
 
 	protected initRoutes(): void {
-		// TODO look into middleware validation of in path IDs. https://github.com/paritytech/substrate-api-sidecar/issues/281
+		this.router.use(this.path, validateBoolean(['adjustMetadataV13']));
 		this.safeMountAsyncGetHandlers([
-			['/:storageItemId', this.getStorageItem],
+			['/:storageItemId', this.getStorageItem as RequestHandler],
 			['/', this.getStorage],
 		]);
 	}
 
-	private getStorageItem: RequestHandler = async (
+	private getStorageItem: RequestHandler<
+		IPalletsStorageParam,
+		unknown,
+		unknown,
+		IPalletsStorageQueryParam
+	> = async (
 		{
-			query: { at, key1, key2, metadata, adjustMetadataV13 },
+			query: { at, keys, metadata, adjustMetadataV13 },
 			params: { palletId, storageItemId },
 		},
 		res
 	): Promise<void> => {
-		const key1Arg = typeof key1 === 'string' ? key1 : undefined;
-		const key2Arg = typeof key2 === 'string' ? key2 : undefined;
+		const parsedKeys = Array.isArray(keys) ? keys : [];
 		const metadataArg = metadata === 'true';
 		const adjustMetadataV13Arg = adjustMetadataV13 === 'true';
 
@@ -77,8 +86,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 				// stringCamelCase ensures we don't have snake case or kebab case
 				palletId: stringCamelCase(palletId),
 				storageItemId: stringCamelCase(storageItemId),
-				key1: key1Arg,
-				key2: key2Arg,
+				keys: parsedKeys,
 				metadata: metadataArg,
 				adjustMetadataV13Arg,
 			})

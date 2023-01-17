@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Option, Struct, Vec } from '@polkadot/types';
+import { GenericExtrinsic } from '@polkadot/types/extrinsic';
 import {
 	AccountId32,
 	Block,
@@ -27,6 +28,7 @@ import {
 	EventRecord,
 	Header,
 	InclusionFee,
+	RuntimeDispatchInfo,
 	Weight,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
@@ -72,6 +74,7 @@ interface FetchBlockOptions {
 enum Event {
 	success = 'ExtrinsicSuccess',
 	failure = 'ExtrinsicFailed',
+	transactionPaidFee = 'TransactionFeePaid',
 }
 
 export class BlocksService extends AbstractService {
@@ -259,45 +262,52 @@ export class BlocksService extends AbstractService {
 				class: dispatchClass,
 				partialFee,
 				weight,
-			} = await api.rpc.payment.queryInfo(
-				block.extrinsics[idx].toHex(),
-				previousBlockHash
+			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+
+			const transactionPaidFeeEvent = xtEvents.find(
+				({ method }) =>
+					isFrameMethod(method) && method.method === Event.transactionPaidFee
 			);
 
-			const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
-				specVersion.toNumber()
-			);
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
-			/**
-			 * Call queryFeeDetails. It may not be available in the runtime and will
-			 * error automatically when we try to call it. We cache the runtimes it will error so we
-			 * don't try to call it again given a specVersion.
-			 */
-			if (doesQueryFeeDetailsExist === 'available') {
-				finalPartialFee = await this.fetchQueryFeeDetails(
-					block.extrinsics[idx].toHex(),
-					previousBlockHash,
-					weightInfo.weight,
-					weight
+			if (transactionPaidFeeEvent) {
+				finalPartialFee = transactionPaidFeeEvent.data[1].toString();
+				dispatchFeeType = 'fromEvent';
+			} else {
+				/**
+				 * Call queryFeeDetails. It may not be available in the runtime and will
+				 * error automatically when we try to call it. We cache the runtimes it will error so we
+				 * don't try to call it again given a specVersion.
+				 */
+				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
+					specVersion.toNumber()
 				);
-
-				dispatchFeeType = 'postDispatch';
-			} else if (doesQueryFeeDetailsExist === 'unknown') {
-				try {
+				if (doesQueryFeeDetailsExist === 'available') {
 					finalPartialFee = await this.fetchQueryFeeDetails(
-						block.extrinsics[idx].toHex(),
+						block.extrinsics[idx],
 						previousBlockHash,
 						weightInfo.weight,
 						weight
 					);
+
 					dispatchFeeType = 'postDispatch';
-					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
-				} catch {
-					this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
-					console.warn(
-						'The error above is automatically emitted from polkadot-js, and can be ignored.'
-					);
+				} else if (doesQueryFeeDetailsExist === 'unknown') {
+					try {
+						finalPartialFee = await this.fetchQueryFeeDetails(
+							block.extrinsics[idx],
+							previousBlockHash,
+							weightInfo.weight,
+							weight
+						);
+						dispatchFeeType = 'postDispatch';
+						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
+					} catch {
+						this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
+						console.warn(
+							'The error above is automatically emitted from polkadot-js, and can be ignored.'
+						);
+					}
 				}
 			}
 
@@ -332,22 +342,36 @@ export class BlocksService extends AbstractService {
 	/**
 	 * Fetch `payment_queryFeeDetails`.
 	 *
-	 * @param extHex
+	 * @param ext
 	 * @param previousBlockHash
 	 * @param extrinsicSuccessWeight
 	 * @param estWeight
 	 */
 	private async fetchQueryFeeDetails(
-		extHex: `0x${string}`,
+		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
 		estWeight: Weight
 	): Promise<string> {
 		const { api } = this;
-		const { inclusionFee } = await api.rpc.payment.queryFeeDetails(
-			extHex,
-			previousBlockHash
-		);
+		const apiAt = await api.at(previousBlockHash);
+
+		let inclusionFee;
+		if (apiAt.call.transactionPaymentApi.queryFeeDetails) {
+			const u8a = ext.toU8a();
+			const result = await apiAt.call.transactionPaymentApi.queryFeeDetails(
+				u8a,
+				u8a.length
+			);
+			inclusionFee = result.inclusionFee;
+		} else {
+			const result = await api.rpc.payment.queryFeeDetails(
+				ext.toHex(),
+				previousBlockHash
+			);
+			inclusionFee = result.inclusionFee;
+		}
+
 		const finalPartialFee = this.calcPartialFee(
 			extrinsicSuccessWeight,
 			estWeight,
@@ -355,6 +379,27 @@ export class BlocksService extends AbstractService {
 		);
 
 		return finalPartialFee;
+	}
+
+	/**
+	 * Fetch `payment_queryInfo`.
+	 *
+	 * @param ext
+	 * @param previousBlockHash
+	 */
+	private async fetchQueryInfo(
+		ext: GenericExtrinsic,
+		previousBlockHash: BlockHash
+	): Promise<RuntimeDispatchInfo> {
+		const { api } = this;
+		const apiAt = await api.at(previousBlockHash);
+		if (apiAt.call.transactionPaymentApi.queryInfo) {
+			const u8a = ext.toU8a();
+			return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
+		} else {
+			// fallback to rpc call
+			return api.rpc.payment.queryInfo(ext.toHex(), previousBlockHash);
+		}
 	}
 
 	/**
