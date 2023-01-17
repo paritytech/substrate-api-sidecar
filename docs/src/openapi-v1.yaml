@@ -706,13 +706,18 @@ paths:
         description: The storage deposit limit to be used as an option for the queried message.
         required: false
         schema:
-          deafult: null
+          default: null
           type: number
       - name: args
         in: query
         description: Abi params used as args specified in the metadata to be passed into a query. 
           The format to use this query param is ?args[]=1&args[]=2&args[]=3.
         required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: An array of Abi params.
       responses:
         "200":
           description: succesful operation
@@ -1010,6 +1015,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StakingProgress'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/staking/validators:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their
+        corresponding status which can be either active or waiting.
+      operationId: getStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StakingValidators'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -2085,7 +2121,7 @@ components:
           description: Will result in an Ok or Err object depending on the result of the query.
         storageDeposit:
           type: object
-    ContractMetata:
+    ContractMetadata:
       type: object
       description: Metadata used to instantiate a ContractPromise. This metadata can be generated
         by compiling the contract you are querying.
@@ -2951,6 +2987,17 @@ components:
           items:
             type: string
             format: ss58
+    StakingValidators:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        address:
+          type: string
+          description: Address of validator.
+        status:
+          type: string
+          description: Status of individual validator (active/waiting).
     StorageEntryTypeV13:
       type: object
       properties:
@@ -3307,6 +3354,6 @@ components:
     ContractMetadata:
       content:
         application/json:
-          scehma:
+          schema:
             $ref: '#/components/schemas/ContractMetadata'
 
