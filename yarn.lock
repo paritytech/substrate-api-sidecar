@@ -1251,7 +1251,7 @@ __metadata:
     "@polkadot/api-contract": ^9.11.3
     "@polkadot/util-crypto": ^10.2.6
     "@substrate/calc": ^0.3.1
-    "@substrate/dev": ^0.6.4
+    "@substrate/dev": ^0.6.6
     "@types/argparse": 2.0.10
     "@types/express": 4.17.14
     "@types/express-serve-static-core": 4.17.31
@@ -1299,9 +1299,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@substrate/dev@npm:^0.6.4":
-  version: 0.6.5
-  resolution: "@substrate/dev@npm:0.6.5"
+"@substrate/dev@npm:^0.6.6":
+  version: 0.6.6
+  resolution: "@substrate/dev@npm:0.6.6"
   dependencies:
     "@babel/plugin-transform-modules-commonjs": ^7.18.6
     "@types/jest": ^27.5.2
@@ -1315,7 +1315,7 @@ __metadata:
     prettier: ^2.7.1
     rimraf: ^3.0.2
     ts-jest: ^27.1.5
-    typescript: ^4.8.2
+    typescript: ^4.9.4
     yargs: ^17.5.1
   bin:
     substrate-dev-run-lint: ./scripts/substrate-dev-run-lint.cjs
@@ -1324,7 +1324,7 @@ __metadata:
     substrate-exec-rimraf: ./scripts/substrate-exec-rimraf.cjs
     substrate-exec-tsc: ./scripts/substrate-exec-tsc.cjs
     substrate-update-pjs-deps: ./scripts/substrate-update-pjs-deps.cjs
-  checksum: 29db8c60976aed92ad610e2e8a0d9d3ebb8ace2428bcf85fb70dfd74fc5567266e7322edc09bb203b8d7693a9530b78570713b0d5fd67f141ad151134c56283b
+  checksum: 22e3c06db193eaff728c27998d64de1b0a120a66af6fa6c6c417446c164e5516dff7e8c98f28699a6c1615cd2c82f11c407970b7ad8de60670b3231abfe7331a
   languageName: node
   linkType: hard
 
@@ -3417,7 +3417,7 @@ fsevents@^2.3.2:
 
 "fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -5595,7 +5595,7 @@ resolve@^1.20.0:
 
 "resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=c3c19d"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
@@ -6349,23 +6349,23 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.7.4":
-  version: 4.7.4
-  resolution: "typescript@npm:4.7.4"
+"typescript@npm:4.9.4":
+  version: 4.9.4
+  resolution: "typescript@npm:4.9.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
+  checksum: e782fb9e0031cb258a80000f6c13530288c6d63f1177ed43f770533fdc15740d271554cdae86701c1dd2c83b082cea808b07e97fd68b38a172a83dbf9e0d0ef9
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>":
-  version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=701156"
+"typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>":
+  version: 4.9.4
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  checksum: 1caaea6cb7f813e64345190fddc4e6c924d0b698ab81189b503763c4a18f7f5501c69362979d36e19c042d89d936443e768a78b0675690b35eb663d19e0eae71
   languageName: node
   linkType: hard
 
