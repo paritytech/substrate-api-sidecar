@@ -34,12 +34,11 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
-		// Querying to get the validators from the active set and populating
-		// the `validatorsActiveSet` Set.
 		const validatorSession = await historicApi.query.session.validators();
 		const validatorsActiveSet: Set<string> = new Set();
-		for (const address of validatorSession)
+		for (const address of validatorSession) {
 			validatorsActiveSet.add(address.toString());
+		}
 
 		// Populating the returned array with the Validator address and its
 		// status. If the address is found in the `validatorsActiveSet` then
@@ -47,7 +46,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const validators: IValidator[] = [];
 		const validatorsEntries =
 			await historicApi.query.staking.validators.entries();
-		validatorsEntries.forEach(([key]) => {
+		validatorsEntries.map(([key]) => {
 			const address = key.args.map((k) => k.toHuman())[0];
 			const status: string = validatorsActiveSet.has(address)
 				? 'active'
