@@ -11,4 +11,4 @@ export const fileTransport = (
 		maxsize: 5242880, // 5MB
 		maxFiles: 5,
 	});
-}
+};

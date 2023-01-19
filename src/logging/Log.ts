@@ -15,7 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { createLogger, Logger } from 'winston';
-import { ConsoleTransportInstance, FileTransportInstance } from 'winston/lib/winston/transports';
+import {
+	ConsoleTransportInstance,
+	FileTransportInstance,
+} from 'winston/lib/winston/transports';
 
 import { consoleTransport, fileTransport } from './transports';
 
@@ -23,7 +26,9 @@ import { consoleTransport, fileTransport } from './transports';
  * Access a singleton winston.Logger that will be intialized on first use.
  */
 export class Log {
-	private static _transports: (ConsoleTransportInstance | FileTransportInstance)[] | undefined;
+	private static _transports:
+		| (ConsoleTransportInstance | FileTransportInstance)[]
+		| undefined;
 	private static _logger: Logger | undefined;
 	private static create(): Logger {
 		if (this._logger) {
