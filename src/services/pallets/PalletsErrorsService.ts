@@ -94,7 +94,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 		);
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
-		const parsedPalletName = stringCamelCase(palletMeta.name.toString())
+		const parsedPalletName = stringCamelCase(palletMeta.name.toString());
 		const errors = historicApi.errors[parsedPalletName];
 
 		let items: [] | ErrorMetadataLatest[] | Text[];
