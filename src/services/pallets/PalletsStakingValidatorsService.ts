@@ -21,12 +21,12 @@ import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingValidatorsService extends AbstractService {
 	/**
-	 * List all validators addresses and their status which can be either `active`
-	 * or `waiting`.
-	 * `Active` means that the validator is part of the active set and
-	 * `waiting` means that the validator did not get into the active set this era.
+	 * Fetch all validators addresses and their status at a given block.
+	 * The status of the validator can be either:
+	 * - `active` (validator is part of the active set) or
+	 * - `waiting` (validator did not get into the active set this era)
 	 *
-	 * @returns all the validators addresses and their corresponding status
+	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingValidators(
 		hash: BlockHash
