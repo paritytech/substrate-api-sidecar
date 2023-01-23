@@ -20,6 +20,7 @@ import {
 	FileTransportInstance,
 } from 'winston/lib/winston/transports';
 
+import { SidecarConfig } from '../SidecarConfig';
 import { consoleTransport, fileTransport } from './transports';
 
 /**
@@ -35,11 +36,17 @@ export class Log {
 			return this._logger;
 		}
 
-		this._transports = [
-			consoleTransport(),
-			fileTransport('error', 'errors.log'),
-			fileTransport('info', 'logs.log'),
-		];
+		this._transports = [consoleTransport()];
+
+		/**
+		 * By default this will be false unless specified as an ENV var.
+		 */
+		if (SidecarConfig.config.LOG.WRITE) {
+			this._transports.push(
+				fileTransport('error', 'errors.log'),
+				fileTransport('info', 'logs.log')
+			);
+		}
 
 		this._logger = createLogger({
 			transports: this._transports,
