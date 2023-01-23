@@ -74,6 +74,8 @@ export class SidecarConfig {
 				JSON: config.Get(MODULES.LOG, CONFIG.JSON) as boolean,
 				FILTER_RPC: config.Get(MODULES.LOG, CONFIG.FILTER_RPC) as boolean,
 				STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
+				WRITE: config.Get(MODULES.LOG, CONFIG.WRITE) as boolean,
+				WRITE_PATH: config.Get(MODULES.LOG, CONFIG.WRITE_PATH) as string,
 			},
 		};
 

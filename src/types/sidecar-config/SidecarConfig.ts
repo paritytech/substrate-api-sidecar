@@ -41,4 +41,6 @@ interface ISidecarConfigLog {
 	JSON: boolean;
 	FILTER_RPC: boolean;
 	STRIP_ANSI: boolean;
+	WRITE: boolean;
+	WRITE_PATH: string;
 }

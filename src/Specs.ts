@@ -206,5 +206,33 @@ export class Specs {
 				}
 			)
 		);
+
+		this._specs.appendSpec(
+			MODULES.LOG,
+			this._specs.getSpec(
+				CONFIG.WRITE,
+				'Whether or not to write the logs locally',
+				{
+					default: 'false',
+					type: 'boolean',
+					regexp: /^true|false$/,
+					mandatory: false,
+				}
+			)
+		);
+
+		this._specs.appendSpec(
+			MODULES.LOG,
+			this._specs.getSpec(
+				CONFIG.WRITE_PATH,
+				'If WRITE is true, the path to write the logs too.',
+				{
+					// TODO: Need <ROOT> of this directory
+					default: `${__dirname}/logs`,
+					type: 'string',
+					mandatory: false,
+				}
+			)
+		);
 	}
 }
