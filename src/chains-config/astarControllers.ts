@@ -32,6 +32,7 @@ export const astarControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
+		'PalletsErrors',
 		'PalletsStorage',
 		'Paras',
 		'RuntimeCode',
