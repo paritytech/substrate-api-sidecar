@@ -35,11 +35,14 @@ export class Log {
 			return this._logger;
 		}
 
-		this._transports = [
-			consoleTransport(),
-			fileTransport('error', 'errors.log'),
-			fileTransport('info', 'logs.log'),
-		];
+		this._transports = [consoleTransport()];
+
+		if (process.env.SAS_LOG_TO_FILE === 'true') {
+			this._transports.push(
+				fileTransport('error', 'errors.log'),
+				fileTransport('info', 'logs.log')
+			);
+		}
 
 		this._logger = createLogger({
 			transports: this._transports,

@@ -203,11 +203,13 @@ export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 
 - `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`
     to see all HTTP requests.
-- `SAS_LOG_JSON`: wether or not to have logs formatted as JSON, defaults to `false`.
+- `SAS_LOG_JSON`: whether or not to have logs formatted as JSON, defaults to `false`.
     Useful when using `stdout` to programmatically process Sidecar log data.
-- `SAS_LOG_FILTER_RPC`: wether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
-- `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters from logs, defaults
+- `SAS_LOG_FILTER_RPC`: whether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
+- `SAS_LOG_STRIP_ANSI`: whether or not to strip ANSI characters from logs, defaults
     to `false`. Useful when logging RPC calls with JSON written to transports.
+- `SAS_LOG_TO_FILE`: whether or not to export logs to files, defaults to `false`.
+- `SAS_PATH_TO_LOG_FILES`: to specify a custom path for log files, defaults to `build/src/logging/transports/logs`.
 
 #### Log levels
 
