@@ -3,11 +3,10 @@ import { transports } from 'winston';
 import { SidecarConfig } from '../../SidecarConfig';
 
 export const fileTransport = (
-	level: string,
 	fileName: string
 ): transports.FileTransportInstance => {
 	return new transports.File({
-		level,
+		level: SidecarConfig.config.LOG.LEVEL,
 		filename: `${SidecarConfig.config.LOG.WRITE_PATH}/${fileName}`,
 		handleExceptions: true,
 		maxsize: SidecarConfig.config.LOG.WRITE_MAX_FILE_SIZE,

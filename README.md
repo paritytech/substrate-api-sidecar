@@ -208,7 +208,7 @@ export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 - `SAS_LOG_FILTER_RPC`: Whether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
 - `SAS_LOG_STRIP_ANSI`: Whether or not to strip ANSI characters from logs, defaults
     to `false`. Useful when logging RPC calls with JSON written to transports.
-- `SAS_LOG_WRITE`: Whether or not to write logs to a log file. Default is set to `false`. Accepts a boolean value. The log files will be written as `logs.log`.
+- `SAS_LOG_WRITE`: Whether or not to write logs to a log file. Default is set to `false`. Accepts a boolean value. The log files will be written as `logs.log`. **NOTE**: Tt will only log what is available depending on what `SAS_LOG_LEVEL` is set to.
 - `SAS_LOG_WRITE_PATH`: Specifies the path to write the log files. Default will be where the package is installed.
 - `SAS_LOG_WRITE_MAX_FILE_SIZE`: Specifies in bytes what the max file size for the written log files should be. Default is `5242880` (5MB).
 - `SAS_LOG_WRITE_MAX_FILES`: Specifies how many files can be written. Default is 5.

@@ -42,9 +42,7 @@ export class Log {
 		 * By default this will be false unless specified as an ENV var.
 		 */
 		if (SidecarConfig.config.LOG.WRITE) {
-			this._transports.push(
-				fileTransport(SidecarConfig.config.LOG.LEVEL, 'logs.log')
-			);
+			this._transports.push(fileTransport('logs.log'));
 		}
 
 		this._logger = createLogger({
