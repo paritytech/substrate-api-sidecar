@@ -35,7 +35,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const historicApi = await api.at(hash);
 
 		const validatorSession = await historicApi.query.session.validators();
-		const validatorsActiveSet: Set<string> = new Set();
+		const validatorsActiveSet= new Set<string>();
 		for (const address of validatorSession) {
 			validatorsActiveSet.add(address.toString());
 		}
