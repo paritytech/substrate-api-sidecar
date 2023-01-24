@@ -35,6 +35,7 @@ export * from './PalletErrors';
 export * from './PalletErrorsItem';
 export * from './PalletNominationPools';
 export * from './PalletStakingProgress';
+export * from './PalletStakingValidators';
 export * from './PalletStorage';
 export * from './PalletStorageItem';
 export * from './Paras';

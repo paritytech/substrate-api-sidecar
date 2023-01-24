@@ -47,6 +47,13 @@ export const polkadot: IConfig = {
             'unclaimedOnly=false',
         ],
     },
+    '/pallets/staking/validators': {
+      path: '/pallets/staking/validators',
+      queryParams: [
+          'at={blockId}',
+          'metadata=true',
+      ]
+    },
     '/accounts/{accountId}/validate': {
         path: '/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate',
         queryParams: [],

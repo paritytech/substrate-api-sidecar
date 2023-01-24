@@ -18,4 +18,5 @@ export * from '././PalletsErrorsService';
 export * from './PalletsAssetsService';
 export * from './PalletsNominationPoolsService';
 export * from './PalletsStakingProgressService';
+export * from './PalletsStakingValidatorsService';
 export * from './PalletsStorageService';

@@ -31,6 +31,7 @@ import {
 	PalletsErrors,
 	PalletsNominationPools,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
@@ -61,6 +62,7 @@ export const controllers = {
 	PalletsErrors,
 	PalletsNominationPools,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 	NodeNetwork,
 	NodeTransactionPool,
