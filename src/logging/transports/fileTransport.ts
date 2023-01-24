@@ -10,7 +10,7 @@ export const fileTransport = (
 		level,
 		filename: `${SidecarConfig.config.LOG.WRITE_PATH}/${fileName}`,
 		handleExceptions: true,
-		maxsize: 5242880, // 5MB
-		maxFiles: 5,
+		maxsize: SidecarConfig.config.LOG.WRITE_MAX_FILE_SIZE,
+		maxFiles: SidecarConfig.config.LOG.WRITE_MAX_FILES,
 	});
 };

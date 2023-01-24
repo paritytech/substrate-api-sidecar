@@ -207,6 +207,7 @@ export class Specs {
 			)
 		);
 
+		// WRITE
 		this._specs.appendSpec(
 			MODULES.LOG,
 			this._specs.getSpec(
@@ -221,6 +222,7 @@ export class Specs {
 			)
 		);
 
+		// WRITE_PATH
 		this._specs.appendSpec(
 			MODULES.LOG,
 			this._specs.getSpec(
@@ -230,6 +232,34 @@ export class Specs {
 					// TODO: Need <ROOT> of this directory
 					default: `${__dirname}/logs`,
 					type: 'string',
+					mandatory: false,
+				}
+			)
+		);
+
+		// WRITE_MAX_FILE_SIZE
+		this._specs.appendSpec(
+			MODULES.LOG,
+			this._specs.getSpec(
+				CONFIG.WRITE_MAX_FILE_SIZE,
+				'The max size the log file should not exceed.',
+				{
+					default: 5242880, // 5MB
+					type: 'number',
+					mandatory: false,
+				}
+			)
+		);
+
+		// WRITE_MAX_FILES
+		this._specs.appendSpec(
+			MODULES.LOG,
+			this._specs.getSpec(
+				CONFIG.WRITE_MAX_FILES,
+				'The max amount of files that should be created.',
+				{
+					default: 5,
+					type: 'number',
 					mandatory: false,
 				}
 			)

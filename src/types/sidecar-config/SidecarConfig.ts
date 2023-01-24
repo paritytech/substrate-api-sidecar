@@ -43,4 +43,6 @@ interface ISidecarConfigLog {
 	STRIP_ANSI: boolean;
 	WRITE: boolean;
 	WRITE_PATH: string;
+	WRITE_MAX_FILE_SIZE: number;
+	WRITE_MAX_FILES: number;
 }
