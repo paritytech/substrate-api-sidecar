@@ -198,6 +198,24 @@ export const polkadot: IConfig = {
             'at={blockId}',
         ]
     },
+    '/pallets/{palletId}/errors': {
+        path: '/pallets/balances/errors',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/errors?onlyIds=true': {
+        path: '/pallets/17/errors',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/errors/{errorItemId}': {
+        path: '/pallets/democracy/errors/ValueLow',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
     '/pallets/nominationPoools/info': {
         path: '/pallets/nominationPools/info',
         queryParams: [

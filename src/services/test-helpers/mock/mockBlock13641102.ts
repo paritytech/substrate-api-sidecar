@@ -14,9 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as PalletsAssets } from './PalletsAssetsController';
-export { default as PalletsErrors } from './PalletsErrorsController';
-export { default as PalletsNominationPools } from './PalletsNominationPoolsController';
-export { default as PalletsStakingProgress } from './PalletsStakingProgressController';
-export { default as PalletsStakingValidators } from './PalletsStakingValidatorsController';
-export { default as PalletsStorage } from './PalletsStorageController';
+import { polkadotRegistryV9300 } from '../../../test-helpers/registries';
+import block13641102 from './data/blocks13641102.json';
+
+/**
+ * Mock for polkadot block #13641102.
+ */
+export const mockBlock13641102 = polkadotRegistryV9300.createType(
+	'Block',
+	block13641102
+);
+
+/**
+ * BlockHash for polkadot block #13641102.
+ */
+export const blockHash13641102 = polkadotRegistryV9300.createType(
+	'BlockHash',
+	'0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655'
+);

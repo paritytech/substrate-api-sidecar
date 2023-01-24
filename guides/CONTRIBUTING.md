@@ -17,7 +17,7 @@ where reviewers will be able to review your changes made.
 
 ### Before submitting a PR
 
--   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint --fix` to
+-   `yarn lint`: Make sure your code follows our linting rules. You can also run `yarn lint:fix` or `yarn lint --fix` to
     automatically fix some of those errors.
 -   `yarn test`: Make sure all tests pass.
 -   If any changes are made to the OpenApi specs :
@@ -57,11 +57,8 @@ result in:
 Asking for help in the Parity community is encouraged and welcomed! The best
 ways to reach us are:
 
-- Chat with us:
-  [Substrate Technical Element](https://app.element.io/#/room/!HzySYSaIhtyWrwiwEV:matrix.org)
-- Ask a question tagged `substrate`:
-  [Stack Overflow](https://stackoverflow.com/questions/tagged/substrate)
-- Weekly office hours: [Substrate Seminar](https://substrate.dev/en/seminar)
+- Ask a question in the [Substrate and Polkadot Stack Exchange](https://substrate.stackexchange.com/)
+- Attend the Biweekly [Substrate Seminars](https://substrate.io/ecosystem/resources/seminar/)
 
 ## Heritage
 
