@@ -43,8 +43,8 @@ export class Log {
 		 */
 		if (SidecarConfig.config.LOG.WRITE) {
 			this._transports.push(
-				fileTransport('error', 'errors.log'),
-				fileTransport('info', 'logs.log')
+				fileTransport(SidecarConfig.config.LOG.LEVEL, 'logs.log'),
+				fileTransport('error', 'errors.log')
 			);
 		}
 
