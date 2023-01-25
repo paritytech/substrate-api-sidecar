@@ -24,7 +24,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 	constructor(api: ApiPromise) {
 		super(
 			api,
-			'/pallets/nominationPools',
+			'/pallets/nomination-pools',
 			new PalletsNominationPoolService(api)
 		);
 		this.initRoutes();
