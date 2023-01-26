@@ -22,6 +22,7 @@ import {
 	MetadataV14,
 	ModuleMetadataV13,
 	PalletErrorMetadataV14,
+	PalletEventMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
 	StorageEntryMetadataV13,
@@ -41,15 +42,18 @@ export abstract class AbstractPalletsService extends AbstractService {
 	):
 		| Option<StorageMetadataV13>
 		| Option<PalletStorageMetadataV14>
-		| Option<PalletErrorMetadataV14> {
+		| Option<PalletErrorMetadataV14>
+		| Option<PalletEventMetadataV14> {
 		if (metadataFieldType === 'storage') {
 			if (meta.toRawType().includes('MetadataV13')) {
 				return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
 			} else {
 				return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 			}
+		} else if (metadataFieldType === 'errors') {
+			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 		} else {
-			return this.getProperty(meta as PalletMetadataV14, 'errors');
+			return this.getProperty(meta as PalletMetadataV14, 'events');
 		}
 	}
 

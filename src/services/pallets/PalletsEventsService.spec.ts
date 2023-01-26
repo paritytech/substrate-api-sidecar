@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
+import { InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
@@ -93,6 +94,27 @@ describe('PalletEventsService', () => {
 					})
 				)
 			).toMatchObject(fetchExternalTabled);
+		});
+
+		it('throws an error when an event id isnt found', async () => {
+			expect.assertions(2);
+			try {
+				sanitizeNumbers(
+					await palletsEventsService.fetchEventItem(mockHistoricApi, {
+						hash: blockHash789629,
+						palletId: 'democracy',
+						eventItemId: 'IncorrectEventId',
+						metadata: true,
+					})
+				);
+			} catch (error) {
+				expect(error).toBeInstanceOf(InternalServerError);
+				expect(error).toEqual(
+					new InternalServerError(
+						`Could not find events item ("IncorrectEventId") in metadata. events item names are expected to be in camel case, e.g. 'storageItemId'`
+					)
+				);
+			}
 		});
 	});
 
