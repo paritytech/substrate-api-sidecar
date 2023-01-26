@@ -201,13 +201,17 @@ export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 
 ### Logging
 
-- `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`
+- `SAS_LOG_LEVEL`: The lowest priority log level to surface, defaults to `info`. Tip: set to `http`
     to see all HTTP requests.
-- `SAS_LOG_JSON`: wether or not to have logs formatted as JSON, defaults to `false`.
+- `SAS_LOG_JSON`:Whether or not to have logs formatted as JSON, defaults to `false`.
     Useful when using `stdout` to programmatically process Sidecar log data.
-- `SAS_LOG_FILTER_RPC`: wether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
-- `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters from logs, defaults
+- `SAS_LOG_FILTER_RPC`: Whether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
+- `SAS_LOG_STRIP_ANSI`: Whether or not to strip ANSI characters from logs, defaults
     to `false`. Useful when logging RPC calls with JSON written to transports.
+- `SAS_LOG_WRITE`: Whether or not to write logs to a log file. Default is set to `false`. Accepts a boolean value. The log files will be written as `logs.log`. **NOTE**: It will only log what is available depending on what `SAS_LOG_LEVEL` is set to.
+- `SAS_LOG_WRITE_PATH`: Specifies the path to write the log files. Default will be where the package is installed.
+- `SAS_LOG_WRITE_MAX_FILE_SIZE`: Specifies in bytes what the max file size for the written log files should be. Default is `5242880` (5MB). **NOTE** Once the the max amount of files have reached their max size, the logger will start to rewrite over the first log file.
+- `SAS_LOG_WRITE_MAX_FILES`: Specifies how many files can be written. Default is 5.
 
 #### Log levels
 
@@ -298,7 +302,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 ### Updating polkadot-js dependencies
 
 1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up,
-and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`.
+and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn up "@polkadot/*"`.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)

@@ -74,6 +74,16 @@ export class SidecarConfig {
 				JSON: config.Get(MODULES.LOG, CONFIG.JSON) as boolean,
 				FILTER_RPC: config.Get(MODULES.LOG, CONFIG.FILTER_RPC) as boolean,
 				STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
+				WRITE: config.Get(MODULES.LOG, CONFIG.WRITE) as boolean,
+				WRITE_PATH: config.Get(MODULES.LOG, CONFIG.WRITE_PATH) as string,
+				WRITE_MAX_FILE_SIZE: config.Get(
+					MODULES.LOG,
+					CONFIG.WRITE_MAX_FILE_SIZE
+				) as number,
+				WRITE_MAX_FILES: config.Get(
+					MODULES.LOG,
+					CONFIG.WRITE_MAX_FILES
+				) as number,
 			},
 		};
 
