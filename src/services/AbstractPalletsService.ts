@@ -17,6 +17,7 @@
 import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Vec } from '@polkadot/types';
 import {
+	EventMetadataLatest,
 	MetadataV13,
 	MetadataV14,
 	ModuleMetadataV13,
@@ -201,11 +202,13 @@ export abstract class AbstractPalletsService extends AbstractService {
 		metadataFieldType: string
 	):
 		| PalletErrorMetadataV14
+		| EventMetadataLatest
 		| StorageEntryMetadataV13
 		| StorageEntryMetadataV14 {
 		let palletItemIdx = -1;
 		let palletItemMeta:
 			| PalletErrorMetadataV14
+			| EventMetadataLatest
 			| StorageEntryMetadataV13
 			| StorageEntryMetadataV14;
 
@@ -215,8 +218,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 				palletItemIdx,
 				palletItemId
 			);
-		} else {
+		} else if (metadataFieldType === 'errors') {
 			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
+				historicApi,
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		} else {
+			[palletItemIdx, palletItemMeta] = this.getEventItemMeta(
 				historicApi,
 				palletMeta as PalletMetadataV14,
 				palletItemIdx,
@@ -260,6 +270,36 @@ export abstract class AbstractPalletsService extends AbstractService {
 			Object.entries(errors)[
 				errorItemMetaIdx
 			] as unknown as PalletErrorMetadataV14,
+		];
+	}
+
+	private getEventItemMeta(
+		historicApi: ApiDecoration<'promise'>,
+		palletMeta: PalletMetadataV14,
+		eventItemMetaIdx: number,
+		eventItemId: string
+	): [number, EventMetadataLatest] {
+		const palletName = stringCamelCase(palletMeta.name);
+		const errors = historicApi.events[palletName];
+
+		if ((palletMeta.errors as unknown as EventMetadataLatest).isEmpty) {
+			throw new InternalServerError(
+				`No event items found in ${palletMeta.name.toString()}'s metadadta`
+			);
+		}
+
+		for (const [, val] of Object.entries(errors)) {
+			const item = val.meta;
+			if (item.name.toLowerCase() === eventItemId.toLowerCase()) {
+				eventItemMetaIdx = val.meta.index.toNumber();
+			}
+		}
+
+		return [
+			eventItemMetaIdx,
+			Object.entries(errors)[
+				eventItemMetaIdx
+			] as unknown as EventMetadataLatest,
 		];
 	}
 

@@ -20,14 +20,14 @@ import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
-import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
-import { getPalletErrors } from '../test-helpers/mock/data/mockPalletErrorsData';
-import fetchErrorOnlyIdsRes from '../test-helpers/responses/pallets/fetchErrorsOnlyIdsRes.json';
-import fetchErrorRes from '../test-helpers/responses/pallets/fetchErrorsRes.json';
-import fetchInsufficientFundsRes from '../test-helpers/responses/pallets/fetchInsufficientFundsErrorItem13641356.json';
-import fetchProposalMissingRes from '../test-helpers/responses/pallets/fetchProposalMissingErrorItem13641102.json';
-import fetchValueLowRes from '../test-helpers/responses/pallets/fetchValueLowErrorItem13641102.json';
-import { PalletsErrorsService } from './PalletsErrorsService';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import { getPalletEvents } from '../test-helpers/mock/data/mockPalletEventsData';
+import fetchEventsOnlyIdsRes from '../test-helpers/responses/pallets/fetchEventsOnlyIdsRes.json';
+import fetchEventsRes from '../test-helpers/responses/pallets/fetchEventsRes.json';
+import fetchExternalTabled from '../test-helpers/responses/pallets/fetchExternalTabledEventItem789629.json';
+import fetchProposedRes from '../test-helpers/responses/pallets/fetchProposedEventItem789629.json';
+import fetchTabledRes from '../test-helpers/responses/pallets/fetchTabledEventItem789629.json';
+import { PalletsEventsService } from './PalletsEventsService';
 
 const referendumInfoOfAt = () =>
 	Promise.resolve().then(() => {
@@ -36,7 +36,7 @@ const referendumInfoOfAt = () =>
 
 const mockHistoricApi = {
 	registry: polkadotRegistryV9300,
-	errors: getPalletErrors,
+	events: getPalletEvents,
 	query: {
 		democracy: {
 			referendumInfoOf: referendumInfoOfAt,
@@ -50,75 +50,75 @@ const mockApi = {
 } as unknown as ApiPromise;
 
 /**
- * Mock PalletsErrorsService instance.
+ * Mock PalletsEventsService instance.
  */
-const palletsErrorsService = new PalletsErrorsService(mockApi);
+const palletsEventsService = new PalletsEventsService(mockApi);
 
-describe('PalletErrorService', () => {
-	describe('fetchErrorItem', () => {
+describe('PalletEventsService', () => {
+	describe('fetchEventItem', () => {
 		it('works with a query to a single error item id', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
-						hash: blockHash13641102,
+					await palletsEventsService.fetchEventItem(mockHistoricApi, {
+						hash: blockHash789629,
 						palletId: 'democracy',
-						errorItemId: 'ValueLow',
-						metadata: false,
+						eventItemId: 'Proposed',
+						metadata: true,
 					})
 				)
-			).toMatchObject(fetchValueLowRes);
+			).toMatchObject(fetchProposedRes);
 		});
 
 		it('works with an index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
-						hash: blockHash13641102,
+					await palletsEventsService.fetchEventItem(mockHistoricApi, {
+						hash: blockHash789629,
 						palletId: '14',
-						errorItemId: 'InsufficientFunds',
+						eventItemId: 'Tabled',
 						metadata: false,
 					})
 				)
-			).toMatchObject(fetchInsufficientFundsRes);
+			).toMatchObject(fetchTabledRes);
 		});
 
 		it('appropriately uses metadata params', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
-						hash: blockHash13641102,
+					await palletsEventsService.fetchEventItem(mockHistoricApi, {
+						hash: blockHash789629,
 						palletId: 'democracy',
-						errorItemId: 'ProposalMissing',
+						eventItemId: 'ExternalTabled',
 						metadata: true,
 					})
 				)
-			).toMatchObject(fetchProposalMissingRes);
+			).toMatchObject(fetchExternalTabled);
 		});
 	});
 
-	describe('fetchErrors', () => {
+	describe('fetchEvents', () => {
 		it('work with a index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrors(mockHistoricApi, {
-						hash: blockHash13641102,
+					await palletsEventsService.fetchEvents(mockHistoricApi, {
+						hash: blockHash789629,
 						palletId: '14',
 						onlyIds: false,
 					})
 				)
-			).toStrictEqual(fetchErrorRes);
+			).toStrictEqual(fetchEventsRes);
 		});
 
 		it('only list error item ids when onlyIds is true', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrors(mockHistoricApi, {
-						hash: blockHash13641102,
+					await palletsEventsService.fetchEvents(mockHistoricApi, {
+						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: true,
 					})
 				)
-			).toStrictEqual(fetchErrorOnlyIdsRes);
+			).toStrictEqual(fetchEventsOnlyIdsRes);
 		});
 	});
 });

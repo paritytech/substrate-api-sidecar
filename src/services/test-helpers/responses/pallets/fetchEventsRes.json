@@ -1,0 +1,76 @@
+{
+	"at": {
+		"hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+		"height": "789629"
+	},
+	"pallet": "democracy",
+	"palletIndex": "14",
+	"items": [
+        {
+			"name": "Proposed",
+			"fields": [
+				{
+					"name": null,
+					"type": "127",
+					"typeName": null,
+					"docs": []
+				},
+				{
+					"name": null,
+					"type": "41",
+					"typeName": null,
+					"docs": []
+				}
+			],
+			"index": "0",
+			"docs": [
+				" A motion has been proposed by a public account."
+			],
+			"args": [
+				"PropIndex",
+				"Balance"
+			]
+		},
+		{
+			"name": "Tabled",
+			"fields": [
+				{
+					"name": null,
+					"type": "127",
+					"typeName": null,
+					"docs": []
+				},
+				{
+					"name": null,
+					"type": "41",
+					"typeName": null,
+					"docs": []
+				},
+				{
+					"name": null,
+					"type": "37",
+					"typeName": null,
+					"docs": []
+				}
+			],
+			"index": "1",
+			"docs": [
+				" A public proposal has been tabled for referendum vote."
+			],
+			"args": [
+				"PropIndex",
+				"Balance",
+				"Vec<AccountId>"
+			]
+		},
+        {
+			"name": "ExternalTabled",
+			"fields": [],
+			"index": "2",
+			"docs": [
+				" An external proposal has been tabled."
+			],
+			"args": []
+		}
+	]
+}
