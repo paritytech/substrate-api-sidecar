@@ -44,4 +44,16 @@ export const statemint = {
             'at={blockId}'
         ],
     },
+    '/pallets/{palletId}/events': {
+        path: '/pallets/assets/events',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/events/{eventItemId}': {
+        path: '/pallets/assets/events/Created',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
 }; 
