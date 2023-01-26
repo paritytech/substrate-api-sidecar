@@ -280,15 +280,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 		eventItemId: string
 	): [number, EventMetadataLatest] {
 		const palletName = stringCamelCase(palletMeta.name);
-		const errors = historicApi.events[palletName];
+		const events = historicApi.events[palletName];
 
-		if ((palletMeta.errors as unknown as EventMetadataLatest).isEmpty) {
+		if ((palletMeta.events as unknown as EventMetadataLatest).isEmpty) {
 			throw new InternalServerError(
 				`No event items found in ${palletMeta.name.toString()}'s metadadta`
 			);
 		}
 
-		for (const [, val] of Object.entries(errors)) {
+		for (const [, val] of Object.entries(events)) {
 			const item = val.meta;
 			if (item.name.toLowerCase() === eventItemId.toLowerCase()) {
 				eventItemMetaIdx = val.meta.index.toNumber();
@@ -297,7 +297,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		return [
 			eventItemMetaIdx,
-			Object.entries(errors)[
+			Object.entries(events)[
 				eventItemMetaIdx
 			] as unknown as EventMetadataLatest,
 		];
