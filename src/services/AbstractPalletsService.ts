@@ -17,6 +17,7 @@
 import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Vec } from '@polkadot/types';
 import {
+	ErrorMetadataLatest,
 	EventMetadataLatest,
 	MetadataV13,
 	MetadataV14,
@@ -204,15 +205,10 @@ export abstract class AbstractPalletsService extends AbstractService {
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
 		metadataFieldType: string
-	):
-		| PalletErrorMetadataV14
-		| EventMetadataLatest
-		| StorageEntryMetadataV13
-		| StorageEntryMetadataV14 {
+	): ErrorMetadataLatest | EventMetadataLatest | StorageEntryMetadataV13 | StorageEntryMetadataV14 {
 		let palletItemIdx = -1;
 		let palletItemMeta:
-			| PalletErrorMetadataV14
-			| EventMetadataLatest
+			| ErrorMetadataLatest
 			| StorageEntryMetadataV13
 			| StorageEntryMetadataV14;
 
@@ -252,11 +248,11 @@ export abstract class AbstractPalletsService extends AbstractService {
 		palletMeta: PalletMetadataV14,
 		errorItemMetaIdx: number,
 		errorItemId: string
-	): [number, PalletErrorMetadataV14] {
+	): [number, ErrorMetadataLatest] {
 		const palletName = stringCamelCase(palletMeta.name);
 		const errors = historicApi.errors[palletName];
 
-		if ((palletMeta.errors as unknown as PalletErrorMetadataV14).isEmpty) {
+		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
 			throw new InternalServerError(
 				`No error items found in ${palletMeta.name.toString()}'s metadadta`
 			);
@@ -273,7 +269,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 			errorItemMetaIdx,
 			Object.entries(errors)[
 				errorItemMetaIdx
-			] as unknown as PalletErrorMetadataV14,
+			] as unknown as ErrorMetadataLatest,
 		];
 	}
 

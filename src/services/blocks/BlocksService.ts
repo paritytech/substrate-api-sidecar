@@ -29,7 +29,9 @@ import {
 	Header,
 	InclusionFee,
 	RuntimeDispatchInfo,
+	RuntimeDispatchInfoV1,
 	Weight,
+	WeightV1,
 } from '@polkadot/types/interfaces';
 import { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
@@ -263,6 +265,9 @@ export class BlocksService extends AbstractService {
 				partialFee,
 				weight,
 			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+			const versionedWeight = (weight as Weight).refTime
+				? (weight as Weight).refTime.unwrap()
+				: (weight as WeightV1);
 
 			const transactionPaidFeeEvent = xtEvents.find(
 				({ method }) =>
@@ -288,7 +293,7 @@ export class BlocksService extends AbstractService {
 						block.extrinsics[idx],
 						previousBlockHash,
 						weightInfo.weight,
-						weight
+						versionedWeight.toString()
 					);
 
 					dispatchFeeType = 'postDispatch';
@@ -298,7 +303,7 @@ export class BlocksService extends AbstractService {
 							block.extrinsics[idx],
 							previousBlockHash,
 							weightInfo.weight,
-							weight
+							versionedWeight.toString()
 						);
 						dispatchFeeType = 'postDispatch';
 						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
@@ -351,7 +356,7 @@ export class BlocksService extends AbstractService {
 		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
-		estWeight: Weight
+		estWeight: string
 	): Promise<string> {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
@@ -390,7 +395,7 @@ export class BlocksService extends AbstractService {
 	private async fetchQueryInfo(
 		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash
-	): Promise<RuntimeDispatchInfo> {
+	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
@@ -429,7 +434,7 @@ export class BlocksService extends AbstractService {
 	 */
 	private calcPartialFee(
 		extrinsicSuccessWeight: Weight,
-		estWeight: Weight,
+		estWeight: string,
 		inclusionFee: Option<InclusionFee>
 	): string {
 		if (inclusionFee.isSome) {

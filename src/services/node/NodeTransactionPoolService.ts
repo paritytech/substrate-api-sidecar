@@ -19,6 +19,7 @@ import {
 	DispatchClass,
 	Extrinsic,
 	Weight,
+	WeightV1,
 	WeightV2,
 } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
@@ -102,7 +103,7 @@ export class NodeTransactionPoolService extends AbstractService {
 	private async computeExtPriority(
 		ext: Extrinsic,
 		dispatchClass: DispatchClass,
-		weight: Weight
+		weight: Weight | WeightV1
 	): Promise<string> {
 		const { api } = this;
 		const { tip, encodedLength: len } = ext;
@@ -112,7 +113,7 @@ export class NodeTransactionPoolService extends AbstractService {
 		// Check which versions of Weight we are using by checking to see if refTime exists.
 		const versionedWeight = weight['refTime']
 			? (weight as unknown as WeightV2).refTime.unwrap().toBn()
-			: weight.toBn();
+			: (weight as WeightV1).toBn();
 		const maxBlockWeight = api.consts.system.blockWeights.maxBlock.refTime
 			? api.consts.system.blockWeights.maxBlock.refTime.unwrap()
 			: (api.consts.system.blockWeights.maxBlock as unknown as u64);

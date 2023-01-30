@@ -230,13 +230,13 @@ export const polkadot: IConfig = {
         ],
     },
     '/pallets/nominationPoools/info': {
-        path: '/pallets/nominationPools/info',
+        path: '/pallets/nomination-pools/info',
         queryParams: [
             'at={blockId}',
         ]
     },
     '/pallets/nominationPoools/{poolId}': {
-        path: '/pallets/nominationPools/122',
+        path: '/pallets/nomination-pools/122',
         queryParams: [
             'at={blockId}',
             'metadata=true',
