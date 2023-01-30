@@ -28,6 +28,7 @@ import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
+	PalletsConsts,
 	PalletsErrors,
 	PalletsNominationPools,
 	PalletsStakingProgress,
@@ -59,6 +60,7 @@ export const controllers = {
 	AccountsStakingPayouts,
 	ContractsInk,
 	PalletsAssets,
+	PalletsConsts,
 	PalletsErrors,
 	PalletsNominationPools,
 	PalletsStakingProgress,

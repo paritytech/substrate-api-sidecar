@@ -67,6 +67,11 @@ export interface IContractQueryParam extends Query {
 	storageDepositLimit: string;
 }
 
+export interface IPalletsConstantsParam extends ParamsDictionary {
+	palletId: string;
+	constantItemId: string;
+}
+
 export interface IPalletsErrorsParam extends ParamsDictionary {
 	palletId: string;
 	errorItemId: string;

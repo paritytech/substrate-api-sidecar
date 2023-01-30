@@ -1,0 +1,17 @@
+{
+	"at": {
+		"hash": "0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655",
+		"height": "789629"
+	},
+	"pallet": "democracy",
+	"palletIndex": "14",
+	"constantsItem": "VotingPeriod",
+	"metadata": {
+		"name": "VotingPeriod",
+		"type": "4",
+		"value": "0x00270600",
+		"docs": [
+			" How often (in blocks) to check for new votes."
+		]
+	}
+}

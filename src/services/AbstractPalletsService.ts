@@ -20,6 +20,8 @@ import {
 	MetadataV13,
 	MetadataV14,
 	ModuleMetadataV13,
+	PalletConstantMetadataV14,
+	PalletConstantMetadataLatest,
 	PalletErrorMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
@@ -40,15 +42,18 @@ export abstract class AbstractPalletsService extends AbstractService {
 	):
 		| Option<StorageMetadataV13>
 		| Option<PalletStorageMetadataV14>
-		| Option<PalletErrorMetadataV14> {
+		| Option<PalletErrorMetadataV14>
+		| Vec<PalletConstantMetadataV14> {
 		if (metadataFieldType === 'storage') {
 			if (meta.toRawType().includes('MetadataV13')) {
 				return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
 			} else {
 				return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 			}
+		} else if (metadataFieldType === 'errors') {
+			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 		} else {
-			return this.getProperty(meta as PalletMetadataV14, 'errors');
+			return this.getProperty(meta as PalletMetadataV14, 'constants');
 		}
 	}
 
@@ -78,7 +83,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 				metadataFieldType
 			);
 			filtered = pallets.filter(
-				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
+				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
 			);
 		} else {
 			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
@@ -87,7 +92,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 				metadataFieldType
 			);
 			filtered = pallets.filter(
-				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
+				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
 			);
 		}
 
@@ -215,9 +220,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 				palletItemIdx,
 				palletItemId
 			);
-		} else {
+		} else if (metadataFieldType === 'errors') {
 			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
 				historicApi,
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		} else {
+			[palletItemIdx, palletItemMeta] = this.getConstItemMeta(
 				palletMeta as PalletMetadataV14,
 				palletItemIdx,
 				palletItemId
@@ -231,6 +242,24 @@ export abstract class AbstractPalletsService extends AbstractService {
 		}
 
 		return palletItemMeta;
+	}
+
+	private getConstItemMeta(
+		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		constItemMetaIdx: number,
+		constItemId: string,
+	): [number, PalletConstantMetadataLatest] {
+		if (palletMeta.constants.isEmpty) {
+			throw new InternalServerError(
+				`No const items found in ${palletMeta.name.toString()}'s metadata`
+			);
+		}
+		const palletMetaConsts = palletMeta.constants as Vec<PalletConstantMetadataLatest>;
+		constItemMetaIdx = palletMetaConsts.findIndex(
+			(item) => item.name.toLowerCase() === constItemId.toLowerCase()
+		);
+
+		return [constItemMetaIdx, palletMetaConsts[constItemMetaIdx]];
 	}
 
 	private getErrorItemMeta(

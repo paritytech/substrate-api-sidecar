@@ -1,0 +1,111 @@
+{
+	"at": {
+		"hash": "0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655",
+		"height": "789629"
+	},
+	"pallet": "democracy",
+	"palletIndex": "14",
+	"items": [
+		{
+			"name": "EnactmentPeriod",
+			"type": "4",
+			"value": "0x00270600",
+			"docs": [
+				" The period between a proposal being approved and enacted.",
+				"",
+				" It should generally be a little more than the unstake period to ensure that",
+				" voting stakers have an opportunity to remove themselves from the system in the case",
+				" where they are on the losing side of a vote."
+			]
+		},
+        {
+ 
+            "name": "LaunchPeriod",
+            "type": "4",
+            "value": "0x00270600",
+            "docs": [
+                " How often (in blocks) new public referenda are launched."
+              ]
+        },
+        {
+            "name": "VotingPeriod",
+            "type": "4",
+            "value": "0x00270600",
+            "docs": [
+                " How often (in blocks) to check for new votes."
+            ]
+        },
+        {
+            "name": "VoteLockingPeriod",
+            "type": "4",
+            "value": "0x00270600",
+            "docs": [
+                " The minimum period of vote locking.",
+                "",
+                " It should be no shorter than enactment period to ensure that in the case of an approval,",
+                " those successful voters are locked into the consequences that their votes entail."
+            ]
+        },
+        {
+            "name": "MinimumDeposit",
+            "type": "6",
+            "value": "0x0010a5d4e80000000000000000000000",
+            "docs": [
+                " The minimum amount to be used as a deposit for a public referendum proposal."
+            ]
+        },
+        {
+            "name": "InstantAllowed",
+            "type": "42",
+            "value": "0x01",
+            "docs": [
+                " Indicator for whether an emergency origin is even allowed to happen. Some chains may",
+                " want to set this permanently to `false`, others may want to condition it on things such",
+                " as an upgrade having happened recently."
+            ]
+        },
+        {
+            "name": "FastTrackVotingPeriod",
+            "type": "4",
+            "value": "0x08070000",
+            "docs": [
+                " Minimum voting period allowed for a fast-track referendum."
+            ]
+        },
+        {
+            "name": "CooloffPeriod",
+            "type": "4",
+            "value": "0xc0890100",
+            "docs": [
+                " Period in blocks where an external proposal may not be re-submitted after being vetoed."
+            ]
+        },
+        {
+            "name": "PreimageByteDeposit",
+            "type": "6",
+            "value": "0x80969800000000000000000000000000",
+            "docs": [
+                " The amount of balance that must be deposited per byte of preimage stored."
+            ]
+        },
+        {
+            "name": "MaxVotes",
+            "type": "4",
+            "value": "0x64000000",
+            "docs": [
+                " The maximum number of votes for an account.",
+                "",
+                " Also used to compute weight, an overly big value can",
+                " lead to extrinsic with very big weight: see `delegate` for instance."
+            ]
+        },
+        {
+            "name": "MaxProposals",
+            "type": "4",
+            "value": "0x64000000",
+            "docs": [
+                " The maximum number of public proposals that can exist at any time."
+            ]
+        }
+    ]
+}
