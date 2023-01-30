@@ -205,7 +205,11 @@ export abstract class AbstractPalletsService extends AbstractService {
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
 		metadataFieldType: string
-	): ErrorMetadataLatest | EventMetadataLatest | StorageEntryMetadataV13 | StorageEntryMetadataV14 {
+	):
+		| ErrorMetadataLatest
+		| EventMetadataLatest
+		| StorageEntryMetadataV13
+		| StorageEntryMetadataV14 {
 		let palletItemIdx = -1;
 		let palletItemMeta:
 			| ErrorMetadataLatest
