@@ -21,8 +21,8 @@ import {
 	MetadataV13,
 	MetadataV14,
 	ModuleMetadataV13,
-	PalletConstantMetadataV14,
 	PalletConstantMetadataLatest,
+	PalletConstantMetadataV14,
 	PalletErrorMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
@@ -205,10 +205,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
 		metadataFieldType: string
-	): ErrorMetadataLatest | StorageEntryMetadataV13 | StorageEntryMetadataV14 {
+	):
+		| ErrorMetadataLatest
+		| PalletConstantMetadataLatest
+		| StorageEntryMetadataV13
+		| StorageEntryMetadataV14 {
 		let palletItemIdx = -1;
 		let palletItemMeta:
 			| ErrorMetadataLatest
+			| PalletConstantMetadataLatest
 			| StorageEntryMetadataV13
 			| StorageEntryMetadataV14;
 
@@ -245,14 +250,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 	private getConstItemMeta(
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		constItemMetaIdx: number,
-		constItemId: string,
+		constItemId: string
 	): [number, PalletConstantMetadataLatest] {
 		if (palletMeta.constants.isEmpty) {
 			throw new InternalServerError(
 				`No const items found in ${palletMeta.name.toString()}'s metadata`
 			);
 		}
-		const palletMetaConsts = palletMeta.constants as Vec<PalletConstantMetadataLatest>;
+		const palletMetaConsts =
+			palletMeta.constants as Vec<PalletConstantMetadataLatest>;
 		constItemMetaIdx = palletMetaConsts.findIndex(
 			(item) => item.name.toLowerCase() === constItemId.toLowerCase()
 		);

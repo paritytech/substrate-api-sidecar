@@ -19,10 +19,10 @@ import { Text } from '@polkadot/types';
 import {
 	BlockHash,
 	PalletConstantMetadataLatest,
-    // PalletConstantMetadataV14,
+	// PalletConstantMetadataV14,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
-import { IPalletConstantsItem, IPalletConstants } from 'src/types/responses';
+import { IPalletConstants, IPalletConstantsItem } from 'src/types/responses';
 
 import { AbstractPalletsService } from '../AbstractPalletsService';
 
@@ -60,11 +60,9 @@ export class PalletsConstantsService extends AbstractPalletsService {
 			metadataFieldType
 		) as PalletConstantMetadataLatest;
 
-        console.log("constantItemMeta---", constantItemMetadata);
-
 		let palletConstantMetadata: PalletConstantMetadataLatest | undefined;
 		if (metadata) {
-			palletConstantMetadata = constantItemMetadata
+			palletConstantMetadata = constantItemMetadata;
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -96,13 +94,15 @@ export class PalletsConstantsService extends AbstractPalletsService {
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 
-        let items: [] | PalletConstantMetadataLatest[] | Text[];
+		let items: [] | PalletConstantMetadataLatest[] | Text[];
 		if (palletMeta.constants.isEmpty) {
 			items = [];
 		} else if (onlyIds) {
-			items = palletMeta.constants.map(((itemMeta) => itemMeta.name));
+			items = palletMeta.constants.map((itemMeta) => itemMeta.name);
 		} else {
-			items = palletMeta.constants.map((itemMeta) => (itemMeta as PalletConstantMetadataLatest));
+			items = palletMeta.constants.map(
+				(itemMeta) => itemMeta as PalletConstantMetadataLatest
+			);
 		}
 
 		return {

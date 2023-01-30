@@ -47,26 +47,29 @@ export default class PalletsConstantsController extends AbstractController<Palle
 		]);
 	}
 
-	private getConstById: RequestHandler<IPalletsConstantsParam, unknown, unknown> =
-		async (
-			{ query: { at, metadata }, params: { palletId, constantItemId } },
-			res
-		): Promise<void> => {
-			const metadataArg = metadata === 'true';
-			const hash = await this.getHashFromAt(at);
-			const historicApi = await this.api.at(hash);
+	private getConstById: RequestHandler<
+		IPalletsConstantsParam,
+		unknown,
+		unknown
+	> = async (
+		{ query: { at, metadata }, params: { palletId, constantItemId } },
+		res
+	): Promise<void> => {
+		const metadataArg = metadata === 'true';
+		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
 
-			PalletsConstantsController.sanitizedSend(
-				res,
-				await this.service.fetchConstantItem(historicApi, {
-					hash,
-					// stringCamelCase ensures we don't have snake case or kebab case
-					palletId: stringCamelCase(palletId),
-					constantItemId: stringCamelCase(constantItemId),
-					metadata: metadataArg,
-				})
-			);
-		};
+		PalletsConstantsController.sanitizedSend(
+			res,
+			await this.service.fetchConstantItem(historicApi, {
+				hash,
+				// stringCamelCase ensures we don't have snake case or kebab case
+				palletId: stringCamelCase(palletId),
+				constantItemId: stringCamelCase(constantItemId),
+				metadata: metadataArg,
+			})
+		);
+	};
 
 	private getConsts: RequestHandler = async (
 		{ params: { palletId }, query: { at, onlyIds } },
