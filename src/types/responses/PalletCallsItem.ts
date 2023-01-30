@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as PalletsAssets } from './PalletsAssetsController';
-export { default as PalletsCalls } from './PalletsCallsController';
-export { default as PalletsErrors } from './PalletsErrorsController';
-export { default as PalletsNominationPools } from './PalletsNominationPoolsController';
-export { default as PalletsStakingProgress } from './PalletsStakingProgressController';
-export { default as PalletsStakingValidators } from './PalletsStakingValidatorsController';
-export { default as PalletsStorage } from './PalletsStorageController';
+import { FunctionMetadataLatest } from '@polkadot/types/interfaces';
+
+import { IPallet, ISanitizedCallItemMetadata } from '.';
+
+export interface IPalletCallsItem extends IPallet {
+	errorItem: string;
+	metadata: ISanitizedCallItemMetadata | FunctionMetadataLatest | undefined;
+}

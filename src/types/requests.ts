@@ -59,6 +59,10 @@ export interface IParaIdParam extends ParamsDictionary {
 export interface IRangeQueryParam extends Query {
 	range: string;
 }
+export interface IPalletsCallsParam extends ParamsDictionary {
+	palletId: string;
+	callItemId: string;
+}
 
 export interface IContractQueryParam extends Query {
 	method: string;
