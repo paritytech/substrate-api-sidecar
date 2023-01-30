@@ -935,7 +935,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
-  /pallets/nominationPools/{poolId}:
+  /pallets/nomination-pools/{poolId}:
     get:
       tags:
         - pallets
@@ -966,7 +966,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsNominationPool'
-  /pallets/nominationPools/info:
+  /pallets/nomination-pools/info:
     get:
       tags:
         - pallets
