@@ -16,11 +16,7 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
-import {
-	BlockHash,
-	ErrorMetadataLatest,
-	PalletErrorMetadataV14,
-} from '@polkadot/types/interfaces';
+import { BlockHash, ErrorMetadataLatest } from '@polkadot/types/interfaces';
 import { IsError } from '@polkadot/types/metadata/decorate/types';
 import { stringCamelCase } from '@polkadot/util';
 import { IPalletErrors, IPalletErrorsItem } from 'src/types/responses';
@@ -59,7 +55,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 			palletMeta,
 			errorItemId,
 			metadataFieldType
-		) as PalletErrorMetadataV14;
+		) as ErrorMetadataLatest;
 
 		let palletErrorMetadata: ErrorMetadataLatest | undefined;
 		if (metadata) {
@@ -98,7 +94,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 		const errors = historicApi.errors[parsedPalletName];
 
 		let items: [] | ErrorMetadataLatest[] | Text[];
-		if ((palletMeta.errors as unknown as PalletErrorMetadataV14).isEmpty) {
+		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
 			items = [];
 		} else if (onlyIds) {
 			items = Object.entries(errors).map(
