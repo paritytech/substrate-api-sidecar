@@ -255,7 +255,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 		const palletName = stringCamelCase(palletMeta.name);
 		const dispatchables = this.api.tx[palletName];
 
-		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
+		if ((palletMeta.calls as unknown as PalletCallMetadataV14).isEmpty) {
 			throw new InternalServerError(
 				`No dispatchable items found in ${palletMeta.name.toString()}'s metadadta`
 			);
