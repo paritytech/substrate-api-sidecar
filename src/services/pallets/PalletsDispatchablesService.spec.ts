@@ -21,12 +21,11 @@ import { Hash } from '@polkadot/types/interfaces';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
-// import { getPalletDispatchables } from '../test-helpers/mock/data/mockDispatchablesData';
 import fetchDispatchablesOnlyIdsRes from '../test-helpers/responses/pallets/fetchDispatchablesOnlyIdsRes.json';
 import fetchDispatchableRes from '../test-helpers/responses/pallets/fetchDispatchablesRes.json';
-// import fetchInsufficientFundsRes from '../test-helpers/responses/pallets/fetchInsufficientFundsErrorItem13641356.json';
-// import fetchProposalMissingRes from '../test-helpers/responses/pallets/fetchProposalMissingErrorItem13641102.json';
-// import fetchValueLowRes from '../test-helpers/responses/pallets/fetchValueLowErrorItem13641102.json';
+import fetchProposeRes from '../test-helpers/responses/pallets/fetchProposeDispatchableItem789629.json';
+import fetchSecondRes from '../test-helpers/responses/pallets/fetchSecondDispatchableItem789629.json';
+import fetchVoteRes from '../test-helpers/responses/pallets/fetchVoteDispatchableItem789629.json';
 import { PalletsDispatchablesService } from './PalletsDispatchablesService';
 
 const referendumInfoOfAt = () =>
@@ -54,56 +53,68 @@ const mockApi = {
 const palletsDispatchablesService = new PalletsDispatchablesService(mockApi);
 
 describe('PalletDispatchablesService', () => {
-	// describe('fetchDispatchableItem', () => {
-	// 	it('works with a query to a single error item id', async () => {
-	// 		expect(
-	// 			sanitizeNumbers(
-	// 				await palletsDispatchablesService.fetchDispatchableItem(mockHistoricApi, {
-	// 					hash: blockHash13641102,
-	// 					palletId: 'democracy',
-	// 					errorItemId: 'ValueLow',
-	// 					metadata: false,
-	// 				})
-	// 			)
-	// 		).toMatchObject(fetchValueLowRes);
-	// 	});
+	describe('fetchDispatchableItem', () => {
+		it('works with a query to a single error item id', async () => {
+			expect(
+				sanitizeNumbers(
+					await palletsDispatchablesService.fetchDispatchableItem(
+						mockHistoricApi,
+						{
+							hash: blockHash13641102,
+							palletId: 'democracy',
+							dispatchableItemId: 'propose',
+							metadata: false,
+						}
+					)
+				)
+			).toMatchObject(fetchProposeRes);
+		});
 
-	// 	it('works with an index identifier', async () => {
-	// 		expect(
-	// 			sanitizeNumbers(
-	// 				await palletsDispatchablesService.fetchDispatchableItem(mockHistoricApi, {
-	// 					hash: blockHash13641102,
-	// 					palletId: '14',
-	// 					dispatchableItemId: 'InsufficientFunds',
-	// 					metadata: false,
-	// 				})
-	// 			)
-	// 		).toMatchObject(fetchInsufficientFundsRes);
-	// 	});
+		it('works with an index identifier', async () => {
+			expect(
+				sanitizeNumbers(
+					await palletsDispatchablesService.fetchDispatchableItem(
+						mockHistoricApi,
+						{
+							hash: blockHash13641102,
+							palletId: '14',
+							dispatchableItemId: 'second',
+							metadata: false,
+						}
+					)
+				)
+			).toMatchObject(fetchSecondRes);
+		});
 
-	// 	it('appropriately uses metadata params', async () => {
-	// 		expect(
-	// 			sanitizeNumbers(
-	// 				await palletsDispatchablesService.fetchDispatchableItem(mockHistoricApi, {
-	// 					hash: blockHash13641102,
-	// 					palletId: 'democracy',
-	// 					dispatchableItemId: 'ProposalMissing',
-	// 					metadata: true,
-	// 				})
-	// 			)
-	// 		).toMatchObject(fetchProposalMissingRes);
-	// 	});
-	// });
+		it('appropriately uses metadata params', async () => {
+			expect(
+				sanitizeNumbers(
+					await palletsDispatchablesService.fetchDispatchableItem(
+						mockHistoricApi,
+						{
+							hash: blockHash13641102,
+							palletId: 'democracy',
+							dispatchableItemId: 'vote',
+							metadata: true,
+						}
+					)
+				)
+			).toMatchObject(fetchVoteRes);
+		});
+	});
 
 	describe('fetchDispatchables', () => {
 		it('work with a index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsDispatchablesService.fetchDispatchables(mockHistoricApi, {
-						hash: blockHash13641102,
-						palletId: '14',
-						onlyIds: false,
-					})
+					await palletsDispatchablesService.fetchDispatchables(
+						mockHistoricApi,
+						{
+							hash: blockHash13641102,
+							palletId: '14',
+							onlyIds: false,
+						}
+					)
 				)
 			).toStrictEqual(fetchDispatchableRes);
 		});
@@ -111,11 +122,14 @@ describe('PalletDispatchablesService', () => {
 		it('only list dispatchable item ids when onlyIds is true', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsDispatchablesService.fetchDispatchables(mockHistoricApi, {
-						hash: blockHash13641102,
-						palletId: 'democracy',
-						onlyIds: true,
-					})
+					await palletsDispatchablesService.fetchDispatchables(
+						mockHistoricApi,
+						{
+							hash: blockHash13641102,
+							palletId: 'democracy',
+							onlyIds: true,
+						}
+					)
 				)
 			).toStrictEqual(fetchDispatchablesOnlyIdsRes);
 		});

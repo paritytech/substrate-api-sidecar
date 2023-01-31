@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Text } from '@polkadot/types';
-import { SubmittableExtrinsicFunction, ApiTypes } from '@polkadot/api/types';
+import { FunctionMetadataLatest } from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 import { IPallet } from './Pallet';
@@ -24,5 +24,5 @@ export interface IPalletDispatchables extends IPallet {
 	at: IAt;
 	pallet: string;
 	palletIndex: number;
-	items: [] | SubmittableExtrinsicFunction<ApiTypes>[] | Text[];
+	items: [] | FunctionMetadataLatest[] | Text[];
 }

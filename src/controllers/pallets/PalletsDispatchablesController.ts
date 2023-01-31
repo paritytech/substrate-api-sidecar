@@ -19,54 +19,61 @@ import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
 import { PalletsDispatchablesService } from '../../services';
-// import { IPalletsCallsParam } from '../../types/requests';
+import { IPalletsDispatchablesParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
- * `/pallets/{palletId}/errors`
+ * `/pallets/{palletId}/dispatchables`
  *
- * Returns the metadata for each error item of the pallet.
+ * Returns the metadata for each dispatchable item of the pallet.
  *
- * `/pallets/{palletId}/errors/{errorItemId}`
+ * `/pallets/{palletId}/dispatchables/{dispatchableItemId}`
  *
- * Returns the info for the errorItemId.
+ * Returns the info for the dispatchableItemId.
  *
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
-export default class PalletsCallsController extends AbstractController<PalletsDispatchablesService> {
+export default class PalletsDispatchablesController extends AbstractController<PalletsDispatchablesService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/dispatchables', new PalletsDispatchablesService(api));
+		super(
+			api,
+			'/pallets/:palletId/dispatchables',
+			new PalletsDispatchablesService(api)
+		);
 
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			// ['/:dispatchableItemId', this.getDispatchableById as RequestHandler],
+			['/:dispatchableItemId', this.getDispatchableById as RequestHandler],
 			['/', this.getDispatchables],
 		]);
 	}
 
-	// private getErrorById: RequestHandler<IPalletsErrorsParam, unknown, unknown> =
-	// 	async (
-	// 		{ query: { at, metadata }, params: { palletId, errorItemId } },
-	// 		res
-	// 	): Promise<void> => {
-	// 		const metadataArg = metadata === 'true';
-	// 		const hash = await this.getHashFromAt(at);
-	// 		const historicApi = await this.api.at(hash);
+	private getDispatchableById: RequestHandler<
+		IPalletsDispatchablesParam,
+		unknown,
+		unknown
+	> = async (
+		{ query: { at, metadata }, params: { palletId, dispatchableItemId } },
+		res
+	): Promise<void> => {
+		const metadataArg = metadata === 'true';
+		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
 
-	// 		PalletsErrorsController.sanitizedSend(
-	// 			res,
-	// 			await this.service.fetchErrorItem(historicApi, {
-	// 				hash,
-	// 				// stringCamelCase ensures we don't have snake case or kebab case
-	// 				palletId: stringCamelCase(palletId),
-	// 				errorItemId: stringCamelCase(errorItemId),
-	// 				metadata: metadataArg,
-	// 			})
-	// 		);
-	// 	};
+		PalletsDispatchablesController.sanitizedSend(
+			res,
+			await this.service.fetchDispatchableItem(historicApi, {
+				hash,
+				// stringCamelCase ensures we don't have snake case or kebab case
+				palletId: stringCamelCase(palletId),
+				dispatchableItemId: stringCamelCase(dispatchableItemId),
+				metadata: metadataArg,
+			})
+		);
+	};
 
 	private getDispatchables: RequestHandler = async (
 		{ params: { palletId }, query: { at, onlyIds } },
@@ -76,7 +83,7 @@ export default class PalletsCallsController extends AbstractController<PalletsDi
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
 
-		PalletsCallsController.sanitizedSend(
+		PalletsDispatchablesController.sanitizedSend(
 			res,
 			await this.service.fetchDispatchables(historicApi, {
 				hash,

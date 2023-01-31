@@ -18,9 +18,11 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Vec } from '@polkadot/types';
 import {
 	ErrorMetadataLatest,
+	FunctionMetadataLatest,
 	MetadataV13,
 	MetadataV14,
 	ModuleMetadataV13,
+	PalletCallMetadataV14,
 	PalletErrorMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
@@ -41,15 +43,18 @@ export abstract class AbstractPalletsService extends AbstractService {
 	):
 		| Option<StorageMetadataV13>
 		| Option<PalletStorageMetadataV14>
-		| Option<PalletErrorMetadataV14> {
+		| Option<PalletErrorMetadataV14>
+		| Option<PalletCallMetadataV14> {
 		if (metadataFieldType === 'storage') {
 			if (meta.toRawType().includes('MetadataV13')) {
 				return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
 			} else {
 				return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 			}
+		} else if (metadataFieldType === 'errors') {
+			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 		} else {
-			return this.getProperty(meta as PalletMetadataV14, 'errors');
+			return this.getProperty(meta as PalletMetadataV14, 'calls');
 		}
 	}
 
@@ -200,10 +205,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
 		metadataFieldType: string
-	): ErrorMetadataLatest | StorageEntryMetadataV13 | StorageEntryMetadataV14 {
+	):
+		| ErrorMetadataLatest
+		| FunctionMetadataLatest
+		| StorageEntryMetadataV13
+		| StorageEntryMetadataV14 {
 		let palletItemIdx = -1;
 		let palletItemMeta:
 			| ErrorMetadataLatest
+			| FunctionMetadataLatest
 			| StorageEntryMetadataV13
 			| StorageEntryMetadataV14;
 
@@ -213,9 +223,15 @@ export abstract class AbstractPalletsService extends AbstractService {
 				palletItemIdx,
 				palletItemId
 			);
-		} else {
+		} else if (metadataFieldType === 'errors') {
 			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
 				historicApi,
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		} else {
+			[palletItemIdx, palletItemMeta] = this.getDispatchablesItemMeta(
 				palletMeta as PalletMetadataV14,
 				palletItemIdx,
 				palletItemId
@@ -229,6 +245,35 @@ export abstract class AbstractPalletsService extends AbstractService {
 		}
 
 		return palletItemMeta;
+	}
+
+	private getDispatchablesItemMeta(
+		palletMeta: PalletMetadataV14,
+		dispatchableItemMetaIdx: number,
+		dispatchableItemId: string
+	): [number, FunctionMetadataLatest] {
+		const palletName = stringCamelCase(palletMeta.name);
+		const dispatchables = this.api.tx[palletName];
+
+		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
+			throw new InternalServerError(
+				`No dispatchable items found in ${palletMeta.name.toString()}'s metadadta`
+			);
+		}
+
+		for (const [, val] of Object.entries(dispatchables)) {
+			const item = val.meta;
+			if (item.name.toLowerCase() === dispatchableItemId.toLowerCase()) {
+				dispatchableItemMetaIdx = val.meta.index.toNumber();
+			}
+		}
+
+		return [
+			dispatchableItemMetaIdx,
+			Object.entries(dispatchables)[
+				dispatchableItemMetaIdx
+			] as unknown as FunctionMetadataLatest,
+		];
 	}
 
 	private getErrorItemMeta(
