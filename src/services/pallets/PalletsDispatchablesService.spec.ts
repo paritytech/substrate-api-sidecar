@@ -54,7 +54,7 @@ const palletsDispatchablesService = new PalletsDispatchablesService(mockApi);
 
 describe('PalletDispatchablesService', () => {
 	describe('fetchDispatchableItem', () => {
-		it('works with a query to a single error item id', async () => {
+		it('works with a query to a single dispatchable item id', async () => {
 			expect(
 				sanitizeNumbers(
 					await palletsDispatchablesService.fetchDispatchableItem(
