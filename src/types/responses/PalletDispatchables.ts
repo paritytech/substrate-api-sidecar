@@ -14,11 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { FunctionMetadataLatest } from '@polkadot/types/interfaces';
+import { Text } from '@polkadot/types';
+import { SubmittableExtrinsicFunction, ApiTypes } from '@polkadot/api/types';
 
-import { IPallet, ISanitizedCallItemMetadata } from '.';
+import { IAt } from '.';
+import { IPallet } from './Pallet';
 
-export interface IPalletCallsItem extends IPallet {
-	errorItem: string;
-	metadata: ISanitizedCallItemMetadata | FunctionMetadataLatest | undefined;
+export interface IPalletDispatchables extends IPallet {
+	at: IAt;
+	pallet: string;
+	palletIndex: number;
+	items: [] | SubmittableExtrinsicFunction<ApiTypes>[] | Text[];
 }

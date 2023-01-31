@@ -44,6 +44,8 @@ import {
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
 import traceBlockRPC from './data/traceBlock.json';
+import { getPalletDispatchables } from '../mock/data/mockDispatchablesData';
+
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -290,7 +292,8 @@ export const defaultMockApi = {
 	},
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
-	tx,
+	
+	tx: getPalletDispatchables,
 	runtimeMetadata: polkadotMetadata,
 	rpc: {
 		chain: {

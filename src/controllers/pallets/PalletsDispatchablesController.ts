@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { PalletsCallsService } from '../../services';
+import { PalletsDispatchablesService } from '../../services';
 // import { IPalletsCallsParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -33,17 +33,17 @@ import AbstractController from '../AbstractController';
  *
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
-export default class PalletsCallsController extends AbstractController<PalletsCallsService> {
+export default class PalletsCallsController extends AbstractController<PalletsDispatchablesService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/calls', new PalletsCallsService(api));
+		super(api, '/pallets/:palletId/dispatchables', new PalletsDispatchablesService(api));
 
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			// ['/:callItemId', this.getCallById as RequestHandler],
-			['/', this.getCalls],
+			// ['/:dispatchableItemId', this.getDispatchableById as RequestHandler],
+			['/', this.getDispatchables],
 		]);
 	}
 
@@ -68,7 +68,7 @@ export default class PalletsCallsController extends AbstractController<PalletsCa
 	// 		);
 	// 	};
 
-	private getCalls: RequestHandler = async (
+	private getDispatchables: RequestHandler = async (
 		{ params: { palletId }, query: { at, onlyIds } },
 		res
 	): Promise<void> => {
@@ -78,7 +78,7 @@ export default class PalletsCallsController extends AbstractController<PalletsCa
 
 		PalletsCallsController.sanitizedSend(
 			res,
-			await this.service.fetchCalls(historicApi, {
+			await this.service.fetchDispatchables(historicApi, {
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,

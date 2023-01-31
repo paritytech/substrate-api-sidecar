@@ -34,7 +34,7 @@ export const kusamaControllers: ControllerConfig = {
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
-		'PalletsCalls',
+		'PalletsDispatchables',
 		'PalletsErrors',
 		'PalletsNominationPools',
 		'PalletsStakingProgress',

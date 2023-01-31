@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export interface ISanitizedCallItemMetadata {
-	// name property corresponds to the callItemId
-	name: string;
-	fields: unknown;
-	index: string;
-	docs: string[] | string;
-	args: unknown;
+import { IPallet } from '.';
+import { SubmittableExtrinsicFunction, ApiTypes } from '@polkadot/api/types';
+
+export interface IPalletCallsItem extends IPallet {
+	errorItem: string;
+	metadata: SubmittableExtrinsicFunction<ApiTypes> | undefined;
 }
