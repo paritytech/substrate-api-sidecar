@@ -145,7 +145,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		if (!palletMeta || palletIdx === undefined || palletIdx < 0) {
 			throw new BadRequest(
-				`"${palletId}" was not recognized as a queryable pallet.`
+				`no queryable ${metadataFieldType} items found for palletId "${palletId}"`
 			);
 		}
 
