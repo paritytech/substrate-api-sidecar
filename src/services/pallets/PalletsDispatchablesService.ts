@@ -109,11 +109,9 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 				(txItem) => txItem[0] as unknown as Text
 			);
 		} else {
-			items = [] as FunctionMetadataLatest[];
-			for (const [, value] of Object.entries(dispatchables)) {
-				const item = value.meta;
-				items.push(item);
-			}
+			items = Object.entries(dispatchables).map(
+				(disaptchableItem) => disaptchableItem[1].meta
+			);
 		}
 
 		return {

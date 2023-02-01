@@ -36,6 +36,7 @@ export const defaultControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
+		'PalletsDispatchables',
 		'PalletsErrors',
 		'PalletsStakingProgress',
 		'PalletsStorage',
