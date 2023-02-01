@@ -36,25 +36,32 @@ import { InternalServerError } from 'http-errors';
 
 import { AbstractService } from './AbstractService';
 
+type IPalletMetadata =
+	| Option<StorageMetadataV13>
+	| Option<PalletStorageMetadataV14>
+	| Option<PalletErrorMetadataV14>
+	| Option<PalletEventMetadataV14>;
+
+type IPalletFieldMeta =
+	| ErrorMetadataLatest
+	| EventMetadataLatest
+	| StorageEntryMetadataV13
+	| StorageEntryMetadataV14;
+
+type IMetadataFieldType = 'events' | 'storage' | 'errors';
+
 export abstract class AbstractPalletsService extends AbstractService {
 	private getPalletMetadataType(
 		meta: ModuleMetadataV13 | PalletMetadataV14,
-		metadataFieldType: string
-	):
-		| Option<StorageMetadataV13>
-		| Option<PalletStorageMetadataV14>
-		| Option<PalletErrorMetadataV14>
-		| Option<PalletEventMetadataV14> {
-		if (metadataFieldType === 'storage') {
-			if (meta.toRawType().includes('MetadataV13')) {
-				return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
-			} else {
-				return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
-			}
-		} else if (metadataFieldType === 'errors') {
-			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
+		metadataFieldType: IMetadataFieldType
+	): IPalletMetadata {
+		if (
+			metadataFieldType === 'storage' &&
+			meta.toRawType().includes('MetadataV13')
+		) {
+			return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
 		} else {
-			return this.getProperty(meta as PalletMetadataV14, 'events');
+			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
 		}
 	}
 
@@ -71,7 +78,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 		adjustedMetadata: MetadataV13 | MetadataV14,
 		historicApi: ApiDecoration<'promise'>,
 		palletId: string,
-		metadataFieldType: string
+		metadataFieldType: IMetadataFieldType
 	): [PalletMetadataV14 | ModuleMetadataV13, number] {
 		const metadataType = adjustedMetadata.toRawType();
 
@@ -204,17 +211,10 @@ export abstract class AbstractPalletsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
-		metadataFieldType: string
-	):
-		| ErrorMetadataLatest
-		| EventMetadataLatest
-		| StorageEntryMetadataV13
-		| StorageEntryMetadataV14 {
+		metadataFieldType: IMetadataFieldType
+	): IPalletFieldMeta {
 		let palletItemIdx = -1;
-		let palletItemMeta:
-			| ErrorMetadataLatest
-			| StorageEntryMetadataV13
-			| StorageEntryMetadataV14;
+		let palletItemMeta: IPalletFieldMeta;
 
 		if (metadataFieldType === 'storage') {
 			[palletItemIdx, palletItemMeta] = this.getStorageItemMeta(

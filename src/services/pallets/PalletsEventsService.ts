@@ -102,11 +102,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 				(eventItem) => eventItem[0] as unknown as Text
 			);
 		} else {
-			items = [] as EventMetadataLatest[];
-			for (const [, value] of Object.entries(events)) {
-				const item = value.meta;
-				items.push(item);
-			}
+			items = Object.entries(events).map((eventItem) => eventItem[1].meta);
 		}
 
 		return {
