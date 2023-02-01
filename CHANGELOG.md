@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [14.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.0..v14.3.1) (2022-02-01)
+## [14.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.0..v14.3.1) (2023-02-01)
 
 ### Bug Fixes
 
@@ -23,7 +23,7 @@ Tested against:
 - Kusama v9370
 - Westend v9370
 
-## [14.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.3..v14.3.0) (2022-01-25)
+## [14.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.3..v14.3.0) (2023-01-25)
 
 ### Features
 
@@ -53,7 +53,7 @@ Tested against:
 - Kusama v9370
 - Westend v9370
 
-## [14.2.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.2..v14.2.3) (2022-01-10)
+## [14.2.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.2..v14.2.3) (2023-01-10)
 
 ### Bug Fixes
 
