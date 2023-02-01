@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.0..v14.3.1) (2022-02-01)
+
+### Bug Fixes
+
+- fix: update errors endpoint to use latest error metadata for fetchErrorItem ([#1205](https://github.com/paritytech/substrate-api-sidecar/pull/1205)) ([a13e8ca](https://github.com/paritytech/substrate-api-sidecar/commit/a13e8caa89dc50ccd36ea23cf1a2f282425c30da))
+- fix: rename nomination-pools to be to standard ([#1203](https://github.com/paritytech/substrate-api-sidecar/pull/1203)) ([7d8ac10](https://github.com/paritytech/substrate-api-sidecar/commit/7d8ac102b9e27ab7bade19999c4c30c378475151))
+    NOTE: This renames `/pallets/nominationPools/*` to `/pallets/nomination-pools/*`.
+
+### Chores
+
+- chore(deps): updated to new version of confmgr ([#1207](https://github.com/paritytech/substrate-api-sidecar/pull/1207)) ([a0f7d78](https://github.com/paritytech/substrate-api-sidecar/commit/a0f7d7800fe639eef95906bbd5c0315b277a48f1))
+- chore(deps): update polkadot-js deps ([#1206](https://github.com/paritytech/substrate-api-sidecar/pull/1206)) ([1cb3d22](https://github.com/paritytech/substrate-api-sidecar/commit/1cb3d22eca16bc95ea5888b4d5d2a5f827895c07))
+- chore(deps): update polkadot-js api to most recent patch ([#1211](https://github.com/paritytech/substrate-api-sidecar/pull/1211)) ([cffc235](https://github.com/paritytech/substrate-api-sidecar/commit/cffc2355a81ff68a6c60756a4cb3c660e374fa17))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9370
+- Kusama v9370
+- Westend v9370
+
 ## [14.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.2.3..v14.3.0) (2022-01-25)
 
 ### Features
