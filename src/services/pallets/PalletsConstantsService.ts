@@ -19,7 +19,6 @@ import { Text } from '@polkadot/types';
 import {
 	BlockHash,
 	PalletConstantMetadataLatest,
-	// PalletConstantMetadataV14,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { IPalletConstants, IPalletConstantsItem } from 'src/types/responses';
