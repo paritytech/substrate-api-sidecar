@@ -41,3 +41,9 @@ export interface IProcOpts {
 	resolverFailed?: string;
 	args: string[];
 }
+
+export interface StatusResponse {
+	code: StatusCode;
+	stderr?: string;
+	stdout?: string;
+}

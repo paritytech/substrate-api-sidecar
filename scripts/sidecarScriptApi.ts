@@ -16,7 +16,7 @@
 
 import { spawn } from 'child_process';
 
-import { IProcOpts, ProcsType, StatusCode } from './types';
+import { IProcOpts, ProcsType, StatusCode, StatusResponse } from './types';
 
 /**
  * Sets the url that sidecar will use in the env
@@ -91,23 +91,31 @@ export const launchProcess = (
 		resolverFailed, 
 		args 
 	}: IProcOpts
-): Promise<StatusCode> => {
-	return new Promise<StatusCode>((resolve, reject) => {
+): Promise<StatusResponse> => {
+	return new Promise<StatusResponse>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;
-		const command = cmd || 'yarn';
+		// Track the status of a jest test, if thats the process running.
 		let jestStatus = Success;
+		const stdout: string[] = [];
+		const stderr: string[] = [];
 
-		procs[proc] = spawn(command, args, { detached: true });
+		procs[proc] = spawn(cmd, args, { detached: true });
 
 		procs[proc].stdout.on('data', (data: Buffer) => {
 			console.log(data.toString().trim());
 
 			if (data.toString().includes(resolver)) {
-				resolve(Success);
+				resolve({
+					code: Success,
+					stdout: stdout.join()
+				});
 			}
 
 			if (resolverFailed && data.toString().includes(resolverFailed)) {
-				resolve(Failed);
+				resolve({
+					code: Failed,
+					stderr: stderr.join()
+				});
 			}
 		});
 
@@ -124,13 +132,22 @@ export const launchProcess = (
 			}
 
 			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
-				resolve(Failed);
+				resolve({
+					code: Failed,
+					stderr: stderr.join()
+				});
 			}
 		});
 
 		procs[proc].on('close', () => {
-			if (jestStatus === Failed) resolve(Failed);
-			resolve(Success);
+			if (jestStatus === Failed) resolve({
+				code: Failed,
+				stderr: stderr.join()
+			});
+			resolve({
+				code: Success,
+				stdout: stdout.join()
+			});
 		});
 
 		procs[proc].on('error', (err) => {

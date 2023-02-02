@@ -40,7 +40,7 @@ const main = async (args: Namespace) => {
     console.log('Building Sidecar...');
     const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
-    if (sidecarBuild === Failed) {
+    if (sidecarBuild.code === Failed) {
         console.log('Sidecar failed to build, exiting...');
         killAll(procs);
         process.exit(2);
