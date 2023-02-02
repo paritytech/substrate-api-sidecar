@@ -114,6 +114,11 @@ export const launchProcess = (
 		procs[proc].stderr.on('data', (data: Buffer) => {
 			console.error(data.toString().trim());
 
+			/**
+			 * The Jest resolver will only apply when its present as an option.
+			 * While the process is active we just want to track the results of Jest, and
+			 * resolve the process on `close`.
+			 */
 			if (resolverJestErr && data.toString().trim().includes(resolverJestErr)) {
 				jestStatus = Failed;
 			}
