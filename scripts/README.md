@@ -79,3 +79,5 @@ $ rm -rf ./package.tgz
 `2`: The process has exited with an error, and building sidecar has failed. 
 
 `3`: CLI args are used incorrectly internally.
+
+`4`: Benchmarks process has failed.

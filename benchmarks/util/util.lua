@@ -48,6 +48,7 @@ function U.done()
         print("Avg RequestTime(Latency):          "..string.format("%.2f",latency.mean / 1000).."ms".."\n")
         print("Max RequestTime(Latency):          "..(latency.max / 1000).."ms".."\n")
         print("Min RequestTime(Latency):          "..(latency.min / 1000).."ms".."\n")
+        print("Benchmark finished")
     end
 end
 
