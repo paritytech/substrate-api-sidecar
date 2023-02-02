@@ -61,12 +61,12 @@ export const launchChainTest = async (
     console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
 
-    if (sidecarStart === Success) {
+    if (sidecarStart.code === Success) {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess('yarn', procs, e2eStartOpts);
 
-		if (jest === Success) {
+		if (jest.code === Success) {
 			killAll(procs);
 			return true;
 		} else {
