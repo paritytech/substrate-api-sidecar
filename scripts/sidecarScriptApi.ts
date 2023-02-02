@@ -19,6 +19,15 @@ import { spawn } from 'child_process';
 import { IProcOpts, ProcsType, StatusCode, StatusResponse } from './types';
 
 /**
+ * Strip data from a buffer.
+ * 
+ * @param data 
+ */
+const stripData = (data: Buffer) => {
+	return data.toString('utf-8').trim();
+};
+
+/**
  * Sets the url that sidecar will use in the env
  *
  * @param url ws url used in sidecar
@@ -102,6 +111,7 @@ export const launchProcess = (
 		procs[proc] = spawn(cmd, args, { detached: true });
 
 		procs[proc].stdout.on('data', (data: Buffer) => {
+			stdout.push(stripData(data));
 			console.log(data.toString().trim());
 
 			if (data.toString().includes(resolver)) {
@@ -120,6 +130,7 @@ export const launchProcess = (
 		});
 
 		procs[proc].stderr.on('data', (data: Buffer) => {
+			stderr.push(stripData(data));
 			console.error(data.toString().trim());
 
 			/**
