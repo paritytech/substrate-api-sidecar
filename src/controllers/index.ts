@@ -28,7 +28,10 @@ import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
+	PalletsErrors,
+	PalletsNominationPools,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
@@ -56,7 +59,10 @@ export const controllers = {
 	AccountsStakingPayouts,
 	ContractsInk,
 	PalletsAssets,
+	PalletsErrors,
+	PalletsNominationPools,
 	PalletsStakingProgress,
+	PalletsStakingValidators,
 	PalletsStorage,
 	NodeNetwork,
 	NodeTransactionPool,
