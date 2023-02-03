@@ -1,5 +1,5 @@
-local blocksBlockIdHeader = {
+local blocksHead = {
     'head'
 }
 
-return blocksBlockIdHeader
+return blocksHead

@@ -31,6 +31,9 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/blocks/head': {
         path: '/benchmarks/blocksHead',
     },
+    '/blocks/head/header': {
+        path: '/benchmarks/blocksHeadHeader',
+    },
     '/pallets/staking/progress': {
         path: '/benchmarks/palletsStakingProgress',
     },
