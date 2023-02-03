@@ -66,5 +66,8 @@ export const benchmarkConfig: IBenchmarkConfig = {
     },
     '/node/transaction-pool': {
         path: '/benchmarks/nodeTransactionPool',
-    }
+    },
+    '/node/version': {
+        path: '/benchmarks/nodeVersion',
+    },
 }
