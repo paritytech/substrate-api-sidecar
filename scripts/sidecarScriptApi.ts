@@ -117,13 +117,15 @@ export const launchProcess = (
 			if (data.toString().includes(resolver)) {
 				resolve({
 					code: Success,
-					stdout: stdout.join()
+					stdout: stdout.join(),
+					stderr: stderr.join()
 				});
 			}
 
 			if (resolverFailed && data.toString().includes(resolverFailed)) {
 				resolve({
 					code: Failed,
+					stdout: stdout.join(),
 					stderr: stderr.join()
 				});
 			}
@@ -145,6 +147,7 @@ export const launchProcess = (
 			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
 				resolve({
 					code: Failed,
+					stdout: stdout.join(),
 					stderr: stderr.join()
 				});
 			}
@@ -153,11 +156,13 @@ export const launchProcess = (
 		procs[proc].on('close', () => {
 			if (jestStatus === Failed) resolve({
 				code: Failed,
+				stdout: stdout.join(),
 				stderr: stderr.join()
 			});
 			resolve({
 				code: Success,
-				stdout: stdout.join()
+				stdout: stdout.join(),
+				stderr: stderr.join()
 			});
 		});
 

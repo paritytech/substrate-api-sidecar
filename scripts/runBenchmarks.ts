@@ -14,74 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import fs from 'fs';
 import { ArgumentParser, Namespace } from 'argparse';
+import { benchmarkConfig } from './benchmarkConfig';
 import { checkWsType } from './e2eHelpers';
 import { launchProcess, setLogLevel, killAll, setWsUrl } from './sidecarScriptApi';
-import { ProcsType, StatusCode } from './types';
+import { ProcsType, StatusCode, IBenchResult } from './types';
 import { defaultSasStartOpts, defaultSasBuildOpts } from './config';
-
-type IBenchmarkConfig = {
-    [x: string]: {
-        /**
-         * Relative path to the benchmark related to the key which represents a endpoint.
-         */
-        path: string;
-    }
-}
-
-const benchmarkConfig: IBenchmarkConfig = {
-    '/accounts/{accountId}/balance-info': {
-        path: '/benchmarks/accountsBalance',
-    },
-    '/accounts/{accountId}/vesting-info': {
-        path: '/benchmarks/accountsVestingInfo',
-    },
-    '/accounts/{accountId}/staking-info': {
-        path: '/benchmarks/accountsStakingInfo',
-    },
-    '/accounts/{accountId}/staking-payouts': {
-        path: '/benchmarks/accountsStakingPayouts',
-    },
-    '/accounts/{accountId}/validate': {
-        path: '/benchmarks/accountsValidate',
-    },
-    '/blocks/{blockId}': {
-        path: '/benchmarks/blocks',
-    },
-    '/pallets/staking/progress': {
-        path: '/benchmarks/palletsStakingProgress',
-    },
-    '/pallets/{palletId}/storage': {
-        path: '/benchmarks/palletsPalletIdStorage',
-    },
-    '/pallets/{palletId}/storage/{storageItemId}': {
-        path: '/benchmarks/pallets/palletsPalletIdStorageStorageId',
-    },
-    '/paras': {
-        path: '/benchmarks/paras',
-    },
-    '/paras/leases/current': {
-        path: '/benchmarks/parasLeasesCurrent',
-    },
-    '/paras/auctions/current': {
-        path: '/benchmarks/parasAuctionCurrent',
-    },
-    '/paras/crowdloans': {
-        path: '/benchmarks/parasCrowdloans',
-    },
-    '/paras/{paraId}/crowdloan-info': {
-        path: '/benchmarks/parasParaIdCrowdloanInfo',
-    },
-    '/paras/{paraId}/lease-info': {
-        path: '/benchmarks/parasParaIdLeasesInfo',
-    },
-}
 
 // Stores all the processes
 const procs: ProcsType = {};
 
+/**
+ * Helper function to add a delay.
+ * 
+ * @param ms 
+ */
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * cd to the correct directory. The benchmarks require being within the write directory in order to run
+ * the lua script.
+ * 
+ * @param path Path to directory.
+ */
 const cdToDir = (path: string): void => {
-    console.log('cd into: ', process.cwd() + path)
     try {
         process.chdir('.' + path);
     } catch (e) {
@@ -90,7 +47,38 @@ const cdToDir = (path: string): void => {
     }
 }
 
-// Should return the results of the benchmark. 
+/**
+ * Format and organize the results from the benchmarks in text form. 
+ * 
+ * @param results 
+ */
+const formatResults = (results: IBenchResult[]): string => {
+    let data = '';
+    for (let i = 0; i < results.length; i++) {
+        if (i > 0) data += '\n\n';
+        data +=  `Result of ${results[i].endpoint}: \u2193 \n\n${results[i].stdout}`;
+    }
+
+    return data
+}
+
+/**
+ * Write the results of the benchmarks to file. Per benchmark these will write over the existing benchmarks.
+ * 
+ * @param results Results organized from stdout
+ */
+const writeResultsToFile = async (results: IBenchResult[]) => {
+    const FILE_NAME = 'benchmarks.txt';
+    const formattedData = formatResults(results);
+    await fs.writeFileSync(FILE_NAME, formattedData);
+}
+
+/**
+ * Launch a single benchmark. It returns the stdout from `<root>/benchmarks/util/util.lua`.
+ * 
+ * @param endpoint Endpoint that reflects one of the keys from `benchmarkConfig`.
+ * @param wsUrl `wsUrl` to benchmark off of.
+ */
 const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string> => {
     const { Failed } = StatusCode;
     // Default ws url.
@@ -109,8 +97,8 @@ const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string>
 		process.exit(1);
 	}
 
-    // TODO: Allow a generous amount of time for sidecar to boot.
-
+    // 2 second delay to allow sidecar to boot before we load it will queries.
+    delay(2000);
 
     // cd into benchmark
     cdToDir(benchmarkConfig[endpoint].path);
@@ -128,25 +116,17 @@ const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string>
         killAll(procs);
         process.exit(4);
     }
-
-    // Ensure the stdout is 
-
     // Ensure before we exit the function that we exit all processes.
     killAll(procs);
 
-    return bench.stdout || '';
+    return bench.stdout;
 }
 
 const main = async (args: Namespace) => {
     const { Failed} = StatusCode;
     const { log_level, endpoint, ws_url } = args;
 
-    // Check if `--endpoint` exists. 
-    // If it doesnt run benchmarks on all endpoints.
-
-    if (log_level) {
-        setLogLevel(log_level);
-    }
+    if (log_level) setLogLevel(log_level);
 
     console.log('Building Sidecar...');
     const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
@@ -157,15 +137,29 @@ const main = async (args: Namespace) => {
         process.exit(2);
     }
 
+    const results: IBenchResult[] = [];
     if (endpoint) {
-        await launchBenchmark(endpoint, ws_url);
+        const res = await launchBenchmark(endpoint, ws_url);
+        results.push({
+            endpoint,
+            stdout: res
+        })
     } else {
-        // Launch each benchmark for each test
+        // Launch each benchmark for each endpoint
+        const endpoints = Object.keys(benchmarkConfig);
+        for (const endpoint of endpoints) {
+            const res = await launchBenchmark(endpoint, ws_url);
+            results.push({
+                    endpoint,
+                    stdout: res
+            })
+        }
     }
 
     /**
      * Write the results to file.
      */
+    writeResultsToFile(results);
 }
 
 const parser = new ArgumentParser();

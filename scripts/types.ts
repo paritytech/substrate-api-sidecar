@@ -44,6 +44,20 @@ export interface IProcOpts {
 
 export interface StatusResponse {
 	code: StatusCode;
-	stderr?: string;
-	stdout?: string;
+	stderr: string;
+	stdout: string;
+}
+
+export interface IBenchResult {
+    endpoint: string;
+    stdout: string;
+}
+
+export type IBenchmarkConfig = {
+    [x: string]: {
+        /**
+         * Relative path to the benchmark related to the key which represents a endpoint.
+         */
+        path: string;
+    }
 }
