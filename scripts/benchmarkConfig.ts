@@ -26,7 +26,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
         path: '/benchmarks/palletsPalletIdStorage',
     },
     '/pallets/{palletId}/storage/{storageItemId}': {
-        path: '/benchmarks/pallets/palletsPalletIdStorageStorageId',
+        path: '/benchmarks/palletsPalletIdStorageStorageId',
     },
     '/paras': {
         path: '/benchmarks/paras',
@@ -35,7 +35,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
         path: '/benchmarks/parasLeasesCurrent',
     },
     '/paras/auctions/current': {
-        path: '/benchmarks/parasAuctionCurrent',
+        path: '/benchmarks/parasAuctionsCurrent',
     },
     '/paras/crowdloans': {
         path: '/benchmarks/parasCrowdloans',

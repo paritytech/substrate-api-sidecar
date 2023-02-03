@@ -53,6 +53,7 @@ const cdToDir = (path: string): void => {
     try {
         process.chdir('.' + path);
     } catch (e) {
+        console.error(e);
         killAll(procs);
         process.exit(4);
     }
@@ -124,6 +125,7 @@ const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string>
 
     // Ensure the benches process was sucessful.
     if (bench.code === Failed) {
+        console.log('ERROR code: 4 - Error running launchBenchmark()');
         killAll(procs);
         process.exit(4);
     }
@@ -165,6 +167,8 @@ const main = async (args: Namespace) => {
                     endpoint,
                     stdout: res
             })
+            console.log(res);
+            console.log('RESULTS LENGTH: ', results.length);
         }
     }
 
