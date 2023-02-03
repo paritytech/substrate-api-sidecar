@@ -7,15 +7,32 @@ Endpoints in Sidecar that are benchmarked against a archive node:
 `/accounts/{accountId}/vesting-info?at={blockId}`
 `/accounts/{accountId}/staking-info?at={blockId}`
 `/accounts/{accountId}/staking-payouts`
+`/accounts/{accountId}/staking-info`
+`/accounts/{accountId}/convert`
 `/accounts/{accountId}/validate`
 
 ### Blocks
 `/blocks/{blockId}`
+`/blocks/{blockId}/header`
+`/blocks/{blockId}/extrinsics/{extrinsicIndex}`
+`/blocks/head`
+`/blocks/head/header`
+
+### Node
+`/node/network`
+`/node/transaction-pool`
+`/node/version`
 
 ### Pallets
 `/pallets/staking/progress?at={blockId}`
 `/pallets/{palletId}/storage?at={blockId}`
 `/pallets/{palletId}/storage/{storageItemId}?at={blockId}`
+`/pallets/nomination-pools/info`
+`/pallets/nomination-pools/{poolId}`
+`/pallets/{palletId}/errors`
+`/pallets/{palletId}/errors/{errorItemId}`
+`/pallets/staking/validators`
+`/pallets/staking/progress`
 
 ### Paras
 `/paras?at={blockId}`
@@ -24,6 +41,12 @@ Endpoints in Sidecar that are benchmarked against a archive node:
 `/paras/crowdloans?at={blockId}`
 `/paras/{paraId}/crowdloan-info?at={blockId}`
 `/paras/{paraId}/lease-info?at={blockId}`
+
+### Runtime
+`/runtime/spec`
+
+### Transaction
+`/transaction/material`
 
 ### Requirements
 
