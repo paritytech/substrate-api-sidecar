@@ -43,6 +43,12 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/pallets/{palletId}/storage/{storageItemId}': {
         path: '/benchmarks/palletsPalletIdStorageStorageId',
     },
+    '/pallets/nomination-pools/info': {
+        path: '/benchmarks/palletsNominationPoolsInfo',
+    },
+    '/pallets/nomination-pools/{poolId}': {
+        path: '/benchmarks/palletsNominationPoolsPoolId'
+    },
     '/paras': {
         path: '/benchmarks/paras',
     },
