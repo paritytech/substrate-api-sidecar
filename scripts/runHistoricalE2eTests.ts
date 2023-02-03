@@ -16,14 +16,10 @@
 
 import { ArgumentParser, Namespace } from 'argparse';
 
-import { historicalE2eConfig, defaultSasBuildOpts } from './config';
-import {
-	killAll,
-	launchProcess,
-	setLogLevel,
-} from './sidecarScriptApi';
+import { defaultSasBuildOpts, historicalE2eConfig } from './config';
+import { checkTests, checkWsType, launchChainTest } from './e2eHelpers';
+import { killAll, launchProcess, setLogLevel } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
-import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
 
 // Stores all the processes
 const procs: ProcsType = {};
@@ -33,7 +29,9 @@ const main = async (args: Namespace): Promise<void> => {
 	const localUrl: string | undefined = args.local ? args.local : undefined;
 
 	if (localUrl && !args.chain) {
-		console.error('error: `--local` must be used in conjunction with `--chain`');
+		console.error(
+			'error: `--local` must be used in conjunction with `--chain`'
+		);
 		process.exit(3);
 	}
 
@@ -51,17 +49,48 @@ const main = async (args: Namespace): Promise<void> => {
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, procs, localUrl);
+		const selectedChain = await launchChainTest(
+			args.chain,
+			historicalE2eConfig,
+			procs,
+			localUrl
+		);
 
 		checkTests(selectedChain);
 	} else {
-		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, procs);
-		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, procs);
-		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
-		const statemineTest = await launchChainTest('statemine', historicalE2eConfig, procs);
-		const statemintTest = await launchChainTest('statemint', historicalE2eConfig, procs);
+		const polkadotTest = await launchChainTest(
+			'polkadot',
+			historicalE2eConfig,
+			procs
+		);
+		const kusamaTest = await launchChainTest(
+			'kusama',
+			historicalE2eConfig,
+			procs
+		);
+		const westendTest = await launchChainTest(
+			'westend',
+			historicalE2eConfig,
+			procs
+		);
+		const statemineTest = await launchChainTest(
+			'statemine',
+			historicalE2eConfig,
+			procs
+		);
+		const statemintTest = await launchChainTest(
+			'statemint',
+			historicalE2eConfig,
+			procs
+		);
 
-		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
+		checkTests(
+			polkadotTest,
+			kusamaTest,
+			westendTest,
+			statemineTest,
+			statemintTest
+		);
 	}
 };
 
@@ -73,8 +102,8 @@ const parser = new ArgumentParser();
 parser.add_argument('--local', {
 	required: false,
 	nargs: '?',
-	type: checkWsType
-})
+	type: checkWsType,
+});
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 });

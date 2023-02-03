@@ -15,63 +15,78 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ArgumentParser, Namespace } from 'argparse';
-import { launchProcess, setLogLevel, killAll } from './sidecarScriptApi';
-import { latestE2eConfig, defaultSasBuildOpts } from './config';
-import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
 
+import { defaultSasBuildOpts, latestE2eConfig } from './config';
+import { checkTests, checkWsType, launchChainTest } from './e2eHelpers';
+import { killAll, launchProcess, setLogLevel } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
 
 // Stores all the processes
 const procs: ProcsType = {};
 
 const main = async (args: Namespace) => {
-    const { Failed } = StatusCode;
-    const localUrl: string | undefined = args.local ? args.local : undefined;
+	const { Failed } = StatusCode;
+	const localUrl: string | undefined = args.local ? args.local : undefined;
 
-    if (localUrl && !args.chain) {
-		console.error('error: `--local` must be used in conjunction with `--chain`');
+	if (localUrl && !args.chain) {
+		console.error(
+			'error: `--local` must be used in conjunction with `--chain`'
+		);
 		process.exit(3);
 	}
-    
-    if (args.log_level) {
-        setLogLevel(args.log_level);
-    }
 
-    console.log('Building Sidecar...');
-    const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
+	if (args.log_level) {
+		setLogLevel(args.log_level);
+	}
 
-    if (sidecarBuild.code === Failed) {
-        console.log('Sidecar failed to build, exiting...');
-        killAll(procs);
-        process.exit(2);
-    }
+	console.log('Building Sidecar...');
+	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
-    // CheckTests will either return a success exit code of 0, or a failed exit code of 1.
-    if (args.chain) {
-        const selectedChain = await launchChainTest(args.chain, latestE2eConfig, procs, localUrl);
+	if (sidecarBuild.code === Failed) {
+		console.log('Sidecar failed to build, exiting...');
+		killAll(procs);
+		process.exit(2);
+	}
 
-        checkTests(selectedChain);
-    } else {
-        const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, procs);
-        const statemintTest = await launchChainTest('statemint', latestE2eConfig, procs);
+	// CheckTests will either return a success exit code of 0, or a failed exit code of 1.
+	if (args.chain) {
+		const selectedChain = await launchChainTest(
+			args.chain,
+			latestE2eConfig,
+			procs,
+			localUrl
+		);
 
-        checkTests(polkadotTest, statemintTest);
-    }
-}
+		checkTests(selectedChain);
+	} else {
+		const polkadotTest = await launchChainTest(
+			'polkadot',
+			latestE2eConfig,
+			procs
+		);
+		const statemintTest = await launchChainTest(
+			'statemint',
+			latestE2eConfig,
+			procs
+		);
+
+		checkTests(polkadotTest, statemintTest);
+	}
+};
 
 const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
-    required: false,
-    nargs: '?',
-    type: checkWsType
+	required: false,
+	nargs: '?',
+	type: checkWsType,
 });
 parser.add_argument('--chain', {
-    choices: ['polkadot', 'statemint'],
+	choices: ['polkadot', 'statemint'],
 });
 parser.add_argument('--log-level', {
-    choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
-    default: 'http',
+	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+	default: 'http',
 });
 
 const args = parser.parse_args() as Namespace;
@@ -79,7 +94,7 @@ const args = parser.parse_args() as Namespace;
 /**
  * Signal interrupt
  */
- process.on('SIGINT', function () {
+process.on('SIGINT', function () {
 	console.log('Caught interrupt signal');
 	killAll(procs);
 	process.exit();

@@ -20,8 +20,8 @@ import { IProcOpts, ProcsType, StatusCode, StatusResponse } from './types';
 
 /**
  * Strip data from a buffer.
- * 
- * @param data 
+ *
+ * @param data
  */
 const stripData = (data: Buffer) => {
 	return data.toString('utf-8').trim();
@@ -92,13 +92,13 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{ 
-		proc, 
-		resolver, 
-		resolverJestErr, 
-		resolverStartupErr, 
-		resolverFailed, 
-		args 
+	{
+		proc,
+		resolver,
+		resolverJestErr,
+		resolverStartupErr,
+		resolverFailed,
+		args,
 	}: IProcOpts
 ): Promise<StatusResponse> => {
 	return new Promise<StatusResponse>((resolve, reject) => {
@@ -118,7 +118,7 @@ export const launchProcess = (
 				resolve({
 					code: Success,
 					stdout: stdout.join(),
-					stderr: stderr.join()
+					stderr: stderr.join(),
 				});
 			}
 
@@ -126,7 +126,7 @@ export const launchProcess = (
 				resolve({
 					code: Failed,
 					stdout: stdout.join(),
-					stderr: stderr.join()
+					stderr: stderr.join(),
 				});
 			}
 		});
@@ -144,25 +144,29 @@ export const launchProcess = (
 				jestStatus = Failed;
 			}
 
-			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
+			if (
+				resolverStartupErr &&
+				data.toString().trim().includes(resolverStartupErr)
+			) {
 				resolve({
 					code: Failed,
 					stdout: stdout.join(),
-					stderr: stderr.join()
+					stderr: stderr.join(),
 				});
 			}
 		});
 
 		procs[proc].on('close', () => {
-			if (jestStatus === Failed) resolve({
-				code: Failed,
-				stdout: stdout.join(),
-				stderr: stderr.join()
-			});
+			if (jestStatus === Failed)
+				resolve({
+					code: Failed,
+					stdout: stdout.join(),
+					stderr: stderr.join(),
+				});
 			resolve({
 				code: Success,
 				stdout: stdout.join(),
-				stderr: stderr.join()
+				stderr: stderr.join(),
 			});
 		});
 

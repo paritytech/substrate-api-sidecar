@@ -13,17 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
 import { IChainConfigE2E, ProcsType, StatusCode } from './types';
-import {
-	killAll,
-	launchProcess,
-	setWsUrl,
-} from './sidecarScriptApi';
 
 /**
  * Check each chain test returned by `launchChainTest`, and exit the program
  * with the correct process.
- * 
+ *
  * @param args The results of each test.
  */
 export const checkTests = (...args: boolean[]): void => {
@@ -39,29 +35,29 @@ export const checkTests = (...args: boolean[]): void => {
 };
 
 /**
- * Launch a e2e test for a chain. 
- * 
+ * Launch a e2e test for a chain.
+ *
  * @param chain The chain to test against.
- * @param config The config specific to a chain. 
+ * @param config The config specific to a chain.
  * @param isLocal Boolean declaring if this chain is local.
  * @param procs Object containing all the processes.
  */
 export const launchChainTest = async (
-    chain: string, 
-    config: Record<string, IChainConfigE2E>, 
-    procs: ProcsType,
-    localUrl?: string,
+	chain: string,
+	config: Record<string, IChainConfigE2E>,
+	procs: ProcsType,
+	localUrl?: string
 ): Promise<boolean> => {
-    const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
-    const { Success } = StatusCode;
+	const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
+	const { Success } = StatusCode;
 
-    // Set the ws url env var
+	// Set the ws url env var
 	localUrl ? setWsUrl(localUrl) : setWsUrl(wsUrl);
 
-    console.log('Launching Sidecar...');
+	console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
 
-    if (sidecarStart.code === Success) {
+	if (sidecarStart.code === Success) {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess('yarn', procs, e2eStartOpts);
@@ -78,13 +74,16 @@ export const launchChainTest = async (
 		killAll(procs);
 		process.exit(2);
 	}
-}
+};
 
 export const checkWsType = (arg: string) => {
-    const res = /^(wss?:\/\/)([0-9]{1,3}(?:\.[0-9]{1,3}){3}|[a-zA-Z]+):([0-9]{1,5})$/.test(arg);
-    if (!res) {
-        console.error('Invalid Ws Url format');
-        process.exit(3);
-    }
-    return arg
-}
+	const res =
+		/^(wss?:\/\/)([0-9]{1,3}(?:\.[0-9]{1,3}){3}|[a-zA-Z]+):([0-9]{1,5})$/.test(
+			arg
+		);
+	if (!res) {
+		console.error('Invalid Ws Url format');
+		process.exit(3);
+	}
+	return arg;
+};
