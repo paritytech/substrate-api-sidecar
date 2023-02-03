@@ -76,4 +76,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/node/version': {
         path: '/benchmarks/nodeVersion',
     },
+    '/runtime/spec': {
+        path: '/benchmarks/runtimeSpec'
+    },
 }
