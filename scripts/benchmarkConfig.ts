@@ -20,7 +20,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
         path: '/benchmarks/accountsConvert',
     },
     '/blocks/{blockId}': {
-        path: '/benchmarks/blocks',
+        path: '/benchmarks/blocksBlockId',
     },
     '/pallets/staking/progress': {
         path: '/benchmarks/palletsStakingProgress',
