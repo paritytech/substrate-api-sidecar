@@ -167,8 +167,6 @@ const main = async (args: Namespace) => {
                     endpoint,
                     stdout: res
             })
-            console.log(res);
-            console.log('RESULTS LENGTH: ', results.length);
         }
     }
 
