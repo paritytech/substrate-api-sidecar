@@ -49,6 +49,9 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/pallets/nomination-pools/{poolId}': {
         path: '/benchmarks/palletsNominationPoolsPoolId'
     },
+    '/pallets/staking/validators': {
+        path: '/benchmarks/palletsStakingValidators'
+    },
     '/paras': {
         path: '/benchmarks/paras',
     },
