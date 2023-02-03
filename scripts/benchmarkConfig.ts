@@ -79,4 +79,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/runtime/spec': {
         path: '/benchmarks/runtimeSpec'
     },
+    '/transaction/material': {
+        path: '/benchmarks/transactionMaterial'
+    },
 }
