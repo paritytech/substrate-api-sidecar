@@ -54,6 +54,12 @@ export interface IBenchResult {
 	stdout: string;
 }
 
+export interface IE2EParseArgs extends Namespace {
+	local: string;
+	chain: string;
+	log_level: string;
+}
+
 export interface IBenchParseArgs extends Namespace {
 	log_level: string;
 	endpoint: string;

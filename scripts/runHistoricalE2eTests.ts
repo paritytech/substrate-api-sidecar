@@ -14,17 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ArgumentParser, Namespace } from 'argparse';
+import { ArgumentParser } from 'argparse';
 
 import { defaultSasBuildOpts, historicalE2eConfig } from './config';
 import { checkTests, checkWsType, launchChainTest } from './e2eHelpers';
 import { killAll, launchProcess, setLogLevel } from './sidecarScriptApi';
-import { ProcsType, StatusCode } from './types';
+import { IE2EParseArgs, ProcsType, StatusCode } from './types';
 
 // Stores all the processes
 const procs: ProcsType = {};
 
-const main = async (args: Namespace): Promise<void> => {
+const main = async (args: IE2EParseArgs): Promise<void> => {
 	const { Failed } = StatusCode;
 	const localUrl: string | undefined = args.local ? args.local : undefined;
 
@@ -112,7 +112,7 @@ parser.add_argument('--log-level', {
 	default: 'http',
 });
 
-const args = parser.parse_args() as Namespace;
+const args = parser.parse_args() as IE2EParseArgs;
 
 /**
  * Signal interrupt
