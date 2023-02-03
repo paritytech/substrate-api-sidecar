@@ -26,6 +26,17 @@ import { defaultSasStartOpts, defaultSasBuildOpts } from './config';
 const procs: ProcsType = {};
 
 /**
+ * The format of `length` will be in an acceptable format for wrk.
+ * 
+ * ex: '1m', '30s', '15s'
+ * 
+ * @param length Time to run each benchmark
+ */
+const setBenchTime = (length: string) => {
+    process.env.WRK_TIME_LENGTH = length
+}
+
+/**
  * Helper function to add a delay.
  * 
  * @param ms 
@@ -127,6 +138,7 @@ const main = async (args: Namespace) => {
     const { log_level, endpoint, ws_url } = args;
 
     if (log_level) setLogLevel(log_level);
+    setBenchTime(args.time)
 
     console.log('Building Sidecar...');
     const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
@@ -177,6 +189,9 @@ parser.add_argument('--log-level', {
     choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
     default: 'http',
 });
+parser.add_argument('--time', {
+    default: '1m',
+})
 
 const args = parser.parse_args() as Namespace;
 
