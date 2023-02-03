@@ -70,6 +70,30 @@ $ yarn remove @substrate/api-sidecar
 $ rm -rf ./package.tgz
 ```
 
+# Script `runBenchmarks.ts`
+
+This script's purpose is to run the benchmarks inside of the `<root>/benchmarks` directory. This script requires you to have `wrk`, `lua`, and a fully synced archive node. Please reference `<root>/benchmarks/README.md` for more information on installation. 
+
+In order to start this script locally, run from the root directory of this repository:
+
+ex1:
+```bash
+$ yarn
+$ yarn bench
+```
+
+ex2:
+```bash
+$ yarn
+$ yarn bench --log-level=info --time=30s  
+```
+
+ex3:
+```
+$ yarn
+$ yarn bench --log-level=info --time=30s  --endpoint=/accounts/{accountId}/balance-info
+```
+
 ## Errors
 
 `0`: The process has finished succesfully and all tests have passed.
