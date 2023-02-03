@@ -16,6 +16,9 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/accounts/{accountId}/validate': {
         path: '/benchmarks/accountsValidate',
     },
+    '/accounts/{accountId}/convert': {
+        path: '/benchmarks/accountsConvert',
+    },
     '/blocks/{blockId}': {
         path: '/benchmarks/blocks',
     },

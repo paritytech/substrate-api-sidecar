@@ -52,4 +52,4 @@ sudo cp wrk /usr/local/bin
 
 ### Running Locally
 
-In order to run each benchmark you should `cd` into the appropriate directory you want to run, and then `sh init.sh`. You are required to have sidecar running, as well as a fully synced archive node.
+In order to run each benchmark you should `cd` into the appropriate directory you want to run, set the `WRK_TIME_LENGTH` env var (ex: `export WRK_TIME_LENGTH=30s`) and then `sh init.sh`. You are required to have sidecar running, as well as a fully synced archive node.
