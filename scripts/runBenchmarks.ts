@@ -93,13 +93,8 @@ const writeResultsToFile = async (results: IBenchResult[]) => {
  */
 const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string> => {
     const { Failed } = StatusCode;
-    // Default ws url.
-    const defaultUrl = 'ws://127.0.0.1:9944';
-
     // Set the ws url env var
-    if (wsUrl ){
-        wsUrl ? setWsUrl(wsUrl) : setWsUrl(defaultUrl);
-    }
+    setWsUrl(wsUrl)
 
     console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, defaultSasStartOpts);
@@ -170,9 +165,6 @@ const main = async (args: Namespace) => {
         }
     }
 
-    /**
-     * Write the results to file.
-     */
     writeResultsToFile(results);
 }
 
@@ -181,7 +173,8 @@ const parser = new ArgumentParser();
 parser.add_argument('--ws-url', {
     required: false,
     nargs: '?',
-    type: checkWsType
+    type: checkWsType,
+    default: 'ws://127.0.0.1:9944'
 });
 parser.add_argument('--endpoint', {
     choices: [...Object.keys(benchmarkConfig)],
