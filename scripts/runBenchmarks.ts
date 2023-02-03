@@ -174,18 +174,22 @@ parser.add_argument('--ws-url', {
     required: false,
     nargs: '?',
     type: checkWsType,
-    default: 'ws://127.0.0.1:9944'
+    default: 'ws://127.0.0.1:9944',
+    help: 'The WsUrl to run the benchmarks against. Default is `ws://127.0.0.1:9944`.'
 });
 parser.add_argument('--endpoint', {
     choices: [...Object.keys(benchmarkConfig)],
-    required: false
+    required: false,
+    help: 'Run a single benchmark by specificing which endpoint to run. If this is absent it will run all benchmarks.'
 });
 parser.add_argument('--log-level', {
     choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
     default: 'http',
+    help: 'The log-level to run the benchmarks in. Defaults to `http`.'
 });
 parser.add_argument('--time', {
     default: '1m',
+    help: 'The amount of time each benchmark should run for. Ex: `1m`, `30s`, `15s`. Default is `1m`.'
 })
 
 const args = parser.parse_args() as Namespace;
