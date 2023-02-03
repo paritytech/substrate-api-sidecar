@@ -1,0 +1,28 @@
+local palletsPalletIdErrorsErrorItemId = {
+    'Democracy/errors/ProposalMissing?at=11900000',
+    'System/errors/InvalidSpecName?at=11900000',
+    'Scheduler/errors/FailedToSchedule?at=11900000',
+    'Balances/errors/VestingBalance?at=11900000',
+    'Democracy/errors/ProposalMissing?at=10000000',
+    'System/errors/InvalidSpecName?at=10000000',
+    'Scheduler/errors/FailedToSchedule?at=10000000',
+    'Balances/errors/VestingBalance?at=10000000',
+    'Democracy/errors/ProposalMissing?at=9000000',
+    'System/errors/InvalidSpecName?at=9000000',
+    'Scheduler/errors/FailedToSchedule?at=9000000',
+    'Balances/errors/VestingBalance?at=9000000',
+    'Democracy/errors/ProposalMissing?at=8000000',
+    'System/errors/InvalidSpecName?at=8000000',
+    'Scheduler/errors/FailedToSchedule?at=8000000',
+    'Balances/errors/VestingBalance?at=8000000',
+    'Democracy/errors/ProposalMissing?at=7000000',
+    'System/errors/InvalidSpecName?at=7000000',
+    'Scheduler/errors/FailedToSchedule?at=7000000',
+    'Balances/errors/VestingBalance?at=7000000',
+    'Democracy/errors/ProposalMissing?at=6000000',
+    'System/errors/InvalidSpecName?at=6000000',
+    'Scheduler/errors/FailedToSchedule?at=6000000',
+    'Balances/errors/VestingBalance?at=6000000',
+}
+
+return palletsPalletIdErrorsErrorItemId

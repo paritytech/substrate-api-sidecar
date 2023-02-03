@@ -46,6 +46,9 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/pallets/{palletId}/errors': {
         path: '/benchmarks/palletsPalletIdErrors',
     },
+    '/pallets/{palletId}/errors/{errorItemId}': {
+        path: '/benchmarks/palletsPalletIdErrorsErrorItemId',
+    },
     '/pallets/nomination-pools/info': {
         path: '/benchmarks/palletsNominationPoolsInfo',
     },
