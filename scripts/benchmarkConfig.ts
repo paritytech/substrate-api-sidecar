@@ -61,4 +61,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
     '/paras/{paraId}/lease-info': {
         path: '/benchmarks/parasParaIdLeasesInfo',
     },
+    '/node/network': {
+        path: '/benchmarks/nodeNetwork',
+    }
 }
