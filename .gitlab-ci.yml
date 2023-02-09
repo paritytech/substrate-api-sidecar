@@ -116,6 +116,7 @@ stages:
     CHAIN_NAME:                    ""
     CHAIN_URL:                     ""
   script:
+    - yarn --immutable
     - yarn test:latest-e2e-tests --chain $CHAIN_NAME --local $CHAIN_URL
 
 e2e-westend:
