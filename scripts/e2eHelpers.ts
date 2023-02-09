@@ -75,15 +75,3 @@ export const launchChainTest = async (
 		process.exit(2);
 	}
 };
-
-export const checkWsType = (arg: string) => {
-	const res =
-		/^(wss?:\/\/)([0-9]{1,3}(?:\.[0-9]{1,3}){3}|[a-zA-Z]+):([0-9]{1,5})$/.test(
-			arg
-		);
-	if (!res) {
-		console.error('Invalid Ws Url format');
-		process.exit(3);
-	}
-	return arg;
-};

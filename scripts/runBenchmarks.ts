@@ -19,7 +19,6 @@ import fs from 'fs';
 
 import { benchmarkConfig } from './benchmarkConfig';
 import { defaultSasBuildOpts, defaultSasStartOpts } from './config';
-import { checkWsType } from './e2eHelpers';
 import {
 	killAll,
 	launchProcess,
@@ -182,7 +181,6 @@ const parser = new ArgumentParser();
 parser.add_argument('--ws-url', {
 	required: false,
 	nargs: '?',
-	type: checkWsType,
 	default: 'ws://127.0.0.1:9944',
 	help: 'The WsUrl to run the benchmarks against. Default is `ws://127.0.0.1:9944`.',
 });

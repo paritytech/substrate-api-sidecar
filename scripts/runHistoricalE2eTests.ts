@@ -17,7 +17,7 @@
 import { ArgumentParser } from 'argparse';
 
 import { defaultSasBuildOpts, historicalE2eConfig } from './config';
-import { checkTests, checkWsType, launchChainTest } from './e2eHelpers';
+import { checkTests, launchChainTest } from './e2eHelpers';
 import { killAll, launchProcess, setLogLevel } from './sidecarScriptApi';
 import { IE2EParseArgs, ProcsType, StatusCode } from './types';
 
@@ -102,7 +102,6 @@ const parser = new ArgumentParser();
 parser.add_argument('--local', {
 	required: false,
 	nargs: '?',
-	type: checkWsType,
 });
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
