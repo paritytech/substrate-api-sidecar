@@ -17,6 +17,7 @@ variables:
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
   CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
+  NODE_IMAGE:                      "node:18"
 
 default:
   retry:
@@ -111,7 +112,7 @@ stages:
   stage:                           test
   <<:                              *kubernetes-env
   variables:
-    CI_IMAGE:                      node:18
+    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    ""
     CHAIN_URL:                     ""
   script:
@@ -120,18 +121,21 @@ stages:
 e2e-westend:
   <<:                              *e2e-template
   variables:
+    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "westend"
     CHAIN_URL:                     "wss://westend-internal-rpc.parity-testnet.parity.io"
 
 e2e-kusama:
   <<:                              *e2e-template
   variables:
+    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "kusama"
     CHAIN_URL:                     "wss://kusama-internal-rpc.parity-testnet.parity.io"
 
 e2e-polkadot:
   <<:                              *e2e-template
   variables:
+    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
     CHAIN_URL:                     "wss://polkadot-internal-rpc.parity-testnet.parity.io"
 
