@@ -24,10 +24,6 @@ export const westend: IConfig = {
             'metadata=true',
         ]
       },
-      '/accounts/{accountId}/validate': {
-          path: '/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate',
-          queryParams: [],
-      },
       '/blocks': {
           path: '/blocks?range=1-5',
           queryParams: [],
