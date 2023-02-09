@@ -75,7 +75,6 @@ export class PalletsStorageService extends AbstractPalletsService {
 		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			chosenMetadata,
-			historicApi,
 			palletId,
 			metadataFieldType
 		);
@@ -132,7 +131,6 @@ export class PalletsStorageService extends AbstractPalletsService {
 		);
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			chosenMetadata,
-			historicApi,
 			palletId,
 			metadataFieldType
 		);

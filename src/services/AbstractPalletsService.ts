@@ -76,13 +76,9 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 */
 	protected findPalletMeta(
 		adjustedMetadata: MetadataV13 | MetadataV14,
-		historicApi: ApiDecoration<'promise'>,
 		palletId: string,
 		metadataFieldType: IMetadataFieldType
 	): [PalletMetadataV14 | ModuleMetadataV13, number] {
-		console.log("what is pallet id--", palletId);
-		console.log("what is metadatafield type---", metadataFieldType);
-
 		const metadataType = adjustedMetadata.toRawType();
 
 		let pallets: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>;
@@ -108,7 +104,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 		}
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
-			this.validPalletId(historicApi, pallets, palletId);
+			this.validPalletId(pallets, palletId);
 
 		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
@@ -146,9 +142,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 			}
 		}
 
-		console.log("what is pallet meta---", palletMeta);
-		console.log("what is pallet idx---", palletIdx);
-
 		if (!palletMeta || palletIdx === undefined || palletIdx < 0) {
 			throw new BadRequest(
 				`no queryable ${metadataFieldType} items found for palletId "${palletId}"`
@@ -159,7 +152,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private validPalletId(
-		historicApi: ApiDecoration<'promise'>,
 		modules: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>,
 		palletId: string
 	): {
@@ -170,9 +162,11 @@ export abstract class AbstractPalletsService extends AbstractService {
 		// Either a pallet name (string) or a pallet index (number)
 		const parsedPalletId = AbstractPalletsService.palletIdxOrName(palletId);
 
-		console.log("parsed Pallet id---", parsedPalletId);
 		const isValidPalletName =
-			typeof parsedPalletId === 'string' && !!historicApi.query[palletId];			
+			typeof parsedPalletId === 'string' &&
+			modules.some(
+				(meta) => meta.name.toString().toLowerCase() === palletId.toLowerCase()
+			);
 
 		const isValidPalletIndex =
 			typeof parsedPalletId === 'number' &&
@@ -181,10 +175,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 					? idx === parsedPalletId
 					: meta.index.eqn(parsedPalletId)
 			);
-
-			console.log("is valid pallet name--", isValidPalletName);
-			console.log("is valid pallet index---", isValidPalletIndex);
-			console.log("parsed pallet id---", parsedPalletId);
 
 		return {
 			isValidPalletName,
@@ -294,9 +284,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 		eventItemMetaIdx: number,
 		eventItemId: string
 	): [number, EventMetadataLatest] {
-		console.log("event item id---", eventItemId);
-		console.log("event item meta idx---", eventItemMetaIdx);
-
 		const palletName = stringCamelCase(palletMeta.name);
 		const events = historicApi.events[palletName];
 
