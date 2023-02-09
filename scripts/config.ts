@@ -85,6 +85,16 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 };
 
 export const latestE2eConfig: Record<string, IChainConfigE2E> = {
+	kusama: {
+		wsUrl: 'wss://kusama-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'kusama']
+		}
+	},
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
 		SasStartOpts: defaultSasStartOpts,
@@ -104,5 +114,15 @@ export const latestE2eConfig: Record<string, IChainConfigE2E> = {
 			resolverFailed: 'Finished with a status code of 1',
 			args: ['start:latest-e2e-tests', '--chain', 'statemint']
 		}
-	}
+	},
+	westend: {
+		wsUrl: 'wss://westend-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'westend']
+		}
+	},
 }
