@@ -23,7 +23,7 @@ import {
 	setLogLevel,
 } from './sidecarScriptApi';
 import { ProcsType, StatusCode } from './types';
-import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
+import { checkTests, launchChainTest } from './e2eHelpers';
 
 // Stores all the processes
 const procs: ProcsType = {};
@@ -73,7 +73,6 @@ const parser = new ArgumentParser();
 parser.add_argument('--local', {
 	required: false,
 	nargs: '?',
-	type: checkWsType
 })
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],

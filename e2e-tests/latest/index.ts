@@ -16,7 +16,7 @@
 
 import { ArgumentParser } from 'argparse';
 import { request, IRequest } from '../helpers/request';
-import { polkadot, statemint } from './endpoints';
+import { polkadot, statemint, westend, kusama } from './endpoints';
 import { IConfig } from './types/endpoints';
 import { HOST, PORT } from '../helpers/consts';
 
@@ -36,6 +36,12 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
     switch(args.chain) {
         case 'polkadot':
             config = polkadot
+            break;
+        case 'kusama':
+            config = kusama
+            break;
+        case 'westend':
+            config = westend
             break;
         case 'statemint':
             config = statemint
@@ -106,7 +112,7 @@ const logErrors = (errors: IRequest[]) => {
 const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
-    choices: ['polkadot', 'statemint'],
+    choices: ['polkadot', 'statemint', 'westend', 'kusama'],
     default: 'polkadot'
 });
 

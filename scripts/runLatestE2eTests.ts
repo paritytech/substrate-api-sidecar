@@ -17,7 +17,7 @@
 import { ArgumentParser, Namespace } from 'argparse';
 import { launchProcess, setLogLevel, killAll } from './sidecarScriptApi';
 import { latestE2eConfig, defaultSasBuildOpts } from './config';
-import { checkTests, launchChainTest, checkWsType } from './e2eHelpers';
+import { checkTests, launchChainTest } from './e2eHelpers';
 
 import { ProcsType, StatusCode } from './types';
 
@@ -63,11 +63,10 @@ const parser = new ArgumentParser();
 
 parser.add_argument('--local', {
     required: false,
-    nargs: '?',
-    type: checkWsType
+    nargs: '?'
 });
 parser.add_argument('--chain', {
-    choices: ['polkadot', 'statemint'],
+    choices: ['polkadot', 'kusama', 'westend', 'statemint'],
 });
 parser.add_argument('--log-level', {
     choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
