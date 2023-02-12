@@ -3,7 +3,7 @@
     "compilerOptions": {
       "baseUrl": ".",
       "outDir": "build",
-      "rootDirs": ["./src"],
+      "rootDirs": ["./historical", "./helpers", "./latest"],
       "suppressImplicitAnyIndexErrors": true,
       "resolveJsonModule": true,
     },
@@ -11,9 +11,13 @@
       "../node_modules/@types"
     ],
     "include": [
-        "./historical", "./helpers", "./latest",
-    ],
-    "exclude": [
-        "./historical-e2e-tests.spec.ts"
+      "./historical/**/*.ts",
+      "./historical/**/*.json",
+      "./helpers/**/*.ts",
+      "./helpers/**/*.json",
+      "./latest/**/*.ts",
+      "./latest/**/*.json",
+      // Include the test file for linting capability
+      "./historical-e2e-tests.spec.ts"
     ]
-  }
+}
