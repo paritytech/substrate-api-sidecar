@@ -13,17 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { killAll, launchProcess, setWsUrl } from './sidecarScriptApi';
 import { IChainConfigE2E, ProcsType, StatusCode } from './types';
-import {
-	killAll,
-	launchProcess,
-	setWsUrl,
-} from './sidecarScriptApi';
 
 /**
  * Check each chain test returned by `launchChainTest`, and exit the program
  * with the correct process.
- * 
+ *
  * @param args The results of each test.
  */
 export const checkTests = (...args: boolean[]): void => {
@@ -39,34 +35,34 @@ export const checkTests = (...args: boolean[]): void => {
 };
 
 /**
- * Launch a e2e test for a chain. 
- * 
+ * Launch a e2e test for a chain.
+ *
  * @param chain The chain to test against.
- * @param config The config specific to a chain. 
+ * @param config The config specific to a chain.
  * @param isLocal Boolean declaring if this chain is local.
  * @param procs Object containing all the processes.
  */
 export const launchChainTest = async (
-    chain: string, 
-    config: Record<string, IChainConfigE2E>, 
-    procs: ProcsType,
-    localUrl?: string,
+	chain: string,
+	config: Record<string, IChainConfigE2E>,
+	procs: ProcsType,
+	localUrl?: string
 ): Promise<boolean> => {
-    const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
-    const { Success } = StatusCode;
+	const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
+	const { Success } = StatusCode;
 
-    // Set the ws url env var
+	// Set the ws url env var
 	localUrl ? setWsUrl(localUrl) : setWsUrl(wsUrl);
 
-    console.log('Launching Sidecar...');
+	console.log('Launching Sidecar...');
 	const sidecarStart = await launchProcess('yarn', procs, SasStartOpts);
 
-    if (sidecarStart === Success) {
+	if (sidecarStart.code === Success) {
 		// Sidecar successfully launched, and jest will now get called
 		console.log('Launching jest...');
 		const jest = await launchProcess('yarn', procs, e2eStartOpts);
 
-		if (jest === Success) {
+		if (jest.code === Success) {
 			killAll(procs);
 			return true;
 		} else {
@@ -78,4 +74,4 @@ export const launchChainTest = async (
 		killAll(procs);
 		process.exit(2);
 	}
-}
+};

@@ -32,6 +32,7 @@
     "build:docs": "(cd docs && yarn && yarn build)",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && substrate-exec-tsc --project scripts/tsconfig.json",
     "build:e2e-tests": "substrate-exec-rimraf e2e-tests/build/ && substrate-exec-tsc --project e2e-tests/tsconfig.json",
+    "bench": "yarn build:scripts && node scripts/build/runBenchmarks.js",
     "lint": "substrate-dev-run-lint",
     "lint:fix": "substrate-dev-run-lint --fix",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",

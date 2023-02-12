@@ -34,3 +34,6 @@ yarn-error.log
 
 # IDE - VSCode
 .vscode/*
+
+# Benchmarks
+/benchmarks.txt

@@ -14,26 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ArgumentParser, Namespace } from 'argparse';
+import { ArgumentParser } from 'argparse';
 
-import { historicalE2eConfig, defaultSasBuildOpts } from './config';
-import {
-	killAll,
-	launchProcess,
-	setLogLevel,
-} from './sidecarScriptApi';
-import { ProcsType, StatusCode } from './types';
+import { defaultSasBuildOpts, historicalE2eConfig } from './config';
 import { checkTests, launchChainTest } from './e2eHelpers';
+import { killAll, launchProcess, setLogLevel } from './sidecarScriptApi';
+import { IE2EParseArgs, ProcsType, StatusCode } from './types';
 
 // Stores all the processes
 const procs: ProcsType = {};
 
-const main = async (args: Namespace): Promise<void> => {
+const main = async (args: IE2EParseArgs): Promise<void> => {
 	const { Failed } = StatusCode;
 	const localUrl: string | undefined = args.local ? args.local : undefined;
 
 	if (localUrl && !args.chain) {
-		console.error('error: `--local` must be used in conjunction with `--chain`');
+		console.error(
+			'error: `--local` must be used in conjunction with `--chain`'
+		);
 		process.exit(3);
 	}
 
@@ -44,24 +42,55 @@ const main = async (args: Namespace): Promise<void> => {
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
-	if (sidecarBuild === Failed) {
+	if (sidecarBuild.code === Failed) {
 		console.error('Sidecar failed to build, exiting...');
 		killAll(procs);
 		process.exit(2);
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, procs, localUrl);
+		const selectedChain = await launchChainTest(
+			args.chain,
+			historicalE2eConfig,
+			procs,
+			localUrl
+		);
 
 		checkTests(selectedChain);
 	} else {
-		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, procs);
-		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, procs);
-		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
-		const statemineTest = await launchChainTest('statemine', historicalE2eConfig, procs);
-		const statemintTest = await launchChainTest('statemint', historicalE2eConfig, procs);
+		const polkadotTest = await launchChainTest(
+			'polkadot',
+			historicalE2eConfig,
+			procs
+		);
+		const kusamaTest = await launchChainTest(
+			'kusama',
+			historicalE2eConfig,
+			procs
+		);
+		const westendTest = await launchChainTest(
+			'westend',
+			historicalE2eConfig,
+			procs
+		);
+		const statemineTest = await launchChainTest(
+			'statemine',
+			historicalE2eConfig,
+			procs
+		);
+		const statemintTest = await launchChainTest(
+			'statemint',
+			historicalE2eConfig,
+			procs
+		);
 
-		checkTests(polkadotTest, kusamaTest, westendTest, statemineTest, statemintTest);
+		checkTests(
+			polkadotTest,
+			kusamaTest,
+			westendTest,
+			statemineTest,
+			statemintTest
+		);
 	}
 };
 
@@ -73,7 +102,7 @@ const parser = new ArgumentParser();
 parser.add_argument('--local', {
 	required: false,
 	nargs: '?',
-})
+});
 parser.add_argument('--chain', {
 	choices: ['polkadot', 'kusama', 'westend', 'statemine', 'statemint'],
 });
@@ -82,7 +111,7 @@ parser.add_argument('--log-level', {
 	default: 'http',
 });
 
-const args = parser.parse_args() as Namespace;
+const args = parser.parse_args() as IE2EParseArgs;
 
 /**
  * Signal interrupt

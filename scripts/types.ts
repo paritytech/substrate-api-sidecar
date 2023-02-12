@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Namespace } from 'argparse';
 import { ChildProcessWithoutNullStreams } from 'child_process';
 
 export type ProcsType = { [key: string]: ChildProcessWithoutNullStreams };
@@ -41,3 +42,36 @@ export interface IProcOpts {
 	resolverFailed?: string;
 	args: string[];
 }
+
+export interface StatusResponse {
+	code: StatusCode;
+	stderr: string;
+	stdout: string;
+}
+
+export interface IBenchResult {
+	endpoint: string;
+	stdout: string;
+}
+
+export interface IE2EParseArgs extends Namespace {
+	local: string;
+	chain: string;
+	log_level: string;
+}
+
+export interface IBenchParseArgs extends Namespace {
+	log_level: string;
+	endpoint: string;
+	ws_url: string;
+	time: string;
+}
+
+export type IBenchmarkConfig = {
+	[x: string]: {
+		/**
+		 * Relative path to the benchmark related to the key which represents a endpoint.
+		 */
+		path: string;
+	};
+};
