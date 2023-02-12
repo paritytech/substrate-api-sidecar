@@ -112,7 +112,7 @@ const launchBenchmark = async (
 		process.exit(1);
 	}
 
-	// 2 second delay to allow sidecar to boot before we load it will queries.
+	// 2 second delay to allow sidecar to boot before we load it with queries.
 	await delay(2000);
 
 	// cd into benchmark
