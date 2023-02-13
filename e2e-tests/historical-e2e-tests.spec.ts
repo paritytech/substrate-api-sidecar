@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { endpoints } from './historical/endpoints';
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
+import { endpoints } from './historical/endpoints';
 import {
 	AccountsResponse,
 	ChainSpec,

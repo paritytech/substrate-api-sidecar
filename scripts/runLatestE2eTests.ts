@@ -64,13 +64,15 @@ const main = async (args: IE2EParseArgs) => {
 			latestE2eConfig,
 			procs
 		);
+		const kusamaTest = await launchChainTest('kusama', latestE2eConfig, procs);
+		const westend = await launchChainTest('westend', latestE2eConfig, procs);
 		const statemintTest = await launchChainTest(
 			'statemint',
 			latestE2eConfig,
 			procs
 		);
 
-		checkTests(polkadotTest, statemintTest);
+		checkTests(polkadotTest, kusamaTest, westend, statemintTest);
 	}
 };
 

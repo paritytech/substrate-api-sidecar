@@ -74,6 +74,6 @@ export const polkadotAccountBalanceEndpoints = [
 	], // v9151
 	[
 		'/accounts/15kUt2i86LHRWCkE3D9Bg1HZAoc2smhn1fwPzDERTb1BXAkX/balance-info?at=9500000',
-		JSON.stringify(accountBalance9500000)
+		JSON.stringify(accountBalance9500000),
 	], // v9170
 ];
