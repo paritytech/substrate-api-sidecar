@@ -234,6 +234,19 @@ export const polkadot: IConfig = {
             'at={blockId}'
         ],
     },
+    '/pallets/{palletId}/events': {
+        path: '/pallets/balances/events',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/events/{eventItemId}': {
+        path: '/pallets/democracy/events/Proposed',
+        queryParams: [
+            'at={blockId}',
+            'metadata=true'
+        ],
+    },
     '/pallets/nominationPoools/info': {
         path: '/pallets/nomination-pools/info',
         queryParams: [

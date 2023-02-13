@@ -33,6 +33,7 @@ export const statemineControllers: ControllerConfig = {
 		'PalletsAssets',
 		'PalletsConsts',
 		'PalletsErrors',
+		'PalletsEvents',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

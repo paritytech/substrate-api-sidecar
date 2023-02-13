@@ -21,7 +21,7 @@ import { Hash } from '@polkadot/types/interfaces';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
-import { getPalletErrors } from '../test-helpers/mock/data/mockErrorData';
+import { getPalletErrors } from '../test-helpers/mock/data/mockPalletErrorsData';
 import fetchErrorOnlyIdsRes from '../test-helpers/responses/pallets/fetchErrorsOnlyIdsRes.json';
 import fetchErrorRes from '../test-helpers/responses/pallets/fetchErrorsRes.json';
 import fetchInsufficientFundsRes from '../test-helpers/responses/pallets/fetchInsufficientFundsErrorItem13641102.json';

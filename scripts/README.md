@@ -70,7 +70,43 @@ $ yarn remove @substrate/api-sidecar
 $ rm -rf ./package.tgz
 ```
 
+# Script `runBenchmarks.ts`
+
+This script's purpose is to run the benchmarks inside of the `<root>/benchmarks` directory. This script requires you to have `wrk`, `lua`, and a fully synced archive node. Please reference `<root>/benchmarks/README.md` for more information on installation. 
+
+In order to start this script locally, run from the root directory of this repository:
+
+ex1:
+```bash
+$ yarn
+$ yarn bench
+```
+
+ex2:
+```bash
+$ yarn
+$ yarn bench --log-level=info --time=30s  
+```
+
+ex3:
+```
+$ yarn
+$ yarn bench --log-level=info --time=30s  --endpoint=/accounts/{accountId}/balance-info
+```
+
+### Flags
+
+`--ws-url`: The Ws Url to run the benchmarks against. Default is `ws://127.0.0.1:9944`.
+
+`--endpoint`: Run a single benchmark by specificing which endpoint to run. If this is absent it will run all benchmarks.
+
+`--log-level`: The log-level to run the benchmarks in. Defaults to `http`.
+
+`--time`: The amount of time each benchmark should run for. Ex: `1m`, `30s`, `15s`. Default is `1m`.
+
 ## Errors
+
+These error codes are shared across all scripts.
 
 `0`: The process has finished succesfully and all tests have passed.
 
@@ -79,3 +115,5 @@ $ rm -rf ./package.tgz
 `2`: The process has exited with an error, and building sidecar has failed. 
 
 `3`: CLI args are used incorrectly internally.
+
+`4`: Benchmarks process has failed.

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from '././PalletsErrorsService';
+export * from '././PalletsEventsService';
 export * from './PalletsAssetsService';
 export * from './PalletsConstantsService';
 export * from './PalletsNominationPoolsService';

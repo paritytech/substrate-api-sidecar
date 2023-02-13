@@ -45,7 +45,6 @@ export class PalletsConstantsService extends AbstractPalletsService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			palletMetadata,
-			historicApi,
 			palletId,
 			metadataFieldType
 		);
@@ -86,7 +85,6 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			metadata,
-			historicApi,
 			palletId,
 			metadataFieldType
 		);

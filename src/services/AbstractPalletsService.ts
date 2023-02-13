@@ -18,12 +18,14 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Option, Vec } from '@polkadot/types';
 import {
 	ErrorMetadataLatest,
+	EventMetadataLatest,
 	MetadataV13,
 	MetadataV14,
 	ModuleMetadataV13,
 	PalletConstantMetadataLatest,
 	PalletConstantMetadataV14,
 	PalletErrorMetadataV14,
+	PalletEventMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
 	StorageEntryMetadataV13,
@@ -40,15 +42,17 @@ type IPalletMetadata =
 	| Option<StorageMetadataV13>
 	| Option<PalletStorageMetadataV14>
 	| Option<PalletErrorMetadataV14>
+	| Option<PalletEventMetadataV14>
 	| Vec<PalletConstantMetadataV14>;
 
 type IPalletFieldMeta =
 	| ErrorMetadataLatest
+	| EventMetadataLatest
 	| PalletConstantMetadataLatest
 	| StorageEntryMetadataV13
 	| StorageEntryMetadataV14;
 
-type IMetadataFieldType = 'constants' | 'storage' | 'errors';
+type IMetadataFieldType = 'constants' | 'events' | 'storage' | 'errors';
 
 export abstract class AbstractPalletsService extends AbstractService {
 	private getPalletMetadataType(
@@ -76,7 +80,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 */
 	protected findPalletMeta(
 		adjustedMetadata: MetadataV13 | MetadataV14,
-		historicApi: ApiDecoration<'promise'>,
 		palletId: string,
 		metadataFieldType: IMetadataFieldType
 	): [PalletMetadataV14 | ModuleMetadataV13, number] {
@@ -105,7 +108,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 		}
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
-			this.validPalletId(historicApi, pallets, palletId);
+			this.validPalletId(pallets, palletId);
 
 		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
 		let palletIdx: number | undefined;
@@ -143,9 +146,13 @@ export abstract class AbstractPalletsService extends AbstractService {
 			}
 		}
 
-		if (!palletMeta || palletIdx === undefined || palletIdx < 0) {
+		if (isValidPalletIndex === false && isValidPalletName === false) {
 			throw new BadRequest(
 				`"${palletId}" was not recognized as a queryable pallet.`
+			);
+		} else if (!palletMeta || palletIdx === undefined || palletIdx < 0) {
+			throw new BadRequest(
+				`no queryable ${metadataFieldType} items found for palletId "${palletId}"`
 			);
 		}
 
@@ -153,7 +160,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private validPalletId(
-		historicApi: ApiDecoration<'promise'>,
 		modules: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>,
 		palletId: string
 	): {
@@ -165,7 +171,10 @@ export abstract class AbstractPalletsService extends AbstractService {
 		const parsedPalletId = AbstractPalletsService.palletIdxOrName(palletId);
 
 		const isValidPalletName =
-			typeof parsedPalletId === 'string' && !!historicApi.query[palletId];
+			typeof parsedPalletId === 'string' &&
+			modules.some(
+				(meta) => meta.name.toString().toLowerCase() === palletId.toLowerCase()
+			);
 
 		const isValidPalletIndex =
 			typeof parsedPalletId === 'number' &&
@@ -211,7 +220,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
 		palletItemId: string,
-		metadataFieldType: string
+		metadataFieldType: IMetadataFieldType
 	): IPalletFieldMeta {
 		let palletItemIdx = -1;
 		let palletItemMeta: IPalletFieldMeta;
@@ -224,6 +233,13 @@ export abstract class AbstractPalletsService extends AbstractService {
 			);
 		} else if (metadataFieldType === 'errors') {
 			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
+				historicApi,
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		} else if (metadataFieldType === 'events') {
+			[palletItemIdx, palletItemMeta] = this.getEventItemMeta(
 				historicApi,
 				palletMeta as PalletMetadataV14,
 				palletItemIdx,
@@ -292,6 +308,36 @@ export abstract class AbstractPalletsService extends AbstractService {
 			Object.entries(errors)[
 				errorItemMetaIdx
 			] as unknown as ErrorMetadataLatest,
+		];
+	}
+
+	private getEventItemMeta(
+		historicApi: ApiDecoration<'promise'>,
+		palletMeta: PalletMetadataV14,
+		eventItemMetaIdx: number,
+		eventItemId: string
+	): [number, EventMetadataLatest] {
+		const palletName = stringCamelCase(palletMeta.name);
+		const events = historicApi.events[palletName];
+
+		if ((palletMeta.events as unknown as EventMetadataLatest).isEmpty) {
+			throw new InternalServerError(
+				`No event items found in ${palletMeta.name.toString()}'s metadadta`
+			);
+		}
+
+		for (const [, val] of Object.entries(events)) {
+			const item = val.meta;
+			if (item.name.toLowerCase() === eventItemId.toLowerCase()) {
+				eventItemMetaIdx = val.meta.index.toNumber();
+			}
+		}
+
+		return [
+			eventItemMetaIdx,
+			Object.entries(events)[
+				eventItemMetaIdx
+			] as unknown as EventMetadataLatest,
 		];
 	}
 
