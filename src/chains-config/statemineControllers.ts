@@ -32,6 +32,7 @@ export const statemineControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsAssets',
 		'PalletsErrors',
+		'PalletsEvents',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

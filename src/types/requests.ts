@@ -72,6 +72,11 @@ export interface IPalletsErrorsParam extends ParamsDictionary {
 	errorItemId: string;
 }
 
+export interface IPalletsEventsParam extends ParamsDictionary {
+	palletId: string;
+	eventItemId: string;
+}
+
 export interface IPalletsStorageParam extends ParamsDictionary {
 	palletId: string;
 	storageItemId: string;

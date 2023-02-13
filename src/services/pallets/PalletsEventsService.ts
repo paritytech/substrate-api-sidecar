@@ -16,10 +16,11 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
-import { BlockHash, ErrorMetadataLatest } from '@polkadot/types/interfaces';
-import { IsError } from '@polkadot/types/metadata/decorate/types';
+import { BlockHash, EventMetadataLatest } from '@polkadot/types/interfaces';
+import { IsEvent } from '@polkadot/types/metadata/decorate/types';
+import { AnyTuple } from '@polkadot/types-codec/types';
 import { stringCamelCase } from '@polkadot/util';
-import { IPalletErrors, IPalletErrorsItem } from 'src/types/responses';
+import { IPalletEvents, IPalletEventsItem } from 'src/types/responses';
 
 import { AbstractPalletsService } from '../AbstractPalletsService';
 
@@ -28,17 +29,17 @@ interface IFetchPalletArgs {
 	palletId: string;
 }
 
-interface IFetchErrorItemArgs extends IFetchPalletArgs {
-	errorItemId: string;
+interface IFetchEventItemArgs extends IFetchPalletArgs {
+	eventItemId: string;
 	metadata: boolean;
 }
 
-export class PalletsErrorsService extends AbstractPalletsService {
-	async fetchErrorItem(
+export class PalletsEventsService extends AbstractPalletsService {
+	async fetchEventItem(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, errorItemId, metadata }: IFetchErrorItemArgs
-	): Promise<IPalletErrorsItem> {
-		const metadataFieldType = 'errors';
+		{ hash, palletId, eventItemId, metadata }: IFetchEventItemArgs
+	): Promise<IPalletEventsItem> {
+		const metadataFieldType = 'events';
 		const palletMetadata = historicApi.registry.metadata;
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
@@ -47,18 +48,18 @@ export class PalletsErrorsService extends AbstractPalletsService {
 			metadataFieldType
 		);
 
-		// Even if `errorItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the error item not existing are that `findErrorItemMeta` will throw.
-		const errorItemMetadata = this.findPalletFieldItemMeta(
+		// Even if `eventItemMeta` is not used, we call this function to ensure it exists. The side effects
+		// of the event item not existing are that `findPalletFieldItemMeta` will throw.
+		const eventItemMetadata = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,
-			errorItemId,
+			eventItemId,
 			metadataFieldType
-		) as ErrorMetadataLatest;
+		) as EventMetadataLatest;
 
-		let palletErrorMetadata: ErrorMetadataLatest | undefined;
+		let palletEventMetadata: EventMetadataLatest | undefined;
 		if (metadata) {
-			palletErrorMetadata = (errorItemMetadata[1] as IsError).meta;
+			palletEventMetadata = (eventItemMetadata[1] as IsEvent<AnyTuple>).meta;
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -70,16 +71,16 @@ export class PalletsErrorsService extends AbstractPalletsService {
 			},
 			pallet: stringCamelCase(palletMeta.name),
 			palletIndex: palletMetaIdx,
-			errorItem: errorItemId,
-			metadata: palletErrorMetadata,
+			eventItem: eventItemId,
+			metadata: palletEventMetadata,
 		};
 	}
 
-	async fetchErrors(
+	async fetchEvents(
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
-	): Promise<IPalletErrors> {
-		const metadataFieldType = 'errors';
+	): Promise<IPalletEvents> {
+		const metadataFieldType = 'events';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			metadata,
@@ -89,21 +90,17 @@ export class PalletsErrorsService extends AbstractPalletsService {
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 		const parsedPalletName = stringCamelCase(palletMeta.name.toString());
-		const errors = historicApi.errors[parsedPalletName];
+		const events = historicApi.events[parsedPalletName];
 
-		let items: [] | ErrorMetadataLatest[] | Text[];
-		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
+		let items: [] | EventMetadataLatest[] | Text[];
+		if ((palletMeta.events as unknown as EventMetadataLatest).isEmpty) {
 			items = [];
 		} else if (onlyIds) {
-			items = Object.entries(errors).map(
-				(errorItem) => errorItem[0] as unknown as Text
+			items = Object.entries(events).map(
+				(eventItem) => eventItem[0] as unknown as Text
 			);
 		} else {
-			items = [] as ErrorMetadataLatest[];
-			for (const [, value] of Object.entries(errors)) {
-				const item = value.meta;
-				items.push(item);
-			}
+			items = Object.entries(events).map((eventItem) => eventItem[1].meta);
 		}
 
 		return {
