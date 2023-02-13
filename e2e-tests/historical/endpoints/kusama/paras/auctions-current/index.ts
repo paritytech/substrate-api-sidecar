@@ -65,10 +65,10 @@ export const parasAuctionsCurrentEndpoints = [
 	], // v9160 - endingPeriod
 	[
 		'/paras/auctions/current?at=11800000',
-		JSON.stringify(parasAuctionsCurrent11800000)
+		JSON.stringify(parasAuctionsCurrent11800000),
 	], // v9170 - startingPeriod
 	[
 		'/paras/auctions/current?at=11821201',
-		JSON.stringify(parasAuctionsCurrent11821201)
+		JSON.stringify(parasAuctionsCurrent11821201),
 	], // v9170 - endingPeriod
 ];

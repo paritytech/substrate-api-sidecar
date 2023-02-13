@@ -59,6 +59,6 @@ export const parasLeasesCurrentEndpoints = [
 	], // v9160
 	[
 		'/paras/leases/current?at=11800000',
-		JSON.stringify(parasLeasesCurrent11800000)
+		JSON.stringify(parasLeasesCurrent11800000),
 	], // v9170
 ];

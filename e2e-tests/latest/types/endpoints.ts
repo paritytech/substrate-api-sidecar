@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export type IConfig = {
-    [key: string]: IEndpoints
-}
+	[key: string]: IEndpoints;
+};
 
 interface IEndpoints {
-    path: string;
-    queryParams: string[] 
+	path: string;
+	queryParams: string[];
 }
