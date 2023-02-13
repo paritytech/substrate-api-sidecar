@@ -38,6 +38,7 @@ export const defaultControllers: ControllerConfig = {
 		'PalletsAssets',
 		'PalletsDispatchables',
 		'PalletsErrors',
+		'PalletsEvents',
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',

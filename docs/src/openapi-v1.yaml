@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.3.0
+  version: 14.3.1
 tags:
 - name: accounts
 - name: blocks
@@ -1073,15 +1073,6 @@ paths:
         required: false
         schema:
           type: boolean
-      - name: at
-        in: query
-        description: Block at which to retrieve a list of
-          the pallet's dispatchable items.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1124,14 +1115,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: at
-        in: query
-        description: Block at which to query the dispatchable item at.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
       - name: metadata
         in: query
         description: Include the dispatchable items metadata (including documentation)
@@ -1254,6 +1237,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletErrorsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of events for a pallet.
+      description: Returns a list of event item metadata for event items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read event metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the event items instead of every event's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's event items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of eventItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletEvents'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events/{eventItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of an event item.
+      description: Returns the value stored under the eventItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read event metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: eventItemId
+        in: path
+        description: Id of the event item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the event item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the event items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletEventsItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -2766,6 +2856,63 @@ components:
           items:
             type: string
       description: Metadata of an error item from a FRAME pallet.
+    PalletEvents:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up events.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletEventsItemMetadata'
+    PalletEventsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up events.
+          example: "14"
+        eventItem:
+          type: string
+          description: Name of the events item.
+          example: "Proposed"
+        metadata:
+          $ref: '#/components/schemas/PalletEventsItemMetadata'
+    PalletEventsItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Tabled"
+          description: The event item's name (which is the same as the event item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the error item in the lists of pallet events
+        docs:
+          type: string
+          example: " Information concerning any given event.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of an event item from a FRAME pallet.
     PalletsNominationPool:
       type: object
       properties:

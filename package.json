@@ -1,5 +1,5 @@
 {
-  "version": "14.3.0",
+  "version": "14.3.1",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -32,6 +32,7 @@
     "build:docs": "(cd docs && yarn && yarn build)",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && substrate-exec-tsc --project scripts/tsconfig.json",
     "build:e2e-tests": "substrate-exec-rimraf e2e-tests/build/ && substrate-exec-tsc --project e2e-tests/tsconfig.json",
+    "bench": "yarn build:scripts && node scripts/build/runBenchmarks.js",
     "lint": "substrate-dev-run-lint",
     "lint:fix": "substrate-dev-run-lint --fix",
     "lint:scripts": "cd scripts && substrate-dev-run-lint",
@@ -50,8 +51,8 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot/api": "^9.13.2",
-    "@polkadot/api-contract": "^9.13.2",
+    "@polkadot/api": "^9.13.6",
+    "@polkadot/api-contract": "^9.13.6",
     "@polkadot/util-crypto": "^10.3.1",
     "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",

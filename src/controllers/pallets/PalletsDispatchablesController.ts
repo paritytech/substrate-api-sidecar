@@ -56,11 +56,12 @@ export default class PalletsDispatchablesController extends AbstractController<P
 		unknown,
 		unknown
 	> = async (
-		{ query: { at, metadata }, params: { palletId, dispatchableItemId } },
+		{ query: { metadata }, params: { palletId, dispatchableItemId } },
 		res
 	): Promise<void> => {
-		const metadataArg = metadata === 'true';
+		const at = undefined;
 		const hash = await this.getHashFromAt(at);
+		const metadataArg = metadata === 'true';
 		const historicApi = await this.api.at(hash);
 
 		PalletsDispatchablesController.sanitizedSend(
@@ -76,11 +77,12 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	};
 
 	private getDispatchables: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds } },
+		{ params: { palletId }, query: { onlyIds } },
 		res
 	): Promise<void> => {
-		const onlyIdsArg = onlyIds === 'true';
+		const at = undefined;
 		const hash = await this.getHashFromAt(at);
+		const onlyIdsArg = onlyIds === 'true';
 		const historicApi = await this.api.at(hash);
 
 		PalletsDispatchablesController.sanitizedSend(

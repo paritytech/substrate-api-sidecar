@@ -41,7 +41,7 @@ const cleanup = async () => {
 		sasUnInstallPackOpts
 	);
 
-	if (sidecarUnInstallPack === Failed) {
+	if (sidecarUnInstallPack.code === Failed) {
 		console.error('UnInstalling sidecar package failed..');
 		console.error(
 			'Please uninstall the package using `yarn remove @substrate/api-sidecar`.'
@@ -60,7 +60,7 @@ const cleanup = async () => {
 	};
 	const deleteTarball = await launchProcess('rm', procs, sasDeleteTarballOpts);
 
-	if (deleteTarball === Failed) {
+	if (deleteTarball.code === Failed) {
 		console.error('Error deleting tarball.');
 		console.error(
 			'In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.'
@@ -82,7 +82,7 @@ const main = async () => {
 	console.log('Building Sidecar');
 	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
 
-	if (sidecarBuild === Failed) {
+	if (sidecarBuild.code === Failed) {
 		console.error('Sidecar failed to build, exiting...');
 		killAll(procs);
 		process.exit(1);
@@ -94,7 +94,7 @@ const main = async () => {
 	console.log('Building Local Npm release of Sidecar.');
 	const sidecarPack = await launchProcess('yarn', procs, defaultSasPackOpts);
 
-	if (sidecarPack === Failed) {
+	if (sidecarPack.code === Failed) {
 		console.error('Sidecar failed to build an local npm tarball.');
 		killAll(procs);
 		process.exit(1);
@@ -115,7 +115,7 @@ const main = async () => {
 		sasInstallPackOpts
 	);
 
-	if (sidecarInstallPack === Failed) {
+	if (sidecarInstallPack.code === Failed) {
 		console.error('Installing the binary failed..');
 		killAll(procs);
 		process.exit(1);
@@ -138,7 +138,7 @@ const main = async () => {
 		sasStartPackOpts
 	);
 
-	if (sidecarStart === Success) {
+	if (sidecarStart.code === Success) {
 		console.log('Successful Release Build of Sidecar');
 		killAll(procs);
 		await cleanup();

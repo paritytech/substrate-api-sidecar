@@ -200,21 +200,15 @@ export const polkadot: IConfig = {
     },
     '/pallets/{palletId}/dispatchables': {
         path: '/pallets/democracy/dispatchables',
-        queryParams: [
-            'at={blockId}'
-        ],
+        queryParams: [],
     },
     '/pallets/{palletId}/dispatchables?onlyIds=true': {
         path: '/pallets/14/dispatchables',
-        queryParams: [
-            'at={blockId}'
-        ],
+        queryParams: [],
     },
     '/pallets/{palletId}/dispatchables/{dispatchableItemId}': {
         path: '/pallets/democracy/dispatchables/vote',
-        queryParams: [
-            'at={blockId}'
-        ],
+        queryParams: [],
     },
     '/pallets/{palletId}/errors': {
         path: '/pallets/balances/errors',
@@ -232,6 +226,19 @@ export const polkadot: IConfig = {
         path: '/pallets/democracy/errors/ValueLow',
         queryParams: [
             'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/events': {
+        path: '/pallets/balances/events',
+        queryParams: [
+            'at={blockId}'
+        ],
+    },
+    '/pallets/{palletId}/events/{eventItemId}': {
+        path: '/pallets/democracy/events/Proposed',
+        queryParams: [
+            'at={blockId}',
+            'metadata=true'
         ],
     },
     '/pallets/nominationPoools/info': {

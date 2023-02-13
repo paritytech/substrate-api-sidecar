@@ -35,6 +35,7 @@ export const westendControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsDispatchables',
 		'PalletsErrors',
+		'PalletsEvents',
 		'PalletsNominationPools',
 		'PalletsStakingProgress',
 		'PalletsStakingValidators',
