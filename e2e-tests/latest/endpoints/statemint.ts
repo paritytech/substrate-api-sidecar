@@ -35,4 +35,12 @@ export const statemint = {
 		path: '/pallets/assets/errors/Frozen',
 		queryParams: ['at={blockId}'],
 	},
+	'/pallets/{palletId}/events': {
+		path: '/pallets/assets/events',
+		queryParams: ['at={blockId}'],
+	},
+	'/pallets/{palletId}/events/{eventItemId}': {
+		path: '/pallets/assets/events/Created',
+		queryParams: ['at={blockId}'],
+	},
 };
