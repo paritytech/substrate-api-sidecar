@@ -26,7 +26,7 @@ const argv = process.argv.slice(0, 2);
 
 /**
  * The arg parser takes in two commands. This file also directly relates to the historical e2e-tests.
- * 
+ *
  * @arg --chain The chain to be passed into the jest test
  * @arg --config The path to the correct jest config. This is important as the
  * jest config inside of /runtime-tests ignores all the other tests.
