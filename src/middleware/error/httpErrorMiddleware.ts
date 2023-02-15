@@ -18,6 +18,7 @@ import { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
 
 import { Log } from '../../logging/Log';
+import { httpErrorCounter } from '../../util/metrics';
 /**
  * Handle HttpError instances.
  *
@@ -46,6 +47,8 @@ export const httpErrorMiddleware: ErrorRequestHandler = (
 		message: err.message,
 		stack: err.stack,
 	};
+
+	httpErrorCounter.inc();
 
 	Log.logger.error(info);
 

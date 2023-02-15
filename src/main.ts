@@ -32,6 +32,7 @@ import { Log } from './logging/Log';
 import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
+import Metrics_App from './util/metrics';
 
 async function main() {
 	const { config } = SidecarConfig;
@@ -88,8 +89,17 @@ async function main() {
 		host: config.EXPRESS.HOST,
 	});
 
+	// Create our App
+	const metricsApp = new Metrics_App({
+		port: 9100,
+		host: config.EXPRESS.HOST,
+	});
+
 	// Start the server
 	app.listen();
+
+	// Start the Metrics server
+	metricsApp.listen();
 }
 
 /**
