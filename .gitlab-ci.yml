@@ -17,6 +17,7 @@ variables:
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
   CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
+  NODE_IMAGE:                      "node:18"
 
 default:
   retry:
@@ -36,6 +37,7 @@ default:
       fi
 
 stages:
+  - test
   - build
   - deploy-staging
   - deploy-production
@@ -53,14 +55,10 @@ stages:
 
 .test-refs:                     &test-refs
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
 .test-refs-manual:              &test-refs-manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       when: manual
 
@@ -109,6 +107,35 @@ stages:
         ${HELM_RELEASE_NAME_2} ${HELM_REPO}
   tags:
     - kubernetes-parity-build
+
+.e2e-template:                     &e2e-template
+  stage:                           test
+  <<:                              *kubernetes-env
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    ""
+    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+  script:
+    - yarn --immutable
+    - yarn test:latest-e2e-tests --chain $CHAIN_NAME --local $CHAIN_URL
+
+e2e-westend:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "westend"
+
+e2e-kusama:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "kusama"
+
+e2e-polkadot:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "polkadot"
 
 build:
   <<:                              *dockerize
