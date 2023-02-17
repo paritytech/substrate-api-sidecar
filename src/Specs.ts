@@ -77,6 +77,19 @@ export class Specs {
 				}
 			)
 		);
+
+		// KEEP_ALIVE_TIMEOUT
+		this._specs.appendSpec(
+			MODULES.EXPRESS,
+			this._specs.getSpec(
+				CONFIG.KEEP_ALIVE_TIMEOUT,
+				'Network keepAliveTimeout duration. It will default to 5.',
+				{
+					default: 5,
+					type: 'number',
+				}
+			)
+		);
 	}
 
 	/**

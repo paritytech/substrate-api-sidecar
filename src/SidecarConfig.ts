@@ -55,6 +55,10 @@ export class SidecarConfig {
 			EXPRESS: {
 				HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
 				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
+				KEEP_ALIVE_TIMEOUT: config.Get(
+					MODULES.EXPRESS,
+					CONFIG.KEEP_ALIVE_TIMEOUT
+				) as number,
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,
