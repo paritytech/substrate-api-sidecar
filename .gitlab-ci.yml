@@ -261,11 +261,11 @@ benchmark:
     - build
 
 # manual step to run benchmarks in PR pipeline
-benchmark-manual-pr:
-  <<:                              *benchmark-template
-  <<:                              *test-refs-manual
-  needs:
-    - build-pr
+# benchmark-manual-pr:
+#   <<:                              *benchmark-template
+#   <<:                              *test-refs-manual
+#   needs:
+#     - build-pr
 
 check-benchmark:
   stage: check-benchmark
