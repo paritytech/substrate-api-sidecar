@@ -145,6 +145,7 @@ stages:
 .bench-template:                   &bench-template
   stage:                           benchmark
   <<:                              *kubernetes-env
+  <<:                              *collect-artifacts
   variables:
     CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    ""
@@ -152,7 +153,8 @@ stages:
   script:
     - yarn --immutable
     - echo "Benchmarks for ${CHAIN_URL}"
-    - yarn bench --ws-url ${CHAIN_URL}
+    - mkdir artifacts
+    - yarn bench --ws-url ${CHAIN_URL} > artifacts/${CHAIN_URL}_benches.txt
 
 bench-westend:
   <<:                              *bench-template
