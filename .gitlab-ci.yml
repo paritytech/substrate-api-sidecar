@@ -164,8 +164,6 @@ build:
 
 push-docker-image-description:
   stage:                           build
-  extends:
-    - .kubernetes-env
   variables:
     CI_IMAGE:                      paritytech/dockerhub-description
     DOCKERHUB_REPOSITORY:          parity/substrate-api-sidecar
@@ -179,6 +177,8 @@ push-docker-image-description:
       - Dockerfile.README.md
   script:
     - cd / && sh entrypoint.sh
+  tags:
+    - kubernetes-parity-build
 
 # checks that dockerimage can be built without publishing
 build-pr:
