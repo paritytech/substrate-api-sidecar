@@ -147,21 +147,25 @@ stages:
     CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
   script:
     - yarn --immutable
+    - echo "Benchmarks for ${CHAIN_URL}"
     - yarn bench --ws-url $CHAIN_URL
 
 bench-westend:
   <<:                              *bench-template
   variables:
+    CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    "westend"
 
 bench-kusama:
   <<:                              *bench-template
   variables:
+    CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    "kusama"
 
 bench-polkadot:
   <<:                              *bench-template
   variables:
+    CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    "polkadot"
 
 build:
