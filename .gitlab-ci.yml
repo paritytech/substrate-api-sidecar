@@ -154,7 +154,7 @@ stages:
     - yarn --immutable
     - echo "Benchmarks for ${CHAIN_URL}"
     - mkdir artifacts
-    - yarn bench --ws-url ${CHAIN_URL} > artifacts/${CHAIN_URL}_benches.txt
+    - yarn bench --ws-url ${CHAIN_URL} > artifacts/${CHAIN_NAME}_benches.txt
 
 bench-westend:
   <<:                              *bench-template
