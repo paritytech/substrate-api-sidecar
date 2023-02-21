@@ -137,6 +137,35 @@ e2e-polkadot:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
 
+.bench-template:                   &bench-template
+  stage:                           benchmark
+  <<:                              *kubernetes-env
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    ""
+    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+  script:
+    - yarn --immutable
+    - yarn bench --ws-url $CHAIN_URL
+
+bench-westend:
+  <<:                              *bench-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "westend"
+
+bench-kusama:
+  <<:                              *bench-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "kusama"
+
+bench-polkadot:
+  <<:                              *bench-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "polkadot"
+
 build:
   <<:                              *dockerize
   <<:                              *publish-refs
