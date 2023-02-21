@@ -165,9 +165,7 @@ build:
 push-docker-image-description:
   stage:                           build
   before_script:
-    - ls
-    - pwd
-    - ls $CI_PROJECT_DIR
+    - echo $README_FILEPATH
   extends:
     - .kubernetes-env
   variables:
