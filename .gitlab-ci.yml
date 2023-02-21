@@ -166,7 +166,6 @@ push-docker-image-description:
   stage:                           build
   extends:
     - .kubernetes-env
-    - .publish-refs
   variables:
     CI_IMAGE:                      paritytech/dockerhub-description
     DOCKERHUB_REPOSITORY:          parity/substrate-api-sidecar
@@ -175,7 +174,8 @@ push-docker-image-description:
     README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
     SHORT_DESCRIPTION:             "REST service to interact with blockchain nodes built using Substrate's FRAME framework."
   rules:
-    - changes:
+    - if: $CI_COMMIT_REF_NAME == "master"
+      changes:
       - Dockerfile.README.md
   script:
     - cd / && sh entrypoint.sh
