@@ -180,7 +180,7 @@ push-docker-image-description:
       changes:
       - Dockerfile.README.md
   script:
-    - cd / && node index.js | sed -i '/::add-mask::/d'
+    - cd / && node index.js
 
 # checks that dockerimage can be built without publishing
 build-pr:
