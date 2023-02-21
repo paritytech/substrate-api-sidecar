@@ -174,7 +174,7 @@ push-docker-image-description:
     README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
     SHORT_DESCRIPTION:             "REST service to interact with blockchain nodes built using Substrate's FRAME framework."
   rules:
-    - if: $CI_COMMIT_REF_NAME == "master"
+    - if: $CI_COMMIT_REF_NAME == "1234"
       changes:
       - Dockerfile.README.md
   script:
