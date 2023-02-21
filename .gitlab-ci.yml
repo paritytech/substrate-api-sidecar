@@ -180,7 +180,7 @@ push-docker-image-description:
       changes:
       - Dockerfile.README.md
   script:
-    - cd / && sh entrypoint.sh
+    - cd / && node index.js | sed -i '/::add-mask::/d'
 
 # checks that dockerimage can be built without publishing
 build-pr:
