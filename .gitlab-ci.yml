@@ -167,7 +167,7 @@ push-docker-image-description:
   before_script:
     - ls
     - pwd
-    - ls /
+    - ls $CI_PROJECT_DIR
   extends:
     - .kubernetes-env
   variables:
