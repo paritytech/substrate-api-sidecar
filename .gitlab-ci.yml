@@ -18,6 +18,7 @@ variables:
   DOCKERFILE_DIRECTORY:            "./"
   CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
   NODE_IMAGE:                      "node:18"
+  BENCHMARK_IMAGE:                 "paritytech/node-wrk:latest"
 
 default:
   retry:
@@ -119,29 +120,29 @@ stages:
     - yarn --immutable
     - yarn test:latest-e2e-tests --chain $CHAIN_NAME --local $CHAIN_URL
 
-e2e-westend:
-  <<:                              *e2e-template
-  variables:
-    CI_IMAGE:                      $NODE_IMAGE
-    CHAIN_NAME:                    "westend"
+# e2e-westend:
+#   <<:                              *e2e-template
+#   variables:
+#     CI_IMAGE:                      $NODE_IMAGE
+#     CHAIN_NAME:                    "westend"
 
-e2e-kusama:
-  <<:                              *e2e-template
-  variables:
-    CI_IMAGE:                      $NODE_IMAGE
-    CHAIN_NAME:                    "kusama"
+# e2e-kusama:
+#   <<:                              *e2e-template
+#   variables:
+#     CI_IMAGE:                      $NODE_IMAGE
+#     CHAIN_NAME:                    "kusama"
 
-e2e-polkadot:
-  <<:                              *e2e-template
-  variables:
-    CI_IMAGE:                      $NODE_IMAGE
-    CHAIN_NAME:                    "polkadot"
+# e2e-polkadot:
+#   <<:                              *e2e-template
+#   variables:
+#     CI_IMAGE:                      $NODE_IMAGE
+#     CHAIN_NAME:                    "polkadot"
 
 .bench-template:                   &bench-template
   stage:                           benchmark
   <<:                              *kubernetes-env
   variables:
-    CI_IMAGE:                      $NODE_IMAGE
+    CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    ""
     CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
   script:
@@ -151,19 +152,16 @@ e2e-polkadot:
 bench-westend:
   <<:                              *bench-template
   variables:
-    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "westend"
 
 bench-kusama:
   <<:                              *bench-template
   variables:
-    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "kusama"
 
 bench-polkadot:
   <<:                              *bench-template
   variables:
-    CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
 
 build:
@@ -192,21 +190,21 @@ build:
       fi
 
 # checks that dockerimage can be built without publishing
-build-pr:
-  <<:                              *dockerize
-  <<:                              *test-refs
-  script:
-    - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-    - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud
-        --format=docker
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
-        --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
-      else
-        buildah bud
-        --format=docker
-        --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
-      fi
+# build-pr:
+#   <<:                              *dockerize
+#   <<:                              *test-refs
+#   script:
+#     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+#     - if [[ $BUILD_LATEST_IMAGE ]]; then
+#         buildah bud
+#         --format=docker
+#         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
+#         --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
+#       else
+#         buildah bud
+#         --format=docker
+#         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
+#       fi
 
 deploy-staging:
   stage:                           deploy-staging
