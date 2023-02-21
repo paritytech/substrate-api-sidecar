@@ -165,7 +165,9 @@ build:
 push-docker-image-description:
   stage:                           build
   before_script:
-    - echo
+    - ls
+    - pwd
+    - ls /
   extends:
     - .kubernetes-env
   variables:

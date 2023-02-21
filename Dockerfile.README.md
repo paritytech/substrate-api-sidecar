@@ -35,4 +35,3 @@ curl -s http://0.0.0.0:8080/blocks/head | jq
 ```
 
 **N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
-
