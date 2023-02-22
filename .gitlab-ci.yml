@@ -142,40 +142,19 @@ stages:
 #     CHAIN_NAME:                    "polkadot"
 #     CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
 
-.bench-template:                   &bench-template
+bench-polkadot:
   stage:                           benchmark
   <<:                              *kubernetes-env
   <<:                              *collect-artifacts
   variables:
     CI_IMAGE:                      $BENCHMARK_IMAGE
-    CHAIN_NAME:                    ""
+    CHAIN_NAME:                    "polkadot"
     CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
   script:
     - yarn --immutable
     - echo "Benchmarks for ${CHAIN_URL}"
-    - mkdir artifacts
+    - mkdir -p artifacts
     - yarn bench --ws-url ${CHAIN_URL} > artifacts/${CHAIN_NAME}_benches.txt
-
-bench-westend:
-  <<:                              *bench-template
-  variables:
-    CI_IMAGE:                      $BENCHMARK_IMAGE
-    CHAIN_NAME:                    "westend"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
-
-bench-kusama:
-  <<:                              *bench-template
-  variables:
-    CI_IMAGE:                      $BENCHMARK_IMAGE
-    CHAIN_NAME:                    "kusama"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
-
-bench-polkadot:
-  <<:                              *bench-template
-  variables:
-    CI_IMAGE:                      $BENCHMARK_IMAGE
-    CHAIN_NAME:                    "polkadot"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
 
 build:
   <<:                              *dockerize
