@@ -154,7 +154,8 @@ bench-polkadot:
     - yarn --immutable
     - echo "Benchmarks for ${CHAIN_URL}"
     - mkdir -p artifacts
-    - yarn bench --log-level info --ws-url ${CHAIN_URL} > artifacts/${CHAIN_NAME}_benches.txt
+    - yarn bench --log-level info --ws-url ${CHAIN_URL} > artifacts/${CHAIN_NAME}_benches_logs.txt
+    - mv benchmarks.txt artifacts/
 
 build:
   <<:                              *dockerize
