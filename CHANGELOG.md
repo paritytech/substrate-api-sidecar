@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.1..v14.4.0) (2023-02-14)
+
+### Features
+
+- feat: add pallets/events endpoint ([#1204](https://github.com/paritytech/substrate-api-sidecar/pull/1204)) ([289d804](https://github.com/paritytech/substrate-api-sidecar/commit/289d804ce1658431603febfbb427deab325e7ad4))
+
+### Perf
+
+- perf: rework benchmarks ([#1044](https://github.com/paritytech/substrate-api-sidecar/pull/1044)) ([3189864](https://github.com/paritytech/substrate-api-sidecar/commit/31898647d1d88103148eb3efdc49e99764db89d2))
+
+### Tests
+
+- tests: fix e2e tests, add kusama westend, and remove ws check ([#1223](https://github.com/paritytech/substrate-api-sidecar/pull/1223)) ([fb35b6b](https://github.com/paritytech/substrate-api-sidecar/commit/fb35b6b6bfce1aeb76f164485ec20fa8bacc68c9))
+
+### Chores
+
+- chore: add e2e-tests to single lint configuration ([#1226](https://github.com/paritytech/substrate-api-sidecar/pull/1226)) ([f546abc](https://github.com/paritytech/substrate-api-sidecar/commit/f546abcabd2297299434888677063be486d48aae))
+- chore(deps): update pjs, add small e2e-config ([#1225](https://github.com/paritytech/substrate-api-sidecar/pull/1225)) ([80f4e2c](https://github.com/paritytech/substrate-api-sidecar/commit/80f4e2cc341ac3647a7156b7c0d481bf0fb270af))
+- chore(deps): update pjs deps ([#1221](https://github.com/paritytech/substrate-api-sidecar/pull/1221)) ([10930b2](https://github.com/paritytech/substrate-api-sidecar/commit/10930b24c30e0e5424ead4b97e9cf9f42513e583))
+- chore(tech-debt): cleanup type assignment for consoleOverride ([#1215](https://github.com/paritytech/substrate-api-sidecar/pull/1215)) ([520631c](https://github.com/paritytech/substrate-api-sidecar/commit/520631c123fa3483a0a16d0ab3ee2cd7bd1aa1b7))
+- chore:(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 ([#1217](https://github.com/paritytech/substrate-api-sidecar/pull/1217)) ([fe6ee23](https://github.com/paritytech/substrate-api-sidecar/commit/fe6ee2376ee5d2ce2f1037a3c23108c053513313))
+- chore: bump http-cache-semantics from 4.1.0 to 4.1.1 in /docs ([#1216](https://github.com/paritytech/substrate-api-sidecar/pull/1216)) ([2f2b513](https://github.com/paritytech/substrate-api-sidecar/commit/2f2b513715bd07c8a5241357d914f53104922f01))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9370
+- Kusama v9370
+- Westend v9370
+
 ## [14.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.0..v14.3.1) (2023-02-01)
 
 ### Bug Fixes
