@@ -1099,7 +1099,7 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get the value of an dispatchable item.
+      summary: Get the value of a dispatchable item.
       description: Returns the value stored under the dispatchableItemId.
       parameters:
       - name: palletId
@@ -2789,15 +2789,15 @@ components:
         index:
          type: string
          example: "0"
-         description: The index of the dispatchable item in the lists of pallet dispatchables
+         description: The index of the dispatchable item in the lists of pallet dispatchables.
         docs:
           type: string
-          example: " Information concerning any given dispatchable.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+          example: "Information concerning any given dispatchable.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
         args:
           type: array
           items:
             type: string
-      description: Metadata of an dispatchable item from a FRAME pallet.
+      description: Metadata of a dispatchable item from a FRAME pallet.
     PalletErrors:
       type: object
       properties:
