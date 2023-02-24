@@ -292,7 +292,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
 			throw new InternalServerError(
-				`No error items found in ${palletMeta.name.toString()}'s metadadta`
+				`No error items found in ${palletMeta.name.toString()}'s metadata`
 			);
 		}
 
@@ -322,7 +322,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		if ((palletMeta.events as unknown as EventMetadataLatest).isEmpty) {
 			throw new InternalServerError(
-				`No event items found in ${palletMeta.name.toString()}'s metadadta`
+				`No event items found in ${palletMeta.name.toString()}'s metadata`
 			);
 		}
 

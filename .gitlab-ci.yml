@@ -17,6 +17,7 @@ variables:
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
   CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
+  NODE_IMAGE:                      "node:18"
 
 default:
   retry:
@@ -36,6 +37,7 @@ default:
       fi
 
 stages:
+  - test
   - build
   - deploy-staging
   - deploy-production
@@ -53,14 +55,10 @@ stages:
 
 .test-refs:                     &test-refs
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
 .test-refs-manual:              &test-refs-manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       when: manual
 
@@ -110,6 +108,35 @@ stages:
   tags:
     - kubernetes-parity-build
 
+.e2e-template:                     &e2e-template
+  stage:                           test
+  <<:                              *kubernetes-env
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    ""
+    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+  script:
+    - yarn --immutable
+    - yarn test:latest-e2e-tests --chain $CHAIN_NAME --local $CHAIN_URL
+
+e2e-westend:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "westend"
+
+e2e-kusama:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "kusama"
+
+e2e-polkadot:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "polkadot"
+
 build:
   <<:                              *dockerize
   <<:                              *publish-refs
@@ -134,6 +161,26 @@ build:
       else
         buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
       fi
+
+push-docker-image-description:
+  stage:                           build
+  before_script:
+    - echo
+  extends:
+    - .kubernetes-env
+  variables:
+    CI_IMAGE:                      paritytech/dockerhub-description
+    DOCKERHUB_REPOSITORY:          parity/substrate-api-sidecar
+    DOCKER_USERNAME:               $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
+    SHORT_DESCRIPTION:             "REST service to interact with blockchain nodes built using Substrate's FRAME framework."
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master"
+      changes:
+      - Dockerfile.README.md
+  script:
+    - cd / && sh entrypoint.sh
 
 # checks that dockerimage can be built without publishing
 build-pr:

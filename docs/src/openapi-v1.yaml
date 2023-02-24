@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.3.1
+  version: 14.4.0
 tags:
 - name: accounts
 - name: blocks
@@ -1108,7 +1108,7 @@ paths:
     get:
       tags:
       - pallets
-      summary: Get the value of an constant item.
+      summary: Get the value of a constant item.
       description: Returns the value stored under the constantItemId.
       parameters:
       - name: palletId
@@ -2808,7 +2808,7 @@ components:
          description: The hex value of the constant
         docs:
           type: array
-          example: " Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+          example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of an constant item from a FRAME pallet.
     PalletErrors:
       type: object
