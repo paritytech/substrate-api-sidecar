@@ -2775,7 +2775,7 @@ components:
           items:
             $ref: '#/components/schemas/PalletConstantsItemMetadata'
           description: Array containing metadata for each constant entry of the pallet.
-    PalletConstsItem:
+    PalletConstantsItem:
       type: object
       properties:
         pallet:
@@ -2807,7 +2807,7 @@ components:
          example: "0x00270600"
          description: The hex value of the constant
         docs:
-          type: array
+          type: string
           example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of an constant item from a FRAME pallet.
     PalletErrors:
