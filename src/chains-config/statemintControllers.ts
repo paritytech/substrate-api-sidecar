@@ -31,6 +31,7 @@ export const statemintControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
+		'PalletsConsts',
 		'PalletsEvents',
 		'PalletsErrors',
 		'RuntimeCode',

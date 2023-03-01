@@ -21,13 +21,12 @@ import { Hash } from '@polkadot/types/interfaces';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
-import { getPalletErrors } from '../test-helpers/mock/data/mockPalletErrorsData';
-import fetchErrorOnlyIdsRes from '../test-helpers/responses/pallets/fetchErrorsOnlyIdsRes.json';
-import fetchErrorRes from '../test-helpers/responses/pallets/fetchErrorsRes.json';
-import fetchInsufficientFundsRes from '../test-helpers/responses/pallets/fetchInsufficientFundsErrorItem13641102.json';
-import fetchProposalMissingRes from '../test-helpers/responses/pallets/fetchProposalMissingErrorItem13641102.json';
-import fetchValueLowRes from '../test-helpers/responses/pallets/fetchValueLowErrorItem13641102.json';
-import { PalletsErrorsService } from './PalletsErrorsService';
+import fetchConstantOnlyIdsRes from '../test-helpers/responses/pallets/fetchConstantsOnlyIdsRes.json';
+import fetchConstantRes from '../test-helpers/responses/pallets/fetchConstantsRes.json';
+import fetchEnactmentPeriodRes from '../test-helpers/responses/pallets/fetchEnactmentPeriodConstsItem789629.json';
+import fetchLaunchPeriodRes from '../test-helpers/responses/pallets/fetchLaunchPeriodConstsItem789629.json';
+import fetchVotingPeriodRes from '../test-helpers/responses/pallets/fetchVotingPeriodConstsItem789629.json';
+import { PalletsConstantsService } from './PalletsConstantsService';
 
 const referendumInfoOfAt = () =>
 	Promise.resolve().then(() => {
@@ -36,7 +35,6 @@ const referendumInfoOfAt = () =>
 
 const mockHistoricApi = {
 	registry: polkadotRegistryV9300,
-	errors: getPalletErrors,
 	query: {
 		democracy: {
 			referendumInfoOf: referendumInfoOfAt,
@@ -50,75 +48,75 @@ const mockApi = {
 } as unknown as ApiPromise;
 
 /**
- * Mock PalletsErrorsService instance.
+ * Mock PalletsConstantsService instance.
  */
-const palletsErrorsService = new PalletsErrorsService(mockApi);
+const palletsConstantsService = new PalletsConstantsService(mockApi);
 
-describe('PalletErrorService', () => {
-	describe('fetchErrorItem', () => {
-		it('works with a query to a single error item id', async () => {
+describe('PalletConstantsService', () => {
+	describe('fetchConstantItem', () => {
+		it('works with a query to a single constant item id', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
+					await palletsConstantsService.fetchConstantItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
-						errorItemId: 'ValueLow',
+						constantItemId: 'EnactmentPeriod',
 						metadata: false,
 					})
 				)
-			).toMatchObject(fetchValueLowRes);
+			).toMatchObject(fetchEnactmentPeriodRes);
 		});
 
 		it('works with an index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
+					await palletsConstantsService.fetchConstantItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: '14',
-						errorItemId: 'InsufficientFunds',
+						constantItemId: 'LaunchPeriod',
 						metadata: false,
 					})
 				)
-			).toMatchObject(fetchInsufficientFundsRes);
+			).toMatchObject(fetchLaunchPeriodRes);
 		});
 
 		it('appropriately uses metadata params', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrorItem(mockHistoricApi, {
+					await palletsConstantsService.fetchConstantItem(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
-						errorItemId: 'ProposalMissing',
+						constantItemId: 'VotingPeriod',
 						metadata: true,
 					})
 				)
-			).toMatchObject(fetchProposalMissingRes);
+			).toMatchObject(fetchVotingPeriodRes);
 		});
 	});
 
-	describe('fetchErrors', () => {
-		it('work with a index identifier', async () => {
+	describe('fetchConstants', () => {
+		it('works with an index identifier', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrors(mockHistoricApi, {
+					await palletsConstantsService.fetchConstants(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: '14',
 						onlyIds: false,
 					})
 				)
-			).toStrictEqual(fetchErrorRes);
+			).toStrictEqual(fetchConstantRes);
 		});
 
-		it('only list error item ids when onlyIds is true', async () => {
+		it('only lists constant item ids when onlyIds is true', async () => {
 			expect(
 				sanitizeNumbers(
-					await palletsErrorsService.fetchErrors(mockHistoricApi, {
+					await palletsConstantsService.fetchConstants(mockHistoricApi, {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						onlyIds: true,
 					})
 				)
-			).toStrictEqual(fetchErrorOnlyIdsRes);
+			).toStrictEqual(fetchConstantOnlyIdsRes);
 		});
 	});
 });
