@@ -146,6 +146,7 @@ bench-polkadot:
   stage:                           benchmark
   <<:                              *kubernetes-env
   <<:                              *collect-artifacts
+  <<:                              *test-refs
   variables:
     CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    "polkadot"
@@ -260,47 +261,36 @@ benchmark:
 #   needs:
 #     - build-pr
 
-check-benchmark:
-  stage: check-benchmark
-  <<:                              *publish-refs
-  <<:                              *kubernetes-env
-  <<:                              *collect-artifacts
-  needs:
-    - job:                         benchmark
-      artifacts:                   true
-  variables:
-    GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
-    CI_IMAGE:                      "paritytech/benchmarks:latest"
-    THRESHOLD:                     60000
-    GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
-  script:
-    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - check_single_bench_result -g $GITHUB_REPO
-                                -c $THRESHOLD
-                                -v $RESULT
+# temporary disabled for collecting results
+# check-benchmark:
+#   stage: check-benchmark
+#   <<:                              *publish-refs
+#   <<:                              *kubernetes-env
+#   <<:                              *collect-artifacts
+#   needs:
+#     - job:                         benchmark
+#       artifacts:                   true
+#   variables:
+#     GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
+#     CI_IMAGE:                      "paritytech/benchmarks:latest"
+#     THRESHOLD:                     60000
+#     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
+#   script:
+#     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
+#     - check_single_bench_result -g $GITHUB_REPO
+#                                 -c $THRESHOLD
+#                                 -v $RESULT
 
 push-benchmark:
   stage: push-benchmark
-  <<:                              *publish-refs
+  # <<:                              *publish-refs
+  <<:                              *test-refs
   <<:                              *kubernetes-env
   needs:
-    - job:                         check-benchmark
+    - job:                         bench-polkadot
       artifacts:                   true
   variables:
     PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
-    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - push_bench_result -t common
-                        -p $CI_PROJECT_NAME
-                        -n sidecar
-                        -r $RESULT
-                        -u ms
-                        -s $PROMETHEUS_URL
-    - push_bench_result -t specific
-                        -p $CI_PROJECT_NAME
-                        -n sidecar
-                        -r $RESULT
-                        -l 'commit="'$CI_COMMIT_SHORT_SHA'"'
-                        -u ms
-                        -s $PROMETHEUS_URL
+    - scripts/ci/benchmarks/push_benchmark_results.sh artifacts/benchmarks.txt
