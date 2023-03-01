@@ -15,7 +15,8 @@ BENCHMARKS=$(cat ${RESULT_FILE} | grep Result | awk '{print $3}')
 
 for benchmark in ${BENCHMARKS}
 do
-    benchmark_name=$(echo ${benchmark} | cut -d ":" -f1)
+    # /accounts/{accountId}/balance-info: -> /accounts/(accountId)/balance-info
+    benchmark_name=$(echo ${benchmark} | cut -d ":" -f1 | tr "{" "(" | tr "}" ")" )
     result=$(cat ${RESULT_FILE} | grep -A 20 ${benchmark} | grep "Avg RequestTime(Latency)" | awk '{print $3}')
     unit=${result: -2}
     result_value=${result::-2}
