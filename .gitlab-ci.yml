@@ -142,7 +142,7 @@ e2e-polkadot:
     CHAIN_NAME:                    "polkadot"
     CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
 
-build:
+build-docker:
   <<:                              *dockerize
   <<:                              *publish-refs
   script:
@@ -188,7 +188,7 @@ push-docker-image-description:
     - cd / && sh entrypoint.sh
 
 # checks that dockerimage can be built without publishing
-build-pr:
+build-docker-pr:
   <<:                              *dockerize
   <<:                              *test-refs
   script:
