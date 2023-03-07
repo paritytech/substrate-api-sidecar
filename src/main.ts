@@ -92,7 +92,7 @@ async function main() {
 	const server = app.listen();
 
 	server.keepAliveTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT;
-	server.headersTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT + 5;
+	server.headersTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT + 5000;
 }
 
 /**

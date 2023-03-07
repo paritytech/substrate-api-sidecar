@@ -157,7 +157,7 @@ For more information on our configuration manager visit its readme [here](https:
 
 - `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
 - `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
-- `SAS_EXPERSS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
+- `SAS_EXPRESS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
 
 ### Substrate node
 
