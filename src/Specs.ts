@@ -83,9 +83,9 @@ export class Specs {
 			MODULES.EXPRESS,
 			this._specs.getSpec(
 				CONFIG.KEEP_ALIVE_TIMEOUT,
-				'Network keepAliveTimeout duration. It will default to 5.',
+				'Network keepAliveTimeout duration. It will default to 5000ms.',
 				{
-					default: 5,
+					default: 5000,
 					type: 'number',
 				}
 			)

@@ -91,6 +91,7 @@ async function main() {
 	// Start the server
 	const server = app.listen();
 
+	console.log(config.EXPRESS.KEEP_ALIVE_TIMEOUT);
 	server.keepAliveTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT;
 	server.headersTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT + 5000;
 }
