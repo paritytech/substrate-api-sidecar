@@ -24,6 +24,8 @@ import {
 	MetadataV14,
 	ModuleMetadataV13,
 	PalletCallMetadataV14,
+	PalletConstantMetadataLatest,
+	PalletConstantMetadataV14,
 	PalletErrorMetadataV14,
 	PalletEventMetadataV14,
 	PalletMetadataV14,
@@ -43,16 +45,23 @@ type IPalletMetadata =
 	| Option<PalletStorageMetadataV14>
 	| Option<PalletCallMetadataV14>
 	| Option<PalletErrorMetadataV14>
-	| Option<PalletEventMetadataV14>;
+	| Option<PalletEventMetadataV14>
+	| Vec<PalletConstantMetadataV14>;
 
 type IPalletFieldMeta =
 	| ErrorMetadataLatest
 	| EventMetadataLatest
 	| FunctionMetadataLatest
+	| PalletConstantMetadataLatest
 	| StorageEntryMetadataV13
 	| StorageEntryMetadataV14;
 
-type IMetadataFieldType = 'calls' | 'events' | 'storage' | 'errors';
+type IMetadataFieldType =
+	| 'calls'
+	| 'constants'
+	| 'events'
+	| 'storage'
+	| 'errors';
 
 export abstract class AbstractPalletsService extends AbstractService {
 	private getPalletMetadataType(
@@ -94,7 +103,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 				metadataFieldType
 			);
 			filtered = pallets.filter(
-				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
+				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
 			);
 		} else {
 			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
@@ -103,7 +112,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 				metadataFieldType
 			);
 			filtered = pallets.filter(
-				(mod) => (mod[metadataFieldType] as typeof palletMetaType).isSome
+				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
 			);
 		}
 
@@ -245,8 +254,14 @@ export abstract class AbstractPalletsService extends AbstractService {
 				palletItemIdx,
 				palletItemId
 			);
-		} else {
+		} else if (metadataFieldType === 'calls') {
 			[palletItemIdx, palletItemMeta] = this.getDispatchablesItemMeta(
+				palletMeta as PalletMetadataV14,
+				palletItemIdx,
+				palletItemId
+			);
+		} else {
+			[palletItemIdx, palletItemMeta] = this.getConstItemMeta(
 				palletMeta as PalletMetadataV14,
 				palletItemIdx,
 				palletItemId
@@ -278,8 +293,13 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		for (const [, val] of Object.entries(dispatchables)) {
 			const item = val.meta;
-			if (item.name.toLowerCase() === dispatchableItemId.toLowerCase()) {
+			console.log(item.name);
+			if (
+				stringCamelCase(item.name).toLowerCase() ===
+				dispatchableItemId.toLowerCase()
+			) {
 				dispatchableItemMetaIdx = val.meta.index.toNumber();
+				break;
 			}
 		}
 
@@ -289,6 +309,25 @@ export abstract class AbstractPalletsService extends AbstractService {
 				dispatchableItemMetaIdx
 			] as unknown as FunctionMetadataLatest,
 		];
+	}
+
+	private getConstItemMeta(
+		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		constItemMetaIdx: number,
+		constItemId: string
+	): [number, PalletConstantMetadataLatest] {
+		if (palletMeta.constants.isEmpty) {
+			throw new InternalServerError(
+				`No const items found in ${palletMeta.name.toString()}'s metadata`
+			);
+		}
+		const palletMetaConsts =
+			palletMeta.constants as Vec<PalletConstantMetadataLatest>;
+		constItemMetaIdx = palletMetaConsts.findIndex(
+			(item) => item.name.toLowerCase() === constItemId.toLowerCase()
+		);
+
+		return [constItemMetaIdx, palletMetaConsts[constItemMetaIdx]];
 	}
 
 	private getErrorItemMeta(
@@ -302,7 +341,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
 			throw new InternalServerError(
-				`No error items found in ${palletMeta.name.toString()}'s metadadta`
+				`No error items found in ${palletMeta.name.toString()}'s metadata`
 			);
 		}
 

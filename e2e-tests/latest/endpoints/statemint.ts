@@ -27,6 +27,14 @@ export const statemint = {
 		path: '/pallets/assets/123/asset-info',
 		queryParams: ['at={blockId}'],
 	},
+	'/pallets/{palletId}/consts': {
+		path: '/pallets/assets/consts',
+		queryParams: ['at={blockId}'],
+	},
+	'/pallets/{palletId}/consts/{constantItemId}': {
+		path: '/pallets/assets/consts/AssetDeposit',
+		queryParams: ['at={blockId}'],
+	},
 	'/pallets/{palletId}/dispatchables': {
 		path: '/pallets/assets/dispatchables',
 		queryParams: ['at={blockId}'],
