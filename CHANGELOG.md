@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.4.0..v14.4.1) (2023-02-27)
+
+## CI
+
+- ci: add e2e tests to ci ([#1222](https://github.com/paritytech/substrate-api-sidecar/pull/1222)) ([14b05f8](https://github.com/paritytech/substrate-api-sidecar/commit/14b05f8921348f229fe1bec59b5fa3ad5b59625b))
+- ci: add docker image description publishing ([#1234](https://github.com/paritytech/substrate-api-sidecar/pull/1234)) ([c97972a](https://github.com/paritytech/substrate-api-sidecar/commit/c97972a2d3003477afc3271c96dc7310b507362e))
+
+## Chores
+
+- chore(deps): update polkadot-js ([#1237](https://github.com/paritytech/substrate-api-sidecar/pull/1237)) ([7366aa3](https://github.com/paritytech/substrate-api-sidecar/commit/7366aa3338fbd8ff7d532d0b60a4e440a9b0c77a))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9380
+- Kusama v9380
+- Westend v9380
+
 ## [14.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.3.1..v14.4.0) (2023-02-14)
 
 ### Features

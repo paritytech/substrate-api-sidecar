@@ -31,6 +31,8 @@ export * from './NodeNetwork';
 export * from './NodeTransactionPool';
 export * from './NodeVersion';
 export * from './Pallet';
+export * from './PalletConstants';
+export * from './PalletConstantsItem';
 export * from './PalletErrors';
 export * from './PalletErrorsItem';
 export * from './PalletEvents';

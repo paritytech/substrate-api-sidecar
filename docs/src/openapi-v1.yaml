@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.4.0
+  version: 14.4.1
 tags:
 - name: accounts
 - name: blocks
@@ -1048,6 +1048,113 @@ paths:
                 $ref: '#/components/schemas/StakingValidators'
         "400":
           description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/consts:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of const item metadata for constant items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the const items instead of every constant's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's constant items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of constantItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletConstants'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/consts/{constantItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a constant item.
+      description: Returns the value stored under the constantItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: constantItemId
+        in: path
+        description: Id of the const item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the const item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the const items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletConstantsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
           content:
             application/json:
               schema:
@@ -2650,6 +2757,59 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+    PalletConstants:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up constants.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletConstantsItemMetadata'
+          description: Array containing metadata for each constant entry of the pallet.
+    PalletConstantsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up constants.
+          example: "14"
+        errorItem:
+          type: string
+          description: Name of the constant item.
+          example: "EnactmentPeriod"
+        metadata:
+          $ref: '#/components/schemas/PalletConstantsItemMetadata'
+    PalletConstantsItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "VotingPeriod"
+          description: The constant item's name (which is the same as the constant item's ID).
+        type:
+          type: string
+          example: "4"
+        value:
+         type: string
+         example: "0x00270600"
+         description: The hex value of the constant
+        docs:
+          type: string
+          example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+      description: Metadata of an constant item from a FRAME pallet.
     PalletErrors:
       type: object
       properties:
