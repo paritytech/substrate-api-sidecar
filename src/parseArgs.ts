@@ -20,6 +20,11 @@ export const parseArgs = (): Namespace => {
 	const parser = new ArgumentParser();
 
 	parser.add_argument('-v', '--version', { action: 'store_true' });
+	parser.add_argument('-p', '--prometheus', { action: 'store_true' });
+	parser.add_argument('-pp', '--prometheus-port', {
+		type: 'int',
+		default: 9100,
+	});
 
 	return parser.parse_args() as Namespace;
 };

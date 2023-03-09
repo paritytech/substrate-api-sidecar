@@ -98,8 +98,10 @@ async function main() {
 	// Start the server
 	app.listen();
 
-	// Start the Metrics server
-	metricsApp.listen();
+	if (args.prometheus) {
+		// Start the Metrics server
+		metricsApp.listen();
+	}
 }
 
 /**
