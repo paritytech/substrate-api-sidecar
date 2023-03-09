@@ -51,9 +51,11 @@ export default class Metrics_App {
 	 */
 	private metricsEndpoint() {
 		// Set up the metrics endpoint
-		this.app.get('/metrics', async (_req: Request, res: Response) => {
-			res.set('Content-Type', register.contentType);
-			return res.send(await register.metrics());
+		this.app.get('/metrics', (_req: Request, res: Response) => {
+			void (async () => {
+				res.set('Content-Type', register.contentType);
+				res.send(await register.metrics());
+			})();
 		});
 	}
 }
