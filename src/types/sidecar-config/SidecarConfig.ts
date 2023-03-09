@@ -34,6 +34,7 @@ interface ISidecarConfigSubstrate {
 interface ISidecarConfigExpress {
 	HOST: string;
 	PORT: number;
+	KEEP_ALIVE_TIMEOUT: number;
 }
 
 interface ISidecarConfigLog {

@@ -157,8 +157,7 @@ For more information on our configuration manager visit its readme [here](https:
 
 - `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
 - `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
-- `SAS_EXPRESS_LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by
-    setting it to anything else. LOG_MODE defaults to only "errors".
+- `SAS_EXPRESS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
 
 ### Substrate node
 
