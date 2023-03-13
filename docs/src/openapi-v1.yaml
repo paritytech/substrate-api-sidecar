@@ -935,6 +935,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
+  /pallets/{palletId}/consts:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of const item metadata for constant items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the const items instead of every constant's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's constant items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of constantItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletConstants'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/consts/{constantItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a constant item.
+      description: Returns the value stored under the constantItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: constantItemId
+        in: path
+        description: Id of the const item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the const item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the const items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletConstantsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/nomination-pools/{poolId}:
     get:
       tags:
@@ -1052,36 +1159,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /pallets/{palletId}/consts:
+  /pallets/{palletId}/dispatchables:
     get:
       tags:
       - pallets
-      summary: Get a list of constants for a pallet.
-      description: Returns a list of const item metadata for constant items of the
+      summary: Get a list of dispatchables for a pallet.
+      description: Returns a list of dispatchable item metadata for distpachable items of the
         specified palletId.
       parameters:
       - name: palletId
         in: path
-        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
           specified in the runtime metadata.'
         required: true
         schema:
           type: string
       - name: onlyIds
         in: query
-        description: Only return the names (IDs) of the const items instead of every constant's metadata.
+        description: Only return the names (IDs) of the dispatchable items instead of every dispatchable's metadata.
         required: false
         schema:
           type: boolean
-      - name: at
-        in: query
-        description: Block at which to retrieve a list of
-          the pallet's constant items.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1089,9 +1187,9 @@ paths:
             application/json:
               schema:
                 type: array
-                description: Pallet info and Array of constantItemIds.
+                description: Pallet info and Array of dispatchableItemIds.
                 items:
-                  $ref: '#/components/schemas/PalletConstants'
+                  $ref: '#/components/schemas/PalletDispatchables'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1104,37 +1202,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /pallets/{palletId}/consts/{constantItemId}:
+  /pallets/{palletId}/dispatchables/{dispatchableItemId}:
     get:
       tags:
       - pallets
-      summary: Get the value of a constant item.
-      description: Returns the value stored under the constantItemId.
+      summary: Get the value of a dispatchable item.
+      description: Returns the value stored under the dispatchableItemId.
       parameters:
       - name: palletId
         in: path
-        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
           specified in the runtime metadata.'
         required: true
         schema:
           type: string
-      - name: constantItemId
+      - name: dispatchableItemId
         in: path
-        description: Id of the const item to query for.
+        description: Id of the dispatchable item to query for.
         required: true
         schema:
           type: string
-      - name: at
-        in: query
-        description: Block at which to query the const item at.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
       - name: metadata
         in: query
-        description: Include the const items metadata (including documentation)
+        description: Include the dispatchable items metadata (including documentation)
           if set to true.
         required: false
         schema:
@@ -1146,7 +1236,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletConstantsItem'
+                $ref: '#/components/schemas/PalletDispatchablesItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -2810,6 +2900,64 @@ components:
           type: string
           example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of an constant item from a FRAME pallet.
+    PalletDispatchables:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+          description: Array containing metadata for each dispatchable entry of the pallet.
+    PalletDispatchablesItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        dispatchableItem:
+          type: string
+          description: Name of the dispatchable item.
+          example: "vote"
+        metadata:
+          $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+    PalletDispatchablesItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "propose"
+          description: The dispatchable item's name (which is the same as the dispatchable item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the dispatchable item in the lists of pallet dispatchables.
+        docs:
+          type: string
+          example: "Information concerning any given dispatchable.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of a dispatchable item from a FRAME pallet.
     PalletErrors:
       type: object
       properties:

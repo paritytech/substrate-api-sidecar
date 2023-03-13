@@ -35,6 +35,7 @@ import {
 	kusamaRegistry,
 	polkadotRegistry,
 } from '../../../test-helpers/registries';
+import { getPalletDispatchables } from '../mock/data/mockDispatchablesData';
 import {
 	balancesTransferValid,
 	blockHash789629,
@@ -290,7 +291,8 @@ export const defaultMockApi = {
 	},
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),
 	registry: polkadotRegistry,
-	tx,
+
+	tx: getPalletDispatchables,
 	runtimeMetadata: polkadotMetadata,
 	rpc: {
 		chain: {
