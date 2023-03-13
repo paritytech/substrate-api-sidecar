@@ -51,6 +51,10 @@ export default class PalletsDispatchablesController extends AbstractController<P
 		]);
 	}
 
+	/**
+	 * Note: the `at` parameter is not provided because the call for dispatchables does not exist on the historicApi currently.
+	 * Support may be added for this in a future update.
+	 */
 	private getDispatchableById: RequestHandler<
 		IPalletsDispatchablesParam,
 		unknown,
@@ -76,6 +80,10 @@ export default class PalletsDispatchablesController extends AbstractController<P
 		);
 	};
 
+	/**
+	 * Note: the `at` parameter is not provided because the call for dispatchables does not exist on the historicApi currently.
+	 * Support may be added for this in a future update.
+	 */
 	private getDispatchables: RequestHandler = async (
 		{ params: { palletId }, query: { onlyIds } },
 		res

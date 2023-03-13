@@ -293,7 +293,6 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 		for (const [, val] of Object.entries(dispatchables)) {
 			const item = val.meta;
-			console.log(item.name);
 			if (
 				stringCamelCase(item.name).toLowerCase() ===
 				dispatchableItemId.toLowerCase()
@@ -349,6 +348,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 			const item = val.meta;
 			if (item.name.toLowerCase() === errorItemId.toLowerCase()) {
 				errorItemMetaIdx = val.meta.index.toNumber();
+				break;
 			}
 		}
 
@@ -379,6 +379,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 			const item = val.meta;
 			if (item.name.toLowerCase() === eventItemId.toLowerCase()) {
 				eventItemMetaIdx = val.meta.index.toNumber();
+				break;
 			}
 		}
 

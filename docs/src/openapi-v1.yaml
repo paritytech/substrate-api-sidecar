@@ -935,58 +935,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
-    /pallets/{palletId}/consts:
-      get:
-        tags:
-        - pallets
-        summary: Get a list of constants for a pallet.
-        description: Returns a list of const item metadata for constant items of the
-          specified palletId.
-        parameters:
-        - name: palletId
-          in: path
-          description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
-            specified in the runtime metadata.'
-          required: true
-          schema:
-            type: string
-        - name: onlyIds
-          in: query
-          description: Only return the names (IDs) of the const items instead of every constant's metadata.
-          required: false
-          schema:
-            type: boolean
-        - name: at
-          in: query
-          description: Block at which to retrieve a list of
-            the pallet's constant items.
-          required: false
-          schema:
-            type: string
-            description: Block identifier, as the block height or block hash.
-            format: unsignedInteger or $hex
-        responses:
-          "200":
-            description: successful operation
-            content:
-              application/json:
-                schema:
-                  type: array
-                  description: Pallet info and Array of constantItemIds.
-                  items:
-                    $ref: '#/components/schemas/PalletConstants'
-          "400":
-            description: invalid blockId supplied for at query param
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error'
-          "404":
-            description: could not find pallet with palletId
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/consts:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of const item metadata for constant items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the const items instead of every constant's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's constant items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of constantItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletConstants'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/consts/{constantItemId}:
     get:
       tags:
