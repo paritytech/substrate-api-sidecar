@@ -22,6 +22,7 @@ import {
 	RequestHandler,
 	Response,
 } from 'express';
+import { Server } from 'http';
 
 import packageJson from '../package.json';
 import AbstractController from './controllers/AbstractController';
@@ -96,8 +97,8 @@ export default class App {
 		}
 	}
 
-	listen(): void {
-		this.app.listen(this.port, this.host, () => {
+	listen(): Server {
+		return this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
 			console.log(
 				`Check the root endpoint (http://${this.host}:${this.port}/) to see the available endpoints for the current node`
