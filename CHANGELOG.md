@@ -25,6 +25,13 @@ All notable changes to this project will be documented in this file. See [standa
 - chore: add inspect mode script ([#1248](https://github.com/paritytech/substrate-api-sidecar/pull/1248)) ([4f40666](https://github.com/paritytech/substrate-api-sidecar/commit/4f40666603080f410fbd73eadd5291171466ad44))
 - chore: bump webpack from 5.68.0 to 5.76.0 in /docs ([#1249](https://github.com/paritytech/substrate-api-sidecar/pull/1249)) ([783ef9b](https://github.com/paritytech/substrate-api-sidecar/commit/783ef9b40c7147960f520aac85605c8f0e8ac589))
 
+## Compatibility
+
+Tested against:
+- Polkadot v9390
+- Kusama v9390
+- Westend v9390
+
 ## [14.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.4.0..v14.4.1) (2023-02-27)
 
 ## CI
