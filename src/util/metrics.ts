@@ -5,18 +5,10 @@ import client from 'prom-client';
 import { Log } from '../logging/Log';
 import { parseArgs } from '../parseArgs';
 
-const { logger } = Log;
-
-const register = new client.Registry();
-
 export const httpErrorCounter = new client.Counter({
 	name: 'sas_http_errors',
 	help: 'Number of HTTP Errors',
 });
-
-register.registerMetric(httpErrorCounter);
-
-client.collectDefaultMetrics({ register, prefix: 'sas_' });
 
 interface IAppConfiguration {
 	port: number;
@@ -42,6 +34,7 @@ export default class Metrics_App {
 	}
 
 	listen(): void {
+		const { logger } = Log;
 		this.app.listen(this.port, this.host, () => {
 			logger.info(
 				`Metrics Server started at http://${this.host}:${this.port}/`
@@ -53,6 +46,9 @@ export default class Metrics_App {
 	 * Mount the metrics endpoint.
 	 */
 	private metricsEndpoint() {
+		const register = new client.Registry();
+		register.registerMetric(httpErrorCounter);
+		client.collectDefaultMetrics({ register, prefix: 'sas_' });
 		// Set up the metrics endpoint
 		this.app.get('/metrics', (_req: Request, res: Response) => {
 			void (async () => {

@@ -89,16 +89,15 @@ async function main() {
 		host: config.EXPRESS.HOST,
 	});
 
-	// Create our App
-	const metricsApp = new Metrics_App({
-		port: 9100,
-		host: config.EXPRESS.HOST,
-	});
-
 	// Start the server
 	app.listen();
 
 	if (args.prometheus) {
+		// Create Metrics App
+		const metricsApp = new Metrics_App({
+			port: 9100,
+			host: config.EXPRESS.HOST,
+		});
 		// Start the Metrics server
 		metricsApp.listen();
 	}

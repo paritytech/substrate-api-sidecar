@@ -233,6 +233,26 @@ file you can `symlink` it with `.env.test`. For example you could run
 `ln -s .env.myEnv .env.test && yarn start:log-rpc` to use `.env.myEnv` to set ENV variables. (see linux
 commands `ln` and `unlink` for more info.)
 
+### Prometheus server
+Prometheus metrics can be enabled by running sidecar with the following flag :
+
+```bash
+yarn start --prometheus
+```
+
+You can also define a custom port by running :
+
+```bash
+yarn start --prometheus --prometheus-port=<YOUR_CUSTOM_PORT>
+```
+
+The metrics endpoint can then be accessed :
+- on the default port : `http://127.0.0.1:9100/metrics` or
+- on your custom port if you defined one : `http://127.0.0.1:<YOUR_CUSTOM_PORT>/metrics`
+
+That way you will have access to the default prometheus metrics and one extra custom metric called `sas_http_errors` (of type counter). This counter is increased by 1 every time an http error has occured in sidecar.
+
+
 ## Debugging fee and staking payout calculations
 
 It is possible to get more information about the fee and staking payout calculation process logged to
@@ -249,7 +269,7 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Chain integration guide
 
-[Click here for chain integration guide.](./guides/CHAIN_INTEGRATION.md))
+[Click here for chain integration guide.](./guides/CHAIN_INTEGRATION.md)
 
 ## Docker
 
