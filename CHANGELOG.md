@@ -2,23 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.5.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.0..v14.5.1) (2023-03-23)
+
+### Chores
+
+- chore(deps): update polkadot-js ([#1252](https://github.com/paritytech/substrate-api-sidecar/pull/1252)) ([c53d6c4](https://github.com/paritytech/substrate-api-sidecar/commit/c53d6c4b9b07e4ccaa6a7baf35a6c03da0d213ac))
+
+Tested against:
+- Polkadot v9390
+- Kusama v9390
+- Westend v9390
+
 ## [14.5.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.4.1..v14.5.0) (2023-03-15)
 
-## Features
+### Features
 
 - feat: add pallets/consts endpoint ([#1210](https://github.com/paritytech/substrate-api-sidecar/pull/1210)) ([97c1ca6](https://github.com/paritytech/substrate-api-sidecar/commit/97c1ca633347d94386f1574f0303baaf96669ba0))
 - feat: add SAS_EXPRESS_KEEP_ALIVE_TIMEOUT ([#1233](https://github.com/paritytech/substrate-api-sidecar/pull/1233)) ([e83dac6](https://github.com/paritytech/substrate-api-sidecar/commit/e83dac6164902654e0b854f60b22d4d3a3a08449))
 - feat: add pallets/dispatchables endpoint ([#1209](https://github.com/paritytech/substrate-api-sidecar/pull/1209)) ([b685ac2](https://github.com/paritytech/substrate-api-sidecar/commit/b685ac244610aa51457412981feab72bfb560f9f))
 
-## CI
+### CI
 
 - ci: refactor benchmark ([#1235](https://github.com/paritytech/substrate-api-sidecar/pull/1235)) ([fe67380](https://github.com/paritytech/substrate-api-sidecar/commit/fe67380de3163f4b3f925bfc4add8b026c7a4c04))
 
-## Test
+### Test
 
 - test: fix benchmark url calls for pallets keys ([#1240](https://github.com/paritytech/substrate-api-sidecar/pull/1240)) ([e4e4cac](https://github.com/paritytech/substrate-api-sidecar/commit/e4e4cacf962c8f230e69fd73f949a2fa78631b7d))
 
-## Chores
+### Chores
 
 - chore: bump Swatinem/rust-cache from 2.2.0 to 2.2.1 ([#1241](https://github.com/paritytech/substrate-api-sidecar/pull/1241)) ([190c713](https://github.com/paritytech/substrate-api-sidecar/commit/190c713bccb233b1d27c0fe9cb9b5c1616ea38cf))
 - chore(deps): update polkadot-js deps ([#1247](https://github.com/paritytech/substrate-api-sidecar/pull/1247)) ([5c4449c](https://github.com/paritytech/substrate-api-sidecar/commit/5c4449c0465b5118b056b2a6c9b328943c81417d))
@@ -34,12 +45,12 @@ Tested against:
 
 ## [14.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.4.0..v14.4.1) (2023-02-27)
 
-## CI
+### CI
 
 - ci: add e2e tests to ci ([#1222](https://github.com/paritytech/substrate-api-sidecar/pull/1222)) ([14b05f8](https://github.com/paritytech/substrate-api-sidecar/commit/14b05f8921348f229fe1bec59b5fa3ad5b59625b))
 - ci: add docker image description publishing ([#1234](https://github.com/paritytech/substrate-api-sidecar/pull/1234)) ([c97972a](https://github.com/paritytech/substrate-api-sidecar/commit/c97972a2d3003477afc3271c96dc7310b507362e))
 
-## Chores
+### Chores
 
 - chore(deps): update polkadot-js ([#1237](https://github.com/paritytech/substrate-api-sidecar/pull/1237)) ([7366aa3](https://github.com/paritytech/substrate-api-sidecar/commit/7366aa3338fbd8ff7d532d0b60a4e440a9b0c77a))
 
