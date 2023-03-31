@@ -58,6 +58,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			}
 			validators.push({ address, status });
 		});
+
 		if (validatorsActiveSet.size > 0) {
 			validatorsActiveSet.forEach((address) =>
 				validators.push({ address, status: 'active' })
