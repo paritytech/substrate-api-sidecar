@@ -91,7 +91,7 @@ export class TypeFactory {
 	 * 2. apiPromise.query.slots.leases
 	 */
 	storageKey(
-		index: number,
+		index: number | string,
 		indexType: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
