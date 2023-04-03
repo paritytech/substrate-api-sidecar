@@ -46,13 +46,24 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const validators: IValidator[] = [];
 		const validatorsEntries =
 			await historicApi.query.staking.validators.entries();
+
 		validatorsEntries.map(([key]) => {
-			const address = key.args.map((k) => k.toHuman())[0];
-			const status: string = validatorsActiveSet.has(address)
-				? 'active'
-				: 'waiting';
+			const address = key.args.map((k) => k.toString())[0];
+			let status: 'active' | 'waiting';
+			if (validatorsActiveSet.has(address)) {
+				status = 'active';
+				validatorsActiveSet.delete(address);
+			} else {
+				status = 'waiting';
+			}
 			validators.push({ address, status });
 		});
+
+		if (validatorsActiveSet.size > 0) {
+			validatorsActiveSet.forEach((address) =>
+				validators.push({ address, status: 'active' })
+			);
+		}
 
 		return {
 			validators,
