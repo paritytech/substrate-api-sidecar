@@ -1,4 +1,8 @@
 {
+	"at": {
+		"hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578",
+		"height": "789629"
+	},
 	"validators": [
 		{
 			"address": "1zugcag7cJVBtVRnFxv5Qftn7xKAnR6YJ9x4x3XLgGgmNnS",
@@ -3676,6 +3680,16 @@
 			"address": "1265yHoixkAt2GfEkYqP8nQ5gRCwMw6xGSscPQGM349t573q",
 			"status": "waiting"
 		},
+		{
+			"address": "1sgm3kyLxWgNWfNMtvnZU7Ammbzhdwbo2TC4hgMPhP91n9M",
+			"status": "active"
+		},
+		{
+			"address": "16XxKGBRWSCQZwrpgcnzE1HqcYC3xJBcSJrM1pRazfmuSrio",
+			"status": "active"
+		}
+	],
+	"validatorsToBeChilled": [
 		{
 			"address": "1sgm3kyLxWgNWfNMtvnZU7Ammbzhdwbo2TC4hgMPhP91n9M",
 			"status": "active"
