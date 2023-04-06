@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { IAt } from './At';
+
 export interface IValidator {
 	/**
 	 * Address of the validator.
@@ -28,5 +30,7 @@ export interface IValidator {
 }
 
 export interface IPalletStakingValidator {
+	at: IAt;
 	validators: IValidator[];
+	validatorsToBeChilled: IValidator[];
 }
