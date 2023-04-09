@@ -79,11 +79,6 @@ export class AccountsBalanceInfoService extends AbstractService {
 				throw this.createHttpErrorForAddr(address, err);
 			});
 
-			// Values dont exist for these historic runtimes
-			const miscFrozen = api.registry.createType('Balance', 0),
-				feeFrozen = api.registry.createType('Balance', 0),
-				frozen = api.registry.createType('Balance', 0);
-
 			const at = {
 				hash,
 				height: header.number.toNumber().toString(10),
@@ -96,9 +91,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 					tokenSymbol: token,
 					free: this.inDenominationBal(denominate, free, decimal),
 					reserved: this.inDenominationBal(denominate, reserved, decimal),
-					miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-					feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
-					frozen: this.inDenominationBal(denominate, frozen, decimal),
+					miscFrozen: 'miscFrozen does not exist for this runtime',
+					feeFrozen: 'feeFrozen does not exist for this runtime',
+					frozen: 'frozen does not exist for this runtime',
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -120,15 +115,15 @@ export class AccountsBalanceInfoService extends AbstractService {
 				free = data.free;
 				reserved = data.reserved;
 				frozen = data.frozen;
-				miscFrozen = api.registry.createType('Balance', 0);
-				feeFrozen = api.registry.createType('Balance', 0);
+				miscFrozen = 'miscFrozen does not exist for this runtime';
+				feeFrozen = 'feeFrozen does not exist for this runtime';
 			} else {
 				const tmpData = data as unknown as AccountData;
 				free = tmpData.free;
 				reserved = tmpData.reserved;
 				feeFrozen = tmpData.feeFrozen;
 				miscFrozen = tmpData.miscFrozen;
-				frozen = api.registry.createType('Balance', 0);
+				frozen = 'frozen does not exist for this runtime';
 			}
 
 			const at = {
@@ -143,9 +138,18 @@ export class AccountsBalanceInfoService extends AbstractService {
 					tokenSymbol: token,
 					free: this.inDenominationBal(denominate, free, decimal),
 					reserved: this.inDenominationBal(denominate, reserved, decimal),
-					miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-					feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
-					frozen: this.inDenominationBal(denominate, frozen, decimal),
+					miscFrozen:
+						typeof miscFrozen === 'string'
+							? miscFrozen
+							: this.inDenominationBal(denominate, miscFrozen, decimal),
+					feeFrozen:
+						typeof feeFrozen === 'string'
+							? feeFrozen
+							: this.inDenominationBal(denominate, feeFrozen, decimal),
+					frozen:
+						typeof frozen === 'string'
+							? frozen
+							: this.inDenominationBal(denominate, frozen, decimal),
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -208,14 +212,14 @@ export class AccountsBalanceInfoService extends AbstractService {
 				reserved = tmpData.reserved;
 				feeFrozen = tmpData.feeFrozen;
 				miscFrozen = tmpData.miscFrozen;
-				frozen = api.registry.createType('Balance', 0);
+				frozen = 'frozen does not exist for this runtime';
 			} else {
 				const tmpData = accountData as PalletBalancesAccountData;
 				free = tmpData.free;
 				reserved = tmpData.reserved;
 				frozen = tmpData.frozen;
-				feeFrozen = api.registry.createType('Balance', 0);
-				miscFrozen = api.registry.createType('Balance', 0);
+				feeFrozen = 'feeFrozen does not exist for this runtime';
+				miscFrozen = 'miscFrozen does not exist for this runtime';
 			}
 
 			return {
@@ -224,9 +228,18 @@ export class AccountsBalanceInfoService extends AbstractService {
 				tokenSymbol: token,
 				free: this.inDenominationBal(denominate, free, decimal),
 				reserved: this.inDenominationBal(denominate, reserved, decimal),
-				miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-				feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
-				frozen: this.inDenominationBal(denominate, frozen, decimal),
+				miscFrozen:
+					typeof miscFrozen === 'string'
+						? miscFrozen
+						: this.inDenominationBal(denominate, miscFrozen, decimal),
+				feeFrozen:
+					typeof feeFrozen === 'string'
+						? feeFrozen
+						: this.inDenominationBal(denominate, feeFrozen, decimal),
+				frozen:
+					typeof frozen === 'string'
+						? frozen
+						: this.inDenominationBal(denominate, frozen, decimal),
 				locks: this.inDenominationLocks(denominate, locks, decimal),
 			};
 		} else {
