@@ -2093,12 +2093,21 @@ components:
         miscFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            for anything except transaction fee payment.
+            for anything except transaction fee payment. Note, that some runtimes may not have
+            support for miscFrozen and if so the following will be returned `miscFrozen does not exist for this runtime`
           format: unsignedInteger
         feeFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            specifically for transaction fee payment.
+            specifically for transaction fee payment. Note, that some runtimes may not have
+            support for feeFrozen and if so the following will be returned `feeFrozen does not exist for this runtime`
+          format: unsignedInteger
+        frozen:
+          type: string
+          description: The amount that `free` may not drop below when reducing the balance, except for actions
+            where the account owner cannot reasonably benefit from thr balance reduction, such as slashing.
+            Note, that some runtimes may not have support for frozen and if so the following 
+            will be returned `frozen does not exist for this runtime`
           format: unsignedInteger
         locks:
           type: array
