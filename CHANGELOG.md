@@ -2,12 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [14.5.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.0..v14.5.1) (2023-04-04)
+## [14.5.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.2..v14.5.3) (2023-04-11)
+
+### Bug Fixes
+
+- fix: validator staking endpoint with more info, and correct docs ([#1258](https://github.com/paritytech/substrate-api-sidecar/pull/1258)) ([e0024e5](https://github.com/paritytech/substrate-api-sidecar/commit/e0024e595561b3a8314cb136f4bf36ce037236c9))
+    NOTE: This ensures that the `pallets/staking/validators` endpoint has the `at` key, and adds the `validatorsToBeChilled` key. Please read the PR for more info.
+
+### CI
+
+- ci: Allow GitLab E2E test jobs to fail ([#1260](https://github.com/paritytech/substrate-api-sidecar/pull/1260)) ([78812f2](https://github.com/paritytech/substrate-api-sidecar/commit/78812f231e1a5171d0d15af85b199c112821edd2))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9400
+- Kusama v9400
+- Westend v9400
+
+## [14.5.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.1..v14.5.2) (2023-04-04)
 
 ### Bug Fixes
 
 - fix: invalid validator active set ([#1256](https://github.com/paritytech/substrate-api-sidecar/pull/1256)) ([a13269b](https://github.com/paritytech/substrate-api-sidecar/commit/a13269b1d96e0f03684374fd74536a6c630505cd))
     - NOTE: This ensure that `/pallets/staking/validators` returns the correct amount of active validators in the set.  
+
+## Compatibility
 
 Tested against:
 - Polkadot v9400
@@ -19,6 +39,8 @@ Tested against:
 ### Chores
 
 - chore(deps): update polkadot-js ([#1252](https://github.com/paritytech/substrate-api-sidecar/pull/1252)) ([c53d6c4](https://github.com/paritytech/substrate-api-sidecar/commit/c53d6c4b9b07e4ccaa6a7baf35a6c03da0d213ac))
+
+## Compatibility
 
 Tested against:
 - Polkadot v9390
