@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,23 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IAt } from './At';
+import { polkadotMetadataRpcV9370 } from '../../../../test-helpers/metadata/polkadotV9370Metadata';
+import {
+	createApiWithAugmentations,
+	TypeFactory,
+} from '../../../../test-helpers/typeFactory';
+import { validatorsAddresses } from './validatorsAddresses';
 
-export interface IValidator {
-	/**
-	 * Address of the validator.
-	 */
-	address: string;
-	/**
-	 * The status of the validator which can be either `active` or `waiting`.
-	 * `Active` means that the validator is part of the active set and
-	 * `waiting` means that the validator did not get into the active set this era.
-	 */
-	status: string;
-}
+const typeFactoryApiV9370 = createApiWithAugmentations(
+	polkadotMetadataRpcV9370
+);
+const factory = new TypeFactory(typeFactoryApiV9370);
 
-export interface IPalletStakingValidator {
-	at: IAt;
-	validators: IValidator[];
-	validatorsToBeChilled: IValidator[];
-}
+export const validatorsEntries = () => {
+	return validatorsAddresses.map((addr) => {
+		const storage = factory.storageKey(
+			addr,
+			'AccountId32',
+			typeFactoryApiV9370.query.staking.validators
+		);
+		return [storage];
+	});
+};

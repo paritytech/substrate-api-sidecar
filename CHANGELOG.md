@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.5.2](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.0..v14.5.1) (2023-04-04)
+
+### Bug Fixes
+
+- fix: invalid validator active set ([#1256](https://github.com/paritytech/substrate-api-sidecar/pull/1256)) ([a13269b](https://github.com/paritytech/substrate-api-sidecar/commit/a13269b1d96e0f03684374fd74536a6c630505cd))
+    - NOTE: This ensure that `/pallets/staking/validators` returns the correct amount of active validators in the set.  
+
+Tested against:
+- Polkadot v9400
+- Kusama v9400
+- Westend v9400
+
 ## [14.5.1](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.0..v14.5.1) (2023-03-23)
 
 ### Chores

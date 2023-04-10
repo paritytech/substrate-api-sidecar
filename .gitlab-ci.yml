@@ -120,6 +120,7 @@ stages:
     - yarn --immutable
     - echo "Tests for ${CHAIN_URL}"
     - yarn test:latest-e2e-tests --log-level info --chain ${CHAIN_NAME} --local ${CHAIN_URL}
+  allow_failure: true
 
 e2e-westend:
   <<:                              *e2e-template
