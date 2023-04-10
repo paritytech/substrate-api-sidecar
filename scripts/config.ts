@@ -51,7 +51,7 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	kusama: {
-		wsUrl: 'wss://kusama.api.onfinality.io/public-ws',
+		wsUrl: 'wss://kusama-rpc.polkadot.io',
 		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'kusama'],
@@ -59,7 +59,7 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	westend: {
-		wsUrl: 'wss://westend.api.onfinality.io/public-ws',
+		wsUrl: 'wss://westend-rpc.polkadot.io',
 		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'westend'],
@@ -67,7 +67,7 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 		SasStartOpts: defaultSasStartOpts,
 	},
 	statemine: {
-		wsUrl: 'wss://statemine.api.onfinality.io/public-ws',
+		wsUrl: 'wss://statemine-rpc.polkadot.io',
 		e2eStartOpts: {
 			...defaultJestOpts,
 			args: ['start:historical-e2e-tests', '--chain', 'statemine'],
