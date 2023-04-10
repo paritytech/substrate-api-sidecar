@@ -9,6 +9,7 @@
     "reserved": "0",
     "miscFrozen": "482984903269501",
     "feeFrozen": "482984903269501",
+    "frozen": "frozen does not exist for this runtime",
     "locks": [
         {
             "id": "0x7374616b696e6720",

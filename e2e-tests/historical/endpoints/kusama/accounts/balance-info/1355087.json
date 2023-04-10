@@ -7,8 +7,9 @@
     "tokenSymbol": "KSM",
     "free": "499073078719448",
     "reserved": "0",
-    "miscFrozen": "0",
-    "feeFrozen": "0",
+    "miscFrozen": "miscFrozen does not exist for this runtime",
+    "feeFrozen": "feeFrozen does not exist for this runtime",
+    "frozen": "frozen does not exist for this runtime",
     "locks": [
         {
             "id": "0x7374616b696e6720",
