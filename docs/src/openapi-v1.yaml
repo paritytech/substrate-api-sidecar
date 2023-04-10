@@ -2108,7 +2108,7 @@ components:
         frozen:
           type: string
           description: The amount that `free` may not drop below when reducing the balance, except for actions
-            where the account owner cannot reasonably benefit from thr balance reduction, such as slashing.
+            where the account owner cannot reasonably benefit from the balance reduction, such as slashing.
             Note, that some runtimes may not have support for frozen and if so the following 
             will be returned `frozen does not exist for this runtime`
           format: unsignedInteger
