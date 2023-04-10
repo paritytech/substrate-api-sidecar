@@ -67,7 +67,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		 *
 		 * b) Does the block use an older api where the free balance is within the
 		 * AccountInfo type, but the storage does not yet have the `.at` method.
-		 * 
+		 *
 		 * NOTE: This PR also checks to see if `frozen` exists or `miscFrozen` and `feeFrozen`.
 		 * There was a breaking change in https://github.com/paritytech/substrate/pull/12951 which
 		 * changed the format of the Account Data returned by the chain.
