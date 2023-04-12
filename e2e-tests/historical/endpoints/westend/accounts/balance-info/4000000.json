@@ -9,5 +9,6 @@
     "reserved": "0",
     "miscFrozen": "0",
     "feeFrozen": "0",
+    "frozen": "frozen does not exist for this runtime",
     "locks": []
 }

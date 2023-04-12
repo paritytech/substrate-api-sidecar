@@ -7,7 +7,8 @@
     "tokenSymbol": "KSM",
     "free": "499588463216330",
     "reserved": "0",
-    "miscFrozen": "0",
-    "feeFrozen": "0",
+    "miscFrozen": "miscFrozen does not exist for this runtime",
+    "feeFrozen": "feeFrozen does not exist for this runtime",
+    "frozen": "frozen does not exist for this runtime",
     "locks": []
 }
