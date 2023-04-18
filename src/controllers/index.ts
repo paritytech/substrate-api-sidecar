@@ -29,6 +29,7 @@ import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssets,
 	PalletsConsts,
+	PalletsDispatchables,
 	PalletsErrors,
 	PalletsEvents,
 	PalletsNominationPools,
@@ -61,6 +62,7 @@ export const controllers = {
 	AccountsStakingPayouts,
 	ContractsInk,
 	PalletsAssets,
+	PalletsDispatchables,
 	PalletsConsts,
 	PalletsErrors,
 	PalletsEvents,

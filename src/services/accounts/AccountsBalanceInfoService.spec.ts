@@ -119,6 +119,7 @@ describe('AccountsBalanceInfoService', () => {
 				},
 				feeFrozen: '100000000000',
 				free: '501090793179',
+				frozen: 'frozen does not exist for this runtime',
 				locks: [
 					{
 						amount: '100000000000',

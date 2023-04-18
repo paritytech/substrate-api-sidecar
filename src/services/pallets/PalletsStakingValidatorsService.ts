@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { BlockHash } from '@polkadot/types/interfaces';
-import { IPalletStakingValidator, IValidator } from 'src/types/responses';
 
+import { IPalletStakingValidator, IValidator } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingValidatorsService extends AbstractService {
@@ -33,8 +33,19 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	): Promise<IPalletStakingValidator> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
+		const [{ number }, validatorSession, validatorsEntries] = await Promise.all(
+			[
+				api.rpc.chain.getHeader(hash),
+				historicApi.query.session.validators(),
+				historicApi.query.staking.validators.entries(),
+			]
+		);
 
-		const validatorSession = await historicApi.query.session.validators();
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
 		const validatorsActiveSet = new Set<string>();
 		for (const address of validatorSession) {
 			validatorsActiveSet.add(address.toString());
@@ -44,18 +55,33 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		// status. If the address is found in the `validatorsActiveSet` then
 		// status is `active` otherwise is set to `waiting`
 		const validators: IValidator[] = [];
-		const validatorsEntries =
-			await historicApi.query.staking.validators.entries();
+		// Active validators that wont be part of the next active validator set
+		// for the incoming era.
+		const validatorsToBeChilled: IValidator[] = [];
+
 		validatorsEntries.map(([key]) => {
-			const address = key.args.map((k) => k.toHuman())[0];
-			const status: string = validatorsActiveSet.has(address)
-				? 'active'
-				: 'waiting';
+			const address = key.args.map((k) => k.toString())[0];
+			let status: 'active' | 'waiting';
+			if (validatorsActiveSet.has(address)) {
+				status = 'active';
+				validatorsActiveSet.delete(address);
+			} else {
+				status = 'waiting';
+			}
 			validators.push({ address, status });
 		});
 
+		if (validatorsActiveSet.size > 0) {
+			validatorsActiveSet.forEach((address) => {
+				validators.push({ address, status: 'active' });
+				validatorsToBeChilled.push({ address, status: 'active' });
+			});
+		}
+
 		return {
+			at,
 			validators,
+			validatorsToBeChilled,
 		};
 	}
 }

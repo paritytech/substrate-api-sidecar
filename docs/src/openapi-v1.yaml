@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.4.1
+  version: 14.5.3
 tags:
 - name: accounts
 - name: blocks
@@ -935,123 +935,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
-  /pallets/nomination-pools/{poolId}:
-    get:
-      tags:
-        - pallets
-      summary: Get information and metadata associated with a nomination pool.
-      description: Returns information associated with a nomination pool which includes
-        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
-      operationId: getNominationPoolById
-      parameters:
-      - name: poolId
-        in: path
-        description: The unsignedInteger Id of a nomination pool.
-        required: true
-        schema:
-          type: string
-          format: unsignedInteger
-      - name: at
-        in: query
-        description: Block at which to retrieve the nomination pool.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsNominationPool'
-  /pallets/nomination-pools/info:
-    get:
-      tags:
-        - pallets
-      summary: Get information associated with nomination pools.
-      description: Returns information and metadata for nomination pools including pool counters and limits.
-      operationId: getNominationPoolInfo
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve the nomination pool info.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
-  /pallets/staking/progress:
-    get:
-      tags:
-      - staking
-      - pallets
-      summary: Get progress on the general Staking pallet system.
-      description: Returns information on the progress of key components of the
-        staking system and estimates of future points of interest. Replaces
-        `/staking-info` from versions < v1.0.0.
-      operationId: getStakingProgress
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve a staking progress report.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StakingProgress'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /pallets/staking/validators:
-    get:
-      tags:
-      - staking
-      - pallets
-      summary: Get all validators (active/waiting) of a specific chain.
-      description: Returns a list of all validators addresses and their
-        corresponding status which can be either active or waiting.
-      operationId: getStakingValidators
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve the list of validators.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:  
-                $ref: '#/components/schemas/StakingValidators'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -1147,6 +1030,216 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletConstantsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/nomination-pools/{poolId}:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with a nomination pool.
+      description: Returns information associated with a nomination pool which includes
+        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
+      operationId: getNominationPoolById
+      parameters:
+      - name: poolId
+        in: path
+        description: The unsignedInteger Id of a nomination pool.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPool'
+  /pallets/nomination-pools/info:
+    get:
+      tags:
+        - pallets
+      summary: Get information associated with nomination pools.
+      description: Returns information and metadata for nomination pools including pool counters and limits.
+      operationId: getNominationPoolInfo
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool info.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
+  /pallets/staking/progress:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get progress on the general Staking pallet system.
+      description: Returns information on the progress of key components of the
+        staking system and estimates of future points of interest. Replaces
+        `/staking-info` from versions < v1.0.0.
+      operationId: getStakingProgress
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve a staking progress report.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StakingProgress'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/staking/validators:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their
+        corresponding status which can be either active or waiting. It will also return 
+        a list of active validators that will not be part of the next era for staking. They will
+        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
+        the "validators" key, and "validatorsToBeChilled".
+      operationId: getStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/StakingValidators'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of dispatchables for a pallet.
+      description: Returns a list of dispatchable item metadata for distpachable items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the dispatchable items instead of every dispatchable's metadata.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of dispatchableItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletDispatchables'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables/{dispatchableItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a dispatchable item.
+      description: Returns the value stored under the dispatchableItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: dispatchableItemId
+        in: path
+        description: Id of the dispatchable item to query for.
+        required: true
+        schema:
+          type: string
+      - name: metadata
+        in: query
+        description: Include the dispatchable items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletDispatchablesItem'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -2003,12 +2096,21 @@ components:
         miscFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            for anything except transaction fee payment.
+            for anything except transaction fee payment. Note, that some runtimes may not have
+            support for miscFrozen and if so the following will be returned `miscFrozen does not exist for this runtime`
           format: unsignedInteger
         feeFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            specifically for transaction fee payment.
+            specifically for transaction fee payment. Note, that some runtimes may not have
+            support for feeFrozen and if so the following will be returned `feeFrozen does not exist for this runtime`
+          format: unsignedInteger
+        frozen:
+          type: string
+          description: The amount that `free` may not drop below when reducing the balance, except for actions
+            where the account owner cannot reasonably benefit from the balance reduction, such as slashing.
+            Note, that some runtimes may not have support for frozen and if so the following 
+            will be returned `frozen does not exist for this runtime`
           format: unsignedInteger
         locks:
           type: array
@@ -2810,6 +2912,64 @@ components:
           type: string
           example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
       description: Metadata of an constant item from a FRAME pallet.
+    PalletDispatchables:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+          description: Array containing metadata for each dispatchable entry of the pallet.
+    PalletDispatchablesItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        dispatchableItem:
+          type: string
+          description: Name of the dispatchable item.
+          example: "vote"
+        metadata:
+          $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+    PalletDispatchablesItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "propose"
+          description: The dispatchable item's name (which is the same as the dispatchable item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the dispatchable item in the lists of pallet dispatchables.
+        docs:
+          type: string
+          example: "Information concerning any given dispatchable.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of a dispatchable item from a FRAME pallet.
     PalletErrors:
       type: object
       properties:
@@ -3479,12 +3639,29 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
-        address:
-          type: string
-          description: Address of validator.
-        status:
-          type: string
-          description: Status of individual validator (active/waiting).
+        validators:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+                description: Address of validator.
+              status:
+                type: string
+                description: Status of individual validator (active/waiting).
+        validatorsToBeChilled:
+          description: Validators that will not be participating in the next era.
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+                description: Address of validator.
+              status:
+                type: string
+                description: Status of individual validator (active/waiting).
     StorageEntryTypeV13:
       type: object
       properties:

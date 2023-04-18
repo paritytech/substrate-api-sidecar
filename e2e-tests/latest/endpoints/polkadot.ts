@@ -153,6 +153,23 @@ export const polkadot: IConfig = {
 		path: '/pallets/democracy/consts/EnactmentPeriod',
 		queryParams: ['at={blockId}'],
 	},
+	'/pallets/{palletId}/dispatchables': {
+		path: '/pallets/democracy/dispatchables',
+		queryParams: [],
+	},
+	'/pallets/{palletId}/dispatchables?onlyIds=true': {
+		path: '/pallets/14/dispatchables',
+		queryParams: [],
+	},
+	'/pallets/{palletId}/dispatchables/{dispatchableItemId}': {
+		path: '/pallets/democracy/dispatchables/vote',
+		queryParams: [],
+	},
+	'/pallets/{palletId}/dispatchables/{dispatchableItemIdWithMultipleWordName}':
+		{
+			path: '/pallets/fastUnstake/dispatchables/registerFastUnstake',
+			queryParams: [],
+		},
 	'/pallets/{palletId}/errors': {
 		path: '/pallets/balances/errors',
 		queryParams: ['at={blockId}'],
