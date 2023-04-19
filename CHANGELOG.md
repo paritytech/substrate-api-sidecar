@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 - fix: incorrect finalization when head blocks are cached and polled ([#1265](https://github.com/paritytech/substrate-api-sidecar/pull/1265)) ([d498206](https://github.com/paritytech/substrate-api-sidecar/commit/d4982060ae080aab20433432e339c58722107a8e))
+    NOTE: This patches a bug related to `/blocks/head`.
 
 ### Test
 
