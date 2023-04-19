@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.3..v15.0.0) (2023-04-19)
+
+### **BREAKING CHANGES**
+
+- fix!: update polkadot-js, and adjust for breaking changes (`/accounts/{accountId}/balance-info`) ([#1255](https://github.com/paritytech/substrate-api-sidecar/pull/1255)) ([8964882](https://github.com/paritytech/substrate-api-sidecar/commit/8964882102487825561c27b525ae3da51e54bbf7))
+    NOTE: The endpoint `/accounts/{accountId}/balance-info` has a new field called `frozen`, while `miscFrozen`, and `feeFrozen` will now give new outputs when they are no longer supported. **Important**: These changes are not yet reflected in a runtime release on `polkadot`, `kusama`, and `westend`, but are applied in sidecar to ensure support is there. Please look into the docs and or the above PR to see the changes in more depth.
+
+### Bug Fixes
+
+- fix: incorrect finalization when head blocks are cached and polled ([#1265](https://github.com/paritytech/substrate-api-sidecar/pull/1265)) ([d498206](https://github.com/paritytech/substrate-api-sidecar/commit/d4982060ae080aab20433432e339c58722107a8e))
+    NOTE: This patches a bug related to `/blocks/head`.
+
+### Test
+
+- test(scripts): change historical e2e-tests endpoints to parity hosted nodes ([#1261](https://github.com/paritytech/substrate-api-sidecar/pull/1261)) ([bfe2976](https://github.com/paritytech/substrate-api-sidecar/commit/bfe297619bada26a715e6d30aa6451a2216fc719))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9400
+- Kusama v9400
+- Westend v9400
+
 ## [14.5.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.2..v14.5.3) (2023-04-11)
 
 ### Bug Fixes
