@@ -115,7 +115,7 @@ stages:
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    ""
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     ""
   script:
     - yarn --immutable
     - echo "Tests for ${CHAIN_URL}"
@@ -127,21 +127,21 @@ e2e-westend:
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "westend"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://westend-rpc.polkadot.io"
 
 e2e-kusama:
   <<:                              *e2e-template
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "kusama"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://kusama-rpc.polkadot.io"
 
 e2e-polkadot:
   <<:                              *e2e-template
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://rpc.polkadot.io"
 
 build-docker:
   <<:                              *dockerize
