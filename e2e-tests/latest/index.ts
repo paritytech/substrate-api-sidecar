@@ -93,7 +93,7 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 			errors.push(res);
 		}
 	});
-	logErrors(errors);
+	logResults(errors);
 
 	if (errors.length > 0) {
 		console.log(`Finished with a status code of ${Failed}`);
@@ -104,14 +104,18 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 	}
 };
 
-const logErrors = (errors: IRequest[]) => {
-	console.log('Received the following errors:');
-	errors.forEach((err) => {
-		console.log('----------------------------------------------');
-		console.log(`Queried Endpoint: ${err.path}`);
-		console.log(`Status Code: ${err.statusCode as number}`);
-		console.log(`Received logging: ${err.data}`);
-	});
+const logResults = (errors: IRequest[]) => {
+	if (errors.length > 0) {
+		console.log('Received the following errors:');
+		errors.forEach((err) => {
+			console.log('----------------------------------------------');
+			console.log(`Queried Endpoint: ${err.path}`);
+			console.log(`Status Code: ${err.statusCode as number}`);
+			console.log(`Received logging: ${err.data}`);
+		});
+	} else {
+		console.log('No errors were received');
+	}
 };
 
 const parser = new ArgumentParser();
