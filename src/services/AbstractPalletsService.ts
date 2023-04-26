@@ -20,9 +20,7 @@ import {
 	ErrorMetadataLatest,
 	EventMetadataLatest,
 	FunctionMetadataLatest,
-	MetadataV13,
 	MetadataV14,
-	ModuleMetadataV13,
 	PalletCallMetadataV14,
 	PalletConstantMetadataLatest,
 	PalletConstantMetadataV14,
@@ -30,9 +28,7 @@ import {
 	PalletEventMetadataV14,
 	PalletMetadataV14,
 	PalletStorageMetadataV14,
-	StorageEntryMetadataV13,
 	StorageEntryMetadataV14,
-	StorageMetadataV13,
 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { BadRequest } from 'http-errors';
@@ -41,7 +37,6 @@ import { InternalServerError } from 'http-errors';
 import { AbstractService } from './AbstractService';
 
 type IPalletMetadata =
-	| Option<StorageMetadataV13>
 	| Option<PalletStorageMetadataV14>
 	| Option<PalletCallMetadataV14>
 	| Option<PalletErrorMetadataV14>
@@ -53,7 +48,6 @@ type IPalletFieldMeta =
 	| EventMetadataLatest
 	| FunctionMetadataLatest
 	| PalletConstantMetadataLatest
-	| StorageEntryMetadataV13
 	| StorageEntryMetadataV14;
 
 type IMetadataFieldType =
@@ -65,17 +59,10 @@ type IMetadataFieldType =
 
 export abstract class AbstractPalletsService extends AbstractService {
 	private getPalletMetadataType(
-		meta: ModuleMetadataV13 | PalletMetadataV14,
+		meta: PalletMetadataV14,
 		metadataFieldType: IMetadataFieldType
 	): IPalletMetadata {
-		if (
-			metadataFieldType === 'storage' &&
-			meta.toRawType().includes('MetadataV13')
-		) {
-			return this.getProperty(meta as ModuleMetadataV13, metadataFieldType);
-		} else {
-			return this.getProperty(meta as PalletMetadataV14, metadataFieldType);
-		}
+		return this.getProperty(meta, metadataFieldType);
 	}
 
 	private getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
@@ -88,38 +75,24 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
 	protected findPalletMeta(
-		adjustedMetadata: MetadataV13 | MetadataV14,
+		adjustedMetadata: MetadataV14,
 		palletId: string,
 		metadataFieldType: IMetadataFieldType
-	): [PalletMetadataV14 | ModuleMetadataV13, number] {
-		const metadataType = adjustedMetadata.toRawType();
+	): [PalletMetadataV14, number] {
+		const pallets: Vec<PalletMetadataV14> = adjustedMetadata['pallets'];
+		const palletMetaType = this.getPalletMetadataType(
+			pallets[0],
+			metadataFieldType
+		);
 
-		let pallets: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>;
-		let filtered: PalletMetadataV14[] | ModuleMetadataV13[];
-		if (metadataType.includes('MetadataV13')) {
-			pallets = adjustedMetadata['modules'] as Vec<ModuleMetadataV13>;
-			const palletMetaType = this.getPalletMetadataType(
-				pallets[0],
-				metadataFieldType
-			);
-			filtered = pallets.filter(
-				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
-			);
-		} else {
-			pallets = adjustedMetadata['pallets'] as Vec<PalletMetadataV14>;
-			const palletMetaType = this.getPalletMetadataType(
-				pallets[0],
-				metadataFieldType
-			);
-			filtered = pallets.filter(
-				(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
-			);
-		}
+		const filtered: PalletMetadataV14[] = pallets.filter(
+			(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
+		);
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(pallets, palletId);
 
-		let palletMeta: PalletMetadataV14 | ModuleMetadataV13 | undefined;
+		let palletMeta: PalletMetadataV14 | undefined;
 		let palletIdx: number | undefined;
 
 		if (isValidPalletIndex) {
@@ -169,7 +142,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private validPalletId(
-		modules: Vec<PalletMetadataV14> | Vec<ModuleMetadataV13>,
+		modules: Vec<PalletMetadataV14>,
 		palletId: string
 	): {
 		isValidPalletName: boolean;
@@ -227,7 +200,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 */
 	protected findPalletFieldItemMeta(
 		historicApi: ApiDecoration<'promise'>,
-		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		palletMeta: PalletMetadataV14,
 		palletItemId: string,
 		metadataFieldType: IMetadataFieldType
 	): IPalletFieldMeta {
@@ -243,26 +216,26 @@ export abstract class AbstractPalletsService extends AbstractService {
 		} else if (metadataFieldType === 'errors') {
 			[palletItemIdx, palletItemMeta] = this.getErrorItemMeta(
 				historicApi,
-				palletMeta as PalletMetadataV14,
+				palletMeta,
 				palletItemIdx,
 				palletItemId
 			);
 		} else if (metadataFieldType === 'events') {
 			[palletItemIdx, palletItemMeta] = this.getEventItemMeta(
 				historicApi,
-				palletMeta as PalletMetadataV14,
+				palletMeta,
 				palletItemIdx,
 				palletItemId
 			);
 		} else if (metadataFieldType === 'calls') {
 			[palletItemIdx, palletItemMeta] = this.getDispatchablesItemMeta(
-				palletMeta as PalletMetadataV14,
+				palletMeta,
 				palletItemIdx,
 				palletItemId
 			);
 		} else {
 			[palletItemIdx, palletItemMeta] = this.getConstItemMeta(
-				palletMeta as PalletMetadataV14,
+				palletMeta,
 				palletItemIdx,
 				palletItemId
 			);
@@ -311,7 +284,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private getConstItemMeta(
-		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		palletMeta: PalletMetadataV14,
 		constItemMetaIdx: number,
 		constItemId: string
 	): [number, PalletConstantMetadataLatest] {
@@ -392,10 +365,10 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private getStorageItemMeta(
-		palletMeta: PalletMetadataV14 | ModuleMetadataV13,
+		palletMeta: PalletMetadataV14,
 		storageItemMetaIdx: number,
 		storageItemId: string
-	): [number, StorageEntryMetadataV13 | StorageEntryMetadataV14] {
+	): [number, StorageEntryMetadataV14] {
 		if (palletMeta.storage.isNone) {
 			throw new InternalServerError(
 				`No storage items found in ${palletMeta.name.toString()}'s metadata`
