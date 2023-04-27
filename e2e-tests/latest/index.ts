@@ -40,9 +40,13 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 
 	const config = endpoints[args.chain] ?? endpoints.polkadot;
 
+	const url = new URL(args.url);
+	const host = url.host;
+	const port = Number(url.port);
+
 	let blockId: string;
 	try {
-		const res = await request('/blocks/head', HOST, PORT);
+		const res = await request('/blocks/head', host, port);
 		blockId = (JSON.parse(res.data) as IBlockResponse).number;
 	} catch (err) {
 		throw `Error fetching the latest block: ${err as string}`;
@@ -69,10 +73,7 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 		}
 	}
 
-	const url = new URL(args.url);
-	const responses = await Promise.all(
-		urls.map((u) => request(u, url.host, Number(url.port)))
-	);
+	const responses = await Promise.all(urls.map((u) => request(u, host, port)));
 	const errors: IRequest[] = [];
 	responses.forEach((res) => {
 		if (res.statusCode && res.statusCode >= 400) {
