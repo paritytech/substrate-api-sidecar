@@ -41,7 +41,7 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 	const config = endpoints[args.chain] ?? endpoints.polkadot;
 
 	const url = new URL(args.url);
-	const host = url.host;
+	const host = url.hostname;
 	const port = Number(url.port);
 
 	let blockId: string;
@@ -84,10 +84,10 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 
 	if (errors.length > 0) {
 		console.log(`Finished with a status code of ${Failed}`);
-		return Failed;
+		process.exit(Failed);
 	} else {
 		console.log(`Finished with a status code of ${Success}`);
-		return Success;
+		process.exit(Success);
 	}
 };
 
@@ -112,9 +112,12 @@ parser.add_argument('--chain', {
 	default: 'polkadot',
 });
 parser.add_argument('--url', {
-	default: `${HOST}:${PORT}}`,
+	default: `http://${HOST}:${PORT}`,
 });
 
 const args = parser.parse_args() as ILatestE2eParser;
 
-main(args).finally(() => process.exit());
+main(args).catch((e) => {
+	console.error('Error', e);
+	process.exit(1);
+});
