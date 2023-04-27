@@ -18,7 +18,7 @@ import { ArgumentParser } from 'argparse';
 
 import { HOST, PORT } from '../helpers/consts';
 import { IRequest, request } from '../helpers/request';
-import { kusama, polkadot, statemint, westend } from './endpoints';
+import * as endpoints from './endpoints';
 import { IConfig } from './types/endpoints';
 
 enum StatusCode {
@@ -27,7 +27,7 @@ enum StatusCode {
 }
 
 interface ILatestE2eParser {
-	chain: string;
+	chain: keyof typeof endpoints;
 }
 
 // This is a shallow mock of the actual response from `/blocks/head`. We only need the number field.
@@ -38,24 +38,7 @@ interface IBlockResponse {
 const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 	const { Success, Failed } = StatusCode;
 
-	let config: IConfig;
-	switch (args.chain) {
-		case 'polkadot':
-			config = polkadot;
-			break;
-		case 'kusama':
-			config = kusama;
-			break;
-		case 'westend':
-			config = westend;
-			break;
-		case 'statemint':
-			config = statemint;
-			break;
-		default:
-			config = polkadot;
-			break;
-	}
+	const config: IConfig = endpoints[args.chain] ?? endpoints.polkadot;
 
 	let blockId: string;
 	try {
@@ -121,7 +104,7 @@ const logResults = (errors: IRequest[]) => {
 const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'statemint', 'westend', 'kusama'],
+	choices: Object.keys(endpoints),
 	default: 'polkadot',
 });
 
