@@ -18,7 +18,7 @@ import { IConfig } from '../types/endpoints';
 
 export const acala: IConfig = {
 	'/blocks': {
-		path: '/blocks?range=1-5',
+		path: '/blocks?range=3000000-3000005',
 		queryParams: [],
 	},
 	'/blocks/{blockId}': {
