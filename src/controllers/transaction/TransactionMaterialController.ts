@@ -17,8 +17,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
-import { Log } from '../../logging/Log';
-import { validateBoolean } from '../../middleware';
 import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -61,7 +59,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean(['noMeta']));
+		this.router.use(this.path);
 		this.safeMountAsyncGetHandlers([['', this.getTransactionMaterial]]);
 	}
 
@@ -72,12 +70,12 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param res Express Response
 	 */
 	private getTransactionMaterial: RequestHandler = async (
-		{ query: { noMeta, at, metadata } },
+		{ query: { at, metadata } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const metadataArg = this.parseMetadataArgs(noMeta, metadata);
+		const metadataArg = this.parseMetadataArgs(metadata);
 
 		TransactionMaterialController.sanitizedSend(
 			res,
@@ -91,10 +89,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param noMeta
 	 * @param metadata
 	 */
-	private parseMetadataArgs(
-		noMeta: unknown,
-		metadata: unknown
-	): MetadataOpts | false {
+	private parseMetadataArgs(metadata: unknown): MetadataOpts | false {
 		/**
 		 * Checks to see if the `metadata` query param is inputted, if it isnt,
 		 * it will default to the old behavior. This is to be removed once after
@@ -108,24 +103,11 @@ export default class TransactionMaterialController extends AbstractController<Tr
 					return 'scale';
 				default:
 					throw new Error(
-						'Invalid inputted value for the `metadata` query param.'
+						'Invalid inputted value for the `metadata` query param. Options are `scale` or `json`.'
 					);
 			}
 		}
 
-		if (noMeta) {
-			Log.logger.warn(
-				'`noMeta` query param will be deprecated in sidecar v13, and replaced with `metadata` please migrate'
-			);
-			switch (noMeta) {
-				case 'true':
-					return false;
-				case 'false':
-					return 'scale';
-			}
-		}
-
-		// default behavior until `noMeta` is deprecated, then false will be default
-		return 'scale';
+		return false;
 	}
 }
