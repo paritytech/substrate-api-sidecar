@@ -75,6 +75,6 @@ export const acala: IConfig = {
 	},
 	'/transaction/material': {
 		path: '/transaction/material',
-		queryParams: ['noMeta=true'],
+		queryParams: [],
 	},
 };
