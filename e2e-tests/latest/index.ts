@@ -19,7 +19,6 @@ import { ArgumentParser } from 'argparse';
 import { HOST, PORT } from '../helpers/consts';
 import { IRequest, request } from '../helpers/request';
 import * as endpoints from './endpoints';
-import { IConfig } from './types/endpoints';
 
 enum StatusCode {
 	Success = 0,
@@ -38,7 +37,7 @@ interface IBlockResponse {
 const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 	const { Success, Failed } = StatusCode;
 
-	const config: IConfig = endpoints[args.chain] ?? endpoints.polkadot;
+	const config = endpoints[args.chain] ?? endpoints.polkadot;
 
 	let blockId: string;
 	try {
