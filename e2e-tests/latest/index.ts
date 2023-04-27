@@ -26,6 +26,7 @@ enum StatusCode {
 }
 
 interface ILatestE2eParser {
+	url: string;
 	chain: keyof typeof endpoints;
 }
 
@@ -68,7 +69,10 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 		}
 	}
 
-	const responses = await Promise.all(urls.map((u) => request(u, HOST, PORT)));
+	const url = new URL(args.url);
+	const responses = await Promise.all(
+		urls.map((u) => request(u, url.host, Number(url.port)))
+	);
 	const errors: IRequest[] = [];
 	responses.forEach((res) => {
 		if (res.statusCode && res.statusCode >= 400) {
@@ -105,6 +109,9 @@ const parser = new ArgumentParser();
 parser.add_argument('--chain', {
 	choices: Object.keys(endpoints),
 	default: 'polkadot',
+});
+parser.add_argument('--url', {
+	default: `${HOST}:${PORT}}`,
 });
 
 const args = parser.parse_args() as ILatestE2eParser;
