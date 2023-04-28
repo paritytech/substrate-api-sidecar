@@ -18,8 +18,7 @@ import { ArgumentParser } from 'argparse';
 
 import { HOST, PORT } from '../helpers/consts';
 import { IRequest, request } from '../helpers/request';
-import { kusama, polkadot, statemint, westend } from './endpoints';
-import { IConfig } from './types/endpoints';
+import * as endpoints from './endpoints';
 
 enum StatusCode {
 	Success = 0,
@@ -27,7 +26,8 @@ enum StatusCode {
 }
 
 interface ILatestE2eParser {
-	chain: string;
+	url: string;
+	chain: keyof typeof endpoints;
 }
 
 // This is a shallow mock of the actual response from `/blocks/head`. We only need the number field.
@@ -38,28 +38,15 @@ interface IBlockResponse {
 const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 	const { Success, Failed } = StatusCode;
 
-	let config: IConfig;
-	switch (args.chain) {
-		case 'polkadot':
-			config = polkadot;
-			break;
-		case 'kusama':
-			config = kusama;
-			break;
-		case 'westend':
-			config = westend;
-			break;
-		case 'statemint':
-			config = statemint;
-			break;
-		default:
-			config = polkadot;
-			break;
-	}
+	const config = endpoints[args.chain] ?? endpoints.polkadot;
+
+	const url = new URL(args.url);
+	const host = url.hostname;
+	const port = Number(url.port);
 
 	let blockId: string;
 	try {
-		const res = await request('/blocks/head', HOST, PORT);
+		const res = await request('/blocks/head', host, port);
 		blockId = (JSON.parse(res.data) as IBlockResponse).number;
 	} catch (err) {
 		throw `Error fetching the latest block: ${err as string}`;
@@ -86,41 +73,51 @@ const main = async (args: ILatestE2eParser): Promise<StatusCode> => {
 		}
 	}
 
-	const responses = await Promise.all(urls.map((u) => request(u, HOST, PORT)));
+	const responses = await Promise.all(urls.map((u) => request(u, host, port)));
 	const errors: IRequest[] = [];
 	responses.forEach((res) => {
 		if (res.statusCode && res.statusCode >= 400) {
 			errors.push(res);
 		}
 	});
-	logErrors(errors);
+	logResults(errors);
 
 	if (errors.length > 0) {
 		console.log(`Finished with a status code of ${Failed}`);
-		return Failed;
+		process.exit(Failed);
 	} else {
 		console.log(`Finished with a status code of ${Success}`);
-		return Success;
+		process.exit(Success);
 	}
 };
 
-const logErrors = (errors: IRequest[]) => {
-	console.log('Received the following errors:');
-	errors.forEach((err) => {
-		console.log('----------------------------------------------');
-		console.log(`Queried Endpoint: ${err.path}`);
-		console.log(`Status Code: ${err.statusCode as number}`);
-		console.log(`Received logging: ${err.data}`);
-	});
+const logResults = (errors: IRequest[]) => {
+	if (errors.length > 0) {
+		console.log('Received the following errors:');
+		errors.forEach((err) => {
+			console.log('----------------------------------------------');
+			console.log(`Queried Endpoint: ${err.path}`);
+			console.log(`Status Code: ${err.statusCode as number}`);
+			console.log(`Received logging: ${err.data}`);
+		});
+	} else {
+		console.log('No errors were received');
+	}
 };
 
 const parser = new ArgumentParser();
 
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'statemint', 'westend', 'kusama'],
+	choices: Object.keys(endpoints),
 	default: 'polkadot',
+});
+parser.add_argument('--url', {
+	default: `http://${HOST}:${PORT}`,
 });
 
 const args = parser.parse_args() as ILatestE2eParser;
 
-main(args).finally(() => process.exit());
+main(args).catch((e) => {
+	console.error('Error', e);
+	process.exit(1);
+});
