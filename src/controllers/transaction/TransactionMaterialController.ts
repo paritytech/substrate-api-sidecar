@@ -59,7 +59,6 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path);
 		this.safeMountAsyncGetHandlers([['', this.getTransactionMaterial]]);
 	}
 
