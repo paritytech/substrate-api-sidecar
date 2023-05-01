@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
 
     steps:
     - name: Install wasm-pack
@@ -31,23 +31,6 @@ jobs:
     - run: yarn
     - run: yarn build
 
-  build-docs:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn
-    - run: yarn build:docs
-
   build-npm-release:
       # This test is to make sure sidecar can release a binary without any errors.
       # This script does not publish a release, but instead uses yarn to create a tarball and
@@ -59,7 +42,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v3
