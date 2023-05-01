@@ -83,7 +83,7 @@ export const westend: IConfig = {
 	},
 	'/transaction/material': {
 		path: '/transaction/material',
-		queryParams: ['noMeta=true'],
+		queryParams: [],
 	},
 	'/paras': {
 		path: '/paras',
