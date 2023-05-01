@@ -3181,7 +3181,7 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: This is going to be StorageEntryTypeV14.
+      description: This is going to be formatted to the type of StorageEntryTypeV14.
     Para:
       type: object
       properties:
