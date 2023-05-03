@@ -150,6 +150,27 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
+	it('Should convert a valid Kusama publicKey when `publicKey` equals `true`', () => {
+		const expectedResponse = {
+			accountId:
+				'0x96074594cccf1cd185fa8a72ceaeefd86648f8d45514f3ce33c31bdd07e4655d',
+			address: 'Fy2rsYCoowQBtuFXqLE65ehAY9T6KWcGiNCQAyPDCkfpm4s',
+			network: 'kusama',
+			publicKey: true,
+			scheme: 'sr25519',
+			ss58Prefix: '2',
+		};
+
+		const kusamaPublicKey =
+			'0x96074594cccf1cd185fa8a72ceaeefd86648f8d45514f3ce33c31bdd07e4655d';
+
+		expect(
+			sanitizeNumbers(
+				validateService.accountConvert(kusamaPublicKey, 'sr25519', 2, true)
+			)
+		).toStrictEqual(expectedResponse);
+	});
+
 	// We try to convert a Polkadot AccountId to an SS58 Address by setting the publicKey=true
 	// which is not correct and that is why in the response we have an invalid address.
 	// If we would like to convert it correctly and have the expected SS58 address
@@ -158,7 +179,7 @@ describe('Convert accounts', () => {
 		const expectedResponse = {
 			ss58Prefix: '0',
 			network: 'polkadot',
-			address: '12ZviSbX1Pzmnw1mg4FUg6Qra2CW7Q3z9iqmcWKWUphp5qgq',
+			address: '1rsCBWhPgyDETNS9yxnANSnm3KAtkxm4mu9jjfMhDF6xaV8',
 			accountId:
 				'0x2607fd20388303bd409e551202ee47b753b4382feac914e9f7ab0d4f728c2bf7',
 			scheme: 'ecdsa',
