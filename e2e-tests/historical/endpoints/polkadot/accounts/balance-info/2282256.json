@@ -1,0 +1,14 @@
+{
+    "at": {
+        "hash": "0xbf1390668be772919fb74af22aeba0cd05cae3c741c339accbab6e98f1af23d4",
+        "height": "2282256"
+    },
+    "nonce": "103",
+    "tokenSymbol": "DOT",
+    "free": "13999000000",
+    "reserved": "0",
+    "miscFrozen": "0",
+    "feeFrozen": "0",
+    "frozen": "frozen does not exist for this runtime",
+    "locks": []
+}

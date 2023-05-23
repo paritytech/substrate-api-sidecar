@@ -23,9 +23,10 @@ import {
 	BlockHash,
 	Index,
 } from '@polkadot/types/interfaces';
+import { PalletBalancesAccountData } from '@polkadot/types/lookup';
 import { BadRequest } from 'http-errors';
-import { IAccountBalanceInfo, IBalanceLock } from 'src/types/responses';
 
+import { IAccountBalanceInfo, IBalanceLock } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsBalanceInfoService extends AbstractService {
@@ -66,6 +67,10 @@ export class AccountsBalanceInfoService extends AbstractService {
 		 *
 		 * b) Does the block use an older api where the free balance is within the
 		 * AccountInfo type, but the storage does not yet have the `.at` method.
+		 *
+		 * NOTE: This PR also checks to see if `frozen` exists or `miscFrozen` and `feeFrozen`.
+		 * There was a breaking change in https://github.com/paritytech/substrate/pull/12951 which
+		 * changed the format of the Account Data returned by the chain.
 		 */
 		if (historicApi.query.balances.freeBalance) {
 			const [header, free, locks, reserved, nonce] = await Promise.all([
@@ -77,10 +82,6 @@ export class AccountsBalanceInfoService extends AbstractService {
 			]).catch((err: Error) => {
 				throw this.createHttpErrorForAddr(address, err);
 			});
-
-			// Values dont exist for these historic runtimes
-			const miscFrozen = api.registry.createType('Balance', 0),
-				feeFrozen = api.registry.createType('Balance', 0);
 
 			const at = {
 				hash,
@@ -94,8 +95,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 					tokenSymbol: token,
 					free: this.inDenominationBal(denominate, free, decimal),
 					reserved: this.inDenominationBal(denominate, reserved, decimal),
-					miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-					feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
+					miscFrozen: 'miscFrozen does not exist for this runtime',
+					feeFrozen: 'feeFrozen does not exist for this runtime',
+					frozen: 'frozen does not exist for this runtime',
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -110,10 +112,23 @@ export class AccountsBalanceInfoService extends AbstractService {
 				throw this.createHttpErrorForAddr(address, err);
 			});
 
-			const {
-				data: { free, reserved, feeFrozen, miscFrozen },
-				nonce,
-			} = accountInfo;
+			const { data, nonce } = accountInfo;
+
+			let free, reserved, feeFrozen, miscFrozen, frozen;
+			if (accountInfo.data.frozen) {
+				free = data.free;
+				reserved = data.reserved;
+				frozen = data.frozen;
+				miscFrozen = 'miscFrozen does not exist for this runtime';
+				feeFrozen = 'feeFrozen does not exist for this runtime';
+			} else {
+				const tmpData = data as unknown as AccountData;
+				free = tmpData.free;
+				reserved = tmpData.reserved;
+				feeFrozen = tmpData.feeFrozen;
+				miscFrozen = tmpData.miscFrozen;
+				frozen = 'frozen does not exist for this runtime';
+			}
 
 			const at = {
 				hash,
@@ -127,8 +142,18 @@ export class AccountsBalanceInfoService extends AbstractService {
 					tokenSymbol: token,
 					free: this.inDenominationBal(denominate, free, decimal),
 					reserved: this.inDenominationBal(denominate, reserved, decimal),
-					miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-					feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
+					miscFrozen:
+						typeof miscFrozen === 'string'
+							? miscFrozen
+							: this.inDenominationBal(denominate, miscFrozen, decimal),
+					feeFrozen:
+						typeof feeFrozen === 'string'
+							? feeFrozen
+							: this.inDenominationBal(denominate, feeFrozen, decimal),
+					frozen:
+						typeof frozen === 'string'
+							? frozen
+							: this.inDenominationBal(denominate, frozen, decimal),
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -174,7 +199,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 			// Coerce the ORML query results from polkadot-js generic Codec to exact type
 			locks = locksAny as Vec<BalanceLock>;
-			accountData = accountDataAny as AccountData;
+			accountData = accountDataAny;
 		}
 
 		const at = {
@@ -183,8 +208,23 @@ export class AccountsBalanceInfoService extends AbstractService {
 		};
 
 		if (accountData && locks && accountInfo) {
-			const { free, reserved, miscFrozen, feeFrozen } = accountData;
 			const { nonce } = accountInfo;
+			let free, reserved, feeFrozen, miscFrozen, frozen;
+			if ((accountData as AccountData).miscFrozen) {
+				const tmpData = accountData as AccountData;
+				free = tmpData.free;
+				reserved = tmpData.reserved;
+				feeFrozen = tmpData.feeFrozen;
+				miscFrozen = tmpData.miscFrozen;
+				frozen = 'frozen does not exist for this runtime';
+			} else {
+				const tmpData = accountData as PalletBalancesAccountData;
+				free = tmpData.free;
+				reserved = tmpData.reserved;
+				frozen = tmpData.frozen;
+				feeFrozen = 'feeFrozen does not exist for this runtime';
+				miscFrozen = 'miscFrozen does not exist for this runtime';
+			}
 
 			return {
 				at,
@@ -192,8 +232,18 @@ export class AccountsBalanceInfoService extends AbstractService {
 				tokenSymbol: token,
 				free: this.inDenominationBal(denominate, free, decimal),
 				reserved: this.inDenominationBal(denominate, reserved, decimal),
-				miscFrozen: this.inDenominationBal(denominate, miscFrozen, decimal),
-				feeFrozen: this.inDenominationBal(denominate, feeFrozen, decimal),
+				miscFrozen:
+					typeof miscFrozen === 'string'
+						? miscFrozen
+						: this.inDenominationBal(denominate, miscFrozen, decimal),
+				feeFrozen:
+					typeof feeFrozen === 'string'
+						? feeFrozen
+						: this.inDenominationBal(denominate, feeFrozen, decimal),
+				frozen:
+					typeof frozen === 'string'
+						? frozen
+						: this.inDenominationBal(denominate, frozen, decimal),
 				locks: this.inDenominationLocks(denominate, locks, decimal),
 			};
 		} else {

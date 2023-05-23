@@ -28,6 +28,7 @@ learn more.
 
 ## Prerequisites
 
+### <= v15.0.0
 This service requires Node versions 14 or higher.
 
 Compatibility:
@@ -35,8 +36,18 @@ Compatibility:
 |---------------|:-----------:|
 |     v14.x.x   |   Stable    |
 |     v16.x.x   |   Stable    |
-|     v17.x.x   |  Not Stable |
-|     v18.x.x   |   Pending   |
+|     v17.x.x   |   Stable    |
+|     v18.x.x   |   Stable    |
+|     v19.x.x   |   Pending   |
+
+### >= v16.0.0
+This service requires Node versions 18.14 or higher.
+
+Compatibility:
+| Node Version  | Stablility  |
+|---------------|:-----------:|
+|     v18.14.x  |   Stable    |
+|     v19.x.x   |   Pending   |
 
 NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.
 
@@ -156,8 +167,7 @@ For more information on our configuration manager visit its readme [here](https:
 
 - `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
 - `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
-- `SAS_EXPRESS_LOG_MODE`: enable console logging of "all" HTTP requests, only "errors", or nothing by
-    setting it to anything else. LOG_MODE defaults to only "errors".
+- `SAS_EXPRESS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
 
 ### Substrate node
 
@@ -200,13 +210,17 @@ export SAS_SUBSTRATE_TYPES=/path/to/my-chains-types.json
 
 ### Logging
 
-- `SAS_LOG_LEVEL`: the lowest priority log level to surface, defaults to `info`. Tip: set to `http`
+- `SAS_LOG_LEVEL`: The lowest priority log level to surface, defaults to `info`. Tip: set to `http`
     to see all HTTP requests.
-- `SAS_LOG_JSON`: wether or not to have logs formatted as JSON, defaults to `false`.
+- `SAS_LOG_JSON`:Whether or not to have logs formatted as JSON, defaults to `false`.
     Useful when using `stdout` to programmatically process Sidecar log data.
-- `SAS_LOG_FILTER_RPC`: wether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
-- `SAS_LOG_STRIP_ANSI`: wether or not to strip ANSI characters from logs, defaults
+- `SAS_LOG_FILTER_RPC`: Whether or not to filter polkadot-js API-WS RPC logging, defaults to `false`.
+- `SAS_LOG_STRIP_ANSI`: Whether or not to strip ANSI characters from logs, defaults
     to `false`. Useful when logging RPC calls with JSON written to transports.
+- `SAS_LOG_WRITE`: Whether or not to write logs to a log file. Default is set to `false`. Accepts a boolean value. The log files will be written as `logs.log`. **NOTE**: It will only log what is available depending on what `SAS_LOG_LEVEL` is set to.
+- `SAS_LOG_WRITE_PATH`: Specifies the path to write the log files. Default will be where the package is installed.
+- `SAS_LOG_WRITE_MAX_FILE_SIZE`: Specifies in bytes what the max file size for the written log files should be. Default is `5242880` (5MB). **NOTE** Once the the max amount of files have reached their max size, the logger will start to rewrite over the first log file.
+- `SAS_LOG_WRITE_MAX_FILES`: Specifies how many files can be written. Default is 5.
 
 #### Log levels
 
@@ -297,7 +311,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 ### Updating polkadot-js dependencies
 
 1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up,
-and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn update-pjs-deps`.
+and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn up "@polkadot/*"`.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
@@ -310,7 +324,8 @@ and read the release notes for any breaking changes or high priority updates. In
    yarn build
    yarn lint
    yarn test
-   yarn test:init-e2e-tests
+   yarn test:historical-e2e-tests
+   yarn test:latest-e2e-tests
    ```
 
 1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.

@@ -12,6 +12,8 @@ yarn-error.log
 /.clinic
 **.log
 **/logs
+
+# Yarn berry
 .yarn/*
 !.yarn/releases
 !.yarn/plugins
@@ -32,3 +34,6 @@ yarn-error.log
 
 # IDE - VSCode
 .vscode/*
+
+# Benchmarks
+/benchmarks.txt

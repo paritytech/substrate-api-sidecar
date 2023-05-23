@@ -6,21 +6,49 @@
 </div>
 <br></br>
 
-
-## Script `runChainTests.ts`
+## Script `runHistoricalE2eTests.ts`
 
 ### Summary
 
-This script calls the local e2e-tests helper library in order to test the current branch or development environment against
-a collection of different blocks, across different runtimes. It does this for Polkadot, Kusama, and Westend.
+This script calls the local historical e2e tests helper library in order to test the current branch or development environment against a collection of different blocks, across different runtimes.
 
 ### Flags
 
-`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'westend', 'kusama']`. If no chain is selected it will default to run the e2e-tests against all chains.
+`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'westend', 'kusama', 'statemine', 'statemint']`. If no chain is selected it will default to run the e2e-tests against all chains.
+
+`--local`: This sets the websocket url for the e2e test. Its to be used along with `--chain`. If `--chain` is not present it will throw an error.
 
 `--log-level`: Acceptable values are `['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']`. This will enable logging in Sidecar.
 
+### Run the script
 
+In order to run the program:
+
+```bash
+$ yarn test:historical-e2e-tests
+```
+
+## Script `runLatestE2eTests.ts`
+
+### Summary
+
+This script calls the local latest e2e tests helper library in order to test the api service against the most recent runtime. It works through all the available endpoints, and calls them each against the most recent block.
+
+### Flags
+
+`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'statemint']`. If no chain is selected it will default to run the e2e-tests against all chains.
+
+`--local`: This sets the websocket url for the e2e test. Its to be used along with `--chain`. If `--chain` is not present it will throw an error.
+
+`--log-level`: Acceptable values are `['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']`. This will enable logging in Sidecar.
+
+### Run the script
+
+In order to run the program:
+
+```bash
+$ yarn test:latest-e2e-tests
+```
 
 ## Script `runYarnPack.ts`
 
@@ -41,3 +69,51 @@ If the cleanup has any issues, you may run from the root directory of this repos
 $ yarn remove @substrate/api-sidecar
 $ rm -rf ./package.tgz
 ```
+
+# Script `runBenchmarks.ts`
+
+This script's purpose is to run the benchmarks inside of the `<root>/benchmarks` directory. This script requires you to have `wrk`, `lua`, and a fully synced archive node. Please reference `<root>/benchmarks/README.md` for more information on installation. 
+
+In order to start this script locally, run from the root directory of this repository:
+
+ex1:
+```bash
+$ yarn
+$ yarn bench
+```
+
+ex2:
+```bash
+$ yarn
+$ yarn bench --log-level=info --time=30s  
+```
+
+ex3:
+```
+$ yarn
+$ yarn bench --log-level=info --time=30s  --endpoint=/accounts/{accountId}/balance-info
+```
+
+### Flags
+
+`--ws-url`: The Ws Url to run the benchmarks against. Default is `ws://127.0.0.1:9944`.
+
+`--endpoint`: Run a single benchmark by specificing which endpoint to run. If this is absent it will run all benchmarks.
+
+`--log-level`: The log-level to run the benchmarks in. Defaults to `http`.
+
+`--time`: The amount of time each benchmark should run for. Ex: `1m`, `30s`, `15s`. Default is `1m`.
+
+## Errors
+
+These error codes are shared across all scripts.
+
+`0`: The process has finished succesfully and all tests have passed.
+
+`1`: The process has finished succesfully but the tests did not come back all successful. Either one or many have failed.
+
+`2`: The process has exited with an error, and building sidecar has failed. 
+
+`3`: CLI args are used incorrectly internally.
+
+`4`: Benchmarks process has failed.

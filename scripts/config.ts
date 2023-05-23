@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IChainConfig } from './types';
+import { IChainConfigE2E } from './types';
 
 const defaultJestOpts = {
 	proc: 'jest',
@@ -41,45 +41,88 @@ export const defaultSasPackOpts = {
 	args: ['pack'],
 };
 
-export const config: Record<string, IChainConfig> = {
+export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 	polkadot: {
 		wsUrl: 'wss://rpc.polkadot.io',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['test:e2e-tests', '--chain', 'polkadot'],
+			args: ['start:historical-e2e-tests', '--chain', 'polkadot'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
 	kusama: {
-		wsUrl: 'wss://kusama.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		wsUrl: 'wss://kusama-rpc.polkadot.io',
+		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['test:e2e-tests', '--chain', 'kusama'],
+			args: ['start:historical-e2e-tests', '--chain', 'kusama'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
 	westend: {
-		wsUrl: 'wss://westend.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		wsUrl: 'wss://westend-rpc.polkadot.io',
+		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['test:e2e-tests', '--chain', 'westend'],
+			args: ['start:historical-e2e-tests', '--chain', 'westend'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
 	statemine: {
-		wsUrl: 'wss://statemine.api.onfinality.io/public-ws',
-		JestProcOpts: {
+		wsUrl: 'wss://statemine-rpc.polkadot.io',
+		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['test:e2e-tests', '--chain', 'statemine'],
+			args: ['start:historical-e2e-tests', '--chain', 'statemine'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
 	statemint: {
 		wsUrl: 'wss://statemint-rpc.polkadot.io',
-		JestProcOpts: {
+		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['test:e2e-tests', '--chain', 'statemint'],
+			args: ['start:historical-e2e-tests', '--chain', 'statemint'],
 		},
-		SasStartOpts: defaultSasStartOpts
-	}
+		SasStartOpts: defaultSasStartOpts,
+	},
+};
+
+export const latestE2eConfig: Record<string, IChainConfigE2E> = {
+	kusama: {
+		wsUrl: 'wss://kusama-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'kusama'],
+		},
+	},
+	polkadot: {
+		wsUrl: 'wss://rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'polkadot'],
+		},
+	},
+	statemint: {
+		wsUrl: 'wss://statemint-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'statemint'],
+		},
+	},
+	westend: {
+		wsUrl: 'wss://westend-rpc.polkadot.io',
+		SasStartOpts: defaultSasStartOpts,
+		e2eStartOpts: {
+			proc: 'latest-e2e',
+			resolver: 'Finished with a status code of 0',
+			resolverFailed: 'Finished with a status code of 1',
+			args: ['start:latest-e2e-tests', '--chain', 'westend'],
+		},
+	},
 };

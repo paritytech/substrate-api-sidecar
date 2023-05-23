@@ -1,0 +1,27 @@
+{
+    "at": {
+        "hash": "0x06228239781f4535be264d27fbc0105f77396b860ff3b3ca1ae6777fed5f0f06",
+        "height": "1355087"
+    },
+    "nonce": "5644",
+    "tokenSymbol": "KSM",
+    "free": "499073078719448",
+    "reserved": "0",
+    "miscFrozen": "miscFrozen does not exist for this runtime",
+    "feeFrozen": "feeFrozen does not exist for this runtime",
+    "frozen": "frozen does not exist for this runtime",
+    "locks": [
+        {
+            "id": "0x7374616b696e6720",
+            "amount": "450000000000000",
+            "until": "4294967295",
+            "reasons": [
+                "TransactionPayment",
+                "Transfer",
+                "Reserve",
+                "Fee",
+                "Tip"
+            ]
+        }
+    ]
+}

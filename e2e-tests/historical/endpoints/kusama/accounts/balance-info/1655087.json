@@ -1,0 +1,20 @@
+{
+    "at": {
+        "hash": "0x4aa9349fb71f4c10c7ed0b14c4fca5cef2411a54d6e1c12fef3b39495f6531b7",
+        "height": "1655087"
+    },
+    "nonce": "5653",
+    "tokenSymbol": "KSM",
+    "free": "501967981988949",
+    "reserved": "0",
+    "miscFrozen": "482984903269501",
+    "feeFrozen": "482984903269501",
+    "frozen": "frozen does not exist for this runtime",
+    "locks": [
+        {
+            "id": "0x7374616b696e6720",
+            "amount": "482984903269501",
+            "reasons": "All"
+        }
+    ]
+}

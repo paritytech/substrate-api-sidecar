@@ -32,6 +32,7 @@ import { TransactionSubmitService } from './TransactionSubmitService';
 
 const mockApi = {
 	...defaultMockApi,
+	tx: tx,
 } as unknown as ApiPromise;
 
 const transactionSubmitService = new TransactionSubmitService(mockApi);

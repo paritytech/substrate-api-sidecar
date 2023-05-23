@@ -1,0 +1,14 @@
+{
+    "at": {
+        "hash": "0x9d58bc66e5c5924c287c3e9f5dd1997b6d492a54b37b1039999117e83f1c4b0a",
+        "height": "11000000"
+    },
+    "nonce": "5658",
+    "tokenSymbol": "KSM",
+    "free": "927815322283",
+    "reserved": "0",
+    "miscFrozen": "0",
+    "feeFrozen": "0",
+    "frozen": "frozen does not exist for this runtime",
+    "locks": []
+}

@@ -1,0 +1,14 @@
+{
+    "at": {
+        "hash": "0xaf7df2540519ff86aae7fe29dd9864f7600e22ba839505d26a830bd3e5c906f0",
+        "height": "7245493"
+    },
+    "nonce": "28023",
+    "tokenSymbol": "WND",
+    "free": "2963810663562321",
+    "reserved": "0",
+    "miscFrozen": "0",
+    "feeFrozen": "0",
+    "frozen": "frozen does not exist for this runtime",
+    "locks": []
+}

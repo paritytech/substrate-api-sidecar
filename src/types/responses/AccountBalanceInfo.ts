@@ -33,6 +33,7 @@ export interface IAccountBalanceInfo {
 	reserved: Balance | string;
 	miscFrozen: Balance | string;
 	feeFrozen: Balance | string;
+	frozen: Balance | string;
 	locks: Vec<BalanceLock> | IBalanceLock[];
 }
 

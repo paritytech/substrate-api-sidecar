@@ -34,6 +34,7 @@ interface ISidecarConfigSubstrate {
 interface ISidecarConfigExpress {
 	HOST: string;
 	PORT: number;
+	KEEP_ALIVE_TIMEOUT: number;
 }
 
 interface ISidecarConfigLog {
@@ -41,4 +42,8 @@ interface ISidecarConfigLog {
 	JSON: boolean;
 	FILTER_RPC: boolean;
 	STRIP_ANSI: boolean;
+	WRITE: boolean;
+	WRITE_PATH: string;
+	WRITE_MAX_FILE_SIZE: number;
+	WRITE_MAX_FILES: number;
 }

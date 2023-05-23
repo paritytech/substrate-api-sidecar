@@ -16,7 +16,16 @@
 
 import { spawn } from 'child_process';
 
-import { IProcOpts, ProcsType, StatusCode } from './types';
+import { IProcOpts, ProcsType, StatusCode, StatusResponse } from './types';
+
+/**
+ * Strip data from a buffer.
+ *
+ * @param data
+ */
+const stripData = (data: Buffer) => {
+	return data.toString('utf-8').trim();
+};
 
 /**
  * Sets the url that sidecar will use in the env
@@ -83,38 +92,82 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{ proc, resolver, resolverJestErr, resolverStartupErr, args }: IProcOpts
-): Promise<StatusCode> => {
-	return new Promise<StatusCode>((resolve, reject) => {
+	{
+		proc,
+		resolver,
+		resolverJestErr,
+		resolverStartupErr,
+		resolverFailed,
+		args,
+	}: IProcOpts
+): Promise<StatusResponse> => {
+	return new Promise<StatusResponse>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;
-		const command = cmd || 'yarn';
+		// Track the status of a jest test, if thats the process running.
 		let jestStatus = Success;
+		const stdout: string[] = [];
+		const stderr: string[] = [];
 
-		procs[proc] = spawn(command, args, { detached: true });
+		procs[proc] = spawn(cmd, args, { detached: true });
 
 		procs[proc].stdout.on('data', (data: Buffer) => {
+			stdout.push(stripData(data));
 			console.log(data.toString().trim());
 
 			if (data.toString().includes(resolver)) {
-				resolve(Success);
+				resolve({
+					code: Success,
+					stdout: stdout.join(),
+					stderr: stderr.join(),
+				});
+			}
+
+			if (resolverFailed && data.toString().includes(resolverFailed)) {
+				resolve({
+					code: Failed,
+					stdout: stdout.join(),
+					stderr: stderr.join(),
+				});
 			}
 		});
 
 		procs[proc].stderr.on('data', (data: Buffer) => {
+			stderr.push(stripData(data));
 			console.error(data.toString().trim());
 
+			/**
+			 * The Jest resolver will only apply when its present as an option.
+			 * While the process is active we just want to track the results of Jest, and
+			 * resolve the process on `close`.
+			 */
 			if (resolverJestErr && data.toString().trim().includes(resolverJestErr)) {
 				jestStatus = Failed;
 			}
 
-			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
-				resolve(Failed);
+			if (
+				resolverStartupErr &&
+				data.toString().trim().includes(resolverStartupErr)
+			) {
+				resolve({
+					code: Failed,
+					stdout: stdout.join(),
+					stderr: stderr.join(),
+				});
 			}
 		});
 
 		procs[proc].on('close', () => {
-			if (jestStatus === Failed) resolve(Failed);
-			resolve(Success);
+			if (jestStatus === Failed)
+				resolve({
+					code: Failed,
+					stdout: stdout.join(),
+					stderr: stderr.join(),
+				});
+			resolve({
+				code: Success,
+				stdout: stdout.join(),
+				stderr: stderr.join(),
+			});
 		});
 
 		procs[proc].on('error', (err) => {

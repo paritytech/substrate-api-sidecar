@@ -1,9 +1,23 @@
 {
     "extends": "@substrate/dev/config/tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "build",
-        "suppressImplicitAnyIndexErrors": true,
-        "resolveJsonModule": true,
+      "baseUrl": ".",
+      "outDir": "build",
+      "rootDirs": ["./historical", "./helpers", "./latest"],
+      "suppressImplicitAnyIndexErrors": true,
+      "resolveJsonModule": true,
     },
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "include": [
+      "./historical/**/*.ts",
+      "./historical/**/*.json",
+      "./helpers/**/*.ts",
+      "./helpers/**/*.json",
+      "./latest/**/*.ts",
+      "./latest/**/*.json",
+      // Include the test file for linting capability
+      "./historical-e2e-tests.spec.ts"
+    ]
 }

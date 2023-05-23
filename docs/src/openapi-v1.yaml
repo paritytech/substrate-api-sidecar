@@ -8,10 +8,11 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 14.1.0
+  version: 16.0.0
 tags:
 - name: accounts
 - name: blocks
+- name: contracts
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -669,6 +670,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /contracts/ink/{address}/query:
+    post:
+      tags:
+      - contracts
+      summary: Query an !Ink contract with a given message (method).
+      description: Will return a valid or invalid result. 
+      operationId: callContractQuery
+      requestBody:
+        $ref: '#/components/requestBodies/ContractMetadata'
+      parameters:
+      - name: address
+        in: path
+        description: SS58 or Hex address of the account associated with the contract.
+        required: true
+        schema:
+          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          type: string
+      - name: method
+        in: query
+        description: The message or method used to query.
+        required: false
+        schema:
+          type: string
+          default: 'get'
+      - name: gasLimit
+        in: query
+        description: The gas limit to be used as an option for the queried message.
+        required: false
+        schema:
+          default: -1
+          type: number
+      - name: storageDepositLimit
+        in: query
+        description: The storage deposit limit to be used as an option for the queried message.
+        required: false
+        schema:
+          default: null
+          type: number
+      - name: args
+        in: query
+        description: Abi params used as args specified in the metadata to be passed into a query. 
+          The format to use this query param is ?args[]=1&args[]=2&args[]=3.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: An array of Abi params.
+      responses:
+        "200":
+          description: succesful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractsInkQuery'
+        "400":
+          description: Invalid Method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /node/network:
     get:
       tags:
@@ -817,10 +879,7 @@ paths:
         in: query
         schema:
           type: boolean
-          description: If true, does not return metadata hex. This is useful when
-            metadata is not needed and response time is a concern. Defaults to false.
-            This is due for deprecation in future releases. Please migrate to using the
-            `metadata` query param.
+          description: DEPRECATED! This is no longer supported
           default: false
       - name: metadata
         in: query
@@ -828,7 +887,7 @@ paths:
           type: string
           description: Specifies the format of the metadata to be returned. Accepted values are
             'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
-            When inputted it will override the `noMeta` query parameter.
+            When `metadata` is not inputted, the `metadata` field will be absent.
       responses:
         "200":
           description: successful operation
@@ -873,6 +932,167 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
+  /pallets/{palletId}/consts:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of constants for a pallet.
+      description: Returns a list of const item metadata for constant items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the const items instead of every constant's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's constant items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of constantItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletConstants'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/consts/{constantItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a constant item.
+      description: Returns the value stored under the constantItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read constant metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: constantItemId
+        in: path
+        description: Id of the const item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the const item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the const items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletConstantsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/nomination-pools/{poolId}:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with a nomination pool.
+      description: Returns information associated with a nomination pool which includes
+        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
+      operationId: getNominationPoolById
+      parameters:
+      - name: poolId
+        in: path
+        description: The unsignedInteger Id of a nomination pool.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPool'
+  /pallets/nomination-pools/info:
+    get:
+      tags:
+        - pallets
+      summary: Get information associated with nomination pools.
+      description: Returns information and metadata for nomination pools including pool counters and limits.
+      operationId: getNominationPoolInfo
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool info.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
   /pallets/staking/progress:
     get:
       tags:
@@ -901,6 +1121,344 @@ paths:
                 $ref: '#/components/schemas/StakingProgress'
         "400":
           description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/staking/validators:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their
+        corresponding status which can be either active or waiting. It will also return 
+        a list of active validators that will not be part of the next era for staking. They will
+        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
+        the "validators" key, and "validatorsToBeChilled".
+      operationId: getStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/StakingValidators'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of dispatchables for a pallet.
+      description: Returns a list of dispatchable item metadata for distpachable items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the dispatchable items instead of every dispatchable's metadata.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of dispatchableItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletDispatchables'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/dispatchables/{dispatchableItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of a dispatchable item.
+      description: Returns the value stored under the dispatchableItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read dispatchable metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: dispatchableItemId
+        in: path
+        description: Id of the dispatchable item to query for.
+        required: true
+        schema:
+          type: string
+      - name: metadata
+        in: query
+        description: Include the dispatchable items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletDispatchablesItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of errors for a pallet.
+      description: Returns a list of error item metadata for error items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read error metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the error items instead of every error's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's error items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of errorItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletErrors'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/errors/{errorItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of an error item.
+      description: Returns the value stored under the errorItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read error metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: errorItemId
+        in: path
+        description: Id of the error item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the error item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the error items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletErrorsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events:
+    get:
+      tags:
+      - pallets
+      summary: Get a list of events for a pallet.
+      description: Returns a list of event item metadata for event items of the
+        specified palletId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read event metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: onlyIds
+        in: query
+        description: Only return the names (IDs) of the event items instead of every event's metadata.
+        required: false
+        schema:
+          type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve a list of
+          the pallet's event items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Pallet info and Array of eventItemIds.
+                items:
+                  $ref: '#/components/schemas/PalletEvents'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find pallet with palletId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/{palletId}/events/{eventItemId}:
+    get:
+      tags:
+      - pallets
+      summary: Get the value of an event item.
+      description: Returns the value stored under the eventItemId.
+      parameters:
+      - name: palletId
+        in: path
+        description: 'Name or index of the pallet to read event metadata for. Note: the pallet name must match what is
+          specified in the runtime metadata.'
+        required: true
+        schema:
+          type: string
+      - name: eventItemId
+        in: path
+        description: Id of the event item to query for.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to query the event item at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include the event items metadata (including documentation)
+          if set to true.
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletEventsItem'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: could not find resource with with id
           content:
             application/json:
               schema:
@@ -991,14 +1549,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
@@ -1059,14 +1609,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: keys
         in: query
         description: Set of N keys used for querying a storage map. It should be queried using the 
@@ -1285,6 +1827,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasLeaseInfo'
+  /paras/head/included-candidates:
+    get:
+      tags:
+      - paras
+      summary: |
+        Get the heads of the included (backed and considered available) parachain candidates at the 
+        specified block height or at the most recent finalized head otherwise.
+      description: |
+        Returns an object with all the parachain id's as keys, and their headers as values.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve para's heads at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasHeaders'
+  /paras/head/backed-candidates:
+    get:
+      tags:
+      - paras
+      summary: |
+        Get the heads of the backed parachain candidates at the specified block height or at the most recent finalized head otherwise.
+      description: |
+        Returns an object with all the parachain id's as keys, and their headers as values.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve para's heads at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParasHeaders'
   /experimental/blocks/head/traces:
     get:
       tags:
@@ -1486,12 +2077,21 @@ components:
         miscFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            for anything except transaction fee payment.
+            for anything except transaction fee payment. Note, that some runtimes may not have
+            support for miscFrozen and if so the following will be returned `miscFrozen does not exist for this runtime`
           format: unsignedInteger
         feeFrozen:
           type: string
           description: The amount that `free` may not drop below when withdrawing
-            specifically for transaction fee payment.
+            specifically for transaction fee payment. Note, that some runtimes may not have
+            support for feeFrozen and if so the following will be returned `feeFrozen does not exist for this runtime`
+          format: unsignedInteger
+        frozen:
+          type: string
+          description: The amount that `free` may not drop below when reducing the balance, except for actions
+            where the account owner cannot reasonably benefit from the balance reduction, such as slashing.
+            Note, that some runtimes may not have support for frozen and if so the following 
+            will be returned `frozen does not exist for this runtime`
           format: unsignedInteger
         locks:
           type: array
@@ -1869,6 +2469,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    BondedPool:
+      type: object
+      properties:
+        points:
+          type: number
+        state:
+          type: string
+        memberCounter:
+          type: number
+        roles:
+          type: object
+          properties:
+            depositor:
+              type: string
+            root:
+              type: string
+            nominator:
+              type: string
+            stateToggler:
+              type: string
     ChainType:
       type: object
       description: Type of the chain. It will return one of the following enum variants as a key. Live, Development, Local, or Custom. Each variant will have a value as null except when the ChainType is Custom, it will return a string.
@@ -1888,6 +2508,27 @@ components:
         custom:
           type: string
       example: "{\"live\": null}"
+    ContractsInkQuery:
+      type: object
+      description: Result from calling a query to a Ink contract.
+      properties:
+        debugMessage:
+          type: string
+        gasConsumed:
+          type: string
+        gasRequired:
+          type: string
+        output:
+          type: boolean
+        result:
+          type: object
+          description: Will result in an Ok or Err object depending on the result of the query.
+        storageDeposit:
+          type: object
+    ContractMetadata:
+      type: object
+      description: Metadata used to instantiate a ContractPromise. This metadata can be generated
+        by compiling the contract you are querying.
     DigestItem:
       type: object
       properties:
@@ -2199,6 +2840,269 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+    PalletConstants:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up constants.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletConstantsItemMetadata'
+          description: Array containing metadata for each constant entry of the pallet.
+    PalletConstantsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up constants.
+          example: "14"
+        errorItem:
+          type: string
+          description: Name of the constant item.
+          example: "EnactmentPeriod"
+        metadata:
+          $ref: '#/components/schemas/PalletConstantsItemMetadata'
+    PalletConstantsItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "VotingPeriod"
+          description: The constant item's name (which is the same as the constant item's ID).
+        type:
+          type: string
+          example: "4"
+        value:
+         type: string
+         example: "0x00270600"
+         description: The hex value of the constant
+        docs:
+          type: string
+          example: "Information concerning any given constant.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+      description: Metadata of an constant item from a FRAME pallet.
+    PalletDispatchables:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+          description: Array containing metadata for each dispatchable entry of the pallet.
+    PalletDispatchablesItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up dispatchables.
+          example: "14"
+        dispatchableItem:
+          type: string
+          description: Name of the dispatchable item.
+          example: "vote"
+        metadata:
+          $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+    PalletDispatchablesItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "propose"
+          description: The dispatchable item's name (which is the same as the dispatchable item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the dispatchable item in the lists of pallet dispatchables.
+        docs:
+          type: string
+          example: "Information concerning any given dispatchable.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of a dispatchable item from a FRAME pallet.
+    PalletErrors:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up errors.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletErrorsItemMetadata'
+          description: Array containing metadata for each error entry of the pallet.
+    PalletErrorsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up errors.
+          example: "14"
+        errorItem:
+          type: string
+          description: Name of the error item.
+          example: "ValueLow"
+        metadata:
+          $ref: '#/components/schemas/PalletErrorsItemMetadata'
+    PalletErrorsItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "InsufficientFunds"
+          description: The error item's name (which is the same as the error item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the error item in the lists of pallet errors
+        docs:
+          type: string
+          example: " Information concerning any given error.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of an error item from a FRAME pallet.
+    PalletEvents:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up events.
+          example: "14"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletEventsItemMetadata'
+    PalletEventsItem:
+      type: object
+      properties:
+        pallet:
+          type: string
+          description: Name of the pallet.
+          example: "democracy"
+        palletIndex:
+          type: string
+          description: Index of the pallet for looking up events.
+          example: "14"
+        eventItem:
+          type: string
+          description: Name of the events item.
+          example: "Proposed"
+        metadata:
+          $ref: '#/components/schemas/PalletEventsItemMetadata'
+    PalletEventsItemMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Tabled"
+          description: The event item's name (which is the same as the event item's ID).
+        fields:
+          type: array
+          items:
+            type: string
+        index:
+         type: string
+         example: "0"
+         description: The index of the error item in the lists of pallet events
+        docs:
+          type: string
+          example: " Information concerning any given event.\n\n TWOX-NOTE: SAFE as indexes are not under an attacker’s control."
+        args:
+          type: array
+          items:
+            type: string
+      description: Metadata of an event item from a FRAME pallet.
+    PalletsNominationPool:
+      type: object
+      properties:
+        bondedPool:
+          $ref: '#/components/schemas/BondedPool'
+        rewardPool:
+          $ref: '#/components/schemas/RewardPool'
+    PalletsNominationPoolsInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        counterForBondedPools: 
+            type: number
+        counterForMetadata:
+            type: number
+        counterForPoolMembers:
+            type: number
+        counterForReversePoolIdLookup:
+            type: number
+        counterForRewardPools:
+            type: number
+        counterForSubPoolsStorage:
+            type: number
+        lastPoolId:
+            type: number
+        maxPoolMembers:
+            type: number
+        maxPoolMembersPerPool:
+            type: number
+            nullable: true
+        maxPools:
+            type: number
+        minCreateBond:
+            type: number
+        minJoinBond:
+            type: number
     PalletStorage:
       type: object
       properties:
@@ -2274,10 +3178,7 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are
-        pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
-        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
-        will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
+      description: This is going to be formatted to the type of StorageEntryTypeV14.
     Para:
       type: object
       properties:
@@ -2374,6 +3275,44 @@ components:
             type: string
             format: unsignedInteger
           description: Lease periods the crowdloan can bid on.
+    ParasHeaders:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        paraId:
+          type: object
+          description: |
+            The key is not named `paraId` and will be the number of the parachain. There is technically no limit to the number of paraId keys there can be. 
+          properties:
+            hash:
+              type: string
+              description: The block's hash.
+              format: hex
+            number:
+              type: string
+              description: The block's height.
+              format: unsignedInteger
+            parentHash:
+              type: string
+              description: The hash of the parent block.
+              format: hex
+            stateRoot:
+              type: string
+              description: The state root after executing this block.
+              format: hex
+            extrinsicsRoot:
+              type: string
+              description: The Merkle root of the extrinsics.
+              format: hex
+            digest:
+              type: object
+              properties:
+                logs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DigestItem'
+                  description: Array of `DigestItem`s associated with the block.
     ParasLeasesCurrent:
       type: object
       properties:
@@ -2489,6 +3428,15 @@ components:
           type: string
           description: Height of the best block on the peer's canon chain.
           format: unsignedInteger
+    RewardPool:
+      type: object
+      properties:
+        lastRecordedRewardCounter: 
+          type: number
+        lastRecordedTotalPayouts:
+          type: number
+        totalRewardsClaimed:
+          type: number
     RuntimeCode:
       type: object
       properties:
@@ -2501,8 +3449,8 @@ components:
       type: object
       properties:
         weight:
-          type: string
-          description: Extrinsic weight.
+          $ref: '#/components/schemas/WeightsV2'
+          description: Weights represented as WeightsV2 (two dimensional weights). When querying historical blocks that use WeightsV1, the weight will be returned as a weight key that points to a number represented as a string.
         class:
           type: string
           description: Extrinsic class.
@@ -2664,6 +3612,34 @@ components:
           items:
             type: string
             format: ss58
+    StakingValidators:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        validators:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+                description: Address of validator.
+              status:
+                type: string
+                description: Status of individual validator (active/waiting).
+        validatorsToBeChilled:
+          description: Validators that will not be participating in the next era.
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+                description: Address of validator.
+              status:
+                type: string
+                description: Status of individual validator (active/waiting).
     StorageEntryTypeV13:
       type: object
       properties:
@@ -2820,8 +3796,8 @@ components:
       type: object
       properties:
         weight:
-          type: string
-          description: Extrinsic weight.
+          $ref: '#/components/schemas/WeightsV2'
+          description: Weights represented as WeightsV2 (two dimensional weights). When querying historical blocks that use WeightsV1, the weight will be returned as a weight key that points to a number represented as a string.
         class:
           type: string
           description: Extrinsic class.
@@ -2978,6 +3954,15 @@ components:
           description: Starting block for unlocking (vesting).
           format: unsignedInteger
       description: Vesting schedule for an account.
+    WeightsV2:
+      type: object
+      properties:
+        refTime:
+          type: string
+          description: The weight of computational time used based on some reference hardware.
+        proofSize:
+          type: string
+          description: The weight of storage space used by proof of validity.
     WinningData:
       type: object
       properties:
@@ -3008,3 +3993,9 @@ components:
           schema:
             $ref: '#/components/schemas/Transaction'
       required: true
+    ContractMetadata:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ContractMetadata'
+

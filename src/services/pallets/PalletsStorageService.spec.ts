@@ -61,7 +61,6 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: false,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -76,7 +75,6 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: false,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -91,7 +89,6 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: true,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toMatchObject(fetchStorageItemRes);
@@ -106,7 +103,6 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: false,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageRes);
@@ -119,7 +115,6 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: '15',
 						onlyIds: false,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageRes);
@@ -132,7 +127,6 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: true,
-						adjustMetadataV13Arg: true,
 					})
 				)
 			).toStrictEqual(fetchStorageIdsOnlyRes);

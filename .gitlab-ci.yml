@@ -16,7 +16,10 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable"
+  CI_IMAGE:                        "quay.io/buildah/stable:v1.29"
+  BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
+  NODE_IMAGE:                      "node:18"
+  BENCHMARK_IMAGE:                 "paritytech/node-wrk:latest"
 
 default:
   retry:
@@ -36,6 +39,7 @@ default:
       fi
 
 stages:
+  - test
   - build
   - deploy-staging
   - deploy-production
@@ -51,16 +55,12 @@ stages:
     paths:
       - ./artifacts/
 
-.test-refs:                     &test-refs
+.test-refs:                        &test-refs
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
-.test-refs-manual:              &test-refs-manual
+.test-refs-manual:                 &test-refs-manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       when: manual
 
@@ -110,47 +110,103 @@ stages:
   tags:
     - kubernetes-parity-build
 
-build:
+.e2e-template:                     &e2e-template
+  stage:                           test
+  <<:                              *kubernetes-env
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    ""
+    CHAIN_URL:                     ""
+  script:
+    - yarn --immutable
+    - echo "Tests for ${CHAIN_URL}"
+    - yarn test:latest-e2e-tests --log-level info --chain ${CHAIN_NAME} --local ${CHAIN_URL}
+  allow_failure: true
+
+e2e-westend:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "westend"
+    CHAIN_URL:                     "wss://westend-rpc.polkadot.io"
+
+e2e-kusama:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "kusama"
+    CHAIN_URL:                     "wss://kusama-rpc.polkadot.io"
+
+e2e-polkadot:
+  <<:                              *e2e-template
+  variables:
+    CI_IMAGE:                      $NODE_IMAGE
+    CHAIN_NAME:                    "polkadot"
+    CHAIN_URL:                     "wss://rpc.polkadot.io"
+
+build-docker:
   <<:                              *dockerize
   <<:                              *publish-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
         --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
+    - $BUILDAH_COMMAND info
     - echo ${Docker_Hub_Pass_Parity} |
         buildah login --username ${Docker_Hub_User_Parity} --password-stdin docker.io
     - echo pushing "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
-        buildah push --format=v2s2 "$CONTAINER_REPO:latest";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:latest";
       else
-        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
       fi
 
+push-docker-image-description:
+  stage:                           build
+  before_script:
+    - echo
+  extends:
+    - .kubernetes-env
+  variables:
+    CI_IMAGE:                      paritytech/dockerhub-description
+    DOCKERHUB_REPOSITORY:          parity/substrate-api-sidecar
+    DOCKER_USERNAME:               $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
+    SHORT_DESCRIPTION:             "REST service to interact with blockchain nodes built using Substrate's FRAME framework."
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master"
+      changes:
+      - Dockerfile.README.md
+  script:
+    - cd / && sh entrypoint.sh
+
 # checks that dockerimage can be built without publishing
-build-pr:
+build-docker-pr:
   <<:                              *dockerize
   <<:                              *test-refs
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
         --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
+    - $BUILDAH_COMMAND info
 
 deploy-staging:
   stage:                           deploy-staging
@@ -168,92 +224,58 @@ deploy-production:
     - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
       when: manual
 
-.benchmark-template:               &benchmark-template
-  stage: benchmark
-  <<:                              *collect-artifacts
+bench-polkadot:                    &bench-polkadot
+  stage:                           benchmark
   <<:                              *kubernetes-env
-  before_script:                   []
-  variables:
-    POLKADOT_ADDRESS:              "ws://substrate-api-sidecar-benchmark-node.nodes:9944"
-    BENCHMARK_DURATION:            "15m"                                   # Tests duration
-    BENCHMARK_THREADS:             4                                       # Total number of threads to use
-    BENCHMARK_CONNECTIONS:         12                                      # Total number of HTTP connections to keep open with each thread handling N = connections/threads
-    BENCHMARK_TIMEOUT:             "120s"                                  # Record a timeout if a response is not received within this amount of time
-    BENCHMARK_OPTS:                "--latency"                             # Additional options, --latency:     print detailed latency statistics
-    BENCHMARK_SCRIPT:              "./scripts/ci/benchmarks/lightweight-bench.lua" # https://github.com/wg/wrk/blob/master/SCRIPTING
-    CI_IMAGE:                      "paritytech/node-wrk:latest"
-  script:
-    - export SAS_SUBSTRATE_URL=$POLKADOT_ADDRESS
-    - yarn
-    - yarn build
-    - yarn run main &
-    - sleep 10
-    - wrk -d${BENCHMARK_DURATION}
-          -t${BENCHMARK_THREADS}
-          -c${BENCHMARK_CONNECTIONS}
-          --timeout ${BENCHMARK_TIMEOUT}
-          ${BENCHMARK_OPTS}
-          -s ${BENCHMARK_SCRIPT} "http://127.0.0.1:8080" > result.txt
-    - cat result.txt
-    - mkdir artifacts/
-    - mv result.txt artifacts/
-  tags:
-    - kubernetes-parity-build
-
-benchmark:
-  <<:                              *benchmark-template
+  <<:                              *collect-artifacts
   <<:                              *publish-refs
-  needs:
-    - build
+  variables:
+    CI_IMAGE:                      $BENCHMARK_IMAGE
+    CHAIN_NAME:                    "polkadot"
+    CHAIN_URL:                     "wss://rpc.polkadot.io"
+  script:
+    - yarn --immutable
+    - echo "Benchmarks for ${CHAIN_URL}"
+    - mkdir -p artifacts
+    - yarn bench --log-level info --ws-url ${CHAIN_URL}
+    - mv benchmarks.txt artifacts/
 
 # manual step to run benchmarks in PR pipeline
-benchmark-manual-pr:
-  <<:                              *benchmark-template
+bench-polkadot-manual-pr:
+  stage:                           benchmark
+  <<:                              *bench-polkadot
   <<:                              *test-refs-manual
-  needs:
-    - build-pr
 
-check-benchmark:
-  stage: check-benchmark
-  <<:                              *publish-refs
-  <<:                              *kubernetes-env
-  <<:                              *collect-artifacts
-  needs:
-    - job:                         benchmark
-      artifacts:                   true
-  variables:
-    GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
-    CI_IMAGE:                      "paritytech/benchmarks:latest"
-    THRESHOLD:                     60000
-    GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
-  script:
-    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - check_single_bench_result -g $GITHUB_REPO
-                                -c $THRESHOLD
-                                -v $RESULT
+
+# temporary disabled for collecting results
+# check-benchmark:
+#   stage: check-benchmark
+#   <<:                              *publish-refs
+#   <<:                              *kubernetes-env
+#   <<:                              *collect-artifacts
+#   needs:
+#     - job:                         benchmark
+#       artifacts:                   true
+#   variables:
+#     GITHUB_REPO:                   "paritytech/substrate-api-sidecar"
+#     CI_IMAGE:                      "paritytech/benchmarks:latest"
+#     THRESHOLD:                     60000
+#     GITHUB_TOKEN:                  $GITHUB_PR_TOKEN
+#   script:
+#     - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
+#     - check_single_bench_result -g $GITHUB_REPO
+#                                 -c $THRESHOLD
+#                                 -v $RESULT
 
 push-benchmark:
-  stage: push-benchmark
+  stage:                           push-benchmark
   <<:                              *publish-refs
   <<:                              *kubernetes-env
   needs:
-    - job:                         check-benchmark
+    - job:                         bench-polkadot
       artifacts:                   true
   variables:
     PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
     CI_IMAGE:                      "paritytech/benchmarks:latest"
   script:
-    - export RESULT=$(cat artifacts/result.txt | grep AvgRequestTime | awk '{print $2}')
-    - push_bench_result -t common
-                        -p $CI_PROJECT_NAME
-                        -n sidecar
-                        -r $RESULT
-                        -u ms
-                        -s $PROMETHEUS_URL
-    - push_bench_result -t specific
-                        -p $CI_PROJECT_NAME
-                        -n sidecar
-                        -r $RESULT
-                        -l 'commit="'$CI_COMMIT_SHORT_SHA'"'
-                        -u ms
-                        -s $PROMETHEUS_URL
+    - scripts/ci/benchmarks/push_benchmark_results.sh artifacts/benchmarks.txt
