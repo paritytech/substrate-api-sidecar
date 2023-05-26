@@ -2224,7 +2224,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset is frozen for non-admin transfers.
+          description: Whether the asset is frozen for non-admin transfers. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
         isSufficient:
           type: boolean
           description: Whether a non-zero balance of this asset is a deposit of sufficient
@@ -2281,7 +2282,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset is frozen for non-admin transfers.
+          description: Whether the asset is frozen for non-admin transfers. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
     AssetMetadata:
       type: object
       properties:
@@ -2304,7 +2306,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset metadata may be changed by a non Force origin.
+          description: Whether the asset metadata may be changed by a non Force origin. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
     BalanceLock:
       type: object
       properties:

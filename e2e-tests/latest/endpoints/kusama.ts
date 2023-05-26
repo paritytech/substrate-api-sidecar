@@ -121,10 +121,6 @@ export const kusama: IConfig = {
 		path: '/pallets/balances/errors',
 		queryParams: ['at={blockId}'],
 	},
-	'/pallets/{palletId}/errors?onlyIds=true': {
-		path: '/pallets/17/errors',
-		queryParams: ['at={blockId}'],
-	},
 	'/pallets/{palletId}/errors/{errorItemId}': {
 		path: '/pallets/Balances/errors/VestingBalance',
 		queryParams: ['at={blockId}'],

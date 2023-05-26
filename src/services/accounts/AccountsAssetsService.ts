@@ -180,10 +180,17 @@ export class AccountsAssetsService extends AbstractService {
 				if (assetBalance.isSome) {
 					const balanceProps = assetBalance.unwrap();
 
+					let isFrozen: bool | string;
+					if ('isFrozen' in balanceProps) {
+						isFrozen = balanceProps.isFrozen as bool;
+					} else {
+						isFrozen = 'isFrozen does not exist for this runtime';
+					}
+
 					return {
 						assetId,
 						balance: balanceProps.balance,
-						isFrozen: balanceProps.isFrozen,
+						isFrozen: isFrozen,
 						isSufficient: balanceProps.reason.isSufficient,
 					};
 				}
