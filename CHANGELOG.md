@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v16.0.0..v17.0.0) (2023-05-29)
+
+### Breaking Changes
+
+- fix(deps)!: update polkadot-js, and adjust for breaking changes (isFrozen compatibility fix) & kusama test removed ([#1285](https://github.com/paritytech/substrate-api-sidecar/pull/1285)) ([110b01a](https://github.com/paritytech/substrate-api-sidecar/commit/110b01ad9ce80568dbe05201ea2ae07d687ae0d4))
+    NOTE: In the endpoint `/accounts/{accountId}/asset-balances`, the field `isFrozen` will now give new outputs when it is no longer supported.
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.3.0 to 2.4.0 ([#1284](https://github.com/paritytech/substrate-api-sidecar/pull/1284)) ([e5e5987](https://github.com/paritytech/substrate-api-sidecar/commit/e5e5987e2219c4729c33aec8055caada7f655a09))
+- chore: bump Swatinem/rust-cache from 2.2.1 to 2.3.0 ([#1283](https://github.com/paritytech/substrate-api-sidecar/pull/1283)) ([fa9d52f](https://github.com/paritytech/substrate-api-sidecar/commit/fa9d52f760d17f6cd09c0b6990ba617b06055d93))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
 ## [16.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v15.0.0..v16.0.0) (2023-05-08)
 
 ### Breaking Changes
