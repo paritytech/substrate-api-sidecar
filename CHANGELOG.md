@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Breaking Changes
 
 - fix(deps)!: update polkadot-js, and adjust for breaking changes (isFrozen compatibility fix) & kusama test removed ([#1285](https://github.com/paritytech/substrate-api-sidecar/pull/1285)) ([110b01a](https://github.com/paritytech/substrate-api-sidecar/commit/110b01ad9ce80568dbe05201ea2ae07d687ae0d4))
+    NOTE: In the endpoint `/accounts/{accountId}/asset-balances`, the field `isFrozen` will now give new outputs when it is no longer supported.
 
 ### Chores
 
