@@ -14,9 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './acala';
-export * from './karura';
-export * from './kusama';
-export * from './polkadot';
-export * from './statemint';
-export * from './westend';
+import { acala } from './acala';
+
+export const karura = acala;

@@ -16,7 +16,8 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable:v1.27"
+  CI_IMAGE:                        "quay.io/buildah/stable:v1.29"
+  BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
   NODE_IMAGE:                      "node:18"
   BENCHMARK_IMAGE:                 "paritytech/node-wrk:latest"
 
@@ -115,7 +116,7 @@ stages:
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    ""
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     ""
   script:
     - yarn --immutable
     - echo "Tests for ${CHAIN_URL}"
@@ -127,21 +128,21 @@ e2e-westend:
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "westend"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://westend-rpc.polkadot.io"
 
 e2e-kusama:
   <<:                              *e2e-template
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "kusama"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://kusama-rpc.polkadot.io"
 
 e2e-polkadot:
   <<:                              *e2e-template
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://rpc.polkadot.io"
 
 build-docker:
   <<:                              *dockerize
@@ -149,23 +150,24 @@ build-docker:
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
         --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
+    - $BUILDAH_COMMAND info
     - echo ${Docker_Hub_Pass_Parity} |
         buildah login --username ${Docker_Hub_User_Parity} --password-stdin docker.io
     - echo pushing "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
-        buildah push --format=v2s2 "$CONTAINER_REPO:latest";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:latest";
       else
-        buildah push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
+        $BUILDAH_COMMAND push --format=v2s2 "$CONTAINER_REPO:$DOCKER_IMAGE_TAG";
       fi
 
 push-docker-image-description:
@@ -195,15 +197,16 @@ build-docker-pr:
   script:
     - echo building "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
     - if [[ $BUILD_LATEST_IMAGE ]]; then
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG"
         --tag "$CONTAINER_REPO:latest" "$DOCKERFILE_DIRECTORY";
       else
-        buildah bud
+        $BUILDAH_COMMAND build
         --format=docker
         --tag "$CONTAINER_REPO:$DOCKER_IMAGE_TAG" "$DOCKERFILE_DIRECTORY";
       fi
+    - $BUILDAH_COMMAND info
 
 deploy-staging:
   stage:                           deploy-staging
@@ -229,7 +232,7 @@ bench-polkadot:                    &bench-polkadot
   variables:
     CI_IMAGE:                      $BENCHMARK_IMAGE
     CHAIN_NAME:                    "polkadot"
-    CHAIN_URL:                     "wss://${CHAIN_NAME}-testing-rpc.parity-build.parity.io"
+    CHAIN_URL:                     "wss://rpc.polkadot.io"
   script:
     - yarn --immutable
     - echo "Benchmarks for ${CHAIN_URL}"

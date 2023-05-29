@@ -94,7 +94,6 @@ export interface IPalletsStorageParam extends ParamsDictionary {
 export interface IPalletsStorageQueryParam extends Query {
 	keys: string[];
 	metadata: string;
-	adjustMetadataV13: string;
 }
 
 export interface IConvertQueryParams extends Query {

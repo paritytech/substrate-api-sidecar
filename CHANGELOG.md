@@ -2,6 +2,85 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v16.0.0..v17.0.0) (2023-05-29)
+
+### Breaking Changes
+
+- fix(deps)!: update polkadot-js, and adjust for breaking changes (isFrozen compatibility fix) & kusama test removed ([#1285](https://github.com/paritytech/substrate-api-sidecar/pull/1285)) ([110b01a](https://github.com/paritytech/substrate-api-sidecar/commit/110b01ad9ce80568dbe05201ea2ae07d687ae0d4))
+    NOTE: In the endpoint `/accounts/{accountId}/asset-balances`, the field `isFrozen` will now give new outputs when it is no longer supported.
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.3.0 to 2.4.0 ([#1284](https://github.com/paritytech/substrate-api-sidecar/pull/1284)) ([e5e5987](https://github.com/paritytech/substrate-api-sidecar/commit/e5e5987e2219c4729c33aec8055caada7f655a09))
+- chore: bump Swatinem/rust-cache from 2.2.1 to 2.3.0 ([#1283](https://github.com/paritytech/substrate-api-sidecar/pull/1283)) ([fa9d52f](https://github.com/paritytech/substrate-api-sidecar/commit/fa9d52f760d17f6cd09c0b6990ba617b06055d93))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
+## [16.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v15.0.0..v16.0.0) (2023-05-08)
+
+### Breaking Changes
+
+- fix!: removes metadata v13 ([#1272](https://github.com/paritytech/substrate-api-sidecar/pull/1272)) ([287d8e3](https://github.com/paritytech/substrate-api-sidecar/commit/287d8e319ad20a8d2e4da8bcb1e58798e5361c79))
+    NOTE: This removes `adjustMetadataV13` query parameter from `/pallets/{palletId}/storage`.
+- fix!: remove noMeta query param from /transaction/materials ([#1275](https://github.com/paritytech/substrate-api-sidecar/pull/1275)) ([1d20501](https://github.com/paritytech/substrate-api-sidecar/commit/1d20501300ab11add2cd37a99c760170f0bd2550))
+    NOTE: This removes `noMeta` from `/transaction/materials`. Please refer to the PR for more information. 
+- fix!: minimum nodejs version ([#1278](https://github.com/paritytech/substrate-api-sidecar/pull/1278)) ([05628da](https://github.com/paritytech/substrate-api-sidecar/commit/05628dab05d8b494b9914c591bb173af6643d205))
+    NOTE: We want this library to be in sync with polkadot-js so it's important for us to also be in line with node-js versions. The version we specify is a minimum of v18.14.
+
+### Test
+
+- test: add acala & karura to e2e tests and some improvements ([#1273](https://github.com/paritytech/substrate-api-sidecar/pull/1273)) ([44e2da4](https://github.com/paritytech/substrate-api-sidecar/commit/44e2da4df8f237978ff2640e176cee5162369ffa)) Contributed by ([xlc](https://github.com/xlc))
+
+### CI
+
+- ci: Update buildah command and version ([#1271](https://github.com/paritytech/substrate-api-sidecar/pull/1271)) ([8fdfef8](https://github.com/paritytech/substrate-api-sidecar/commit/8fdfef82e5a3ededf597744589c55680b6b6ccf8))
+- ci: Change endpoints for e2e tests ([#1270](https://github.com/paritytech/substrate-api-sidecar/pull/1270)) ([23f5b51](https://github.com/paritytech/substrate-api-sidecar/commit/23f5b511d78a39ef03ba2977fcf9177b404274b8))
+
+### Chores
+
+- chore(deps): update polkadot-js ([#1277](https://github.com/paritytech/substrate-api-sidecar/pull/1277)) ([e8666ca](https://github.com/paritytech/substrate-api-sidecar/commit/e8666cae4ccbe858959dacb61748009aeafd016e))
+- chore(deps): update polkadot-js deps ([#1267](https://github.com/paritytech/substrate-api-sidecar/pull/1267)) ([637c964](https://github.com/paritytech/substrate-api-sidecar/commit/637c9642b56d9116fea5464266250f00f4fe5906))
+- chore(deps): update substrate dev ([#1269](https://github.com/paritytech/substrate-api-sidecar/pull/1269)) ([5e9b838](https://github.com/paritytech/substrate-api-sidecar/commit/5e9b8386b882ffbd792591afa92f80bea71526da))
+
+### Docs
+
+- docs: update sec deps ([#1279](https://github.com/paritytech/substrate-api-sidecar/pull/1279)) ([f430b79](https://github.com/paritytech/substrate-api-sidecar/commit/f430b7981f02f93e9a903d5b50627f1e4268db85))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
+## [15.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.3..v15.0.0) (2023-04-19)
+
+### **BREAKING CHANGES**
+
+- fix!: update polkadot-js, and adjust for breaking changes (`/accounts/{accountId}/balance-info`) ([#1255](https://github.com/paritytech/substrate-api-sidecar/pull/1255)) ([8964882](https://github.com/paritytech/substrate-api-sidecar/commit/8964882102487825561c27b525ae3da51e54bbf7))
+    NOTE: The endpoint `/accounts/{accountId}/balance-info` has a new field called `frozen`, while `miscFrozen`, and `feeFrozen` will now give new outputs when they are no longer supported. **Important**: These changes are not yet reflected in a runtime release on `polkadot`, `kusama`, and `westend`, but are applied in sidecar to ensure support is there. Please look into the docs and or the above PR to see the changes in more depth.
+
+### Bug Fixes
+
+- fix: incorrect finalization when head blocks are cached and polled ([#1265](https://github.com/paritytech/substrate-api-sidecar/pull/1265)) ([d498206](https://github.com/paritytech/substrate-api-sidecar/commit/d4982060ae080aab20433432e339c58722107a8e))
+    NOTE: This patches a bug related to `/blocks/head`.
+
+### Test
+
+- test(scripts): change historical e2e-tests endpoints to parity hosted nodes ([#1261](https://github.com/paritytech/substrate-api-sidecar/pull/1261)) ([bfe2976](https://github.com/paritytech/substrate-api-sidecar/commit/bfe297619bada26a715e6d30aa6451a2216fc719))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9400
+- Kusama v9400
+- Westend v9400
+
 ## [14.5.3](https://github.com/paritytech/substrate-api-sidecar/compare/v14.5.2..v14.5.3) (2023-04-11)
 
 ### Bug Fixes

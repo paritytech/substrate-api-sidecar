@@ -16,13 +16,9 @@
 
 import { IConfig } from '../types/endpoints';
 
-export const westend: IConfig = {
-	'/pallets/staking/validators': {
-		path: '/pallets/staking/validators',
-		queryParams: ['at={blockId}', 'metadata=true'],
-	},
+export const acala: IConfig = {
 	'/blocks': {
-		path: '/blocks?range=1-5',
+		path: '/blocks?range=3000000-3000005',
 		queryParams: [],
 	},
 	'/blocks/{blockId}': {
@@ -57,10 +53,6 @@ export const westend: IConfig = {
 		path: '/node/version',
 		queryParams: [],
 	},
-	'/pallets/staking/progress': {
-		path: '/pallets/staking/progress',
-		queryParams: ['at={blockId}'],
-	},
 	'/pallets/{palletId}/storage': {
 		path: '/pallets/System/storage',
 		queryParams: ['onlyIds=true', 'at={blockId}'],
@@ -84,57 +76,5 @@ export const westend: IConfig = {
 	'/transaction/material': {
 		path: '/transaction/material',
 		queryParams: [],
-	},
-	'/paras': {
-		path: '/paras',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/leases/current': {
-		path: '/paras/leases/current',
-		queryParams: ['at={blockId}', 'currentLeaseHolders=false'],
-	},
-	'/paras/auctions/current': {
-		path: '/paras/auctions/current',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/crowdloans': {
-		path: '/paras/crowdloans',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/{paraId}/crowdloan-info': {
-		path: '/paras/2021/crowdloan-info',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/{paraId}/lease-info': {
-		path: '/paras/2021/lease-info',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/head/included-candidates': {
-		path: '/paras/head/included-candidates',
-		queryParams: ['at={blockId}'],
-	},
-	'/paras/head/backed-candidates': {
-		path: '/paras/head/backed-candidates',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/{palletId}/errors': {
-		path: '/pallets/balances/errors',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/{palletId}/errors?onlyIds=true': {
-		path: '/pallets/17/errors',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/{palletId}/errors/{errorItemId}': {
-		path: '/pallets/Balances/errors/VestingBalance',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/nominationPoools/info': {
-		path: '/pallets/nomination-pools/info',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/nominationPoools/{poolId}': {
-		path: '/pallets/nomination-pools/122',
-		queryParams: ['at={blockId}', 'metadata=true'],
 	},
 };

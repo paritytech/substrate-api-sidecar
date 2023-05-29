@@ -83,7 +83,7 @@ export const kusama: IConfig = {
 	},
 	'/transaction/material': {
 		path: '/transaction/material',
-		queryParams: ['noMeta=true'],
+		queryParams: [],
 	},
 	'/paras': {
 		path: '/paras',
@@ -119,10 +119,6 @@ export const kusama: IConfig = {
 	},
 	'/pallets/{palletId}/errors': {
 		path: '/pallets/balances/errors',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/{palletId}/errors?onlyIds=true': {
-		path: '/pallets/17/errors',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/errors/{errorItemId}': {
