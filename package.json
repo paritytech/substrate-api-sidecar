@@ -42,9 +42,9 @@
     "start:latest-e2e-scripts": "yarn build:scripts && node scripts/build/runLatestE2eTests.js",
     "start:historical-e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/historical/historical.js --config=./e2e-tests/jest.config.js",
     "start:historical-e2e-scripts": "yarn build:scripts && node scripts/build/runHistoricalE2eTests.js",
-    "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
+    "test": "NODE_ENV=test substrate-exec-jest",
     "test:watch": "NODE_ENV=test substrate-exec-jest --watch",
-    "test:ci": "NODE_ENV=test substrate-exec-jest --runInBand",
+    "test:ci": "NODE_ENV=test substrate-exec-jest",
     "test:latest-e2e-tests": "yarn start:latest-e2e-scripts",
     "test:historical-e2e-tests": "yarn start:historical-e2e-scripts",
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
@@ -60,6 +60,7 @@
     "express-winston": "^4.2.0",
     "http-errors": "^2.0.0",
     "lru-cache": "^7.13.1",
+    "prom-client": "^14.2.0",
     "rxjs": "^7.5.6",
     "winston": "^3.8.1"
   },

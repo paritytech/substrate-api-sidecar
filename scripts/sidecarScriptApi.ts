@@ -56,9 +56,12 @@ export const killAll = (procs: ProcsType): void => {
 		if (!procs[key].killed) {
 			try {
 				console.log(`Killing ${key}`);
+				const ppid = procs[key].pid;
 				// Kill child and all its descendants.
-				process.kill(-procs[key].pid, 'SIGTERM');
-				process.kill(-procs[key].pid, 'SIGKILL');
+				if (ppid != undefined) {
+					process.kill(-ppid, 'SIGTERM');
+					process.kill(-ppid, 'SIGKILL');
+				}
 			} catch (e) {
 				/**
 				 * The error we are catching here silently, is when `-procs[key].pid` takes
