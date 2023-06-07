@@ -30,6 +30,7 @@ export const westendControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksTrace',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
