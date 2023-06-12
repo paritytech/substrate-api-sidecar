@@ -21,7 +21,7 @@ import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
 	Codec,
-	Constructor,
+	CodecClass,
 	InterfaceTypes,
 	Registry,
 } from '@polkadot/types/types';
@@ -104,7 +104,7 @@ export class TypeFactory {
 	optionOf<T extends Codec>(value: T): Option<T> {
 		return new Option<T>(
 			this.#registry,
-			value.constructor as Constructor<T>,
+			value.constructor as CodecClass<T>,
 			value
 		);
 	}
@@ -112,7 +112,7 @@ export class TypeFactory {
 	vecOf<T extends Codec>(items: T[]): Vec<T> {
 		const vector = new Vec<T>(
 			this.#registry,
-			items[0].constructor as Constructor<T>
+			items[0].constructor as CodecClass<T>
 		);
 
 		vector.push(...items);
@@ -122,7 +122,7 @@ export class TypeFactory {
 
 	tupleOf<T extends Codec>(
 		value: T[],
-		types: (Constructor | keyof InterfaceTypes)[]
+		types: (CodecClass | keyof InterfaceTypes)[]
 	): Tuple {
 		return new Tuple(this.#registry, types, value);
 	}
