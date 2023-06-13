@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.0.0..v17.1.0) (2023-06-13)
+
+### Features
+
+- feat: add prometheus metrics in dedicated port ([#1232](https://github.com/paritytech/substrate-api-sidecar/pull/1232)) ([a256790](https://github.com/paritytech/substrate-api-sidecar/commit/a256790e75b2a717896ab019bc03d6f96542ddf3))
+
+### Bug Fixes
+
+- fix: Add BlockTraces to Westend config ([#1292](https://github.com/paritytech/substrate-api-sidecar/pull/1292)) ([d3de591](https://github.com/paritytech/substrate-api-sidecar/commit/d3de591f3b95f9ca30f0bbf667918eb05b9a7497))
+- fix(deps): update pjs api ([#1294](https://github.com/paritytech/substrate-api-sidecar/pull/1294)) ([fe8ef2e](https://github.com/paritytech/substrate-api-sidecar/commit/fe8ef2e741f5013fbe2f11923ba67d333d9eb8ca))
+
+### CI
+
+- CI: fix gha set-output command ([#1291](https://github.com/paritytech/substrate-api-sidecar/pull/1291)) ([609b332](https://github.com/paritytech/substrate-api-sidecar/commit/609b332ccf4582f1987615036e7b53eb26a5bbad))
+
+### Docs
+
+- docs: update release guide ([#1288](https://github.com/paritytech/substrate-api-sidecar/pull/1288)) ([f1516ad](https://github.com/paritytech/substrate-api-sidecar/commit/f1516ad00be419d5ee9e9e0eb0919122a22bb678))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
 ## [17.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v16.0.0..v17.0.0) (2023-05-29)
 
 ### Breaking Changes
