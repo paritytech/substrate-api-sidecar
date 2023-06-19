@@ -18,5 +18,5 @@ export * from './acala';
 export * from './karura';
 export * from './kusama';
 export * from './polkadot';
-export * from './statemint';
+export * from './asset-hub-polkadot';
 export * from './westend';

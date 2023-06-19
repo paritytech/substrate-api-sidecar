@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import accountsApprovals993480 from './993480.json';
+import { assetHubPolkadotBlockEndpoints } from './blocks';
+import { assetHubKusamaRuntimeEndpoints } from './runtime';
 
-export const statemineAccountsApprovalsEndpoints = [
-	[
-		'/accounts/CwqsPsimisa33niBsKd513TBne4PnTHvfhyLR6Vh73DBQMY/asset-approvals?assetId=100&delegate=CwqsPsimisa33niBsKd513TBne4PnTHvfhyLR6Vh73DBQMY&at=993480',
-		JSON.stringify(accountsApprovals993480),
-	],
-];
+export const assetHubPolkadotEndpoints = {
+	accounts: [],
+	blocks: assetHubPolkadotBlockEndpoints,
+	paras: [],
+	runtime: assetHubKusamaRuntimeEndpoints,
+};

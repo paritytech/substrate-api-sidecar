@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { statemineAccountsApprovalsEndpoints } from './asset-approvals';
-import { statemineAccountAssetBalanceEndpoints } from './asset-balances';
-import { statemineAccountBalanceEndpoints } from './balance-info';
+import { assetHubKusamaAccountsApprovalsEndpoints } from './asset-approvals';
+import { assetHubKusamaAccountAssetBalanceEndpoints } from './asset-balances';
+import { assetHubKusamaAccountBalanceEndpoints } from './balance-info';
 
-export const statemineAccountAssetEndpoints = [
-	...statemineAccountBalanceEndpoints,
-	...statemineAccountAssetBalanceEndpoints,
-	...statemineAccountsApprovalsEndpoints,
+export const assetHubKusamaAccountAssetEndpoints = [
+	...assetHubKusamaAccountBalanceEndpoints,
+	...assetHubKusamaAccountAssetBalanceEndpoints,
+	...assetHubKusamaAccountsApprovalsEndpoints,
 ];

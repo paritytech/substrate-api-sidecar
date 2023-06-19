@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { statemintAccountsApprovalsEndpoints } from './asset-approvals';
-import { statemintAccountAssetBalanceEndpoints } from './asset-balances';
+import block10000 from './10000.json';
+import block340000 from './340000.json';
 
-export const statemintAccountAssetEndpoints = [
-	...statemintAccountAssetBalanceEndpoints,
-	...statemintAccountsApprovalsEndpoints,
+export const assetHubPolkadotBlockEndpoints = [
+	['/blocks/10000', JSON.stringify(block10000)], // v2
+	['/blocks/340000', JSON.stringify(block340000)], // v601
 ];

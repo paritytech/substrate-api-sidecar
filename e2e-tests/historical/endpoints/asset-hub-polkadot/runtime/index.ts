@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Currently there are no assets established within statemint
- * so these tests will be empty.
- */
-export const statemintAccountAssetBalanceEndpoints = [];
+import runtimeSpec340000 from './340000.json';
+
+export const assetHubKusamaRuntimeEndpoints = [
+	['/runtime/spec?at=340000', JSON.stringify(runtimeSpec340000)],
+];
