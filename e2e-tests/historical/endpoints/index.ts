@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { IChains } from '../types';
-import { kusamaEndpoints } from './kusama';
-import { polkadotEndpoints } from './polkadot';
 import { assetHubKusamaEndpoints } from './asset-hub-kusama';
 import { assetHubPolkadotEndpoints } from './asset-hub-polkadot';
+import { kusamaEndpoints } from './kusama';
+import { polkadotEndpoints } from './polkadot';
 import { westendEndpoints } from './westend';
 
 export const endpoints: IChains = {
