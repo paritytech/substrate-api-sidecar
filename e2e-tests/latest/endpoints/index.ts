@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from './acala';
+export * from './asset-hub-polkadot';
 export * from './karura';
 export * from './kusama';
 export * from './polkadot';
-export * from './statemint';
 export * from './westend';

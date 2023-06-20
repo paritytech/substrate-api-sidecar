@@ -23,16 +23,16 @@ import {
 import { PalletAssetsAssetAccount } from '@polkadot/types/lookup';
 import { Option } from '@polkadot/types-codec/base';
 
-import { statemintV1 } from '../../../../test-helpers/metadata/statemintMetadata';
+import { assetHubPolkadotV1 } from '../../../../test-helpers/metadata/assetHubPolkadotMetadata';
 import { rococoRegistry } from '../../../../test-helpers/registries';
 import { createApiWithAugmentations } from '../../../../test-helpers/typeFactory';
 import { TypeFactory } from '../../../../test-helpers/typeFactory';
 
 /**
- * This mock data uses Statemint specVersion 1
+ * This mock data uses Asset Hub Polkadot specVersion 1
  */
-const statemintApiV1 = createApiWithAugmentations(statemintV1);
-const statemintTypeFactory = new TypeFactory(statemintApiV1);
+const assetHubPolkadotApiV1 = createApiWithAugmentations(assetHubPolkadotV1);
+const assetHubPolkadotTypeFactory = new TypeFactory(assetHubPolkadotApiV1);
 
 const falseBool = rococoRegistry.createType('bool', false);
 const trueBool = rococoRegistry.createType('bool', true);
@@ -73,22 +73,22 @@ const assetBalanceFactory = {
 	'30': assetBalanceObjThree as unknown as PalletAssetsAssetAccount,
 };
 
-const assetStorageKeyOne = statemintTypeFactory.storageKey(
+const assetStorageKeyOne = assetHubPolkadotTypeFactory.storageKey(
 	10,
 	'AssetId',
-	statemintApiV1.query.assets.asset
+	assetHubPolkadotApiV1.query.assets.asset
 );
 
-const assetStorageKeyTwo = statemintTypeFactory.storageKey(
+const assetStorageKeyTwo = assetHubPolkadotTypeFactory.storageKey(
 	20,
 	'AssetId',
-	statemintApiV1.query.assets.asset
+	assetHubPolkadotApiV1.query.assets.asset
 );
 
-const assetStorageKeyThree = statemintTypeFactory.storageKey(
+const assetStorageKeyThree = assetHubPolkadotTypeFactory.storageKey(
 	30,
 	'AssetId',
-	statemintApiV1.query.assets.asset
+	assetHubPolkadotApiV1.query.assets.asset
 );
 
 const assetsAccountKeysAt = () =>

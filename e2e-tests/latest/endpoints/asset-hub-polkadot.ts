@@ -16,7 +16,7 @@
 
 import { IConfig } from '../types/endpoints';
 
-export const statemint: IConfig = {
+export const assetHubPolkadot: IConfig = {
 	'/accounts/{accountId}/asset-balances': {
 		path: '/accounts/1ULZhwpUPLLg5VRYiq6rBHY8XaShAmBW7kqGBfvHBqrgBcN/asset-balances',
 		queryParams: ['at={blockId}', 'assets[]=100&assets[]=123'],

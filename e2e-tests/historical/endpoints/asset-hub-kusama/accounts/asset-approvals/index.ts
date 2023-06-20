@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Currently there are no assets established within statemint
- * so these tests will be empty.
- */
-export const statemintAccountsApprovalsEndpoints = [];
+import accountsApprovals993480 from './993480.json';
+
+export const assetHubKusamaAccountsApprovalsEndpoints = [
+	[
+		'/accounts/CwqsPsimisa33niBsKd513TBne4PnTHvfhyLR6Vh73DBQMY/asset-approvals?assetId=100&delegate=CwqsPsimisa33niBsKd513TBne4PnTHvfhyLR6Vh73DBQMY&at=993480',
+		JSON.stringify(accountsApprovals993480),
+	],
+];

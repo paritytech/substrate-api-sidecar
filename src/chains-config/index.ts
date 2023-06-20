@@ -21,6 +21,8 @@ import AbstractController from '../controllers/AbstractController';
 import { AbstractService } from '../services/AbstractService';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
+import { assetHubKusamaControllers } from './assetHubKusamaControllers';
+import { assetHubPolkadotControllers } from './assetHubPolkadotControllers';
 import { astarControllers } from './astarControllers';
 import { bifrostControllers } from './bifrostControllers';
 import { bifrostPolkadotControllers } from './bifrostPolkadotControllers';
@@ -42,8 +44,6 @@ import { polkadotControllers } from './polkadotControllers';
 import { polymeshControllers } from './polymeshControllers';
 import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
-import { statemineControllers } from './statemineControllers';
-import { statemintControllers } from './statemintControllers';
 import { westendControllers } from './westendControllers';
 
 const specToControllerMap: { [x: string]: ControllerConfig } = {
@@ -57,10 +57,10 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'dock-main-runtime': dockMainnetControllers,
 	'dock-pos-main-runtime': dockPoSMainnetControllers,
 	'dock-pos-test-runtime': dockTestnetControllers,
-	statemine: statemineControllers,
-	statemint: statemintControllers,
-	westmine: statemineControllers,
-	westmint: statemintControllers,
+	'asset-hub-kusama': assetHubKusamaControllers,
+	'asset-hub-polkadot': assetHubPolkadotControllers,
+	westmine: assetHubKusamaControllers,
+	'asset-hub-westend': assetHubPolkadotControllers,
 	shiden: shidenControllers,
 	astar: astarControllers,
 	sora: soraControllers,

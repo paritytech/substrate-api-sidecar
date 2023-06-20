@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import runtimeSpec340000 from './340000.json';
+import runtimeSpec993450 from './993450.json';
 
-export const statemineRuntimeEndpoints = [
-	['/runtime/spec?at=340000', JSON.stringify(runtimeSpec340000)],
+export const assetHubKusamaRuntimeEndpoints = [
+	['/runtime/spec?at=993540', JSON.stringify(runtimeSpec993450)],
 ];

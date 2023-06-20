@@ -22,7 +22,7 @@ import accountAssetBalance1100000 from './1100000.json';
 import accountAssetBalance1300000 from './1300000.json';
 import accountAssetBalance1800000 from './1800000.json';
 
-export const statemineAccountAssetBalanceEndpoints = [
+export const assetHubKusamaAccountAssetBalanceEndpoints = [
 	[
 		'/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/asset-balances?at=450000',
 		JSON.stringify(accountAssetBalance450000),

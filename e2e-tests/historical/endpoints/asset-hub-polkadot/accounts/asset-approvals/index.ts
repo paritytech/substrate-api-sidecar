@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import runtimeSpec993450 from './993450.json';
-
-export const statemineRuntimeEndpoints = [
-	['/runtime/spec?at=993540', JSON.stringify(runtimeSpec993450)],
-];
+/**
+ * Currently there are no assets established within Asset Hub Polkadot
+ * so these tests will be empty.
+ */
+export const assetHubPolkadotAccountsApprovalsEndpoints = [];
