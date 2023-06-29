@@ -150,6 +150,8 @@ describe('Convert accounts', () => {
 		).toStrictEqual(expectedResponse);
 	});
 
+	// This ensures the behaviour of the endpoint correctly converts a kusama publicKey given
+	// the following input. See PR: https://github.com/paritytech/substrate-api-sidecar/pull/1280
 	it('Should convert a valid Kusama publicKey when `publicKey` equals `true`', () => {
 		const expectedResponse = {
 			accountId:
