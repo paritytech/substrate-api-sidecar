@@ -15,16 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { IChains } from '../types';
+import { assetHubKusamaEndpoints } from './asset-hub-kusama';
+import { assetHubPolkadotEndpoints } from './asset-hub-polkadot';
 import { kusamaEndpoints } from './kusama';
 import { polkadotEndpoints } from './polkadot';
-import { statemineEndpoints } from './statemine';
-import { statemintEndpoints } from './statemint';
 import { westendEndpoints } from './westend';
 
 export const endpoints: IChains = {
 	kusama: kusamaEndpoints,
 	polkadot: polkadotEndpoints,
 	westend: westendEndpoints,
-	statemine: statemineEndpoints,
-	statemint: statemintEndpoints,
+	'asset-hub-kusama': assetHubKusamaEndpoints,
+	'asset-hub-polkadot': assetHubPolkadotEndpoints,
 };

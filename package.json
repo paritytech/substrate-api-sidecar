@@ -1,5 +1,5 @@
 {
-  "version": "15.0.0",
+  "version": "17.1.0",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -42,17 +42,17 @@
     "start:latest-e2e-scripts": "yarn build:scripts && node scripts/build/runLatestE2eTests.js",
     "start:historical-e2e-tests": "yarn build:e2e-tests && node ./e2e-tests/build/historical/historical.js --config=./e2e-tests/jest.config.js",
     "start:historical-e2e-scripts": "yarn build:scripts && node scripts/build/runHistoricalE2eTests.js",
-    "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
+    "test": "NODE_ENV=test substrate-exec-jest",
     "test:watch": "NODE_ENV=test substrate-exec-jest --watch",
-    "test:ci": "NODE_ENV=test substrate-exec-jest --runInBand",
+    "test:ci": "NODE_ENV=test substrate-exec-jest",
     "test:latest-e2e-tests": "yarn start:latest-e2e-scripts",
     "test:historical-e2e-tests": "yarn start:historical-e2e-scripts",
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot/api": "^10.5.1",
-    "@polkadot/api-contract": "^10.5.1",
-    "@polkadot/util-crypto": "^12.1.1",
+    "@polkadot/api": "^10.9.1",
+    "@polkadot/api-contract": "^10.9.1",
+    "@polkadot/util-crypto": "^12.3.2",
     "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",
     "confmgr": "^1.0.10",
@@ -60,6 +60,7 @@
     "express-winston": "^4.2.0",
     "http-errors": "^2.0.0",
     "lru-cache": "^7.13.1",
+    "prom-client": "^14.2.0",
     "rxjs": "^7.5.6",
     "winston": "^3.8.1"
   },

@@ -32,7 +32,7 @@ export interface IAssetBalance {
 	/**
 	 * Whether this asset class is frozen except for permissioned/admin instructions.
 	 */
-	isFrozen: bool;
+	isFrozen: bool | string;
 	/**
 	 * Whether a non-zero balance of this asset is deposit of sufficient
 	 * value to account for the state bloat associated with its balance storage. If set to

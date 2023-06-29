@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 15.0.0
+  version: 17.1.0
 tags:
 - name: accounts
 - name: blocks
@@ -1549,14 +1549,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: onlyIds
         in: query
         description: Only return the names (IDs) of the storage items instead of all of each storage
@@ -1617,14 +1609,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: adjustMetadataV13
-        in: query
-        description: Instruct sidecar to return `StorageEntryType` in the V13 metadata
-          format rather than V14. This is a **temporary** flag to allow existing systems to migrate.
-          It will be deprecated and then removed in the future.
-        required: false
-        schema:
-          type: boolean
       - name: keys
         in: query
         description: Set of N keys used for querying a storage map. It should be queried using the 
@@ -2240,7 +2224,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset is frozen for non-admin transfers.
+          description: Whether the asset is frozen for non-admin transfers. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
         isSufficient:
           type: boolean
           description: Whether a non-zero balance of this asset is a deposit of sufficient
@@ -2297,7 +2282,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset is frozen for non-admin transfers.
+          description: Whether the asset is frozen for non-admin transfers. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
     AssetMetadata:
       type: object
       properties:
@@ -2320,7 +2306,8 @@ components:
           format: unsignedInteger
         isFrozen:
           type: boolean
-          description: Whether the asset metadata may be changed by a non Force origin.
+          description: Whether the asset metadata may be changed by a non Force origin. Note, that some runtimes may not have
+            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
     BalanceLock:
       type: object
       properties:
@@ -3194,10 +3181,7 @@ components:
       description: Metadata of a storage item from a FRAME pallet.
     PalletStorageType:
       type: object
-      description: If the query parameter 'adjustMetadataV13' is set to true, all historic blocks that are
-        pre v9110 will have the return type `StorageEntryTypeV13`, and all present and post v9110 blocks will
-        have a return type of `StorageEntryTypeV14`. Please check those types to see potential responses. This
-        will be deprecated and removed in the future, and will only live as `StorageEntryTypeV14`.
+      description: This is going to be formatted to the type of StorageEntryTypeV14.
     Para:
       type: object
       properties:

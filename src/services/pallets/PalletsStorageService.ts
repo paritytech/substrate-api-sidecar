@@ -16,13 +16,7 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
-import {
-	BlockHash,
-	MetadataV13,
-	MetadataV14,
-	StorageEntryMetadataV13,
-	StorageEntryMetadataV14,
-} from '@polkadot/types/interfaces';
+import { BlockHash, StorageEntryMetadataV14 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import {
 	IPalletStorage,
@@ -36,43 +30,21 @@ import { AbstractPalletsService } from '../AbstractPalletsService';
 interface IFetchPalletArgs {
 	hash: BlockHash;
 	palletId: string;
-	adjustMetadataV13Arg: boolean;
 }
 
 interface IFetchStorageItemArgs extends IFetchPalletArgs {
 	storageItemId: string;
 	keys: string[];
 	metadata: boolean;
-	adjustMetadataV13Arg: boolean;
 }
-
-/**
- * This is where these networks switched to v9110 which introduces v14 Metadata.
- */
-const upgradeBlocks = {
-	kusama: 9625129,
-	polkadot: 7229126,
-	westend: 7766392,
-};
 
 export class PalletsStorageService extends AbstractPalletsService {
 	async fetchStorageItem(
 		historicApi: ApiDecoration<'promise'>,
-		{
-			hash,
-			palletId,
-			storageItemId,
-			keys,
-			metadata,
-			adjustMetadataV13Arg,
-		}: IFetchStorageItemArgs
+		{ hash, palletId, storageItemId, keys, metadata }: IFetchStorageItemArgs
 	): Promise<IPalletStorageItem> {
 		const metadataFieldType = 'storage';
-		const chosenMetadata = await this.chooseMetadataVersion(
-			historicApi,
-			hash,
-			adjustMetadataV13Arg
-		);
+		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			chosenMetadata,
 			palletId,
@@ -87,7 +59,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 			palletMeta,
 			storageItemId,
 			metadataFieldType
-		) as StorageEntryMetadataV13 | StorageEntryMetadataV14;
+		) as StorageEntryMetadataV14;
 
 		let normalizedStorageItemMeta: ISanitizedStorageItemMetadata | undefined;
 		if (metadata) {
@@ -116,19 +88,10 @@ export class PalletsStorageService extends AbstractPalletsService {
 
 	async fetchStorage(
 		historicApi: ApiDecoration<'promise'>,
-		{
-			hash,
-			palletId,
-			onlyIds,
-			adjustMetadataV13Arg,
-		}: IFetchPalletArgs & { onlyIds: boolean }
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
 	): Promise<IPalletStorage> {
 		const metadataFieldType = 'storage';
-		const chosenMetadata = await this.chooseMetadataVersion(
-			historicApi,
-			hash,
-			adjustMetadataV13Arg
-		);
+		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
 			chosenMetadata,
 			palletId,
@@ -162,48 +125,14 @@ export class PalletsStorageService extends AbstractPalletsService {
 	}
 
 	/**
-	 * This will grab either V13 or V14 metadata for pallets. The reason being is v14 introduced
-	 * `StorageEntryTypeV14` which is different from `StorageEntryTypeV13` when it comes
-	 * to `asMap`. This will ultimately give different responses, and we want to make sure
-	 * we preserve the integrity of older blocks.
-	 *
-	 * @param hash BlockHash to query
-	 */
-	private chooseMetadataVersion = async (
-		historicApi: ApiDecoration<'promise'>,
-		hash: BlockHash,
-		adjustMetadataV13Arg: boolean
-	): Promise<MetadataV13 | MetadataV14> => {
-		const [blockHeader, { specName }] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
-			this.api.rpc.state.getRuntimeVersion(),
-		]);
-
-		const blockNumber = blockHeader.number.toNumber();
-
-		let chosenMetadata;
-		if (
-			blockNumber < upgradeBlocks[specName.toString()] &&
-			adjustMetadataV13Arg
-		) {
-			const historicMetadata = await this.api.rpc.state.getMetadata(hash);
-			chosenMetadata = historicMetadata.asV13;
-		} else {
-			chosenMetadata = historicApi.registry.metadata;
-		}
-
-		return chosenMetadata;
-	};
-
-	/**
 	 * Normalize storage item metadata by running it through `sanitizeNumbers` and
 	 * converting the docs section from an array of strings to a single string
 	 * joined with new line characters.
 	 *
-	 * @param storageItemMeta polkadot-js StorageEntryMetadataV12
+	 * @param storageItemMeta polkadot-js StorageEntryMetadataV14
 	 */
 	private normalizeStorageItemMeta(
-		storageItemMeta: StorageEntryMetadataV14 | StorageEntryMetadataV13
+		storageItemMeta: StorageEntryMetadataV14
 	): ISanitizedStorageItemMetadata {
 		const normalizedStorageItemMeta = sanitizeNumbers(
 			storageItemMeta

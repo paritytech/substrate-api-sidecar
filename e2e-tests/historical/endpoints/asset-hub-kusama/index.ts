@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { statemintBlockEndpoints } from './blocks';
-import { statemineRuntimeEndpoints } from './runtime';
+import { assetHubKusamaAccountAssetEndpoints } from './accounts';
+import { assetHubKusamaBlockEndpoints } from './blocks';
+import { assetHubKusamaRuntimeEndpoints } from './runtime';
 
-export const statemintEndpoints = {
-	accounts: [],
-	blocks: statemintBlockEndpoints,
+export const assetHubKusamaEndpoints = {
+	accounts: assetHubKusamaAccountAssetEndpoints,
+	blocks: assetHubKusamaBlockEndpoints,
 	paras: [],
-	runtime: statemineRuntimeEndpoints,
+	runtime: assetHubKusamaRuntimeEndpoints,
 };

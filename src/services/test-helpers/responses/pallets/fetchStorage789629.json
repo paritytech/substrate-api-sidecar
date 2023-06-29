@@ -10,7 +10,7 @@
       "name": "PublicPropCount",
       "modifier": "Default",
       "type": {
-        "plain": "PropIndex"
+        "plain": "160"
       },
       "fallback": "0x00000000",
       "docs": " The number of (public) proposals that have been made so far."
@@ -19,7 +19,7 @@
       "name": "PublicProps",
       "modifier": "Default",
       "type": {
-        "plain": "Vec<(PropIndex,Hash,AccountId)>"
+        "plain": "163"
       },
       "fallback": "0x00",
       "docs": " The public proposals. Unsorted. The second item is the proposal's hash."
@@ -29,10 +29,9 @@
       "modifier": "Optional",
       "type": {
         "map": {
-          "hasher": "Twox64Concat",
-          "key": "PropIndex",
-          "value": "(Vec<AccountId>,BalanceOf)",
-          "linked": false
+          "hashers": ["Twox64Concat"],
+          "key": "160",
+          "value": "164"
         }
       },
       "fallback": "0x00",
@@ -43,10 +42,9 @@
       "modifier": "Optional",
       "type": {
         "map": {
-          "hasher": "Identity",
-          "key": "Hash",
-          "value": "PreimageStatus",
-          "linked": false
+          "hashers": ["Identity"],
+          "key": "22",
+          "value": "165"
         }
       },
       "fallback": "0x00",
@@ -56,7 +54,7 @@
       "name": "ReferendumCount",
       "modifier": "Default",
       "type": {
-        "plain": "ReferendumIndex"
+        "plain": "156"
       },
       "fallback": "0x00000000",
       "docs": " The next free referendum index, aka the number of referenda started so far."
@@ -65,7 +63,7 @@
       "name": "LowestUnbaked",
       "modifier": "Default",
       "type": {
-        "plain": "ReferendumIndex"
+        "plain": "156"
       },
       "fallback": "0x00000000",
       "docs": " The lowest referendum index representing an unbaked referendum. Equal to\n `ReferendumCount` if there isn't a unbaked referendum."
@@ -75,10 +73,9 @@
       "modifier": "Optional",
       "type": {
         "map": {
-          "hasher": "Twox64Concat",
-          "key": "ReferendumIndex",
-          "value": "ReferendumInfo",
-          "linked": false
+          "hashers": ["Twox64Concat"],
+          "key": "156",
+          "value": "166"
         }
       },
       "fallback": "0x00",
@@ -89,10 +86,9 @@
       "modifier": "Default",
       "type": {
         "map": {
-          "hasher": "Twox64Concat",
-          "key": "AccountId",
-          "value": "Voting",
-          "linked": false
+          "hashers": ["Twox64Concat"],
+          "key": "18",
+          "value": "167"
         }
       },
       "fallback": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -103,10 +99,9 @@
       "modifier": "Optional",
       "type": {
         "map": {
-          "hasher": "Twox64Concat",
-          "key": "AccountId",
-          "value": "BlockNumber",
-          "linked": false
+          "hashers": ["Twox64Concat"],
+          "key": "18",
+          "value": "12"
         }
       },
       "fallback": "0x00",
@@ -116,7 +111,7 @@
       "name": "LastTabledWasExternal",
       "modifier": "Default",
       "type": {
-        "plain": "bool"
+        "plain": "52"
       },
       "fallback": "0x00",
       "docs": " True if the last referendum tabled was submitted externally. False if it was a public\n proposal."
@@ -125,7 +120,7 @@
       "name": "NextExternal",
       "modifier": "Optional",
       "type": {
-        "plain": "(Hash,VoteThreshold)"
+        "plain": "168"
       },
       "fallback": "0x00",
       "docs": " The referendum to be tabled whenever it would be valid to table an external proposal.\n This happens when a referendum needs to be tabled and one of two conditions are met:\n - `LastTabledWasExternal` is `false`; or\n - `PublicProps` is empty."
@@ -135,10 +130,9 @@
       "modifier": "Optional",
       "type": {
         "map": {
-          "hasher": "Identity",
-          "key": "Hash",
-          "value": "(BlockNumber,Vec<AccountId>)",
-          "linked": false
+          "hashers": ["Identity"],
+          "key": "22",
+          "value": "169"
         }
       },
       "fallback": "0x00",
@@ -149,10 +143,9 @@
       "modifier": "Default",
       "type": {
         "map": {
-          "hasher": "Identity",
-          "key": "Hash",
-          "value": "bool",
-          "linked": false
+          "hashers": ["Identity"],
+          "key": "22",
+          "value": "52"
         }
       },
       "fallback": "0x00",
@@ -162,7 +155,7 @@
       "name": "StorageVersion",
       "modifier": "Optional",
       "type": {
-        "plain": "Releases"
+        "plain": "40"
       },
       "fallback": "0x00",
       "docs": " Storage version of the pallet.\n\n New networks start with last version."

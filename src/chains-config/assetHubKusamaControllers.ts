@@ -18,9 +18,9 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Statemint configuration for Sidecar.
+ * Asset Hub Kusama configuration for Sidecar.
  */
-export const statemintControllers: ControllerConfig = {
+export const assetHubKusamaControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
 		'AccountsBalanceInfo',
@@ -31,10 +31,9 @@ export const statemintControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
-		'PalletsDispatchables',
 		'PalletsConsts',
-		'PalletsEvents',
 		'PalletsErrors',
+		'PalletsEvents',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
@@ -45,7 +44,7 @@ export const statemintControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 601,
+		minCalcFeeRuntime: 1,
 		blockStore: initLRUCache(),
 		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},

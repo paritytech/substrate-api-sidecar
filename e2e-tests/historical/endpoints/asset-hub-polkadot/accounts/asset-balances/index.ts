@@ -14,13 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { statemineAccountAssetEndpoints } from './accounts';
-import { statemineBlockEndpoints } from './blocks';
-import { statemineRuntimeEndpoints } from './runtime';
-
-export const statemineEndpoints = {
-	accounts: statemineAccountAssetEndpoints,
-	blocks: statemineBlockEndpoints,
-	paras: [],
-	runtime: statemineRuntimeEndpoints,
-};
+/**
+ * Currently there are no assets established within Asset Hub Polkadot
+ * so these tests will be empty.
+ */
+export const assetHubPolkadotAccountAssetBalanceEndpoints = [];
