@@ -16,12 +16,24 @@
 
 import { Keyring } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
-import { allNetworks } from '@polkadot/util-crypto';
-import { blake2AsHex } from '@polkadot/util-crypto';
+import { hexToU8a } from '@polkadot/util';
+import { allNetworks, blake2AsHex } from '@polkadot/util-crypto';
 import { BadRequest } from 'http-errors';
 
 import { IAccountConvert } from '../../types/responses/AccountConvert';
 import { AbstractService } from '../AbstractService';
+
+/**
+ * Copyright 2023 via polkadot-js/common
+ *
+ * The slightly modified below logic is copyrighted from polkadot-js/common . The exact path to the code can be seen here:
+ * https://github.com/polkadot-js/common/blob/e5cb0ba2b4a6b5817626cc964b4f66334f2410e4/packages/keyring/src/pair/index.ts#L44-L49
+ */
+const TYPE_ADDRESS = {
+	ecdsa: (p: string) => (hexToU8a(p).length > 32 ? blake2AsHex(p) : p),
+	ed25519: (p: string) => p,
+	sr25519: (p: string) => p,
+};
 
 export class AccountsConvertService extends AbstractService {
 	/**
@@ -59,7 +71,9 @@ export class AccountsConvertService extends AbstractService {
 			);
 		}
 
-		const accountId2Encode = publicKey ? blake2AsHex(accountId) : accountId;
+		const accountId2Encode = publicKey
+			? TYPE_ADDRESS[scheme](accountId)
+			: accountId;
 
 		const keyring = new Keyring({ type: scheme, ss58Format: ss58Prefix });
 		const address = keyring.encodeAddress(accountId2Encode, ss58Prefix);
