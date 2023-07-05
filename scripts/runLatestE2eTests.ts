@@ -83,7 +83,7 @@ parser.add_argument('--local', {
 	nargs: '?',
 });
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'kusama', 'westend', 'asset-hub-polkadot'],
+	choices: ['polkadot', 'kusama', 'westend', 'polkadot-asset-hub'],
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],

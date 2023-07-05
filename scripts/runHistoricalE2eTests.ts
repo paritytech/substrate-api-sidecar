@@ -108,8 +108,8 @@ parser.add_argument('--chain', {
 		'polkadot',
 		'kusama',
 		'westend',
-		'asset-hub-kusama',
-		'asset-hub-polkadot',
+		'kusama-asset-hub',
+		'polkadot-asset-hub',
 	],
 });
 parser.add_argument('--log-level', {
