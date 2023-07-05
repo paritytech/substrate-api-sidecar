@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.0..v17.1.1) (2023-07-05)
+
+### Bug Fixes
+
+- fix: rename wsurl endpoints to asset hub ([#1301](https://github.com/paritytech/substrate-api-sidecar/pull/1301)) ([7a7e7de](https://github.com/paritytech/substrate-api-sidecar/commit/7a7e7de03e17b3ebdb156f6a7580737858e47810))
+- fix: /accounts/{accountId}/convert encoding for ecdsa ([#1280](https://github.com/paritytech/substrate-api-sidecar/pull/1280)) ([86edf0b](https://github.com/paritytech/substrate-api-sidecar/commit/86edf0b058c3effad80ab9d314dff914e2e7aab8))
+- fix: rename statemint/statemine/westmint to asset-hub-polkadot/kusama/westend ([#1296](https://github.com/paritytech/substrate-api-sidecar/pull/1296)) ([362e912](https://github.com/paritytech/substrate-api-sidecar/commit/362e91224f0bb8562dd0c28da740621bbdad72c0))
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.5.0 to 2.5.1 ([#1300](https://github.com/paritytech/substrate-api-sidecar/pull/1300)) ([45d8ecf](https://github.com/paritytech/substrate-api-sidecar/commit/45d8ecf84841ee28aad7f29cf099d9a829b1ee6c))
+- chore: bump semver from 7.3.5 to 7.5.3 in /docs ([#1298](https://github.com/paritytech/substrate-api-sidecar/pull/1298)) ([45eee30](https://github.com/paritytech/substrate-api-sidecar/commit/45eee30f1b3814721d949868e70ee3212f164b4d))
+- chore: bump Swatinem/rust-cache from 2.4.0 to 2.5.0 ([#1297](https://github.com/paritytech/substrate-api-sidecar/pull/1297)) ([2579500](https://github.com/paritytech/substrate-api-sidecar/commit/2579500952acd7a25bdc1cf20424aed445778a21))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
 ## [17.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.0.0..v17.1.0) (2023-06-13)
 
 ### Features
