@@ -248,7 +248,10 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
-			if (!api.rpc.payment || !api.rpc.payment.queryInfo) {
+			if (
+				!api.rpc.payment?.queryInfo &&
+				!api.call.transactionPaymentApi?.queryInfo
+			) {
 				extrinsics[idx].info = {
 					error: 'Rpc method payment::queryInfo is not available',
 				};
