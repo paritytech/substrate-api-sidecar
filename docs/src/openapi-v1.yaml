@@ -804,7 +804,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/TransactionFailure'
+                  $ref: '#/components/schemas/Error'
   /transaction/dry-run:
     post:
       tags:
@@ -821,12 +821,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionDryRun'
-        "500":
+        "400":
           description: failed to dry-run transaction
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionFailure'
+                $ref: '#/components/schemas/Error'
   /transaction/fee-estimate:
     post:
       tags:
@@ -851,12 +851,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionFeeEstimate'
-        "500":
+        "400":
           description: fee estimation failure
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionFeeEstimateFailure'
+                $ref: '#/components/schemas/Error'
   /transaction/material:
     get:
       tags:
@@ -1034,7 +1034,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1244,7 +1244,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1351,7 +1351,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1458,7 +1458,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1650,7 +1650,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -2574,6 +2574,8 @@ components:
         message:
           type: string
         stack:
+          type: string
+        level:
           type: string
     ExtrinsicMethod:
       type: object
@@ -3757,44 +3759,6 @@ components:
         References:
         - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
         - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
-    TransactionFailedToParse:
-      type: object
-      properties:
-        code:
-          type: number
-        error:
-          type: string
-          description: >-
-            `Failed to parse a tx.`
-        transaction:
-          type: string
-          format: hex
-        cause:
-          type: string
-        stack:
-          type: string
-      description: Error message when Sidecar fails to parse the transaction.
-    TransactionFailedToSubmit:
-      type: object
-      properties:
-        code:
-          type: number
-        error:
-          type: string
-          description: Failed to submit transaction.
-        transaction:
-          type: string
-          format: hex
-        cause:
-          type: string
-        stack:
-          type: string
-      description: >-
-        Error message when the node rejects the submitted transaction.
-    TransactionFailure:
-      oneOf:
-        - $ref: '#/components/schemas/TransactionFailedToSubmit'
-        - $ref: '#/components/schemas/TransactionFailedToParse'
     TransactionFeeEstimate:
       type: object
       properties:
@@ -3817,30 +3781,6 @@ components:
       description: >-
         Note: `partialFee` does not include any tips that you may add to increase a transaction's
         priority. See [compute_fee](https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee).
-    TransactionFeeEstimateFailure:
-      type: object
-      properties:
-        code:
-          type: number
-        at:
-            type: object
-            properties:
-              hash:
-                type: string
-        error:
-          type: string
-          description:  Error description.
-        transaction:
-          type: string
-          format: hex
-        block:
-          type: string
-          description: Block hash of the block fee estimation was attempted at.
-        cause:
-          type: string
-          description: Error message from the client.
-        stack:
-          type: string
     TransactionMaterial:
       type: object
       properties:

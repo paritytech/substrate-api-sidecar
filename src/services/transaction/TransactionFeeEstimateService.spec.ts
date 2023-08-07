@@ -19,6 +19,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
@@ -29,7 +30,6 @@ import {
 	defaultMockApi,
 	queryInfoAt,
 } from '../test-helpers/mock';
-import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
 import validRpcResponse from '../test-helpers/responses/transaction/feeEstimateValidRpcCall.json';
 import validRuntimeResponse from '../test-helpers/responses/transaction/feeEstimateValidRuntimeCall.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
@@ -65,7 +65,7 @@ const transactionFeeEstimateService = new TransactionFeeEstimateService(
 
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
-		it('Works with a valid a transaction', async () => {
+		it('Works with a valid transaction', async () => {
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
@@ -93,16 +93,10 @@ describe('TransactionFeeEstimateService', () => {
 		});
 
 		it('Catches ApiPromise throws and then throws the correct error format', async () => {
-			const err = new Error(
-				'2: Unable to query dispatch info.: Invalid transaction version'
-			);
-			err.stack =
-				'Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock';
-
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = undefined;
 			(mockApi.rpc.payment as any).queryInfo = () =>
 				Promise.resolve().then(() => {
-					throw err;
+					throw new BadRequest('Unable to fetch fee info.');
 				});
 
 			await expect(
@@ -110,7 +104,7 @@ describe('TransactionFeeEstimateService', () => {
 					blockHash789629,
 					balancesTransferInvalid
 				)
-			).rejects.toStrictEqual(invalidResponse);
+			).rejects.toStrictEqual(new BadRequest('Unable to fetch fee info.'));
 
 			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =

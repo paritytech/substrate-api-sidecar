@@ -15,9 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Hash } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import { AbstractService } from '../AbstractService';
-import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionSubmitService extends AbstractService {
 	/**
@@ -33,14 +33,7 @@ export class TransactionSubmitService extends AbstractService {
 		try {
 			tx = api.tx(transaction);
 		} catch (err) {
-			const { cause, stack } = extractCauseAndStack(err);
-
-			throw {
-				error: 'Failed to parse transaction.',
-				transaction,
-				cause,
-				stack,
-			};
+			throw new BadRequest('Failed to parse transaction.');
 		}
 
 		try {
@@ -50,14 +43,7 @@ export class TransactionSubmitService extends AbstractService {
 				hash,
 			};
 		} catch (err) {
-			const { cause, stack } = extractCauseAndStack(err);
-
-			throw {
-				error: 'Failed to submit transaction.',
-				transaction,
-				cause,
-				stack,
-			};
+			throw new BadRequest('Failed to submit transaction.');
 		}
 	}
 }

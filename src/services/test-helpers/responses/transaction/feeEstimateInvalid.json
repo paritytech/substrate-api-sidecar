@@ -1,9 +1,0 @@
-{
-  "error": "Unable to fetch fee info",
-  "at": {
-    "hash": "0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578"
-  },
-  "transaction": "0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0",
-  "cause": "2: Unable to query dispatch info.: Invalid transaction version",
-  "stack": "Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock"
-}

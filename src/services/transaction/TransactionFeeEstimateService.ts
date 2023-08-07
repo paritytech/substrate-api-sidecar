@@ -19,9 +19,9 @@ import {
 	RuntimeDispatchInfo,
 	RuntimeDispatchInfoV1,
 } from '@polkadot/types/interfaces';
+import { BadRequest } from 'http-errors';
 
 import { AbstractService } from '../AbstractService';
-import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionFeeEstimateService extends AbstractService {
 	/**
@@ -51,17 +51,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 				return await api.rpc.payment.queryInfo(transaction, hash);
 			}
 		} catch (err) {
-			const { cause, stack } = extractCauseAndStack(err);
-
-			throw {
-				at: {
-					hash: hash.toString(),
-				},
-				error: 'Unable to fetch fee info',
-				transaction,
-				cause,
-				stack,
-			};
+			throw new BadRequest('Unable to fetch fee info.');
 		}
 	}
 }
