@@ -14,28 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IBasicLegacyError } from './BasicLegacyError';
+// TODO look into creating a base class for transactions and move this into that base class
 
-/**
- * Error from tx POST methods
- */
-export interface ITxLegacyError extends IBasicLegacyError {
-	code: number;
-	data?: string; // deprecated
-	transaction?: string;
+import { isToString } from '../../types/util';
+
+export function extractCauseAndStack(err: unknown): {
 	cause: string | unknown;
-	stack: string;
-	at?: string;
-}
+	stack: string | undefined;
+} {
+	// const code = err instanceof Error ? err : '';
+	const cause =
+		err instanceof Error ? err.message : isToString(err) ? err.toString() : err;
 
-/**
- * Type guard to check if something is a subset of the interface TxError.
- *
- * @param thing to check type of
- */
-export function isTxLegacyError(thing: unknown): thing is ITxLegacyError {
-	return (
-		(thing as ITxLegacyError).cause !== undefined &&
-		(thing as ITxLegacyError).error !== undefined
-	);
+	const stack = err instanceof Error ? err.stack : '';
+
+	return { cause, stack };
 }

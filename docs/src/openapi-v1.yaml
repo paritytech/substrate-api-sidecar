@@ -804,7 +804,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Error'
+                  $ref: '#/components/schemas/TransactionFailure'
   /transaction/dry-run:
     post:
       tags:
@@ -826,7 +826,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/TransactionFailure'
   /transaction/fee-estimate:
     post:
       tags:
@@ -856,7 +856,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/TransactionFeeEstimateFailure'
   /transaction/material:
     get:
       tags:
@@ -3759,6 +3759,44 @@ components:
         References:
         - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
         - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
+    TransactionFailedToParse:
+      type: object
+      properties:
+        code:
+          type: number
+        error:
+          type: string
+          description: >-
+            `Failed to parse a tx.`
+        transaction:
+          type: string
+          format: hex
+        cause:
+          type: string
+        stack:
+          type: string
+      description: Error message when Sidecar fails to parse the transaction.
+    TransactionFailedToSubmit:
+      type: object
+      properties:
+        code:
+          type: number
+        error:
+          type: string
+          description: Failed to submit transaction.
+        transaction:
+          type: string
+          format: hex
+        cause:
+          type: string
+        stack:
+          type: string
+      description: >-
+        Error message when the node rejects the submitted transaction.
+    TransactionFailure:
+      oneOf:
+        - $ref: '#/components/schemas/TransactionFailedToSubmit'
+        - $ref: '#/components/schemas/TransactionFailedToParse'
     TransactionFeeEstimate:
       type: object
       properties:
@@ -3781,6 +3819,30 @@ components:
       description: >-
         Note: `partialFee` does not include any tips that you may add to increase a transaction's
         priority. See [compute_fee](https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee).
+    TransactionFeeEstimateFailure:
+      type: object
+      properties:
+        code:
+          type: number
+        at:
+            type: object
+            properties:
+              hash:
+                type: string
+        error:
+          type: string
+          description:  Error description.
+        transaction:
+          type: string
+          format: hex
+        block:
+          type: string
+          description: Block hash of the block fee estimation was attempted at.
+        cause:
+          type: string
+          description: Error message from the client.
+        stack:
+          type: string
     TransactionMaterial:
       type: object
       properties:

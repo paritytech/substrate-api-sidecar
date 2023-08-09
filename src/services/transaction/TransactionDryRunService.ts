@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { BlockHash } from '@polkadot/types/interfaces';
-import { BadRequest } from 'http-errors';
 
 import {
 	ITransactionDryRun,
@@ -23,6 +22,7 @@ import {
 	ValidityErrorType,
 } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
@@ -62,7 +62,18 @@ export class TransactionDryRunService extends AbstractService {
 				dryRunResult,
 			};
 		} catch (err) {
-			throw new BadRequest('Unable to dry-run transaction.');
+			const { cause, stack } = extractCauseAndStack(err);
+
+			throw {
+				at: {
+					hash,
+				},
+				code: 400,
+				error: 'Unable to dry-run transaction',
+				transaction,
+				cause,
+				stack,
+			};
 		}
 	}
 }

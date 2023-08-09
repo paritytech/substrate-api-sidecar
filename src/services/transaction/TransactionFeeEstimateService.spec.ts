@@ -19,7 +19,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
-import { BadRequest } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
@@ -30,6 +29,7 @@ import {
 	defaultMockApi,
 	queryInfoAt,
 } from '../test-helpers/mock';
+import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
 import validRpcResponse from '../test-helpers/responses/transaction/feeEstimateValidRpcCall.json';
 import validRuntimeResponse from '../test-helpers/responses/transaction/feeEstimateValidRuntimeCall.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
@@ -93,10 +93,16 @@ describe('TransactionFeeEstimateService', () => {
 		});
 
 		it('Catches ApiPromise throws and then throws the correct error format', async () => {
+			const err = new Error(
+				'2: Unable to query dispatch info.: Invalid transaction version'
+			);
+			err.stack =
+				'Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock';
+
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = undefined;
 			(mockApi.rpc.payment as any).queryInfo = () =>
 				Promise.resolve().then(() => {
-					throw new BadRequest('Unable to fetch fee info.');
+					throw err;
 				});
 
 			await expect(
@@ -104,7 +110,7 @@ describe('TransactionFeeEstimateService', () => {
 					blockHash789629,
 					balancesTransferInvalid
 				)
-			).rejects.toStrictEqual(new BadRequest('Unable to fetch fee info.'));
+			).rejects.toStrictEqual(invalidResponse);
 
 			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
