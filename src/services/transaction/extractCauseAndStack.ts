@@ -22,7 +22,6 @@ export function extractCauseAndStack(err: unknown): {
 	cause: string | unknown;
 	stack: string | undefined;
 } {
-	// const code = err instanceof Error ? err : '';
 	const cause =
 		err instanceof Error ? err.message : isToString(err) ? err.toString() : err;
 
