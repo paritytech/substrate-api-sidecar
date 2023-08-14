@@ -37,15 +37,16 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 		return next(err);
 	}
 
-	const { error, data, cause, stack, transaction } = err;
+	const { code, error, data, cause, stack, transaction, at } = err;
 
 	const info = {
-		code: 500,
+		code,
 		error,
 		data,
 		transaction,
 		cause,
 		stack,
+		at,
 	};
 
 	Log.logger.error({
@@ -55,5 +56,5 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 		}`,
 	});
 
-	res.status(500).send(info);
+	res.status(code).send(info);
 };

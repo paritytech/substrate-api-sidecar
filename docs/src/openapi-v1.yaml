@@ -821,7 +821,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionDryRun'
-        "500":
+        "400":
           description: failed to dry-run transaction
           content:
             application/json:
@@ -851,7 +851,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionFeeEstimate'
-        "500":
+        "400":
           description: fee estimation failure
           content:
             application/json:
@@ -1034,7 +1034,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1244,7 +1244,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1351,7 +1351,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1458,7 +1458,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -1650,7 +1650,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: could not find resource with with id
+          description: could not find resource with id
           content:
             application/json:
               schema:
@@ -2574,6 +2574,8 @@ components:
         message:
           type: string
         stack:
+          type: string
+        level:
           type: string
     ExtrinsicMethod:
       type: object
