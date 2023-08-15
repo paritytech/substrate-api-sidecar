@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.1..v17.1.2) (2023-08-16)
+
+### Bug Fixes
+- fix: query info feature detection ([#1305](https://github.com/paritytech/substrate-api-sidecar/pull/1305)) ([3c768e3](https://github.com/paritytech/substrate-api-sidecar/commit/3c768e33674d8448482dac65d278a86fa8d25aa8)) Contributed by [xlc](https://github.com/xlc)
+- fix: change error&error codes returned from /transaction/* related endpoints ([#1312](https://github.com/paritytech/substrate-api-sidecar/pull/1312)) ([797c421](https://github.com/paritytech/substrate-api-sidecar/commit/797c4217a9041edc98140bcf3a55a87e8056ae94))
+
+### Chores
+- chore(deps): bump semver from 6.3.0 to 6.3.1 ([#1304](https://github.com/paritytech/substrate-api-sidecar/pull/1304)) ([62b97f3](https://github.com/paritytech/substrate-api-sidecar/commit/62b97f3b6223660d696119d317c8e5184ce703ed))
+- chore(yarn): bump yarn ([#1303](https://github.com/paritytech/substrate-api-sidecar/pull/1303)) ([e4d42af](https://github.com/paritytech/substrate-api-sidecar/commit/e4d42af754707003297ec1dc00a000a0bd8bb80b))
+- chore(dev): switch from tsc-watch to ts-node-dev ([#1307](https://github.com/paritytech/substrate-api-sidecar/pull/1307)) ([83d201a](https://github.com/paritytech/substrate-api-sidecar/commit/83d201a514b1b5a49fad7268a3f7eabf6a143d39))
+- chore(deps): bump word-wrap from 1.2.3 to 1.2.4 ([#1309](https://github.com/paritytech/substrate-api-sidecar/pull/1309)) ([573d083](https://github.com/paritytech/substrate-api-sidecar/commit/573d083fb514a5dcae399267ddd585b8ded996ab))
+- chore: bump Swatinem/rust-cache from 2.5.1 to 2.6.0 ([#1310](https://github.com/paritytech/substrate-api-sidecar/pull/1310)) ([28e6078](https://github.com/paritytech/substrate-api-sidecar/commit/28e6078964eb7ba91252e5458e6fbffe966505a2))
+- chore: bump Swatinem/rust-cache from 2.6.0 to 2.6.1 ([#1313](https://github.com/paritytech/substrate-api-sidecar/pull/1313)) ([9fcda59](https://github.com/paritytech/substrate-api-sidecar/commit/9fcda59e76db9339e5a105b3d827a7953c4574aa))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10000
+- Kusama v10000
+- Westend v10000
+
 ## [17.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.0..v17.1.1) (2023-07-05)
 
 ### Bug Fixes
