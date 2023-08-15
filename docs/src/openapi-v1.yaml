@@ -932,6 +932,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
+  /pallets/foreign-assets/asset-info:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with foreign assets.
+      description: Returns information associated with every foreign asset which includes
+        the assets `AssetDetails` and `AssetMetadata`.
+      operationId: getForeignAssets
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the foreign assets.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: An array of foreign assets.
+                items:
+                  $ref: '#/components/schemas/PalletsForeignAssets'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -3071,6 +3098,23 @@ components:
           items:
             type: string
       description: Metadata of an event item from a FRAME pallet.
+    PalletsForeignAssets:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalletsForeignAssetsInfo'
+          description: Array containing the `AssetDetails` and `AssetMetadata` of every foreign asset.
+    PalletsForeignAssetsInfo:
+      type: object
+      properties:
+        foreignAssetInfo:
+          $ref: '#/components/schemas/AssetInfo'
+        foreignAssetMetadata:
+          $ref: '#/components/schemas/AssetMetadata'
     PalletsNominationPool:
       type: object
       properties:

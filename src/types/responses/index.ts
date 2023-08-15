@@ -25,6 +25,7 @@ export * from './At';
 export * from './Block';
 export * from './EraPayouts';
 export * from './Extrinsic';
+export * from './ForeignAssets';
 export * from './FrameMethod';
 export * from './MetadataCode';
 export * from './NodeNetwork';

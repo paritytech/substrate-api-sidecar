@@ -14,13 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsForeignAssetsService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import { AssetMetadata } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
+import { Codec } from '@polkadot/types/types';
+
+import { IAt } from '.';
+
+export interface IForeignAssetInfo<T = Codec> {
+	foreignAssetInfo: PalletAssetsAssetDetails | T;
+	foreignAssetMetadata: AssetMetadata | T;
+}
+
+export interface IForeignAssets {
+	at: IAt;
+	items: IForeignAssetInfo[];
+}

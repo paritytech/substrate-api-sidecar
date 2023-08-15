@@ -108,7 +108,7 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 			);
 		} else {
 			items = Object.entries(dispatchables).map(
-				(disaptchableItem) => disaptchableItem[1].meta
+				(dispatchableItem) => dispatchableItem[1].meta
 			);
 		}
 
