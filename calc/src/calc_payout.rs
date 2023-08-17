@@ -186,7 +186,7 @@ mod test_payout {
         // era: 1150
         // total_reward_points : 22_265_020 api.query.staking.erasRewardPoints.total
         // era_payout: 3_213_084_537_093_535 gotten from api.query.staking.erasValidatorReward
-        // validator: 1SWFK4bcbDe4FisWjtN5JQ47VYyQDMPfbuiw8WF7UFDw1Zm
+        // nominator: 1SWFK4bcbDe4FisWjtN5JQ47VYyQDMPfbuiw8WF7UFDw1Zm
         // validator_comission: 3 %
         // validator_reward_points: 56_220 api.query.staking.erasRewardPoints
         // total_exposure: 20_509_805_345_780_557 api.query.staking.erasStakers
