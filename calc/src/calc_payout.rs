@@ -35,7 +35,7 @@ impl CalcPayout {
 
         info!("from_params({}, {}) -> ", total_reward_points, era_payout);
 
-        let calc_payout = Self {
+        let calc_payout: CalcPayout = Self {
             total_reward_points: total_reward_points as RewardPoint,
             era_payout: Balance::from_str(era_payout).unwrap(),
         };
@@ -64,28 +64,46 @@ impl CalcPayout {
             is_validator,
         );
 
-        // This is the fraction of the total reward that the validator and the
-        // nominators will get.
-        let validator_total_reward_part =
+        /*
+        This is the fraction of the total reward that will be split between the
+        validator and its nominators
+        */
+        let validator_total_reward_part: Perbill =
             Perbill::from_rational(validator_reward_points, self.total_reward_points);
 
-        // This is how much validator + nominators are entitled to.
-        let validator_total_payout = validator_total_reward_part * self.era_payout;
+        /*
+        Using the previous info, here we calculate the portion of the era's reward
+        that the nominator and its validators are entitled to
+        */
+        let validator_total_payout: u128 = validator_total_reward_part * self.era_payout;
 
-        // This is the validator's commission
-        let validator_commission = Perbill::from_percent(validator_commission);
-        let validator_commission_payout = validator_commission * validator_total_payout;
+        /*
+        This is the validator's commission, independent of their share of the
+        reward for their stake
+        */
+        let validator_commission: Perbill = Perbill::from_percent(validator_commission);
+        let validator_commission_payout: u128 = validator_commission * validator_total_payout;
 
-        // What's left to split between the validator + nominators
-        let validator_leftover_payout = validator_total_payout - validator_commission_payout;
+        /*
+        Subtracting the validator's commission, how much is left to split between
+        the validator and its nominators
+        */
+        let validator_leftover_payout: u128 = validator_total_payout - validator_commission_payout;
 
-        let own_exposure = Balance::from_str(nominator_exposure).unwrap();
-        let total_exposure = Balance::from_str(total_exposure).unwrap();
-        // This is the fraction of the validators leftover payout that the staker is entitled to
-        let own_exposure_part = Perbill::from_rational(own_exposure, total_exposure);
+        let own_exposure: u128 = Balance::from_str(nominator_exposure).unwrap();
+        let total_exposure: u128 = Balance::from_str(total_exposure).unwrap();
 
-        // Now let's calculate how this is split to the account
-        let own_staking_payout = if is_validator {
+        /*
+        This is the portion of the validator/nominator's leftover payout that
+        the staker is entitled to
+        */
+        let own_exposure_part: Perbill = Perbill::from_rational(own_exposure, total_exposure);
+
+        /*
+        This is the payout for the address we are interested in, depending on
+        whether it's a validator or a nominator
+        */
+        let own_staking_payout: u128 = if is_validator {
             own_exposure_part * validator_leftover_payout + validator_commission_payout
         } else {
             own_exposure_part * validator_leftover_payout
@@ -100,9 +118,6 @@ impl CalcPayout {
             validator_leftover_payout,
             own_staking_payout
         );
-        println!("{:?}", validator_total_payout);
-        println!("{:?}", validator_commission_payout);
-        println!("{:?}", validator_commission_payout);
 
         own_staking_payout.to_string()
     }
@@ -111,17 +126,28 @@ impl CalcPayout {
 #[cfg(test)]
 mod test_payout {
     use super::*;
-
+    /*
+    These tests are designed to test the accuracy of the preceding functions.
+    All the data can be retrieved and checked with polkadot-js and subscan.io.
+    */
     #[test]
     fn kusama_era_5529_validator() {
-        // era: 5529
-        // total_reward_points : 6_341_260 api.query.staking.erasRewardPoints.total
-        // era_payout: 792_713_971_465_885 gotten from api.query.staking.erasValidatorReward
-        // validator: CaxeCQ3JWSrZiRNyCTnE4vT8aMrX1sJDJWCXSwrEpxWkiL5
-        // validator_comission: 10 %
-        // validator_reward_points: 3_920 api.query.staking.erasRewardPoints
-        // total_exposure: 9_676_879_871_438_978 api.query.staking.erasStakers
-        // nominator_exposure: 5_545_118_499_777 api.query.staking.erasStakers
+        /*
+        Parameters:
+            era: 5529
+            total_reward_points: 6_341_260 retrieved via api.query.staking.erasRewardPoints
+            era_payout: 792_713_971_465_885 retrieved via api.query.staking.erasValidatorReward
+            validator: CaxeCQ3JWSrZiRNyCTnE4vT8aMrX1sJDJWCXSwrEpxWkiL5
+            validator_reward_points: 3_920 retrieved via api.query.staking.erasRewardPoints
+            validator_commission: 10 % retrieved via api.query.staking.erasValidatorPrefs
+            nominator_exposure: 5_545_118_499_777 retrieved via api.query.staking.erasStakers
+            total_exposure: 9_676_879_871_438_978 retrieved via api.query.staking.erasStakers
+        */
+
+        let total_reward_points = 6_341_260u32;
+        let era_payout = String::from("792713971465885");
+
+        let params = CalcPayout::from_params(total_reward_points, &era_payout);
 
         let validator_reward_points = 3_920u32;
         let validator_commission = 10u32;
@@ -129,11 +155,6 @@ mod test_payout {
         let total_exposure = String::from("9676879871438978");
         let is_validator = true;
 
-        let total_reward_points = 6_341_260u32;
-        let era_payout = String::from("792713971465885");
-
-        let params = CalcPayout::from_params(total_reward_points, &era_payout);
-
         let estimated_payout = CalcPayout::calc_payout(
             &params,
             validator_reward_points,
@@ -143,20 +164,29 @@ mod test_payout {
             is_validator,
         );
 
-        let total_actual_payout: Balance = 49256160022; //https://kusama.subscan.io/event?address=CaxeCQ3JWSrZiRNyCTnE4vT8aMrX1sJDJWCXSwrEpxWkiL5&module=staking&event=rewarded&startDate=&endDate=&startBlock=&endBlock=&timeType=date&version=9430
-        assert_eq!(estimated_payout, total_actual_payout.to_string())
+        //https://kusama.subscan.io/event?address=CaxeCQ3JWSrZiRNyCTnE4vT8aMrX1sJDJWCXSwrEpxWkiL5&module=staking&event=rewarded&startDate=&endDate=&startBlock=&endBlock=&timeType=date&version=9430
+        let total_actual_payout = "49256160022";
+        assert_eq!(estimated_payout, total_actual_payout)
     }
 
     #[test]
     fn polkadot_era_1150_validator() {
-        // era: 1150
-        // total_reward_points : 22_265_020 api.query.staking.erasRewardPoints.total
-        // era_payout: 3_213_084_537_093_535 gotten from api.query.staking.erasValidatorReward
-        // validator: 14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp
-        // validator_comission: 3 %
-        // validator_reward_points: 56_220 api.query.staking.erasRewardPoints
-        // total_exposure: 20_509_805_345_780_557 api.query.staking.erasStakers
-        // nominator_exposure: 4_423_101_721_494 api.query.staking.erasStakers
+        /*
+        Parameters:
+            era: 1150
+            total_reward_points: 22_265_020 retrieved via api.query.staking.erasRewardPoints
+            era_payout: 3_213_084_537_093_535 retrieved via api.query.staking.erasValidatorReward
+            validator: 14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp
+            validator_reward_points: 56_220 retrieved via api.query.staking.erasRewardPoints
+            validator_commission: 3 % retrieved via api.query.staking.erasValidatorPrefs
+            nominator_exposure: 4_423_101_721_494 retrieved via api.query.staking.erasStakers
+            total_exposure: 20_509_805_345_780_557 retrieved via api.query.staking.erasStakers
+        */
+
+        let total_reward_points = 22_265_020u32;
+        let era_payout = String::from("3213084537093535");
+
+        let params = CalcPayout::from_params(total_reward_points, &era_payout);
 
         let validator_reward_points = 56_220u32;
         let validator_commission = 3u32;
@@ -164,11 +194,6 @@ mod test_payout {
         let total_exposure = String::from("20509805345780557");
         let is_validator = true;
 
-        let total_reward_points = 22_265_020u32;
-        let era_payout = String::from("3213084537093535");
-
-        let params = CalcPayout::from_params(total_reward_points, &era_payout);
-
         let estimated_payout = CalcPayout::calc_payout(
             &params,
             validator_reward_points,
@@ -178,21 +203,30 @@ mod test_payout {
             is_validator,
         );
 
-        let total_actual_payout = Balance::from_str("245091889606").unwrap(); //https://polkadot.subscan.io/extrinsic/16584606-2?event=16584606-230
-        assert_eq!(estimated_payout, total_actual_payout.to_string())
+        //https://polkadot.subscan.io/extrinsic/16584606-2?event=16584606-230
+        let total_actual_payout: &str = "245091889606";
+        assert_eq!(estimated_payout, total_actual_payout)
     }
 
     #[test]
     fn polkadot_era_1150_nominator() {
-        // era: 1150
-        // total_reward_points : 22_265_020 api.query.staking.erasRewardPoints.total
-        // era_payout: 3_213_084_537_093_535 gotten from api.query.staking.erasValidatorReward
-        // nominator: 14xA7KotR6pxt3LpgdZz8BDv3fyokWnP67bBnN6tsCWn5wsF
-        // validator: 12MgK2Sc8Rrh6DXS2gDrt7fWJ24eGeVb23NALbZLMw1grnkL
-        // validator_comission: 2 %
-        // validator_reward_points: 74_280 api.query.staking.erasRewardPoints
-        // total_exposure: 20_509_805_345_780_557 api.query.staking.erasStakers
-        // nominator_exposure: 4_669_514_624_960 api.query.staking.erasStakers
+        /*
+        Parameters:
+            era: 1150
+            total_reward_points: 22_265_020 retrieved via api.query.staking.erasRewardPoints
+            era_payout: 3_213_084_537_093_535 retrieved via api.query.staking.erasValidatorReward
+            validator: 12MgK2Sc8Rrh6DXS2gDrt7fWJ24eGeVb23NALbZLMw1grnkL
+            nominator: 14xA7KotR6pxt3LpgdZz8BDv3fyokWnP67bBnN6tsCWn5wsF
+            validator_reward_points: 74_280 retrieved via api.query.staking.erasRewardPoints
+            validator_commission: 3 % retrieved via api.query.staking.erasValidatorPrefs
+            nominator_exposure: 4_669_514_624_960 retrieved via api.query.staking.erasStakers
+            total_exposure: 20_509_805_345_780_557 retrieved via api.query.staking.erasStakers
+        */
+
+        let total_reward_points = 22_265_020u32;
+        let era_payout = String::from("3213084537093535");
+
+        let params = CalcPayout::from_params(total_reward_points, &era_payout);
 
         let validator_reward_points = 74_280u32;
         let validator_commission = 2u32;
@@ -200,11 +234,6 @@ mod test_payout {
         let total_exposure = String::from("20509838437005865");
         let is_validator = false;
 
-        let total_reward_points = 22_265_020u32;
-        let era_payout = String::from("3213084537093535");
-
-        let params = CalcPayout::from_params(total_reward_points, &era_payout);
-
         let estimated_payout = CalcPayout::calc_payout(
             &params,
             validator_reward_points,
@@ -214,7 +243,8 @@ mod test_payout {
             is_validator,
         );
 
-        let total_actual_payout = Balance::from_str("2391688616").unwrap(); //https://polkadot.subscan.io/extrinsic/16584521-2?event=16584521-1840
-        assert_eq!(estimated_payout, total_actual_payout.to_string())
+        //https://polkadot.subscan.io/extrinsic/16584521-2?event=16584521-1840
+        let total_actual_payout: &str = "2391688616";
+        assert_eq!(estimated_payout, total_actual_payout)
     }
 }
