@@ -129,6 +129,7 @@ mod test_payout {
     /*
     These tests are designed to test the accuracy of the preceding functions.
     All the data can be retrieved and checked with polkadot-js and subscan.io.
+    NOTE: As these tests are setup, the eras should be regularly updated.
     */
     #[test]
     fn kusama_era_5529_validator() {
