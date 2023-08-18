@@ -14,4 +14,5 @@
 
 pub mod calc_partial_fee;
 pub mod calc_payout;
+pub mod test;
 mod debug;
