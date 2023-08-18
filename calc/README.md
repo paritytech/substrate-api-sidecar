@@ -32,7 +32,7 @@ Example usage for the package can be found in Sidecar's
 and Sidecar's [block service](https://github.com/paritytech/substrate-api-sidecar/blob/master/src/services/blocks/BlocksService.ts).
 
 ### calc_partial_fee
-Tool to calculate an extrinsics `partial_fee` (ie the total fee minus any tip).
+Tool to calculate an extrinsics' `partial_fee` (i.e. the total fee minus any tip).
 It uses the following formula:
 
 ```
@@ -63,7 +63,7 @@ whether the node changes the weight or decides not to take a fee at all.
 
 To get the correct values for some extrinsic from both endpoints, provide the 
 extrinsic bytes, and the number of the block **before the block it is included in** 
-(eg if the extrinsic was in block 100, you'd use block 99 as an argument). This 
+(e.g. if the extrinsic was in block 100, you'd use block 99 as an argument). This 
 is very important.
 
 Once you've called these endpoints, access the `ExtrinsicSuccess` event to find 
