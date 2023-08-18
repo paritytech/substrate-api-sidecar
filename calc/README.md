@@ -42,7 +42,7 @@ partial_fee = base_fee + len_fee + ((adjusted_weight_fee/estimated_weight)*actua
 Where:
 - `base_fee` is a fixed base fee to include some transaction in a block. It accounts
   for the work needed to verify the signature and the computing work common to any tx.
-  It iss constant for any tx.
+  It is constant for any tx.
 - `len_fee` is a fee paid based on the size (length in bytes) of the transaction.
   Longer transactions require more storage, and therefore are more expensive.
 - `adjusted_weight_fee` is a fee that is itself `estimated_weight * targeted_fee_adjustment`:
@@ -89,7 +89,7 @@ We do this all in Rust simply to limit any precision loss.
 This is a tool to calculate the payout of a staking era, either for a validator 
 or a nominator. This is not a predictive estimation, instead it intakes data 
 from a concluded [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes)
-arrive to the final amount. For this it takes the following parameters:
+to arrive to the final amount. For this it takes the following parameters:
 - `total_reward_points` are the total [era points](https://wiki.polkadot.network/docs/maintain-guides-validator-payout#era-points)
   for a determined [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes). 
 - `era_payout` is the [payout](https://wiki.polkadot.network/docs/maintain-guides-validator-payout#payout-scheme)
