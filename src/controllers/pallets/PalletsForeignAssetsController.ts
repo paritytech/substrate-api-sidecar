@@ -27,7 +27,7 @@ import AbstractController from '../AbstractController';
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
  *
- * `/pallets/foreign-assets/asset-info`
+ * `/pallets/foreign-assets`
  * Returns:
  * - `at`: Block number and hash at which the call was made.
  * - `items`: An array containing the `AssetDetails` and `AssetMetadata` of every foreign asset.
@@ -37,11 +37,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsForeignAssetsController extends AbstractController<PalletsForeignAssetsService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/foreign-assets/asset-info',
-			new PalletsForeignAssetsService(api)
-		);
+		super(api, '/pallets/foreign-assets', new PalletsForeignAssetsService(api));
 		this.initRoutes();
 	}
 

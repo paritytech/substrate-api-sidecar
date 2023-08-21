@@ -932,7 +932,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
-  /pallets/foreign-assets/asset-info:
+  /pallets/foreign-assets:
     get:
       tags:
         - pallets
@@ -955,10 +955,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: An array of foreign assets.
-                items:
-                  $ref: '#/components/schemas/PalletsForeignAssets'
+                $ref: '#/components/schemas/PalletsForeignAssets'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -995,10 +993,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: Pallet info and Array of constantItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletConstants'
+                $ref: '#/components/schemas/PalletConstants'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1213,10 +1209,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: Pallet info and Array of dispatchableItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletDispatchables'
+                $ref: '#/components/schemas/PalletDispatchables'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1312,10 +1306,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: Pallet info and Array of errorItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletErrors'
+                $ref: '#/components/schemas/PalletErrors'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1419,10 +1411,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: Pallet info and Array of eventItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletEvents'
+                $ref: '#/components/schemas/PalletEvents'
         "400":
           description: invalid blockId supplied for at query param
           content:
@@ -1598,10 +1588,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 description: Pallet info and Array of storageItemIds.
-                items:
-                  $ref: '#/components/schemas/PalletStorage'
+                $ref: '#/components/schemas/PalletStorage'
         "400":
           description: invalid blockId supplied for at query param
           content:
