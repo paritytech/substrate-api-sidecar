@@ -23,6 +23,8 @@ import { IAt } from '.';
 export interface IForeignAssetInfo<T = Codec> {
 	foreignAssetInfo: PalletAssetsAssetDetails | T;
 	foreignAssetMetadata: AssetMetadata | T;
+	foreignAssetName: string;
+	foreignAssetSymbol: string;
 }
 
 export interface IForeignAssets {

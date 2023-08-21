@@ -45,6 +45,8 @@ export class PalletsForeignAssetsService extends AbstractService {
 				return {
 					foreignAssetInfo: info,
 					foreignAssetMetadata: foreignAssetMetaData[index][1],
+					foreignAssetName: foreignAssetMetaData[index][1]['name'].toHuman(),
+					foreignAssetSymbol: foreignAssetMetaData[index][1]['symbol'].toHuman(),
 				};
 			}
 		);
