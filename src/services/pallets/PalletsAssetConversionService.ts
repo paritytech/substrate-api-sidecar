@@ -13,33 +13,57 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import "@polkadot/api-augment"
 
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-
-import { IAssetInfo } from '../../types/responses';
+import { ILiquidityPools, ILiquidityPoolsInfo, ILiquidityId } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
-export class PalletsAssetsService extends AbstractService {
+export class PalletsAssetConversionService extends AbstractService {
 	constructor(api: ApiPromise) {
 		super(api);
 	}
 
-	/**
-	 * Fetch an asset's `AssetDetails` and `AssetMetadata` with its `AssetId`.
-	 *
-	 * @param hash `BlockHash` to make call at
-	 * @param assetId `AssetId` used to get info and metadata for an asset
-	 */
-	async fetchAssetById(hash: BlockHash, assetId: number): Promise<IAssetInfo> {
+	async fetchNextAvailableId(hash: BlockHash): Promise<ILiquidityId> {
 		const { api } = this;
 
-		const [{ number }, assetInfo, assetMetaData] = await Promise.all([
+		const [{ number }, id] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.assets.asset(assetId),
-			api.query.assets.metadata(assetId),
+			api.query.assetConversion.nextPoolAssetId(),
 		]);
+
+		const at = {
+			hash,
+			height: number.unwrap().toString(10),
+		};
+
+		this.api.query.assetConversion.nextPoolAssetId()
+
+		return {
+			at,
+			id,
+		}
+	}
+
+	async fetchLiquidityPools(hash: BlockHash): Promise<ILiquidityPools> {
+		const { api } = this;
+
+		const [{ number }, poolsInfo] =
+			await Promise.all([
+				api.rpc.chain.getHeader(hash),
+				api.query.assetConversion.pools.entries(),
+
+			]);
+
+		const pools: ILiquidityPoolsInfo[] = poolsInfo.map(
+			([_, info]) => {
+				return {
+					lpToken: info
+				};
+			}
+		);
 
 		const at = {
 			hash,
@@ -48,8 +72,8 @@ export class PalletsAssetsService extends AbstractService {
 
 		return {
 			at,
-			assetInfo,
-			assetMetaData,
+			pools,
 		};
 	}
+
 }

@@ -14,13 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetConversionService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import { Option } from '@polkadot/types/codec';
+import { PalletAssetConversionPoolInfo } from '@polkadot/types/lookup';
+import { IAt } from '.';
+
+export interface ILiquidityId{
+	at: IAt;
+	id: Option<any>;
+}
+
+export interface ILiquidityPoolsInfo {
+	lpToken: Option<PalletAssetConversionPoolInfo>;
+}
+
+export interface ILiquidityPools {
+	at: IAt;
+	pools: ILiquidityPoolsInfo[];
+}

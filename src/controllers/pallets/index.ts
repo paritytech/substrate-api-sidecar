@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export { default as PalletsAssets } from './PalletsAssetsController';
+export { default as PalletsAssetConversion } from './PalletsAssetConversionController';
 export { default as PalletsConsts } from './PalletsConstsController';
 export { default as PalletsDispatchables } from './PalletsDispatchablesController';
 export { default as PalletsErrors } from './PalletsErrorsController';

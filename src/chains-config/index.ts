@@ -23,6 +23,7 @@ import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { assetHubKusamaControllers } from './assetHubKusamaControllers';
 import { assetHubPolkadotControllers } from './assetHubPolkadotControllers';
+import { assetHubWestendControllers } from './assetHubWestendControllers';
 import { astarControllers } from './astarControllers';
 import { bifrostControllers } from './bifrostControllers';
 import { bifrostPolkadotControllers } from './bifrostPolkadotControllers';
@@ -60,7 +61,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'asset-hub-kusama': assetHubKusamaControllers,
 	'asset-hub-polkadot': assetHubPolkadotControllers,
 	westmine: assetHubKusamaControllers,
-	'asset-hub-westend': assetHubPolkadotControllers,
+	'asset-hub-westend': assetHubWestendControllers,
 	shiden: shidenControllers,
 	astar: astarControllers,
 	sora: soraControllers,
