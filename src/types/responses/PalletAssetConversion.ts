@@ -16,9 +16,10 @@
 
 import { Option } from '@polkadot/types/codec';
 import { PalletAssetConversionPoolInfo } from '@polkadot/types/lookup';
+
 import { IAt } from '.';
 
-export interface ILiquidityId{
+export interface ILiquidityId {
 	at: IAt;
 	id: Option<any>;
 }

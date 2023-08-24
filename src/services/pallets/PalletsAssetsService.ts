@@ -17,7 +17,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-
 import { IAssetInfo } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 

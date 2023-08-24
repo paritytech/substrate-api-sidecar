@@ -1,4 +1,3 @@
-
 // Copyright 2017-2022 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
@@ -38,14 +37,19 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsAssetConversionController extends AbstractController<PalletsAssetConversionService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/asset-conversion', new PalletsAssetConversionService(api));
+		super(
+			api,
+			'/pallets/asset-conversion',
+			new PalletsAssetConversionService(api)
+		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/next-available-id', this.getNextAvailableId],
-			['/liquidity-pools', this.getLiquidityPools]]);
+			['/liquidity-pools', this.getLiquidityPools],
+		]);
 	}
 
 	private getNextAvailableId: RequestHandler = async (

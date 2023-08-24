@@ -13,12 +13,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import "@polkadot/api-augment"
+import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import { ILiquidityPools, ILiquidityPoolsInfo, ILiquidityId } from '../../types/responses';
+import {
+	ILiquidityId,
+	ILiquidityPools,
+	ILiquidityPoolsInfo,
+} from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsAssetConversionService extends AbstractService {
@@ -39,31 +43,25 @@ export class PalletsAssetConversionService extends AbstractService {
 			height: number.unwrap().toString(10),
 		};
 
-		this.api.query.assetConversion.nextPoolAssetId()
-
 		return {
 			at,
 			id,
-		}
+		};
 	}
 
 	async fetchLiquidityPools(hash: BlockHash): Promise<ILiquidityPools> {
 		const { api } = this;
 
-		const [{ number }, poolsInfo] =
-			await Promise.all([
-				api.rpc.chain.getHeader(hash),
-				api.query.assetConversion.pools.entries(),
+		const [{ number }, poolsInfo] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.assetConversion.pools.entries(),
+		]);
 
-			]);
-
-		const pools: ILiquidityPoolsInfo[] = poolsInfo.map(
-			([_, info]) => {
-				return {
-					lpToken: info
-				};
-			}
-		);
+		const pools: ILiquidityPoolsInfo[] = poolsInfo.map(([_, info]) => {
+			return {
+				lpToken: info,
+			};
+		});
 
 		const at = {
 			hash,
@@ -75,5 +73,4 @@ export class PalletsAssetConversionService extends AbstractService {
 			pools,
 		};
 	}
-
 }

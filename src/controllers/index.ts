@@ -27,8 +27,8 @@ import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
-	PalletsAssets,
 	PalletsAssetConversion,
+	PalletsAssets,
 	PalletsConsts,
 	PalletsDispatchables,
 	PalletsErrors,

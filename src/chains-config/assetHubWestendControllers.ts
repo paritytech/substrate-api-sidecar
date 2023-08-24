@@ -31,7 +31,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
-        'PalletsAssetConversion',
+		'PalletsAssetConversion',
 		'PalletsDispatchables',
 		'PalletsConsts',
 		'PalletsEvents',
