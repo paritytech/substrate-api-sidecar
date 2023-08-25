@@ -1,24 +1,19 @@
-name: "Check Semantic Commit"
-
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - edited
       - synchronize
 
 permissions:
-  contents: read
+  pull-requests: read
 
 jobs:
-  main:
-    permissions:
-      pull-requests: read  # for amannn/action-semantic-pull-request to analyze PRs
-    name: Validate PR Title
+  ci:
+    name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - name: semantic-pull-request
-        uses: amannn/action-semantic-pull-request@v5 # tag: v5
+      - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
