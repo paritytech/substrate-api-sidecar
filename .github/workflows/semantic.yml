@@ -11,7 +11,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  semantic:
+  main:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
