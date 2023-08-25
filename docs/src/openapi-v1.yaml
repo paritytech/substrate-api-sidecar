@@ -938,8 +938,8 @@ paths:
       - pallets
       summary: Get information related to existing liquidity pools.
       description: Returns a list of the existing liquidity pools and its corresponding 
-      tokens at a given block height. If no block is specified, it returns the latest list
-      available.
+        tokens at a given block height. If no block is specified, it returns the latest list
+        available.
       parameters:
         - name: at
           in: query
@@ -949,27 +949,27 @@ paths:
             type: string
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
-        responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsAssetConversion'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+      responses:
+      "200":
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiquidityPools'
+      "400":
+        description: invalid blockId supplied for at query param
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
   /pallets/asset-conversion/next-available-id:
     get:
       tags:
       - pallets
       summary: Get the next available liquidity pool id.
       description: Returns the next available liquidity pool's id at a given 
-      block height. If no block is specified, it returns the latest list
-      available.
+        block height. If no block is specified, it returns the latest list
+        available.
       parameters:
         - name: at
           in: query
@@ -979,19 +979,19 @@ paths:
             type: string
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
-        responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsAssetConversion'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+      responses:
+      "200":
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NextAvailableId'
+      "400":
+        description: invalid blockId supplied for at query param
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -2111,6 +2111,24 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+    LiquidityPools:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pools:
+          type: array
+          description: Array containing existent liquidity pool's token id.
+          example: "[{\"lpToken\":{\"lpToken\":\"1\"}},{\"lpToken\":{\"lpToken\":\"0\"}}]"
+    NextAvailableId:
+      type: object
+        properties:
+          at:
+            $ref: '#/components/schemas/BlockIdentifiers'
+          id:
+            type: string
+            description: Next availabe liquidity pool's id.
+            example: "4"
     AccountBalanceInfo:
       type: object
       properties:

@@ -16,12 +16,13 @@
 
 import { Option } from '@polkadot/types/codec';
 import { PalletAssetConversionPoolInfo } from '@polkadot/types/lookup';
+import { Codec } from '@polkadot/types/types';
 
 import { IAt } from '.';
 
 export interface ILiquidityId {
 	at: IAt;
-	id: Option<any>;
+	id: Option<Codec>;
 }
 
 export interface ILiquidityPoolsInfo {

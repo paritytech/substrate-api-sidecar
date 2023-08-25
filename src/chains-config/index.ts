@@ -62,6 +62,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'asset-hub-polkadot': assetHubPolkadotControllers,
 	westmine: assetHubKusamaControllers,
 	'asset-hub-westend': assetHubWestendControllers,
+	westmint: assetHubWestendControllers,
 	shiden: shidenControllers,
 	astar: astarControllers,
 	sora: soraControllers,
