@@ -133,4 +133,24 @@ jobs:
       - name: Build Docs
         run: yarn build:docs
 
+  build-npm-release:
+      # This test is to make sure sidecar can release a binary without any errors.
+      # This script does not publish a release, but instead uses yarn to create a tarball and
+      # install it locally. Once installed a binary is attached to sidecars node_modules, and that
+      # binary is then tested against. For more in depth information reference the docs at
+      # `../../scripts/README.md`.
 
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn
+    - run: yarn test:test-release

@@ -1,4 +1,4 @@
-name: CI-Calc
+name: calc
 
 on:
   push:
