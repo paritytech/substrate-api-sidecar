@@ -33,23 +33,48 @@ export class PalletsForeignAssetsService extends AbstractService {
 	async fetchForeignAssets(hash: BlockHash): Promise<IForeignAssets> {
 		const { api } = this;
 
-		const [{ number }, foreignAssetInfo, foreignAssetMetaData] =
-			await Promise.all([
-				api.rpc.chain.getHeader(hash),
-				api.query.foreignAssets.asset.entries(),
-				api.query.foreignAssets.metadata.entries(),
-			]);
+		const [{ number }, foreignAssetInfo] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			api.query.foreignAssets.asset.entries(),
+		]);
 
-		const items: IForeignAssetInfo[] = foreignAssetInfo.map(
-			([_, info], index) => {
-				return {
-					foreignAssetInfo: info,
-					foreignAssetMetadata: foreignAssetMetaData[index][1],
-					foreignAssetName: foreignAssetMetaData[index][1]['name'].toHuman(),
-					foreignAssetSymbol: foreignAssetMetaData[index][1]['symbol'].toHuman(),
-				};
+		const items: IForeignAssetInfo[] = [];
+
+		/**
+		 * This will iterate through all the foreign asset entries and for each entry it will create
+		 * the `foreignAssetMultiLocation` variable based on the MultiLocation of the foreign asset.
+		 * This variable will then be used as the key to get the corresponding metadata of the foreign asset.
+		 *
+		 * This is based on the logic implemented by marshacb in asset-transfer-api-registry
+		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
+		 */
+		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
+			const foreignAssetData = assetStorageKeyData.toHuman();
+
+			if (foreignAssetData) {
+				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
+				const foreignAssetMultiLocationStr = JSON.stringify(
+					foreignAssetData[0]
+				).replace(/(\d),/g, '$1');
+				const foreignAssetMultiLocation = api.registry.createType(
+					'MultiLocation',
+					JSON.parse(foreignAssetMultiLocationStr)
+				);
+
+				const assetMetadata = await api.query.foreignAssets.metadata(
+					foreignAssetMultiLocation
+				);
+
+				if (assetMetadata) {
+					const item: IForeignAssetInfo = {
+						foreignAssetInfo: assetInfo.toHuman(),
+						foreignAssetMetadata: assetMetadata.toHuman(),
+					};
+
+					items.push(item);
+				}
 			}
-		);
+		}
 
 		const at = {
 			hash,

@@ -16,15 +16,13 @@
 
 import { AssetMetadata } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
-import { Codec } from '@polkadot/types/types';
+import { AnyJson } from 'src/types/polkadot-js';
 
 import { IAt } from '.';
 
-export interface IForeignAssetInfo<T = Codec> {
-	foreignAssetInfo: PalletAssetsAssetDetails | T;
-	foreignAssetMetadata: AssetMetadata | T;
-	foreignAssetName: string;
-	foreignAssetSymbol: string;
+export interface IForeignAssetInfo {
+	foreignAssetInfo: PalletAssetsAssetDetails | AnyJson;
+	foreignAssetMetadata: AssetMetadata | AnyJson;
 }
 
 export interface IForeignAssets {
