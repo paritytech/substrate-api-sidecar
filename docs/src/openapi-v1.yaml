@@ -2119,7 +2119,10 @@ components:
         pools:
           type: array
           description: Array containing existent liquidity pool's token id.
-          example: "[{\"lpToken\":{\"lpToken\":\"1\"}},{\"lpToken\":{\"lpToken\":\"0\"}}]"
+          example: "[{\"reserves\":[{\"parents\":\"1\",\"interior\":{\"here\":
+            null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
+            \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
+            },{\"lpToken\":{\"lpToken\":\"0\"}}]"
     NextAvailableId:
       type: object
         properties:

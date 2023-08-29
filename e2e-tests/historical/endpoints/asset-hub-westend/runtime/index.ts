@@ -14,25 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types/codec';
-import { PalletAssetConversionPoolInfo, PalletAssetConversionNativeOrAssetId } from '@polkadot/types/lookup';
-import type { ITuple } from '@polkadot/types-codec/types';
+import runtimeSpec5216878 from './5216878.json';
 
-import { Codec } from '@polkadot/types/types';
-
-import { IAt } from '.';
-
-export interface ILiquidityId {
-	at: IAt;
-	poolId: Option<Codec> | string;
-}
-
-export interface ILiquidityPoolsInfo {
-	reserves: ITuple<[PalletAssetConversionNativeOrAssetId, PalletAssetConversionNativeOrAssetId]>;
-	lpToken: Option<PalletAssetConversionPoolInfo>;
-}
-
-export interface ILiquidityPools {
-	at: IAt;
-	pools: ILiquidityPoolsInfo[];
-}
+export const assetHubWestendRuntimeEndpoints = [
+	['/runtime/spec?at=5216878', JSON.stringify(runtimeSpec5216878)],
+];

@@ -17,6 +17,7 @@
 import { IChains } from '../types';
 import { assetHubKusamaEndpoints } from './asset-hub-kusama';
 import { assetHubPolkadotEndpoints } from './asset-hub-polkadot';
+import { assetHubWestendEndpoints } from './asset-hub-westend';
 import { kusamaEndpoints } from './kusama';
 import { polkadotEndpoints } from './polkadot';
 import { westendEndpoints } from './westend';
@@ -27,4 +28,6 @@ export const endpoints: IChains = {
 	westend: westendEndpoints,
 	'asset-hub-kusama': assetHubKusamaEndpoints,
 	'asset-hub-polkadot': assetHubPolkadotEndpoints,
+	'asset-hub-westend': assetHubWestendEndpoints,
+	westmint: assetHubWestendEndpoints,
 };

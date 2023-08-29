@@ -14,25 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types/codec';
-import { PalletAssetConversionPoolInfo, PalletAssetConversionNativeOrAssetId } from '@polkadot/types/lookup';
-import type { ITuple } from '@polkadot/types-codec/types';
+import { assetHubWestendRegistryV9435 } from '../../../test-helpers/registries';
+import block5236177 from './data/block5236177.json';
 
-import { Codec } from '@polkadot/types/types';
+/**
+ * Mock for polkadot block #13641102.
+ */
+export const mockBlock5236177 = assetHubWestendRegistryV9435.createType(
+	'Block',
+	block5236177
+);
 
-import { IAt } from '.';
-
-export interface ILiquidityId {
-	at: IAt;
-	poolId: Option<Codec> | string;
-}
-
-export interface ILiquidityPoolsInfo {
-	reserves: ITuple<[PalletAssetConversionNativeOrAssetId, PalletAssetConversionNativeOrAssetId]>;
-	lpToken: Option<PalletAssetConversionPoolInfo>;
-}
-
-export interface ILiquidityPools {
-	at: IAt;
-	pools: ILiquidityPoolsInfo[];
-}
+/**
+ * BlockHash for polkadot block #13641102.
+ */
+export const blockHash5236177 = assetHubWestendRegistryV9435.createType(
+	'BlockHash',
+	'0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5'
+);

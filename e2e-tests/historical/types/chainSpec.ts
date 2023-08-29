@@ -17,7 +17,13 @@
 /**
  * String literal for specific chains that are being tested for
  */
-export type ChainSpec = 'polkadot' | 'kusama' | 'westend' | 'asset-hub-kusama';
+export type ChainSpec =
+	| 'polkadot'
+	| 'kusama'
+	| 'westend'
+	| 'asset-hub-kusama'
+	| 'asset-hub-westend'
+	| 'westmint';
 
 /**
  * Sidecar endpoints that are supported
@@ -45,4 +51,6 @@ export interface IChains {
 	westend: ChainEndpoints;
 	'asset-hub-kusama': ChainEndpoints;
 	'asset-hub-polkadot': ChainEndpoints;
+	'asset-hub-westend': ChainEndpoints;
+	westmint: ChainEndpoints;
 }

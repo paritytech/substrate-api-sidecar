@@ -14,25 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types/codec';
-import { PalletAssetConversionPoolInfo, PalletAssetConversionNativeOrAssetId } from '@polkadot/types/lookup';
-import type { ITuple } from '@polkadot/types-codec/types';
+import { assetHubWestendAccountsApprovalsEndpoints } from './asset-approvals';
+import { assetHubWestendAccountAssetBalanceEndpoints } from './asset-balances';
+import { assetHubWestendAccountBalanceEndpoints } from './balance-info';
 
-import { Codec } from '@polkadot/types/types';
-
-import { IAt } from '.';
-
-export interface ILiquidityId {
-	at: IAt;
-	poolId: Option<Codec> | string;
-}
-
-export interface ILiquidityPoolsInfo {
-	reserves: ITuple<[PalletAssetConversionNativeOrAssetId, PalletAssetConversionNativeOrAssetId]>;
-	lpToken: Option<PalletAssetConversionPoolInfo>;
-}
-
-export interface ILiquidityPools {
-	at: IAt;
-	pools: ILiquidityPoolsInfo[];
-}
+export const assetHubWestendAccountEndpoints = [
+	...assetHubWestendAccountBalanceEndpoints,
+	...assetHubWestendAccountAssetBalanceEndpoints,
+	...assetHubWestendAccountsApprovalsEndpoints,
+];

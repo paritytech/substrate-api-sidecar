@@ -32,11 +32,17 @@ export class PalletsAssetConversionService extends AbstractService {
 
 	async fetchNextAvailableId(hash: BlockHash): Promise<ILiquidityId> {
 		const { api } = this;
-
+		
 		const [{ number }, id] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.assetConversion.nextPoolAssetId(),
 		]);
+		let poolId;
+		if (id.isSome) {
+			poolId = id; 
+		} else {
+			poolId = '0';
+		};
 
 		const at = {
 			hash,
@@ -45,7 +51,7 @@ export class PalletsAssetConversionService extends AbstractService {
 
 		return {
 			at,
-			id,
+			poolId,
 		};
 	}
 
@@ -57,8 +63,9 @@ export class PalletsAssetConversionService extends AbstractService {
 			api.query.assetConversion.pools.entries(),
 		]);
 
-		const pools: ILiquidityPoolsInfo[] = poolsInfo.map(([_, info]) => {
+		const pools: ILiquidityPoolsInfo[] = poolsInfo.map(([reserves, info]) => {
 			return {
+				reserves: reserves.args[0],
 				lpToken: info,
 			};
 		});
