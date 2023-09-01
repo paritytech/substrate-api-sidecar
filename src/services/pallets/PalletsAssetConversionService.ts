@@ -37,12 +37,7 @@ export class PalletsAssetConversionService extends AbstractService {
 			api.rpc.chain.getHeader(hash),
 			api.query.assetConversion.nextPoolAssetId(),
 		]);
-		let poolId;
-		if (id.isSome) {
-			poolId = id;
-		} else {
-			poolId = '0';
-		}
+		const poolId = id.isSome ? id : '0';
 
 		const at = {
 			hash,

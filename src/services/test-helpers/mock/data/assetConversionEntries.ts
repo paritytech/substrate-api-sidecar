@@ -198,5 +198,4 @@ for (let i = 0; i < assets.length; i++) {
 	reserves.push([native, reserve] as unknown as ITuple<
 		[XcmV3MultiLocation, XcmV3MultiLocation]
 	>);
-	console.log(reserves);
 }
