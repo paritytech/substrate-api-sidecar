@@ -32,17 +32,17 @@ export class PalletsAssetConversionService extends AbstractService {
 
 	async fetchNextAvailableId(hash: BlockHash): Promise<ILiquidityId> {
 		const { api } = this;
-		
+
 		const [{ number }, id] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.assetConversion.nextPoolAssetId(),
 		]);
 		let poolId;
 		if (id.isSome) {
-			poolId = id; 
+			poolId = id;
 		} else {
 			poolId = '0';
-		};
+		}
 
 		const at = {
 			hash,

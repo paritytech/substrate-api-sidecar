@@ -2125,13 +2125,13 @@ components:
             },{\"lpToken\":{\"lpToken\":\"0\"}}]"
     NextAvailableId:
       type: object
-        properties:
-          at:
-            $ref: '#/components/schemas/BlockIdentifiers'
-          id:
-            type: string
-            description: Next availabe liquidity pool's id.
-            example: "4"
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        id:
+          type: string
+          description: Next availabe liquidity pool's id.
+          example: "4"
     AccountBalanceInfo:
       type: object
       properties:

@@ -18,15 +18,15 @@ import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
-import { assetHubWestendMetadataV9435 } from '../metadata/assetHubWestendMetadata';
+import { assetHubWestendMetadataRpcV9435 } from '../metadata/assetHubWestendMetadata';
 
 /**
- * Create a type registry for Rococo.
+ * Create a type registry for Asset Hub Westend.
  * Useful for creating types in order to facilitate testing.
  */
 function createAssetHubWestendRegistry(): TypeRegistry {
 	const registry = new TypeRegistry();
-    registry.setChainProperties(
+	registry.setChainProperties(
 		registry.createType('ChainProperties', {
 			ss58Format: 42,
 			tokenDecimals: 12,
@@ -36,12 +36,12 @@ function createAssetHubWestendRegistry(): TypeRegistry {
 
 	registry.register(getSpecTypes(registry, 'westmint', 'westmint', 9435));
 
-	registry.setMetadata(new Metadata(registry, assetHubWestendMetadataV9435));
+	registry.setMetadata(new Metadata(registry, assetHubWestendMetadataRpcV9435));
 
 	return registry;
 }
 
 /**
- * Rococo v228 TypeRegistry.
+ * Asset Hub Westend v9435 TypeRegistry.
  */
 export const assetHubWestendRegistryV9435 = createAssetHubWestendRegistry();

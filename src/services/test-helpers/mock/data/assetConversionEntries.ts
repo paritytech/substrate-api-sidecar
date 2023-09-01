@@ -14,352 +14,189 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export const assetConversionEntries =
-	// new Map();
-	// assetConversionEntries.set('11', { lptoken: '11'});
-	// assetConversionEntries.set('10', { lptoken: '10'});
-	// assetConversionEntries.set('9', { lptoken: '9'});
-	// assetConversionEntries.set('8', { lptoken: '8'});
-	// assetConversionEntries.set('7', { lptoken: '7'});
-	// assetConversionEntries.set('6', { lptoken: '6'});
-	// assetConversionEntries.set('5', { lptoken: '5'});
-	// assetConversionEntries.set('4', { lptoken: '4'});
-	// assetConversionEntries.set('3', { lptoken: '3'});
-	// assetConversionEntries.set('2', { lptoken: '2'});
-	// assetConversionEntries.set('1', { lptoken: '1'});
-	// assetConversionEntries.set('0', { lptoken: '0'});
+import { XcmV3MultiLocation } from '@polkadot/types/lookup';
+import type { ITuple } from '@polkadot/types-codec/types';
 
-	[
-		{
-			reserves: [
+import { assetHubWestendRegistryV9435 } from '../../../../test-helpers/registries/assetHubWestendRegistry';
+
+export const reserves: ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>[] = [];
+
+const native = assetHubWestendRegistryV9435.createType('XcmV3MultiLocation', {
+	parents: '0',
+	interior: {
+		here: null,
+	},
+});
+
+export const assets = [
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '47'
-							}
-						]
-					}
-				}
+					generalIndex: '47',
+				},
 			],
-			lpToken: {
-				lpToken: '12'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '1'
-							}
-						]
-					}
-				}
+					generalIndex: '1',
+				},
 			],
-			lpToken: {
-				lpToken: '11'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '46'
-							}
-						]
-					}
-				}
+					generalIndex: '46',
+				},
 			],
-			lpToken: {
-				lpToken: '10'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '30'
-							}
-						]
-					}
-				}
+					generalIndex: '30',
+				},
 			],
-			lpToken: {
-				lpToken: '9'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '32'
-							}
-						]
-					}
-				}
+					generalIndex: '32',
+				},
 			],
-			lpToken: {
-				lpToken: '8'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '4'
-							}
-						]
-					}
-				}
+					generalIndex: '4',
+				},
 			],
-			lpToken: {
-				lpToken: '7'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '45'
-							}
-						]
-					}
-				}
+					generalIndex: '45',
+				},
 			],
-			lpToken: {
-				lpToken: '6'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '2',
+		interior: {
+			X1: {
+				globalConsensus: { polkadot: null },
+			},
+		},
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '2',
-					interior: {
-						X1: [
-							{
-								globalConsensus: 'Polkadot'
-							}
-						]
-					}
-				}
+					generalIndex: '2511',
+				},
 			],
-			lpToken: {
-				lpToken: '5'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '2511'
-							}
-						]
-					}
-				}
+					generalIndex: '19801204',
+				},
 			],
-			lpToken: {
-				lpToken: '4'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '19801204'
-							}
-						]
-					}
-				}
+					generalIndex: '1114',
+				},
 			],
-			lpToken: {
-				lpToken: '3'
-			}
 		},
-		{
-			reserves: [
+	},
+	{
+		parents: '0',
+		interior: {
+			X2: [
 				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					palletInstance: '50',
 				},
 				{
-					parents: 0,
-					interior: {
-						X2: [
-							{
-								palletInstance: '50'
-							},
-							{
-								generalIndex: '1114'
-							}
-						]
-					}
-				}
-			],
-			lpToken: {
-				lpToken: '2'
-			}
-		},
-		{
-			reserves: [
-				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
+					generalIndex: '8',
 				},
-				{
-					parents: '0',
-					interior: {
-						X2: [
-							{
-								palletInstance: '50',
-							},
-							{
-								generalIndex: '8'
-							}
-						]
-					}
-				}
 			],
-			lpToken: {
-				lpToken: '1'
-			}
 		},
-		{
-			reserves: [
-				{
-					parents: '0',
-					interior: {
-						here: ''
-					}
-				},
-				{
-					parents: '2',
-					interior: {
-						X1: [
-							{
-								globalConsensus: 'Polkadot'
-							}
-						]
-					}
-				}
-			],
-			lpToken: {
-				lpToken: '0'
-			}
+	},
+	{
+		parents: '2',
+		interior: {
+			X1: {
+				globalConsensus: { polkadot: null },
+			},
 		},
-	]
+	},
+];
+
+for (let i = 0; i < assets.length; i++) {
+	const reserve = assetHubWestendRegistryV9435.createType(
+		'XcmV3MultiLocation',
+		assets[i]
+	);
+	reserves.push([native, reserve] as unknown as ITuple<
+		[XcmV3MultiLocation, XcmV3MultiLocation]
+	>);
+	console.log(reserves);
+}

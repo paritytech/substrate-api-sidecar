@@ -16,22 +16,128 @@
 
 import { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
+import { StorageEntryBase } from '@polkadot/api/types';
+import { StorageKey } from '@polkadot/types';
+import { Option } from '@polkadot/types/codec';
 import type { Hash } from '@polkadot/types/interfaces';
-import { assetHubWestendRegistryV9435 } from '../../test-helpers/registries';
+import { XcmV3MultiLocation } from '@polkadot/types/lookup';
+import { Codec } from '@polkadot/types/types';
+import type { ITuple } from '@polkadot/types-codec/types';
+import { Observable } from 'rxjs';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
+import { assetHubWestendMetadataRpcV9435 } from '../../test-helpers/metadata/assetHubWestendMetadata';
+import { assetHubWestendRegistryV9435 } from '../../test-helpers/registries/assetHubWestendRegistry';
+import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
 import { blockHash5236177, mockAssethubWestend } from '../test-helpers/mock';
-import { assetConversionEntries } from '../test-helpers/mock/data/assetConversionEntries';
+import { reserves } from '../test-helpers/mock/data/assetConversionEntries';
 import { PalletsAssetConversionService } from './PalletsAssetConversionService';
 
+const assetHubWestendApi = createApiWithAugmentations(
+	assetHubWestendMetadataRpcV9435
+);
+
+type StorageEntryFunction = (
+	arg1: [XcmV3MultiLocation, XcmV3MultiLocation]
+) => Observable<Codec>;
+
+function key(
+	multilocation: [XcmV3MultiLocation, XcmV3MultiLocation],
+	storageEntry: StorageEntryBase<'promise', StorageEntryFunction>
+): StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> {
+	const native = multilocation[0];
+	const asset = multilocation[1];
+	const id: [XcmV3MultiLocation, XcmV3MultiLocation] = [native, asset];
+	const key: StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> =
+		new StorageKey(assetHubWestendRegistryV9435, storageEntry.key(id));
+
+	return key.setMeta(storageEntry.creator.meta);
+}
+
+const poolId0 = key(
+	reserves[12],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId1 = key(
+	reserves[11],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId2 = key(
+	reserves[10],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId3 = key(
+	reserves[9],
+	assetHubWestendApi.query.assetConversion.pools
+);
+
+const poolId4 = key(
+	reserves[8],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId5 = key(
+	reserves[7],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId6 = key(
+	reserves[6],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId7 = key(
+	reserves[5],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId8 = key(
+	reserves[4],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId9 = key(
+	reserves[3],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId10 = key(
+	reserves[2],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId11 = key(
+	reserves[1],
+	assetHubWestendApi.query.assetConversion.pools
+);
+const poolId12 = key(
+	reserves[0],
+	assetHubWestendApi.query.assetConversion.pools
+);
+
+const poolEntries = () =>
+	Promise.resolve().then(() => {
+		const options: Option<Codec>[] = [];
+		for (let i = 13; i > 0; i--) {
+			options.push(
+				assetHubWestendRegistryV9435.createType('Option<u32>', i - 1)
+			);
+		}
+		const entries = [
+			[poolId12, { lpToken: options[0] }],
+			[poolId11, { lpToken: options[1] }],
+			[poolId10, { lpToken: options[2] }],
+			[poolId9, { lpToken: options[3] }],
+			[poolId8, { lpToken: options[4] }],
+			[poolId7, { lpToken: options[5] }],
+			[poolId6, { lpToken: options[6] }],
+			[poolId5, { lpToken: options[7] }],
+			[poolId4, { lpToken: options[8] }],
+			[poolId3, { lpToken: options[9] }],
+			[poolId2, { lpToken: options[10] }],
+			[poolId1, { lpToken: options[11] }],
+			[poolId0, { lpToken: options[12] }],
+		];
+
+		return entries;
+	});
 
 const nextPoolAssetIdAt = () =>
 	Promise.resolve().then(() =>
 		assetHubWestendRegistryV9435.createType('Option<u32>', '12')
-	);
-
-const assetConversionEntriesAt = () =>
-	Promise.resolve().then(() => assetConversionEntries
 	);
 
 const mockHistoricApi = {
@@ -45,7 +151,7 @@ const mockApi = {
 		assetConversion: {
 			nextPoolAssetId: nextPoolAssetIdAt,
 			pools: {
-				entries: assetConversionEntriesAt,
+				entries: poolEntries,
 			},
 		},
 	},
@@ -69,7 +175,6 @@ describe('PalletsAssetConversionService', () => {
 			const response = await palletsAssetConversionService.fetchNextAvailableId(
 				blockHash5236177
 			);
-			console.log("height {}", response.at.height)
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -81,348 +186,345 @@ describe('PalletsAssetConversionService', () => {
 					hash: '0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5',
 					height: '5236177',
 				},
-				pools:
-					[
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+				pools: [
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '47'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '12'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '47',
+										},
+									],
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '1'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '11'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '12',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '46'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '10'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '1',
+										},
+									],
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '30'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '9'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '11',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '32'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '8'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '46',
+										},
+									],
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '4'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '7'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '10',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '45'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '6'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '30',
+										},
+									],
 								},
-								{
-									parents: '2',
-									interior: {
-										X1: [
-											{
-												globalConsensus: 'Polkadot'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '5'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '9',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '2511'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '4'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '32',
+										},
+									],
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '19801204'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '3'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '8',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: 0,
-									interior: {
-										X2: [
-											{
-												palletInstance: '50'
-											},
-											{
-												generalIndex: '1114'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '2'
-							}
-						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '4',
+										},
+									],
 								},
-								{
-									parents: '0',
-									interior: {
-										X2: [
-											{
-												palletInstance: '50',
-											},
-											{
-												generalIndex: '8'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '1'
-							}
+							},
+						],
+						lpToken: {
+							lpToken: '7',
 						},
-						{
-							reserves: [
-								{
-									parents: '0',
-									interior: {
-										here: ''
-									}
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
 								},
-								{
-									parents: '2',
-									interior: {
-										X1: [
-											{
-												globalConsensus: 'Polkadot'
-											}
-										]
-									}
-								}
-							],
-							lpToken: {
-								lpToken: '0'
-							}
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '45',
+										},
+									],
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '6',
 						},
-					]
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '2',
+								interior: {
+									x1: {
+										globalConsensus: { polkadot: null },
+									},
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '5',
+						},
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '2511',
+										},
+									],
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '4',
+						},
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '19801204',
+										},
+									],
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '3',
+						},
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '1114',
+										},
+									],
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '2',
+						},
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '0',
+								interior: {
+									x2: [
+										{
+											palletInstance: '50',
+										},
+										{
+											generalIndex: '8',
+										},
+									],
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '1',
+						},
+					},
+					{
+						reserves: [
+							{
+								parents: '0',
+								interior: {
+									here: null,
+								},
+							},
+							{
+								parents: '2',
+								interior: {
+									x1: {
+										globalConsensus: { polkadot: null },
+									},
+								},
+							},
+						],
+						lpToken: {
+							lpToken: '0',
+						},
+					},
+				],
 			};
 
 			const response = await palletsAssetConversionService.fetchLiquidityPools(
 				blockHash5236177
 			);
 
-			expect(sanitizeNumbers(response.pools)).toStrictEqual(expectedResponse.pools);
+			expect(sanitizeNumbers(response.pools)).toStrictEqual(
+				expectedResponse.pools
+			);
 		});
 	});
 });

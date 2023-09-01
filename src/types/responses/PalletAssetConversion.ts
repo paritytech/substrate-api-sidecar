@@ -15,10 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Option } from '@polkadot/types/codec';
-import { PalletAssetConversionPoolInfo, PalletAssetConversionNativeOrAssetId } from '@polkadot/types/lookup';
-import type { ITuple } from '@polkadot/types-codec/types';
-
+import {
+	PalletAssetConversionNativeOrAssetId,
+	PalletAssetConversionPoolInfo,
+	XcmV3MultiLocation,
+} from '@polkadot/types/lookup';
 import { Codec } from '@polkadot/types/types';
+import type { ITuple } from '@polkadot/types-codec/types';
 
 import { IAt } from '.';
 
@@ -28,7 +31,12 @@ export interface ILiquidityId {
 }
 
 export interface ILiquidityPoolsInfo {
-	reserves: ITuple<[PalletAssetConversionNativeOrAssetId, PalletAssetConversionNativeOrAssetId]>;
+	reserves: ITuple<
+		[
+			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
+			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation
+		]
+	>;
 	lpToken: Option<PalletAssetConversionPoolInfo>;
 }
 
