@@ -40,6 +40,8 @@ parser.add_argument('--chain', {
 		'westend',
 		'asset-hub-kusama',
 		'asset-hub-polkadot',
+		'asset-hub-westend',
+		'westmint',
 	],
 	default: 'polkadot',
 });

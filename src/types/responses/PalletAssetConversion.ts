@@ -14,7 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './assetHubWestendRegistry';
-export * from './kusamaRegistry';
-export * from './polkadotRegistry';
-export * from './rococoRegistry';
+import { Option } from '@polkadot/types/codec';
+import {
+	PalletAssetConversionNativeOrAssetId,
+	PalletAssetConversionPoolInfo,
+	XcmV3MultiLocation,
+} from '@polkadot/types/lookup';
+import { Codec } from '@polkadot/types/types';
+import type { ITuple } from '@polkadot/types-codec/types';
+
+import { IAt } from '.';
+
+export interface ILiquidityId {
+	at: IAt;
+	poolId: Option<Codec> | string;
+}
+
+export interface ILiquidityPoolsInfo {
+	reserves: ITuple<
+		[
+			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
+			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation
+		]
+	>;
+	lpToken: Option<PalletAssetConversionPoolInfo>;
+}
+
+export interface ILiquidityPools {
+	at: IAt;
+	pools: ILiquidityPoolsInfo[];
+}

@@ -14,7 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './assetHubWestendRegistry';
-export * from './kusamaRegistry';
-export * from './polkadotRegistry';
-export * from './rococoRegistry';
+import accountsApprovals5235874 from './5235874.json';
+
+export const assetHubWestendAccountsApprovalsEndpoints = [
+	[
+		'/accounts/5ESM47S6Yrx48SsuSvmDe3HQJm5czh5grYekv4diqCT3f7wM/asset-approvals?assetId=301&delegate=5Di8DkuGHV7rBvJ8XLHZP8Hrq9p6RqiiPdnqGqvxMD88Xhrc&at=5235874',
+		JSON.stringify(accountsApprovals5235874),
+	],
+];

@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './assetHubWestendRegistry';
-export * from './kusamaRegistry';
-export * from './polkadotRegistry';
-export * from './rococoRegistry';
+import block1800000 from './1800000.json';
+
+export const assetHubWestendBlockEndpoints = [
+	['/blocks/10000', JSON.stringify(block1800000)],
+];

@@ -16,6 +16,7 @@
 
 export * from '././PalletsErrorsService';
 export * from '././PalletsEventsService';
+export * from './PalletsAssetConversionService';
 export * from './PalletsAssetsService';
 export * from './PalletsConstantsService';
 export * from './PalletsDispatchablesService';

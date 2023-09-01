@@ -14,7 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './assetHubWestendRegistry';
-export * from './kusamaRegistry';
-export * from './polkadotRegistry';
-export * from './rococoRegistry';
+import accountAssetBalance1800000 from './1800000.json';
+
+export const assetHubWestendAccountAssetBalanceEndpoints = [
+	[
+		'/accounts/H4DU1hKQeLkR5bhMeMidarF9bVvrH3k6ybLz84YLs7eRQMu/asset-balances?assets[]=301&at=1800000',
+		JSON.stringify(accountAssetBalance1800000),
+	],
+];

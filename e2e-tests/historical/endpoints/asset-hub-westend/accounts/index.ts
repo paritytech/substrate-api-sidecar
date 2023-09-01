@@ -14,7 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './assetHubWestendRegistry';
-export * from './kusamaRegistry';
-export * from './polkadotRegistry';
-export * from './rococoRegistry';
+import { assetHubWestendAccountsApprovalsEndpoints } from './asset-approvals';
+import { assetHubWestendAccountAssetBalanceEndpoints } from './asset-balances';
+import { assetHubWestendAccountBalanceEndpoints } from './balance-info';
+
+export const assetHubWestendAccountEndpoints = [
+	...assetHubWestendAccountBalanceEndpoints,
+	...assetHubWestendAccountAssetBalanceEndpoints,
+	...assetHubWestendAccountsApprovalsEndpoints,
+];
