@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
+import { AnyJson } from 'src/types/polkadot-js';
 
 import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -67,8 +68,8 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 				if (assetMetadata) {
 					const item: IForeignAssetInfo = {
-						foreignAssetInfo: assetInfo.toHuman(),
-						foreignAssetMetadata: assetMetadata.toHuman(),
+						foreignAssetInfo: assetInfo as unknown as AnyJson,
+						foreignAssetMetadata: assetMetadata as unknown as AnyJson,
 					};
 
 					items.push(item);

@@ -20,6 +20,7 @@ import { WsProvider } from '@polkadot/rpc-provider/ws';
 import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
+	AnyJson,
 	Codec,
 	CodecClass,
 	InterfaceTypes,
@@ -96,6 +97,17 @@ export class TypeFactory {
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
+
+		return key.setMeta(storageEntry.creator.meta);
+	}
+
+	storageKeyMultilocation(
+		location: AnyJson,
+		indexType: keyof InterfaceTypes,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const id = this.#registry.createType(indexType, location);
 		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
 		return key.setMeta(storageEntry.creator.meta);
