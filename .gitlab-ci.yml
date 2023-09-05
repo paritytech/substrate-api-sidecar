@@ -16,7 +16,7 @@ variables:
   HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
   HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
-  CI_IMAGE:                        "quay.io/buildah/stable:v1.29"
+  CI_IMAGE:                        "$BUILDAH_IMAGE" # defined in group variables
   BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
   NODE_IMAGE:                      "node:18"
   BENCHMARK_IMAGE:                 "paritytech/node-wrk:latest"
