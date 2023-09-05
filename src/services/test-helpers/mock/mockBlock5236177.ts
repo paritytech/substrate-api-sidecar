@@ -14,14 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetConversionService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsForeignAssetsService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import { assetHubWestendRegistryV9435 } from '../../../test-helpers/registries';
+import block5236177 from './data/block5236177.json';
+
+/**
+ * Mock for polkadot block #13641102.
+ */
+export const mockBlock5236177 = assetHubWestendRegistryV9435.createType(
+	'Block',
+	block5236177
+);
+
+/**
+ * BlockHash for polkadot block #13641102.
+ */
+export const blockHash5236177 = assetHubWestendRegistryV9435.createType(
+	'BlockHash',
+	'0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5'
+);

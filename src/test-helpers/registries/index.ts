@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from './assetHubKusamaRegistry';
+export * from './assetHubWestendRegistry';
 export * from './kusamaRegistry';
 export * from './polkadotRegistry';
 export * from './rococoRegistry';

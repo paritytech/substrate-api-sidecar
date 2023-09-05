@@ -14,14 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetConversionService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsForeignAssetsService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import accountBalance1800000 from './1800000.json';
+
+export const assetHubWestendAccountBalanceEndpoints = [
+	[
+		'/accounts/5Gj8nd1DqK3p6Dqpao9bGnDwLaxYgEGxFwPL2ZwjGvt2kSWv/balance-info?at=1800000',
+		JSON.stringify(accountBalance1800000),
+	],
+];

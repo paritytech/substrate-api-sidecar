@@ -1,0 +1,23 @@
+{
+    "at": {
+        "height": "5216878",
+        "hash": "0x1eecf8a7200df0f05072894af4cae885b7b271b0f187014ef9d1964620ed04d5"
+    },
+    "authoringVersion": "1",
+    "transactionVersion": "13",
+    "implVersion": "0",
+    "specName": "westmint",
+    "specVersion": "9,435",
+    "chainType": {
+        "live": null
+    },
+    "properties": {
+        "ss58Format": "42",
+        "tokenDecimals": [
+            "12"
+        ],
+        "tokenSymbol": [
+            "WND"
+        ]
+    }
+}

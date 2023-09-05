@@ -17,13 +17,10 @@
 import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import {
-	assetsMetadata,
-} from '../test-helpers/mock/assets/mockAssetHubKusamaData';
+import { assetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
 import { foreignAssetsEntries } from '../test-helpers/mock/data/foreignAssetsEntries';
 import { mockAssetHubKusamaApi } from '../test-helpers/mock/mockAssetHubKusamaApi';
 import { blockHash523510 } from '../test-helpers/mock/mockBlock523510';
-
 import { PalletsForeignAssetsService } from './PalletsForeignAssetsService';
 
 const foreignAssetsEntriesAt = () =>

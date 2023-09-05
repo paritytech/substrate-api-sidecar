@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 17.1.1
+  version: 17.1.2
 tags:
 - name: accounts
 - name: blocks
@@ -932,6 +932,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsAssetsInfo'
+  /pallets/asset-conversion/liquidity-pools:
+    get:
+      tags:
+      - pallets
+      summary: Get information related to existing liquidity pools.
+      description: Returns a list of the existing liquidity pools and its corresponding 
+        tokens at a given block height. If no block is specified, it returns the latest list
+        available.
+      parameters:
+        - name: at
+          in: query
+          description: Block at which to retrieve the liquidity pools information.
+          required: false
+          schema:
+            type: string
+            description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+      responses:
+      "200":
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiquidityPools'
+      "400":
+        description: invalid blockId supplied for at query param
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+  /pallets/asset-conversion/next-available-id:
+    get:
+      tags:
+      - pallets
+      summary: Get the next available liquidity pool id.
+      description: Returns the next available liquidity pool's id at a given 
+        block height. If no block is specified, it returns the latest list
+        available.
+      parameters:
+        - name: at
+          in: query
+          description: Block at which to retrieve the next liquidity pool's id.
+          required: false
+          schema:
+            type: string
+            description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+      responses:
+      "200":
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NextAvailableId'
+      "400":
+        description: invalid blockId supplied for at query param
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
   /pallets/foreign-assets:
     get:
       tags:
@@ -957,6 +1017,60 @@ paths:
               schema:
                 description: An array of foreign assets.
                 $ref: '#/components/schemas/PalletsForeignAssets'
+  /pallets/nomination-pools/info:
+    get:
+      tags:
+        - pallets
+      summary: Get information associated with nomination pools.
+      description: Returns information and metadata for nomination pools including pool counters and limits.
+      operationId: getNominationPoolInfo
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool info.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
+  /pallets/nomination-pools/{poolId}:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with a nomination pool.
+      description: Returns information associated with a nomination pool which includes
+        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
+      operationId: getNominationPoolById
+      parameters:
+      - name: poolId
+        in: path
+        description: The unsignedInteger Id of a nomination pool.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the nomination pool.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsNominationPool'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -1058,126 +1172,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         "404":
           description: could not find resource with id
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /pallets/nomination-pools/{poolId}:
-    get:
-      tags:
-        - pallets
-      summary: Get information and metadata associated with a nomination pool.
-      description: Returns information associated with a nomination pool which includes
-        the nomination pools' `bondedPool`, `rewardPool` and `metadata`.
-      operationId: getNominationPoolById
-      parameters:
-      - name: poolId
-        in: path
-        description: The unsignedInteger Id of a nomination pool.
-        required: true
-        schema:
-          type: string
-          format: unsignedInteger
-      - name: at
-        in: query
-        description: Block at which to retrieve the nomination pool.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsNominationPool'
-  /pallets/nomination-pools/info:
-    get:
-      tags:
-        - pallets
-      summary: Get information associated with nomination pools.
-      description: Returns information and metadata for nomination pools including pool counters and limits.
-      operationId: getNominationPoolInfo
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve the nomination pool info.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PalletsNominationPoolsInfo'
-  /pallets/staking/progress:
-    get:
-      tags:
-      - staking
-      - pallets
-      summary: Get progress on the general Staking pallet system.
-      description: Returns information on the progress of key components of the
-        staking system and estimates of future points of interest. Replaces
-        `/staking-info` from versions < v1.0.0.
-      operationId: getStakingProgress
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve a staking progress report.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StakingProgress'
-        "400":
-          description: invalid blockId supplied for at query param
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /pallets/staking/validators:
-    get:
-      tags:
-      - staking
-      - pallets
-      summary: Get all validators (active/waiting) of a specific chain.
-      description: Returns a list of all validators addresses and their
-        corresponding status which can be either active or waiting. It will also return 
-        a list of active validators that will not be part of the next era for staking. They will
-        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
-        the "validators" key, and "validatorsToBeChilled".
-      operationId: getStakingValidators
-      parameters:
-      - name: at
-        in: query
-        description: Block at which to retrieve the list of validators.
-        required: false
-        schema:
-          type: string
-          description: Block identifier, as the block height or block hash.
-          format: unsignedInteger or $hex
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:  
-                $ref: '#/components/schemas/StakingValidators'
-        "400":
-          description: invalid blockId supplied for at query param
           content:
             application/json:
               schema:
@@ -1670,6 +1664,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pallets/staking/progress:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get progress on the general Staking pallet system.
+      description: Returns information on the progress of key components of the
+        staking system and estimates of future points of interest. Replaces
+        `/staking-info` from versions < v1.0.0.
+      operationId: getStakingProgress
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve a staking progress report.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StakingProgress'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pallets/staking/validators:
+    get:
+      tags:
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their
+        corresponding status which can be either active or waiting. It will also return 
+        a list of active validators that will not be part of the next era for staking. They will
+        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
+        the "validators" key, and "validatorsToBeChilled".
+      operationId: getStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/StakingValidators'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /paras:
     get:
       tags:
@@ -2066,6 +2126,27 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+    LiquidityPools:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pools:
+          type: array
+          description: Array containing existent liquidity pool's token id.
+          example: "[{\"reserves\":[{\"parents\":\"1\",\"interior\":{\"here\":
+            null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
+            \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
+            },{\"lpToken\":{\"lpToken\":\"0\"}}]"
+    NextAvailableId:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        id:
+          type: string
+          description: Next availabe liquidity pool's id.
+          example: "4"
     AccountBalanceInfo:
       type: object
       properties:

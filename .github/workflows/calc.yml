@@ -1,4 +1,4 @@
-name: CI-Calc
+name: calc
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust stable toolchain
         uses: actions-rs/toolchain@v1.0.7
@@ -22,7 +22,7 @@ jobs:
           toolchain: stable
 
       - name: Rust Cache
-        uses: Swatinem/rust-cache@b8a6852b4f997182bdea832df3f9e153038b5191 # v2.6.0
+        uses: Swatinem/rust-cache@e207df5d269b42b69c8bc5101da26f7d31feddb4 # v2.6.2
 
       - name: Cargo test
         uses: actions-rs/cargo@v1.0.3

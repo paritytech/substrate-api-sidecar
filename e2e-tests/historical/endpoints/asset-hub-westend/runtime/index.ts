@@ -14,14 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetConversionService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsForeignAssetsService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import runtimeSpec5216878 from './5216878.json';
+
+export const assetHubWestendRuntimeEndpoints = [
+	['/runtime/spec?at=5216878', JSON.stringify(runtimeSpec5216878)],
+];
