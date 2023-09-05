@@ -16,7 +16,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node v18
         uses: actions/setup-node@v3
@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node v18
         uses: actions/setup-node@v3
@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node v18
         uses: actions/setup-node@v3
@@ -108,7 +108,7 @@ jobs:
 
     steps:
       - name: Checkout files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node v18
         uses: actions/setup-node@v3
@@ -147,7 +147,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
