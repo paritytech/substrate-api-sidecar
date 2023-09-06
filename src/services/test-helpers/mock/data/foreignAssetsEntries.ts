@@ -27,7 +27,7 @@ const factory = new TypeFactory(typeFactoryApiV9430);
 
 export const foreignAssetsEntries = () => {
 	return foreignAssetsLocations.map((location) => {
-		const storage = factory.storageKeyMultilocation(
+		const storage = factory.storageKey(
 			location,
 			'MultiLocationV2',
 			typeFactoryApiV9430.query.foreignAssets.asset

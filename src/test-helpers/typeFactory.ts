@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -92,22 +92,11 @@ export class TypeFactory {
 	 * 2. apiPromise.query.slots.leases
 	 */
 	storageKey(
-		index: number | string,
+		index: AnyJson,
 		indexType: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
-		const key = new StorageKey(this.#registry, storageEntry.key(id));
-
-		return key.setMeta(storageEntry.creator.meta);
-	}
-
-	storageKeyMultilocation(
-		location: AnyJson,
-		indexType: keyof InterfaceTypes,
-		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
-	): StorageKey {
-		const id = this.#registry.createType(indexType, location);
 		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
 		return key.setMeta(storageEntry.creator.meta);
