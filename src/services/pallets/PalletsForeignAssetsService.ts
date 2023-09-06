@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import type { ApiPromise } from '@polkadot/api';
 import type { BlockHash, AssetMetadata } from '@polkadot/types/interfaces';
 import type { AnyJson } from '../../types/polkadot-js';
 
