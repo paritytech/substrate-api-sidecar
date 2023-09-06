@@ -15,8 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { ApiPromise } from '@polkadot/api';
-import type { BlockHash, AssetMetadata } from '@polkadot/types/interfaces';
-import type { AnyJson } from '../../types/polkadot-js';
+import type { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
 
 import type { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -62,14 +61,15 @@ export class PalletsForeignAssetsService extends AbstractService {
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
-				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(
-					foreignAssetMultiLocation
-				);
+				const assetMetadata =
+					await api.query.foreignAssets.metadata<AssetMetadata>(
+						foreignAssetMultiLocation
+					);
 
 				if (assetMetadata) {
 					const item: IForeignAssetInfo = {
-						foreignAssetInfo: assetInfo as unknown as AnyJson,
-						foreignAssetMetadata: assetMetadata as unknown as AnyJson,
+						foreignAssetInfo: assetInfo,
+						foreignAssetMetadata: assetMetadata,
 					};
 
 					items.push(item);
