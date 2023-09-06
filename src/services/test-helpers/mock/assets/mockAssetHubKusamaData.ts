@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,7 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { AssetDetails, AssetMetadata } from '@polkadot/types/interfaces';
+import {
+	PalletAssetsAssetDetails,
+	PalletAssetsAssetMetadata,
+} from '@polkadot/types/lookup';
 import { Option } from '@polkadot/types-codec/base';
 
 import { assetHubKusamaRegistryV9430 } from '../../../../test-helpers/registries';
@@ -34,7 +37,7 @@ const balanceOf = assetHubKusamaRegistryV9430.createType(
 	6693666633
 );
 
-export const foreignAssetInfo = (): Option<AssetDetails> => {
+export const foreignAssetInfo = (): Option<PalletAssetsAssetDetails> => {
 	const responseObj = {
 		owner: accountId,
 		issuer: accountId,
@@ -51,12 +54,14 @@ export const foreignAssetInfo = (): Option<AssetDetails> => {
 	};
 
 	return assetHubKusamaRegistryV9430.createType(
-		'Option<AssetDetails>',
+		'Option<PalletAssetsAssetDetails>',
 		responseObj
 	);
 };
 
-export const assetsMetadata = (): Promise<Option<AssetMetadata>> =>
+export const foreignAssetMetadata = (): Promise<
+	Option<PalletAssetsAssetMetadata>
+> =>
 	Promise.resolve().then(() => {
 		const responseObj = {
 			deposit: balanceOf,
@@ -67,7 +72,7 @@ export const assetsMetadata = (): Promise<Option<AssetMetadata>> =>
 		};
 
 		return assetHubKusamaRegistryV9430.createType(
-			'Option<AssetMetadata>',
+			'Option<PalletAssetsAssetMetadata>',
 			responseObj
 		);
 	});

@@ -15,7 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { ApiPromise } from '@polkadot/api';
-import type { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
+import { Option } from '@polkadot/types';
+import type { BlockHash } from '@polkadot/types/interfaces';
+import {
+	PalletAssetsAssetDetails,
+	PalletAssetsAssetMetadata,
+} from '@polkadot/types/lookup';
 
 import type { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -35,7 +40,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.foreignAssets.asset.entries(),
+			api.query.foreignAssets.asset.entries<Option<PalletAssetsAssetDetails>>(),
 		]);
 
 		const items: IForeignAssetInfo[] = [];
@@ -61,10 +66,9 @@ export class PalletsForeignAssetsService extends AbstractService {
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
-				const assetMetadata =
-					await api.query.foreignAssets.metadata<AssetMetadata>(
-						foreignAssetMultiLocation
-					);
+				const assetMetadata = await api.query.foreignAssets.metadata<
+					Option<PalletAssetsAssetMetadata>
+				>(foreignAssetMultiLocation);
 
 				if (assetMetadata) {
 					const item: IForeignAssetInfo = {

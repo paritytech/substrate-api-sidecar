@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { assetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
+import { foreignAssetMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
 import { foreignAssetsEntries } from '../test-helpers/mock/data/foreignAssetsEntries';
 import { mockAssetHubKusamaApi } from '../test-helpers/mock/mockAssetHubKusamaApi';
 import { blockHash523510 } from '../test-helpers/mock/mockBlock523510';
@@ -33,7 +33,7 @@ const mockApi = {
 			asset: {
 				entries: foreignAssetsEntriesAt,
 			},
-			metadata: assetsMetadata,
+			metadata: foreignAssetMetadata,
 		},
 	},
 } as unknown as ApiPromise;
@@ -62,7 +62,7 @@ describe('PalletsForeignAssetsService', () => {
 							accounts: '0',
 							sufficients: '0',
 							approvals: '0',
-							isFrozen: false,
+							status:	"Live",
 						},
 						foreignAssetMetadata: {
 							deposit: '6693666633',
