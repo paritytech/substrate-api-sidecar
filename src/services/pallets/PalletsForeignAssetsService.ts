@@ -62,7 +62,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
-				const assetMetadata = await api.query.foreignAssets.metadata(
+				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(
 					foreignAssetMultiLocation
 				);
 
