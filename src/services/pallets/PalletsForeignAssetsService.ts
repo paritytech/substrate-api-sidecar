@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces';
+import type { BlockHash, AssetMetadata } from '@polkadot/types/interfaces';
 import { AnyJson } from 'src/types/polkadot-js';
 
 import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
