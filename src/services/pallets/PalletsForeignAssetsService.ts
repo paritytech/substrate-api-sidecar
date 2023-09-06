@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import type { BlockHash, AssetMetadata } from '@polkadot/types/interfaces';
 import type { AnyJson } from '../../types/polkadot-js';
 
-import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
+import type { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsForeignAssetsService extends AbstractService {
