@@ -53,8 +53,8 @@ export class PalletsForeignAssetsService extends AbstractService {
 		 * This is based on the logic implemented by marshacb in asset-transfer-api-registry
 		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
 		 */
-		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
-			const foreignAssetData = assetStorageKeyData.toHuman();
+		for (const asset of foreignAssetInfo) {
+			const foreignAssetData = asset[0].toHuman();
 
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
@@ -62,7 +62,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 					foreignAssetData[0]
 				).replace(/(\d),/g, '$1');
 				const foreignAssetMultiLocation = api.registry.createType(
-					'MultiLocation',
+					'XcmV3MultiLocation',
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
@@ -72,7 +72,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 				if (assetMetadata) {
 					const item: IForeignAssetInfo = {
-						foreignAssetInfo: assetInfo,
+						foreignAssetInfo: asset[1],
 						foreignAssetMetadata: assetMetadata,
 					};
 
