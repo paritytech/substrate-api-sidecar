@@ -60,7 +60,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 					foreignAssetData[0]
 				).replace(/(\d),/g, '$1');
 				const foreignAssetMultiLocation = api.registry.createType(
-					'MultiLocation',
+					'XcmV3MultiLocation',
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
