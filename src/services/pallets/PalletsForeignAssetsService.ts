@@ -51,7 +51,6 @@ export class PalletsForeignAssetsService extends AbstractService {
 		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
 		 */
 		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
-			console.log(assetInfo.toRawType());
 			const foreignAssetData = assetStorageKeyData.toHuman();
 
 			if (foreignAssetData) {
