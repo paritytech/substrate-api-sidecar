@@ -25,24 +25,54 @@ import { assetHubKusamaRegistryV9430 } from '../../../../test-helpers/registries
 /**
  * This mock data uses Asset Hub Kusama specVersion V9430
  */
-
+const trueBool = assetHubKusamaRegistryV9430.createType('bool', true);
 const falseBool = assetHubKusamaRegistryV9430.createType('bool', false);
 
-const accountId = assetHubKusamaRegistryV9430.createType(
+const accountIdTknr = assetHubKusamaRegistryV9430.createType(
 	'AccountId',
 	'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9'
 );
-const balanceOf = assetHubKusamaRegistryV9430.createType(
+const balanceOfTknr = assetHubKusamaRegistryV9430.createType(
 	'BalanceOf',
 	6693666633
 );
 
-export const foreignAssetInfo = (): Option<PalletAssetsAssetDetails> => {
+const accountIdDot = assetHubKusamaRegistryV9430.createType(
+	'AccountId',
+	'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q'
+);
+// TODO: balanceOfDot needs to be updated as soon as DOT Metadata
+// in Kusama Asset Hub are updated with the right values.
+const balanceOfDot = assetHubKusamaRegistryV9430.createType('BalanceOf', 0);
+
+const foreignAssetInfoDot = (): Option<PalletAssetsAssetDetails> => {
 	const responseObj = {
-		owner: accountId,
-		issuer: accountId,
-		admin: accountId,
-		freezer: accountId,
+		owner: accountIdDot,
+		issuer: accountIdDot,
+		admin: accountIdDot,
+		freezer: accountIdDot,
+		supply: assetHubKusamaRegistryV9430.createType('u64', 0),
+		deposit: assetHubKusamaRegistryV9430.createType('BalanceOf', 0),
+		minBalance: assetHubKusamaRegistryV9430.createType('u64', 100000000),
+		isSufficient: trueBool,
+		accounts: assetHubKusamaRegistryV9430.createType('u8', 0),
+		sufficients: assetHubKusamaRegistryV9430.createType('u8', 0),
+		approvals: assetHubKusamaRegistryV9430.createType('u8', 0),
+		isFrozen: falseBool,
+	};
+
+	return assetHubKusamaRegistryV9430.createType(
+		'Option<PalletAssetsAssetDetails>',
+		responseObj
+	);
+};
+
+const foreignAssetInfoTknr = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdTknr,
+		issuer: accountIdTknr,
+		admin: accountIdTknr,
+		freezer: accountIdTknr,
 		supply: assetHubKusamaRegistryV9430.createType('u64', 0),
 		deposit: assetHubKusamaRegistryV9430.createType('BalanceOf', 100000000000),
 		minBalance: assetHubKusamaRegistryV9430.createType('u64', 1000000000),
@@ -59,20 +89,55 @@ export const foreignAssetInfo = (): Option<PalletAssetsAssetDetails> => {
 	);
 };
 
-export const foreignAssetMetadata = (): Promise<
-	Option<PalletAssetsAssetMetadata>
-> =>
-	Promise.resolve().then(() => {
-		const responseObj = {
-			deposit: balanceOf,
-			name: assetHubKusamaRegistryV9430.createType('Bytes', 'Tinkernet'),
-			symbol: assetHubKusamaRegistryV9430.createType('Bytes', 'TNKR'),
-			decimals: assetHubKusamaRegistryV9430.createType('u8', 12),
-			isFrozen: falseBool,
-		};
+export const foreignAssetsInfo = [foreignAssetInfoDot, foreignAssetInfoTknr];
 
-		return assetHubKusamaRegistryV9430.createType(
-			'Option<PalletAssetsAssetMetadata>',
-			responseObj
-		);
-	});
+// TODO: The values in foreignAssetMetadataDot need to be updated
+// as soon as the Metadata of Polkadot are correctly updated in Kusama Asset Hub.
+// Right now Polkadot does not have metadata due to an error.
+const foreignAssetMetadataDot = (): Option<PalletAssetsAssetMetadata> => {
+	const responseObj = {
+		deposit: balanceOfDot,
+		name: assetHubKusamaRegistryV9430.createType('Bytes', ''),
+		symbol: assetHubKusamaRegistryV9430.createType('Bytes', ''),
+		decimals: assetHubKusamaRegistryV9430.createType('u8', 0),
+		isFrozen: falseBool,
+	};
+
+	return assetHubKusamaRegistryV9430.createType(
+		'Option<PalletAssetsAssetMetadata>',
+		responseObj
+	);
+};
+
+const foreignAssetMetadataTknr = (): Option<PalletAssetsAssetMetadata> => {
+	const responseObj = {
+		deposit: balanceOfTknr,
+		name: assetHubKusamaRegistryV9430.createType('Bytes', 'Tinkernet'),
+		symbol: assetHubKusamaRegistryV9430.createType('Bytes', 'TNKR'),
+		decimals: assetHubKusamaRegistryV9430.createType('u8', 12),
+		isFrozen: falseBool,
+	};
+
+	return assetHubKusamaRegistryV9430.createType(
+		'Option<PalletAssetsAssetMetadata>',
+		responseObj
+	);
+};
+
+export const foreignAssetsMetadata = (
+	location: string
+): Option<PalletAssetsAssetMetadata> => {
+	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(
+		/(\d),/g,
+		'$1'
+	);
+
+	if (
+		foreignAssetMultiLocationStr ==
+		'{"parents":2"interior":{"x1":{"globalConsensus":{"polkadot":null}}}}'
+	)
+		return foreignAssetMetadataDot();
+	else {
+		return foreignAssetMetadataTknr();
+	}
+};

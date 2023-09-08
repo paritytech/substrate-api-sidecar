@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Option } from '@polkadot/types';
+import { StorageKey } from '@polkadot/types';
 import {
 	PalletAssetsAssetDetails,
 	PalletAssetsAssetMetadata,
@@ -23,7 +24,7 @@ import {
 import { IAt } from '.';
 
 export interface IForeignAssetInfo {
-	foreignAssetInfo: Option<PalletAssetsAssetDetails>;
+	foreignAssetInfo: StorageKey<[PalletAssetsAssetDetails]>[];
 	foreignAssetMetadata: Option<PalletAssetsAssetMetadata>;
 }
 

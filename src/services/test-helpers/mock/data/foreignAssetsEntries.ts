@@ -19,21 +19,21 @@ import {
 	createApiWithAugmentations,
 	TypeFactory,
 } from '../../../../test-helpers/typeFactory';
-import { foreignAssetInfo } from '../assets/mockAssetHubKusamaData';
+import { foreignAssetsInfo } from '../assets/mockAssetHubKusamaData';
 import { foreignAssetsLocations } from './foreignAssets';
 
 const typeFactoryApiV9430 = createApiWithAugmentations(assetHubKusamaV14);
 const factory = new TypeFactory(typeFactoryApiV9430);
 
 export const foreignAssetsEntries = () => {
-	return foreignAssetsLocations.map((location) => {
-		const storage = factory.storageKey(
+	return foreignAssetsLocations.map((location, idx) => {
+		const storage = factory.storageKeyMultilocation(
 			location,
-			'MultiLocationV2',
+			'XcmV3MultiLocation',
 			typeFactoryApiV9430.query.foreignAssets.asset
 		);
-		const assetInfo = foreignAssetInfo();
 
+		const assetInfo = foreignAssetsInfo[idx]();
 		return [storage, assetInfo];
 	});
 };

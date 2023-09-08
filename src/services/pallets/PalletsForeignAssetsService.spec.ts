@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { foreignAssetMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
+import { foreignAssetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
 import { foreignAssetsEntries } from '../test-helpers/mock/data/foreignAssetsEntries';
 import { mockAssetHubKusamaApi } from '../test-helpers/mock/mockAssetHubKusamaApi';
 import { blockHash523510 } from '../test-helpers/mock/mockBlock523510';
@@ -33,7 +33,7 @@ const mockApi = {
 			asset: {
 				entries: foreignAssetsEntriesAt,
 			},
-			metadata: foreignAssetMetadata,
+			metadata: foreignAssetsMetadata,
 		},
 	},
 } as unknown as ApiPromise;
@@ -49,6 +49,29 @@ describe('PalletsForeignAssetsService', () => {
 					height: '523510',
 				},
 				items: [
+					{
+						foreignAssetInfo: {
+							owner: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
+							issuer: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
+							admin: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
+							freezer: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
+							supply: '0',
+							deposit: '0',
+							minBalance: '100000000',
+							isSufficient: true,
+							accounts: '0',
+							sufficients: '0',
+							approvals: '0',
+							status: 'Live',
+						},
+						foreignAssetMetadata: {
+							deposit: '0',
+							name: '0x',
+							symbol: '0x',
+							decimals: '0',
+							isFrozen: false,
+						},
+					},
 					{
 						foreignAssetInfo: {
 							owner: 'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9',

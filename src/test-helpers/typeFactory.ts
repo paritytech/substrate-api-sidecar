@@ -92,11 +92,30 @@ export class TypeFactory {
 	 * 2. apiPromise.query.slots.leases
 	 */
 	storageKey(
-		index: AnyJson,
+		index: number | string,
 		indexType: keyof InterfaceTypes,
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
+
+		return key.setMeta(storageEntry.creator.meta);
+	}
+
+	storageKeyMultilocation(
+		index: AnyJson,
+		indexType: string,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const foreignAssetMultiLocationStr = JSON.stringify(index).replace(
+			/(\d),/g,
+			'$1'
+		);
+
+		const id = this.#registry.createType(
+			indexType,
+			JSON.parse(foreignAssetMultiLocationStr)
+		);
 		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
 		return key.setMeta(storageEntry.creator.meta);

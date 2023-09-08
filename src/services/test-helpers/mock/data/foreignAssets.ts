@@ -14,13 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const foreignAssetsLocation = {
-	V3: {
-		parents: 1,
-		interior: {
-			X2: [{ Parachain: '2,125' }, { GeneralIndex: '0' }],
-		},
+const foreignAssetsLocation1 = {
+	parents: '2',
+	interior: {
+		X1: { GlobalConsensus: 'Polkadot' },
 	},
 };
 
-export const foreignAssetsLocations = [foreignAssetsLocation];
+const foreignAssetsLocation2 = {
+	parents: '1',
+	interior: {
+		X2: [{ Parachain: '2,125' }, { GeneralIndex: '0' }],
+	},
+};
+
+export const foreignAssetsLocations = [
+	foreignAssetsLocation1,
+	foreignAssetsLocation2,
+];

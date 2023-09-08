@@ -16,6 +16,7 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
+import { StorageKey } from '@polkadot/types';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import {
 	PalletAssetsAssetDetails,
@@ -40,7 +41,9 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.foreignAssets.asset.entries<Option<PalletAssetsAssetDetails>>(),
+			api.query.foreignAssets.asset.entries<
+				StorageKey<[PalletAssetsAssetDetails]>[]
+			>(),
 		]);
 
 		const items: IForeignAssetInfo[] = [];
