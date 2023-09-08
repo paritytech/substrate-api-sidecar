@@ -16,16 +16,14 @@
 
 import { Option } from '@polkadot/types';
 import { StorageKey } from '@polkadot/types';
-import {
-	PalletAssetsAssetDetails,
-	PalletAssetsAssetMetadata,
-} from '@polkadot/types/lookup';
+import { AssetMetadata } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 
 import { IAt } from '.';
 
 export interface IForeignAssetInfo {
-	foreignAssetInfo: StorageKey<[PalletAssetsAssetDetails]>[];
-	foreignAssetMetadata: Option<PalletAssetsAssetMetadata>;
+	foreignAssetInfo: StorageKey<[Option<PalletAssetsAssetDetails>]>[];
+	foreignAssetMetadata: AssetMetadata;
 }
 
 export interface IForeignAssets {

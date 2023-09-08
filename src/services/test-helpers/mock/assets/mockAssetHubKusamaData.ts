@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-	PalletAssetsAssetDetails,
-	PalletAssetsAssetMetadata,
-} from '@polkadot/types/lookup';
+import { AssetMetadata } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 import { Option } from '@polkadot/types-codec/base';
 
 import { assetHubKusamaRegistryV9430 } from '../../../../test-helpers/registries';
@@ -94,7 +92,7 @@ export const foreignAssetsInfo = [foreignAssetInfoDot, foreignAssetInfoTknr];
 // TODO: The values in foreignAssetMetadataDot need to be updated
 // as soon as the Metadata of Polkadot are correctly updated in Kusama Asset Hub.
 // Right now Polkadot does not have metadata due to an error.
-const foreignAssetMetadataDot = (): Option<PalletAssetsAssetMetadata> => {
+const foreignAssetMetadataDot = (): AssetMetadata => {
 	const responseObj = {
 		deposit: balanceOfDot,
 		name: assetHubKusamaRegistryV9430.createType('Bytes', ''),
@@ -103,13 +101,10 @@ const foreignAssetMetadataDot = (): Option<PalletAssetsAssetMetadata> => {
 		isFrozen: falseBool,
 	};
 
-	return assetHubKusamaRegistryV9430.createType(
-		'Option<PalletAssetsAssetMetadata>',
-		responseObj
-	);
+	return assetHubKusamaRegistryV9430.createType('AssetMetadata', responseObj);
 };
 
-const foreignAssetMetadataTknr = (): Option<PalletAssetsAssetMetadata> => {
+const foreignAssetMetadataTknr = (): AssetMetadata => {
 	const responseObj = {
 		deposit: balanceOfTknr,
 		name: assetHubKusamaRegistryV9430.createType('Bytes', 'Tinkernet'),
@@ -118,15 +113,10 @@ const foreignAssetMetadataTknr = (): Option<PalletAssetsAssetMetadata> => {
 		isFrozen: falseBool,
 	};
 
-	return assetHubKusamaRegistryV9430.createType(
-		'Option<PalletAssetsAssetMetadata>',
-		responseObj
-	);
+	return assetHubKusamaRegistryV9430.createType('AssetMetadata', responseObj);
 };
 
-export const foreignAssetsMetadata = (
-	location: string
-): Option<PalletAssetsAssetMetadata> => {
+export const foreignAssetsMetadata = (location: string): AssetMetadata => {
 	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(
 		/(\d),/g,
 		'$1'

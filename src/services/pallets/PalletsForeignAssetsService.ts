@@ -18,10 +18,8 @@ import type { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
 import { StorageKey } from '@polkadot/types';
 import type { BlockHash } from '@polkadot/types/interfaces';
-import {
-	PalletAssetsAssetDetails,
-	PalletAssetsAssetMetadata,
-} from '@polkadot/types/lookup';
+import { AssetMetadata } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 
 import type { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -42,7 +40,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.query.foreignAssets.asset.entries<
-				StorageKey<[PalletAssetsAssetDetails]>[]
+				StorageKey<[Option<PalletAssetsAssetDetails>]>[]
 			>(),
 		]);
 
@@ -69,9 +67,10 @@ export class PalletsForeignAssetsService extends AbstractService {
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
-				const assetMetadata = await api.query.foreignAssets.metadata<
-					Option<PalletAssetsAssetMetadata>
-				>(foreignAssetMultiLocation);
+				const assetMetadata =
+					await api.query.foreignAssets.metadata<AssetMetadata>(
+						foreignAssetMultiLocation
+					);
 
 				if (assetMetadata) {
 					const item: IForeignAssetInfo = {
