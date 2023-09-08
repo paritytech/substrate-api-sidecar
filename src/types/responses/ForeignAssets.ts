@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Option } from '@polkadot/types';
-import { StorageKey } from '@polkadot/types';
 import { AssetMetadata } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 
 import { IAt } from '.';
 
 export interface IForeignAssetInfo {
-	foreignAssetInfo: StorageKey<[Option<PalletAssetsAssetDetails>]>[];
+	foreignAssetInfo: PalletAssetsAssetDetails | {};
 	foreignAssetMetadata: AssetMetadata;
 }
 

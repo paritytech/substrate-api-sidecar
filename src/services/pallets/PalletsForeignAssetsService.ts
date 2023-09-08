@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
+import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
-import { StorageKey } from '@polkadot/types';
-import type { BlockHash } from '@polkadot/types/interfaces';
-import { AssetMetadata } from '@polkadot/types/interfaces';
+import { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 
-import type { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
+import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsForeignAssetsService extends AbstractService {
@@ -39,9 +37,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			api.query.foreignAssets.asset.entries<
-				StorageKey<[Option<PalletAssetsAssetDetails>]>[]
-			>(),
+			api.query.foreignAssets.asset.entries<Option<PalletAssetsAssetDetails>>(),
 		]);
 
 		const items: IForeignAssetInfo[] = [];
@@ -54,8 +50,9 @@ export class PalletsForeignAssetsService extends AbstractService {
 		 * This is based on the logic implemented by marshacb in asset-transfer-api-registry
 		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
 		 */
-		for (const asset of foreignAssetInfo) {
-			const foreignAssetData = asset[0].toHuman();
+		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
+			console.log(assetInfo.toRawType());
+			const foreignAssetData = assetStorageKeyData.toHuman();
 
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
@@ -63,7 +60,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 					foreignAssetData[0]
 				).replace(/(\d),/g, '$1');
 				const foreignAssetMultiLocation = api.registry.createType(
-					'XcmV3MultiLocation',
+					'MultiLocation',
 					JSON.parse(foreignAssetMultiLocationStr)
 				);
 
@@ -72,13 +69,16 @@ export class PalletsForeignAssetsService extends AbstractService {
 						foreignAssetMultiLocation
 					);
 
-				if (assetMetadata) {
-					const item: IForeignAssetInfo = {
-						foreignAssetInfo: asset[1],
+				if (assetInfo.isSome) {
+					items.push({
+						foreignAssetInfo: assetInfo.unwrap(),
 						foreignAssetMetadata: assetMetadata,
-					};
-
-					items.push(item);
+					});
+				} else {
+					items.push({
+						foreignAssetInfo: {},
+						foreignAssetMetadata: assetMetadata,
+					});
 				}
 			}
 		}
