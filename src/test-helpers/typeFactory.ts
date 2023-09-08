@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ import { WsProvider } from '@polkadot/rpc-provider/ws';
 import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
+	AnyJson,
 	Codec,
 	CodecClass,
 	InterfaceTypes,
@@ -96,6 +97,25 @@ export class TypeFactory {
 		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
 	): StorageKey {
 		const id = this.#registry.createType(indexType, index);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
+
+		return key.setMeta(storageEntry.creator.meta);
+	}
+
+	storageKeyMultilocation(
+		index: AnyJson,
+		indexType: string,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const foreignAssetMultiLocationStr = JSON.stringify(index).replace(
+			/(\d),/g,
+			'$1'
+		);
+
+		const id = this.#registry.createType(
+			indexType,
+			JSON.parse(foreignAssetMultiLocationStr)
+		);
 		const key = new StorageKey(this.#registry, storageEntry.key(id));
 
 		return key.setMeta(storageEntry.creator.meta);

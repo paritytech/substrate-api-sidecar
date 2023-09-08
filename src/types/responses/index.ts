@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ export * from './At';
 export * from './Block';
 export * from './EraPayouts';
 export * from './Extrinsic';
+export * from './ForeignAssets';
 export * from './FrameMethod';
 export * from './MetadataCode';
 export * from './NodeNetwork';

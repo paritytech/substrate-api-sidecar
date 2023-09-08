@@ -34,6 +34,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'PalletsConsts',
 		'PalletsErrors',
 		'PalletsEvents',
+		'PalletsForeignAssets',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

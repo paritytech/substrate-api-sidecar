@@ -1,0 +1,24 @@
+{
+  "header": {
+    "parentHash": "0xbe68cd448c8e64f0e6871c84a6abddb2b1a27ac07e94bb24bfbed2def96840e8",
+    "number": 523510,
+    "stateRoot": "0xeefb2fca8c2e28234fa2c6a2fec045b4470f2c184d7953b5daecdd63ec549166",
+    "extrinsicsRoot": "0xd3a14458b7e9bed0bce824e60451206db3faf425ef84f34d8e8846f00b3f6dd9",
+    "digest": {
+      "logs": [
+        {
+          "PreRuntime": [
+            "0x61757261",
+            "0x2d15170800000000"
+          ]
+        },
+        {
+          "Seal": [
+            "0x61757261",
+            "0x16f8b2af69230166a49110eeb4798de42e398a6283146b0f8f88bb8a31653936ea096b3ee1e6e718c856270ac07fc607c6304b1b0e774773cc65d2ff22e25183"
+          ]
+        }
+      ]
+    }
+  }
+}

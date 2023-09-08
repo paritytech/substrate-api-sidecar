@@ -20,6 +20,7 @@ export * from './PalletsAssetConversionService';
 export * from './PalletsAssetsService';
 export * from './PalletsConstantsService';
 export * from './PalletsDispatchablesService';
+export * from './PalletsForeignAssetsService';
 export * from './PalletsNominationPoolsService';
 export * from './PalletsStakingProgressService';
 export * from './PalletsStakingValidatorsService';

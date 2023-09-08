@@ -14,8 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import runtimeSpec993450 from './993450.json';
+import { AssetMetadata } from '@polkadot/types/interfaces';
+import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
 
-export const assetHubKusamaRuntimeEndpoints = [
-	['/runtime/spec?at=993540', JSON.stringify(runtimeSpec993450)],
-];
+import { IAt } from '.';
+
+export interface IForeignAssetInfo {
+	foreignAssetInfo: PalletAssetsAssetDetails | {};
+	foreignAssetMetadata: AssetMetadata;
+}
+
+export interface IForeignAssets {
+	at: IAt;
+	items: IForeignAssetInfo[];
+}
