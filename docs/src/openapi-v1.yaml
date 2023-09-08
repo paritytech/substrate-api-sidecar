@@ -950,18 +950,18 @@ paths:
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
       responses:
-      "200":
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LiquidityPools'
-      "400":
-        description: invalid blockId supplied for at query param
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiquidityPools'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/asset-conversion/next-available-id:
     get:
       tags:
@@ -980,18 +980,18 @@ paths:
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
       responses:
-      "200":
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NextAvailableId'
-      "400":
-        description: invalid blockId supplied for at query param
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NextAvailableId'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/foreign-assets:
     get:
       tags:
