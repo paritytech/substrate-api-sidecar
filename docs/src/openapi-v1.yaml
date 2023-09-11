@@ -9,6 +9,15 @@ info:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
   version: 17.1.2
+servers:
+- url: https://polkadot-public-sidecar.parity-chains.parity.io/
+  description: Polkadot Parity public sidecar
+- url: https://kusama-public-sidecar.parity-chains.parity.io/
+  description: Kusama Parity public sidecar
+- url: https://polkadot-asset-hub-public-sidecar.parity-chains.parity.io/
+  description: Polkadot Asset Hub Parity public sidecar
+- url: https://kusama-asset-hub-public-sidecar.parity-chains.parity.io/
+  description: Kusama Asset Hub Parity public sidecar
 tags:
 - name: accounts
 - name: blocks
