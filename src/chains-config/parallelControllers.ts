@@ -28,7 +28,7 @@ export const parallelControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
-		'BlocksRawTx',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

@@ -22,7 +22,7 @@ import { ControllerOptions } from '../../types/chains-config';
 import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
-export default class BlocksRawTxController extends AbstractController<BlocksService> {
+export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
 			api,
@@ -38,7 +38,7 @@ export default class BlocksRawTxController extends AbstractController<BlocksServ
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([['', this.getRawTx]]);
+		this.safeMountAsyncGetHandlers([['', this.getBlockRawExtrinsics]]);
 	}
 
 	/**
@@ -46,13 +46,13 @@ export default class BlocksRawTxController extends AbstractController<BlocksServ
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getRawTx: RequestHandler<INumberParam> = async (
+	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async (
 		{ params: { blockId } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
-		BlocksRawTxController.sanitizedSend(
+		BlocksRawExtrinsicsController.sanitizedSend(
 			res,
 			await this.service.fetchBlockRaw(hash)
 		);

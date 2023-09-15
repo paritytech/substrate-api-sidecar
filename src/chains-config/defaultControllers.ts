@@ -31,7 +31,7 @@ export const defaultControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
-		'BlocksRawTx',
+		'BlocksRawExtrinsics',
 		'ContractsInk',
 		'NodeNetwork',
 		'NodeTransactionPool',
