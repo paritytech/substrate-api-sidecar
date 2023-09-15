@@ -797,7 +797,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Fetch a block with raw values.
+	 * Fetch a block with raw extrinics values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
