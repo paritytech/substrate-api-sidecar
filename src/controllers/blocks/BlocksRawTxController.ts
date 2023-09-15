@@ -47,19 +47,14 @@ export default class BlocksRawTxController extends AbstractController<BlocksServ
 	 * @param res Express Response
 	 */
 	private getRawTx: RequestHandler<INumberParam> = async (
-		{
-			params: { blockId },
-			// query: { eventDocs, extrinsicDocs },
-		},
+		{ params: { blockId } },
 		res
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
-		const historicApi = await this.api.at(hash);
-        
 		BlocksRawTxController.sanitizedSend(
 			res,
-			await this.service.fetchBlockRaw(hash, historicApi);
+			await this.service.fetchBlockRaw(hash)
 		);
 	};
 }

@@ -23,7 +23,7 @@ import {
 	AccountsValidate,
 	AccountsVestingInfo,
 } from './accounts';
-import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
+import { Blocks, BlocksExtrinsics, BlocksRawTx, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
@@ -55,6 +55,7 @@ export const controllers = {
 	Blocks,
 	BlocksExtrinsics,
 	BlocksTrace,
+	BlocksRawTx,
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsConvert,

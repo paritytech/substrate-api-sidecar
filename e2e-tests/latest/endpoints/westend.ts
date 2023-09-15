@@ -45,6 +45,10 @@ export const westend: IConfig = {
 		path: '/blocks/head',
 		queryParams: [],
 	},
+	'/blocks/{blockId}/extrinsics-raw': {
+		path: `/blocks/{blockId}/extrinsics-raw`,
+		queryParams: [],
+	},
 	'/node/network': {
 		path: '/node/network',
 		queryParams: [],

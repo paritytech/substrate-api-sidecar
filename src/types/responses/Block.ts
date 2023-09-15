@@ -39,7 +39,7 @@ interface IOnInitializeOrFinalize {
 	events: ISanitizedEvent[];
 }
 
-interface ILog {
+export interface ILog {
 	type: string;
 	index: number;
 	value: Codec;

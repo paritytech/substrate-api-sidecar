@@ -13,22 +13,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { GenericExtrinsic, Vec } from '@polkadot/types';
+import { AnyTuple } from '@polkadot/types/types';
+
+import { ILog } from './Block';
 
 export interface IBlockRaw {
-  parentHash: string;
-  number: string;
-  stateRoot: string;
-  extrinsicRoot: string;
-  digest: IDigest;
-  extrinsics: `0x${string}`[] 
+	parentHash: string;
+	number: string;
+	stateRoot: string;
+	extrinsicRoot: string;
+	digest: IDigest;
+	extrinsics: Vec<GenericExtrinsic<AnyTuple>>;
 }
 
 interface IDigest {
-    logs: ILog[]
-}
-
-interface ILog {
-	type: string;
-	index: string;
-	value: string[];
+	logs: ILog[];
 }

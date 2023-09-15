@@ -801,17 +801,25 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
-		async fetchBlockRaw(
-			hash: BlockHash,
-			// historicApi: ApiDecoration<'promise'>,
-		): Promise<IBlockRaw> {
-			const { api } = this;
-			const { block }  = await api.rpc.chain.getBlock(hash);
+	async fetchBlockRaw(hash: BlockHash): Promise<IBlockRaw> {
+		const { api } = this;
+		const { block } = await api.rpc.chain.getBlock(hash);
 
-			console.log(block);
+		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
+			block.header;
+		const { extrinsics } = block;
 
-			return {
+		const logs = digest.logs.map(({ type, index, value }) => {
+			return { type, index, value };
+		});
 
-			} as IBlockRaw;
-		}
+		return {
+			parentHash: parentHash.toString(),
+			number: number.toString(),
+			stateRoot: stateRoot.toString(),
+			extrinsicRoot: extrinsicsRoot.toString(),
+			digest: { logs },
+			extrinsics: extrinsics,
+		};
+	}
 }
