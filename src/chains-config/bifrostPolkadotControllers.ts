@@ -26,6 +26,7 @@ export const bifrostPolkadotControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawTx',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

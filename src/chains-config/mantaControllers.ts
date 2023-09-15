@@ -29,6 +29,7 @@ export const mantaControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawTx',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

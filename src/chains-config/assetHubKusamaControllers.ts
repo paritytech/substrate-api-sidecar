@@ -27,6 +27,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawTx',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

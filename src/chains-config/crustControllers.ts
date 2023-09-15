@@ -26,6 +26,7 @@ export const crustControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawTx',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
