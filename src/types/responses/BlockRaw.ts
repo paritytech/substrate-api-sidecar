@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { GenericExtrinsic, Vec } from '@polkadot/types';
+import { BlockHash, Hash } from '@polkadot/types/interfaces';
 import { AnyTuple } from '@polkadot/types/types';
 
 import { ILog } from './Block';
 
 export interface IBlockRaw {
-	parentHash: string;
-	number: string;
-	stateRoot: string;
-	extrinsicRoot: string;
+	parentHash: BlockHash;
+	number: `0x${string}`;
+	stateRoot: Hash;
+	extrinsicRoot: Hash;
 	digest: IDigest;
 	extrinsics: Vec<GenericExtrinsic<AnyTuple>>;
 }

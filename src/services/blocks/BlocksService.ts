@@ -814,10 +814,10 @@ export class BlocksService extends AbstractService {
 		});
 
 		return {
-			parentHash: parentHash.toString(),
-			number: number.toString(),
-			stateRoot: stateRoot.toString(),
-			extrinsicRoot: extrinsicsRoot.toString(),
+			parentHash: parentHash,
+			number: number.toHex(),
+			stateRoot: stateRoot,
+			extrinsicRoot: extrinsicsRoot,
 			digest: { logs },
 			extrinsics: extrinsics,
 		};
