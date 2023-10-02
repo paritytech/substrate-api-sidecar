@@ -683,9 +683,9 @@ paths:
     get:
       tags:
       - blocks
-      summary: Get a block by its height or hash.
-      description: Returns a single block. BlockId can either be a block hash or a
-        block height. Replaces `/block/{number}` from versions < v1.0.0.
+      summary: Get a blocks header & its extrinsics as hex values.
+      description: Returns a block & its extrinsics as hex values. BlockId can either be a block hash or a
+        block height.
       operationId: getBlockRawExtrinsics
       parameters:
       - name: blockId
@@ -2516,10 +2516,6 @@ components:
     BlockRaw:
       type: object
       properties:
-        hash:
-          type: string
-          description: The block's hash.
-          format: hex
         number:
           type: string
           description: The block's height.
@@ -2536,7 +2532,7 @@ components:
           type: string
           description: The Merkle root of the extrinsics.
           format: hex
-        logs:
+        digest:
           type: array
           items:
             $ref: '#/components/schemas/DigestItem'
