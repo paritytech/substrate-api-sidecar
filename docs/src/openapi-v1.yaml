@@ -2532,10 +2532,13 @@ components:
           description: The Merkle root of the extrinsics.
           format: hex
         digest:
-          type: array
-          items:
-            $ref: '#/components/schemas/DigestItem'
-          description: Array of `DigestItem`s associated with the block.
+          type: object
+          properties:
+            logs:
+              type: array
+              items:
+                $ref: '#/components/schemas/DigestItem'
+              description: Array of `DigestItem`s associated with the block.
         extrinsics:
           type: array
           description: Array of raw extrinsics (inherents and transactions) within the
