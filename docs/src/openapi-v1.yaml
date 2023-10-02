@@ -497,7 +497,7 @@ paths:
         description: Block identifier, as the block height or block hash.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
       - name: eventDocs
         in: query
@@ -542,7 +542,7 @@ paths:
         description: Block identifier, as the block height or block hash.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
       responses:
         "200":
@@ -571,7 +571,7 @@ paths:
         description: Block identifier, as the block height or block hash.
         required: true
         schema:
-          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
       - name: extrinsicIndex
         in: path
@@ -723,7 +723,6 @@ paths:
         description: SS58 or Hex address of the account associated with the contract.
         required: true
         schema:
-          pattern: a-km-zA-HJ-NP-Z1-9{8,64}
           type: string
       - name: method
         in: query
@@ -2022,7 +2021,7 @@ paths:
         description: Block identifier, as the block height or block hash.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
       responses:
         "200":
@@ -2122,7 +2121,7 @@ paths:
         description: Block identifier, as the block height or block hash.
         required: true
         schema:
-          pattern: 'a-km-zA-HJ-NP-Z1-9{8,64}'
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
       - name: actions
         in: query
