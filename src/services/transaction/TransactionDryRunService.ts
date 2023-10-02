@@ -68,6 +68,7 @@ export class TransactionDryRunService extends AbstractService {
 				at: {
 					hash,
 				},
+				code: 400,
 				error: 'Unable to dry-run transaction',
 				transaction,
 				cause,

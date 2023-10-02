@@ -66,19 +66,19 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
-	statemine: {
-		wsUrl: 'wss://statemine-rpc.polkadot.io',
+	'kusama-asset-hub': {
+		wsUrl: 'wss://kusama-asset-hub-rpc.polkadot.io',
 		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['start:historical-e2e-tests', '--chain', 'statemine'],
+			args: ['start:historical-e2e-tests', '--chain', 'asset-hub-kusama'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
-	statemint: {
-		wsUrl: 'wss://statemint-rpc.polkadot.io',
+	'polkadot-asset-hub': {
+		wsUrl: 'wss://polkadot-asset-hub-rpc.polkadot.io',
 		e2eStartOpts: {
 			...defaultJestOpts,
-			args: ['start:historical-e2e-tests', '--chain', 'statemint'],
+			args: ['start:historical-e2e-tests', '--chain', 'asset-hub-polkadot'],
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
@@ -105,14 +105,14 @@ export const latestE2eConfig: Record<string, IChainConfigE2E> = {
 			args: ['start:latest-e2e-tests', '--chain', 'polkadot'],
 		},
 	},
-	statemint: {
-		wsUrl: 'wss://statemint-rpc.polkadot.io',
+	'polkadot-asset-hub': {
+		wsUrl: 'wss://polkadot-asset-hub-rpc.polkadot.io',
 		SasStartOpts: defaultSasStartOpts,
 		e2eStartOpts: {
 			proc: 'latest-e2e',
 			resolver: 'Finished with a status code of 0',
 			resolverFailed: 'Finished with a status code of 1',
-			args: ['start:latest-e2e-tests', '--chain', 'statemint'],
+			args: ['start:latest-e2e-tests', '--chain', 'assetHubPolkadot'],
 		},
 	},
 	westend: {

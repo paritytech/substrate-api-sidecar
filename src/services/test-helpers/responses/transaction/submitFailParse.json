@@ -2,5 +2,6 @@
   "error": "Failed to parse transaction.",
   "transaction": "0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0",
   "cause": "createType(ExtrinsicV4):: Struct: failed on 'signature':: Struct: cannot decode type Type with value \"0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0\"",
-  "stack": "Error: createType(ExtrinsicV4):: Struct: failed ... this is a unit test mock"
+  "stack": "Error: createType(ExtrinsicV4):: Struct: failed ... this is a unit test mock",
+  "code": 400
 }

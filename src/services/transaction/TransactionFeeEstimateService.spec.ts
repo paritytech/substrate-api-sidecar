@@ -65,7 +65,7 @@ const transactionFeeEstimateService = new TransactionFeeEstimateService(
 
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
-		it('Works with a valid a transaction', async () => {
+		it('Works with a valid transaction', async () => {
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(

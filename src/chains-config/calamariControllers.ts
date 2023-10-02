@@ -29,6 +29,7 @@ export const calamariControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

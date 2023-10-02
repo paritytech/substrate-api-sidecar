@@ -31,6 +31,7 @@ export const kusamaControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksTrace',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

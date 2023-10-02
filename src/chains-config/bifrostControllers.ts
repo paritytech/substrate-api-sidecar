@@ -26,6 +26,7 @@ export const bifrostControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

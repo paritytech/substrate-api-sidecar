@@ -5,5 +5,6 @@
   },
   "transaction": "0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0",
   "cause": "2: Unable to query dispatch info.: Invalid transaction version",
-  "stack": "Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock"
+  "stack": "Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock",
+  "code": 400
 }

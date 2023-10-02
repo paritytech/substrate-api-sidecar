@@ -28,6 +28,7 @@ export const astarControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksTrace',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

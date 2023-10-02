@@ -23,15 +23,22 @@ import {
 	AccountsValidate,
 	AccountsVestingInfo,
 } from './accounts';
-import { Blocks, BlocksExtrinsics, BlocksTrace } from './blocks';
+import {
+	Blocks,
+	BlocksExtrinsics,
+	BlocksRawExtrinsics,
+	BlocksTrace,
+} from './blocks';
 import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
+	PalletsAssetConversion,
 	PalletsAssets,
 	PalletsConsts,
 	PalletsDispatchables,
 	PalletsErrors,
 	PalletsEvents,
+	PalletsForeignAssets,
 	PalletsNominationPools,
 	PalletsStakingProgress,
 	PalletsStakingValidators,
@@ -53,6 +60,7 @@ export const controllers = {
 	Blocks,
 	BlocksExtrinsics,
 	BlocksTrace,
+	BlocksRawExtrinsics,
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsConvert,
@@ -62,10 +70,12 @@ export const controllers = {
 	AccountsStakingPayouts,
 	ContractsInk,
 	PalletsAssets,
+	PalletsAssetConversion,
 	PalletsDispatchables,
 	PalletsConsts,
 	PalletsErrors,
 	PalletsEvents,
+	PalletsForeignAssets,
 	PalletsNominationPools,
 	PalletsStakingProgress,
 	PalletsStakingValidators,

@@ -44,6 +44,7 @@ import { validators789629Hex } from '../test-helpers/mock/data/validators789629H
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
+import blocks789629Raw from '../test-helpers/responses/blocks/blocks789629Raw.json';
 import { BlocksService } from './BlocksService';
 
 const validatorsAt = (_hash: Hash) =>
@@ -554,6 +555,14 @@ describe('BlocksService', () => {
 
 			expect(cache.get(blockHash789629.toString())).toBe(undefined);
 			expect(cache.size).toBe(2);
+		});
+	});
+
+	describe('fetchBlockRaw', () => {
+		it('works when ApiPromise works (block 789629)', async () => {
+			expect(
+				sanitizeNumbers(await blocksService.fetchBlockRaw(blockHash789629))
+			).toMatchObject(blocks789629Raw);
 		});
 	});
 });

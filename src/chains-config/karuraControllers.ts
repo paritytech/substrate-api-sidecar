@@ -26,6 +26,7 @@ export const karuraControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

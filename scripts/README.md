@@ -14,7 +14,7 @@ This script calls the local historical e2e tests helper library in order to test
 
 ### Flags
 
-`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'westend', 'kusama', 'statemine', 'statemint']`. If no chain is selected it will default to run the e2e-tests against all chains.
+`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'westend', 'kusama', 'kusama-asset-hub', 'polkadot-asset-hub']`. If no chain is selected it will default to run the e2e-tests against all chains.
 
 `--local`: This sets the websocket url for the e2e test. Its to be used along with `--chain`. If `--chain` is not present it will throw an error.
 
@@ -36,7 +36,7 @@ This script calls the local latest e2e tests helper library in order to test the
 
 ### Flags
 
-`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'statemint']`. If no chain is selected it will default to run the e2e-tests against all chains.
+`--chain`: This sets the specific chain to run the script against. Acceptable values are `['polkadot', 'polkadot-asset-hub']`. If no chain is selected it will default to run the e2e-tests against all chains.
 
 `--local`: This sets the websocket url for the e2e test. Its to be used along with `--chain`. If `--chain` is not present it will throw an error.
 

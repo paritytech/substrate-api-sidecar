@@ -27,6 +27,7 @@ export const kiltControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

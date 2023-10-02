@@ -26,6 +26,7 @@ export const acalaControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

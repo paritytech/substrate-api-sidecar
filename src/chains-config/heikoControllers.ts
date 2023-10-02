@@ -28,6 +28,7 @@ export const heikoControllers: ControllerConfig = {
 		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -20,8 +20,9 @@ import { WsProvider } from '@polkadot/rpc-provider/ws';
 import { Metadata } from '@polkadot/types';
 import { Option, StorageKey, Tuple, TypeRegistry, Vec } from '@polkadot/types';
 import {
+	AnyJson,
 	Codec,
-	Constructor,
+	CodecClass,
 	InterfaceTypes,
 	Registry,
 } from '@polkadot/types/types';
@@ -101,10 +102,29 @@ export class TypeFactory {
 		return key.setMeta(storageEntry.creator.meta);
 	}
 
+	storageKeyMultilocation(
+		index: AnyJson,
+		indexType: string,
+		storageEntry: StorageEntryBase<'promise', GenericStorageEntryFunction>
+	): StorageKey {
+		const foreignAssetMultiLocationStr = JSON.stringify(index).replace(
+			/(\d),/g,
+			'$1'
+		);
+
+		const id = this.#registry.createType(
+			indexType,
+			JSON.parse(foreignAssetMultiLocationStr)
+		);
+		const key = new StorageKey(this.#registry, storageEntry.key(id));
+
+		return key.setMeta(storageEntry.creator.meta);
+	}
+
 	optionOf<T extends Codec>(value: T): Option<T> {
 		return new Option<T>(
 			this.#registry,
-			value.constructor as Constructor<T>,
+			value.constructor as CodecClass<T>,
 			value
 		);
 	}
@@ -112,7 +132,7 @@ export class TypeFactory {
 	vecOf<T extends Codec>(items: T[]): Vec<T> {
 		const vector = new Vec<T>(
 			this.#registry,
-			items[0].constructor as Constructor<T>
+			items[0].constructor as CodecClass<T>
 		);
 
 		vector.push(...items);
@@ -122,7 +142,7 @@ export class TypeFactory {
 
 	tupleOf<T extends Codec>(
 		value: T[],
-		types: (Constructor | keyof InterfaceTypes)[]
+		types: (CodecClass | keyof InterfaceTypes)[]
 	): Tuple {
 		return new Tuple(this.#registry, types, value);
 	}

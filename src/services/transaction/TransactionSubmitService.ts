@@ -36,6 +36,7 @@ export class TransactionSubmitService extends AbstractService {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
+				code: 400,
 				error: 'Failed to parse transaction.',
 				transaction,
 				cause,
@@ -53,6 +54,7 @@ export class TransactionSubmitService extends AbstractService {
 			const { cause, stack } = extractCauseAndStack(err);
 
 			throw {
+				code: 400,
 				error: 'Failed to submit transaction.',
 				transaction,
 				cause,

@@ -45,6 +45,10 @@ export const kusama: IConfig = {
 		path: '/blocks/head',
 		queryParams: [],
 	},
+	'/blocks/{blockId}/extrinsics-raw': {
+		path: `/blocks/{blockId}/extrinsics-raw`,
+		queryParams: [],
+	},
 	'/node/network': {
 		path: '/node/network',
 		queryParams: [],
@@ -119,10 +123,6 @@ export const kusama: IConfig = {
 	},
 	'/pallets/{palletId}/errors': {
 		path: '/pallets/balances/errors',
-		queryParams: ['at={blockId}'],
-	},
-	'/pallets/{palletId}/errors?onlyIds=true': {
-		path: '/pallets/17/errors',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/errors/{errorItemId}': {

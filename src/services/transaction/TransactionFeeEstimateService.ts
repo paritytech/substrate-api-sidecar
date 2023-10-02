@@ -57,6 +57,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 				at: {
 					hash: hash.toString(),
 				},
+				code: 400,
 				error: 'Unable to fetch fee info',
 				transaction,
 				cause,

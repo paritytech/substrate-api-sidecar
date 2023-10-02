@@ -2,6 +2,132 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.2..v17.2.0) (2023-09-11)
+
+### Features
+
+- feat: add asset-conversion endpoints ([#1324](https://github.com/paritytech/substrate-api-sidecar/pull/1324)) ([242aa09](https://github.com/paritytech/substrate-api-sidecar/commit/242aa095d9884a88d2c6467ed6cc04f25114cb0e))
+- feat: add pallets/foreign-assets endpoint ([#1314](https://github.com/paritytech/substrate-api-sidecar/pull/1314)) ([450c6ea](https://github.com/paritytech/substrate-api-sidecar/commit/450c6eada4fec2e3d09579798f048b4b2b533262))
+
+### Bug Fixes
+
+- fix: docker-compose.yml ([#1321](https://github.com/paritytech/substrate-api-sidecar/pull/1321)) ([5c9de90](https://github.com/paritytech/substrate-api-sidecar/commit/5c9de905cf65932c301fd51a5a37ee4a2df73af0))
+
+### CI
+
+- ci: add semantic title check, and cleanup actions ([#1325](https://github.com/paritytech/substrate-api-sidecar/pull/1325)) ([7098710](https://github.com/paritytech/substrate-api-sidecar/commit/7098710b74c5261a2c98ffbbca57dc811789a5e8)) Contribute by: [benxiao](https://github.com/benxiao)
+- ci: use buildah image defined in gitlab group vars ([#1327](https://github.com/paritytech/substrate-api-sidecar/pull/1327)) ([37344bf](https://github.com/paritytech/substrate-api-sidecar/commit/37344bfabccbd2f2830bce18e0618600c367f5ae))
+
+### Chore
+
+- chore(yarn): bump yarn ([#1320](https://github.com/paritytech/substrate-api-sidecar/pull/1320)) ([e744f8d](https://github.com/paritytech/substrate-api-sidecar/commit/e744f8dc2ac27e3542c6997ff23f4d65b04e319b))
+- chore: bump Swatinem/rust-cache from 2.6.1 to 2.6.2 ([#1319](https://github.com/paritytech/substrate-api-sidecar/pull/1319)) ([f2bd4de](https://github.com/paritytech/substrate-api-sidecar/commit/f2bd4de7a0f63558127f4d495308f6ef5520b7f6))
+- chore: bump actions/checkout from 3 to 4 ([#1326](https://github.com/paritytech/substrate-api-sidecar/pull/1326)) ([f9f9ad0](https://github.com/paritytech/substrate-api-sidecar/commit/f9f9ad05576c10562edc5ee5172b6fd1d523dfc1))
+
+### Test
+
+- test(fix-dev): update appropriate type packages ([#1318](https://github.com/paritytech/substrate-api-sidecar/pull/1318)) ([d0b2959](https://github.com/paritytech/substrate-api-sidecar/commit/d0b29596ca243f948d4b1357d42a113baadedf58))
+- test(calc): add test for calc_payout ([#1317](https://github.com/paritytech/substrate-api-sidecar/pull/1317)) ([b105cd3](https://github.com/paritytech/substrate-api-sidecar/commit/b105cd30e7bf7bc4efd62c2a19ead989e28e3a3e))
+
+### Docs
+
+- docs: fixed lack of responses on openapi ([#1328](https://github.com/paritytech/substrate-api-sidecar/pull/1328)) ([899b26f](https://github.com/paritytech/substrate-api-sidecar/commit/899b26fb25e35facdb790d9923c360a288f19055))
+- docs: add server urls to swagger-ui ([#1330](https://github.com/paritytech/substrate-api-sidecar/pull/1330)) ([05f3966](https://github.com/paritytech/substrate-api-sidecar/commit/05f39662fad85dead1e531ed051d14e44090a484))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10000
+- Kusama v10000
+- Westend v10000
+
+## [17.1.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.1..v17.1.2) (2023-08-16)
+
+### Bug Fixes
+- fix: query info feature detection ([#1305](https://github.com/paritytech/substrate-api-sidecar/pull/1305)) ([3c768e3](https://github.com/paritytech/substrate-api-sidecar/commit/3c768e33674d8448482dac65d278a86fa8d25aa8)) Contributed by [xlc](https://github.com/xlc)
+- fix: change error&error codes returned from /transaction/* related endpoints ([#1312](https://github.com/paritytech/substrate-api-sidecar/pull/1312)) ([797c421](https://github.com/paritytech/substrate-api-sidecar/commit/797c4217a9041edc98140bcf3a55a87e8056ae94))
+
+### Chores
+- chore(deps): bump semver from 6.3.0 to 6.3.1 ([#1304](https://github.com/paritytech/substrate-api-sidecar/pull/1304)) ([62b97f3](https://github.com/paritytech/substrate-api-sidecar/commit/62b97f3b6223660d696119d317c8e5184ce703ed))
+- chore(yarn): bump yarn ([#1303](https://github.com/paritytech/substrate-api-sidecar/pull/1303)) ([e4d42af](https://github.com/paritytech/substrate-api-sidecar/commit/e4d42af754707003297ec1dc00a000a0bd8bb80b))
+- chore(dev): switch from tsc-watch to ts-node-dev ([#1307](https://github.com/paritytech/substrate-api-sidecar/pull/1307)) ([83d201a](https://github.com/paritytech/substrate-api-sidecar/commit/83d201a514b1b5a49fad7268a3f7eabf6a143d39))
+- chore(deps): bump word-wrap from 1.2.3 to 1.2.4 ([#1309](https://github.com/paritytech/substrate-api-sidecar/pull/1309)) ([573d083](https://github.com/paritytech/substrate-api-sidecar/commit/573d083fb514a5dcae399267ddd585b8ded996ab))
+- chore: bump Swatinem/rust-cache from 2.5.1 to 2.6.0 ([#1310](https://github.com/paritytech/substrate-api-sidecar/pull/1310)) ([28e6078](https://github.com/paritytech/substrate-api-sidecar/commit/28e6078964eb7ba91252e5458e6fbffe966505a2))
+- chore: bump Swatinem/rust-cache from 2.6.0 to 2.6.1 ([#1313](https://github.com/paritytech/substrate-api-sidecar/pull/1313)) ([9fcda59](https://github.com/paritytech/substrate-api-sidecar/commit/9fcda59e76db9339e5a105b3d827a7953c4574aa))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10000
+- Kusama v10000
+- Westend v10000
+
+## [17.1.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.0..v17.1.1) (2023-07-05)
+
+### Bug Fixes
+
+- fix: rename wsurl endpoints to asset hub ([#1301](https://github.com/paritytech/substrate-api-sidecar/pull/1301)) ([7a7e7de](https://github.com/paritytech/substrate-api-sidecar/commit/7a7e7de03e17b3ebdb156f6a7580737858e47810))
+- fix: /accounts/{accountId}/convert encoding for ecdsa ([#1280](https://github.com/paritytech/substrate-api-sidecar/pull/1280)) ([86edf0b](https://github.com/paritytech/substrate-api-sidecar/commit/86edf0b058c3effad80ab9d314dff914e2e7aab8))
+- fix: rename statemint/statemine/westmint to asset-hub-polkadot/kusama/westend ([#1296](https://github.com/paritytech/substrate-api-sidecar/pull/1296)) ([362e912](https://github.com/paritytech/substrate-api-sidecar/commit/362e91224f0bb8562dd0c28da740621bbdad72c0))
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.5.0 to 2.5.1 ([#1300](https://github.com/paritytech/substrate-api-sidecar/pull/1300)) ([45d8ecf](https://github.com/paritytech/substrate-api-sidecar/commit/45d8ecf84841ee28aad7f29cf099d9a829b1ee6c))
+- chore: bump semver from 7.3.5 to 7.5.3 in /docs ([#1298](https://github.com/paritytech/substrate-api-sidecar/pull/1298)) ([45eee30](https://github.com/paritytech/substrate-api-sidecar/commit/45eee30f1b3814721d949868e70ee3212f164b4d))
+- chore: bump Swatinem/rust-cache from 2.4.0 to 2.5.0 ([#1297](https://github.com/paritytech/substrate-api-sidecar/pull/1297)) ([2579500](https://github.com/paritytech/substrate-api-sidecar/commit/2579500952acd7a25bdc1cf20424aed445778a21))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
+## [17.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.0.0..v17.1.0) (2023-06-13)
+
+### Features
+
+- feat: add prometheus metrics in dedicated port ([#1232](https://github.com/paritytech/substrate-api-sidecar/pull/1232)) ([a256790](https://github.com/paritytech/substrate-api-sidecar/commit/a256790e75b2a717896ab019bc03d6f96542ddf3))
+
+### Bug Fixes
+
+- fix: Add BlockTraces to Westend config ([#1292](https://github.com/paritytech/substrate-api-sidecar/pull/1292)) ([d3de591](https://github.com/paritytech/substrate-api-sidecar/commit/d3de591f3b95f9ca30f0bbf667918eb05b9a7497))
+- fix(deps): update pjs api ([#1294](https://github.com/paritytech/substrate-api-sidecar/pull/1294)) ([fe8ef2e](https://github.com/paritytech/substrate-api-sidecar/commit/fe8ef2e741f5013fbe2f11923ba67d333d9eb8ca))
+
+### CI
+
+- CI: fix gha set-output command ([#1291](https://github.com/paritytech/substrate-api-sidecar/pull/1291)) ([609b332](https://github.com/paritytech/substrate-api-sidecar/commit/609b332ccf4582f1987615036e7b53eb26a5bbad))
+
+### Docs
+
+- docs: update release guide ([#1288](https://github.com/paritytech/substrate-api-sidecar/pull/1288)) ([f1516ad](https://github.com/paritytech/substrate-api-sidecar/commit/f1516ad00be419d5ee9e9e0eb0919122a22bb678))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
+## [17.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v16.0.0..v17.0.0) (2023-05-29)
+
+### Breaking Changes
+
+- fix(deps)!: update polkadot-js, and adjust for breaking changes (isFrozen compatibility fix) & kusama test removed ([#1285](https://github.com/paritytech/substrate-api-sidecar/pull/1285)) ([110b01a](https://github.com/paritytech/substrate-api-sidecar/commit/110b01ad9ce80568dbe05201ea2ae07d687ae0d4))
+    NOTE: In the endpoint `/accounts/{accountId}/asset-balances`, the field `isFrozen` will now give new outputs when it is no longer supported.
+
+### Chores
+
+- chore: bump Swatinem/rust-cache from 2.3.0 to 2.4.0 ([#1284](https://github.com/paritytech/substrate-api-sidecar/pull/1284)) ([e5e5987](https://github.com/paritytech/substrate-api-sidecar/commit/e5e5987e2219c4729c33aec8055caada7f655a09))
+- chore: bump Swatinem/rust-cache from 2.2.1 to 2.3.0 ([#1283](https://github.com/paritytech/substrate-api-sidecar/pull/1283)) ([fa9d52f](https://github.com/paritytech/substrate-api-sidecar/commit/fa9d52f760d17f6cd09c0b6990ba617b06055d93))
+
+## Compatibility
+
+Tested against:
+- Polkadot v9420
+- Kusama v9420
+- Westend v9420
+
 ## [16.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v15.0.0..v16.0.0) (2023-05-08)
 
 ### Breaking Changes

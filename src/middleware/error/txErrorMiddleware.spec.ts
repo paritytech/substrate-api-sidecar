@@ -62,6 +62,7 @@ describe('txErrorMiddleware', () => {
 	txErrorMiddlewareCatchesErrWithResponse(
 		'ITxLegacyError (with data)',
 		{
+			code: 500,
 			data: 'some data!',
 			cause: 'a cause!',
 			error: 'an error!',
@@ -78,6 +79,7 @@ describe('txErrorMiddleware', () => {
 	txErrorMiddlewareCatchesErrWithResponse(
 		'ITxLegacyError (without data)',
 		{
+			code: 500,
 			cause: 'a cause!',
 			error: 'an error!',
 		},

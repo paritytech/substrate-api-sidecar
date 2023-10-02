@@ -7,7 +7,7 @@ services:
       - ~/polkadot-data:/data
     # ports:
     #   - "9944:9944"
-    command: '--chain polkadot --unsafe-ws-external --rpc-cors=all'
+    command: '--chain polkadot --unsafe-rpc-external --rpc-cors=all'
 
   sidecar:
     # build: .

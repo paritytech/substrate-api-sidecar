@@ -26,6 +26,7 @@ export const dockMainnetControllers: ControllerConfig = {
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
+		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',

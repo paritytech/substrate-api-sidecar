@@ -35,7 +35,7 @@ impl CalcPayout {
 
         info!("from_params({}, {}) -> ", total_reward_points, era_payout);
 
-        let calc_payout = Self {
+        let calc_payout: CalcPayout = Self {
             total_reward_points: total_reward_points as RewardPoint,
             era_payout: Balance::from_str(era_payout).unwrap(),
         };
@@ -64,26 +64,46 @@ impl CalcPayout {
             is_validator,
         );
 
-        // This is the fraction of the total reward that the validator and the
-        // nominators will get.
-        let validator_total_reward_part =
+        /*
+        This is the fraction of the total reward that will be split between the
+        validator and its nominators
+        */
+        let validator_total_reward_part: Perbill =
             Perbill::from_rational(validator_reward_points, self.total_reward_points);
 
-        // This is how much validator + nominators are entitled to.
-        let validator_total_payout = validator_total_reward_part * self.era_payout;
+        /*
+        Using the previous info, here we calculate the portion of the era's reward
+        that the nominator and its validators are entitled to
+        */
+        let validator_total_payout: u128 = validator_total_reward_part * self.era_payout;
 
-        let validator_commission = Perbill::from_parts(validator_commission);
-        let validator_commission_payout = validator_commission * validator_total_payout;
+        /*
+        This is the validator's commission, independent of their share of the
+        reward for their stake
+        */
+        let validator_commission: Perbill = Perbill::from_percent(validator_commission);
+        let validator_commission_payout: u128 = validator_commission * validator_total_payout;
 
-        let validator_leftover_payout = validator_total_payout - validator_commission_payout;
+        /*
+        Subtracting the validator's commission, how much is left to split between
+        the validator and its nominators
+        */
+        let validator_leftover_payout: u128 = validator_total_payout - validator_commission_payout;
 
-        let own_exposure = Balance::from_str(nominator_exposure).unwrap();
-        let total_exposure = Balance::from_str(total_exposure).unwrap();
-        // This is the fraction of the validators leftover payout that the staker is entitled to
-        let own_exposure_part = Perbill::from_rational(own_exposure, total_exposure);
+        let own_exposure: u128 = Balance::from_str(nominator_exposure).unwrap();
+        let total_exposure: u128 = Balance::from_str(total_exposure).unwrap();
 
-        // Now let's calculate how this is split to the account
-        let own_staking_payout = if is_validator {
+        /*
+        This is the portion of the validator/nominator's leftover payout that
+        the staker is entitled to
+        */
+        let own_exposure_part: Perbill = Perbill::from_rational(own_exposure, total_exposure);
+
+        /*
+        This is the payout for the address we are interested in, depending on
+        whether it's a validator or a nominator
+        */
+        let own_staking_payout: u128 = if is_validator {
             own_exposure_part * validator_leftover_payout + validator_commission_payout
         } else {
             own_exposure_part * validator_leftover_payout

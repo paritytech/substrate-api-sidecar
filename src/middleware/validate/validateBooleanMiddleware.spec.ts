@@ -20,7 +20,7 @@ import { BadRequest } from 'http-errors';
 import { doesNotErrorWith, errorsWith } from './util';
 import { validateBooleanMiddleware } from './validateBooleanMiddleware';
 
-describe('validaeBooleanMiddleware', () => {
+describe('validateBooleanMiddleware', () => {
 	doesNotErrorWith(
 		'no query params in path',
 		{
