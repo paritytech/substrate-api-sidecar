@@ -13,33 +13,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { GenericExtrinsic, Vec } from '@polkadot/types';
+import { BlockHash, Hash } from '@polkadot/types/interfaces';
+import { AnyTuple } from '@polkadot/types/types';
 
-import { ControllerConfig } from '../types/chains-config';
-import { initLRUCache, QueryFeeDetailsCache } from './cache';
+import { ILog } from './Block';
 
-export const kulupuControllers: ControllerConfig = {
-	controllers: [
-		'AccountsBalanceInfo',
-		'AccountsValidate',
-		'Blocks',
-		'BlocksExtrinsics',
-		'BlocksRawExtrinsics',
-		'NodeNetwork',
-		'NodeTransactionPool',
-		'NodeVersion',
-		'PalletsAssets',
-		'RuntimeCode',
-		'RuntimeMetadata',
-		'RuntimeSpec',
-		'TransactionDryRun',
-		'TransactionFeeEstimate',
-		'TransactionMaterial',
-		'TransactionSubmit',
-	],
-	options: {
-		finalizes: false,
-		minCalcFeeRuntime: null,
-		blockStore: initLRUCache(),
-		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
-	},
-};
+export interface IBlockRaw {
+	parentHash: BlockHash;
+	number: `0x${string}`;
+	stateRoot: Hash;
+	extrinsicRoot: Hash;
+	digest: IDigest;
+	extrinsics: Vec<GenericExtrinsic<AnyTuple>>;
+}
+
+interface IDigest {
+	logs: ILog[];
+}

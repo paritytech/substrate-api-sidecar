@@ -679,6 +679,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /blocks/{blockId}/extrinsics-raw:
+    get:
+      tags:
+      - blocks
+      summary: Get a blocks header & its extrinsics as hex values.
+      description: Returns a block & its extrinsics as hex values. BlockId can either be a block hash or a
+        block height.
+      operationId: getBlockRawExtrinsics
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+        "400":
+          description: invalid Block identifier supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'         
   /contracts/ink/{address}/query:
     post:
       tags:
@@ -2483,6 +2512,39 @@ components:
         Note: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
         _construction._
+    BlockRaw:
+      type: object
+      properties:
+        number:
+          type: string
+          description: The block's height.
+          format: unsignedInteger
+        parentHash:
+          type: string
+          description: The hash of the parent block.
+          format: hex
+        stateRoot:
+          type: string
+          description: The state root after executing this block.
+          format: hex
+        extrinsicRoot:
+          type: string
+          description: The Merkle root of the extrinsics.
+          format: hex
+        digest:
+          type: object
+          properties:
+            logs:
+              type: array
+              items:
+                $ref: '#/components/schemas/DigestItem'
+              description: Array of `DigestItem`s associated with the block.
+        extrinsics:
+          type: array
+          description: Array of raw extrinsics (inherents and transactions) within the
+            block.
+          items:
+            type: string
     Blocks:
       type: array
       items: 

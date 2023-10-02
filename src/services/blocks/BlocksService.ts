@@ -44,6 +44,7 @@ import LRU from 'lru-cache';
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
 	IBlock,
+	IBlockRaw,
 	IExtrinsic,
 	IExtrinsicIndex,
 	ISanitizedCall,
@@ -793,5 +794,32 @@ export class BlocksService extends AbstractService {
 			// If so, the user's block is finalized.
 			return blockNumber.unwrap().lte(finalizedHeadBlockNumber.unwrap());
 		}
+	}
+
+	/**
+	 * Fetch a block with raw extrinics values.
+	 *
+	 * @param hash `BlockHash` of the block to fetch.
+	 */
+	async fetchBlockRaw(hash: BlockHash): Promise<IBlockRaw> {
+		const { api } = this;
+		const { block } = await api.rpc.chain.getBlock(hash);
+
+		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
+			block.header;
+		const { extrinsics } = block;
+
+		const logs = digest.logs.map(({ type, index, value }) => {
+			return { type, index, value };
+		});
+
+		return {
+			parentHash: parentHash,
+			number: number.toHex(),
+			stateRoot: stateRoot,
+			extrinsicRoot: extrinsicsRoot,
+			digest: { logs },
+			extrinsics: extrinsics,
+		};
 	}
 }
