@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ import { assetHubWestendRegistryV9435 } from '../../../test-helpers/registries';
 import block5236177 from './data/block5236177.json';
 
 /**
- * Mock for polkadot block #13641102.
+ * Mock for Asset Hub Westend Block #5236177.
  */
 export const mockBlock5236177 = assetHubWestendRegistryV9435.createType(
 	'Block',
@@ -26,7 +26,7 @@ export const mockBlock5236177 = assetHubWestendRegistryV9435.createType(
 );
 
 /**
- * BlockHash for polkadot block #13641102.
+ * BlockHash for Asset Hub Westend Block #5236177.
  */
 export const blockHash5236177 = assetHubWestendRegistryV9435.createType(
 	'BlockHash',

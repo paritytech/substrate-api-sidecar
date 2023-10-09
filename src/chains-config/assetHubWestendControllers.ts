@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,12 +18,13 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Asset Hub Polkadot configuration for Sidecar.
+ * Asset Hub Westend configuration for Sidecar.
  */
 export const assetHubWestendControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
 		'AccountsBalanceInfo',
+		'AccountsPoolAssets',
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',
@@ -37,6 +38,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'PalletsConsts',
 		'PalletsEvents',
 		'PalletsErrors',
+		'PalletsPoolAssets',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

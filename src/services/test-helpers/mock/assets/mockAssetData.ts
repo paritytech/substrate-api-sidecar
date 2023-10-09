@@ -16,15 +16,17 @@
 
 import {
 	AssetApproval,
-	AssetDetails,
 	AssetId,
 	AssetMetadata,
 } from '@polkadot/types/interfaces';
-import { PalletAssetsAssetAccount } from '@polkadot/types/lookup';
+import {
+	PalletAssetsAssetAccount,
+	PalletAssetsAssetDetails,
+} from '@polkadot/types/lookup';
 import { Option } from '@polkadot/types-codec/base';
 
 import { assetHubPolkadotV1 } from '../../../../test-helpers/metadata/assetHubPolkadotMetadata';
-import { rococoRegistry } from '../../../../test-helpers/registries';
+import { assetHubKusamaRegistryV9430 } from '../../../../test-helpers/registries';
 import { createApiWithAugmentations } from '../../../../test-helpers/typeFactory';
 import { TypeFactory } from '../../../../test-helpers/typeFactory';
 
@@ -34,20 +36,29 @@ import { TypeFactory } from '../../../../test-helpers/typeFactory';
 const assetHubPolkadotApiV1 = createApiWithAugmentations(assetHubPolkadotV1);
 const assetHubPolkadotTypeFactory = new TypeFactory(assetHubPolkadotApiV1);
 
-const falseBool = rococoRegistry.createType('bool', false);
-const trueBool = rococoRegistry.createType('bool', true);
-const assetTBalanceOne = rococoRegistry.createType('u64', 10000000);
-const assetTBalanceTwo = rococoRegistry.createType('u64', 20000000);
+const falseBool = assetHubKusamaRegistryV9430.createType('bool', false);
+const trueBool = assetHubKusamaRegistryV9430.createType('bool', true);
+const assetTBalanceOne = assetHubKusamaRegistryV9430.createType(
+	'u64',
+	10000000
+);
+const assetTBalanceTwo = assetHubKusamaRegistryV9430.createType(
+	'u64',
+	20000000
+);
 
-const accountIdOne = rococoRegistry.createType(
+const accountIdOne = assetHubKusamaRegistryV9430.createType(
 	'AccountId',
 	'1TYrFCWxwHA5bhiXf6uLvPfG6eEvrzzL7uiPK3Yc6yHLUqc'
 );
-const accountIdTwo = rococoRegistry.createType(
+const accountIdTwo = assetHubKusamaRegistryV9430.createType(
 	'AccountId',
 	'13NXiLYYzVEjXxU3eaZNcrjEX9vPyVDNNpURCzK8Bj9BiCWH'
 );
-const balanceOfTwo = rococoRegistry.createType('BalanceOf', 2000000);
+const balanceOfTwo = assetHubKusamaRegistryV9430.createType(
+	'BalanceOf',
+	2000000
+);
 
 const assetBalanceObjOne = {
 	balance: assetTBalanceOne,
@@ -96,7 +107,7 @@ const assetsAccountKeysAt = () =>
 		return [assetStorageKeyOne, assetStorageKeyTwo, assetStorageKeyThree];
 	});
 
-export const assetsInfo = (): Promise<AssetDetails> =>
+export const assetsInfo = (): Promise<PalletAssetsAssetDetails> =>
 	Promise.resolve().then(() => {
 		const responseObj = {
 			owner: accountIdOne,
@@ -105,40 +116,44 @@ export const assetsInfo = (): Promise<AssetDetails> =>
 			freezer: accountIdTwo,
 			supply: assetTBalanceOne,
 			deposit: balanceOfTwo,
-			minBalance: rococoRegistry.createType('u64', 10000),
+			minBalance: assetHubKusamaRegistryV9430.createType('u64', 10000),
 			isSufficient: trueBool,
-			accounts: rococoRegistry.createType('u32', 10),
-			sufficients: rococoRegistry.createType('u32', 15),
-			approvals: rococoRegistry.createType('u32', 20),
+			accounts: assetHubKusamaRegistryV9430.createType('u32', 10),
+			sufficients: assetHubKusamaRegistryV9430.createType('u32', 15),
+			approvals: assetHubKusamaRegistryV9430.createType('u32', 20),
 			isFrozen: falseBool,
 		};
 
-		return rococoRegistry.createType('AssetDetails', responseObj);
+		return assetHubKusamaRegistryV9430.createType(
+			'PalletAssetsAssetDetails',
+			responseObj
+		);
 	});
 
-export const assetsInfoKeysInjected = (): (() => Promise<AssetDetails>) => {
-	// Create a shallow copy of assetsInfo
-	const assetInfoCopy = Object.assign({}, assetsInfo);
+export const assetsInfoKeysInjected =
+	(): (() => Promise<PalletAssetsAssetDetails>) => {
+		// Create a shallow copy of assetsInfo
+		const assetInfoCopy = Object.assign({}, assetsInfo);
 
-	// Inject the keys into `assetsInfoCopy`
-	Object.assign(assetInfoCopy, {
-		keys: assetsAccountKeysAt,
-	});
+		// Inject the keys into `assetsInfoCopy`
+		Object.assign(assetInfoCopy, {
+			keys: assetsAccountKeysAt,
+		});
 
-	return assetInfoCopy;
-};
+		return assetInfoCopy;
+	};
 
 export const assetsMetadata = (): Promise<AssetMetadata> =>
 	Promise.resolve().then(() => {
 		const responseObj = {
 			deposit: balanceOfTwo,
-			name: rococoRegistry.createType('Bytes', 'statemint'),
-			symbol: rococoRegistry.createType('Bytes', 'DOT'),
-			decimals: rococoRegistry.createType('u8', 10),
+			name: assetHubKusamaRegistryV9430.createType('Bytes', 'statemint'),
+			symbol: assetHubKusamaRegistryV9430.createType('Bytes', 'DOT'),
+			decimals: assetHubKusamaRegistryV9430.createType('u8', 10),
 			isFrozen: falseBool,
 		};
 
-		return rococoRegistry.createType('AssetMetadata', responseObj);
+		return assetHubKusamaRegistryV9430.createType('AssetMetadata', responseObj);
 	});
 
 /**
@@ -169,5 +184,8 @@ export const assetApprovals = (): Promise<Option<AssetApproval>> =>
 			amount: assetTBalanceOne,
 			deposit: balanceOfTwo,
 		};
-		return rococoRegistry.createType('Option<AssetApproval>', assetObj);
+		return assetHubKusamaRegistryV9430.createType(
+			'Option<AssetApproval>',
+			assetObj
+		);
 	});
