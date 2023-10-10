@@ -246,7 +246,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 	/**
 	 * @param keys Extract `assetId`s from an array of storage keys
 	 */
-	extractPoolAssetIds(keys: StorageKey<[AssetId]>[]): AssetId[] {
+	private extractPoolAssetIds(keys: StorageKey<[AssetId]>[]): AssetId[] {
 		return keys.map(({ args: [assetId] }) => assetId);
 	}
 
