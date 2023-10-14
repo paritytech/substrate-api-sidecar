@@ -21,12 +21,14 @@ import {
 	EventMetadataLatest,
 	FunctionMetadataLatest,
 	MetadataV14,
+	MetadataV15,
 	PalletCallMetadataV14,
 	PalletConstantMetadataLatest,
 	PalletConstantMetadataV14,
 	PalletErrorMetadataV14,
 	PalletEventMetadataV14,
 	PalletMetadataV14,
+	PalletMetadataV15,
 	PalletStorageMetadataV14,
 	StorageEntryMetadataV14,
 } from '@polkadot/types/interfaces';
@@ -59,7 +61,7 @@ type IMetadataFieldType =
 
 export abstract class AbstractPalletsService extends AbstractService {
 	private getPalletMetadataType(
-		meta: PalletMetadataV14,
+		meta: PalletMetadataV14 | PalletMetadataV15,
 		metadataFieldType: IMetadataFieldType
 	): IPalletMetadata {
 		return this.getProperty(meta, metadataFieldType);
@@ -75,24 +77,25 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
 	protected findPalletMeta(
-		adjustedMetadata: MetadataV14,
+		adjustedMetadata: MetadataV14 | MetadataV15,
 		palletId: string,
 		metadataFieldType: IMetadataFieldType
-	): [PalletMetadataV14, number] {
-		const pallets: Vec<PalletMetadataV14> = adjustedMetadata['pallets'];
+	): [PalletMetadataV14 | PalletMetadataV15, number] {
+		const pallets: Vec<PalletMetadataV14> | Vec<PalletMetadataV15> =
+			adjustedMetadata['pallets'];
 		const palletMetaType = this.getPalletMetadataType(
 			pallets[0],
 			metadataFieldType
 		);
 
-		const filtered: PalletMetadataV14[] = pallets.filter(
+		const filtered: (PalletMetadataV14 | PalletMetadataV15)[] = pallets.filter(
 			(mod) => !(mod[metadataFieldType] as typeof palletMetaType).isEmpty
 		);
 
 		const { isValidPalletName, isValidPalletIndex, parsedPalletId } =
 			this.validPalletId(pallets, palletId);
 
-		let palletMeta: PalletMetadataV14 | undefined;
+		let palletMeta: PalletMetadataV14 | PalletMetadataV15 | undefined;
 		let palletIdx: number | undefined;
 
 		if (isValidPalletIndex) {
@@ -142,7 +145,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private validPalletId(
-		modules: Vec<PalletMetadataV14>,
+		modules: Vec<PalletMetadataV14> | Vec<PalletMetadataV15>,
 		palletId: string
 	): {
 		isValidPalletName: boolean;
@@ -200,7 +203,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 */
 	protected findPalletFieldItemMeta(
 		historicApi: ApiDecoration<'promise'>,
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		palletItemId: string,
 		metadataFieldType: IMetadataFieldType
 	): IPalletFieldMeta {
@@ -251,14 +254,17 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private getDispatchablesItemMeta(
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		dispatchableItemMetaIdx: number,
 		dispatchableItemId: string
 	): [number, FunctionMetadataLatest] {
 		const palletName = stringCamelCase(palletMeta.name);
 		const dispatchables = this.api.tx[palletName];
 
-		if ((palletMeta.calls as unknown as PalletCallMetadataV14).isEmpty) {
+		if (
+			(palletMeta.calls as unknown as PalletMetadataV14 | PalletMetadataV15)
+				.isEmpty
+		) {
 			throw new InternalServerError(
 				`No dispatchable items found in ${palletMeta.name.toString()}'s metadata`
 			);
@@ -284,7 +290,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private getConstItemMeta(
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		constItemMetaIdx: number,
 		constItemId: string
 	): [number, PalletConstantMetadataLatest] {
@@ -304,7 +310,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 	private getErrorItemMeta(
 		historicApi: ApiDecoration<'promise'>,
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		errorItemMetaIdx: number,
 		errorItemId: string
 	): [number, ErrorMetadataLatest] {
@@ -335,7 +341,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 
 	private getEventItemMeta(
 		historicApi: ApiDecoration<'promise'>,
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		eventItemMetaIdx: number,
 		eventItemId: string
 	): [number, EventMetadataLatest] {
@@ -365,7 +371,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	}
 
 	private getStorageItemMeta(
-		palletMeta: PalletMetadataV14,
+		palletMeta: PalletMetadataV14 | PalletMetadataV15,
 		storageItemMetaIdx: number,
 		storageItemId: string
 	): [number, StorageEntryMetadataV14] {
