@@ -12,6 +12,7 @@
     "live": null
   },
   "properties": {
+    "isEthereum": false,
     "ss58Format": "0",
     "tokenDecimals": ["12"],
     "tokenSymbol": ["DOT"]
