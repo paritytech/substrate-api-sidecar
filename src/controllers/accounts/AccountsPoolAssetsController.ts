@@ -86,10 +86,8 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const assetsSplit = (assets as string)?.split(',') || [];
-
-		const assetsArray = Array.isArray(assetsSplit)
-			? this.parseQueryParamArrayOrThrow(assetsSplit)
+		const assetsArray = Array.isArray(assets)
+			? this.parseQueryParamArrayOrThrow(assets as string[])
 			: [];
 
 		AccountsPoolAssetsController.sanitizedSend(
