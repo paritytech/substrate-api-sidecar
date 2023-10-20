@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { assetHubWestendMetadataRpcV9435 } from '../../test-helpers/metadata/assetHubWestendMetadata';
 import { assetHubWestendRegistryV9435 } from '../../test-helpers/registries/assetHubWestendRegistry';
 import { createApiWithAugmentations } from '../../test-helpers/typeFactory';
-import { blockHash5236177, mockAssethubWestend } from '../test-helpers/mock';
+import { blockHash5236177, mockAssetHubWestendApi } from '../test-helpers/mock';
 import { reserves } from '../test-helpers/mock/data/assetConversionEntries';
 import { PalletsAssetConversionService } from './PalletsAssetConversionService';
 
@@ -145,7 +145,7 @@ const mockHistoricApi = {
 } as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
-	...mockAssethubWestend,
+	...mockAssetHubWestendApi,
 	at: (_hash: Hash) => mockHistoricApi,
 	query: {
 		assetConversion: {

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -271,9 +271,9 @@ const traceBlock = () =>
 
 /**
  * Deafult Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
- * #789629, which is what most Service unit tests are based on.
+ * #5236177, which is what most Service unit tests are based on.
  */
-export const mockAssethubWestend = {
+export const mockAssetHubWestendApi = {
 	runtimeVersion,
 	call: {
 		transactionPaymentApi: {

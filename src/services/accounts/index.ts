@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 export * from './AccountsAssetsService';
 export * from './AccountsBalanceInfoService';
 export * from './AccountsConvertService';
+export * from './AccountsPoolAssetsService';
 export * from './AccountsStakingInfoService';
 export * from './AccountsStakingPayoutsService';
 export * from './AccountsValidateService';

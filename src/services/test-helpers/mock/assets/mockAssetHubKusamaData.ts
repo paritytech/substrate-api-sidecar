@@ -56,7 +56,7 @@ const foreignAssetInfoDot = (): Option<PalletAssetsAssetDetails> => {
 		accounts: assetHubKusamaRegistryV9430.createType('u8', 0),
 		sufficients: assetHubKusamaRegistryV9430.createType('u8', 0),
 		approvals: assetHubKusamaRegistryV9430.createType('u8', 0),
-		isFrozen: falseBool,
+		status: 'Live',
 	};
 
 	return assetHubKusamaRegistryV9430.createType(
@@ -78,7 +78,7 @@ const foreignAssetInfoTknr = (): Option<PalletAssetsAssetDetails> => {
 		accounts: assetHubKusamaRegistryV9430.createType('u8', 0),
 		sufficients: assetHubKusamaRegistryV9430.createType('u8', 0),
 		approvals: assetHubKusamaRegistryV9430.createType('u8', 0),
-		isFrozen: falseBool,
+		status: 'Live',
 	};
 
 	return assetHubKusamaRegistryV9430.createType(

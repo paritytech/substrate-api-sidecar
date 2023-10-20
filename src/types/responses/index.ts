@@ -17,6 +17,7 @@
 export * from './AccountAssets';
 export * from './AccountBalanceInfo';
 export * from './AccountConvert';
+export * from './AccountPoolAssets';
 export * from './AccountStakingInfo';
 export * from './AccountStakingPayouts';
 export * from './AccountVestingInfo';
@@ -49,6 +50,7 @@ export * from './PalletStorage';
 export * from './PalletStorageItem';
 export * from './Paras';
 export * from './Payout';
+export * from './PoolAssets';
 export * from './RuntimeSpec';
 export * from './SanitizedArgs';
 export * from './SanitizedCall';

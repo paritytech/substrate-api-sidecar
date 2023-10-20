@@ -261,6 +261,112 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/pool-asset-balances:
+    get:
+      tags:
+      - accounts
+      summary: Get an array of pool-asset-balances for an account.
+      description: Returns information about an account's pool-asset-balances. This is
+        specific to the pool assets pallet for parachains. If no `assets` query parameter
+        is provided, all pool-asset-balances for the given account will be returned.
+      operationId: getPoolAssetBalances
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query pool-asset-balance info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a positive integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: assets
+        in: query
+        description: An array of AssetId's to be queried. If not supplied, defaults to providing
+          all asset balances associated with the `accountId` will be returned. The array query param
+          format follows Express 4.x API. ex:`?assets[]=1&assets[]=2&assets[]=3`.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: A list of assetId numbers represented as strings
+          format: Array of unsignedInteger's
+      responses:
+        "200":
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPoolAssetsBalances'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/pool-asset-approvals:
+    get:
+      tags:
+      - accounts
+      summary: Get an asset approval for an account.
+      description: Returns information about an account's asset approval transaction.
+        It is required to pass in a delegate and an assetId as query parameters.
+      operationId: getPoolAssetApprovals
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query asset approval info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: assetId
+        in: query
+        description: The `assetId` associated with the asset-approval.
+        required: true
+        schema:
+          type: string
+          description: An assetId represented as an unsignedInteger.
+          format: unsignedInteger
+      - name: delegate
+        in: query
+        description: The delegate's `accountId` associated with an asset-approval.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      responses:
+        "200":
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAssetsApproval'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /accounts/{accountId}/staking-info:
     get:
       tags:
@@ -1701,6 +1807,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pallets/pool-assets/{assetId}/asset-info:
+    get:
+      tags:
+        - pallets
+      summary: Get information and metadata associated with a pool asset.
+      description: Returns information associated with a pool asset which includes
+        the assets `AssetDetails` and `AssetMetadata`.
+      operationId: getPoolAssetById
+      parameters:
+      - name: assetId
+        in: path
+        description: The unsignedInteger Id of a pool asset.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: at
+        in: query
+        description: Block at which to retrieve the assetInfo.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsPoolAssetsInfo'
   /pallets/staking/progress:
     get:
       tags:
@@ -2163,6 +2300,16 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+    AccountPoolAssetsBalances:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        poolAssets:
+          type: array
+          description: An array of queried assets.
+          items:
+            $ref: '#/components/schemas/AssetsBalance'
     LiquidityPools:
       type: object
       properties:
@@ -2413,10 +2560,9 @@ components:
           type: string
           description: The total number of approvals.
           format: unsignedInteger
-        isFrozen:
-          type: boolean
-          description: Whether the asset is frozen for non-admin transfers. Note, that some runtimes may not have
-            support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
+        status:
+          type: string
+          description: The status of the asset.
     AssetMetadata:
       type: object
       properties:
@@ -3291,6 +3437,15 @@ components:
             type: number
         minJoinBond:
             type: number
+    PalletsPoolAssetsInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        poolAssetInfo:
+          $ref: '#/components/schemas/AssetInfo'
+        poolAssetMetadata:
+          $ref: '#/components/schemas/AssetMetadata'
     PalletStorage:
       type: object
       properties:

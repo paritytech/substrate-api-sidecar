@@ -49,10 +49,10 @@ describe('PalletsAssetsService', () => {
 					height: '789629',
 				},
 				assetInfo: {
-					owner: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
-					issuer: '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM',
-					admin: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
-					freezer: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
+					owner: 'D2sNEHKjX2cPiWeLirx6ivWZ4vq3EG2i11ycgL9XpAFu9rS',
+					issuer: 'CaKWz5omakTK7ovp4m3koXrHyHb7NG3Nt7GENHbviByZpKp',
+					admin: 'EwrEKdMm4zBr5GyTeKRNfG5p8Cz5rUQkhagSMbj7SLAGok5',
+					freezer: 'EwrEKdMm4zBr5GyTeKRNfG5p8Cz5rUQkhagSMbj7SLAGok5',
 					supply: '10000000',
 					deposit: '2000000',
 					minBalance: '10000',
@@ -60,7 +60,7 @@ describe('PalletsAssetsService', () => {
 					accounts: '10',
 					sufficients: '15',
 					approvals: '20',
-					isFrozen: false,
+					status: 'Live',
 				},
 				assetMetaData: {
 					deposit: '2000000',

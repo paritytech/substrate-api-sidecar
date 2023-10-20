@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ import {
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsConvert,
+	AccountsPoolAssets,
 	AccountsStakingInfo,
 	AccountsStakingPayouts,
 	AccountsValidate,
@@ -40,6 +41,7 @@ import {
 	PalletsEvents,
 	PalletsForeignAssets,
 	PalletsNominationPools,
+	PalletsPoolAssets,
 	PalletsStakingProgress,
 	PalletsStakingValidators,
 	PalletsStorage,
@@ -64,6 +66,7 @@ export const controllers = {
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsConvert,
+	AccountsPoolAssets,
 	AccountsStakingInfo,
 	AccountsValidate,
 	AccountsVestingInfo,
@@ -77,6 +80,7 @@ export const controllers = {
 	PalletsEvents,
 	PalletsForeignAssets,
 	PalletsNominationPools,
+	PalletsPoolAssets,
 	PalletsStakingProgress,
 	PalletsStakingValidators,
 	PalletsStorage,
