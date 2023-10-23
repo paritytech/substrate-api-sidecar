@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.2.0..v17.3.0) (2023-10-23)
+
+### Features
+
+- feat: add pool-assets endpoints ([#1338](https://github.com/paritytech/substrate-api-sidecar/pull/1338)) ([02c4a3f](https://github.com/paritytech/substrate-api-sidecar/commit/02c4a3fa9556029840bd00dd842ad7fb89afd1b6))
+- feat: add blocks raw extrinsics endpoint ([#1334](https://github.com/paritytech/substrate-api-sidecar/pull/1334)) ([f486aa9](https://github.com/paritytech/substrate-api-sidecar/commit/f486aa94bd86b21d460aaf2285dda1c535cfb969))
+
+The following endpoints are now available:
+- `/blocks/:blockId/extrinsics-raw`
+- `/pallets/pool-assets/{assetId}/asset-info`
+- `/accounts/{accountId}/pool-asset-balances`
+- `/accounts/{accountId}/pool-asset-approvals`
+
+### Chore
+
+- chore(yarn): bump yarn ([#1341](https://github.com/paritytech/substrate-api-sidecar/pull/1341)) ([052aaa1](https://github.com/paritytech/substrate-api-sidecar/commit/052aaa1269758c4c1fec9a383e81fe345a53c32d))
+- chore(deps): update polkadot-js deps ([#1339](https://github.com/paritytech/substrate-api-sidecar/pull/1339)) ([2978d1a](https://github.com/paritytech/substrate-api-sidecar/commit/2978d1a0b3e07f81eb5c6ab3e6bf120fc96c38e2))
+- chore: bump Swatinem/rust-cache from 2.6.2 to 2.7.0 ([#1332](https://github.com/paritytech/substrate-api-sidecar/pull/1332)) ([2d1d82d](https://github.com/paritytech/substrate-api-sidecar/commit/2d1d82de5cdb684a7e4ec19939892a521a949509))
+- chore: bump postcss from 8.4.14 to 8.4.31 in /docs ([#1337](https://github.com/paritytech/substrate-api-sidecar/pull/1337)) ([39d016a](https://github.com/paritytech/substrate-api-sidecar/commit/39d016a6317f91078bf76b9c17ed8817150c5cde))
+- chore(deps): bump @babel/traverse from 7.22.11 to 7.23.2 ([#1340](https://github.com/paritytech/substrate-api-sidecar/pull/1340)) ([b59bb90](https://github.com/paritytech/substrate-api-sidecar/commit/b59bb900791e57dbc7ba240581d656e6b1329b74))
+
+### Docs
+
+- docs: fix regex under the pattern keyword ([#1335](https://github.com/paritytech/substrate-api-sidecar/pull/1335)) ([fbdca75](https://github.com/paritytech/substrate-api-sidecar/commit/fbdca75b970e3955878206e6ad94ace58796cabf))
+
+## Compatibility
+
+Tested against:
+- Polkadot v12000
+- Kusama v120000
+- Westend v12000
+
 ## [17.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.2..v17.2.0) (2023-09-11)
 
 ### Features
