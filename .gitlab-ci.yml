@@ -76,12 +76,12 @@ stages:
   stage:                           build
   image:                           $CI_IMAGE
   tags:
-    - kubernetes-parity-build
+    - linux-docker
 
-.kubernetes-env:                   &kubernetes-env
+.docker-env:                   &docker-env
   image:                           $CI_IMAGE
   tags:
-    - kubernetes-parity-build
+    - linux-docker
 
 .deploy-k8s:                       &deploy-k8s
   image:                           paritytech/kubetools:3.5.3
@@ -108,11 +108,11 @@ stages:
         --values ${HELM_CUSTOM_VALUES_FILE_2}
         ${HELM_RELEASE_NAME_2} ${HELM_REPO}
   tags:
-    - kubernetes-parity-build
+    - linux-docker
 
 .e2e-template:                     &e2e-template
   stage:                           test
-  <<:                              *kubernetes-env
+  <<:                              *docker-env
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    ""
@@ -175,7 +175,7 @@ push-docker-image-description:
   before_script:
     - echo
   extends:
-    - .kubernetes-env
+    - .docker-env
   variables:
     CI_IMAGE:                      paritytech/dockerhub-description
     DOCKERHUB_REPOSITORY:          parity/substrate-api-sidecar
@@ -226,7 +226,7 @@ deploy-production:
 
 bench-polkadot:                    &bench-polkadot
   stage:                           benchmark
-  <<:                              *kubernetes-env
+  <<:                              *docker-env
   <<:                              *collect-artifacts
   <<:                              *publish-refs
   variables:
@@ -251,7 +251,7 @@ bench-polkadot-manual-pr:
 # check-benchmark:
 #   stage: check-benchmark
 #   <<:                              *publish-refs
-#   <<:                              *kubernetes-env
+#   <<:                              *docker-env
 #   <<:                              *collect-artifacts
 #   needs:
 #     - job:                         benchmark
@@ -270,7 +270,7 @@ bench-polkadot-manual-pr:
 push-benchmark:
   stage:                           push-benchmark
   <<:                              *publish-refs
-  <<:                              *kubernetes-env
+  <<:                              *docker-env
   needs:
     - job:                         bench-polkadot
       artifacts:                   true
