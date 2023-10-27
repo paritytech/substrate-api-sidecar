@@ -236,7 +236,10 @@ function mapTypeSanitizeKeyValue(
 	const jsonMap: AnyJson = {};
 
 	map.forEach((value: unknown, key: unknown) => {
-		const nonCodecKey = sanitizeNumbers(key, options);
+		let nonCodecKey = sanitizeNumbers(key, options);
+		if (typeof nonCodecKey === 'object') {
+			nonCodecKey = JSON.stringify(nonCodecKey);
+		}
 		if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
 			throw new InternalServerError(
 				'Unexpected non-string and non-number key while sanitizing a Map-like type'
