@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.0..v17.3.1) (2023-10-30)
+
+### Fix
+
+- fix: bifrost type issue & small fixes in tests ([#1345](https://github.com/paritytech/substrate-api-sidecar/pull/1345)) ([567170b](https://github.com/paritytech/substrate-api-sidecar/commit/567170b7d3d8cbb53cca07c467447ba99bb24b52))
+
+### Chore
+
+- chore(deps): bump actions/setup-node from 3 to 4 ([#1343](https://github.com/paritytech/substrate-api-sidecar/pull/1343)) ([8fa49aa](https://github.com/paritytech/substrate-api-sidecar/commit/8fa49aaa93cfdad36fe8126262409832033bba89))
+- chore(deps): bump Swatinem/rust-cache from 2.7.0 to 2.7.1 ([#1344](https://github.com/paritytech/substrate-api-sidecar/pull/1344)) ([47a47da](https://github.com/paritytech/substrate-api-sidecar/commit/47a47daaa6987836a10aea53bcd02aef453408c4))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10200
+- Kusama v10200
+- Westend v10200
+
 ## [17.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.2.0..v17.3.0) (2023-10-23)
 
 ### Features
@@ -30,9 +48,9 @@ The following endpoints are now available:
 ## Compatibility
 
 Tested against:
-- Polkadot v12000
-- Kusama v120000
-- Westend v12000
+- Polkadot v10200
+- Kusama v10200
+- Westend v10200
 
 ## [17.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.1.2..v17.2.0) (2023-09-11)
 
