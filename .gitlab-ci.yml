@@ -135,14 +135,14 @@ e2e-kusama:
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "kusama"
-    CHAIN_URL:                     "wss://kusama-rpc.polkadot.io"
+    CHAIN_URL:                     "wss://apps-kusama-rpc.polkadot.io"
 
 e2e-polkadot:
   <<:                              *e2e-template
   variables:
     CI_IMAGE:                      $NODE_IMAGE
     CHAIN_NAME:                    "polkadot"
-    CHAIN_URL:                     "wss://rpc.polkadot.io"
+    CHAIN_URL:                     "wss://apps-rpc.polkadot.io"
 
 build-docker:
   <<:                              *dockerize
