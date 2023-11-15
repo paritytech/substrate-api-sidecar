@@ -23,13 +23,17 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/registries';
+import {
+	polkadotRegistry,
+	polkadotRegistryV9370,
+} from '../../test-helpers/registries';
 import {
 	blockHash789629,
 	defaultMockApi,
 	testAddress,
 } from '../test-helpers/mock';
 import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
+import accountsBalanceInfoFeeFrozen from '../test-helpers/responses/accounts/balanceInfoFeeFrozen.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
 const locksAt = (_address: string) =>
@@ -47,6 +51,19 @@ const accountAt = (_address: string) =>
 			'0x0600000003dbb656ab7400000000000000000000000000000000000000000000000000000000e8764817000000000000000000000000e87648170000000000000000000000'
 		)
 	);
+
+const accountDataAt = (_address: String) =>
+	Promise.resolve().then(() => {
+		return {
+			data: polkadotRegistryV9370.createType('AccountData', {
+				free: '100000',
+				reserved: '100000',
+				miscFrozen: '111111',
+				feeFrozen: '111111',
+			}),
+			nonce: polkadotRegistry.createType('Index', 1),
+		};
+	});
 
 const freeBalanceAt = () =>
 	Promise.resolve().then(() =>
@@ -101,6 +118,45 @@ describe('AccountsBalanceInfoService', () => {
 					)
 				)
 			).toStrictEqual(accountsBalanceInfo789629);
+		});
+
+		it('works when the api does not have the frozen field in Account data', async () => {
+			const tmpHistoricApi = {
+				registry: polkadotRegistry,
+				query: {
+					balances: {
+						freeBalance: undefined,
+						reservedBalance: async () =>
+							polkadotRegistry.createType('Balance', 1),
+						locks: locksAt,
+					},
+					system: {
+						accountNonce: async () => polkadotRegistry.createType('Index', 1),
+						account: accountDataAt,
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
+
+			const tmpMockApi = {
+				...defaultMockApi,
+				at: (_hash: Hash) => tmpHistoricApi,
+			} as unknown as ApiPromise;
+
+			const tmpAccountsBalanceInfoService = new AccountsBalanceInfoService(
+				tmpMockApi
+			);
+
+			expect(
+				sanitizeNumbers(
+					await tmpAccountsBalanceInfoService.fetchAccountBalanceInfo(
+						blockHash789629,
+						tmpHistoricApi,
+						testAddress,
+						'DOT',
+						false
+					)
+				)
+			).toStrictEqual(accountsBalanceInfoFeeFrozen);
 		});
 
 		it('Correctly queries historical blocks', async () => {

@@ -115,7 +115,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 			const { data, nonce } = accountInfo;
 
 			let free, reserved, feeFrozen, miscFrozen, frozen;
-			if (accountInfo.data.frozen) {
+			if (accountInfo.data?.frozen) {
 				free = data.free;
 				reserved = data.reserved;
 				frozen = data.frozen;
