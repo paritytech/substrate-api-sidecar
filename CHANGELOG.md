@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.1..v17.3.2) (2023-11-26)
+
+### Fix
+
+- fix: add override types for asset hub conversation pallet ([#1354](https://github.com/paritytech/substrate-api-sidecar/pull/1354)) ([21e016d](https://github.com/paritytech/substrate-api-sidecar/commit/21e016d990ab0edd6cc322dc073ab576552a1320))
+
+### Test
+
+- test: add test for frozen deprecation in runtime ([#1353](https://github.com/paritytech/substrate-api-sidecar/pull/1353)) ([1a249a3](https://github.com/paritytech/substrate-api-sidecar/commit/1a249a3fcca5df21a85a035d49c422b265bdc2e4))
+
+### CI
+
+- ci: fixing gitspiegel trigger workflow ([bdb9271](https://github.com/paritytech/substrate-api-sidecar/commit/bdb9271565192ec106febee4788e888976040190))
+- ci: switch e2e-tests endpoints ([#1350](https://github.com/paritytech/substrate-api-sidecar/pull/1350)) ([644b475](https://github.com/paritytech/substrate-api-sidecar/commit/644b475daf95997901430d3cc6de43cd5befe3b4))
+- ci: adding gitspiegel-trigger workflow ([#1348](https://github.com/paritytech/substrate-api-sidecar/pull/1348)) ([87f47a5](https://github.com/paritytech/substrate-api-sidecar/commit/87f47a59860b43cd8797cfaf351d130572a4a207))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10300
+- Kusama v10300
+- Westend v10300
+
 ## [17.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.0..v17.3.1) (2023-10-30)
 
 ### Fix
