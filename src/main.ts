@@ -26,11 +26,11 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import tempTypesBundle from './overrideTypes/typesBundle';
 import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
+import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 import Metrics_App from './util/metrics';
@@ -51,8 +51,8 @@ async function main() {
 			: new WsProvider(config.SUBSTRATE.URL),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
-			? (tempTypesBundle as OverrideBundleType) 
-			: undefined,
+			? (require(TYPES_BUNDLE) as OverrideBundleType)
+			: (tempTypesBundle as OverrideBundleType),
 		typesChain: TYPES_CHAIN
 			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
 			: undefined,
