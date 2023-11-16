@@ -30,6 +30,7 @@ import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import * as middleware from './middleware';
+import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 import Metrics_App from './util/metrics';
@@ -51,7 +52,7 @@ async function main() {
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
 			? (require(TYPES_BUNDLE) as OverrideBundleType)
-			: undefined,
+			: (tempTypesBundle as OverrideBundleType),
 		typesChain: TYPES_CHAIN
 			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
 			: undefined,
