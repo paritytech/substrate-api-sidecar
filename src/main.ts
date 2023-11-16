@@ -26,6 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
+import tempTypesBundle from './overrideTypes/typesBundle';
 import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
@@ -50,7 +51,7 @@ async function main() {
 			: new WsProvider(config.SUBSTRATE.URL),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE
-			? (require(TYPES_BUNDLE) as OverrideBundleType)
+			? (tempTypesBundle as OverrideBundleType) 
 			: undefined,
 		typesChain: TYPES_CHAIN
 			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
