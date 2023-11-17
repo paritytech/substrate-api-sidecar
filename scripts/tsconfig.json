@@ -4,6 +4,7 @@
         "baseUrl": ".",
         "outDir": "build",
         "suppressImplicitAnyIndexErrors": true,
+        "ignoreDeprecations": "5.0",
         "resolveJsonModule": true,
     },
 }
