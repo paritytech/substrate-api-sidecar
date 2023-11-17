@@ -48,19 +48,12 @@ import AbstractController from '../AbstractController';
  */
 export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/transaction/fee-estimate',
-			new TransactionFeeEstimateService(api)
-		);
+		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.router.post(
-			this.path,
-			TransactionFeeEstimateController.catchWrap(this.txFeeEstimate)
-		);
+		this.router.post(this.path, TransactionFeeEstimateController.catchWrap(this.txFeeEstimate));
 	}
 
 	/**
@@ -70,10 +63,7 @@ export default class TransactionFeeEstimateController extends AbstractController
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txFeeEstimate: IPostRequestHandler<ITx> = async (
-		{ body: { tx } },
-		res
-	): Promise<void> => {
+	private txFeeEstimate: IPostRequestHandler<ITx> = async ({ body: { tx } }, res): Promise<void> => {
 		if (!tx) {
 			throw {
 				error: 'Missing field `tx` on request body.',
@@ -82,9 +72,6 @@ export default class TransactionFeeEstimateController extends AbstractController
 
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		TransactionFeeEstimateController.sanitizedSend(
-			res,
-			await this.service.fetchTransactionFeeEstimate(hash, tx)
-		);
+		TransactionFeeEstimateController.sanitizedSend(res, await this.service.fetchTransactionFeeEstimate(hash, tx));
 	};
 }

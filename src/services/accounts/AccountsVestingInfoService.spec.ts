@@ -21,15 +21,8 @@ import { Hash } from '@polkadot/types/interfaces';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotMetadataRpcV9110 } from '../../test-helpers/metadata/polkadotV9110Metadata';
 import { polkadotRegistry } from '../../test-helpers/registries';
-import {
-	createApiWithAugmentations,
-	TypeFactory,
-} from '../../test-helpers/typeFactory';
-import {
-	blockHash789629,
-	defaultMockApi,
-	testAddress,
-} from '../test-helpers/mock';
+import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
+import { blockHash789629, defaultMockApi, testAddress } from '../test-helpers/mock';
 import response789629 from '../test-helpers/responses/accounts/vestingInfo789629.json';
 import { AccountsVestingInfoService } from './AccountsVestingInfoService';
 
@@ -44,19 +37,14 @@ const vestingRes = {
 
 const vestingAt = (_address: string) =>
 	Promise.resolve().then(() => {
-		const vestingInfo = typeFactorApiV9110.createType(
-			'PalletVestingVestingInfo',
-			vestingRes
-		);
+		const vestingInfo = typeFactorApiV9110.createType('PalletVestingVestingInfo', vestingRes);
 		const vecVestingInfo = factory.vecOf([vestingInfo]);
 
 		return factory.optionOf(vecVestingInfo);
 	});
 
 const historicVestingAt = (_address: string) =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Option<VestingInfo>', vestingRes)
-	);
+	Promise.resolve().then(() => polkadotRegistry.createType('Option<VestingInfo>', vestingRes));
 
 const mockHistoricApi = {
 	query: {
@@ -77,20 +65,12 @@ describe('AccountVestingInfoService', () => {
 	describe('fetchAccountVestingInfo', () => {
 		it('works when ApiPromise works (block 789629) with V14 metadata', async () => {
 			expect(
-				sanitizeNumbers(
-					await accountsVestingInfoService.fetchAccountVestingInfo(
-						blockHash789629,
-						testAddress
-					)
-				)
+				sanitizeNumbers(await accountsVestingInfoService.fetchAccountVestingInfo(blockHash789629, testAddress)),
 			).toStrictEqual(response789629);
 		});
 
 		it('Vesting should return an empty array for None responses', async () => {
-			const tempVest = () =>
-				Promise.resolve().then(() =>
-					polkadotRegistry.createType('Option<VestingInfo>', null)
-				);
+			const tempVest = () => Promise.resolve().then(() => polkadotRegistry.createType('Option<VestingInfo>', null));
 			(mockHistoricApi.query.vesting.vesting as unknown) = tempVest;
 
 			const expectedResponse = {
@@ -102,12 +82,7 @@ describe('AccountVestingInfoService', () => {
 			};
 
 			expect(
-				sanitizeNumbers(
-					await accountsVestingInfoService.fetchAccountVestingInfo(
-						blockHash789629,
-						testAddress
-					)
-				)
+				sanitizeNumbers(await accountsVestingInfoService.fetchAccountVestingInfo(blockHash789629, testAddress)),
 			).toStrictEqual(expectedResponse);
 			(mockHistoricApi.query.vesting.vesting as unknown) = vestingAt;
 		});
@@ -115,12 +90,7 @@ describe('AccountVestingInfoService', () => {
 		it('Should correctly adjust `Option<VestingInfo>` for pre V14 blocks to return an array', async () => {
 			(mockHistoricApi.query.vesting.vesting as unknown) = historicVestingAt;
 			expect(
-				sanitizeNumbers(
-					await accountsVestingInfoService.fetchAccountVestingInfo(
-						blockHash789629,
-						testAddress
-					)
-				)
+				sanitizeNumbers(await accountsVestingInfoService.fetchAccountVestingInfo(blockHash789629, testAddress)),
 			).toStrictEqual(response789629);
 			(mockHistoricApi.query.vesting.vesting as unknown) = vestingAt;
 		});

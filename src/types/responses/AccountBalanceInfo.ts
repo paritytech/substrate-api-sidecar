@@ -15,13 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Vec } from '@polkadot/types';
-import {
-	Balance,
-	BalanceLock,
-	Index,
-	LockIdentifier,
-	Reasons,
-} from '@polkadot/types/interfaces';
+import { Balance, BalanceLock, Index, LockIdentifier, Reasons } from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 

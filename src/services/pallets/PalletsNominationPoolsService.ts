@@ -17,10 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import {
-	IPalletNominationPool,
-	IPalletNominationPoolInfo,
-} from '../../types/responses/';
+import { IPalletNominationPool, IPalletNominationPoolInfo } from '../../types/responses/';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsNominationPoolService extends AbstractService {
@@ -34,11 +31,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param getMetaData boolean determining whether to query pool metadata
 	 */
-	async fetchNominationPoolById(
-		poolId: number,
-		hash: BlockHash,
-		getMetaData: boolean
-	): Promise<IPalletNominationPool> {
+	async fetchNominationPoolById(poolId: number, hash: BlockHash, getMetaData: boolean): Promise<IPalletNominationPool> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 		let metadata = '';
@@ -81,9 +74,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
-	async fetchNominationPoolInfo(
-		hash: BlockHash
-	): Promise<IPalletNominationPoolInfo> {
+	async fetchNominationPoolInfo(hash: BlockHash): Promise<IPalletNominationPoolInfo> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 

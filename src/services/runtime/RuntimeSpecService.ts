@@ -21,13 +21,7 @@ import { AbstractService } from '../AbstractService';
 export class RuntimeSpecService extends AbstractService {
 	async fetchSpec(hash: BlockHash): Promise<IRuntimeSpec> {
 		const [
-			{
-				authoringVersion,
-				specName,
-				specVersion,
-				transactionVersion,
-				implVersion,
-			},
+			{ authoringVersion, specName, specVersion, transactionVersion, implVersion },
 			chainType,
 			properties,
 			{ number },

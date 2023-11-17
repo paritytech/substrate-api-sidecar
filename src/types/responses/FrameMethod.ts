@@ -20,8 +20,5 @@ export interface IFrameMethod {
 }
 
 export function isFrameMethod(thing: unknown): thing is IFrameMethod {
-	return (
-		typeof (thing as IFrameMethod).pallet === 'string' &&
-		typeof (thing as IFrameMethod).method === 'string'
-	);
+	return typeof (thing as IFrameMethod).pallet === 'string' && typeof (thing as IFrameMethod).method === 'string';
 }

@@ -46,7 +46,7 @@ export const launchChainTest = async (
 	chain: string,
 	config: Record<string, IChainConfigE2E>,
 	procs: ProcsType,
-	localUrl?: string
+	localUrl?: string,
 ): Promise<boolean> => {
 	const { wsUrl, SasStartOpts, e2eStartOpts } = config[chain];
 	const { Success } = StatusCode;

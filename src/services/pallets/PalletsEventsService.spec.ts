@@ -65,8 +65,8 @@ describe('PalletEventsService', () => {
 						palletId: 'democracy',
 						eventItemId: 'Proposed',
 						metadata: true,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchProposedRes);
 		});
 
@@ -78,8 +78,8 @@ describe('PalletEventsService', () => {
 						palletId: '14',
 						eventItemId: 'Tabled',
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchTabledRes);
 		});
 
@@ -91,8 +91,8 @@ describe('PalletEventsService', () => {
 						palletId: 'democracy',
 						eventItemId: 'ExternalTabled',
 						metadata: true,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchExternalTabled);
 		});
 
@@ -105,14 +105,14 @@ describe('PalletEventsService', () => {
 						palletId: 'democracy',
 						eventItemId: 'IncorrectEventId',
 						metadata: true,
-					})
+					}),
 				);
 			} catch (error) {
 				expect(error).toBeInstanceOf(InternalServerError);
 				expect(error).toEqual(
 					new InternalServerError(
-						`Could not find events item ("IncorrectEventId") in metadata. events item names are expected to be in camel case, e.g. 'storageItemId'`
-					)
+						`Could not find events item ("IncorrectEventId") in metadata. events item names are expected to be in camel case, e.g. 'storageItemId'`,
+					),
 				);
 			}
 		});
@@ -126,8 +126,8 @@ describe('PalletEventsService', () => {
 						hash: blockHash789629,
 						palletId: '14',
 						onlyIds: false,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchEventsRes);
 		});
 
@@ -138,8 +138,8 @@ describe('PalletEventsService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: true,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchEventsOnlyIdsRes);
 		});
 	});

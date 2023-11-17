@@ -34,12 +34,10 @@ function createAssetHubKusamaRegistry(specVersion: number): TypeRegistry {
 			ss58Format: 2,
 			tokenDecimals: 12,
 			tokenSymbol: 'KSM',
-		})
+		}),
 	);
 
-	registry.register(
-		getSpecTypes(registry, 'Statemine', 'statemine', specVersion)
-	);
+	registry.register(getSpecTypes(registry, 'Statemine', 'statemine', specVersion));
 
 	registry.setMetadata(new Metadata(registry, assetHubKusamaV14));
 

@@ -20,15 +20,12 @@ import block13641102 from './data/blocks13641102.json';
 /**
  * Mock for polkadot block #13641102.
  */
-export const mockBlock13641102 = polkadotRegistryV9300.createType(
-	'Block',
-	block13641102
-);
+export const mockBlock13641102 = polkadotRegistryV9300.createType('Block', block13641102);
 
 /**
  * BlockHash for polkadot block #13641102.
  */
 export const blockHash13641102 = polkadotRegistryV9300.createType(
 	'BlockHash',
-	'0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655'
+	'0x18707858d4a24cf7235d4e1b45ab1665e61050d01a8a01397f3423ffd6937655',
 );

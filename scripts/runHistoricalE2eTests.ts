@@ -29,9 +29,7 @@ const main = async (args: IE2EParseArgs): Promise<void> => {
 	const localUrl: string | undefined = args.local ? args.local : undefined;
 
 	if (localUrl && !args.chain) {
-		console.error(
-			'error: `--local` must be used in conjunction with `--chain`'
-		);
+		console.error('error: `--local` must be used in conjunction with `--chain`');
 		process.exit(3);
 	}
 
@@ -49,48 +47,17 @@ const main = async (args: IE2EParseArgs): Promise<void> => {
 	}
 
 	if (args.chain) {
-		const selectedChain = await launchChainTest(
-			args.chain,
-			historicalE2eConfig,
-			procs,
-			localUrl
-		);
+		const selectedChain = await launchChainTest(args.chain, historicalE2eConfig, procs, localUrl);
 
 		checkTests(selectedChain);
 	} else {
-		const polkadotTest = await launchChainTest(
-			'polkadot',
-			historicalE2eConfig,
-			procs
-		);
-		const kusamaTest = await launchChainTest(
-			'kusama',
-			historicalE2eConfig,
-			procs
-		);
-		const westendTest = await launchChainTest(
-			'westend',
-			historicalE2eConfig,
-			procs
-		);
-		const assetHubKusamaTest = await launchChainTest(
-			'asset-hub-kusama',
-			historicalE2eConfig,
-			procs
-		);
-		const assetHubPolkadotTest = await launchChainTest(
-			'asset-hub-polkadot',
-			historicalE2eConfig,
-			procs
-		);
+		const polkadotTest = await launchChainTest('polkadot', historicalE2eConfig, procs);
+		const kusamaTest = await launchChainTest('kusama', historicalE2eConfig, procs);
+		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
+		const assetHubKusamaTest = await launchChainTest('asset-hub-kusama', historicalE2eConfig, procs);
+		const assetHubPolkadotTest = await launchChainTest('asset-hub-polkadot', historicalE2eConfig, procs);
 
-		checkTests(
-			polkadotTest,
-			kusamaTest,
-			westendTest,
-			assetHubKusamaTest,
-			assetHubPolkadotTest
-		);
+		checkTests(polkadotTest, kusamaTest, westendTest, assetHubKusamaTest, assetHubPolkadotTest);
 	}
 };
 
@@ -104,13 +71,7 @@ parser.add_argument('--local', {
 	nargs: '?',
 });
 parser.add_argument('--chain', {
-	choices: [
-		'polkadot',
-		'kusama',
-		'westend',
-		'kusama-asset-hub',
-		'polkadot-asset-hub',
-	],
+	choices: ['polkadot', 'kusama', 'westend', 'kusama-asset-hub', 'polkadot-asset-hub'],
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],

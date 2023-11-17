@@ -36,9 +36,7 @@ export default class Metrics_App {
 	listen(): void {
 		const { logger } = Log;
 		this.app.listen(this.port, this.host, () => {
-			logger.info(
-				`Metrics Server started at http://${this.host}:${this.port}/`
-			);
+			logger.info(`Metrics Server started at http://${this.host}:${this.port}/`);
 		});
 	}
 

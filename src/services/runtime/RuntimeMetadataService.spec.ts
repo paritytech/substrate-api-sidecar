@@ -24,11 +24,9 @@ const runtimeMetadataService = new RuntimeMetadataService(defaultMockApi);
 describe('RuntimeMetadataService', () => {
 	describe('fetchMetadata', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
-			expect(
-				sanitizeNumbers(
-					await runtimeMetadataService.fetchMetadata(blockHash789629)
-				)
-			).toStrictEqual(response789629);
+			expect(sanitizeNumbers(await runtimeMetadataService.fetchMetadata(blockHash789629))).toStrictEqual(
+				response789629,
+			);
 		});
 	});
 });

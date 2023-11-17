@@ -18,19 +18,11 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import HttpErrorConstructor from 'http-errors';
 
 import { legacyErrorMiddleware } from './legacyErrorMiddleware';
-import {
-	callsNextWithErr,
-	callsNextWithSentHeaders,
-	catchesErrWithResponse,
-} from './testTools';
+import { callsNextWithErr, callsNextWithSentHeaders, catchesErrWithResponse } from './testTools';
 
-const legacyErrorMiddlewareCallsNextWithErr = callsNextWithErr(
-	legacyErrorMiddleware
-);
+const legacyErrorMiddlewareCallsNextWithErr = callsNextWithErr(legacyErrorMiddleware);
 
-const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(
-	legacyErrorMiddleware
-);
+const legacyErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(legacyErrorMiddleware);
 
 describe('legacyErrorMiddleware', () => {
 	// Necessary since the consolveOverride is called after the getter for the logger is launced
@@ -40,14 +32,11 @@ describe('legacyErrorMiddleware', () => {
 
 	legacyErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
-	legacyErrorMiddlewareCallsNextWithErr(
-		'BadRequest',
-		new BadRequest('bad request')
-	);
+	legacyErrorMiddlewareCallsNextWithErr('BadRequest', new BadRequest('bad request'));
 
 	legacyErrorMiddlewareCallsNextWithErr(
 		'InternalServerError (http-error which extends Error)',
-		new InternalServerError('internal error')
+		new InternalServerError('internal error'),
 	);
 
 	legacyErrorMiddlewareCallsNextWithErr('nonsense object', {
@@ -64,7 +53,7 @@ describe('legacyErrorMiddleware', () => {
 			error: 'tx error',
 		},
 		500,
-		new InternalServerError('tx error')
+		new InternalServerError('tx error'),
 	);
 
 	legacyErrorMiddlewareCatchesErrWithResponse(
@@ -73,7 +62,7 @@ describe('legacyErrorMiddleware', () => {
 			error: 'basic error',
 		},
 		500,
-		new InternalServerError('basic error')
+		new InternalServerError('basic error'),
 	);
 
 	legacyErrorMiddlewareCatchesErrWithResponse(
@@ -83,7 +72,7 @@ describe('legacyErrorMiddleware', () => {
 			statusCode: 418,
 		},
 		418,
-		HttpErrorConstructor(418, 'Server refuses to brew coffee.')
+		HttpErrorConstructor(418, 'Server refuses to brew coffee.'),
 	);
 
 	callsNextWithSentHeaders(legacyErrorMiddleware, {

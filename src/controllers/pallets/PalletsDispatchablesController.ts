@@ -35,11 +35,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsDispatchablesController extends AbstractController<PalletsDispatchablesService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/:palletId/dispatchables',
-			new PalletsDispatchablesService(api)
-		);
+		super(api, '/pallets/:palletId/dispatchables', new PalletsDispatchablesService(api));
 
 		this.initRoutes();
 	}
@@ -55,13 +51,9 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	 * Note: the `at` parameter is not provided because the call for dispatchables does not exist on the historicApi currently.
 	 * Support may be added for this in a future update.
 	 */
-	private getDispatchableById: RequestHandler<
-		IPalletsDispatchablesParam,
-		unknown,
-		unknown
-	> = async (
+	private getDispatchableById: RequestHandler<IPalletsDispatchablesParam, unknown, unknown> = async (
 		{ query: { metadata }, params: { palletId, dispatchableItemId } },
-		res
+		res,
 	): Promise<void> => {
 		const at = undefined;
 		const hash = await this.getHashFromAt(at);
@@ -76,7 +68,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 				palletId: stringCamelCase(palletId),
 				dispatchableItemId: stringCamelCase(dispatchableItemId),
 				metadata: metadataArg,
-			})
+			}),
 		);
 	};
 
@@ -86,7 +78,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	 */
 	private getDispatchables: RequestHandler = async (
 		{ params: { palletId }, query: { onlyIds } },
-		res
+		res,
 	): Promise<void> => {
 		const at = undefined;
 		const hash = await this.getHashFromAt(at);
@@ -99,7 +91,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
-			})
+			}),
 		);
 	};
 }

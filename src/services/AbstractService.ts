@@ -42,11 +42,7 @@ export abstract class AbstractService {
 	 * @param docs metadata doucumentation array
 	 */
 	protected sanitizeDocs(docs: Vec<Text>): string {
-		return docs
-			.map((l, idx, arr) =>
-				idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`
-			)
-			.join('');
+		return docs.map((l, idx, arr) => (idx === arr.length - 1 ? l.toString() : `${l.toString()}\n`)).join('');
 	}
 
 	/**

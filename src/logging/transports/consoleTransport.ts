@@ -18,13 +18,7 @@ import { format, transports } from 'winston';
 
 import { SidecarConfig } from '../../SidecarConfig';
 import { ITransformableInfo } from '../../types/logging';
-import {
-	filterApiRpc,
-	nodeUtilFormat,
-	stripAnsi,
-	stripTimestamp,
-	timeStamp,
-} from '../transformers';
+import { filterApiRpc, nodeUtilFormat, stripAnsi, stripTimestamp, timeStamp } from '../transformers';
 
 /**
  * Console transport for winston logger.

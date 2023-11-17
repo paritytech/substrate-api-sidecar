@@ -38,49 +38,34 @@ export default class BlocksTraceController extends AbstractController<BlocksTrac
 		]);
 	}
 
-	private getLatestBlockTraces: RequestHandler = async (
-		_req,
-		res
-	): Promise<void> => {
+	private getLatestBlockTraces: RequestHandler = async (_req, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		BlocksController.sanitizedSend(res, await this.service.traces(hash));
 	};
 
-	private getBlockTraces: RequestHandler = async (
-		{ params: { number } },
-		res
-	): Promise<void> => {
+	private getBlockTraces: RequestHandler = async ({ params: { number } }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
 		BlocksController.sanitizedSend(res, await this.service.traces(hash));
 	};
 
-	private getLatestBlockOperations: RequestHandler = async (
-		{ query: { actions } },
-		res
-	): Promise<void> => {
+	private getLatestBlockOperations: RequestHandler = async ({ query: { actions } }, res): Promise<void> => {
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 		const includeActions = actions === 'true';
 		const historicApi = await this.api.at(hash);
 
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.operations(hash, historicApi, includeActions)
-		);
+		BlocksController.sanitizedSend(res, await this.service.operations(hash, historicApi, includeActions));
 	};
 
 	private getBlockOperations: RequestHandler = async (
 		{ params: { number }, query: { actions } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 		const includeActions = actions === 'true';
 		const historicApi = await this.api.at(hash);
 
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.operations(hash, historicApi, includeActions)
-		);
+		BlocksController.sanitizedSend(res, await this.service.operations(hash, historicApi, includeActions));
 	};
 }

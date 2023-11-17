@@ -18,11 +18,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
 import { BlockHash, StorageEntryMetadataV14 } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
-import {
-	IPalletStorage,
-	IPalletStorageItem,
-	ISanitizedStorageItemMetadata,
-} from 'src/types/responses';
+import { IPalletStorage, IPalletStorageItem, ISanitizedStorageItemMetadata } from 'src/types/responses';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { AbstractPalletsService } from '../AbstractPalletsService';
@@ -41,15 +37,11 @@ interface IFetchStorageItemArgs extends IFetchPalletArgs {
 export class PalletsStorageService extends AbstractPalletsService {
 	async fetchStorageItem(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, storageItemId, keys, metadata }: IFetchStorageItemArgs
+		{ hash, palletId, storageItemId, keys, metadata }: IFetchStorageItemArgs,
 	): Promise<IPalletStorageItem> {
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			chosenMetadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);
 		const palletName = stringCamelCase(palletMeta.name);
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
@@ -58,13 +50,12 @@ export class PalletsStorageService extends AbstractPalletsService {
 			historicApi,
 			palletMeta,
 			storageItemId,
-			metadataFieldType
+			metadataFieldType,
 		) as StorageEntryMetadataV14;
 
 		let normalizedStorageItemMeta: ISanitizedStorageItemMetadata | undefined;
 		if (metadata) {
-			normalizedStorageItemMeta =
-				this.normalizeStorageItemMeta(storageItemMeta);
+			normalizedStorageItemMeta = this.normalizeStorageItemMeta(storageItemMeta);
 		}
 
 		const [value, { number }] = await Promise.all([
@@ -88,27 +79,19 @@ export class PalletsStorageService extends AbstractPalletsService {
 
 	async fetchStorage(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletStorage> {
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			chosenMetadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);
 
 		let items: [] | ISanitizedStorageItemMetadata[] | Text[];
 		if (palletMeta.storage.isNone) {
 			items = [];
 		} else if (onlyIds) {
-			items = palletMeta.storage
-				.unwrap()
-				.items.map((itemMeta) => itemMeta.name);
+			items = palletMeta.storage.unwrap().items.map((itemMeta) => itemMeta.name);
 		} else {
-			items = palletMeta.storage
-				.unwrap()
-				.items.map((itemMeta) => this.normalizeStorageItemMeta(itemMeta));
+			items = palletMeta.storage.unwrap().items.map((itemMeta) => this.normalizeStorageItemMeta(itemMeta));
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
@@ -131,12 +114,8 @@ export class PalletsStorageService extends AbstractPalletsService {
 	 *
 	 * @param storageItemMeta polkadot-js StorageEntryMetadataV14
 	 */
-	private normalizeStorageItemMeta(
-		storageItemMeta: StorageEntryMetadataV14
-	): ISanitizedStorageItemMetadata {
-		const normalizedStorageItemMeta = sanitizeNumbers(
-			storageItemMeta
-		) as unknown as ISanitizedStorageItemMetadata;
+	private normalizeStorageItemMeta(storageItemMeta: StorageEntryMetadataV14): ISanitizedStorageItemMetadata {
+		const normalizedStorageItemMeta = sanitizeNumbers(storageItemMeta) as unknown as ISanitizedStorageItemMetadata;
 
 		normalizedStorageItemMeta.docs = this.sanitizeDocs(storageItemMeta.docs);
 

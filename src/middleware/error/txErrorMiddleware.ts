@@ -27,12 +27,7 @@ import { isTxLegacyError } from '../../types/errors';
  * @param res Express Response
  * @param next Express NextFunction
  */
-export const txErrorMiddleware: ErrorRequestHandler = (
-	err: unknown,
-	_req,
-	res,
-	next
-): void => {
+export const txErrorMiddleware: ErrorRequestHandler = (err: unknown, _req, res, next): void => {
 	if (res.headersSent || !isTxLegacyError(err)) {
 		return next(err);
 	}
@@ -51,9 +46,7 @@ export const txErrorMiddleware: ErrorRequestHandler = (
 
 	Log.logger.error({
 		...info,
-		message: `${error}\n Cause: ${cause as string}\n Transaction: ${
-			transaction as string
-		}`,
+		message: `${error}\n Cause: ${cause as string}\n Transaction: ${transaction as string}`,
 	});
 
 	res.status(code).send(info);

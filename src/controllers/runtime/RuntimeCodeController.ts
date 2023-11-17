@@ -48,15 +48,9 @@ export default class RuntimeCodeController extends AbstractController<RuntimeCod
 	 * @param res Express Response
 	 */
 
-	private getCodeAtBlock: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getCodeAtBlock: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		RuntimeCodeController.sanitizedSend(
-			res,
-			await this.service.fetchCode(hash)
-		);
+		RuntimeCodeController.sanitizedSend(res, await this.service.fetchCode(hash));
 	};
 }

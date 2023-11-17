@@ -64,8 +64,8 @@ describe('PalletErrorService', () => {
 						palletId: 'democracy',
 						errorItemId: 'ValueLow',
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchValueLowRes);
 		});
 
@@ -77,8 +77,8 @@ describe('PalletErrorService', () => {
 						palletId: '14',
 						errorItemId: 'InsufficientFunds',
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchInsufficientFundsRes);
 		});
 
@@ -90,8 +90,8 @@ describe('PalletErrorService', () => {
 						palletId: 'democracy',
 						errorItemId: 'ProposalMissing',
 						metadata: true,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchProposalMissingRes);
 		});
 	});
@@ -104,8 +104,8 @@ describe('PalletErrorService', () => {
 						hash: blockHash13641102,
 						palletId: '14',
 						onlyIds: false,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchErrorRes);
 		});
 
@@ -116,8 +116,8 @@ describe('PalletErrorService', () => {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						onlyIds: true,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchErrorOnlyIdsRes);
 		});
 	});

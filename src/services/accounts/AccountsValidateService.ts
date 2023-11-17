@@ -15,11 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { hexToU8a, isHex } from '@polkadot/util';
-import {
-	allNetworks,
-	base58Decode,
-	checkAddressChecksum,
-} from '@polkadot/util-crypto';
+import { allNetworks, base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 
 import { IValidateAddrResponse } from '../../types/responses/ValidateAddress';

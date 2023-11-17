@@ -23,52 +23,31 @@ import { InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
-import {
-	activeEraAt,
-	blockHash789629,
-	defaultMockApi,
-	erasStartSessionIndexAt,
-} from '../test-helpers/mock';
+import { activeEraAt, blockHash789629, defaultMockApi, erasStartSessionIndexAt } from '../test-helpers/mock';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
-const epochIndexAt = () =>
-	Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
+const epochIndexAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
 
-const genesisSlotAt = () =>
-	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265084563));
+const genesisSlotAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u64', 265084563));
 
-const currentSlotAt = () =>
-	Promise.resolve().then(() => polkadotRegistry.createType('u64', 265876724));
+const currentSlotAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u64', 265876724));
 
-const currentIndexAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('SessionIndex', 330)
-	);
+const currentIndexAt = () => Promise.resolve().then(() => polkadotRegistry.createType('SessionIndex', 330));
 
 const eraElectionStatusAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('ElectionStatus', { Close: null })
-	);
+	Promise.resolve().then(() => polkadotRegistry.createType('ElectionStatus', { Close: null }));
 
 const validatorsAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex)
-	);
+	Promise.resolve().then(() => polkadotRegistry.createType('Vec<ValidatorId>', validators789629Hex));
 
-const forceEraAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Forcing', 'NotForcing')
-	);
+const forceEraAt = () => Promise.resolve().then(() => polkadotRegistry.createType('Forcing', 'NotForcing'));
 
 const unappliedSlashesAt = (_activeEra: EraIndex) =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Vec<UnappliedSlash>', [])
-	);
+	Promise.resolve().then(() => polkadotRegistry.createType('Vec<UnappliedSlash>', []));
 
-const validatorCountAt = () =>
-	Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
+const validatorCountAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
 
 const mockHistoricApi = {
 	consts: {
@@ -117,46 +96,27 @@ describe('PalletStakingProgressService', () => {
 
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(
-				sanitizeNumbers(
-					await palletStakingProgressService.derivePalletStakingProgress(
-						blockHash789629
-					)
-				)
+				sanitizeNumbers(await palletStakingProgressService.derivePalletStakingProgress(blockHash789629)),
 			).toStrictEqual(palletsStakingProgress789629SResponse);
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
 			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
-				Promise.resolve().then(() =>
-					polkadotRegistry.createType('Option<SessionIndex>', null)
-				);
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', null));
 
-			await expect(
-				palletStakingProgressService.derivePalletStakingProgress(
-					blockHash789629
-				)
-			).rejects.toStrictEqual(
-				new InternalServerError(
-					'EraStartSessionIndex is None when Some was expected.'
-				)
+			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
+				new InternalServerError('EraStartSessionIndex is None when Some was expected.'),
 			);
 
-			(mockHistoricApi.query.staking.erasStartSessionIndex as any) =
-				erasStartSessionIndexAt;
+			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = erasStartSessionIndexAt;
 		});
 
 		it('throws when activeEra.isNone', async () => {
 			(mockHistoricApi.query.staking.activeEra as any) = () =>
-				Promise.resolve().then(() =>
-					polkadotRegistry.createType('Option<ActiveEraInfo>', null)
-				);
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<ActiveEraInfo>', null));
 
-			await expect(
-				palletStakingProgressService.derivePalletStakingProgress(
-					blockHash789629
-				)
-			).rejects.toStrictEqual(
-				new InternalServerError('ActiveEra is None when Some was expected.')
+			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
+				new InternalServerError('ActiveEra is None when Some was expected.'),
 			);
 
 			(mockHistoricApi.query.staking.activeEra as any) = activeEraAt;

@@ -45,11 +45,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsVestingInfoController extends AbstractController<AccountsVestingInfoService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/accounts/:address/vesting-info',
-			new AccountsVestingInfoService(api)
-		);
+		super(api, '/accounts/:address/vesting-info', new AccountsVestingInfoService(api));
 		this.initRoutes();
 	}
 
@@ -67,13 +63,10 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
 		{ params: { address }, query: { at } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		AccountsVestingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountVestingInfo(hash, address)
-		);
+		AccountsVestingInfoController.sanitizedSend(res, await this.service.fetchAccountVestingInfo(hash, address));
 	};
 }

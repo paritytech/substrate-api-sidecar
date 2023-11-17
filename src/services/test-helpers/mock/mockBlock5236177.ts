@@ -20,15 +20,12 @@ import block5236177 from './data/block5236177.json';
 /**
  * Mock for Asset Hub Westend Block #5236177.
  */
-export const mockBlock5236177 = assetHubWestendRegistryV9435.createType(
-	'Block',
-	block5236177
-);
+export const mockBlock5236177 = assetHubWestendRegistryV9435.createType('Block', block5236177);
 
 /**
  * BlockHash for Asset Hub Westend Block #5236177.
  */
 export const blockHash5236177 = assetHubWestendRegistryV9435.createType(
 	'BlockHash',
-	'0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5'
+	'0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5',
 );

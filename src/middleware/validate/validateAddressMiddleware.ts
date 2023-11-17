@@ -15,11 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { isHex } from '@polkadot/util';
-import {
-	base58Decode,
-	checkAddressChecksum,
-	isEthereumAddress,
-} from '@polkadot/util-crypto';
+import { base58Decode, checkAddressChecksum, isEthereumAddress } from '@polkadot/util-crypto';
 import { defaults } from '@polkadot/util-crypto/address/defaults';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';

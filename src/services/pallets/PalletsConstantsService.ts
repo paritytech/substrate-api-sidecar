@@ -16,10 +16,7 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Text } from '@polkadot/types';
-import {
-	BlockHash,
-	PalletConstantMetadataLatest,
-} from '@polkadot/types/interfaces';
+import { BlockHash, PalletConstantMetadataLatest } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { IPalletConstants, IPalletConstantsItem } from 'src/types/responses';
 
@@ -38,16 +35,12 @@ interface IFetchConstantItemArgs extends IFetchPalletArgs {
 export class PalletsConstantsService extends AbstractPalletsService {
 	async fetchConstantItem(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, constantItemId, metadata }: IFetchConstantItemArgs
+		{ hash, palletId, constantItemId, metadata }: IFetchConstantItemArgs,
 	): Promise<IPalletConstantsItem> {
 		const metadataFieldType = 'constants';
 		const palletMetadata = historicApi.registry.metadata;
 
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			palletMetadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
 		// Even if `constantItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the constant item not existing are that `findConstantItemMeta` will throw.
@@ -55,7 +48,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 			historicApi,
 			palletMeta,
 			constantItemId,
-			metadataFieldType
+			metadataFieldType,
 		) as PalletConstantMetadataLatest;
 
 		let palletConstantMetadata: PalletConstantMetadataLatest | undefined;
@@ -79,15 +72,11 @@ export class PalletsConstantsService extends AbstractPalletsService {
 
 	async fetchConstants(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletConstants> {
 		const metadataFieldType = 'constants';
 		const metadata = historicApi.registry.metadata;
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			metadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 
@@ -97,9 +86,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		} else if (onlyIds) {
 			items = palletMeta.constants.map((itemMeta) => itemMeta.name);
 		} else {
-			items = palletMeta.constants.map(
-				(itemMeta) => itemMeta as PalletConstantMetadataLatest
-			);
+			items = palletMeta.constants.map((itemMeta) => itemMeta as PalletConstantMetadataLatest);
 		}
 
 		return {

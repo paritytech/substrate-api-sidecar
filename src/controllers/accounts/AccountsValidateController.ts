@@ -31,9 +31,6 @@ export default class ValidateAddressController extends AbstractController<Accoun
 	}
 
 	private validateAddress: RequestHandler = ({ params: { address } }, res) => {
-		ValidateAddressController.sanitizedSend(
-			res,
-			this.service.validateAddress(address)
-		);
+		ValidateAddressController.sanitizedSend(res, this.service.validateAddress(address));
 	};
 }

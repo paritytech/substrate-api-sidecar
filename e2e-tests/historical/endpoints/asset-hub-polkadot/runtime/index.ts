@@ -16,6 +16,4 @@
 
 import runtimeSpec340000 from './340000.json';
 
-export const assetHubKusamaRuntimeEndpoints = [
-	['/runtime/spec?at=340000', JSON.stringify(runtimeSpec340000)],
-];
+export const assetHubKusamaRuntimeEndpoints = [['/runtime/spec?at=340000', JSON.stringify(runtimeSpec340000)]];

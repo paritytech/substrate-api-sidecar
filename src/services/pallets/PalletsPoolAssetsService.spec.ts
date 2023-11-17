@@ -71,10 +71,7 @@ describe('PalletsPoolAssetsService', () => {
 				},
 			};
 
-			const response = await palletsPoolAssetsService.fetchPoolAssetById(
-				blockHash5236177,
-				21
-			);
+			const response = await palletsPoolAssetsService.fetchPoolAssetById(blockHash5236177, 21);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});

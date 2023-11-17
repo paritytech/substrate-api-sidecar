@@ -62,8 +62,8 @@ describe('PalletConstantsService', () => {
 						palletId: 'democracy',
 						constantItemId: 'EnactmentPeriod',
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchEnactmentPeriodRes);
 		});
 
@@ -75,8 +75,8 @@ describe('PalletConstantsService', () => {
 						palletId: '14',
 						constantItemId: 'LaunchPeriod',
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchLaunchPeriodRes);
 		});
 
@@ -88,8 +88,8 @@ describe('PalletConstantsService', () => {
 						palletId: 'democracy',
 						constantItemId: 'VotingPeriod',
 						metadata: true,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchVotingPeriodRes);
 		});
 	});
@@ -102,8 +102,8 @@ describe('PalletConstantsService', () => {
 						hash: blockHash13641102,
 						palletId: '14',
 						onlyIds: false,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchConstantRes);
 		});
 
@@ -114,8 +114,8 @@ describe('PalletConstantsService', () => {
 						hash: blockHash13641102,
 						palletId: 'democracy',
 						onlyIds: true,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchConstantOnlyIdsRes);
 		});
 	});

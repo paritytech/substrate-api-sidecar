@@ -27,12 +27,7 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 		super(
 			api,
 			'/blocks/:blockId/extrinsics-raw',
-			new BlocksService(
-				api,
-				options.minCalcFeeRuntime,
-				options.blockStore,
-				options.hasQueryFeeApi
-			)
+			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
 		);
 		this.initRoutes();
 	}
@@ -46,15 +41,9 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async (
-		{ params: { blockId } },
-		res
-	): Promise<void> => {
+	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async ({ params: { blockId } }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
-		BlocksRawExtrinsicsController.sanitizedSend(
-			res,
-			await this.service.fetchBlockRaw(hash)
-		);
+		BlocksRawExtrinsicsController.sanitizedSend(res, await this.service.fetchBlockRaw(hash));
 	};
 }

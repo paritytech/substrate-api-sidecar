@@ -50,10 +50,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getMetadata: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getMetadata: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		let historicApi;

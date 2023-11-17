@@ -47,13 +47,9 @@ export default class PalletsConstantsController extends AbstractController<Palle
 		]);
 	}
 
-	private getConstById: RequestHandler<
-		IPalletsConstantsParam,
-		unknown,
-		unknown
-	> = async (
+	private getConstById: RequestHandler<IPalletsConstantsParam, unknown, unknown> = async (
 		{ query: { at, metadata }, params: { palletId, constantItemId } },
-		res
+		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
 		const hash = await this.getHashFromAt(at);
@@ -67,14 +63,11 @@ export default class PalletsConstantsController extends AbstractController<Palle
 				palletId: stringCamelCase(palletId),
 				constantItemId: stringCamelCase(constantItemId),
 				metadata: metadataArg,
-			})
+			}),
 		);
 	};
 
-	private getConsts: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds } },
-		res
-	): Promise<void> => {
+	private getConsts: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -85,7 +78,7 @@ export default class PalletsConstantsController extends AbstractController<Palle
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
-			})
+			}),
 		);
 	};
 }

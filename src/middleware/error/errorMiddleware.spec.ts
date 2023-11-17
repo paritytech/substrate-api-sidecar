@@ -17,16 +17,11 @@
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { errorMiddleware } from './errorMiddleware';
-import {
-	callsNextWithErr,
-	callsNextWithSentHeaders,
-	catchesErrWithStatus,
-} from './testTools';
+import { callsNextWithErr, callsNextWithSentHeaders, catchesErrWithStatus } from './testTools';
 
 const errorMiddlewareCallsNextWithErr = callsNextWithErr(errorMiddleware);
 
-const errorMiddlewareCatchesErrWithStatus =
-	catchesErrWithStatus(errorMiddleware);
+const errorMiddlewareCatchesErrWithStatus = catchesErrWithStatus(errorMiddleware);
 
 describe('errorMiddleware', () => {
 	// Necessary since the consolveOverride is called after the getter for the logger is launced
@@ -53,22 +48,18 @@ describe('errorMiddleware', () => {
 		veryImportantMessage: 'NOT',
 	});
 
-	errorMiddlewareCatchesErrWithStatus(
-		'Error',
-		new Error('This is an error'),
-		500
-	);
+	errorMiddlewareCatchesErrWithStatus('Error', new Error('This is an error'), 500);
 
 	errorMiddlewareCatchesErrWithStatus(
 		'BadRequest (http-error which extends Error) (code gets changed to 500)',
 		new BadRequest('bad request'),
-		500
+		500,
 	);
 
 	errorMiddlewareCatchesErrWithStatus(
 		'InternalServerError (http-error which extends Error)',
 		new InternalServerError('internal error'),
-		500
+		500,
 	);
 
 	callsNextWithSentHeaders(errorMiddleware, new Error('This is an error'));

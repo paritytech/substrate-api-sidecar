@@ -82,40 +82,33 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 	private getPoolAssetBalances: RequestHandler = async (
 		{ params: { address }, query: { at, assets } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const assetsArray = Array.isArray(assets)
-			? this.parseQueryParamArrayOrThrow(assets as string[])
-			: [];
+		const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
 
 		AccountsPoolAssetsController.sanitizedSend(
 			res,
-			await this.service.fetchPoolAssetBalances(hash, address, assetsArray)
+			await this.service.fetchPoolAssetBalances(hash, address, assetsArray),
 		);
 	};
 
 	private getPoolAssetApprovals: RequestHandler = async (
 		{ params: { address }, query: { at, delegate, assetId } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
-			throw new BadRequest(
-				'Must include a `delegate` and `assetId` query param'
-			);
+			throw new BadRequest('Must include a `delegate` and `assetId` query param');
 		}
 
-		const id = this.parseNumberOrThrow(
-			assetId,
-			'`assetId` provided is not a number.'
-		);
+		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
 		AccountsPoolAssetsController.sanitizedSend(
 			res,
-			await this.service.fetchPoolAssetApprovals(hash, address, id, delegate)
+			await this.service.fetchPoolAssetApprovals(hash, address, id, delegate),
 		);
 	};
 }

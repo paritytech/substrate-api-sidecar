@@ -15,13 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { u64 } from '@polkadot/types';
-import {
-	DispatchClass,
-	Extrinsic,
-	Weight,
-	WeightV1,
-	WeightV2,
-} from '@polkadot/types/interfaces';
+import { DispatchClass, Extrinsic, Weight, WeightV1, WeightV2 } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
 
 import { INodeTransactionPool } from '../../types/responses';
@@ -34,16 +28,12 @@ export class NodeTransactionPoolService extends AbstractService {
 	 * @param includeFee Whether or not to include the fee's and priority of a extrinsic
 	 * in the transaction pool.
 	 */
-	public async fetchTransactionPool(
-		includeFee: boolean
-	): Promise<INodeTransactionPool> {
+	public async fetchTransactionPool(includeFee: boolean): Promise<INodeTransactionPool> {
 		const { api } = this;
 		const extrinsics = await api.rpc.author.pendingExtrinsics();
 
 		if (includeFee) {
-			const pool = await Promise.all(
-				extrinsics.map((ext) => this.extractExtrinsicInfo(ext))
-			);
+			const pool = await Promise.all(extrinsics.map((ext) => this.extractExtrinsicInfo(ext)));
 
 			return {
 				pool,
@@ -70,11 +60,7 @@ export class NodeTransactionPoolService extends AbstractService {
 		const { api } = this;
 		const { hash, tip } = ext;
 		const u8a = ext.toU8a();
-		const {
-			class: c,
-			partialFee,
-			weight,
-		} = await api.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
+		const { class: c, partialFee, weight } = await api.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
 		const priority = await this.computeExtPriority(ext, c, weight);
 
 		return {
@@ -103,7 +89,7 @@ export class NodeTransactionPoolService extends AbstractService {
 	private async computeExtPriority(
 		ext: Extrinsic,
 		dispatchClass: DispatchClass,
-		weight: Weight | WeightV1
+		weight: Weight | WeightV1,
 	): Promise<string> {
 		const { api } = this;
 		const { tip, encodedLength: len } = ext;
@@ -117,14 +103,9 @@ export class NodeTransactionPoolService extends AbstractService {
 		const maxBlockWeight = api.consts.system.blockWeights.maxBlock.refTime
 			? api.consts.system.blockWeights.maxBlock.refTime.unwrap()
 			: (api.consts.system.blockWeights.maxBlock as unknown as u64);
-		const maxLength: BN = new BN(
-			api.consts.system.blockLength.max[sanitizedClass]
-		);
+		const maxLength: BN = new BN(api.consts.system.blockLength.max[sanitizedClass]);
 
-		const boundedWeight = BN.min(
-			BN.max(versionedWeight, BN_ONE),
-			new BN(maxBlockWeight)
-		);
+		const boundedWeight = BN.min(BN.max(versionedWeight, BN_ONE), new BN(maxBlockWeight));
 
 		const boundedLength = BN.min(BN.max(new BN(len), BN_ONE), maxLength);
 		const maxTxPerBlockWeight = maxBlockWeight.toBn().div(boundedWeight);
@@ -146,8 +127,7 @@ export class NodeTransactionPoolService extends AbstractService {
 			}
 			case 'operational': {
 				const u8a = ext.toU8a();
-				const { inclusionFee } =
-					await api.call.transactionPaymentApi.queryFeeDetails(u8a, u8a.length);
+				const { inclusionFee } = await api.call.transactionPaymentApi.queryFeeDetails(u8a, u8a.length);
 				const { operationalFeeMultiplier } = api.consts.transactionPayment;
 
 				if (inclusionFee.isNone) {
@@ -157,10 +137,7 @@ export class NodeTransactionPoolService extends AbstractService {
 				}
 
 				const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
-				const computedInclusionFee = baseFee
-					.toBn()
-					.add(lenFee)
-					.add(adjustedWeightFee);
+				const computedInclusionFee = baseFee.toBn().add(lenFee).add(adjustedWeightFee);
 				const finalFee = computedInclusionFee.add(tip.toBn());
 				const virtualTip = finalFee.mul(operationalFeeMultiplier);
 				const scaledVirtualTip = this.maxReward(virtualTip, maxTxPerBlock);
@@ -182,9 +159,7 @@ export class NodeTransactionPoolService extends AbstractService {
 	 *
 	 * @param c DispatchClass of an extrinsic
 	 */
-	private defineDispatchClassType(
-		c: DispatchClass
-	): 'normal' | 'mandatory' | 'operational' {
+	private defineDispatchClassType(c: DispatchClass): 'normal' | 'mandatory' | 'operational' {
 		const cString = c.type.toLowerCase();
 		if (cString === 'normal') return 'normal';
 		if (cString === 'mandatory') return 'mandatory';

@@ -28,7 +28,4 @@ const foreignAssetsLocation2 = {
 	},
 };
 
-export const foreignAssetsLocations = [
-	foreignAssetsLocation1,
-	foreignAssetsLocation2,
-];
+export const foreignAssetsLocations = [foreignAssetsLocation1, foreignAssetsLocation2];

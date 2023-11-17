@@ -61,10 +61,7 @@ export default class NodeNetworkController extends AbstractController<NodeNetwor
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getNodeNetworking: RequestHandler = async (
-		_req,
-		res
-	): Promise<void> => {
+	private getNodeNetworking: RequestHandler = async (_req, res): Promise<void> => {
 		NodeNetworkController.sanitizedSend(res, await this.service.fetchNetwork());
 	};
 }

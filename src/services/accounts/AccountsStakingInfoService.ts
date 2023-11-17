@@ -27,10 +27,7 @@ export class AccountsStakingInfoService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param stash address of the _Stash_  account to get the staking info of
 	 */
-	async fetchAccountStakingInfo(
-		hash: BlockHash,
-		stash: string
-	): Promise<IAccountStakingInfo> {
+	async fetchAccountStakingInfo(hash: BlockHash, stash: string): Promise<IAccountStakingInfo> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
@@ -52,27 +49,24 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const controller = controllerOption.unwrap();
 
-		const [stakingLedgerOption, rewardDestination, slashingSpansOption] =
-			await Promise.all([
-				historicApi.query.staking.ledger(controller),
-				historicApi.query.staking.payee(stash),
-				historicApi.query.staking.slashingSpans(stash),
-			]).catch((err: Error) => {
-				throw this.createHttpErrorForAddr(stash, err);
-			});
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
+			historicApi.query.staking.ledger(controller),
+			historicApi.query.staking.payee(stash),
+			historicApi.query.staking.slashingSpans(stash),
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
 		if (stakingLedger === null) {
 			// should never throw because by time we get here we know we have a bonded pair
 			throw new InternalServerError(
-				`Staking ledger could not be found for controller address "${controller.toString()}"`
+				`Staking ledger could not be found for controller address "${controller.toString()}"`,
 			);
 		}
 
-		const numSlashingSpans = slashingSpansOption.isSome
-			? slashingSpansOption.unwrap().prior.length + 1
-			: 0;
+		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
 
 		return {
 			at,

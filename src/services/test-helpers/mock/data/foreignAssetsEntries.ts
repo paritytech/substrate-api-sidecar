@@ -15,10 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { assetHubKusamaV14 } from '../../../../test-helpers/metadata/assetHubKusamaMetadata';
-import {
-	createApiWithAugmentations,
-	TypeFactory,
-} from '../../../../test-helpers/typeFactory';
+import { createApiWithAugmentations, TypeFactory } from '../../../../test-helpers/typeFactory';
 import { foreignAssetsInfo } from '../assets/mockAssetHubKusamaData';
 import { foreignAssetsLocations } from './foreignAssets';
 
@@ -30,7 +27,7 @@ export const foreignAssetsEntries = () => {
 		const storage = factory.storageKeyMultilocation(
 			location,
 			'XcmV3MultiLocation',
-			typeFactoryApiV9430.query.foreignAssets.asset
+			typeFactoryApiV9430.query.foreignAssets.asset,
 		);
 
 		const assetInfo = foreignAssetsInfo[idx]();

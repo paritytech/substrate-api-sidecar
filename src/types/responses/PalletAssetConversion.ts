@@ -34,7 +34,7 @@ export interface ILiquidityPoolsInfo {
 	reserves: ITuple<
 		[
 			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
-			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation
+			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
 		]
 	>;
 	lpToken: Option<PalletAssetConversionPoolInfo>;

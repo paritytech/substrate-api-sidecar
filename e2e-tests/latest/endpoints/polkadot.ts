@@ -169,11 +169,10 @@ export const polkadot: IConfig = {
 		path: '/pallets/democracy/dispatchables/vote',
 		queryParams: [],
 	},
-	'/pallets/{palletId}/dispatchables/{dispatchableItemIdWithMultipleWordName}':
-		{
-			path: '/pallets/fastUnstake/dispatchables/registerFastUnstake',
-			queryParams: [],
-		},
+	'/pallets/{palletId}/dispatchables/{dispatchableItemIdWithMultipleWordName}': {
+		path: '/pallets/fastUnstake/dispatchables/registerFastUnstake',
+		queryParams: [],
+	},
 	'/pallets/{palletId}/errors': {
 		path: '/pallets/balances/errors',
 		queryParams: ['at={blockId}'],

@@ -17,17 +17,9 @@
 import { HOST, PORT } from './helpers/consts';
 import { request } from './helpers/request';
 import { endpoints } from './historical/endpoints';
-import {
-	AccountsResponse,
-	ChainSpec,
-	IBlockResponse,
-	IEnvChainConfig,
-	RuntimeResponse,
-} from './historical/types';
+import { AccountsResponse, ChainSpec, IBlockResponse, IEnvChainConfig, RuntimeResponse } from './historical/types';
 
-const config = JSON.parse(
-	process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string
-) as IEnvChainConfig;
+const config = JSON.parse(process.env.__SAS_RUNTIME_TEST_CONFIGURATION as string) as IEnvChainConfig;
 
 const chain = config.chain as ChainSpec;
 const TIMEOUT_MS = 60000;
@@ -41,15 +33,12 @@ describe('Runtime Tests for blocks', () => {
 	 * Test runtimes for `/blocks`
 	 */
 	if (blocks.length) {
-		test.each(blocks)(
-			'Given path %p, it should return the correct JSON response',
-			async (blockPath, blockResponse) => {
-				const res = await request(blockPath, HOST, PORT);
-				const responseJson = JSON.parse(res.data) as IBlockResponse;
+		test.each(blocks)('Given path %p, it should return the correct JSON response', async (blockPath, blockResponse) => {
+			const res = await request(blockPath, HOST, PORT);
+			const responseJson = JSON.parse(res.data) as IBlockResponse;
 
-				expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
-			}
-		);
+			expect(responseJson).toStrictEqual(JSON.parse(blockResponse));
+		});
 	}
 });
 
@@ -67,7 +56,7 @@ describe('Runtime Tests for accounts', () => {
 				const responseJson = JSON.parse(res.data) as AccountsResponse;
 
 				expect(responseJson).toStrictEqual(JSON.parse(accountsResponse));
-			}
+			},
 		);
 	}
 });
@@ -83,7 +72,7 @@ describe('Runtime Tests for `/runtime/*`', () => {
 				const responseJson = JSON.parse(res.data) as RuntimeResponse;
 
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
-			}
+			},
 		);
 	}
 });
@@ -100,7 +89,7 @@ describe('Runtime Tests for `/paras/*`', () => {
 				const responseJson = JSON.parse(res.data);
 
 				expect(responseJson).toStrictEqual(JSON.parse(runtimeResponse));
-			}
+			},
 		);
 	}
 });

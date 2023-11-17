@@ -19,10 +19,7 @@ import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
 import { PalletsStorageService } from '../../services';
-import {
-	IPalletsStorageParam,
-	IPalletsStorageQueryParam,
-} from '../../types/requests';
+import { IPalletsStorageParam, IPalletsStorageQueryParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
@@ -52,14 +49,9 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		]);
 	}
 
-	private getStorageItem: RequestHandler<
-		IPalletsStorageParam,
-		unknown,
-		unknown,
-		IPalletsStorageQueryParam
-	> = async (
+	private getStorageItem: RequestHandler<IPalletsStorageParam, unknown, unknown, IPalletsStorageQueryParam> = async (
 		{ query: { at, keys, metadata }, params: { palletId, storageItemId } },
-		res
+		res,
 	): Promise<void> => {
 		const parsedKeys = Array.isArray(keys) ? keys : [];
 		const metadataArg = metadata === 'true';
@@ -76,14 +68,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 				storageItemId: stringCamelCase(storageItemId),
 				keys: parsedKeys,
 				metadata: metadataArg,
-			})
+			}),
 		);
 	};
 
-	private getStorage: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds } },
-		res
-	): Promise<void> => {
+	private getStorage: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 
 		const hash = await this.getHashFromAt(at);
@@ -95,7 +84,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
-			})
+			}),
 		);
 	};
 }

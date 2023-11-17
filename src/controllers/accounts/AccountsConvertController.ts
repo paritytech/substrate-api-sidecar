@@ -34,38 +34,27 @@ export default class AccountsConvertController extends AbstractController<Accoun
 		this.safeMountAsyncGetHandlers([['', this.accountConvert]]);
 	}
 
-	private accountConvert: RequestHandler<
-		IAddressParam,
-		unknown,
-		unknown,
-		IConvertQueryParams
-	> = ({ params: { address }, query: { scheme, prefix, publicKey } }, res) => {
+	private accountConvert: RequestHandler<IAddressParam, unknown, unknown, IConvertQueryParams> = (
+		{ params: { address }, query: { scheme, prefix, publicKey } },
+		res,
+	) => {
 		// Validation of the `scheme` query param
 		const cryptoScheme = scheme ? scheme : 'sr25519';
-		if (
-			!(
-				cryptoScheme === 'ed25519' ||
-				cryptoScheme === 'sr25519' ||
-				cryptoScheme === 'ecdsa'
-			)
-		) {
+		if (!(cryptoScheme === 'ed25519' || cryptoScheme === 'sr25519' || cryptoScheme === 'ecdsa')) {
 			throw new BadRequest(
-				'The `scheme` query parameter provided can be one of the following three values : [ed25519, sr25519, ecdsa]'
+				'The `scheme` query parameter provided can be one of the following three values : [ed25519, sr25519, ecdsa]',
 			);
 		}
 
 		// Validation of the `prefix` query param
 		const networkPrefix = prefix ? prefix : '42';
-		const ss58Prefix = this.parseNumberOrThrow(
-			networkPrefix,
-			'The `prefix` query parameter provided is not a number.'
-		);
+		const ss58Prefix = this.parseNumberOrThrow(networkPrefix, 'The `prefix` query parameter provided is not a number.');
 
 		const pubKey = publicKey === 'true';
 
 		AccountsConvertController.sanitizedSend(
 			res,
-			this.service.accountConvert(address, cryptoScheme, ss58Prefix, pubKey)
+			this.service.accountConvert(address, cryptoScheme, ss58Prefix, pubKey),
 		);
 	};
 }

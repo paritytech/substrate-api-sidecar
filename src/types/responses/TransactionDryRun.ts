@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-	DispatchOutcome,
-	InvalidTransaction,
-	UnknownTransaction,
-} from '@polkadot/types/interfaces';
+import { DispatchOutcome, InvalidTransaction, UnknownTransaction } from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 
@@ -32,10 +28,7 @@ export enum ValidityErrorType {
 	Unknown = 'UnknownTransaction',
 }
 
-export type TransactionResult =
-	| DispatchOutcome
-	| InvalidTransaction
-	| UnknownTransaction;
+export type TransactionResult = DispatchOutcome | InvalidTransaction | UnknownTransaction;
 
 export interface ITransactionDryRun {
 	at: IAt;

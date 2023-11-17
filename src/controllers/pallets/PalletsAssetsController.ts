@@ -71,22 +71,13 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getAssetById]]);
 	}
 
-	private getAssetById: RequestHandler = async (
-		{ params: { assetId }, query: { at } },
-		res
-	): Promise<void> => {
+	private getAssetById: RequestHandler = async ({ params: { assetId }, query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
-		const index = this.parseNumberOrThrow(
-			assetId,
-			'`assetId` path param is not a number'
-		);
-		PalletsAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchAssetById(hash, index)
-		);
+		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
+		PalletsAssetsController.sanitizedSend(res, await this.service.fetchAssetById(hash, index));
 	};
 }

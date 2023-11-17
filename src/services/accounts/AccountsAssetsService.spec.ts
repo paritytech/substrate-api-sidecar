@@ -75,7 +75,7 @@ describe('AccountsAssetsService', () => {
 			const response = await accountsAssetsService.fetchAssetBalances(
 				blockHash789629,
 				'0xffff', // AccountId arg here does not affect the test results
-				[10, 20]
+				[10, 20],
 			);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -109,7 +109,7 @@ describe('AccountsAssetsService', () => {
 			const response = await accountsAssetsService.fetchAssetBalances(
 				blockHash789629,
 				'0xffff', // AccountId arg here does not affect the test results
-				[]
+				[],
 			);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -128,7 +128,7 @@ describe('AccountsAssetsService', () => {
 				blockHash789629,
 				'', // AccountId arg here does not affect the test results
 				10,
-				'' // Delegate arg here does not affect the test results
+				'', // Delegate arg here does not affect the test results
 			);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);

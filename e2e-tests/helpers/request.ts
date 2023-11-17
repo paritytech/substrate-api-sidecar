@@ -22,11 +22,7 @@ export interface IRequest {
 	statusCode?: number;
 }
 
-export const request = (
-	path: string,
-	hostname: string,
-	port: number
-): Promise<IRequest> => {
+export const request = (path: string, hostname: string, port: number): Promise<IRequest> => {
 	return new Promise((resolve) => {
 		http.get({ path, hostname, port }, (response) => {
 			let data = '';
@@ -36,7 +32,7 @@ export const request = (
 					data,
 					path,
 					statusCode: response.statusCode,
-				})
+				}),
 			);
 		});
 	});

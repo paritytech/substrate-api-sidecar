@@ -36,10 +36,7 @@ export function consoleOverride(logger: Logger): void {
 		console[consoleLevel] = function (...args: unknown[]) {
 			// We typecast here because the typescript compiler is not sure what we are keying into.
 			// The type within the logger of any of the following log levels is `LeveledLogMethod`.
-			(logger[winstonLevel] as LeveledLogMethod).call<Logger, string[], Logger>(
-				logger,
-				format.apply(format, args)
-			);
+			(logger[winstonLevel] as LeveledLogMethod).call<Logger, string[], Logger>(logger, format.apply(format, args));
 		};
 	});
 }

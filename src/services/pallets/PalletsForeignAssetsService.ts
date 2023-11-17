@@ -55,18 +55,13 @@ export class PalletsForeignAssetsService extends AbstractService {
 
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
-				const foreignAssetMultiLocationStr = JSON.stringify(
-					foreignAssetData[0]
-				).replace(/(\d),/g, '$1');
+				const foreignAssetMultiLocationStr = JSON.stringify(foreignAssetData[0]).replace(/(\d),/g, '$1');
 				const foreignAssetMultiLocation = api.registry.createType(
 					'XcmV3MultiLocation',
-					JSON.parse(foreignAssetMultiLocationStr)
+					JSON.parse(foreignAssetMultiLocationStr),
 				);
 
-				const assetMetadata =
-					await api.query.foreignAssets.metadata<AssetMetadata>(
-						foreignAssetMultiLocation
-					);
+				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(foreignAssetMultiLocation);
 
 				if (assetInfo.isSome) {
 					items.push({

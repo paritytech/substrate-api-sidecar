@@ -18,12 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { DeriveEraExposure } from '@polkadot/api-derive/types';
 import { Option, u32 } from '@polkadot/types';
-import {
-	AccountId32,
-	BalanceOf,
-	EraIndex,
-	Hash,
-} from '@polkadot/types/interfaces';
+import { AccountId32, BalanceOf, EraIndex, Hash } from '@polkadot/types/interfaces';
 import {
 	PalletStakingEraRewardPoints,
 	PalletStakingStakingLedger,
@@ -60,29 +55,19 @@ const era = polkadotRegistryV9122.createType('EraIndex', 532);
 
 const historyDepthAt = polkadotRegistryV9122.createType('u32', 84);
 
-const erasRewardPointsAt = (
-	_eraIndex: EraIndex
-): Promise<PalletStakingEraRewardPoints | Codec> =>
+const erasRewardPointsAt = (_eraIndex: EraIndex): Promise<PalletStakingEraRewardPoints | Codec> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType(
-			'PalletStakingEraRewardPoints',
-			mockEraRewardPoints
-		);
+		return polkadotRegistryV9122.createType('PalletStakingEraRewardPoints', mockEraRewardPoints);
 	});
 
-const erasValidatorRewardAt = (
-	_eraIndex: EraIndex
-): Promise<Option<BalanceOf>> =>
+const erasValidatorRewardAt = (_eraIndex: EraIndex): Promise<Option<BalanceOf>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType(
-			'Option<BalanceOf>',
-			2426740332127971
-		);
+		return polkadotRegistryV9122.createType('Option<BalanceOf>', 2426740332127971);
 	});
 
 const erasValidatorPrefsAt = (
 	_era: u32 | number,
-	_validatorId: string | AccountId32
+	_validatorId: string | AccountId32,
 ): Promise<PalletStakingValidatorPrefs | Codec> =>
 	Promise.resolve().then(() => {
 		return polkadotRegistryV9122.createType('PalletStakingValidatorPrefs', {
@@ -91,24 +76,14 @@ const erasValidatorPrefsAt = (
 		});
 	});
 
-const bondedAt = (
-	_validatorId: string | AccountId32
-): Promise<Option<AccountId32>> =>
+const bondedAt = (_validatorId: string | AccountId32): Promise<Option<AccountId32>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType(
-			'Option<AccountId32>',
-			'1ZMbuCR3QiatxRsQdNnJYgydn3CWV4PELcTzpH4TNoNjxno'
-		);
+		return polkadotRegistryV9122.createType('Option<AccountId32>', '1ZMbuCR3QiatxRsQdNnJYgydn3CWV4PELcTzpH4TNoNjxno');
 	});
 
-const ledgerAt = (
-	_validatorId: string | AccountId32
-): Promise<Option<PalletStakingStakingLedger | Codec>> =>
+const ledgerAt = (_validatorId: string | AccountId32): Promise<Option<PalletStakingStakingLedger | Codec>> =>
 	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType(
-			'Option<PalletStakingStakingLedger>',
-			mockLedger
-		);
+		return polkadotRegistryV9122.createType('Option<PalletStakingStakingLedger>', mockLedger);
 	});
 
 const deriveEraExposure = (_eraIndex: EraIndex): Promise<DeriveEraExposure> =>
@@ -159,7 +134,7 @@ describe('AccountsStakingPayoutsService', () => {
 
 	const blockHash = polkadotRegistryV9122.createType(
 		'BlockHash',
-		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578'
+		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
 	);
 
 	let derivedExposure: DeriveEraExposure;
@@ -169,27 +144,13 @@ describe('AccountsStakingPayoutsService', () => {
 
 	describe('Correct succesfull responses', () => {
 		it('Should work when ApiPromise works', async () => {
-			const res = await stakingPayoutsService.fetchAccountStakingPayout(
-				blockHash,
-				nominator,
-				1,
-				533,
-				true,
-				534
-			);
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 533, true, 534);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
 		});
 
 		it('Should work when unclaimed is false', async () => {
-			const res = await stakingPayoutsService.fetchAccountStakingPayout(
-				blockHash,
-				nominator,
-				1,
-				533,
-				false,
-				534
-			);
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 533, false, 534);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
 		});
@@ -198,17 +159,13 @@ describe('AccountsStakingPayoutsService', () => {
 			const rewards = await erasRewardPointsAt(era);
 			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](
 				rewards as unknown as PalletStakingEraRewardPoints,
-				validator
+				validator,
 			);
 			expect(sanitizeNumbers(res)).toBe('3360');
 		});
 
 		it('`extractExposure` should return the correct value when the address is a nominator', () => {
-			const res = stakingPayoutsService['extractExposure'](
-				nominator,
-				validator,
-				derivedExposure
-			);
+			const res = stakingPayoutsService['extractExposure'](nominator, validator, derivedExposure);
 			expect(sanitizeNumbers(res)).toStrictEqual({
 				nominatorExposure: '33223051661066606',
 				totalExposure: '33223251661066606',
@@ -216,11 +173,7 @@ describe('AccountsStakingPayoutsService', () => {
 		});
 
 		it('`extractExposure` should return the correct value when the address is a validator', () => {
-			const res = stakingPayoutsService['extractExposure'](
-				validator,
-				validator,
-				derivedExposure
-			);
+			const res = stakingPayoutsService['extractExposure'](validator, validator, derivedExposure);
 			expect(sanitizeNumbers(res)).toStrictEqual({
 				nominatorExposure: '200000000000',
 				totalExposure: '33223251661066606',
@@ -230,7 +183,7 @@ describe('AccountsStakingPayoutsService', () => {
 		it('`deriveNominatedExposures` should return the correct value when address is a validator', () => {
 			const res = stakingPayoutsService['deriveNominatedExposures'](
 				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
-				derivedExposure
+				derivedExposure,
 			);
 			const expectedResult = [
 				{
@@ -246,53 +199,32 @@ describe('AccountsStakingPayoutsService', () => {
 		});
 
 		it('`deriveNominatedExposures` should return the correct value when the address is a nominator', () => {
-			const res = stakingPayoutsService['deriveNominatedExposures'](
-				nominator,
-				derivedExposure
-			);
-			expect(sanitizeNumbers(res)).toStrictEqual(
-				mockDeriveNominatedExposure[nominator]
-			);
+			const res = stakingPayoutsService['deriveNominatedExposures'](nominator, derivedExposure);
+			expect(sanitizeNumbers(res)).toStrictEqual(mockDeriveNominatedExposure[nominator]);
 		});
 	});
 
 	describe('Correct errors', () => {
 		it('Should throw an error when the depth is greater than the historyDepth', () => {
 			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(
-					blockHash,
-					nominator,
-					85,
-					533,
-					true,
-					534
-				);
+				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 85, 533, true, 534);
 			};
 
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(serviceCall()).rejects.toThrow(
-				new BadRequest('Must specify a depth less than history_depth')
-			);
+			expect(serviceCall()).rejects.toThrow(new BadRequest('Must specify a depth less than history_depth'));
 		});
 
 		it('Should throw an error inputted era and historydepth is invalid', () => {
 			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(
-					blockHash,
-					nominator,
-					1,
-					400,
-					true,
-					534
-				);
+				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 400, true, 534);
 			};
 
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(serviceCall()).rejects.toThrow(
 				new BadRequest(
 					'Must specify era and depth such that era - (depth - 1) is less ' +
-						'than or equal to current_era - history_depth.'
-				)
+						'than or equal to current_era - history_depth.',
+				),
 			);
 		});
 	});

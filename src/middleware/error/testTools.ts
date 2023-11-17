@@ -40,12 +40,7 @@ export const callsNextWithErr =
 				};
 			});
 
-			ware(
-				err,
-				mockReq,
-				{ headersSent: false, status } as unknown as Response,
-				next
-			);
+			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
 			expect(status).not.toBeCalled();
 			expect(send).not.toBeCalled();
 			expect(next).toBeCalledTimes(1);
@@ -73,12 +68,7 @@ export const catchesErrWithStatus =
 				};
 			});
 
-			ware(
-				err,
-				mockReq,
-				{ headersSent: false, status } as unknown as Response,
-				next
-			);
+			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
 			expect(send).toBeCalledTimes(1);
 			expect(status).toBeCalledWith<[number]>(code);
 			expect(status).toBeCalledTimes(1);
@@ -108,12 +98,7 @@ export const catchesErrWithResponse =
 				};
 			});
 
-			ware(
-				err,
-				mockReq,
-				{ headersSent: false, status } as unknown as Response,
-				next
-			);
+			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
 			expect(send).toBeCalledTimes(1);
 			expect(send).toBeCalledWith(response);
 			expect(status).toBeCalledWith<[number]>(code);
@@ -122,10 +107,7 @@ export const catchesErrWithResponse =
 		});
 	};
 
-export function callsNextWithSentHeaders(
-	ware: ErrorRequestHandler,
-	err: unknown
-): void {
+export function callsNextWithSentHeaders(ware: ErrorRequestHandler, err: unknown): void {
 	it('calls next if the headers have been sent', () => {
 		const next = jest.fn();
 		const send = jest.fn();
@@ -135,12 +117,7 @@ export function callsNextWithSentHeaders(
 			};
 		});
 
-		ware(
-			err,
-			mockReq,
-			{ headersSent: true, status } as unknown as Response,
-			next
-		);
+		ware(err, mockReq, { headersSent: true, status } as unknown as Response, next);
 		expect(send).not.toBeCalled();
 		expect(status).not.toBeCalled();
 		expect(next).toBeCalledTimes(1);

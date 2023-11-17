@@ -51,25 +51,16 @@ export default class TransactionDryRunController extends AbstractController<Tran
 	}
 
 	protected initRoutes(): void {
-		this.router.post(
-			this.path,
-			TransactionDryRunController.catchWrap(this.dryRunTransaction)
-		);
+		this.router.post(this.path, TransactionDryRunController.catchWrap(this.dryRunTransaction));
 	}
 
-	private dryRunTransaction: IPostRequestHandler<ITx> = async (
-		{ body: { tx }, query: { at } },
-		res
-	): Promise<void> => {
+	private dryRunTransaction: IPostRequestHandler<ITx> = async ({ body: { tx }, query: { at } }, res): Promise<void> => {
 		if (!tx) {
 			throw new BadRequest('Missing field `tx` on request body.');
 		}
 
 		const hash = await this.getHashFromAt(at);
 
-		TransactionDryRunController.sanitizedSend(
-			res,
-			await this.service.dryRuntExtrinsic(hash, tx)
-		);
+		TransactionDryRunController.sanitizedSend(res, await this.service.dryRuntExtrinsic(hash, tx));
 	};
 }

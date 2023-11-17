@@ -102,12 +102,7 @@ describe('palletsNominationPoolService', () => {
 				},
 			};
 
-			const response =
-				await palletsNominationPoolService.fetchNominationPoolById(
-					122,
-					blockHash789629,
-					false
-				);
+			const response = await palletsNominationPoolService.fetchNominationPoolById(122, blockHash789629, false);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -139,15 +134,10 @@ describe('palletsNominationPoolService', () => {
 
 			const blockHashAt = polkadotRegistry.createType(
 				'BlockHash',
-				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84'
+				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84',
 			);
 
-			const response =
-				await palletsNominationPoolService.fetchNominationPoolById(
-					122,
-					blockHashAt,
-					true
-				);
+			const response = await palletsNominationPoolService.fetchNominationPoolById(122, blockHashAt, true);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -175,11 +165,10 @@ describe('palletsNominationPoolService', () => {
 			};
 			const blockHashAt = polkadotRegistry.createType(
 				'BlockHash',
-				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84'
+				'0x64c6d3db75e33e5ef617bc9851078a4c387fcff7ca0eada54e46293d532e3c84',
 			);
 
-			const response =
-				await palletsNominationPoolService.fetchNominationPoolInfo(blockHashAt);
+			const response = await palletsNominationPoolService.fetchNominationPoolInfo(blockHashAt);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});

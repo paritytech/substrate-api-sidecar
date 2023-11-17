@@ -18,11 +18,7 @@ import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import {
-	ILiquidityId,
-	ILiquidityPools,
-	ILiquidityPoolsInfo,
-} from '../../types/responses';
+import { ILiquidityId, ILiquidityPools, ILiquidityPoolsInfo } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsAssetConversionService extends AbstractService {

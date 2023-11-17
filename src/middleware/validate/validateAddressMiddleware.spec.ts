@@ -28,7 +28,7 @@ describe('validateAddressMiddleware', () => {
 				number: '1',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -39,7 +39,7 @@ describe('validateAddressMiddleware', () => {
 				address: '5EnxxUmEbw8DkENKiYuZ1DwQuMoB2UWEQJZZXrTsxoz7SpgG',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -50,7 +50,7 @@ describe('validateAddressMiddleware', () => {
 				address: 'DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -61,7 +61,7 @@ describe('validateAddressMiddleware', () => {
 				address: '2cYv9Gk6U4m4a7Taw9pG8qMfd1Pnxw6FLTvV6kYZNhGL6M9y',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -72,7 +72,7 @@ describe('validateAddressMiddleware', () => {
 				address: '5D24s4paTdVxddyeUzgsxGGiRd7SPhTnEvKu6XGPQvj1QSYN',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -83,7 +83,7 @@ describe('validateAddressMiddleware', () => {
 				address: '1xN1Q5eKQmS5AzASdjt6R6sHF76611vKR4PFpFjy1kXau4m',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	doesNotErrorWith(
@@ -94,7 +94,7 @@ describe('validateAddressMiddleware', () => {
 				address: '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac',
 			},
 		} as unknown as Request,
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	errorsWith(
@@ -106,7 +106,7 @@ describe('validateAddressMiddleware', () => {
 			},
 		} as unknown as Request,
 		new BadRequest('Invalid base58 character "I" (0x49) at index 4'),
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	errorsWith(
@@ -118,7 +118,7 @@ describe('validateAddressMiddleware', () => {
 			},
 		} as unknown as Request,
 		new BadRequest('Invalid address format'),
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	errorsWith(
@@ -130,7 +130,7 @@ describe('validateAddressMiddleware', () => {
 			},
 		} as unknown as Request,
 		new BadRequest('Invalid decoded address checksum'),
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 
 	errorsWith(
@@ -142,6 +142,6 @@ describe('validateAddressMiddleware', () => {
 			},
 		} as unknown as Request,
 		new BadRequest('Invalid base58 character "l" (0x6c) at index 2'),
-		validateAddressMiddleware
+		validateAddressMiddleware,
 	);
 });

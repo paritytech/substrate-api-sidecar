@@ -22,11 +22,7 @@ import AbstractController from '../AbstractController';
 
 export default class PalletsStakingValidatorsController extends AbstractController<PalletsStakingValidatorsService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/staking/validators',
-			new PalletsStakingValidatorsService(api)
-		);
+		super(api, '/pallets/staking/validators', new PalletsStakingValidatorsService(api));
 		this.initRoutes();
 	}
 
@@ -40,15 +36,9 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletStakingValidators: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getPalletStakingValidators: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		PalletsStakingValidatorsController.sanitizedSend(
-			res,
-			await this.service.derivePalletStakingValidators(hash)
-		);
+		PalletsStakingValidatorsController.sanitizedSend(res, await this.service.derivePalletStakingValidators(hash));
 	};
 }

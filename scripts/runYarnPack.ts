@@ -35,17 +35,11 @@ const cleanup = async () => {
 		resolver: 'YN0000: Done',
 		args: ['remove', '@substrate/api-sidecar'],
 	};
-	const sidecarUnInstallPack = await launchProcess(
-		'yarn',
-		procs,
-		sasUnInstallPackOpts
-	);
+	const sidecarUnInstallPack = await launchProcess('yarn', procs, sasUnInstallPackOpts);
 
 	if (sidecarUnInstallPack.code === Failed) {
 		console.error('UnInstalling sidecar package failed..');
-		console.error(
-			'Please uninstall the package using `yarn remove @substrate/api-sidecar`.'
-		);
+		console.error('Please uninstall the package using `yarn remove @substrate/api-sidecar`.');
 		killAll(procs);
 	}
 
@@ -62,9 +56,7 @@ const cleanup = async () => {
 
 	if (deleteTarball.code === Failed) {
 		console.error('Error deleting tarball.');
-		console.error(
-			'In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.'
-		);
+		console.error('In order to delete tarball run: `rm -rf ./package.tgz` from the root directory of the repository.');
 		killAll(procs);
 	}
 };
@@ -109,11 +101,7 @@ const main = async () => {
 		resolver: 'YN0000: Done',
 		args: ['add', `${__dirname}/../../package.tgz`],
 	};
-	const sidecarInstallPack = await launchProcess(
-		'yarn',
-		procs,
-		sasInstallPackOpts
-	);
+	const sidecarInstallPack = await launchProcess('yarn', procs, sasInstallPackOpts);
 
 	if (sidecarInstallPack.code === Failed) {
 		console.error('Installing the binary failed..');
@@ -135,7 +123,7 @@ const main = async () => {
 	const sidecarStart = await launchProcess(
 		`${__dirname}/../../node_modules/.bin/substrate-api-sidecar`,
 		procs,
-		sasStartPackOpts
+		sasStartPackOpts,
 	);
 
 	if (sidecarStart.code === Success) {

@@ -60,8 +60,8 @@ export class Specs {
 				{
 					default: '127.0.0.1',
 					type: 'string',
-				}
-			)
+				},
+			),
 		);
 
 		// PORT
@@ -74,21 +74,17 @@ export class Specs {
 					default: 8080,
 					type: 'number',
 					regexp: /^\d{2,6}$/,
-				}
-			)
+				},
+			),
 		);
 
 		// KEEP_ALIVE_TIMEOUT
 		this._specs.appendSpec(
 			MODULES.EXPRESS,
-			this._specs.getSpec(
-				CONFIG.KEEP_ALIVE_TIMEOUT,
-				'Network keepAliveTimeout duration. It will default to 5000ms.',
-				{
-					default: 5000,
-					type: 'number',
-				}
-			)
+			this._specs.getSpec(CONFIG.KEEP_ALIVE_TIMEOUT, 'Network keepAliveTimeout duration. It will default to 5000ms.', {
+				default: 5000,
+				type: 'number',
+			}),
 		);
 	}
 
@@ -107,7 +103,7 @@ export class Specs {
 				default: 'ws://127.0.0.1:9944',
 				mandatory: true,
 				regexp: /^(ws|wss|http|https)?:\/\/.*/,
-			})
+			}),
 		);
 
 		// TYPES_BUNDLE
@@ -119,8 +115,8 @@ export class Specs {
 				{
 					default: '',
 					mandatory: false,
-				}
-			)
+				},
+			),
 		);
 
 		// TYPES_CHAIN
@@ -132,8 +128,8 @@ export class Specs {
 				{
 					default: '',
 					mandatory: false,
-				}
-			)
+				},
+			),
 		);
 
 		// TYPES_SPEC
@@ -145,19 +141,15 @@ export class Specs {
 				{
 					default: '',
 					mandatory: false,
-				}
-			)
+				},
+			),
 		);
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
-			this._specs.getSpec(
-				CONFIG.TYPES,
-				'absolute path to file with `typesSpec` type definitions for @polkadot/api',
-				{
-					default: '',
-					mandatory: false,
-				}
-			)
+			this._specs.getSpec(CONFIG.TYPES, 'absolute path to file with `typesSpec` type definitions for @polkadot/api', {
+				default: '',
+				mandatory: false,
+			}),
 		);
 	}
 
@@ -175,107 +167,79 @@ export class Specs {
 			this._specs.getSpec(CONFIG.LEVEL, 'Log level', {
 				default: 'info',
 				regexp: /^error|warn|info|http|verbose|debug|silly$/,
-			})
+			}),
 		);
 
 		// JSON
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.JSON,
-				'Whether or not to format logs as JSON',
-				{
-					default: 'false',
-					type: 'boolean',
-					regexp: /^true|false$/,
-				}
-			)
+			this._specs.getSpec(CONFIG.JSON, 'Whether or not to format logs as JSON', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+			}),
 		);
 
 		// FILTER_RPC
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.FILTER_RPC,
-				'Wether or not filter out API-WS RPC logging',
-				{
-					default: 'false',
-					type: 'boolean',
-					regexp: /^true|false$/,
-				}
-			)
+			this._specs.getSpec(CONFIG.FILTER_RPC, 'Wether or not filter out API-WS RPC logging', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+			}),
 		);
 
 		// STRIP_ANSI
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.STRIP_ANSI,
-				'Whether or not to strip ANSI characters',
-				{
-					default: 'false',
-					type: 'boolean',
-					regexp: /^true|false$/,
-				}
-			)
+			this._specs.getSpec(CONFIG.STRIP_ANSI, 'Whether or not to strip ANSI characters', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+			}),
 		);
 
 		// WRITE
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.WRITE,
-				'Whether or not to write the logs locally',
-				{
-					default: 'false',
-					type: 'boolean',
-					regexp: /^true|false$/,
-					mandatory: false,
-				}
-			)
+			this._specs.getSpec(CONFIG.WRITE, 'Whether or not to write the logs locally', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+				mandatory: false,
+			}),
 		);
 
 		// WRITE_PATH
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.WRITE_PATH,
-				'If WRITE is true, the path to write the logs too.',
-				{
-					// TODO: Need <ROOT> of this directory
-					default: `${__dirname}/logs`,
-					type: 'string',
-					mandatory: false,
-				}
-			)
+			this._specs.getSpec(CONFIG.WRITE_PATH, 'If WRITE is true, the path to write the logs too.', {
+				// TODO: Need <ROOT> of this directory
+				default: `${__dirname}/logs`,
+				type: 'string',
+				mandatory: false,
+			}),
 		);
 
 		// WRITE_MAX_FILE_SIZE
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.WRITE_MAX_FILE_SIZE,
-				'The max size the log file should not exceed.',
-				{
-					default: 5242880, // 5MB
-					type: 'number',
-					mandatory: false,
-				}
-			)
+			this._specs.getSpec(CONFIG.WRITE_MAX_FILE_SIZE, 'The max size the log file should not exceed.', {
+				default: 5242880, // 5MB
+				type: 'number',
+				mandatory: false,
+			}),
 		);
 
 		// WRITE_MAX_FILES
 		this._specs.appendSpec(
 			MODULES.LOG,
-			this._specs.getSpec(
-				CONFIG.WRITE_MAX_FILES,
-				'The max amount of files that should be created.',
-				{
-					default: 5,
-					type: 'number',
-					mandatory: false,
-				}
-			)
+			this._specs.getSpec(CONFIG.WRITE_MAX_FILES, 'The max amount of files that should be created.', {
+				default: 5,
+				type: 'number',
+				mandatory: false,
+			}),
 		);
 	}
 }

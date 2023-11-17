@@ -44,10 +44,7 @@ export default class TransactionSubmitController extends AbstractController<Tran
 	}
 
 	protected initRoutes(): void {
-		this.router.post(
-			this.path,
-			TransactionSubmitController.catchWrap(this.txSubmit)
-		);
+		this.router.post(this.path, TransactionSubmitController.catchWrap(this.txSubmit));
 	}
 
 	/**
@@ -56,10 +53,7 @@ export default class TransactionSubmitController extends AbstractController<Tran
 	 * @param req Sidecar TxRequest
 	 * @param res Express Response
 	 */
-	private txSubmit: IPostRequestHandler<ITx> = async (
-		{ body: { tx } },
-		res
-	): Promise<void> => {
+	private txSubmit: IPostRequestHandler<ITx> = async ({ body: { tx } }, res): Promise<void> => {
 		if (!tx) {
 			throw {
 				error: 'Missing field `tx` on request body.',

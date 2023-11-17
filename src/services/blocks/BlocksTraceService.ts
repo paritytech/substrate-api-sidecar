@@ -19,10 +19,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { BlockTrace as PdJsBlockTrace } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
-import {
-	BlocksTrace,
-	BlocksTraceOperations,
-} from '../../types/responses/BlocksTrace';
+import { BlocksTrace, BlocksTraceOperations } from '../../types/responses/BlocksTrace';
 import { AbstractService } from '../AbstractService';
 import { BlockTrace, StringValues, Trace } from './trace';
 
@@ -71,9 +68,7 @@ export class BlocksTraceService extends AbstractService {
 		if (traceResponse.isTraceError) {
 			throw new InternalServerError(`${traceResponse.asTraceError.toString()}`);
 		} else {
-			const formattedTrace = BlocksTraceService.formatBlockTrace(
-				traceResponse.asBlockTrace
-			);
+			const formattedTrace = BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace);
 			return {
 				at: {
 					hash,
@@ -97,7 +92,7 @@ export class BlocksTraceService extends AbstractService {
 	async operations(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
-		includeActions: boolean
+		includeActions: boolean,
 	): Promise<BlocksTraceOperations> {
 		const [{ block }, traceResponse] = await Promise.all([
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
@@ -112,7 +107,7 @@ export class BlocksTraceService extends AbstractService {
 			const trace = new Trace(
 				this.api,
 				BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace),
-				historicApi.registry
+				historicApi.registry,
 			);
 
 			const { operations, actions } = trace.actionsAndOps();
@@ -136,38 +131,31 @@ export class BlocksTraceService extends AbstractService {
 	 * @param blockTrace Polkadot-js BlockTrace
 	 */
 	private static formatBlockTrace(blockTrace: PdJsBlockTrace): BlockTrace {
-		const events = blockTrace.events.map(
-			({ parentId, target, data: { stringValues } }) => {
-				const formattedStringValues = [...stringValues.entries()].reduce(
-					(acc, [k, v]) => {
-						acc[k.toString()] = v.toString();
+		const events = blockTrace.events.map(({ parentId, target, data: { stringValues } }) => {
+			const formattedStringValues = [...stringValues.entries()].reduce((acc, [k, v]) => {
+				acc[k.toString()] = v.toString();
 
-						return acc;
-					},
-					{} as StringValues
-				);
+				return acc;
+			}, {} as StringValues);
 
-				return {
-					parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
-					target: target.toString(),
-					data: {
-						stringValues: formattedStringValues,
-					},
-				};
-			}
-		);
+			return {
+				parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
+				target: target.toString(),
+				data: {
+					stringValues: formattedStringValues,
+				},
+			};
+		});
 
-		const spans = blockTrace.spans.map(
-			({ id, name, parentId, target, wasm }) => {
-				return {
-					id: id.toNumber(),
-					parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
-					name: name.toString(),
-					target: target.toString(),
-					wasm: wasm.toJSON(),
-				};
-			}
-		);
+		const spans = blockTrace.spans.map(({ id, name, parentId, target, wasm }) => {
+			return {
+				id: id.toNumber(),
+				parentId: parentId.isSome ? parentId.unwrap().toNumber() : null,
+				name: name.toString(),
+				target: target.toString(),
+				wasm: wasm.toJSON(),
+			};
+		});
 
 		return {
 			storageKeys: blockTrace.storageKeys.toString(),

@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-	BlockHash,
-	RuntimeDispatchInfo,
-	RuntimeDispatchInfoV1,
-} from '@polkadot/types/interfaces';
+import { BlockHash, RuntimeDispatchInfo, RuntimeDispatchInfoV1 } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
@@ -33,7 +29,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 	 */
 	async fetchTransactionFeeEstimate(
 		hash: BlockHash,
-		transaction: string
+		transaction: string,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
 		const apiAt = await api.at(hash);
@@ -43,10 +39,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 				const ext = api.registry.createType('Extrinsic', transaction);
 				const u8a = ext.toU8a();
 
-				return await apiAt.call.transactionPaymentApi.queryInfo(
-					ext,
-					u8a.length
-				);
+				return await apiAt.call.transactionPaymentApi.queryInfo(ext, u8a.length);
 			} else {
 				return await api.rpc.payment.queryInfo(transaction, hash);
 			}

@@ -16,6 +16,4 @@
 
 import runtimeSpec5216878 from './5216878.json';
 
-export const assetHubWestendRuntimeEndpoints = [
-	['/runtime/spec?at=5216878', JSON.stringify(runtimeSpec5216878)],
-];
+export const assetHubWestendRuntimeEndpoints = [['/runtime/spec?at=5216878', JSON.stringify(runtimeSpec5216878)]];

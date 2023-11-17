@@ -53,7 +53,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	constructor(
 		protected api: ApiPromise,
 		private _path: string,
-		protected service: T
+		protected service: T,
 	) {}
 
 	get path(): string {
@@ -80,15 +80,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param pathsAndHandlers array of tuples containing the suffix to the controller
 	 * base path (use empty string if no suffix) and the get request handler function.
 	 */
-	protected safeMountAsyncGetHandlers(
-		pathsAndHandlers: [string, SidecarRequestHandler][]
-	): void {
+	protected safeMountAsyncGetHandlers(pathsAndHandlers: [string, SidecarRequestHandler][]): void {
 		for (const pathAndHandler of pathsAndHandlers) {
 			const [pathSuffix, handler] = pathAndHandler;
-			this.router.get(
-				`${this.path}${pathSuffix}`,
-				AbstractController.catchWrap(handler as RequestHandler)
-			);
+			this.router.get(`${this.path}${pathSuffix}`, AbstractController.catchWrap(handler as RequestHandler));
 		}
 	}
 
@@ -100,15 +95,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param pathsAndHandlers array of tuples containing the suffix to the controller
 	 * base path (use empty string if no suffix) and the get request handler function.
 	 */
-	protected safeMountAsyncPostHandlers(
-		pathsAndHandlers: [string, SidecarRequestHandler][]
-	): void {
+	protected safeMountAsyncPostHandlers(pathsAndHandlers: [string, SidecarRequestHandler][]): void {
 		for (const pathAndHandler of pathsAndHandlers) {
 			const [pathSuffix, handler] = pathAndHandler;
-			this.router.post(
-				`${this.path}${pathSuffix}`,
-				AbstractController.catchWrap(handler as RequestHandler)
-			);
+			this.router.post(`${this.path}${pathSuffix}`, AbstractController.catchWrap(handler as RequestHandler));
 		}
 	}
 
@@ -153,14 +143,13 @@ export default abstract class AbstractController<T extends AbstractService> {
 				return this.api.createType('BlockHash', blockId);
 			} else if (isHexStr) {
 				throw new BadRequest(
-					`Cannot get block hash for ${blockId}. ` +
-						`Hex string block IDs must be 32-bytes (66-characters) in length.`
+					`Cannot get block hash for ${blockId}. ` + `Hex string block IDs must be 32-bytes (66-characters) in length.`,
 				);
 			} else if (blockId.slice(0, 2) === '0x') {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` +
 						`Hex string block IDs must be a valid hex string ` +
-						`and must be 32-bytes (66-characters) in length.`
+						`and must be 32-bytes (66-characters) in length.`,
 				);
 			}
 
@@ -170,7 +159,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			} catch (err) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` +
-						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`
+						`Block IDs must be either 32-byte hex strings or non-negative decimal integers.`,
 				);
 			}
 
@@ -182,14 +171,12 @@ export default abstract class AbstractController<T extends AbstractService> {
 			}
 
 			const { number } = await this.api.rpc.chain.getHeader().catch(() => {
-				throw new InternalServerError(
-					'Failed while trying to get the latest header.'
-				);
+				throw new InternalServerError('Failed while trying to get the latest header.');
 			});
 			if (blockNumber && number.toNumber() < blockNumber) {
 				throw new BadRequest(
 					`Specified block number is larger than the current largest block. ` +
-						`The largest known block number is ${number.toString()}.`
+						`The largest known block number is ${number.toString()}.`,
 				);
 			}
 
@@ -225,60 +212,38 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const max = Number(splitRange[1]);
 
 		if (!verifyUInt(min)) {
-			throw new BadRequest(
-				'Inputted min value for range must be an unsigned integer.'
-			);
+			throw new BadRequest('Inputted min value for range must be an unsigned integer.');
 		}
 
 		if (!verifyNonZeroUInt(max)) {
-			throw new BadRequest(
-				'Inputted max value for range must be an unsigned non zero integer.'
-			);
+			throw new BadRequest('Inputted max value for range must be an unsigned non zero integer.');
 		}
 
 		if (min >= max) {
-			throw new BadRequest(
-				'Inputted min value cannot be greater than or equal to the max value.'
-			);
+			throw new BadRequest('Inputted min value cannot be greater than or equal to the max value.');
 		}
 
 		if (max - min > maxRange) {
-			throw new BadRequest(
-				`Inputted range is greater than the ${maxRange} range limit.`
-			);
+			throw new BadRequest(`Inputted range is greater than the ${maxRange} range limit.`);
 		}
 
 		return [...Array(max - min + 1).keys()].map((i) => i + min);
 	}
 
 	protected parseQueryParamArrayOrThrow(n: string[]): number[] {
-		return n.map((str) =>
-			this.parseNumberOrThrow(
-				str,
-				`Incorrect AssetId format: ${str} is not a positive integer.`
-			)
-		);
+		return n.map((str) => this.parseNumberOrThrow(str, `Incorrect AssetId format: ${str} is not a positive integer.`));
 	}
 
-	protected verifyAndCastOr(
-		name: string,
-		str: unknown,
-		or: number | undefined
-	): number | undefined {
+	protected verifyAndCastOr(name: string, str: unknown, or: number | undefined): number | undefined {
 		if (!str) {
 			return or;
 		}
 
 		if (!(typeof str === 'string')) {
-			throw new BadRequest(
-				`Incorrect argument quantity or type passed in for ${name} query param`
-			);
+			throw new BadRequest(`Incorrect argument quantity or type passed in for ${name} query param`);
 		}
 
-		return this.parseNumberOrThrow(
-			str,
-			`${name} query param is an invalid number`
-		);
+		return this.parseNumberOrThrow(str, `${name} query param is an invalid number`);
 	}
 
 	/**
@@ -287,9 +252,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param at should be a block height, hash, or undefined from the `at` query param
 	 */
 	protected async getHashFromAt(at: unknown): Promise<BlockHash> {
-		return typeof at === 'string'
-			? await this.getHashForBlock(at)
-			: await this.api.rpc.chain.getFinalizedHead();
+		return typeof at === 'string' ? await this.getHashForBlock(at) : await this.api.rpc.chain.getFinalizedHead();
 	}
 
 	/**
@@ -299,11 +262,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param res Response
 	 * @param body response body
 	 */
-	static sanitizedSend<T>(
-		res: Response<AnyJson>,
-		body: T,
-		options: ISanitizeOptions = {}
-	): void {
+	static sanitizedSend<T>(res: Response<AnyJson>, body: T, options: ISanitizeOptions = {}): void {
 		res.send(sanitizeNumbers(body, options));
 	}
 }

@@ -34,8 +34,5 @@ export interface ITxLegacyError extends IBasicLegacyError {
  * @param thing to check type of
  */
 export function isTxLegacyError(thing: unknown): thing is ITxLegacyError {
-	return (
-		(thing as ITxLegacyError).cause !== undefined &&
-		(thing as ITxLegacyError).error !== undefined
-	);
+	return (thing as ITxLegacyError).cause !== undefined && (thing as ITxLegacyError).error !== undefined;
 }

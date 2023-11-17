@@ -45,14 +45,8 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 		this.safeMountAsyncGetHandlers([['', this.getForeignAssets]]);
 	}
 
-	private getForeignAssets: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getForeignAssets: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		PalletsForeignAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchForeignAssets(hash)
-		);
+		PalletsForeignAssetsController.sanitizedSend(res, await this.service.fetchForeignAssets(hash));
 	};
 }

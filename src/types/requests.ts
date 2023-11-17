@@ -33,12 +33,7 @@ export type IBodyContractMetadata = Record<string, unknown>;
  * Post Request - assuming no url params
  */
 // eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any
-export type IPostRequestHandler<T, P = Query> = RequestHandler<
-	ParamsDictionary,
-	unknown,
-	T,
-	P
->;
+export type IPostRequestHandler<T, P = Query> = RequestHandler<ParamsDictionary, unknown, T, P>;
 
 export interface INumberParam extends ParamsDictionary {
 	number: string;

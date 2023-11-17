@@ -20,11 +20,7 @@ import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
-import {
-	IAccountAssetApproval,
-	IAccountAssetsBalances,
-	IAssetBalance,
-} from '../../types/responses';
+import { IAccountAssetApproval, IAccountAssetsBalances, IAssetBalance } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -65,11 +61,7 @@ export class AccountsAssetsService extends AbstractService {
 	 * @param assets An array of `assetId`'s to be queried. If the length is zero
 	 * all assetId's associated to the account will be queried
 	 */
-	async fetchAssetBalances(
-		hash: BlockHash,
-		address: string,
-		assets: number[]
-	): Promise<IAccountAssetsBalances> {
+	async fetchAssetBalances(hash: BlockHash, address: string, assets: number[]): Promise<IAccountAssetsBalances> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
@@ -118,7 +110,7 @@ export class AccountsAssetsService extends AbstractService {
 		hash: BlockHash,
 		address: string,
 		assetId: number,
-		delegate: string
+		delegate: string,
 	): Promise<IAccountAssetApproval> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
@@ -162,14 +154,11 @@ export class AccountsAssetsService extends AbstractService {
 	async queryAssets(
 		historicApi: ApiDecoration<'promise'>,
 		assets: AssetId[] | number[],
-		address: string
+		address: string,
 	): Promise<IAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await historicApi.query.assets.account(
-					assetId,
-					address
-				);
+				const assetBalance = await historicApi.query.assets.account(assetId, address);
 
 				/**
 				 * The following checks for three different cases:
@@ -198,8 +187,7 @@ export class AccountsAssetsService extends AbstractService {
 				// 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
 				// `sufficient` as a key.
 				if ((assetBalance as unknown as PalletAssetsAssetBalance).sufficient) {
-					const balanceProps =
-						assetBalance as unknown as PalletAssetsAssetBalance;
+					const balanceProps = assetBalance as unknown as PalletAssetsAssetBalance;
 
 					return {
 						assetId,
@@ -212,8 +200,7 @@ export class AccountsAssetsService extends AbstractService {
 				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
 				// of `sufficient`.
 				if (assetBalance['isSufficient'] as bool) {
-					const balanceProps =
-						assetBalance as unknown as LegacyPalletAssetsAssetBalance;
+					const balanceProps = assetBalance as unknown as LegacyPalletAssetsAssetBalance;
 
 					return {
 						assetId,
@@ -235,7 +222,7 @@ export class AccountsAssetsService extends AbstractService {
 					isFrozen: historicApi.registry.createType('bool', false),
 					isSufficient: historicApi.registry.createType('bool', false),
 				};
-			})
+			}),
 		).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(address, err);
 		});
@@ -256,9 +243,7 @@ export class AccountsAssetsService extends AbstractService {
 	 */
 	private checkAssetsError(historicApi: ApiDecoration<'promise'>): void {
 		if (!historicApi.query.assets) {
-			throw new BadRequest(
-				`The runtime does not include the assets pallet at this block.`
-			);
+			throw new BadRequest(`The runtime does not include the assets pallet at this block.`);
 		}
 	}
 }

@@ -87,25 +87,20 @@ import AbstractController from '../AbstractController';
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
 export default class BlocksController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, private readonly options: ControllerOptions) {
+	constructor(
+		api: ApiPromise,
+		private readonly options: ControllerOptions,
+	) {
 		super(
 			api,
 			'/blocks',
-			new BlocksService(
-				api,
-				options.minCalcFeeRuntime,
-				options.blockStore,
-				options.hasQueryFeeApi
-			)
+			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
 		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.router.use(
-			this.path,
-			validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized'])
-		);
+		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -121,10 +116,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized } },
-		res
-	) => {
+	private getLatestBlock: RequestHandler = async ({ query: { eventDocs, extrinsicDocs, finalized } }, res) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
@@ -157,10 +149,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const historicApi = await this.api.at(hash);
 
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.fetchBlock(hash, historicApi, options)
-		);
+		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
 	};
 
 	/**
@@ -171,7 +160,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
 		{ params: { number }, query: { eventDocs, extrinsicDocs } },
-		res
+		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
 
@@ -195,10 +184,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const historicApi = await this.api.at(hash);
 
 		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.fetchBlock(hash, historicApi, options)
-		);
+		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
 	};
 
 	/**
@@ -207,16 +193,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockHeaderById: RequestHandler<INumberParam> = async (
-		{ params: { number } },
-		res
-	): Promise<void> => {
+	private getBlockHeaderById: RequestHandler<INumberParam> = async ({ params: { number } }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(number);
 
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.fetchBlockHeader(hash)
-		);
+		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
 	};
 
 	/**
@@ -225,20 +205,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlockHeader: RequestHandler = async (
-		{ query: { finalized } },
-		res
-	): Promise<void> => {
+	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized } }, res): Promise<void> => {
 		const paramFinalized = finalized !== 'false';
 
-		const hash = paramFinalized
-			? await this.api.rpc.chain.getFinalizedHead()
-			: undefined;
+		const hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
 
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.fetchBlockHeader(hash)
-		);
+		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
 	};
 
 	/**
@@ -247,14 +219,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: RequestHandler<
-		unknown,
-		unknown,
-		unknown,
-		IRangeQueryParam
-	> = async (
+	private getBlocks: RequestHandler<unknown, unknown, unknown, IRangeQueryParam> = async (
 		{ query: { range, eventDocs, extrinsicDocs } },
-		res
+		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 

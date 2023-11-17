@@ -33,88 +33,45 @@ import { blockHash5236177, mockAssetHubWestendApi } from '../test-helpers/mock';
 import { reserves } from '../test-helpers/mock/data/assetConversionEntries';
 import { PalletsAssetConversionService } from './PalletsAssetConversionService';
 
-const assetHubWestendApi = createApiWithAugmentations(
-	assetHubWestendMetadataRpcV9435
-);
+const assetHubWestendApi = createApiWithAugmentations(assetHubWestendMetadataRpcV9435);
 
-type StorageEntryFunction = (
-	arg1: [XcmV3MultiLocation, XcmV3MultiLocation]
-) => Observable<Codec>;
+type StorageEntryFunction = (arg1: [XcmV3MultiLocation, XcmV3MultiLocation]) => Observable<Codec>;
 
 function key(
 	multilocation: [XcmV3MultiLocation, XcmV3MultiLocation],
-	storageEntry: StorageEntryBase<'promise', StorageEntryFunction>
+	storageEntry: StorageEntryBase<'promise', StorageEntryFunction>,
 ): StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> {
 	const native = multilocation[0];
 	const asset = multilocation[1];
 	const id: [XcmV3MultiLocation, XcmV3MultiLocation] = [native, asset];
-	const key: StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> =
-		new StorageKey(assetHubWestendRegistryV9435, storageEntry.key(id));
+	const key: StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> = new StorageKey(
+		assetHubWestendRegistryV9435,
+		storageEntry.key(id),
+	);
 
 	return key.setMeta(storageEntry.creator.meta);
 }
 
-const poolId0 = key(
-	reserves[12],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId1 = key(
-	reserves[11],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId2 = key(
-	reserves[10],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId3 = key(
-	reserves[9],
-	assetHubWestendApi.query.assetConversion.pools
-);
+const poolId0 = key(reserves[12], assetHubWestendApi.query.assetConversion.pools);
+const poolId1 = key(reserves[11], assetHubWestendApi.query.assetConversion.pools);
+const poolId2 = key(reserves[10], assetHubWestendApi.query.assetConversion.pools);
+const poolId3 = key(reserves[9], assetHubWestendApi.query.assetConversion.pools);
 
-const poolId4 = key(
-	reserves[8],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId5 = key(
-	reserves[7],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId6 = key(
-	reserves[6],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId7 = key(
-	reserves[5],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId8 = key(
-	reserves[4],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId9 = key(
-	reserves[3],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId10 = key(
-	reserves[2],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId11 = key(
-	reserves[1],
-	assetHubWestendApi.query.assetConversion.pools
-);
-const poolId12 = key(
-	reserves[0],
-	assetHubWestendApi.query.assetConversion.pools
-);
+const poolId4 = key(reserves[8], assetHubWestendApi.query.assetConversion.pools);
+const poolId5 = key(reserves[7], assetHubWestendApi.query.assetConversion.pools);
+const poolId6 = key(reserves[6], assetHubWestendApi.query.assetConversion.pools);
+const poolId7 = key(reserves[5], assetHubWestendApi.query.assetConversion.pools);
+const poolId8 = key(reserves[4], assetHubWestendApi.query.assetConversion.pools);
+const poolId9 = key(reserves[3], assetHubWestendApi.query.assetConversion.pools);
+const poolId10 = key(reserves[2], assetHubWestendApi.query.assetConversion.pools);
+const poolId11 = key(reserves[1], assetHubWestendApi.query.assetConversion.pools);
+const poolId12 = key(reserves[0], assetHubWestendApi.query.assetConversion.pools);
 
 const poolEntries = () =>
 	Promise.resolve().then(() => {
 		const options: Option<Codec>[] = [];
 		for (let i = 13; i > 0; i--) {
-			options.push(
-				assetHubWestendRegistryV9435.createType('Option<u32>', i - 1)
-			);
+			options.push(assetHubWestendRegistryV9435.createType('Option<u32>', i - 1));
 		}
 		const entries = [
 			[poolId12, { lpToken: options[0] }],
@@ -136,9 +93,7 @@ const poolEntries = () =>
 	});
 
 const nextPoolAssetIdAt = () =>
-	Promise.resolve().then(() =>
-		assetHubWestendRegistryV9435.createType('Option<u32>', '12')
-	);
+	Promise.resolve().then(() => assetHubWestendRegistryV9435.createType('Option<u32>', '12'));
 
 const mockHistoricApi = {
 	registry: assetHubWestendRegistryV9435,
@@ -157,9 +112,7 @@ const mockApi = {
 	},
 } as unknown as ApiPromise;
 
-const palletsAssetConversionService = new PalletsAssetConversionService(
-	mockApi
-);
+const palletsAssetConversionService = new PalletsAssetConversionService(mockApi);
 
 describe('PalletsAssetConversionService', () => {
 	describe('PalletsAssetConversionService.fetchNextAvailableId', () => {
@@ -172,9 +125,7 @@ describe('PalletsAssetConversionService', () => {
 				poolId: '12',
 			};
 
-			const response = await palletsAssetConversionService.fetchNextAvailableId(
-				blockHash5236177
-			);
+			const response = await palletsAssetConversionService.fetchNextAvailableId(blockHash5236177);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
@@ -518,13 +469,9 @@ describe('PalletsAssetConversionService', () => {
 				],
 			};
 
-			const response = await palletsAssetConversionService.fetchLiquidityPools(
-				blockHash5236177
-			);
+			const response = await palletsAssetConversionService.fetchLiquidityPools(blockHash5236177);
 
-			expect(sanitizeNumbers(response.pools)).toStrictEqual(
-				expectedResponse.pools
-			);
+			expect(sanitizeNumbers(response.pools)).toStrictEqual(expectedResponse.pools);
 		});
 	});
 });

@@ -36,13 +36,8 @@ export const getPalletEvents = {
 					},
 				]),
 				index: polkadotRegistryV9300.createType('u8', 0),
-				docs: polkadotRegistryV9300.createType('Vec<Text>', [
-					' A motion has been proposed by a public account.',
-				]),
-				args: polkadotRegistryV9300.createType('Vec<Text>', [
-					'PropIndex',
-					'Balance',
-				]),
+				docs: polkadotRegistryV9300.createType('Vec<Text>', [' A motion has been proposed by a public account.']),
+				args: polkadotRegistryV9300.createType('Vec<Text>', ['PropIndex', 'Balance']),
 			},
 		},
 		Tabled: {
@@ -72,11 +67,7 @@ export const getPalletEvents = {
 				docs: polkadotRegistryV9300.createType('Vec<Text>', [
 					' A public proposal has been tabled for referendum vote.',
 				]),
-				args: polkadotRegistryV9300.createType('Vec<Type>', [
-					'PropIndex',
-					'Balance',
-					'Vec<AccountId>',
-				]),
+				args: polkadotRegistryV9300.createType('Vec<Type>', ['PropIndex', 'Balance', 'Vec<AccountId>']),
 			},
 		},
 		ExternalTabled: {
@@ -84,9 +75,7 @@ export const getPalletEvents = {
 				name: 'ExternalTabled',
 				fields: polkadotRegistryV9300.createType('Vec<Si1Field>', []),
 				index: polkadotRegistryV9300.createType('u8', 2),
-				docs: polkadotRegistryV9300.createType('Vec<Text>', [
-					' An external proposal has been tabled.',
-				]),
+				docs: polkadotRegistryV9300.createType('Vec<Text>', [' An external proposal has been tabled.']),
 				args: polkadotRegistryV9300.createType('Vec<Text>', []),
 			},
 		},

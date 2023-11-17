@@ -15,13 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import express from 'express';
-import {
-	Application,
-	ErrorRequestHandler,
-	Request,
-	RequestHandler,
-	Response,
-} from 'express';
+import { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
 import { Server } from 'http';
 
 import packageJson from '../package.json';
@@ -45,13 +39,7 @@ export default class App {
 	/**
 	 * @param appConfig configuration for app.
 	 */
-	constructor({
-		controllers,
-		preMiddleware,
-		postMiddleware,
-		host,
-		port,
-	}: IAppConfiguration) {
+	constructor({ controllers, preMiddleware, postMiddleware, host, port }: IAppConfiguration) {
 		this.app = express();
 		this.port = port;
 		this.host = host;
@@ -78,9 +66,7 @@ export default class App {
 	 *
 	 * @param controllers array of Controllers
 	 */
-	private initControllers(
-		controllers: AbstractController<AbstractService>[]
-	): void {
+	private initControllers(controllers: AbstractController<AbstractService>[]): void {
 		for (const c of controllers) {
 			this.app.use('/', c.router);
 		}
@@ -101,7 +87,7 @@ export default class App {
 		return this.app.listen(this.port, this.host, () => {
 			console.log(`Listening on http://${this.host}:${this.port}/`);
 			console.log(
-				`Check the root endpoint (http://${this.host}:${this.port}/) to see the available endpoints for the current node`
+				`Check the root endpoint (http://${this.host}:${this.port}/) to see the available endpoints for the current node`,
 			);
 		});
 	}
@@ -118,7 +104,7 @@ export default class App {
 				version: packageJson.version,
 				listen: `${this.host}:${this.port}`,
 				routes: this.getRoutes(),
-			})
+			}),
 		);
 	}
 
@@ -144,7 +130,7 @@ export default class App {
 
 				return acc;
 			},
-			[] as { path: string; method: string }[]
+			[] as { path: string; method: string }[],
 		);
 	}
 

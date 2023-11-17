@@ -65,11 +65,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/accounts/:address/staking-info',
-			new AccountsStakingInfoService(api)
-		);
+		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
 		this.initRoutes();
 	}
 
@@ -87,13 +83,10 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	 */
 	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
 		{ params: { address }, query: { at } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		AccountsStakingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountStakingInfo(hash, address)
-		);
+		AccountsStakingInfoController.sanitizedSend(res, await this.service.fetchAccountStakingInfo(hash, address));
 	};
 }

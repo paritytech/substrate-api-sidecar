@@ -23,33 +23,23 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import {
-	polkadotRegistry,
-	polkadotRegistryV9370,
-} from '../../test-helpers/registries';
-import {
-	blockHash789629,
-	defaultMockApi,
-	testAddress,
-} from '../test-helpers/mock';
+import { polkadotRegistry, polkadotRegistryV9370 } from '../../test-helpers/registries';
+import { blockHash789629, defaultMockApi, testAddress } from '../test-helpers/mock';
 import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
 import accountsBalanceInfoFeeFrozen from '../test-helpers/responses/accounts/balanceInfoFeeFrozen.json';
 import { AccountsBalanceInfoService } from './AccountsBalanceInfoService';
 
 const locksAt = (_address: string) =>
 	Promise.resolve().then(() =>
-		polkadotRegistry.createType(
-			'Vec<BalanceLock>',
-			'0x047374616b696e672000e8764817000000000000000000000002'
-		)
+		polkadotRegistry.createType('Vec<BalanceLock>', '0x047374616b696e672000e8764817000000000000000000000002'),
 	);
 
 const accountAt = (_address: string) =>
 	Promise.resolve().then(() =>
 		polkadotRegistry.createType(
 			'AccountInfo',
-			'0x0600000003dbb656ab7400000000000000000000000000000000000000000000000000000000e8764817000000000000000000000000e87648170000000000000000000000'
-		)
+			'0x0600000003dbb656ab7400000000000000000000000000000000000000000000000000000000e8764817000000000000000000000000e87648170000000000000000000000',
+		),
 	);
 
 const accountDataAt = (_address: String) =>
@@ -65,10 +55,7 @@ const accountDataAt = (_address: String) =>
 		};
 	});
 
-const freeBalanceAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistry.createType('Balance', 123456789)
-	);
+const freeBalanceAt = () => Promise.resolve().then(() => polkadotRegistry.createType('Balance', 123456789));
 
 const mockHistoricApi = {
 	registry: polkadotRegistry,
@@ -103,9 +90,7 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tempHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tempAccountsBalanceInfoService = new AccountsBalanceInfoService(
-				tempMockApi
-			);
+			const tempAccountsBalanceInfoService = new AccountsBalanceInfoService(tempMockApi);
 
 			expect(
 				sanitizeNumbers(
@@ -114,9 +99,9 @@ describe('AccountsBalanceInfoService', () => {
 						mockHistoricApi,
 						testAddress,
 						'DOT',
-						false
-					)
-				)
+						false,
+					),
+				),
 			).toStrictEqual(accountsBalanceInfo789629);
 		});
 
@@ -126,8 +111,7 @@ describe('AccountsBalanceInfoService', () => {
 				query: {
 					balances: {
 						freeBalance: undefined,
-						reservedBalance: async () =>
-							polkadotRegistry.createType('Balance', 1),
+						reservedBalance: async () => polkadotRegistry.createType('Balance', 1),
 						locks: locksAt,
 					},
 					system: {
@@ -142,9 +126,7 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tmpHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tmpAccountsBalanceInfoService = new AccountsBalanceInfoService(
-				tmpMockApi
-			);
+			const tmpAccountsBalanceInfoService = new AccountsBalanceInfoService(tmpMockApi);
 
 			expect(
 				sanitizeNumbers(
@@ -153,9 +135,9 @@ describe('AccountsBalanceInfoService', () => {
 						tmpHistoricApi,
 						testAddress,
 						'DOT',
-						false
-					)
-				)
+						false,
+					),
+				),
 			).toStrictEqual(accountsBalanceInfoFeeFrozen);
 		});
 
@@ -165,7 +147,7 @@ describe('AccountsBalanceInfoService', () => {
 				mockHistoricApi,
 				testAddress,
 				'DOT',
-				false
+				false,
 			);
 
 			const expectedResponse = {
@@ -202,9 +184,7 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tokenHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tokenAccountsBalanceInfoService = new AccountsBalanceInfoService(
-				tokenMockApi
-			);
+			const tokenAccountsBalanceInfoService = new AccountsBalanceInfoService(tokenMockApi);
 
 			let tempQueryTokens: any,
 				tempQueryBalance: any,
@@ -218,11 +198,7 @@ describe('AccountsBalanceInfoService', () => {
 				tempQueryBalance = tokenHistoricApi.query.balances;
 
 				const tokensAccountAt = async (address: Address): Promise<any> =>
-					(
-						(await tokenHistoricApi.query.system.account(
-							address
-						)) as unknown as AccountInfo
-					).data;
+					((await tokenHistoricApi.query.system.account(address)) as unknown as AccountInfo).data;
 				// Wrap our functions in a jest mock so we can collect data on how they are called
 				mockTokensLocksAt = jest.fn(tokenHistoricApi.query.balances.locks);
 				mockTokenAccountAt = jest.fn(tokensAccountAt);
@@ -232,8 +208,7 @@ describe('AccountsBalanceInfoService', () => {
 				} as any;
 
 				mockBalancesLocksAt = jest.fn(tokenHistoricApi.query.balances.locks);
-				(tokenHistoricApi.query.balances.locks as unknown) =
-					mockBalancesLocksAt;
+				(tokenHistoricApi.query.balances.locks as unknown) = mockBalancesLocksAt;
 			});
 
 			afterEach(() => {
@@ -262,10 +237,10 @@ describe('AccountsBalanceInfoService', () => {
 								tokenHistoricApi,
 								testAddress,
 								'fOoToKeN',
-								false
-							)
+								false,
+							),
 						) as any
-					).tokenSymbol
+					).tokenSymbol,
 				).toEqual('fOoToKeN');
 
 				expect(mockTokensLocksAt).toBeCalled();
@@ -282,10 +257,10 @@ describe('AccountsBalanceInfoService', () => {
 								tokenHistoricApi,
 								testAddress,
 								'doT',
-								false
-							)
+								false,
+							),
 						) as any
-					).tokenSymbol
+					).tokenSymbol,
 				).toEqual('doT');
 
 				expect(mockTokensLocksAt).not.toBeCalled();
@@ -299,43 +274,28 @@ describe('AccountsBalanceInfoService', () => {
 		const balance = polkadotRegistry.createType('Balance', 12345);
 
 		it('Should correctly denominate a balance when balance.length <= decimal', () => {
-			const ltValue = accountsBalanceInfoService['applyDenominationBalance'](
-				balance,
-				7
-			);
-			const etValue = accountsBalanceInfoService['applyDenominationBalance'](
-				balance,
-				5
-			);
+			const ltValue = accountsBalanceInfoService['applyDenominationBalance'](balance, 7);
+			const etValue = accountsBalanceInfoService['applyDenominationBalance'](balance, 5);
 
 			expect(ltValue).toBe('.0012345');
 			expect(etValue).toBe('.12345');
 		});
 
 		it('Should correctly denominate a balance when balance.length > decimal', () => {
-			const value = accountsBalanceInfoService['applyDenominationBalance'](
-				balance,
-				3
-			);
+			const value = accountsBalanceInfoService['applyDenominationBalance'](balance, 3);
 
 			expect(value).toBe('12.345');
 		});
 
 		it('Should correctly denominate a balance when balance is equal to zero', () => {
 			const zeroBalance = polkadotRegistry.createType('Balance', 0);
-			const value = accountsBalanceInfoService['applyDenominationBalance'](
-				zeroBalance,
-				2
-			);
+			const value = accountsBalanceInfoService['applyDenominationBalance'](zeroBalance, 2);
 
 			expect(value).toBe('0');
 		});
 
 		it('Should correctly denominate a balance when the decimal value is zero', () => {
-			const value = accountsBalanceInfoService['applyDenominationBalance'](
-				balance,
-				0
-			);
+			const value = accountsBalanceInfoService['applyDenominationBalance'](balance, 0);
 
 			expect(value).toBe('12345');
 		});
@@ -348,26 +308,16 @@ describe('AccountsBalanceInfoService', () => {
 				amount: 12345,
 				reasons: 'All',
 			});
-			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', [
-				balanceLock,
-			]);
-			const value = accountsBalanceInfoService['applyDenominationLocks'](
-				vecLocks,
-				3
-			);
-			const expectedValue = [
-				{ amount: '12.345', id: '0x7374616b696e6720', reasons: 'All' },
-			];
+			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', [balanceLock]);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](vecLocks, 3);
+			const expectedValue = [{ amount: '12.345', id: '0x7374616b696e6720', reasons: 'All' }];
 
 			expect(sanitizeNumbers(value)).toStrictEqual(expectedValue);
 		});
 
 		it('Should handle an empty Vec correctly', () => {
 			const vecLocks = polkadotRegistry.createType('Vec<BalanceLock>', []);
-			const value = accountsBalanceInfoService['applyDenominationLocks'](
-				vecLocks,
-				3
-			);
+			const value = accountsBalanceInfoService['applyDenominationLocks'](vecLocks, 3);
 
 			expect(sanitizeNumbers(value)).toStrictEqual([]);
 		});

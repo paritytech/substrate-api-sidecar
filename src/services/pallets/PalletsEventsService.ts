@@ -37,16 +37,12 @@ interface IFetchEventItemArgs extends IFetchPalletArgs {
 export class PalletsEventsService extends AbstractPalletsService {
 	async fetchEventItem(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, eventItemId, metadata }: IFetchEventItemArgs
+		{ hash, palletId, eventItemId, metadata }: IFetchEventItemArgs,
 	): Promise<IPalletEventsItem> {
 		const metadataFieldType = 'events';
 		const palletMetadata = historicApi.registry.metadata;
 
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			palletMetadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
 		// Even if `eventItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the event item not existing are that `findPalletFieldItemMeta` will throw.
@@ -54,7 +50,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 			historicApi,
 			palletMeta,
 			eventItemId,
-			metadataFieldType
+			metadataFieldType,
 		) as EventMetadataLatest;
 
 		let palletEventMetadata: EventMetadataLatest | undefined;
@@ -78,15 +74,11 @@ export class PalletsEventsService extends AbstractPalletsService {
 
 	async fetchEvents(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletEvents> {
 		const metadataFieldType = 'events';
 		const metadata = historicApi.registry.metadata;
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			metadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 		const parsedPalletName = stringCamelCase(palletMeta.name.toString());
@@ -96,9 +88,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 		if ((palletMeta.events as unknown as EventMetadataLatest).isEmpty) {
 			items = [];
 		} else if (onlyIds) {
-			items = Object.entries(events).map(
-				(eventItem) => eventItem[0] as unknown as Text
-			);
+			items = Object.entries(events).map((eventItem) => eventItem[0] as unknown as Text);
 		} else {
 			items = Object.entries(events).map((eventItem) => eventItem[1].meta);
 		}
