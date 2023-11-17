@@ -23,7 +23,7 @@ export interface ITxLegacyError extends IBasicLegacyError {
 	code: number;
 	data?: string; // deprecated
 	transaction?: string;
-	cause: string | unknown;
+	cause: unknown;
 	stack: string;
 	at?: string;
 }

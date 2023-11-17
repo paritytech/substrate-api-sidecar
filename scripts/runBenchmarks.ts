@@ -211,4 +211,6 @@ process.on('SIGHUP', function () {
 	process.exit();
 });
 
-main(args).finally(() => process.exit());
+main(args)
+	.catch((err) => console.error(err))
+	.finally(() => process.exit());
