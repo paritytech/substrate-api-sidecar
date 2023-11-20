@@ -13,6 +13,7 @@
     },
     "properties": {
         "ss58Format": "2",
+        "isEthereum": false,
         "tokenDecimals": [
             "12"
         ],

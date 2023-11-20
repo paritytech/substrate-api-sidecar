@@ -55,7 +55,7 @@ const main = async (args: IE2EParseArgs) => {
 		const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, procs);
 		const kusamaTest = await launchChainTest('kusama', latestE2eConfig, procs);
 		const westend = await launchChainTest('westend', latestE2eConfig, procs);
-		const assetHubPolkadotTest = await launchChainTest('asset-hub-polkadot', latestE2eConfig, procs);
+		const assetHubPolkadotTest = await launchChainTest('polkadot-asset-hub', latestE2eConfig, procs);
 
 		checkTests(polkadotTest, kusamaTest, westend, assetHubPolkadotTest);
 	}
