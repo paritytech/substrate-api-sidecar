@@ -20,11 +20,7 @@ import { StorageKey } from '@polkadot/types';
 import { AssetId, BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
-import {
-	IAccountPoolAssetApproval,
-	IAccountPoolAssetsBalances,
-	IPoolAssetBalance,
-} from '../../types/responses';
+import { IAccountPoolAssetApproval, IAccountPoolAssetsBalances, IPoolAssetBalance } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -68,7 +64,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 	async fetchPoolAssetBalances(
 		hash: BlockHash,
 		address: string,
-		assets: number[]
+		assets: number[],
 	): Promise<IAccountPoolAssetsBalances> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
@@ -118,7 +114,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 		hash: BlockHash,
 		address: string,
 		assetId: number,
-		delegate: string
+		delegate: string,
 	): Promise<IAccountPoolAssetApproval> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
@@ -162,14 +158,11 @@ export class AccountsPoolAssetsService extends AbstractService {
 	async queryPoolAssets(
 		historicApi: ApiDecoration<'promise'>,
 		assets: AssetId[] | number[],
-		address: string
+		address: string,
 	): Promise<IPoolAssetBalance[]> {
 		return Promise.all(
 			assets.map(async (assetId: AssetId | number) => {
-				const assetBalance = await historicApi.query.poolAssets.account(
-					assetId,
-					address
-				);
+				const assetBalance = await historicApi.query.poolAssets.account(assetId, address);
 
 				/**
 				 * The following checks for three different cases:
@@ -197,11 +190,8 @@ export class AccountsPoolAssetsService extends AbstractService {
 
 				// 2. `query.assets.account()` return `PalletAssetsAssetBalance` which exludes `reasons` but has
 				// `sufficient` as a key.
-				if (
-					(assetBalance as unknown as PalletPoolAssetsAssetBalance).sufficient
-				) {
-					const balanceProps =
-						assetBalance as unknown as PalletPoolAssetsAssetBalance;
+				if ((assetBalance as unknown as PalletPoolAssetsAssetBalance).sufficient) {
+					const balanceProps = assetBalance as unknown as PalletPoolAssetsAssetBalance;
 
 					return {
 						assetId,
@@ -214,8 +204,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
 				// of `sufficient`.
 				if (assetBalance['isSufficient'] as bool) {
-					const balanceProps =
-						assetBalance as unknown as LegacyPalletPoolAssetsAssetBalance;
+					const balanceProps = assetBalance as unknown as LegacyPalletPoolAssetsAssetBalance;
 
 					return {
 						assetId,
@@ -237,7 +226,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 					isFrozen: historicApi.registry.createType('bool', false),
 					isSufficient: historicApi.registry.createType('bool', false),
 				};
-			})
+			}),
 		).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(address, err);
 		});
@@ -258,9 +247,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 	 */
 	private checkPoolAssetsError(historicApi: ApiDecoration<'promise'>): void {
 		if (!historicApi.query.poolAssets) {
-			throw new BadRequest(
-				`The runtime does not include the pool assets pallet at this block.`
-			);
+			throw new BadRequest(`The runtime does not include the pool assets pallet at this block.`);
 		}
 	}
 }

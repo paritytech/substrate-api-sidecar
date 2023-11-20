@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
+
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
@@ -85,7 +87,7 @@ export class BlocksService extends AbstractService {
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
 		private blockStore: LRU<string, IBlock>,
-		private hasQueryFeeApi: QueryFeeDetailsCache
+		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
 		super(api);
 	}
@@ -99,13 +101,7 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
-		{
-			eventDocs,
-			extrinsicDocs,
-			checkFinalized,
-			queryFinalizedHead,
-			omitFinalizedTag,
-		}: FetchBlockOptions
+		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag }: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -116,28 +112,19 @@ export class BlocksService extends AbstractService {
 			return isBlockCached;
 		}
 
-		const [
-			{ block },
-			{ specName, specVersion },
-			validators,
-			events,
-			finalizedHead,
-		] = await Promise.all([
+		const [{ block }, { specName, specVersion }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			api.rpc.state.getRuntimeVersion(hash),
 			this.fetchValidators(historicApi),
 			this.fetchEvents(historicApi),
-			queryFinalizedHead
-				? api.rpc.chain.getFinalizedHead()
-				: Promise.resolve(hash),
+			queryFinalizedHead ? api.rpc.chain.getFinalizedHead() : Promise.resolve(hash),
 		]);
 
 		if (block === undefined) {
 			throw new InternalServerError('Error querying for block');
 		}
 
-		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
-			block.header;
+		const { parentHash, number, stateRoot, extrinsicsRoot, digest } = block.header;
 
 		const authorId = extractAuthor(digest, validators);
 
@@ -145,31 +132,20 @@ export class BlocksService extends AbstractService {
 			return { type, index, value };
 		});
 
-		const nonSanitizedExtrinsics = this.extractExtrinsics(
-			block,
-			events,
-			historicApi.registry,
-			extrinsicDocs
-		);
+		const nonSanitizedExtrinsics = this.extractExtrinsics(block, events, historicApi.registry, extrinsicDocs);
 
 		const { extrinsics, onInitialize, onFinalize } = this.sanitizeEvents(
 			events,
 			nonSanitizedExtrinsics,
 			hash,
-			eventDocs
+			eventDocs,
 		);
 
 		let finalized = undefined;
 
 		if (!omitFinalizedTag) {
 			// Check if the requested block is finalized
-			finalized = await this.isFinalizedBlock(
-				api,
-				number,
-				hash,
-				finalizedHead,
-				checkFinalized
-			);
+			finalized = await this.isFinalizedBlock(api, number, hash, finalizedHead, checkFinalized);
 		}
 
 		// The genesis block is a special case with little information associated with it.
@@ -212,9 +188,7 @@ export class BlocksService extends AbstractService {
 
 			const xtEvents = extrinsics[idx].events;
 			const completedEvent = xtEvents.find(
-				({ method }) =>
-					isFrameMethod(method) &&
-					(method.method === Event.success || method.method === Event.failure)
+				({ method }) => isFrameMethod(method) && (method.method === Event.success || method.method === Event.failure),
 			);
 
 			if (!completedEvent) {
@@ -228,8 +202,7 @@ export class BlocksService extends AbstractService {
 			const completedData = completedEvent.data;
 			if (!completedData) {
 				extrinsics[idx].info = {
-					error:
-						'Success or failure event for extrinsic does not contain expected data',
+					error: 'Success or failure event for extrinsic does not contain expected data',
 				};
 
 				continue;
@@ -237,22 +210,16 @@ export class BlocksService extends AbstractService {
 
 			// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
 			// types as their final arg
-			const weightInfo = completedData[
-				completedData.length - 1
-			] as DispatchInfo;
+			const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
 			if (!weightInfo.weight) {
 				extrinsics[idx].info = {
-					error:
-						'Success or failure event for extrinsic does not specify weight',
+					error: 'Success or failure event for extrinsic does not specify weight',
 				};
 
 				continue;
 			}
 
-			if (
-				!api.rpc.payment?.queryInfo &&
-				!api.call.transactionPaymentApi?.queryInfo
-			) {
+			if (!api.rpc.payment?.queryInfo && !api.call.transactionPaymentApi?.queryInfo) {
 				extrinsics[idx].info = {
 					error: 'Rpc method payment::queryInfo is not available',
 				};
@@ -269,13 +236,10 @@ export class BlocksService extends AbstractService {
 				partialFee,
 				weight,
 			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
-			const versionedWeight = (weight as Weight).refTime
-				? (weight as Weight).refTime.unwrap()
-				: (weight as WeightV1);
+			const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
 
 			const transactionPaidFeeEvent = xtEvents.find(
-				({ method }) =>
-					isFrameMethod(method) && method.method === Event.transactionPaidFee
+				({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
 			);
 
 			let finalPartialFee = partialFee.toString(),
@@ -289,15 +253,13 @@ export class BlocksService extends AbstractService {
 				 * error automatically when we try to call it. We cache the runtimes it will error so we
 				 * don't try to call it again given a specVersion.
 				 */
-				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(
-					specVersion.toNumber()
-				);
+				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(specVersion.toNumber());
 				if (doesQueryFeeDetailsExist === 'available') {
 					finalPartialFee = await this.fetchQueryFeeDetails(
 						block.extrinsics[idx],
 						previousBlockHash,
 						weightInfo.weight,
-						versionedWeight.toString()
+						versionedWeight.toString(),
 					);
 
 					dispatchFeeType = 'postDispatch';
@@ -307,15 +269,13 @@ export class BlocksService extends AbstractService {
 							block.extrinsics[idx],
 							previousBlockHash,
 							weightInfo.weight,
-							versionedWeight.toString()
+							versionedWeight.toString(),
 						);
 						dispatchFeeType = 'postDispatch';
 						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
 					} catch {
 						this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
-						console.warn(
-							'The error above is automatically emitted from polkadot-js, and can be ignored.'
-						);
+						console.warn('The error above is automatically emitted from polkadot-js, and can be ignored.');
 					}
 				}
 			}
@@ -360,7 +320,7 @@ export class BlocksService extends AbstractService {
 		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
-		estWeight: string
+		estWeight: string,
 	): Promise<string> {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
@@ -368,24 +328,14 @@ export class BlocksService extends AbstractService {
 		let inclusionFee;
 		if (apiAt.call.transactionPaymentApi.queryFeeDetails) {
 			const u8a = ext.toU8a();
-			const result = await apiAt.call.transactionPaymentApi.queryFeeDetails(
-				u8a,
-				u8a.length
-			);
+			const result = await apiAt.call.transactionPaymentApi.queryFeeDetails(u8a, u8a.length);
 			inclusionFee = result.inclusionFee;
 		} else {
-			const result = await api.rpc.payment.queryFeeDetails(
-				ext.toHex(),
-				previousBlockHash
-			);
+			const result = await api.rpc.payment.queryFeeDetails(ext.toHex(), previousBlockHash);
 			inclusionFee = result.inclusionFee;
 		}
 
-		const finalPartialFee = this.calcPartialFee(
-			extrinsicSuccessWeight,
-			estWeight,
-			inclusionFee
-		);
+		const finalPartialFee = this.calcPartialFee(extrinsicSuccessWeight, estWeight, inclusionFee);
 
 		return finalPartialFee;
 	}
@@ -398,7 +348,7 @@ export class BlocksService extends AbstractService {
 	 */
 	private async fetchQueryInfo(
 		ext: GenericExtrinsic,
-		previousBlockHash: BlockHash
+		previousBlockHash: BlockHash,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
 		const apiAt = await api.at(previousBlockHash);
@@ -417,15 +367,11 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param blockNumber The blockId being queried
 	 */
-	private async fetchPreviousBlockHash(
-		blockNumber: Compact<BlockNumber>
-	): Promise<BlockHash> {
+	private async fetchPreviousBlockHash(blockNumber: Compact<BlockNumber>): Promise<BlockHash> {
 		const { api } = this;
 
 		const num = blockNumber.toBn();
-		return num.isZero()
-			? await api.rpc.chain.getBlockHash(num)
-			: await api.rpc.chain.getBlockHash(num.sub(new BN(1)));
+		return num.isZero() ? await api.rpc.chain.getBlockHash(num) : await api.rpc.chain.getBlockHash(num.sub(new BN(1)));
 	}
 
 	/**
@@ -439,7 +385,7 @@ export class BlocksService extends AbstractService {
 	private calcPartialFee(
 		extrinsicSuccessWeight: Weight,
 		estWeight: string,
-		inclusionFee: Option<InclusionFee>
+		inclusionFee: Option<InclusionFee>,
 	): string {
 		if (inclusionFee.isSome) {
 			const { baseFee, lenFee, adjustedWeightFee } = inclusionFee.unwrap();
@@ -449,7 +395,7 @@ export class BlocksService extends AbstractService {
 				lenFee.toString(),
 				adjustedWeightFee.toString(),
 				estWeight.toString(),
-				extrinsicSuccessWeight.toString()
+				extrinsicSuccessWeight.toString(),
 			);
 		} else {
 			// When the inclusion fee isNone we are dealing with a unsigned extrinsic.
@@ -465,9 +411,7 @@ export class BlocksService extends AbstractService {
 	async fetchBlockHeader(hash?: BlockHash): Promise<Header> {
 		const { api } = this;
 
-		const header = hash
-			? await api.rpc.chain.getHeader(hash)
-			: await api.rpc.chain.getHeader();
+		const header = hash ? await api.rpc.chain.getHeader(hash) : await api.rpc.chain.getHeader();
 
 		return header;
 	}
@@ -477,10 +421,7 @@ export class BlocksService extends AbstractService {
 	 * @param block Takes in a block which is the result of `BlocksService.fetchBlock`
 	 * @param extrinsicIndex Parameter passed into the request
 	 */
-	fetchExtrinsicByIndex(
-		block: IBlock,
-		extrinsicIndex: number
-	): IExtrinsicIndex {
+	fetchExtrinsicByIndex(block: IBlock, extrinsicIndex: number): IExtrinsicIndex {
 		if (extrinsicIndex > block.extrinsics.length - 1) {
 			throw new BadRequest('Requested `extrinsicIndex` does not exist');
 		}
@@ -509,13 +450,12 @@ export class BlocksService extends AbstractService {
 		block: Block,
 		events: Vec<EventRecord> | string,
 		registry: Registry,
-		extrinsicDocs: boolean
+		extrinsicDocs: boolean,
 	): IExtrinsic[] {
 		const defaultSuccess = typeof events === 'string' ? events : false;
 
 		return block.extrinsics.map((extrinsic) => {
-			const { method, nonce, signature, signer, isSigned, tip, era } =
-				extrinsic;
+			const { method, nonce, signature, signer, isSigned, tip, era } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 			const call = registry.createType('Call', method);
 
@@ -536,9 +476,7 @@ export class BlocksService extends AbstractService {
 				// paysFee overrides to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
 				// we set to false if !isSigned because unsigned never pays a fee
 				paysFee: isSigned ? null : false,
-				docs: extrinsicDocs
-					? this.sanitizeDocs(extrinsic.meta.docs)
-					: undefined,
+				docs: extrinsicDocs ? this.sanitizeDocs(extrinsic.meta.docs) : undefined,
 			};
 		});
 	}
@@ -555,7 +493,7 @@ export class BlocksService extends AbstractService {
 		events: EventRecord[] | string,
 		extrinsics: IExtrinsic[],
 		hash: BlockHash,
-		eventDocs: boolean
+		eventDocs: boolean,
 	) {
 		const onInitialize = { events: [] as ISanitizedEvent[] };
 		const onFinalize = { events: [] as ISanitizedEvent[] };
@@ -578,25 +516,19 @@ export class BlocksService extends AbstractService {
 					const extrinsic = extrinsics[extrinsicIdx];
 
 					if (!extrinsic) {
-						throw new Error(
-							`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`
-						);
+						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`);
 					}
 
 					if (event.method === Event.success) {
 						extrinsic.success = true;
 					}
 
-					if (
-						event.method === Event.success ||
-						event.method === Event.failure
-					) {
+					if (event.method === Event.success || event.method === Event.failure) {
 						const sanitizedData = event.data.toJSON() as AnyJson[];
 
 						for (const data of sanitizedData) {
 							if (extrinsic.signature && isPaysFee(data)) {
-								extrinsic.paysFee =
-									data.paysFee === true || data.paysFee === 'Yes';
+								extrinsic.paysFee = data.paysFee === true || data.paysFee === 'Yes';
 
 								break;
 							}
@@ -624,9 +556,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param historicApi ApiDecoration to use for the query
 	 */
-	private async fetchEvents(
-		historicApi: ApiDecoration<'promise'>
-	): Promise<Vec<EventRecord> | string> {
+	private async fetchEvents(historicApi: ApiDecoration<'promise'>): Promise<Vec<EventRecord> | string> {
 		try {
 			return await historicApi.query.system.events();
 		} catch {
@@ -640,9 +570,7 @@ export class BlocksService extends AbstractService {
 	 *
 	 * @param historicApi ApiDecoration to use for the query
 	 */
-	private async fetchValidators(
-		historicApi: ApiDecoration<'promise'>
-	): Promise<Vec<AccountId32>> {
+	private async fetchValidators(historicApi: ApiDecoration<'promise'>): Promise<Vec<AccountId32>> {
 		return historicApi.query.session
 			? await historicApi.query.session.validators()
 			: ([] as unknown as Vec<AccountId32>);
@@ -654,10 +582,7 @@ export class BlocksService extends AbstractService {
 	 * @param argsArray array of `Codec` values
 	 * @param registry type registry of the block the call belongs to
 	 */
-	private parseArrayGenericCalls(
-		argsArray: Codec[],
-		registry: Registry
-	): (Codec | ISanitizedCall)[] {
+	private parseArrayGenericCalls(argsArray: Codec[], registry: Registry): (Codec | ISanitizedCall)[] {
 		return argsArray.map((argument) => {
 			if (argument instanceof GenericCall) {
 				return this.parseGenericCall(argument as GenericCall, registry);
@@ -675,10 +600,7 @@ export class BlocksService extends AbstractService {
 	 * @param genericCall `GenericCall`
 	 * @param registry type registry of the block the call belongs to
 	 */
-	private parseGenericCall(
-		genericCall: GenericCall,
-		registry: Registry
-	): ISanitizedCall {
+	private parseGenericCall(genericCall: GenericCall, registry: Registry): ISanitizedCall {
 		const newArgs = {};
 
 		// Pull out the struct of arguments to this call
@@ -693,16 +615,11 @@ export class BlocksService extends AbstractService {
 				if (Array.isArray(argument)) {
 					newArgs[paramName] = this.parseArrayGenericCalls(argument, registry);
 				} else if (argument instanceof GenericCall) {
-					newArgs[paramName] = this.parseGenericCall(
-						argument as GenericCall,
-						registry
-					);
+					newArgs[paramName] = this.parseGenericCall(argument as GenericCall, registry);
 				} else if (
 					argument &&
 					paramName === 'call' &&
-					['Bytes', 'WrapperKeepOpaque<Call>', 'WrapperOpaque<Call>'].includes(
-						argument?.toRawType()
-					)
+					['Bytes', 'WrapperKeepOpaque<Call>', 'WrapperOpaque<Call>'].includes(argument?.toRawType())
 				) {
 					// multiSig.asMulti.args.call is either an OpaqueCall (Vec<u8>),
 					// WrapperKeepOpaque<Call>, or WrapperOpaque<Call> that we
@@ -743,7 +660,7 @@ export class BlocksService extends AbstractService {
 		blockNumber: Compact<BlockNumber>,
 		queriedHash: BlockHash,
 		finalizedHead: BlockHash,
-		checkFinalized: boolean
+		checkFinalized: boolean,
 	): Promise<boolean> {
 		if (checkFinalized) {
 			// The blockId url param is a hash
@@ -805,8 +722,7 @@ export class BlocksService extends AbstractService {
 		const { api } = this;
 		const { block } = await api.rpc.chain.getBlock(hash);
 
-		const { parentHash, number, stateRoot, extrinsicsRoot, digest } =
-			block.header;
+		const { parentHash, number, stateRoot, extrinsicsRoot, digest } = block.header;
 		const { extrinsics } = block;
 
 		const logs = digest.logs.map(({ type, index, value }) => {

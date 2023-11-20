@@ -16,17 +16,12 @@
 
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import {
-	callsNextWithErr,
-	callsNextWithSentHeaders,
-	catchesErrWithResponse,
-} from './testTools';
+import { callsNextWithErr, callsNextWithSentHeaders, catchesErrWithResponse } from './testTools';
 import { txErrorMiddleware } from './txErrorMiddleware';
 
 const txErrorMiddlewareCallsNextWithErr = callsNextWithErr(txErrorMiddleware);
 
-const txErrorMiddlewareCatchesErrWithResponse =
-	catchesErrWithResponse(txErrorMiddleware);
+const txErrorMiddlewareCatchesErrWithResponse = catchesErrWithResponse(txErrorMiddleware);
 
 describe('txErrorMiddleware', () => {
 	// Necessary since the consolveOverride is called after the getter for the logger is launced
@@ -36,14 +31,11 @@ describe('txErrorMiddleware', () => {
 
 	txErrorMiddlewareCallsNextWithErr('Error', new Error('This is an error'));
 
-	txErrorMiddlewareCallsNextWithErr(
-		'BadRequest',
-		new BadRequest('bad request')
-	);
+	txErrorMiddlewareCallsNextWithErr('BadRequest', new BadRequest('bad request'));
 
 	txErrorMiddlewareCallsNextWithErr(
 		'InternalServerError (http-error which extends Error)',
-		new InternalServerError('internal error')
+		new InternalServerError('internal error'),
 	);
 
 	txErrorMiddlewareCallsNextWithErr('nonsense object', {
@@ -73,7 +65,7 @@ describe('txErrorMiddleware', () => {
 			data: 'some data!',
 			cause: 'a cause!',
 			error: 'an error!',
-		}
+		},
 	);
 
 	txErrorMiddlewareCatchesErrWithResponse(
@@ -88,7 +80,7 @@ describe('txErrorMiddleware', () => {
 			code: 500,
 			cause: 'a cause!',
 			error: 'an error!',
-		}
+		},
 	);
 
 	callsNextWithSentHeaders(txErrorMiddleware, {

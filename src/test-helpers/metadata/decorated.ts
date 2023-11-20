@@ -23,15 +23,9 @@ import { kusamaMetadata, polkadotMetadata } from './metadata';
 /**
  * Decorated metadata of the kusamaRegistry (v2008).
  */
-export const decoratedKusamaMetadata = expandMetadata(
-	kusamaRegistry,
-	kusamaMetadata
-);
+export const decoratedKusamaMetadata = expandMetadata(kusamaRegistry, kusamaMetadata);
 
 /**
  * Decorated metadata of the polkadotRegistry (v16).
  */
-export const decoratedPolkadotMetadata = expandMetadata(
-	polkadotRegistry,
-	polkadotMetadata
-);
+export const decoratedPolkadotMetadata = expandMetadata(polkadotRegistry, polkadotMetadata);

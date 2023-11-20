@@ -31,19 +31,15 @@ const constructCodecData = (data: string[]) => {
 		data.map((val) =>
 			val.startsWith('0x')
 				? polkadotRegistry.createType('AccountId', val)
-				: polkadotRegistry.createType('Balance', val)
-		)
+				: polkadotRegistry.createType('Balance', val),
+		),
 	);
 };
 
 /**
  *  Construct events for testing.
  */
-export const constructEvent = (
-	pallet: string,
-	method: string,
-	data: string[]
-): ISanitizedEvent => {
+export const constructEvent = (pallet: string, method: string, data: string[]): ISanitizedEvent => {
 	return {
 		method: {
 			pallet,
@@ -53,13 +49,9 @@ export const constructEvent = (
 	};
 };
 
-export const withdrawEvent = [
-	constructEvent('balances', 'Withdraw', ['0x', '2490128143']),
-];
+export const withdrawEvent = [constructEvent('balances', 'Withdraw', ['0x', '2490128143'])];
 
-export const withdrawEventForTip = [
-	constructEvent('balances', 'Withdraw', ['0x', '1681144907847007']),
-];
+export const withdrawEventForTip = [constructEvent('balances', 'Withdraw', ['0x', '1681144907847007'])];
 
 export const treasuryEvent = [
 	// Set the fee inside of the data for withdraw 1 decimal larger than expected.

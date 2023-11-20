@@ -125,12 +125,10 @@ export class Trace {
 		/**
 		 * Type registry corresponding to the exact runtime the traces are from.
 		 */
-		private registry: Registry
+		private registry: Registry,
 	) {
 		if (!traceBlock.spans.length) {
-			throw new InternalServerError(
-				'No spans found. This runtime is likely not supported with tracing.'
-			);
+			throw new InternalServerError('No spans found. This runtime is likely not supported with tracing.');
 		}
 
 		this.keyNames = Trace.getKeyNames(api);
@@ -144,25 +142,28 @@ export class Trace {
 	 * @param api ApiPromise
 	 */
 	private static getKeyNames(api: ApiPromise): Record<string, KeyInfo> {
-		const moduleKeys = Object.keys(api.query).reduce((acc, mod) => {
-			Object.keys(api.query[mod]).forEach((item) => {
-				const queryObj = api.query[mod][item];
-				let key;
-				try {
-					// `slice(2)` is to slice off '0x' prefix
-					key = queryObj.key().slice(2);
-				} catch {
-					key = queryObj.keyPrefix().slice(2);
-				}
+		const moduleKeys = Object.keys(api.query).reduce(
+			(acc, mod) => {
+				Object.keys(api.query[mod]).forEach((item) => {
+					const queryObj = api.query[mod][item];
+					let key;
+					try {
+						// `slice(2)` is to slice off '0x' prefix
+						key = queryObj.key().slice(2);
+					} catch {
+						key = queryObj.keyPrefix().slice(2);
+					}
 
-				acc[key.toString()] = {
-					module: mod,
-					item,
-				};
-			});
+					acc[key.toString()] = {
+						module: mod,
+						item,
+					};
+				});
 
-			return acc;
-		}, {} as Record<string, KeyInfo>);
+				return acc;
+			},
+			{} as Record<string, KeyInfo>,
+		);
 
 		return { ...moduleKeys, ...WELL_KNOWN_KEYS };
 	}
@@ -178,22 +179,25 @@ export class Trace {
 	 */
 	private static extractExtrinsicIndex(
 		spanIds: number[],
-		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId
+		extrinsicIndexBySpanId: ExtrinsicIndexBySpanId,
 	): BN | undefined {
 		// There are typically multiple reads of extrinsic index when applying an extrinsic,
 		// so we check that all those reads are the same number.
-		return spanIds.reduce((uniqExtIdx, id) => {
-			const extIdxToCheck = extrinsicIndexBySpanId.get(id);
-			if (uniqExtIdx === undefined && extIdxToCheck) {
-				uniqExtIdx = extIdxToCheck;
-			} else if (extIdxToCheck && !uniqExtIdx?.eq(extIdxToCheck)) {
-				// Since we assume the `spanIds` are for spans from an apply extrinsic action group,
-				// we assume there is always an `:extrinsic_index` event
-				throw new InternalServerError('Expected at least one extrinsic index');
-			}
+		return spanIds.reduce(
+			(uniqExtIdx, id) => {
+				const extIdxToCheck = extrinsicIndexBySpanId.get(id);
+				if (uniqExtIdx === undefined && extIdxToCheck) {
+					uniqExtIdx = extIdxToCheck;
+				} else if (extIdxToCheck && !uniqExtIdx?.eq(extIdxToCheck)) {
+					// Since we assume the `spanIds` are for spans from an apply extrinsic action group,
+					// we assume there is always an `:extrinsic_index` event
+					throw new InternalServerError('Expected at least one extrinsic index');
+				}
 
-			return uniqExtIdx;
-		}, undefined as BN | undefined);
+				return uniqExtIdx;
+			},
+			undefined as BN | undefined,
+		);
 	}
 
 	/**
@@ -247,14 +251,9 @@ export class Trace {
 		for (const span of spans) {
 			const spanWithChildren = { ...span, children: [] };
 
-			if (
-				span.name === SPANS.executeBlock.name &&
-				span.target === SPANS.executeBlock.target
-			) {
+			if (span.name === SPANS.executeBlock.name && span.target === SPANS.executeBlock.target) {
 				if (executeBlockSpanId !== undefined) {
-					throw new InternalServerError(
-						'More than 1 execute block span found when only 1 was expected'
-					);
+					throw new InternalServerError('More than 1 execute block span found when only 1 was expected');
 				}
 				executeBlockSpanId = span.id;
 			}
@@ -277,9 +276,7 @@ export class Trace {
 
 			const maybeParentSpan = spansById.get(span.parentId);
 			if (!maybeParentSpan) {
-				throw new InternalServerError(
-					'Expected spans parent to exist in spansById'
-				);
+				throw new InternalServerError('Expected spans parent to exist in spansById');
 			}
 
 			maybeParentSpan.children.push(span.id);
@@ -292,13 +289,8 @@ export class Trace {
 	 * Derive the action groups and operations from the block trace.
 	 */
 	actionsAndOps(): { actions: ActionGroup[]; operations: Operation[] } {
-		const {
-			spansById,
-			parsedSpans: spans,
-			executeBlockSpanId,
-		} = Trace.parseSpans(this.traceBlock.spans);
-		const { eventsByParentId, extrinsicIndexBySpanId } =
-			this.parseEvents(spansById);
+		const { spansById, parsedSpans: spans, executeBlockSpanId } = Trace.parseSpans(this.traceBlock.spans);
+		const { eventsByParentId, extrinsicIndexBySpanId } = this.parseEvents(spansById);
 
 		const actions: ActionGroup[] = [];
 		// Create a list of action groups (`actions`) and a list of all `Operations`.
@@ -331,7 +323,7 @@ export class Trace {
 				extrinsicIndex = Trace.extractExtrinsicIndex(
 					// Pass in all the relevant spanIds of this action group
 					secondarySpansIds.concat(primary.id),
-					extrinsicIndexBySpanId
+					extrinsicIndexBySpanId,
 				);
 
 				phase = Phase.ApplyExtrinsic;
@@ -378,9 +370,7 @@ export class Trace {
 			});
 		}
 
-		const accountEventsByAddress = this.accountEventsByAddress(
-			this.traceBlock.events as ParsedActionEvent[]
-		);
+		const accountEventsByAddress = this.accountEventsByAddress(this.traceBlock.events as ParsedActionEvent[]);
 		// Note: if operations need to be in order of the actual storage ops they need to be sorted
 		// again by `eventIndex`. We skip that here for performance.
 		const operations = this.deriveOperations(accountEventsByAddress);
@@ -400,8 +390,7 @@ export class Trace {
 	private maybeExtractIndex(event: ParsedEvent): IOption<BN> {
 		if (
 			!(
-				(event.storagePath as SpecialKeyInfo)?.special === ':extrinsic_index' &&
-				event.data.stringValues.method == 'Get'
+				(event.storagePath as SpecialKeyInfo)?.special === ':extrinsic_index' && event.data.stringValues.method == 'Get'
 			)
 		) {
 			// Note: there are many read and writes of `:extrinsic_index` per extrinsic
@@ -413,9 +402,7 @@ export class Trace {
 		const { value_encoded, result_encoded } = event.data.stringValues;
 		const indexEncodedOption = value_encoded ?? result_encoded;
 		if (!(typeof indexEncodedOption == 'string')) {
-			throw new InternalServerError(
-				'Expected there to be an encoded extrinsic index for extrinsic index event'
-			);
+			throw new InternalServerError('Expected there to be an encoded extrinsic index for extrinsic index event');
 		}
 
 		const scale = indexEncodedOption
@@ -494,10 +481,7 @@ export class Trace {
 	accountEventsByAddress(events: ParsedActionEvent[]): AccountEventsByAddress {
 		return events.reduce((acc, cur) => {
 			if (
-				!(
-					(cur.storagePath as PalletKeyInfo).module == 'system' &&
-					(cur.storagePath as PalletKeyInfo).item == 'account'
-				)
+				!((cur.storagePath as PalletKeyInfo).module == 'system' && (cur.storagePath as PalletKeyInfo).item == 'account')
 			) {
 				// filter out non system::Account events
 				return acc;
@@ -527,15 +511,8 @@ export class Trace {
 	 */
 	private toAccountEvent(event: ParsedActionEvent): ParsedAccountEvent {
 		const { storagePath } = event;
-		if (
-			!(
-				(storagePath as PalletKeyInfo).module == 'system' &&
-				(storagePath as PalletKeyInfo).item == 'account'
-			)
-		) {
-			throw new InternalServerError(
-				'Event did not have system::account key prefix as expected'
-			);
+		if (!((storagePath as PalletKeyInfo).module == 'system' && (storagePath as PalletKeyInfo).item == 'account')) {
+			throw new InternalServerError('Event did not have system::account key prefix as expected');
 		}
 
 		// storage key = h(system) + h(account) + h(address) + address
@@ -545,22 +522,18 @@ export class Trace {
 		// (which is equal to 96 bytes).
 		const addressRaw = event.data.stringValues.key?.slice(96);
 		if (!(typeof addressRaw === 'string')) {
-			throw new InternalServerError(
-				'Expect encoded address in system::account event storage key'
-			);
+			throw new InternalServerError('Expect encoded address in system::account event storage key');
 		}
 		const address = this.registry.createType('Address', `0x${addressRaw}`);
 
 		const { value_encoded, result_encoded } = event.data.stringValues;
 		const accountInfoEncoded = value_encoded ?? result_encoded;
 		if (!(typeof accountInfoEncoded === 'string')) {
-			throw new InternalServerError(
-				'Expect accountInfoEncoded to always be a string in system::Account event'
-			);
+			throw new InternalServerError('Expect accountInfoEncoded to always be a string in system::Account event');
 		}
 		const accountInfo = this.registry.createType(
 			'AccountInfo',
-			`0x${accountInfoEncoded.slice(2)}` // Slice off the leading Option byte
+			`0x${accountInfoEncoded.slice(2)}`, // Slice off the leading Option byte
 		) as unknown as AccountInfo;
 
 		// Mutate the event to make it a `ParsedAccountEvent`
@@ -580,9 +553,7 @@ export class Trace {
 	 * @param accountEventsByAddress map of address => events of that addresses `accountInfo`
 	 * events.
 	 */
-	private deriveOperations(
-		accountEventsByAddress: AccountEventsByAddress
-	): Operation[] {
+	private deriveOperations(accountEventsByAddress: AccountEventsByAddress): Operation[] {
 		const ops = [];
 		for (const events of accountEventsByAddress.values()) {
 			// IMPORTANT NOTE: we assume the events are in order so we know the deltas are
@@ -687,8 +658,6 @@ export class Trace {
 	 * @returns KeyInfo
 	 */
 	private getStoragePathFromKey(key?: string): KeyInfo {
-		return (
-			((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) || EMPTY_KEY_INFO
-		);
+		return ((key && this.keyNames[key?.slice(0, 64)]) as KeyInfo) || EMPTY_KEY_INFO;
 	}
 }

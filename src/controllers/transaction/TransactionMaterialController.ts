@@ -68,18 +68,12 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getTransactionMaterial: RequestHandler = async (
-		{ query: { at, metadata } },
-		res
-	): Promise<void> => {
+	private getTransactionMaterial: RequestHandler = async ({ query: { at, metadata } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		const metadataArg = this.parseMetadataArgs(metadata);
 
-		TransactionMaterialController.sanitizedSend(
-			res,
-			await this.service.fetchTransactionMaterial(hash, metadataArg)
-		);
+		TransactionMaterialController.sanitizedSend(res, await this.service.fetchTransactionMaterial(hash, metadataArg));
 	};
 
 	/**
@@ -101,9 +95,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 				case 'scale':
 					return 'scale';
 				default:
-					throw new Error(
-						'Invalid inputted value for the `metadata` query param. Options are `scale` or `json`.'
-					);
+					throw new Error('Invalid inputted value for the `metadata` query param. Options are `scale` or `json`.');
 			}
 		}
 

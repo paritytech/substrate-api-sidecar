@@ -78,20 +78,12 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsStakingPayoutsController extends AbstractController<AccountsStakingPayoutsService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/accounts/:address/staking-payouts',
-			new AccountsStakingPayoutsService(api)
-		);
+		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.router.use(
-			this.path,
-			validateAddress,
-			validateBoolean(['unclaimedOnly'])
-		);
+		this.router.use(this.path, validateAddress, validateBoolean(['unclaimedOnly']));
 
 		this.safeMountAsyncGetHandlers([['', this.getStakingPayoutsByAccountId]]);
 	}
@@ -104,11 +96,9 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	 */
 	private getStakingPayoutsByAccountId: RequestHandler<IAddressParam> = async (
 		{ params: { address }, query: { depth, era, unclaimedOnly } },
-		res
+		res,
 	): Promise<void> => {
-		const { hash, eraArg, currentEra } = await this.getEraAndHash(
-			this.verifyAndCastOr('era', era, undefined)
-		);
+		const { hash, eraArg, currentEra } = await this.getEraAndHash(this.verifyAndCastOr('era', era, undefined));
 
 		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;
 
@@ -120,8 +110,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 				this.verifyAndCastOr('depth', depth, 1) as number,
 				eraArg,
 				unclaimedOnlyArg,
-				currentEra
-			)
+				currentEra,
+			),
 		);
 	};
 
@@ -140,9 +130,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let currentEra;
 		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
-				throw new InternalServerError(
-					'CurrentEra is None when Some was expected'
-				);
+				throw new InternalServerError('CurrentEra is None when Some was expected');
 			}
 
 			currentEra = currentEraMaybeOption.unwrap().toNumber();
@@ -150,15 +138,12 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			// EraIndex extends u32, which extends BN so this should always be true
 			currentEra = (currentEraMaybeOption as BN).toNumber();
 		} else {
-			throw new InternalServerError(
-				'Query for current_era returned a non-processable result.'
-			);
+			throw new InternalServerError('Query for current_era returned a non-processable result.');
 		}
 
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
-				`The specified era (${era}) is too large. ` +
-					`Largest era payout info is available for is ${activeEra - 1}`
+				`The specified era (${era}) is too large. ` + `Largest era payout info is available for is ${activeEra - 1}`,
 			);
 		}
 

@@ -24,9 +24,7 @@ const nodeVersionService = new NodeVersionService(defaultMockApi);
 describe('NodeVersionService', () => {
 	describe('fetchVersion', () => {
 		it('works when ApiPromise works', async () => {
-			expect(
-				sanitizeNumbers(await nodeVersionService.fetchVersion())
-			).toStrictEqual(nodeVersionResponse);
+			expect(sanitizeNumbers(await nodeVersionService.fetchVersion())).toStrictEqual(nodeVersionResponse);
 		});
 	});
 });

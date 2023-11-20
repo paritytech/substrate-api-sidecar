@@ -58,9 +58,6 @@ export default class RuntimeSpecController extends AbstractController<RuntimeSpe
 	private getSpec: RequestHandler = async ({ query: { at } }, res) => {
 		const hash = await this.getHashFromAt(at);
 
-		RuntimeSpecController.sanitizedSend(
-			res,
-			await this.service.fetchSpec(hash)
-		);
+		RuntimeSpecController.sanitizedSend(res, await this.service.fetchSpec(hash));
 	};
 }

@@ -32,10 +32,7 @@ export class QueryFeeDetailsCache {
 	 */
 	private _registerWithCall;
 
-	constructor(
-		registerWithoutCall: number | null,
-		registerWithCall: number | null
-	) {
+	constructor(registerWithoutCall: number | null, registerWithCall: number | null) {
 		this._registerWithoutCall = registerWithoutCall;
 		this._registerWithCall = registerWithCall;
 	}
@@ -48,17 +45,11 @@ export class QueryFeeDetailsCache {
 	public hasQueryFeeDetails(specVersion: number) {
 		const { available, notAvailable, unknown } = QueryFee;
 
-		if (
-			this._registerWithCall !== null &&
-			specVersion >= this._registerWithCall
-		) {
+		if (this._registerWithCall !== null && specVersion >= this._registerWithCall) {
 			return available;
 		}
 
-		if (
-			this._registerWithoutCall !== null &&
-			specVersion <= this._registerWithoutCall
-		) {
+		if (this._registerWithoutCall !== null && specVersion <= this._registerWithoutCall) {
 			return notAvailable;
 		}
 

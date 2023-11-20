@@ -22,11 +22,7 @@ import AbstractController from '../AbstractController';
 
 export default class PalletsAssetConversionController extends AbstractController<PalletsAssetConversionService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/asset-conversion',
-			new PalletsAssetConversionService(api)
-		);
+		super(api, '/pallets/asset-conversion', new PalletsAssetConversionService(api));
 		this.initRoutes();
 	}
 
@@ -37,26 +33,14 @@ export default class PalletsAssetConversionController extends AbstractController
 		]);
 	}
 
-	private getNextAvailableId: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getNextAvailableId: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		PalletsAssetConversionController.sanitizedSend(
-			res,
-			await this.service.fetchNextAvailableId(hash)
-		);
+		PalletsAssetConversionController.sanitizedSend(res, await this.service.fetchNextAvailableId(hash));
 	};
 
-	private getLiquidityPools: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getLiquidityPools: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		PalletsAssetConversionController.sanitizedSend(
-			res,
-			await this.service.fetchLiquidityPools(hash)
-		);
+		PalletsAssetConversionController.sanitizedSend(res, await this.service.fetchLiquidityPools(hash));
 	};
 }

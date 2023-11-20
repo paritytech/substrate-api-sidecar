@@ -47,31 +47,27 @@ export default class PalletsErrorsController extends AbstractController<PalletsE
 		]);
 	}
 
-	private getErrorById: RequestHandler<IPalletsErrorsParam, unknown, unknown> =
-		async (
-			{ query: { at, metadata }, params: { palletId, errorItemId } },
-			res
-		): Promise<void> => {
-			const metadataArg = metadata === 'true';
-			const hash = await this.getHashFromAt(at);
-			const historicApi = await this.api.at(hash);
-
-			PalletsErrorsController.sanitizedSend(
-				res,
-				await this.service.fetchErrorItem(historicApi, {
-					hash,
-					// stringCamelCase ensures we don't have snake case or kebab case
-					palletId: stringCamelCase(palletId),
-					errorItemId: stringCamelCase(errorItemId),
-					metadata: metadataArg,
-				})
-			);
-		};
-
-	private getErrors: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds } },
-		res
+	private getErrorById: RequestHandler<IPalletsErrorsParam, unknown, unknown> = async (
+		{ query: { at, metadata }, params: { palletId, errorItemId } },
+		res,
 	): Promise<void> => {
+		const metadataArg = metadata === 'true';
+		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
+
+		PalletsErrorsController.sanitizedSend(
+			res,
+			await this.service.fetchErrorItem(historicApi, {
+				hash,
+				// stringCamelCase ensures we don't have snake case or kebab case
+				palletId: stringCamelCase(palletId),
+				errorItemId: stringCamelCase(errorItemId),
+				metadata: metadataArg,
+			}),
+		);
+	};
+
+	private getErrors: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -82,7 +78,7 @@ export default class PalletsErrorsController extends AbstractController<PalletsE
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
-			})
+			}),
 		);
 	};
 }

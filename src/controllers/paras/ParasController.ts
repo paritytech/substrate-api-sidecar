@@ -29,10 +29,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	protected initRoutes(): void {
-		this.router.use(
-			this.path + '/paras/leases/current',
-			validateBoolean(['currentLeaseHolders'])
-		);
+		this.router.use(this.path + '/paras/leases/current', validateBoolean(['currentLeaseHolders']));
 		this.safeMountAsyncGetHandlers([
 			['/paras', this.getParas],
 			['/paras/crowdloans', this.getCrowdloans],
@@ -51,10 +48,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		]);
 	}
 
-	private getParas: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getParas: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
@@ -62,52 +56,31 @@ export default class ParasController extends AbstractController<ParasService> {
 		ParasController.sanitizedSend(res, await this.service.paras(hash));
 	};
 
-	private getParasHeadIncludedCandidates: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getParasHeadIncludedCandidates: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.parasHead(hash, 'CandidateIncluded')
-		);
+		ParasController.sanitizedSend(res, await this.service.parasHead(hash, 'CandidateIncluded'));
 	};
 
-	private getParasHeadBackedCandidates: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getParasHeadBackedCandidates: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.parasHead(hash, 'CandidateBacked')
-		);
+		ParasController.sanitizedSend(res, await this.service.parasHead(hash, 'CandidateBacked'));
 	};
 
 	private getCrowdloanInfo: RequestHandler<IParaIdParam> = async (
 		{ params: { paraId }, query: { at } },
-		res
+		res,
 	): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
-		const paraIdArg = this.parseNumberOrThrow(
-			paraId,
-			'paraId must be an integer'
-		);
+		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.crowdloansInfo(hash, paraIdArg)
-		);
+		ParasController.sanitizedSend(res, await this.service.crowdloansInfo(hash, paraIdArg));
 	};
 
-	private getCrowdloans: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getCrowdloans: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
@@ -117,49 +90,31 @@ export default class ParasController extends AbstractController<ParasService> {
 
 	private getLeaseInfo: RequestHandler<IParaIdParam> = async (
 		{ params: { paraId }, query: { at } },
-		res
+		res,
 	): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
-		const paraIdArg = this.parseNumberOrThrow(
-			paraId,
-			'paraId must be an integer'
-		);
+		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.leaseInfo(hash, paraIdArg)
-		);
+		ParasController.sanitizedSend(res, await this.service.leaseInfo(hash, paraIdArg));
 	};
 
-	private getLeasesCurrent: RequestHandler = async (
-		{ query: { at, currentLeaseHolders } },
-		res
-	): Promise<void> => {
+	private getLeasesCurrent: RequestHandler = async ({ query: { at, currentLeaseHolders } }, res): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const includeCurrentLeaseHolders = currentLeaseHolders !== 'false';
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.leasesCurrent(hash, includeCurrentLeaseHolders)
-		);
+		ParasController.sanitizedSend(res, await this.service.leasesCurrent(hash, includeCurrentLeaseHolders));
 	};
 
-	private getAuctionsCurrent: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getAuctionsCurrent: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
-		ParasController.sanitizedSend(
-			res,
-			await this.service.auctionsCurrent(hash)
-		);
+		ParasController.sanitizedSend(res, await this.service.auctionsCurrent(hash));
 	};
 
 	private checkParasModule = (): void => {

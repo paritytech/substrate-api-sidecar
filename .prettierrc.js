@@ -1,1 +1,6 @@
-module.exports = require('@substrate/dev/config/prettier');
+const config = require('@substrate/dev/config/prettier');
+
+module.exports = {
+    ...config,
+    printWidth: 120,
+}

@@ -24,12 +24,7 @@ import {
 	AccountsValidate,
 	AccountsVestingInfo,
 } from './accounts';
-import {
-	Blocks,
-	BlocksExtrinsics,
-	BlocksRawExtrinsics,
-	BlocksTrace,
-} from './blocks';
+import { Blocks, BlocksExtrinsics, BlocksRawExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
@@ -48,12 +43,7 @@ import {
 } from './pallets';
 import { Paras } from './paras';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
-import {
-	TransactionDryRun,
-	TransactionFeeEstimate,
-	TransactionMaterial,
-	TransactionSubmit,
-} from './transaction';
+import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
 
 /**
  * Object containing every controller class definition.

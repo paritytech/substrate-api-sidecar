@@ -43,7 +43,7 @@ const queryInfoCallAt = () =>
 			},
 			class: 'Normal',
 			partialFee: '171607466',
-		})
+		}),
 	);
 
 const mockApiAt = {
@@ -59,20 +59,15 @@ const mockApi = {
 	at: (_hash: Hash) => mockApiAt,
 } as unknown as ApiPromise;
 
-const transactionFeeEstimateService = new TransactionFeeEstimateService(
-	mockApi
-);
+const transactionFeeEstimateService = new TransactionFeeEstimateService(mockApi);
 
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
 		it('Works with a valid transaction', async () => {
 			expect(
 				sanitizeNumbers(
-					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
-						blockHash789629,
-						balancesTransferValid
-					)
-				)
+					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
+				),
 			).toStrictEqual(validRuntimeResponse);
 		});
 
@@ -81,21 +76,15 @@ describe('TransactionFeeEstimateService', () => {
 
 			expect(
 				sanitizeNumbers(
-					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
-						blockHash789629,
-						balancesTransferValid
-					)
-				)
+					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
+				),
 			).toStrictEqual(validRpcResponse);
 
-			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
-				queryInfoCallAt;
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = queryInfoCallAt;
 		});
 
 		it('Catches ApiPromise throws and then throws the correct error format', async () => {
-			const err = new Error(
-				'2: Unable to query dispatch info.: Invalid transaction version'
-			);
+			const err = new Error('2: Unable to query dispatch info.: Invalid transaction version');
 			err.stack =
 				'Error: 2: Unable to query dispatch info.: Invalid transaction version\n  ... this is a unit test mock';
 
@@ -106,15 +95,11 @@ describe('TransactionFeeEstimateService', () => {
 				});
 
 			await expect(
-				transactionFeeEstimateService.fetchTransactionFeeEstimate(
-					blockHash789629,
-					balancesTransferInvalid
-				)
+				transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferInvalid),
 			).rejects.toStrictEqual(invalidResponse);
 
 			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;
-			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) =
-				queryInfoCallAt;
+			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = queryInfoCallAt;
 		});
 	});
 });

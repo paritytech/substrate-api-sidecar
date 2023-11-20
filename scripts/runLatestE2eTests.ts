@@ -29,9 +29,7 @@ const main = async (args: IE2EParseArgs) => {
 	const localUrl: string | undefined = args.local ? args.local : undefined;
 
 	if (localUrl && !args.chain) {
-		console.error(
-			'error: `--local` must be used in conjunction with `--chain`'
-		);
+		console.error('error: `--local` must be used in conjunction with `--chain`');
 		process.exit(3);
 	}
 
@@ -50,27 +48,14 @@ const main = async (args: IE2EParseArgs) => {
 
 	// CheckTests will either return a success exit code of 0, or a failed exit code of 1.
 	if (args.chain) {
-		const selectedChain = await launchChainTest(
-			args.chain,
-			latestE2eConfig,
-			procs,
-			localUrl
-		);
+		const selectedChain = await launchChainTest(args.chain, latestE2eConfig, procs, localUrl);
 
 		checkTests(selectedChain);
 	} else {
-		const polkadotTest = await launchChainTest(
-			'polkadot',
-			latestE2eConfig,
-			procs
-		);
+		const polkadotTest = await launchChainTest('polkadot', latestE2eConfig, procs);
 		const kusamaTest = await launchChainTest('kusama', latestE2eConfig, procs);
 		const westend = await launchChainTest('westend', latestE2eConfig, procs);
-		const assetHubPolkadotTest = await launchChainTest(
-			'asset-hub-polkadot',
-			latestE2eConfig,
-			procs
-		);
+		const assetHubPolkadotTest = await launchChainTest('asset-hub-polkadot', latestE2eConfig, procs);
 
 		checkTests(polkadotTest, kusamaTest, westend, assetHubPolkadotTest);
 	}
@@ -110,4 +95,6 @@ process.on('SIGHUP', function () {
 	process.exit();
 });
 
-main(args).finally(() => process.exit());
+main(args)
+	.catch((err) => console.error(err))
+	.finally(() => process.exit());

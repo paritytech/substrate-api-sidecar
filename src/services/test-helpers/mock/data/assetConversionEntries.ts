@@ -191,11 +191,6 @@ export const assets = [
 ];
 
 for (let i = 0; i < assets.length; i++) {
-	const reserve = assetHubWestendRegistryV9435.createType(
-		'XcmV3MultiLocation',
-		assets[i]
-	);
-	reserves.push([native, reserve] as unknown as ITuple<
-		[XcmV3MultiLocation, XcmV3MultiLocation]
-	>);
+	const reserve = assetHubWestendRegistryV9435.createType('XcmV3MultiLocation', assets[i]);
+	reserves.push([native, reserve] as unknown as ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>);
 }

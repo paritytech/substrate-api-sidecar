@@ -29,8 +29,5 @@ export interface ILegacyError extends IBasicLegacyError {
  * @param thing to check type of
  */
 export function isLegacyError(thing: unknown): thing is ILegacyError {
-	return (
-		(thing as ILegacyError).error !== undefined &&
-		(thing as ILegacyError).statusCode !== undefined
-	);
+	return (thing as ILegacyError).error !== undefined && (thing as ILegacyError).statusCode !== undefined;
 }

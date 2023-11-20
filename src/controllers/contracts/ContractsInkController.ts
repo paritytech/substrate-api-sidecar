@@ -21,11 +21,7 @@ import { BadRequest } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
-import {
-	IBodyContractMetadata,
-	IContractQueryParam,
-	IPostRequestHandler,
-} from '../../types/requests';
+import { IBodyContractMetadata, IContractQueryParam, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
@@ -36,9 +32,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
-		this.safeMountAsyncPostHandlers([
-			['/query', this.callContractQuery as RequestHandler],
-		]);
+		this.safeMountAsyncPostHandlers([['/query', this.callContractQuery as RequestHandler]]);
 	}
 
 	/**
@@ -47,43 +41,25 @@ export default class ContractsInkController extends AbstractController<Contracts
 	 * @param _req
 	 * @param res
 	 */
-	private callContractQuery: IPostRequestHandler<
-		IBodyContractMetadata,
-		IContractQueryParam
-	> = async (
-		{
-			params: { address },
-			body,
-			query: { method = 'get', gasLimit, storageDepositLimit, args },
-		},
-		res
+	private callContractQuery: IPostRequestHandler<IBodyContractMetadata, IContractQueryParam> = async (
+		{ params: { address }, body, query: { method = 'get', gasLimit, storageDepositLimit, args } },
+		res,
 	): Promise<void> => {
 		const { api } = this;
 		const argsArray = Array.isArray(args) ? args : [];
 		const contract = new ContractPromise(api, body, address);
 		if (!contract.query[method]) {
-			throw new BadRequest(
-				`Invalid Method: Contract does not have the given ${method} message.`
-			);
+			throw new BadRequest(`Invalid Method: Contract does not have the given ${method} message.`);
 		}
 
 		const callMeta = contract.query[method].meta;
 		if (callMeta.isPayable || callMeta.isMutating) {
-			throw new BadRequest(
-				`Invalid Method: This endpoint does not handle mutating or payable calls.`
-			);
+			throw new BadRequest(`Invalid Method: This endpoint does not handle mutating or payable calls.`);
 		}
 
 		ContractsInkController.sanitizedSend(
 			res,
-			await this.service.fetchContractCall(
-				contract,
-				address,
-				method,
-				argsArray,
-				gasLimit,
-				storageDepositLimit
-			)
+			await this.service.fetchContractCall(contract, address, method, argsArray, gasLimit, storageDepositLimit),
 		);
 	};
 }

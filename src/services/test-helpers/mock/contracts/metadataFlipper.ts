@@ -38,9 +38,7 @@ export const metadataFlipper = {
 							},
 						},
 					],
-					docs: [
-						'Constructor that initializes the `bool` value to the given `init_value`.',
-					],
+					docs: ['Constructor that initializes the `bool` value to the given `init_value`.'],
 					label: 'new',
 					payable: false,
 					selector: '0x9bae9d5e',

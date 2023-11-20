@@ -15,24 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { polkadotMetadataRpcV9370 } from '../../../../test-helpers/metadata/polkadotV9370Metadata';
-import {
-	createApiWithAugmentations,
-	TypeFactory,
-} from '../../../../test-helpers/typeFactory';
+import { createApiWithAugmentations, TypeFactory } from '../../../../test-helpers/typeFactory';
 import { validatorsAddresses } from './validatorsAddresses';
 
-const typeFactoryApiV9370 = createApiWithAugmentations(
-	polkadotMetadataRpcV9370
-);
+const typeFactoryApiV9370 = createApiWithAugmentations(polkadotMetadataRpcV9370);
 const factory = new TypeFactory(typeFactoryApiV9370);
 
 export const validatorsEntries = () => {
 	return validatorsAddresses.map((addr) => {
-		const storage = factory.storageKey(
-			addr,
-			'AccountId32',
-			typeFactoryApiV9370.query.staking.validators
-		);
+		const storage = factory.storageKey(addr, 'AccountId32', typeFactoryApiV9370.query.staking.validators);
 		return [storage];
 	});
 };

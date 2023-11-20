@@ -26,7 +26,7 @@ describe('validateBooleanMiddleware', () => {
 		{
 			query: {},
 		} as unknown as Request,
-		validateBooleanMiddleware([])
+		validateBooleanMiddleware([]),
 	);
 
 	doesNotErrorWith(
@@ -37,7 +37,7 @@ describe('validateBooleanMiddleware', () => {
 				eventDocs: 'false',
 			},
 		} as unknown as Request,
-		validateBooleanMiddleware(['finalized', 'eventDocs'])
+		validateBooleanMiddleware(['finalized', 'eventDocs']),
 	);
 
 	doesNotErrorWith(
@@ -47,7 +47,7 @@ describe('validateBooleanMiddleware', () => {
 				invalid: 'truee',
 			},
 		} as unknown as Request,
-		validateBooleanMiddleware([])
+		validateBooleanMiddleware([]),
 	);
 
 	errorsWith(
@@ -57,10 +57,8 @@ describe('validateBooleanMiddleware', () => {
 				finalized: 'truee',
 			},
 		} as unknown as Request,
-		new BadRequest(
-			'Query parameter: finalized has an invalid boolean value of truee'
-		),
-		validateBooleanMiddleware(['finalized'])
+		new BadRequest('Query parameter: finalized has an invalid boolean value of truee'),
+		validateBooleanMiddleware(['finalized']),
 	);
 
 	errorsWith(
@@ -70,10 +68,8 @@ describe('validateBooleanMiddleware', () => {
 				finalized: 'falsee',
 			},
 		} as unknown as Request,
-		new BadRequest(
-			'Query parameter: finalized has an invalid boolean value of falsee'
-		),
-		validateBooleanMiddleware(['finalized'])
+		new BadRequest('Query parameter: finalized has an invalid boolean value of falsee'),
+		validateBooleanMiddleware(['finalized']),
 	);
 
 	errorsWith(
@@ -85,8 +81,8 @@ describe('validateBooleanMiddleware', () => {
 			},
 		} as unknown as Request,
 		new BadRequest(
-			'Query parameter: finalized has an invalid boolean value of notTrue - Query parameter: eventDocs has an invalid boolean value of notFalse'
+			'Query parameter: finalized has an invalid boolean value of notTrue - Query parameter: eventDocs has an invalid boolean value of notFalse',
 		),
-		validateBooleanMiddleware(['finalized', 'eventDocs'])
+		validateBooleanMiddleware(['finalized', 'eventDocs']),
 	);
 });

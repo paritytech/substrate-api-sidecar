@@ -31,10 +31,7 @@ export class PalletsPoolAssetsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param assetId `AssetId` used to get info and metadata for an asset
 	 */
-	async fetchPoolAssetById(
-		hash: BlockHash,
-		assetId: number
-	): Promise<IPoolAssetInfo> {
+	async fetchPoolAssetById(hash: BlockHash, assetId: number): Promise<IPoolAssetInfo> {
 		const { api } = this;
 
 		const [{ number }, poolAssetInfo, poolAssetMetaData] = await Promise.all([

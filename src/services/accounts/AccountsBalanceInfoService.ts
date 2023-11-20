@@ -16,13 +16,7 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Vec } from '@polkadot/types';
-import {
-	AccountData,
-	Balance,
-	BalanceLock,
-	BlockHash,
-	Index,
-} from '@polkadot/types/interfaces';
+import { AccountData, Balance, BalanceLock, BlockHash, Index } from '@polkadot/types/interfaces';
 import { PalletBalancesAccountData } from '@polkadot/types/lookup';
 import { BadRequest } from 'http-errors';
 
@@ -43,19 +37,17 @@ export class AccountsBalanceInfoService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		address: string,
 		token: string,
-		denominate: boolean
+		denominate: boolean,
 	): Promise<IAccountBalanceInfo> {
 		const { api } = this;
 
 		if (denominate && historicApi.registry.chainDecimals.length === 0) {
 			throw new BadRequest(
-				"Invalid use of the query parameter `denominated`. This chain doesn't have a valid chain decimal to denominate a value."
+				"Invalid use of the query parameter `denominated`. This chain doesn't have a valid chain decimal to denominate a value.",
 			);
 		}
 
-		const capitalizeTokens = historicApi.registry.chainTokens.map((token) =>
-			token.toUpperCase()
-		);
+		const capitalizeTokens = historicApi.registry.chainTokens.map((token) => token.toUpperCase());
 		const tokenIdx = capitalizeTokens.indexOf(token);
 		const decimal = historicApi.registry.chainDecimals[tokenIdx];
 		/**
@@ -143,17 +135,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 					free: this.inDenominationBal(denominate, free, decimal),
 					reserved: this.inDenominationBal(denominate, reserved, decimal),
 					miscFrozen:
-						typeof miscFrozen === 'string'
-							? miscFrozen
-							: this.inDenominationBal(denominate, miscFrozen, decimal),
-					feeFrozen:
-						typeof feeFrozen === 'string'
-							? feeFrozen
-							: this.inDenominationBal(denominate, feeFrozen, decimal),
-					frozen:
-						typeof frozen === 'string'
-							? frozen
-							: this.inDenominationBal(denominate, frozen, decimal),
+						typeof miscFrozen === 'string' ? miscFrozen : this.inDenominationBal(denominate, miscFrozen, decimal),
+					feeFrozen: typeof feeFrozen === 'string' ? feeFrozen : this.inDenominationBal(denominate, feeFrozen, decimal),
+					frozen: typeof frozen === 'string' ? frozen : this.inDenominationBal(denominate, frozen, decimal),
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -163,9 +147,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		let locks, header, accountInfo, accountData;
 		// We assume the first token is the native token
-		if (
-			token.toUpperCase() === historicApi.registry.chainTokens[0].toUpperCase()
-		) {
+		if (token.toUpperCase() === historicApi.registry.chainTokens[0].toUpperCase()) {
 			[header, locks, accountInfo] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
 				historicApi.query.balances.locks(address),
@@ -174,10 +156,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				throw this.createHttpErrorForAddr(address, err);
 			});
 
-			accountData =
-				accountInfo.data != null
-					? accountInfo.data
-					: await historicApi.query.balances.account(address);
+			accountData = accountInfo.data != null ? accountInfo.data : await historicApi.query.balances.account(address);
 		} else {
 			// Assume we are using ORML token pallet
 			let locksAny, accountDataAny;
@@ -193,7 +172,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 			} catch {
 				throw new BadRequest(
 					'An error occured while attempting to query for a non-native token; ' +
-						'the token specified is likely invalid.'
+						'the token specified is likely invalid.',
 				);
 			}
 
@@ -233,17 +212,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				free: this.inDenominationBal(denominate, free, decimal),
 				reserved: this.inDenominationBal(denominate, reserved, decimal),
 				miscFrozen:
-					typeof miscFrozen === 'string'
-						? miscFrozen
-						: this.inDenominationBal(denominate, miscFrozen, decimal),
-				feeFrozen:
-					typeof feeFrozen === 'string'
-						? feeFrozen
-						: this.inDenominationBal(denominate, feeFrozen, decimal),
-				frozen:
-					typeof frozen === 'string'
-						? frozen
-						: this.inDenominationBal(denominate, frozen, decimal),
+					typeof miscFrozen === 'string' ? miscFrozen : this.inDenominationBal(denominate, miscFrozen, decimal),
+				feeFrozen: typeof feeFrozen === 'string' ? feeFrozen : this.inDenominationBal(denominate, feeFrozen, decimal),
+				frozen: typeof frozen === 'string' ? frozen : this.inDenominationBal(denominate, frozen, decimal),
 				locks: this.inDenominationLocks(denominate, locks, decimal),
 			};
 		} else {
@@ -272,11 +243,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 		}
 
 		const lenDiff = strBalance.length - dec;
-		return (
-			strBalance.substring(0, lenDiff) +
-			'.' +
-			strBalance.substring(lenDiff, strBalance.length)
-		);
+		return strBalance.substring(0, lenDiff) + '.' + strBalance.substring(lenDiff, strBalance.length);
 	}
 
 	/**
@@ -285,10 +252,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 	 * @param locks A vector containing BalanceLock objects
 	 * @param dec The chains given decimal value
 	 */
-	private applyDenominationLocks(
-		locks: Vec<BalanceLock>,
-		dec: number
-	): IBalanceLock[] {
+	private applyDenominationLocks(locks: Vec<BalanceLock>, dec: number): IBalanceLock[] {
 		return locks.map((lock) => {
 			return {
 				id: lock.id,
@@ -305,11 +269,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 	 * @param bal Inputted Balance
 	 * @param dec Decimal value used to denominate a Balance
 	 */
-	private inDenominationBal(
-		denominate: boolean,
-		bal: Balance,
-		dec: number
-	): Balance | string {
+	private inDenominationBal(denominate: boolean, bal: Balance, dec: number): Balance | string {
 		return denominate ? this.applyDenominationBalance(bal, dec) : bal;
 	}
 
@@ -323,7 +283,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 	private inDenominationLocks(
 		denominate: boolean,
 		locks: Vec<BalanceLock>,
-		dec: number
+		dec: number,
 	): Vec<BalanceLock> | IBalanceLock[] {
 		return denominate ? this.applyDenominationLocks(locks, dec) : locks;
 	}

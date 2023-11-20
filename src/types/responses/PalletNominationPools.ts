@@ -15,10 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Option } from '@polkadot/types/codec';
-import {
-	PalletNominationPoolsBondedPoolInner,
-	PalletNominationPoolsRewardPool,
-} from '@polkadot/types/lookup';
+import { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsRewardPool } from '@polkadot/types/lookup';
 import { u32, u128 } from '@polkadot/types-codec';
 
 import { IAt } from '.';

@@ -61,8 +61,8 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchStorageItemRes);
 		});
 
@@ -75,8 +75,8 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: false,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchStorageItemRes);
 		});
 
@@ -89,8 +89,8 @@ describe('PalletStorageService', () => {
 						storageItemId: 'referendumInfoOf',
 						keys: ['0'],
 						metadata: true,
-					})
-				)
+					}),
+				),
 			).toMatchObject(fetchStorageItemRes);
 		});
 	});
@@ -103,8 +103,8 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: false,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchStorageRes);
 		});
 
@@ -115,8 +115,8 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: '15',
 						onlyIds: false,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchStorageRes);
 		});
 
@@ -127,8 +127,8 @@ describe('PalletStorageService', () => {
 						hash: blockHash789629,
 						palletId: 'democracy',
 						onlyIds: true,
-					})
-				)
+					}),
+				),
 			).toStrictEqual(fetchStorageIdsOnlyRes);
 		});
 	});

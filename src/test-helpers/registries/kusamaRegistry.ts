@@ -51,7 +51,7 @@ function createKusamaRegistry(specVersion: number): TypeRegistry {
 			ss58Format: 2,
 			tokenDecimals: 12,
 			tokenSymbol: 'KSM',
-		})
+		}),
 	);
 
 	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));

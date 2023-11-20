@@ -26,10 +26,7 @@ export class TransactionMaterialService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
-	async fetchTransactionMaterial(
-		hash: BlockHash,
-		metadataArg: MetadataOpts | false
-	): Promise<ITransactionMaterial> {
+	async fetchTransactionMaterial(hash: BlockHash, metadataArg: MetadataOpts | false): Promise<ITransactionMaterial> {
 		const { api } = this;
 
 		if (!metadataArg) {
@@ -68,8 +65,7 @@ export class TransactionMaterialService extends AbstractService {
 			height: header.number.toNumber().toString(10),
 		};
 
-		const formattedMeta =
-			metadataArg === 'scale' ? metadata.toHex() : metadata.toJSON();
+		const formattedMeta = metadataArg === 'scale' ? metadata.toHex() : metadata.toJSON();
 
 		return {
 			at,

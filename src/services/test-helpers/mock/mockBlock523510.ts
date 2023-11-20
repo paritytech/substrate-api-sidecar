@@ -20,15 +20,12 @@ import block523510 from './data/block523510.json';
 /**
  * Mock for Asset Hub Kusama Block #523510.
  */
-export const mockBlock523510 = assetHubKusamaRegistryV9430.createType(
-	'Block',
-	block523510
-);
+export const mockBlock523510 = assetHubKusamaRegistryV9430.createType('Block', block523510);
 
 /**
  * BlockHash for Asset Hub Kusama Block #523510.
  */
 export const blockHash523510 = assetHubKusamaRegistryV9430.createType(
 	'BlockHash',
-	'0x814bb69eba28cf13066aa025d39526b503fc563162f1301c627548b9ccec54c8'
+	'0x814bb69eba28cf13066aa025d39526b503fc563162f1301c627548b9ccec54c8',
 );

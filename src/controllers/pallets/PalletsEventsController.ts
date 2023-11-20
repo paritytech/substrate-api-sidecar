@@ -36,31 +36,27 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 		]);
 	}
 
-	private getEventById: RequestHandler<IPalletsEventsParam, unknown, unknown> =
-		async (
-			{ query: { at, metadata }, params: { palletId, eventItemId } },
-			res
-		): Promise<void> => {
-			const metadataArg = metadata === 'true';
-			const hash = await this.getHashFromAt(at);
-			const historicApi = await this.api.at(hash);
-
-			PalletsEventsController.sanitizedSend(
-				res,
-				await this.service.fetchEventItem(historicApi, {
-					hash,
-					// stringCamelCase ensures we don't have snake case or kebab case
-					palletId: stringCamelCase(palletId),
-					eventItemId: stringCamelCase(eventItemId),
-					metadata: metadataArg,
-				})
-			);
-		};
-
-	private getEvents: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds } },
-		res
+	private getEventById: RequestHandler<IPalletsEventsParam, unknown, unknown> = async (
+		{ query: { at, metadata }, params: { palletId, eventItemId } },
+		res,
 	): Promise<void> => {
+		const metadataArg = metadata === 'true';
+		const hash = await this.getHashFromAt(at);
+		const historicApi = await this.api.at(hash);
+
+		PalletsEventsController.sanitizedSend(
+			res,
+			await this.service.fetchEventItem(historicApi, {
+				hash,
+				// stringCamelCase ensures we don't have snake case or kebab case
+				palletId: stringCamelCase(palletId),
+				eventItemId: stringCamelCase(eventItemId),
+				metadata: metadataArg,
+			}),
+		);
+	};
+
+	private getEvents: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
@@ -71,7 +67,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 				hash,
 				palletId: stringCamelCase(palletId),
 				onlyIds: onlyIdsArg,
-			})
+			}),
 		);
 	};
 }

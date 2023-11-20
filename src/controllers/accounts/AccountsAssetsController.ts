@@ -82,40 +82,27 @@ export default class AccountsAssetsController extends AbstractController<Account
 
 	private getAssetBalances: RequestHandler = async (
 		{ params: { address }, query: { at, assets } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		const assetsArray = Array.isArray(assets)
-			? this.parseQueryParamArrayOrThrow(assets as string[])
-			: [];
+		const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
 
-		AccountsAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchAssetBalances(hash, address, assetsArray)
-		);
+		AccountsAssetsController.sanitizedSend(res, await this.service.fetchAssetBalances(hash, address, assetsArray));
 	};
 
 	private getAssetApprovals: RequestHandler = async (
 		{ params: { address }, query: { at, delegate, assetId } },
-		res
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
-			throw new BadRequest(
-				'Must include a `delegate` and `assetId` query param'
-			);
+			throw new BadRequest('Must include a `delegate` and `assetId` query param');
 		}
 
-		const id = this.parseNumberOrThrow(
-			assetId,
-			'`assetId` provided is not a number.'
-		);
+		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
-		AccountsAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchAssetApproval(hash, address, id, delegate)
-		);
+		AccountsAssetsController.sanitizedSend(res, await this.service.fetchAssetApproval(hash, address, id, delegate));
 	};
 }

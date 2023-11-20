@@ -95,14 +95,7 @@ export const killAll = (procs: ProcsType): void => {
 export const launchProcess = (
 	cmd: string,
 	procs: ProcsType,
-	{
-		proc,
-		resolver,
-		resolverJestErr,
-		resolverStartupErr,
-		resolverFailed,
-		args,
-	}: IProcOpts
+	{ proc, resolver, resolverJestErr, resolverStartupErr, resolverFailed, args }: IProcOpts,
 ): Promise<StatusResponse> => {
 	return new Promise<StatusResponse>((resolve, reject) => {
 		const { Success, Failed } = StatusCode;
@@ -147,10 +140,7 @@ export const launchProcess = (
 				jestStatus = Failed;
 			}
 
-			if (
-				resolverStartupErr &&
-				data.toString().trim().includes(resolverStartupErr)
-			) {
+			if (resolverStartupErr && data.toString().trim().includes(resolverStartupErr)) {
 				resolve({
 					code: Failed,
 					stdout: stdout.join(),

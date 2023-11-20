@@ -28,16 +28,13 @@ const falseBool = assetHubKusamaRegistryV9430.createType('bool', false);
 
 const accountIdTknr = assetHubKusamaRegistryV9430.createType(
 	'AccountId',
-	'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9'
+	'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9',
 );
-const balanceOfTknr = assetHubKusamaRegistryV9430.createType(
-	'BalanceOf',
-	6693666633
-);
+const balanceOfTknr = assetHubKusamaRegistryV9430.createType('BalanceOf', 6693666633);
 
 const accountIdDot = assetHubKusamaRegistryV9430.createType(
 	'AccountId',
-	'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q'
+	'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
 );
 // TODO: balanceOfDot needs to be updated as soon as DOT Metadata
 // in Kusama Asset Hub are updated with the right values.
@@ -59,10 +56,7 @@ const foreignAssetInfoDot = (): Option<PalletAssetsAssetDetails> => {
 		status: 'Live',
 	};
 
-	return assetHubKusamaRegistryV9430.createType(
-		'Option<PalletAssetsAssetDetails>',
-		responseObj
-	);
+	return assetHubKusamaRegistryV9430.createType('Option<PalletAssetsAssetDetails>', responseObj);
 };
 
 const foreignAssetInfoTknr = (): Option<PalletAssetsAssetDetails> => {
@@ -81,10 +75,7 @@ const foreignAssetInfoTknr = (): Option<PalletAssetsAssetDetails> => {
 		status: 'Live',
 	};
 
-	return assetHubKusamaRegistryV9430.createType(
-		'Option<PalletAssetsAssetDetails>',
-		responseObj
-	);
+	return assetHubKusamaRegistryV9430.createType('Option<PalletAssetsAssetDetails>', responseObj);
 };
 
 export const foreignAssetsInfo = [foreignAssetInfoDot, foreignAssetInfoTknr];
@@ -117,15 +108,9 @@ const foreignAssetMetadataTknr = (): AssetMetadata => {
 };
 
 export const foreignAssetsMetadata = (location: string): AssetMetadata => {
-	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(
-		/(\d),/g,
-		'$1'
-	);
+	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(/(\d),/g, '$1');
 
-	if (
-		foreignAssetMultiLocationStr ==
-		'{"parents":2"interior":{"x1":{"globalConsensus":{"polkadot":null}}}}'
-	)
+	if (foreignAssetMultiLocationStr == '{"parents":2"interior":{"x1":{"globalConsensus":{"polkadot":null}}}}')
 		return foreignAssetMetadataDot();
 	else {
 		return foreignAssetMetadataTknr();

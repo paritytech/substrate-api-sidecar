@@ -27,20 +27,13 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
-			new BlocksService(
-				api,
-				options.minCalcFeeRuntime,
-				options.blockStore,
-				options.hasQueryFeeApi
-			)
+			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
 		);
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([
-			['/:extrinsicIndex', this.getExtrinsicByTimepoint],
-		]);
+		this.safeMountAsyncGetHandlers([['/:extrinsicIndex', this.getExtrinsicByTimepoint]]);
 	}
 
 	/**
@@ -49,11 +42,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param res Express Response
 	 */
 	private getExtrinsicByTimepoint: RequestHandler<INumberParam> = async (
-		{
-			params: { blockId, extrinsicIndex },
-			query: { eventDocs, extrinsicDocs },
-		},
-		res
+		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs } },
+		res,
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
@@ -75,10 +65,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		/**
 		 * Verify our param `extrinsicIndex` is an integer represented as a string
 		 */
-		this.parseNumberOrThrow(
-			extrinsicIndex,
-			'`exstrinsicIndex` path param is not a number'
-		);
+		this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
 
 		/**
 		 * Change extrinsicIndex from a type string to a number before passing it
@@ -86,9 +73,6 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		 */
 		const index = parseInt(extrinsicIndex, 10);
 
-		BlocksExtrinsicsController.sanitizedSend(
-			res,
-			this.service.fetchExtrinsicByIndex(block, index)
-		);
+		BlocksExtrinsicsController.sanitizedSend(res, this.service.fetchExtrinsicByIndex(block, index));
 	};
 }

@@ -83,10 +83,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
  * @param api ApiPromise to inject into controllers
  * @param implName
  */
-export function getControllersForSpec(
-	api: ApiPromise,
-	specName: string
-): AbstractController<AbstractService>[] {
+export function getControllersForSpec(api: ApiPromise, specName: string): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
 		return getControllersFromConfig(api, specToControllerMap[specName]);
 	}

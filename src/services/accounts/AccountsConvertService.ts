@@ -50,13 +50,11 @@ export class AccountsConvertService extends AbstractService {
 		accountId: string,
 		scheme: 'ed25519' | 'sr25519' | 'ecdsa',
 		ss58Prefix: number,
-		publicKey: boolean
+		publicKey: boolean,
 	): IAccountConvert {
 		const accountIdIsHex = isHex(accountId);
 		if (!accountIdIsHex) {
-			throw new BadRequest(
-				'The `accountId` parameter provided is not a valid hex value.'
-			);
+			throw new BadRequest('The `accountId` parameter provided is not a valid hex value.');
 		}
 		let network = null;
 		for (const networkParams of allNetworks) {
@@ -66,14 +64,10 @@ export class AccountsConvertService extends AbstractService {
 			}
 		}
 		if (network === null) {
-			throw new BadRequest(
-				'The given `prefix` query parameter does not correspond to an existing network.'
-			);
+			throw new BadRequest('The given `prefix` query parameter does not correspond to an existing network.');
 		}
 
-		const accountId2Encode = publicKey
-			? TYPE_ADDRESS[scheme](accountId)
-			: accountId;
+		const accountId2Encode = publicKey ? TYPE_ADDRESS[scheme](accountId) : accountId;
 
 		const keyring = new Keyring({ type: scheme, ss58Format: ss58Prefix });
 		const address = keyring.encodeAddress(accountId2Encode, ss58Prefix);

@@ -16,19 +16,12 @@
 
 import { BlockHash } from '@polkadot/types/interfaces';
 
-import {
-	ITransactionDryRun,
-	TransactionResultType,
-	ValidityErrorType,
-} from '../../types/responses';
+import { ITransactionDryRun, TransactionResultType, ValidityErrorType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
 export class TransactionDryRunService extends AbstractService {
-	async dryRuntExtrinsic(
-		hash: BlockHash,
-		transaction: string
-	): Promise<ITransactionDryRun> {
+	async dryRuntExtrinsic(hash: BlockHash, transaction: string): Promise<ITransactionDryRun> {
 		const { api } = this;
 
 		try {
@@ -48,9 +41,7 @@ export class TransactionDryRunService extends AbstractService {
 				dryRunResult = {
 					resultType: TransactionResultType.TransactionValidityError,
 					result: asErr.isInvalid ? asErr.asInvalid : asErr.asUnknown,
-					validityErrorType: asErr.isInvalid
-						? ValidityErrorType.Invalid
-						: ValidityErrorType.Unknown,
+					validityErrorType: asErr.isInvalid ? ValidityErrorType.Invalid : ValidityErrorType.Unknown,
 				};
 			}
 

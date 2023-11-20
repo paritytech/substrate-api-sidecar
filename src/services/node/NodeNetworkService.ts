@@ -20,17 +20,13 @@ import { AbstractService } from '../AbstractService';
 
 export class NodeNetworkService extends AbstractService {
 	async fetchNetwork(): Promise<INodeNetwork> {
-		const [
-			{ peers: numPeers, isSyncing, shouldHavePeers },
-			localPeerId,
-			nodeRoles,
-			localListenAddresses,
-		] = await Promise.all([
-			this.api.rpc.system.health(),
-			this.api.rpc.system.localPeerId(),
-			this.api.rpc.system.nodeRoles(),
-			this.api.rpc.system.localListenAddresses(),
-		]);
+		const [{ peers: numPeers, isSyncing, shouldHavePeers }, localPeerId, nodeRoles, localListenAddresses] =
+			await Promise.all([
+				this.api.rpc.system.health(),
+				this.api.rpc.system.localPeerId(),
+				this.api.rpc.system.nodeRoles(),
+				this.api.rpc.system.localListenAddresses(),
+			]);
 
 		let peersInfo;
 		try {

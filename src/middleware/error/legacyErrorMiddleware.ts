@@ -29,12 +29,7 @@ import { isBasicLegacyError, isLegacyError } from '../../types/errors';
  * @param res Express Response
  * @param next Express NextFunction
  */
-export const legacyErrorMiddleware: ErrorRequestHandler = (
-	err: unknown,
-	_req,
-	res,
-	next
-): void => {
+export const legacyErrorMiddleware: ErrorRequestHandler = (err: unknown, _req, res, next): void => {
 	if (res.headersSent || !isBasicLegacyError(err)) {
 		return next(err);
 	}

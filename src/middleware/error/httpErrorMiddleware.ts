@@ -31,12 +31,7 @@ import { httpErrorCounter } from '../../util/metrics';
  * @param res Express Response
  * @param next Express NextFunction
  */
-export const httpErrorMiddleware: ErrorRequestHandler = (
-	err: unknown,
-	_req,
-	res,
-	next
-): void => {
+export const httpErrorMiddleware: ErrorRequestHandler = (err: unknown, _req, res, next): void => {
 	if (res.headersSent || !(err instanceof HttpError)) {
 		return next(err);
 	}

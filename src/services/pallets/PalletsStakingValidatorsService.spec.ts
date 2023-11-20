@@ -27,12 +27,9 @@ import fetchValidators14815152 from '../test-helpers/responses/pallets/fetchVali
 import { PalletsStakingValidatorsService } from './PalletsStakingValidatorsService';
 
 const validatorsAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistryV9370.createType('Vec<AccountId32>', validators14815152Hex)
-	);
+	Promise.resolve().then(() => polkadotRegistryV9370.createType('Vec<AccountId32>', validators14815152Hex));
 
-const validatorsEntriesAt = () =>
-	Promise.resolve().then(() => validatorsEntries());
+const validatorsEntriesAt = () => Promise.resolve().then(() => validatorsEntries());
 
 const mockHistoricApi = {
 	query: {
@@ -54,9 +51,7 @@ const mockApi = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletsStakingValidatorsService = new PalletsStakingValidatorsService(
-	mockApi
-);
+const palletsStakingValidatorsService = new PalletsStakingValidatorsService(mockApi);
 
 describe('PalletsStakingValidatorsService', () => {
 	describe('derivePalletStakingValidators', () => {
@@ -65,10 +60,8 @@ describe('PalletsStakingValidatorsService', () => {
 				sanitizeNumbers(
 					// The inputted blockHash does not change the tests since the mocked data is all based
 					// on block 14815152
-					await palletsStakingValidatorsService.derivePalletStakingValidators(
-						blockHash789629
-					)
-				)
+					await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629),
+				),
 			).toStrictEqual(fetchValidators14815152);
 		});
 	});

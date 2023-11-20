@@ -55,22 +55,14 @@ afterAll(() => {
 describe('BlocksTraceService', () => {
 	describe('BlocksTraceService.traces', () => {
 		it('works when ApiPromise works', async () => {
-			expect(
-				sanitizeNumbers(await blocksTraceService.traces(blockHash789629))
-			).toStrictEqual(tracesResponse);
+			expect(sanitizeNumbers(await blocksTraceService.traces(blockHash789629))).toStrictEqual(tracesResponse);
 		});
 	});
 
 	describe('BlocksTraceService.operations', () => {
 		it('works when ApiPromise works (without `actions`)', async () => {
 			expect(
-				sanitizeNumbers(
-					await blocksTraceService.operations(
-						blockHash789629,
-						mockHistoricApi,
-						false
-					)
-				)
+				sanitizeNumbers(await blocksTraceService.operations(blockHash789629, mockHistoricApi, false)),
 			).toMatchObject(operationsResponse);
 		});
 

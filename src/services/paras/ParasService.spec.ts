@@ -24,20 +24,9 @@ import BN from 'bn.js';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { rococoMetadataV228 } from '../../test-helpers/metadata/rococoMetadata';
-import {
-	polkadotRegistry,
-	polkadotRegistryV9300,
-	rococoRegistry,
-} from '../../test-helpers/registries';
-import {
-	createApiWithAugmentations,
-	TypeFactory,
-} from '../../test-helpers/typeFactory';
-import {
-	blockHash789629,
-	defaultMockApi,
-	mockBlock789629,
-} from '../test-helpers/mock';
+import { polkadotRegistry, polkadotRegistryV9300, rococoRegistry } from '../../test-helpers/registries';
+import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
+import { blockHash789629, defaultMockApi, mockBlock789629 } from '../test-helpers/mock';
 import { eventsHex } from '../test-helpers/mock/paras/eventsHex';
 import parasHeadBackedCandidatesResponse from '../test-helpers/responses/paras/parasHeadBackedCandidates.json';
 import parasHeadIncludedCandidatesResponse from '../test-helpers/responses/paras/parasHeadIncludedCandidates.json';
@@ -55,18 +44,12 @@ const rococoTypeFactory = new TypeFactory(rococoApi);
  * Used for parachain crowdloans
  */
 const funds = {
-	depositor: rococoRegistry.createType(
-		'AccountId',
-		'14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'
-	),
+	depositor: rococoRegistry.createType('AccountId', '14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'),
 	verifier: null,
 	deposit: rococoRegistry.createType('Balance', 100000000000000),
 	raised: rococoRegistry.createType('Balance', 627500000000000),
 	end: rococoRegistry.createType('BlockNumber', 200000),
-	cap: rococoRegistry.createType(
-		'Balance',
-		'0x0000000000000000016345785d8a0000'
-	),
+	cap: rococoRegistry.createType('Balance', '0x0000000000000000016345785d8a0000'),
 	lastContribution: rococoRegistry.createType('LastContribution', {
 		preEnding: 6,
 	}),
@@ -83,32 +66,12 @@ const paraLifecycleObjectTwo = {
 	parathread: true,
 	parachain: false,
 };
-const crowdloanParaId1 = rococoTypeFactory.storageKey(
-	199,
-	'ParaId',
-	rococoApi.query.crowdloan.funds
-);
-const crowdloanParaId2 = rococoTypeFactory.storageKey(
-	200,
-	'ParaId',
-	rococoApi.query.crowdloan.funds
-);
-const paraLifecycleOne = rococoRegistry.createType(
-	'ParaLifecycle',
-	paraLifecycleObjectOne
-);
-const paraLifecycleTwo = rococoRegistry.createType(
-	'ParaLifecycle',
-	paraLifecycleObjectTwo
-);
-const accountIdOne = rococoRegistry.createType(
-	'AccountId',
-	'1TYrFCWxwHA5bhiXf6uLvPfG6eEvrzzL7uiPK3Yc6yHLUqc'
-);
-const accountIdTwo = rococoRegistry.createType(
-	'AccountId',
-	'13NXiLYYzVEjXxU3eaZNcrjEX9vPyVDNNpURCzK8Bj9BiCWH'
-);
+const crowdloanParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.crowdloan.funds);
+const crowdloanParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.crowdloan.funds);
+const paraLifecycleOne = rococoRegistry.createType('ParaLifecycle', paraLifecycleObjectOne);
+const paraLifecycleTwo = rococoRegistry.createType('ParaLifecycle', paraLifecycleObjectTwo);
+const accountIdOne = rococoRegistry.createType('AccountId', '1TYrFCWxwHA5bhiXf6uLvPfG6eEvrzzL7uiPK3Yc6yHLUqc');
+const accountIdTwo = rococoRegistry.createType('AccountId', '13NXiLYYzVEjXxU3eaZNcrjEX9vPyVDNNpURCzK8Bj9BiCWH');
 const balanceOfOne = rococoRegistry.createType('BalanceOf', 1000000);
 const balanceOfTwo = rococoRegistry.createType('BalanceOf', 2000000);
 
@@ -137,16 +100,8 @@ const fundsKeys = () =>
 /**
  * Used for parachain paras
  */
-const paraLifeCycleParaId1 = rococoTypeFactory.storageKey(
-	199,
-	'ParaId',
-	rococoApi.query.paras.paraLifecycles
-);
-const paraLifeCycleParaId2 = rococoTypeFactory.storageKey(
-	200,
-	'ParaId',
-	rococoApi.query.paras.paraLifecycles
-);
+const paraLifeCycleParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.paras.paraLifecycles);
+const paraLifeCycleParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.paras.paraLifecycles);
 
 const parasLifecyclesEntriesAt = () =>
 	Promise.resolve().then(() => {
@@ -176,30 +131,13 @@ const parasLifecyclesAt = () =>
 /**
  * Used for parachain leases
  */
-const leasesParaId1 = rococoTypeFactory.storageKey(
-	199,
-	'ParaId',
-	rococoApi.query.slots.leases
-);
-const leasesParaId2 = rococoTypeFactory.storageKey(
-	200,
-	'ParaId',
-	rococoApi.query.slots.leases
-);
-const leasesTupleOne = rococoTypeFactory.tupleOf(
-	[accountIdOne, balanceOfOne],
-	['AccountId', 'BalanceOf']
-);
-const leasesTupleTwo = rococoTypeFactory.tupleOf(
-	[accountIdTwo, balanceOfTwo],
-	['AccountId', 'BalanceOf']
-);
+const leasesParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.slots.leases);
+const leasesParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.slots.leases);
+const leasesTupleOne = rococoTypeFactory.tupleOf([accountIdOne, balanceOfOne], ['AccountId', 'BalanceOf']);
+const leasesTupleTwo = rococoTypeFactory.tupleOf([accountIdTwo, balanceOfTwo], ['AccountId', 'BalanceOf']);
 const parasOptionsOne = rococoTypeFactory.optionOf(leasesTupleOne);
 const parasOptionsTwo = rococoTypeFactory.optionOf(leasesTupleTwo);
-const vectorLeases = rococoTypeFactory.vecOf([
-	parasOptionsOne,
-	parasOptionsTwo,
-]);
+const vectorLeases = rococoTypeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
 export const emptyVectorLeases = rococoRegistry.createType('Vec<Raw>', []);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
@@ -222,10 +160,7 @@ export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
 		const beginEnd = rococoRegistry.createType('BlockNumber', 780000);
 		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
-		const vectorAuctions = rococoTypeFactory.vecOf([
-			leasePeriodIndex,
-			beginEnd,
-		]);
+		const vectorAuctions = rococoTypeFactory.vecOf([leasePeriodIndex, beginEnd]);
 		const optionAuctions = rococoTypeFactory.optionOf(vectorAuctions);
 
 		return optionAuctions;
@@ -247,26 +182,22 @@ const auctionsWinningsAt = () =>
 		const paraId2 = rococoRegistry.createType('ParaId', 200);
 		const tupleOne = rococoTypeFactory.tupleOf(
 			[accountIdOne, paraId1, balanceOfOne],
-			['AccountId', 'ParaId', 'BalanceOf']
+			['AccountId', 'ParaId', 'BalanceOf'],
 		);
 		const tupleTwo = rococoTypeFactory.tupleOf(
 			[accountIdTwo, paraId2, balanceOfTwo],
-			['AccountId', 'ParaId', 'BalanceOf']
+			['AccountId', 'ParaId', 'BalanceOf'],
 		);
 		const parasOptionsOne = rococoTypeFactory.optionOf(tupleOne);
 		const parasOptionsTwo = rococoTypeFactory.optionOf(tupleTwo);
 
 		// No bids for the remaining slot ranges
 		const mockWinningOptions = new Array(8).fill(
-			rococoRegistry.createType('Option<Raw>', null) // This is just `Option::None`
+			rococoRegistry.createType('Option<Raw>', null), // This is just `Option::None`
 		) as Option<Tuple>[];
 
 		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
-		const vectorWinnings = rococoTypeFactory.vecOf([
-			parasOptionsOne,
-			parasOptionsTwo,
-			...mockWinningOptions,
-		]);
+		const vectorWinnings = rococoTypeFactory.vecOf([parasOptionsOne, parasOptionsTwo, ...mockWinningOptions]);
 		const optionWinnings = rococoTypeFactory.optionOf(vectorWinnings);
 
 		return optionWinnings;
@@ -276,9 +207,7 @@ const auctionsWinningsAt = () =>
  * Used for parachain ParasHeads
  */
 const eventsAt = () =>
-	Promise.resolve().then(() =>
-		polkadotRegistryV9300.createType('Vec<FrameSystemEventRecord>', eventsHex)
-	);
+	Promise.resolve().then(() => polkadotRegistryV9300.createType('Vec<FrameSystemEventRecord>', eventsHex));
 
 const historicApi = {
 	consts: {
@@ -372,10 +301,7 @@ describe('ParasService', () => {
 				leasePeriods: ['13', '14', '15', '16'],
 			};
 
-			const response = await parasService.crowdloansInfo(
-				blockHash789629,
-				paraId
-			);
+			const response = await parasService.crowdloansInfo(blockHash789629, paraId);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -427,8 +353,7 @@ describe('ParasService', () => {
 		});
 
 		it('Should have `null` `leases` when its length is equal to 0', async () => {
-			const emptyLeasesAt = () =>
-				Promise.resolve().then(() => emptyVectorLeases);
+			const emptyLeasesAt = () => Promise.resolve().then(() => emptyVectorLeases);
 
 			(historicApi.query.slots.leases as unknown) = emptyLeasesAt;
 
@@ -507,34 +432,24 @@ describe('ParasService', () => {
 		 * @param blockNumber Current block head returned by header
 		 * @returns
 		 */
-		const generateOverrideHeader = (
-			blockNumber: number
-		): Record<string, unknown> => {
+		const generateOverrideHeader = (blockNumber: number): Record<string, unknown> => {
 			return {
-				parentHash:
-					'0x205da5dba43bbecae52b44912249480aa9f751630872b6b6ba1a9d2aeabf0177',
+				parentHash: '0x205da5dba43bbecae52b44912249480aa9f751630872b6b6ba1a9d2aeabf0177',
 				number: blockNumber,
-				stateRoot:
-					'0x023b5bb1bc10a1a91a9ef683f46a8bb09666c50476d5592bd6575a73777eb173',
-				extrinsicsRoot:
-					'0x4c1d65bf6b57086f00d5df40aa0686ffbc581ef60878645613b1fc3303de5030',
+				stateRoot: '0x023b5bb1bc10a1a91a9ef683f46a8bb09666c50476d5592bd6575a73777eb173',
+				extrinsicsRoot: '0x4c1d65bf6b57086f00d5df40aa0686ffbc581ef60878645613b1fc3303de5030',
 				digest: {},
 			};
 		};
 
 		it('Should return the correct data during an ongoing endPeriod phase', async () => {
 			const leasePeriodIndex = new BN(39);
-			const leaseIndexArray = parasService['enumerateLeaseSets'](
-				historicApi,
-				leasePeriodIndex
-			);
+			const leaseIndexArray = parasService['enumerateLeaseSets'](historicApi, leasePeriodIndex);
 			// Remove the first two entries with splice because we have them in the expectedResponse.
 			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
-			const additionalWinningOptions = leaseIndexArray
-				.splice(2, leaseIndexArray.length - 2)
-				.map((k) => {
-					return { bid: null, leaseSet: sanitizeNumbers(k) };
-				});
+			const additionalWinningOptions = leaseIndexArray.splice(2, leaseIndexArray.length - 2).map((k) => {
+				return { bid: null, leaseSet: sanitizeNumbers(k) };
+			});
 
 			const expectedResponse = {
 				at: expectedAt,
@@ -574,8 +489,7 @@ describe('ParasService', () => {
 			const header = polkadotRegistry.createType('Header', overrideHeader);
 
 			// Override the mockApi
-			(mockApi.rpc.chain.getHeader as unknown) = () =>
-				Promise.resolve().then(() => header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => header);
 
 			const expectedResponse = {
 				at: {
@@ -595,8 +509,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 
 			// Set the MockApi back to its original self
-			(mockApi.rpc.chain.getHeader as unknown) = () =>
-				Promise.resolve().then(() => mockBlock789629.header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock789629.header);
 		});
 
 		it('Should return the correct data during a vrfDelay phase', async () => {
@@ -604,8 +517,7 @@ describe('ParasService', () => {
 			const header = polkadotRegistry.createType('Header', overrideHeader);
 
 			// Override the mockApi
-			(mockApi.rpc.chain.getHeader as unknown) = () =>
-				Promise.resolve().then(() => header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => header);
 
 			const expectedResponse = {
 				at: {
@@ -625,8 +537,7 @@ describe('ParasService', () => {
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 
 			// Set the MockApi back to its original self
-			(mockApi.rpc.chain.getHeader as unknown) = () =>
-				Promise.resolve().then(() => mockBlock789629.header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock789629.header);
 		});
 
 		it('Should return the correct null values when `auctionInfo` is `None`', async () => {
@@ -651,25 +562,15 @@ describe('ParasService', () => {
 	});
 	describe('ParasService.parasHead', () => {
 		it('Should return the correct response for CandidateIncluded methods', async () => {
-			const response = await parasService.parasHead(
-				blockHash789629,
-				'CandidateIncluded'
-			);
+			const response = await parasService.parasHead(blockHash789629, 'CandidateIncluded');
 
-			expect(sanitizeNumbers(response)).toStrictEqual(
-				parasHeadIncludedCandidatesResponse
-			);
+			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadIncludedCandidatesResponse);
 		});
 
 		it('Should return the correct response for CandidateBacked methods', async () => {
-			const response = await parasService.parasHead(
-				blockHash789629,
-				'CandidateBacked'
-			);
+			const response = await parasService.parasHead(blockHash789629, 'CandidateBacked');
 
-			expect(sanitizeNumbers(response)).toStrictEqual(
-				parasHeadBackedCandidatesResponse
-			);
+			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadBackedCandidatesResponse);
 		});
 	});
 });

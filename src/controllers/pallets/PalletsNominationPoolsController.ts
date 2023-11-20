@@ -22,11 +22,7 @@ import AbstractController from '../AbstractController';
 
 export default class PalletsNominationPoolController extends AbstractController<PalletsNominationPoolService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/nomination-pools',
-			new PalletsNominationPoolService(api)
-		);
+		super(api, '/pallets/nomination-pools', new PalletsNominationPoolService(api));
 		this.initRoutes();
 	}
 
@@ -39,16 +35,13 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 	private getNominationPoolById: RequestHandler = async (
 		{ params: { poolId }, query: { at, metadata } },
-		res
+		res,
 	): Promise<void> => {
 		/**
 		 * Verify our param `poolId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
-		const index = this.parseNumberOrThrow(
-			poolId,
-			'`poolId` path param is not a number'
-		);
+		const index = this.parseNumberOrThrow(poolId, '`poolId` path param is not a number');
 
 		const metadataArg = metadata === 'true';
 
@@ -56,19 +49,13 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 		PalletsNominationPoolController.sanitizedSend(
 			res,
-			await this.service.fetchNominationPoolById(index, hash, metadataArg)
+			await this.service.fetchNominationPoolById(index, hash, metadataArg),
 		);
 	};
 
-	private getNominationPoolInfo: RequestHandler = async (
-		{ query: { at } },
-		res
-	): Promise<void> => {
+	private getNominationPoolInfo: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		PalletsNominationPoolController.sanitizedSend(
-			res,
-			await this.service.fetchNominationPoolInfo(hash)
-		);
+		PalletsNominationPoolController.sanitizedSend(res, await this.service.fetchNominationPoolInfo(hash));
 	};
 }

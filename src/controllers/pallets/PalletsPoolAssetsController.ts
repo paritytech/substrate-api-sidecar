@@ -63,11 +63,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsPoolAssetsController extends AbstractController<PalletsPoolAssetsService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/pallets/pool-assets/:assetId',
-			new PalletsPoolAssetsService(api)
-		);
+		super(api, '/pallets/pool-assets/:assetId', new PalletsPoolAssetsService(api));
 		this.initRoutes();
 	}
 
@@ -75,22 +71,13 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getPoolAssetById]]);
 	}
 
-	private getPoolAssetById: RequestHandler = async (
-		{ params: { assetId }, query: { at } },
-		res
-	): Promise<void> => {
+	private getPoolAssetById: RequestHandler = async ({ params: { assetId }, query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
-		const index = this.parseNumberOrThrow(
-			assetId,
-			'`assetId` path param is not a number'
-		);
-		PalletsPoolAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchPoolAssetById(hash, index)
-		);
+		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
+		PalletsPoolAssetsController.sanitizedSend(res, await this.service.fetchPoolAssetById(hash, index));
 	};
 }

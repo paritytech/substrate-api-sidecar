@@ -32,9 +32,7 @@ export const getPalletErrors = {
 				name: 'ProposalMissing',
 				fields: [],
 				index: polkadotRegistryV9300.createType('u8', 1),
-				docs: polkadotRegistryV9300.createType('Vec<Text>', [
-					'Proposal does not exist',
-				]),
+				docs: polkadotRegistryV9300.createType('Vec<Text>', ['Proposal does not exist']),
 				args: [],
 			},
 		},

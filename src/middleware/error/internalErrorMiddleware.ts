@@ -28,12 +28,7 @@ import { Log } from '../../logging/Log';
  * @param res Express Response
  * @param next Express NextFunction
  */
-export const internalErrorMiddleware: ErrorRequestHandler = (
-	exception: unknown,
-	_req,
-	res,
-	next
-): void => {
+export const internalErrorMiddleware: ErrorRequestHandler = (exception: unknown, _req, res, next): void => {
 	// If express has started writing the response, we must default to the
 	// built in express error handler in order to close the connection.
 	if (res.headersSent) {

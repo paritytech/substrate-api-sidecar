@@ -22,24 +22,15 @@ import { BadRequest } from 'http-errors';
  *
  * @param queryParams An array of queryParams to check for. These are passed in at the controller level.
  */
-export const validateBooleanMiddleware = (
-	queryParams: string[]
-): RequestHandler => {
+export const validateBooleanMiddleware = (queryParams: string[]): RequestHandler => {
 	return (req, _res, next) => {
 		const errQueryParams: string[] = [];
 
 		for (const key of queryParams) {
 			if (req.query[key]) {
-				const queryParamVal =
-					typeof req.query[key] === 'string'
-						? (req.query[key] as string).toLowerCase()
-						: '';
+				const queryParamVal = typeof req.query[key] === 'string' ? (req.query[key] as string).toLowerCase() : '';
 				if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
-					errQueryParams.push(
-						`Query parameter: ${key} has an invalid boolean value of ${
-							req.query[key] as string
-						}`
-					);
+					errQueryParams.push(`Query parameter: ${key} has an invalid boolean value of ${req.query[key] as string}`);
 				}
 			}
 		}

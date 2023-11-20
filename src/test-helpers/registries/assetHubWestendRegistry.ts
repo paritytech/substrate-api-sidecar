@@ -31,7 +31,7 @@ function createAssetHubWestendRegistry(): TypeRegistry {
 			ss58Format: 42,
 			tokenDecimals: 12,
 			tokenSymbol: 'WND',
-		})
+		}),
 	);
 
 	registry.register(getSpecTypes(registry, 'westmint', 'westmint', 9435));

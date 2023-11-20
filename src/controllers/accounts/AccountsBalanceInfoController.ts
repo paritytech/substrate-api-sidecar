@@ -57,20 +57,12 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
 	constructor(api: ApiPromise) {
-		super(
-			api,
-			'/accounts/:address/balance-info',
-			new AccountsBalanceInfoService(api)
-		);
+		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}
 
 	protected initRoutes(): void {
-		this.router.use(
-			this.path,
-			validateAddress,
-			validateBoolean(['denominated'])
-		);
+		this.router.use(this.path, validateAddress, validateBoolean(['denominated']));
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}
@@ -83,7 +75,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
 		{ params: { address }, query: { at, token, denominated } },
-		res
+		res,
 	): Promise<void> => {
 		const tokenArg =
 			typeof token === 'string'
@@ -97,13 +89,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 
 		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalanceInfo(
-				hash,
-				historicApi,
-				address,
-				tokenArg,
-				withDenomination
-			)
+			await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination),
 		);
 	};
 }

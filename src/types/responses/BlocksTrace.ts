@@ -14,12 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-	ActionGroup,
-	Operation,
-	TraceEvent,
-	TraceSpan,
-} from '../../services/blocks/trace';
+import { ActionGroup, Operation, TraceEvent, TraceSpan } from '../../services/blocks/trace';
 import { IAt } from './At';
 
 export interface BlocksTrace {

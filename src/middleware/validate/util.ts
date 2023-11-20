@@ -23,11 +23,7 @@ import { RequestHandler } from 'express-serve-static-core';
  * @param name String for tests to log.
  * @param req Express Request containing thing it errors on.
  */
-export const doesNotErrorWith = (
-	name: string,
-	req: Request,
-	middleware: RequestHandler
-): void => {
+export const doesNotErrorWith = (name: string, req: Request, middleware: RequestHandler): void => {
 	it(`does not error with ${name}`, () => {
 		const next = jest.fn();
 		middleware(req, null as unknown as Response, next);
@@ -44,12 +40,7 @@ export const doesNotErrorWith = (
  * @param req Express Request containing thing it errors on.
  * @param err Expected error that it passes to next.
  */
-export const errorsWith = (
-	name: string,
-	req: Request,
-	err: unknown,
-	middleware: RequestHandler
-): void => {
+export const errorsWith = (name: string, req: Request, err: unknown, middleware: RequestHandler): void => {
 	it(`errors with ${name}`, () => {
 		const next = jest.fn();
 

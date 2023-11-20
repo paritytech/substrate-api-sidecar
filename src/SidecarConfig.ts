@@ -41,9 +41,7 @@ export class SidecarConfig {
 			console.log(hr());
 			console.log(config.GenEnv().join('\n'));
 			console.log(hr());
-			console.log(
-				'You may copy the snippet above in a .env.foobar file, then use it with:'
-			);
+			console.log('You may copy the snippet above in a .env.foobar file, then use it with:');
 			console.log('    NODE_ENV=foobar yarn start\n');
 			console.log('Invalid config, exiting...');
 			process.exit(1);
@@ -55,21 +53,12 @@ export class SidecarConfig {
 			EXPRESS: {
 				HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
 				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
-				KEEP_ALIVE_TIMEOUT: config.Get(
-					MODULES.EXPRESS,
-					CONFIG.KEEP_ALIVE_TIMEOUT
-				) as number,
+				KEEP_ALIVE_TIMEOUT: config.Get(MODULES.EXPRESS, CONFIG.KEEP_ALIVE_TIMEOUT) as number,
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,
-				TYPES_BUNDLE: config.Get(
-					MODULES.SUBSTRATE,
-					CONFIG.TYPES_BUNDLE
-				) as string,
-				TYPES_CHAIN: config.Get(
-					MODULES.SUBSTRATE,
-					CONFIG.TYPES_CHAIN
-				) as string,
+				TYPES_BUNDLE: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_BUNDLE) as string,
+				TYPES_CHAIN: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_CHAIN) as string,
 				TYPES_SPEC: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_SPEC) as string,
 				TYPES: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES) as string,
 			},
@@ -80,14 +69,8 @@ export class SidecarConfig {
 				STRIP_ANSI: config.Get(MODULES.LOG, CONFIG.STRIP_ANSI) as boolean,
 				WRITE: config.Get(MODULES.LOG, CONFIG.WRITE) as boolean,
 				WRITE_PATH: config.Get(MODULES.LOG, CONFIG.WRITE_PATH) as string,
-				WRITE_MAX_FILE_SIZE: config.Get(
-					MODULES.LOG,
-					CONFIG.WRITE_MAX_FILE_SIZE
-				) as number,
-				WRITE_MAX_FILES: config.Get(
-					MODULES.LOG,
-					CONFIG.WRITE_MAX_FILES
-				) as number,
+				WRITE_MAX_FILE_SIZE: config.Get(MODULES.LOG, CONFIG.WRITE_MAX_FILE_SIZE) as number,
+				WRITE_MAX_FILES: config.Get(MODULES.LOG, CONFIG.WRITE_MAX_FILES) as number,
 			},
 		};
 

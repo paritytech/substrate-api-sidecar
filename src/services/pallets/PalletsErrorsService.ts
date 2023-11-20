@@ -36,16 +36,12 @@ interface IFetchErrorItemArgs extends IFetchPalletArgs {
 export class PalletsErrorsService extends AbstractPalletsService {
 	async fetchErrorItem(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, errorItemId, metadata }: IFetchErrorItemArgs
+		{ hash, palletId, errorItemId, metadata }: IFetchErrorItemArgs,
 	): Promise<IPalletErrorsItem> {
 		const metadataFieldType = 'errors';
 		const palletMetadata = historicApi.registry.metadata;
 
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			palletMetadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
 		// Even if `errorItemMeta` is not used, we call this function to ensure it exists. The side effects
 		// of the error item not existing are that `findErrorItemMeta` will throw.
@@ -53,7 +49,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 			historicApi,
 			palletMeta,
 			errorItemId,
-			metadataFieldType
+			metadataFieldType,
 		) as ErrorMetadataLatest;
 
 		let palletErrorMetadata: ErrorMetadataLatest | undefined;
@@ -77,15 +73,11 @@ export class PalletsErrorsService extends AbstractPalletsService {
 
 	async fetchErrors(
 		historicApi: ApiDecoration<'promise'>,
-		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean }
+		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletErrors> {
 		const metadataFieldType = 'errors';
 		const metadata = historicApi.registry.metadata;
-		const [palletMeta, palletMetaIdx] = this.findPalletMeta(
-			metadata,
-			palletId,
-			metadataFieldType
-		);
+		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
 		const parsedPalletName = stringCamelCase(palletMeta.name.toString());
@@ -95,9 +87,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 		if ((palletMeta.errors as unknown as ErrorMetadataLatest).isEmpty) {
 			items = [];
 		} else if (onlyIds) {
-			items = Object.entries(errors).map(
-				(errorItem) => errorItem[0] as unknown as Text
-			);
+			items = Object.entries(errors).map((errorItem) => errorItem[0] as unknown as Text);
 		} else {
 			items = [] as ErrorMetadataLatest[];
 			for (const [, value] of Object.entries(errors)) {

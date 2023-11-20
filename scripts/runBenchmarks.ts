@@ -19,12 +19,7 @@ import fs from 'fs';
 
 import { benchmarkConfig } from './benchmarkConfig';
 import { defaultSasBuildOpts, defaultSasStartOpts } from './config';
-import {
-	killAll,
-	launchProcess,
-	setLogLevel,
-	setWsUrl,
-} from './sidecarScriptApi';
+import { killAll, launchProcess, setLogLevel, setWsUrl } from './sidecarScriptApi';
 import { IBenchParseArgs, IBenchResult, ProcsType, StatusCode } from './types';
 
 // Stores all the processes
@@ -96,10 +91,7 @@ const writeResultsToFile = (results: IBenchResult[]) => {
  * @param endpoint Endpoint that reflects one of the keys from `benchmarkConfig`.
  * @param wsUrl `wsUrl` to benchmark off of.
  */
-const launchBenchmark = async (
-	endpoint: string,
-	wsUrl: string
-): Promise<string> => {
+const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string> => {
 	const { Failed } = StatusCode;
 	// Set the ws url env var
 	setWsUrl(wsUrl);
@@ -219,4 +211,6 @@ process.on('SIGHUP', function () {
 	process.exit();
 });
 
-main(args).finally(() => process.exit());
+main(args)
+	.catch((err) => console.error(err))
+	.finally(() => process.exit());

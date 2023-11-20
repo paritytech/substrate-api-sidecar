@@ -24,9 +24,7 @@ const nodeNetworkService = new NodeNetworkService(defaultMockApi);
 describe('NodeNetworkService', () => {
 	describe('fetchNetwork', () => {
 		it('works when ApiPromise works', async () => {
-			expect(
-				sanitizeNumbers(await nodeNetworkService.fetchNetwork())
-			).toStrictEqual(nodeNetworkResponse);
+			expect(sanitizeNumbers(await nodeNetworkService.fetchNetwork())).toStrictEqual(nodeNetworkResponse);
 		});
 	});
 });

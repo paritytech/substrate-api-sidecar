@@ -23,8 +23,7 @@ import { mockAssetHubKusamaApi } from '../test-helpers/mock/mockAssetHubKusamaAp
 import { blockHash523510 } from '../test-helpers/mock/mockBlock523510';
 import { PalletsForeignAssetsService } from './PalletsForeignAssetsService';
 
-const foreignAssetsEntriesAt = () =>
-	Promise.resolve().then(() => foreignAssetsEntries());
+const foreignAssetsEntriesAt = () => Promise.resolve().then(() => foreignAssetsEntries());
 
 const mockApi = {
 	...mockAssetHubKusamaApi,
@@ -98,9 +97,7 @@ describe('PalletsForeignAssetsService', () => {
 				],
 			};
 
-			const response = await palletsForeignAssetsService.fetchForeignAssets(
-				blockHash523510
-			);
+			const response = await palletsForeignAssetsService.fetchForeignAssets(blockHash523510);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});

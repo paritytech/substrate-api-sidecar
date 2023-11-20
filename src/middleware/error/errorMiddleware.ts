@@ -26,12 +26,7 @@ import { Log } from '../../logging/Log';
  * @param res Express Response
  * @param next Express NextFunction
  */
-export const errorMiddleware: ErrorRequestHandler = (
-	err: unknown,
-	_req,
-	res,
-	next
-): void => {
+export const errorMiddleware: ErrorRequestHandler = (err: unknown, _req, res, next): void => {
 	if (res.headersSent || !(err instanceof Error)) {
 		return next(err);
 	}

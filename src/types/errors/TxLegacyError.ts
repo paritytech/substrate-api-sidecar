@@ -23,7 +23,7 @@ export interface ITxLegacyError extends IBasicLegacyError {
 	code: number;
 	data?: string; // deprecated
 	transaction?: string;
-	cause: string | unknown;
+	cause: unknown;
 	stack: string;
 	at?: string;
 }
@@ -34,8 +34,5 @@ export interface ITxLegacyError extends IBasicLegacyError {
  * @param thing to check type of
  */
 export function isTxLegacyError(thing: unknown): thing is ITxLegacyError {
-	return (
-		(thing as ITxLegacyError).cause !== undefined &&
-		(thing as ITxLegacyError).error !== undefined
-	);
+	return (thing as ITxLegacyError).cause !== undefined && (thing as ITxLegacyError).error !== undefined;
 }

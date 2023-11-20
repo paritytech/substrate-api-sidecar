@@ -50,15 +50,9 @@ async function main() {
 			? new HttpProvider(config.SUBSTRATE.URL)
 			: new WsProvider(config.SUBSTRATE.URL),
 		/* eslint-disable @typescript-eslint/no-var-requires */
-		typesBundle: TYPES_BUNDLE
-			? (require(TYPES_BUNDLE) as OverrideBundleType)
-			: (tempTypesBundle as OverrideBundleType),
-		typesChain: TYPES_CHAIN
-			? (require(TYPES_CHAIN) as Record<string, RegistryTypes>)
-			: undefined,
-		typesSpec: TYPES_SPEC
-			? (require(TYPES_SPEC) as Record<string, RegistryTypes>)
-			: undefined,
+		typesBundle: TYPES_BUNDLE ? (require(TYPES_BUNDLE) as OverrideBundleType) : (tempTypesBundle as OverrideBundleType),
+		typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,
+		typesSpec: TYPES_SPEC ? (require(TYPES_SPEC) as Record<string, RegistryTypes>) : undefined,
 		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
 		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
@@ -69,11 +63,7 @@ async function main() {
 		api.rpc.state.getRuntimeVersion(),
 	]);
 
-	startUpPrompt(
-		config.SUBSTRATE.URL,
-		chainName.toString(),
-		implName.toString()
-	);
+	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	// Create our App
 	const app = new App({
@@ -118,21 +108,18 @@ async function main() {
 function startUpPrompt(url: string, chainName: string, implName: string) {
 	const { logger } = Log;
 
-	logger.info(
-		`Connected to chain ${chainName} on the ${implName} client at ${url}`
-	);
+	logger.info(`Connected to chain ${chainName} on the ${implName} client at ${url}`);
 
 	// Split the Url to check for 2 things. Secure connection, and if its a local IP.
 	const splitUrl: string[] = url.split(':');
 	// If its 'ws' its not a secure connection.
 	const isSecure: boolean = splitUrl[0] === 'wss' || splitUrl[0] === 'https';
 	// Check if its a local IP.
-	const isLocal: boolean =
-		splitUrl[1] === '//127.0.0.1' || splitUrl[1] === '//localhost';
+	const isLocal: boolean = splitUrl[1] === '//127.0.0.1' || splitUrl[1] === '//localhost';
 
 	if (!isSecure && !isLocal) {
 		logger.warn(
-			`Using unencrypted connection to a public node (${url}); All traffic is sent over the internet in cleartext.`
+			`Using unencrypted connection to a public node (${url}); All traffic is sent over the internet in cleartext.`,
 		);
 	}
 }

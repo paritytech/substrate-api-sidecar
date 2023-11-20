@@ -51,11 +51,7 @@ const mockContractPromise = {
 describe('ContractsInkService', () => {
 	it('fetchContractCall', async () => {
 		const address = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
-		const result = await contractInkService.fetchContractCall(
-			mockContractPromise,
-			address,
-			'get'
-		);
+		const result = await contractInkService.fetchContractCall(mockContractPromise, address, 'get');
 		const expectedResponse = {
 			debugMessage: '',
 			gasConsumed: '7437907045',

@@ -16,6 +16,4 @@
 
 import block1800000 from './1800000.json';
 
-export const assetHubWestendBlockEndpoints = [
-	['/blocks/10000', JSON.stringify(block1800000)],
-];
+export const assetHubWestendBlockEndpoints = [['/blocks/10000', JSON.stringify(block1800000)]];

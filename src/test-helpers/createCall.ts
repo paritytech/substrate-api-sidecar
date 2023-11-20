@@ -34,11 +34,7 @@ type CallArgs = { [i: string]: CallArgValues | CallArgs };
  * @param method name of method in metadata (lowercase)
  * @param args arguments to call as an object
  */
-export function createCall(
-	pallet: string,
-	method: string,
-	args: CallArgs
-): Call {
+export function createCall(pallet: string, method: string, args: CallArgs): Call {
 	// Get the call signature
 	const call = decoratedKusamaMetadata.tx[pallet][method];
 
@@ -47,6 +43,6 @@ export function createCall(
 		// We are making the assumption that meta.args will have correct ordering
 		...call.meta.args.map((arg) => {
 			return args[stringCamelCase(arg.name.toString())];
-		})
+		}),
 	);
 }

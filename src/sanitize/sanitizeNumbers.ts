@@ -14,38 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-	BTreeSet,
-	Compact,
-	Enum,
-	Option,
-	Set as CodecSet,
-	Struct,
-} from '@polkadot/types';
-import {
-	AbstractArray,
-	AbstractInt,
-	Bytes,
-	CodecMap,
-	Json,
-} from '@polkadot/types-codec';
-import {
-	hexToU8a,
-	isHex,
-	isObject,
-	stringCamelCase,
-	u8aToBn,
-} from '@polkadot/util';
+import { BTreeSet, Compact, Enum, Option, Set as CodecSet, Struct } from '@polkadot/types';
+import { AbstractArray, AbstractInt, Bytes, CodecMap, Json } from '@polkadot/types-codec';
+import { hexToU8a, isHex, isObject, stringCamelCase, u8aToBn } from '@polkadot/util';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 
-import {
-	AnyJson,
-	Codec,
-	isAnyJson,
-	isCodec,
-	isToJSONable,
-} from '../types/polkadot-js';
+import { AnyJson, Codec, isAnyJson, isCodec, isToJSONable } from '../types/polkadot-js';
 import { IMetadataOptions, ISanitizeOptions } from '../types/sanitize';
 
 /**
@@ -68,30 +43,28 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
 	}
 
 	if (value instanceof Struct) {
-		return value.defKeys.reduce((jsonStruct, key) => {
-			const property = value.get(key);
+		return value.defKeys.reduce(
+			(jsonStruct, key) => {
+				const property = value.get(key);
 
-			if (!property) {
+				if (!property) {
+					return jsonStruct;
+				}
+
+				jsonStruct[key] = sanitizeNumbers(property, options);
+
+				/**
+				 * If the data we are sanitizing is metadata, ex: `/runtime/metadata`,
+				 * we want to sanitize all exceptions that arent caught using `sanitizeNumbers`
+				 */
+				if (options?.metadataOpts) {
+					sanitizeMetadataExceptions(key, jsonStruct, property, options.metadataOpts);
+				}
+
 				return jsonStruct;
-			}
-
-			jsonStruct[key] = sanitizeNumbers(property, options);
-
-			/**
-			 * If the data we are sanitizing is metadata, ex: `/runtime/metadata`,
-			 * we want to sanitize all exceptions that arent caught using `sanitizeNumbers`
-			 */
-			if (options?.metadataOpts) {
-				sanitizeMetadataExceptions(
-					key,
-					jsonStruct,
-					property,
-					options.metadataOpts
-				);
-			}
-
-			return jsonStruct;
-		}, {} as Record<string, AnyJson>);
+			},
+			{} as Record<string, AnyJson>,
+		);
 	}
 
 	if (value instanceof Json) {
@@ -164,10 +137,7 @@ function sanitizeCodec(value: Codec, options: ISanitizeOptions = {}): AnyJson {
  * @param data - any arbitrary data that Sidecar might send
  * @param options - set of options specific to sanitization
  */
-export function sanitizeNumbers(
-	data: unknown,
-	options: ISanitizeOptions = {}
-): AnyJson {
+export function sanitizeNumbers(data: unknown, options: ISanitizeOptions = {}): AnyJson {
 	if (data !== 0 && !data) {
 		// All falsy values are valid AnyJson, but we want to force numbers to strings
 		return data as AnyJson;
@@ -206,11 +176,14 @@ export function sanitizeNumbers(
 
 	// Pretty much everything non-primitive is an object, so we need to check this last
 	if (isObject(data)) {
-		return Object.entries(data).reduce((sanitizedObject, [key, value]) => {
-			sanitizedObject[key] = sanitizeNumbers(value, options);
+		return Object.entries(data).reduce(
+			(sanitizedObject, [key, value]) => {
+				sanitizedObject[key] = sanitizeNumbers(value, options);
 
-			return sanitizedObject;
-		}, {} as { [prop: string]: AnyJson });
+				return sanitizedObject;
+			},
+			{} as { [prop: string]: AnyJson },
+		);
 	}
 
 	if (!isAnyJson(data)) {
@@ -229,10 +202,7 @@ export function sanitizeNumbers(
  * @param map Map | CodecMap
  * @param options - set of options specific to sanitization
  */
-function mapTypeSanitizeKeyValue(
-	map: Map<unknown, unknown> | CodecMap,
-	options: ISanitizeOptions = {}
-) {
+function mapTypeSanitizeKeyValue(map: Map<unknown, unknown> | CodecMap, options: ISanitizeOptions = {}) {
 	const jsonMap: AnyJson = {};
 
 	map.forEach((value: unknown, key: unknown) => {
@@ -241,9 +211,7 @@ function mapTypeSanitizeKeyValue(
 			nonCodecKey = JSON.stringify(nonCodecKey);
 		}
 		if (!(typeof nonCodecKey === 'string' || typeof nonCodecKey === 'number')) {
-			throw new InternalServerError(
-				'Unexpected non-string and non-number key while sanitizing a Map-like type'
-			);
+			throw new InternalServerError('Unexpected non-string and non-number key while sanitizing a Map-like type');
 		}
 
 		jsonMap[nonCodecKey] = sanitizeNumbers(value, options);
@@ -265,7 +233,7 @@ function sanitizeMetadataExceptions(
 	key: string,
 	struct: Record<string, AnyJson>,
 	property: Codec,
-	metadataOpts: IMetadataOptions
+	metadataOpts: IMetadataOptions,
 ): void {
 	switch (metadataOpts.version) {
 		case 14:
@@ -289,7 +257,7 @@ function sanitizeMetadataExceptionsV14(
 	key: string,
 	struct: Record<string, AnyJson>,
 	property: Codec,
-	metadataOpts: IMetadataOptions
+	metadataOpts: IMetadataOptions,
 ) {
 	const { registry } = metadataOpts;
 	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
@@ -304,9 +272,7 @@ function sanitizeMetadataExceptionsV14(
 		 * Get the lookup typedef. It is safe to assume that we have the struct
 		 * `type` field when `key === value` is true.
 		 */
-		const typeDef = registry.lookup.getTypeDef(
-			parseFloat(struct.type as string)
-		);
+		const typeDef = registry.lookup.getTypeDef(parseFloat(struct.type as string));
 		/**
 		 * Checks u128, u64, u32, u16, u8
 		 */
@@ -322,10 +288,7 @@ function sanitizeMetadataExceptionsV14(
 		if (isHex(struct[key]) && (typeDef.lookupName || typeDef.type)) {
 			const typeName = typeDef.lookupName || typeDef.type;
 
-			struct[key] = sanitizeNumbers(
-				registry.createType(typeName, u8aValue).toJSON(),
-				{ metadataOpts }
-			);
+			struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
 		}
 	}
 }

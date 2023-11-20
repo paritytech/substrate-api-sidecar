@@ -18,12 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
-import {
-	assetApprovals,
-	assetsAccount,
-	assetsInfo,
-	assetsMetadata,
-} from '../test-helpers/mock/assets/mockAssetData';
+import { assetApprovals, assetsAccount, assetsInfo, assetsMetadata } from '../test-helpers/mock/assets/mockAssetData';
 import { PalletsAssetsService } from './PalletsAssetsService';
 
 const mockApi = {
@@ -71,10 +66,7 @@ describe('PalletsAssetsService', () => {
 				},
 			};
 
-			const response = await palletsAssetsService.fetchAssetById(
-				blockHash789629,
-				10
-			);
+			const response = await palletsAssetsService.fetchAssetById(blockHash789629, 10);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 		});
