@@ -9,7 +9,7 @@ RUN yarn install && \
 
 # ---------------------------------
 
-FROM docker.io/library/node:16.15.1-alpine
+FROM docker.io/library/node:18.12.1-alpine
 
 # metadata
 ARG VERSION=""
