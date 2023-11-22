@@ -12,7 +12,7 @@ install_wasm_pack() {
         Darwin*)    machine=Darwin;;
     esac
 
-    if [ $(cargo install --list | grep -q "wasm-pack v${WASM_PACK_VERSION}") ]; then
+    if [ $(cargo install --list | grep -q "wasm-pack v${WASM_PACK_VERSION}"; echo $?) != 0 ]; then
         echo "$WASM_PACK v${WASM_PACK_VERSION} is not installed, and is required to build calc, would you like to install it now? (Y/N)";
         read response
         if [ "$response" == "y" ] || [ "$response" == "Y" ]; then
