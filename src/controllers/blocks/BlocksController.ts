@@ -159,7 +159,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, finalized } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, finalizedKey } },
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -168,7 +168,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const finalizeOverride = finalized === 'false';
+		const finalizeOverride = finalizedKey === 'false';
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		let omitFinalizedTag = !this.options.finalizes ? true : false;
