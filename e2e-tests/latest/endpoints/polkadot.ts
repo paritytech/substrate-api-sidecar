@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -146,27 +146,27 @@ export const polkadot: IConfig = {
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/consts': {
-		path: '/pallets/democracy/consts',
+		path: '/pallets/MessageQueue/consts',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/consts?onlyIds=true': {
-		path: '/pallets/14/consts',
+		path: '/pallets/100/consts',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/consts/{constItemId}': {
-		path: '/pallets/democracy/consts/EnactmentPeriod',
+		path: '/pallets/MessageQueue/consts/ServiceWeight',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/dispatchables': {
-		path: '/pallets/democracy/dispatchables',
+		path: '/pallets/XcmPallet/dispatchables',
 		queryParams: [],
 	},
 	'/pallets/{palletId}/dispatchables?onlyIds=true': {
-		path: '/pallets/14/dispatchables',
+		path: '/pallets/99/dispatchables',
 		queryParams: [],
 	},
 	'/pallets/{palletId}/dispatchables/{dispatchableItemId}': {
-		path: '/pallets/democracy/dispatchables/vote',
+		path: '/pallets/XcmPallet/dispatchables/limitedTeleportAssets',
 		queryParams: [],
 	},
 	'/pallets/{palletId}/dispatchables/{dispatchableItemIdWithMultipleWordName}': {
@@ -178,11 +178,11 @@ export const polkadot: IConfig = {
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/errors?onlyIds=true': {
-		path: '/pallets/17/errors',
+		path: '/pallets/34/errors',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/errors/{errorItemId}': {
-		path: '/pallets/democracy/errors/ValueLow',
+		path: '/pallets/crowdloan/errors/VrfDelayInProgress',
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/events': {
@@ -190,7 +190,7 @@ export const polkadot: IConfig = {
 		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/events/{eventItemId}': {
-		path: '/pallets/democracy/events/Proposed',
+		path: '/pallets/auctions/events/ReserveConfiscated',
 		queryParams: ['at={blockId}', 'metadata=true'],
 	},
 	'/pallets/nominationPoools/info': {
