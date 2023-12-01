@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -42,8 +42,8 @@ export class PalletsConstantsService extends AbstractPalletsService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
-		// Even if `constantItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the constant item not existing are that `findConstantItemMeta` will throw.
+		// Even if `constantItemMetadata` is not used, we call this function to ensure it exists. The side effects
+		// of the constant item not existing are that `getConstItemMeta` will throw.
 		const constantItemMetadata = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,
