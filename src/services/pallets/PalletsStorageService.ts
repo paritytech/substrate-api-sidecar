@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 		const palletName = stringCamelCase(palletMeta.name);
 
 		// Even if `storageItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the storage item not existing are that `findPalletItemMeta` will throw.
+		// of the storage item not existing are that `getStorageItemMeta` will throw.
 		const storageItemMeta = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,

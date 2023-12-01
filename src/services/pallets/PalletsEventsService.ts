@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -44,8 +44,8 @@ export class PalletsEventsService extends AbstractPalletsService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
-		// Even if `eventItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the event item not existing are that `findPalletFieldItemMeta` will throw.
+		// Even if `eventItemMetadata` is not used, we call this function to ensure it exists. The side effects
+		// of the event item not existing are that `getEventItemMeta` will throw.
 		const eventItemMetadata = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,

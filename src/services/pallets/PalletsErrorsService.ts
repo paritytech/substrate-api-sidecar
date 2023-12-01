@@ -43,8 +43,8 @@ export class PalletsErrorsService extends AbstractPalletsService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
-		// Even if `errorItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the error item not existing are that `findErrorItemMeta` will throw.
+		// Even if `errorItemMetadata` is not used, we call this function to ensure it exists. The side effects
+		// of the error item not existing are that `getErrorItemMeta` will throw.
 		const errorItemMetadata = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,

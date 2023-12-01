@@ -42,8 +42,8 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(palletMetadata, palletId, metadataFieldType);
 
-		// Even if `dispatchableItemMeta` is not used, we call this function to ensure it exists. The side effects
-		// of the dispatchable item not existing are that `findPalletFieldItemMeta` will throw.
+		// Even if `dispatchableItemMetadata` is not used, we call this function to ensure it exists. The side effects
+		// of the dispatchable item not existing are that `getDispatchablesItemMeta` will throw.
 		const dispatchableItemMetadata = this.findPalletFieldItemMeta(
 			historicApi,
 			palletMeta,
