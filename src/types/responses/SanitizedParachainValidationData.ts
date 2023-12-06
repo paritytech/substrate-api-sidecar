@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ISanitizedCall } from '.';
-import { ISanitizedParachainInherentData } from './SanitizedParachainInherentData';
-import { ISanitizedParentInherentData } from './SanitizedParentInherentData';
-
-export interface ISanitizedArgs {
-	call?: ISanitizedCall;
-	calls?: ISanitizedCall[];
-	data?: ISanitizedParentInherentData | ISanitizedParachainInherentData;
+export interface ISanitizedParachainValidationData {
+	parentHead: `0x${string}`;
+	relayParentNumber: string;
+	relayParentStorageRoot: `0x${string}`;
+	maxPovSize: string;
 }

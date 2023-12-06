@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ISanitizedCall } from '.';
-import { ISanitizedParachainInherentData } from './SanitizedParachainInherentData';
-import { ISanitizedParentInherentData } from './SanitizedParentInherentData';
+import { IBlockRaw } from './BlockRaw';
+import { ISanitizedBackedCandidate } from './SanitizedBackedCandidate';
+import { ISanitizedBitfield } from './SanitizedBitfield';
+import { ISanitizedDisputeStatementSet } from './SanitizediDisputeStatementSet';
 
-export interface ISanitizedArgs {
-	call?: ISanitizedCall;
-	calls?: ISanitizedCall[];
-	data?: ISanitizedParentInherentData | ISanitizedParachainInherentData;
+export interface ISanitizedParentInherentData {
+	bitfields: ISanitizedBitfield[];
+	backedCandidates: ISanitizedBackedCandidate[];
+	disputes: ISanitizedDisputeStatementSet[];
+	parentHeader: IBlockRaw;
 }

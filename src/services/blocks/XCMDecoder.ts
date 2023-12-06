@@ -18,6 +18,9 @@ import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import { Bytes } from '@polkadot/types';
+import { ISanitizedBackedCandidate } from 'src/types/responses/SanitizedBackedCandidate';
+import { ISanitizedParachainInherentData } from 'src/types/responses/SanitizedParachainInherentData';
+import { ISanitizedParentInherentData } from 'src/types/responses/SanitizedParentInherentData';
 
 import {
 	IDownwardMessage,
@@ -59,10 +62,10 @@ export class XcmDecoder {
 			extrinsics.forEach((extrinsic) => {
 				const frame = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
-					const data: any = extrinsic.args.data;
+					const data = extrinsic.args.data as ISanitizedParentInherentData;
 					const upwardMessage: IUpwardMessage[] = [];
 					if (paraId !== undefined) {
-						data.backedCandidates.forEach((candidate: any) => {
+						data.backedCandidates.forEach((candidate) => {
 							if (candidate.candidate.descriptor.paraId.toString() === paraId) {
 								const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
 								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
@@ -71,7 +74,7 @@ export class XcmDecoder {
 							}
 						});
 					} else {
-						data.backedCandidates.forEach((candidate: any) => {
+						data.backedCandidates.forEach((candidate) => {
 							const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
 							if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
 								upwardMessage.push(msg_decoded);
@@ -87,11 +90,12 @@ export class XcmDecoder {
 			extrinsics.forEach((extrinsic) => {
 				const frame: IFrameMethod = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'parachainSystem' && frame.method === 'setValidationData') {
-					const data: any = extrinsic.args.data;
-					data.downwardMessages.forEach((msg: any) => {
-						if (msg.msg.length > 0) {
+					const data = extrinsic.args.data as ISanitizedParachainInherentData;
+					data.downwardMessages.forEach((msg) => {
+						const message = msg.data;
+						if (message.length > 0) {
 							const downwardMessage: IDownwardMessage[] = [];
-							const xcmMessageDecoded = this.decodeMsg(api, msg.msg);
+							const xcmMessageDecoded = this.decodeMsg(api, message);
 							downwardMessage.push({
 								sentAt: msg.sentAt,
 								data: xcmMessageDecoded,
@@ -101,8 +105,8 @@ export class XcmDecoder {
 							});
 						}
 					});
-					data.horizontalMessages.forEach((msg: [], index: string) => {
-						msg.forEach((msg: any) => {
+					data.horizontalMessages.forEach((msgs, index) => {
+						msgs.forEach((msg) => {
 							const horizontalMessage: IHorizontalMessage[] = [];
 							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
 							horizontalMessage.push({
@@ -121,10 +125,10 @@ export class XcmDecoder {
 		return xcmMessages;
 	}
 
-	static checkUpwardMsg(api: ApiPromise, candidate: any): IUpwardMessage | undefined {
+	static checkUpwardMsg(api: ApiPromise, candidate: ISanitizedBackedCandidate): IUpwardMessage | undefined {
 		if (candidate.candidate.commitments.upwardMessages.length > 0) {
-			const xcmMessage: string = candidate.candidate.commitments.upwardMessages;
-			const paraId: string = candidate.candidate.descriptor.paraId.toString();
+			const xcmMessage = candidate.candidate.commitments.upwardMessages;
+			const paraId: string = candidate.candidate.descriptor.paraId;
 			const xcmMessageDecoded: string = this.decodeMsg(api, xcmMessage[0]);
 			const upwardMessage = {
 				paraId: paraId,

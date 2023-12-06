@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ISanitizedCall } from '.';
-import { ISanitizedParachainInherentData } from './SanitizedParachainInherentData';
-import { ISanitizedParentInherentData } from './SanitizedParentInherentData';
-
-export interface ISanitizedArgs {
-	call?: ISanitizedCall;
-	calls?: ISanitizedCall[];
-	data?: ISanitizedParentInherentData | ISanitizedParachainInherentData;
+export interface ISanitizedBackedCandidateDescriptor {
+	paraId: string;
+	relayParent: `0x${string}`;
+	collator: `0x${string}`;
+	persistedValidationDataHash: `0x${string}`;
+	povHash: `0x${string}`;
+	erasureRoot: `0x${string}`;
+	signature: `0x${string}`;
+	paraHead: `0x${string}`;
+	validationCodeHash: `0x${string}`;
 }
