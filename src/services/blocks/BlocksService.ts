@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -56,6 +56,7 @@ import {
 import { IOption } from '../../types/util';
 import { isPaysFee } from '../../types/util';
 import { AbstractService } from '../AbstractService';
+import { XcmDecoder } from './XCMDecoder';
 
 /**
  * Types for fetchBlock's options
@@ -102,6 +103,8 @@ export class BlocksService extends AbstractService {
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
 		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag }: FetchBlockOptions,
+		decodedXcmMsgsArg?: boolean,
+		paraId?: string,
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -287,7 +290,8 @@ export class BlocksService extends AbstractService {
 				kind: dispatchFeeType,
 			};
 		}
-
+		const decodedMsgs = decodedXcmMsgsArg ? new XcmDecoder(api, specName.toString(), extrinsics, paraId) : undefined;
+		const decodedXcmMsgs = decodedMsgs?.messages;
 		const response = {
 			number,
 			hash,
@@ -300,6 +304,7 @@ export class BlocksService extends AbstractService {
 			extrinsics,
 			onFinalize,
 			finalized,
+			decodedXcmMsgs,
 		};
 
 		// Store the block in the cache

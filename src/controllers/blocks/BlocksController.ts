@@ -159,7 +159,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, finalizedKey } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, finalizedKey, decodedXcmMsgs, paraId } },
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -168,6 +168,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
 		const finalizeOverride = finalizedKey === 'false';
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
@@ -189,7 +190,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const historicApi = await this.api.at(hash);
 
 		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
+		BlocksController.sanitizedSend(
+			res,
+			await this.service.fetchBlock(hash, historicApi, options, decodedXcmMsgsArg, paraId as string),
+		);
 	};
 
 	/**
