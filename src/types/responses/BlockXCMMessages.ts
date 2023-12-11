@@ -21,6 +21,7 @@ export interface IUpwardMessage {
 
 export interface IDownwardMessage {
 	sentAt: string;
+	msg: string;
 	data: string;
 }
 

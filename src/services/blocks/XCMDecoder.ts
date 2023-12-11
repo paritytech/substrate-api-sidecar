@@ -92,12 +92,13 @@ export class XcmDecoder {
 				if (frame.pallet === 'parachainSystem' && frame.method === 'setValidationData') {
 					const data = extrinsic.args.data as ISanitizedParachainInherentData;
 					data.downwardMessages.forEach((msg) => {
-						const message = msg.data;
-						if (message.length > 0) {
+						const message = msg.msg;
+						if (message && message.toString().length > 0) {
 							const downwardMessage: IDownwardMessage[] = [];
 							const xcmMessageDecoded = this.decodeMsg(api, message);
 							downwardMessage.push({
 								sentAt: msg.sentAt,
+								msg: message.toString(),
 								data: xcmMessageDecoded,
 							});
 							xcmMessages.push({
@@ -109,14 +110,25 @@ export class XcmDecoder {
 						msgs.forEach((msg) => {
 							const horizontalMessage: IHorizontalMessage[] = [];
 							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-							horizontalMessage.push({
-								sentAt: msg.sentAt,
-								paraId: index,
-								data: xcmMessageDecoded,
-							});
-							xcmMessages.push({
-								horizontalMessages: horizontalMessage,
-							});
+							if (paraId !== undefined && index.toString() === paraId) {
+								horizontalMessage.push({
+									sentAt: msg.sentAt,
+									paraId: index,
+									data: xcmMessageDecoded,
+								});
+								xcmMessages.push({
+									horizontalMessages: horizontalMessage,
+								});
+							} else if (paraId === undefined) {
+								horizontalMessage.push({
+									sentAt: msg.sentAt,
+									paraId: index,
+									data: xcmMessageDecoded,
+								});
+								xcmMessages.push({
+									horizontalMessages: horizontalMessage,
+								});
+							}
 						});
 					});
 				}
