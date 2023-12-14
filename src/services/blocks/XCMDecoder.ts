@@ -31,7 +31,6 @@ import {
 	IMessages,
 	IUpwardMessage,
 } from '../../types/responses';
-// import type { StagingXcmVersionedXcm } from "@polkadot/types/lookup";
 
 enum ChainType {
 	Relay = 'Relay',

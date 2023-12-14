@@ -629,6 +629,22 @@ paths:
         required: false
         schema:
           type: boolean
+      - name: decodedXcmMsgs
+        in: query
+        description: When set to `true`, this will show the decoded XCM messages within
+          the extrinsics of the requested block.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: paraId
+        in: query
+        description: When it is set, this will return only the decoded XCM messages
+          for the specified paraId/parachain Id. To activate this functionality,
+          ensure that the `decodedXcmMsgs` parameter is set to true.
+        required: false
+        schema:
+          type: string
       responses:
         "200":
           description: successful operation
