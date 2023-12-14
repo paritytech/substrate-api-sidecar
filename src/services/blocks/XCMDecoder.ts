@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import '@polkadot/api-augment';
+import '@moonbeam-network/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import { Bytes } from '@polkadot/types';
@@ -30,6 +31,7 @@ import {
 	IMessages,
 	IUpwardMessage,
 } from '../../types/responses';
+// import type { StagingXcmVersionedXcm } from "@polkadot/types/lookup";
 
 enum ChainType {
 	Relay = 'Relay',
@@ -40,9 +42,11 @@ export class XcmDecoder {
 	readonly messages: IMessages[];
 	readonly api: ApiPromise;
 	static curChainType: ChainType;
+	static specName: string;
 
 	constructor(api: ApiPromise, specName: string, extrinsics: IExtrinsic[], paraId?: string) {
 		this.api = api;
+		XcmDecoder.specName = specName;
 		XcmDecoder.curChainType = XcmDecoder.getCurChainType(specName);
 		this.messages = XcmDecoder.getMessages(api, extrinsics, paraId);
 	}
@@ -157,7 +161,12 @@ export class XcmDecoder {
 		let xcmMessage: string = message;
 		let instructionLength = 0;
 		while (xcmMessage.length != 0) {
-			const xcmInstructions: Bytes = api.createType('XcmVersionedXcm', xcmMessage);
+			let xcmInstructions: Bytes;
+			if (XcmDecoder.specName === 'moonbeam') {
+				xcmInstructions = api.createType('StagingXcmVersionedXcm', xcmMessage);
+			} else {
+				xcmInstructions = api.createType('XcmVersionedXcm', xcmMessage);
+			}
 			instructions.push(xcmInstructions);
 			instructionLength = xcmInstructions.toU8a().length;
 			xcmMessage = xcmMessage.slice(instructionLength);

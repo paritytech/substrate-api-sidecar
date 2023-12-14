@@ -50,6 +50,7 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
+    "@moonbeam-network/api-augment": "^0.2600.0",
     "@polkadot/api": "^10.10.1",
     "@polkadot/api-contract": "^10.10.1",
     "@polkadot/util-crypto": "^12.5.1",
