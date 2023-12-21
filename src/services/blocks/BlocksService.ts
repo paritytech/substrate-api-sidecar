@@ -169,7 +169,7 @@ export class BlocksService extends AbstractService {
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
-			if (noFees === true) {
+			if (noFees) {
 				extrinsics[idx].info = {};
 				continue;
 			}
