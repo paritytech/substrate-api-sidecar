@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ControllerConfig } from '../types/chains-config';
-import { SidecarConfig } from '../../src/SidecarConfig'
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
@@ -58,6 +57,5 @@ export const polkadotControllers: ControllerConfig = {
 		minCalcFeeRuntime: 0,
 		blockStore: initLRUCache(),
 		hasQueryFeeApi: new QueryFeeDetailsCache(27, 28),
-		calcFee: SidecarConfig.config.SUBSTRATE.CALC_FEE,
 	},
 };

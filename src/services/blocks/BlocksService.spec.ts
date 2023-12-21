@@ -122,6 +122,8 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				noFees: false,
+
 			};
 
 			expect(sanitizeNumbers(await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options))).toMatchObject(
@@ -146,6 +148,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
+				noFees: false,
 			};
 			const tempGetBlock = mockApi.rpc.chain.getBlock;
 			mockApi.rpc.chain.getBlock = (() =>
@@ -170,6 +173,7 @@ describe('BlocksService', () => {
 				checkFinalized: false,
 				queryFinalizedHead: false,
 				omitFinalizedTag: true,
+				noFees: false,
 			};
 
 			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
@@ -357,6 +361,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			noFees: false,
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
@@ -442,6 +447,7 @@ describe('BlocksService', () => {
 			checkFinalized: false,
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
+			noFees: false,
 		};
 
 		it('Should correctly store the most recent queried blocks', async () => {
