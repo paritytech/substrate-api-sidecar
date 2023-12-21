@@ -4,8 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [17.3.3](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.2..v17.3.3) (2023-12-21)
 
-**NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` were overwhelmed with transactions. `noFees` focuses on removing fee info for the blocks in order to improve performance and for the other cases, there is the `transactionPaidFee` PR, that covers a more wide approach to performance improvement.
-
+**NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` were overwhelmed with transactions. The `noFees` query parameter focuses on removing fee info for the blocks if the user does not intend on needing fees. For more general cases where fees are necessary we have increased the performance of querying `/blocks` while also calculating fees. This was done with 2 cases: ensuring `transactionPaidFee`, and `ExtrinsicSuccess` or `ExtrinsicFailure` info is used to its fullest so we can avoid making any additional rpc calls, as well as ensuring the extrinsic's are called concurrently.
 ### Perf
 
 - perf: transactionPaidFee event optimization ([#1367](https://github.com/paritytech/substrate-api-sidecar/pull/1367)) ([2883249](https://github.com/paritytech/substrate-api-sidecar/commit/288324918b7445fce8be6c4606c41058c66cdf69)) 
