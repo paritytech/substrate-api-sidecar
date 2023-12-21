@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [17.3.3](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.2..v17.3.3) (2023-12-21)
 
+**NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` where overwhelmed with transactions. `noFees` focuses on removing fee info for the blocks in order to improve performance and for the other cases, there is the `transactionPaidFee` PR, that covers a more wide approach to performance improvement.
+
 ### Perf
 
 - perf: transactionPaidFee event optimization ([#1367](https://github.com/paritytech/substrate-api-sidecar/pull/1367)) ([2883249](https://github.com/paritytech/substrate-api-sidecar/commit/288324918b7445fce8be6c4606c41058c66cdf69)) 
@@ -18,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
 ### Test
 
 -  test(e2e): replace tests pointing to deprecated pallets ([#1363](https://github.com/paritytech/substrate-api-sidecar/pull/1363)) ([2a38b2e](https://github.com/paritytech/substrate-api-sidecar/commit/2a38b2e652bf621bf6cc450ce5fdacf5656d9c8c))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10400
+- Kusama v10400
+- Westend v10400
 
 ## [17.3.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.1..v17.3.2) (2023-11-26)
 
