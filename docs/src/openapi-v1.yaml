@@ -576,6 +576,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -617,6 +624,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
         required: false
         schema:
           type: boolean
@@ -744,6 +758,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
         required: false
         schema:
           type: boolean

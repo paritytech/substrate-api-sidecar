@@ -123,7 +123,6 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-
 			};
 
 			expect(sanitizeNumbers(await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options))).toMatchObject(

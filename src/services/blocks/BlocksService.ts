@@ -170,8 +170,8 @@ export class BlocksService extends AbstractService {
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			if (noFees === true) {
-				extrinsics[idx].info = {}
-				continue
+				extrinsics[idx].info = {};
+				continue;
 			}
 
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
@@ -292,7 +292,6 @@ export class BlocksService extends AbstractService {
 				partialFee: api.registry.createType('Balance', finalPartialFee),
 				kind: dispatchFeeType,
 			};
-
 		}
 
 		const response = {

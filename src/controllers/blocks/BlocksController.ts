@@ -174,7 +174,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
 		const noFeesArg = noFees === 'true';
-		
+
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
@@ -243,7 +243,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
-			noFees: noFeesArg
+			noFees: noFeesArg,
 		};
 
 		const pQueue = new PromiseQueue(4);
