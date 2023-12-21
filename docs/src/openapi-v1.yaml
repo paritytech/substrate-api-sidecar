@@ -635,6 +635,14 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: finalizedKey
+        in: query
+        description: When set to false, this will override the chain-config, and omit the
+          finalized key in the response. This can increase performance slightly by avoiding an additional 
+          RPC call to the node.
+        required: false
+        schema:
+          type: boolean
       responses:
         "200":
           description: successful operation
