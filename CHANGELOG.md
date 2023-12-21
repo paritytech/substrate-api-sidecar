@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.3](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.2..v17.3.3) (2023-12-21)
+
+### Perf
+
+- perf: transactionPaidFee event optimization ([#1367](https://github.com/paritytech/substrate-api-sidecar/pull/1367)) ([2883249](https://github.com/paritytech/substrate-api-sidecar/commit/288324918b7445fce8be6c4606c41058c66cdf69)) 
+- perf: add concurrency to fee calls ([#1368](https://github.com/paritytech/substrate-api-sidecar/pull/1368)) ([0980d1e](https://github.com/paritytech/substrate-api-sidecar/commit/0980d1e0766f1e416883c8e68ebcf04ca8ecd2fc))
+
+### Fix
+
+- fix: add finalizedKey query param to /blocks/{blockId} ([#1362](https://github.com/paritytech/substrate-api-sidecar/pull/1362) ([ecd1518](https://github.com/paritytech/substrate-api-sidecar/commit/ecd1518a1e7f6b4465e90cd7ff8f6fd7a115b88b))
+- fix: added query to calc fees ([#1366](https://github.com/paritytech/substrate-api-sidecar/pull/1366)) ([203a257](https://github.com/paritytech/substrate-api-sidecar/commit/203a257bea3c150ac09d7b7fa956d68e524969bc))
+
+### Test
+
+-  test(e2e): replace tests pointing to deprecated pallets ([#1363](https://github.com/paritytech/substrate-api-sidecar/pull/1363)) ([2a38b2e](https://github.com/paritytech/substrate-api-sidecar/commit/2a38b2e652bf621bf6cc450ce5fdacf5656d9c8c))
+
 ## [17.3.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.1..v17.3.2) (2023-11-26)
 
 ### Fix
