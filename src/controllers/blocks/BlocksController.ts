@@ -191,9 +191,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
 		const historicApi = await this.api.at(hash);
-
+		console.time('BLOCK');
+		const block = await this.service.fetchBlock(hash, historicApi, options);
+		console.timeEnd('BLOCK');
 		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
+		BlocksController.sanitizedSend(res, block);
 	};
 
 	/**
