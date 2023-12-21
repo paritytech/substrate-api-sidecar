@@ -71,6 +71,7 @@ interface FetchBlockOptions {
 	checkFinalized: boolean;
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
+	noFees: boolean;
 }
 
 /**
@@ -101,7 +102,7 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
-		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag }: FetchBlockOptions,
+		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag, noFees }: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -168,6 +169,11 @@ export class BlocksService extends AbstractService {
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
+			if (noFees) {
+				extrinsics[idx].info = {};
+				continue;
+			}
+
 			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
 				continue;
 			}
