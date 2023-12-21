@@ -88,6 +88,7 @@ export class BlocksService extends AbstractService {
 		private minCalcFeeRuntime: IOption<number>,
 		private blockStore: LRU<string, IBlock>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
+		private calcFee?: boolean,
 	) {
 		super(api);
 	}
@@ -168,124 +169,132 @@ export class BlocksService extends AbstractService {
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
 
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
-			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
-				continue;
-			}
+			if (this.calcFee) {
+				console.log("Calc fee true", this.calcFee)
 
-			if (this.minCalcFeeRuntime === null) {
-				extrinsics[idx].info = {
-					error: `Fee calculation not supported for this network`,
-				};
-				continue;
-			}
+				if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
+					continue;
+				}
 
-			if (this.minCalcFeeRuntime > specVersion.toNumber()) {
-				extrinsics[idx].info = {
-					error: `Fee calculation not supported for ${specVersion.toString()}#${specName.toString()}`,
-				};
-				continue;
-			}
+				if (this.minCalcFeeRuntime === null) {
+					extrinsics[idx].info = {
+						error: `Fee calculation not supported for this network`,
+					};
+					continue;
+				}
 
-			const xtEvents = extrinsics[idx].events;
-			const completedEvent = xtEvents.find(
-				({ method }) => isFrameMethod(method) && (method.method === Event.success || method.method === Event.failure),
-			);
+				if (this.minCalcFeeRuntime > specVersion.toNumber()) {
+					extrinsics[idx].info = {
+						error: `Fee calculation not supported for ${specVersion.toString()}#${specName.toString()}`,
+					};
+					continue;
+				}
 
-			if (!completedEvent) {
-				extrinsics[idx].info = {
-					error: 'Unable to find success or failure event for extrinsic',
-				};
+				const xtEvents = extrinsics[idx].events;
+				const completedEvent = xtEvents.find(
+					({ method }) => isFrameMethod(method) && (method.method === Event.success || method.method === Event.failure),
+				);
 
-				continue;
-			}
+				if (!completedEvent) {
+					extrinsics[idx].info = {
+						error: 'Unable to find success or failure event for extrinsic',
+					};
 
-			const completedData = completedEvent.data;
-			if (!completedData) {
-				extrinsics[idx].info = {
-					error: 'Success or failure event for extrinsic does not contain expected data',
-				};
+					continue;
+				}
 
-				continue;
-			}
+				const completedData = completedEvent.data;
+				if (!completedData) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not contain expected data',
+					};
 
-			// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
-			// types as their final arg
-			const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
-			if (!weightInfo.weight) {
-				extrinsics[idx].info = {
-					error: 'Success or failure event for extrinsic does not specify weight',
-				};
+					continue;
+				}
 
-				continue;
-			}
+				// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+				// types as their final arg
+				const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+				if (!weightInfo.weight) {
+					extrinsics[idx].info = {
+						error: 'Success or failure event for extrinsic does not specify weight',
+					};
 
-			if (!api.rpc.payment?.queryInfo && !api.call.transactionPaymentApi?.queryInfo) {
-				extrinsics[idx].info = {
-					error: 'Rpc method payment::queryInfo is not available',
-				};
+					continue;
+				}
 
-				continue;
-			}
+				if (!api.rpc.payment?.queryInfo && !api.call.transactionPaymentApi?.queryInfo) {
+					extrinsics[idx].info = {
+						error: 'Rpc method payment::queryInfo is not available',
+					};
 
-			/**
-			 * Grab the initial partialFee, and information required for calculating a partialFee
-			 * if queryFeeDetails is available in the runtime.
-			 */
-			const {
-				class: dispatchClass,
-				partialFee,
-				weight,
-			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
-			const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
+					continue;
+				}
 
-			const transactionPaidFeeEvent = xtEvents.find(
-				({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
-			);
-
-			let finalPartialFee = partialFee.toString(),
-				dispatchFeeType = 'preDispatch';
-			if (transactionPaidFeeEvent) {
-				finalPartialFee = transactionPaidFeeEvent.data[1].toString();
-				dispatchFeeType = 'fromEvent';
-			} else {
 				/**
-				 * Call queryFeeDetails. It may not be available in the runtime and will
-				 * error automatically when we try to call it. We cache the runtimes it will error so we
-				 * don't try to call it again given a specVersion.
+				 * Grab the initial partialFee, and information required for calculating a partialFee
+				 * if queryFeeDetails is available in the runtime.
 				 */
-				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(specVersion.toNumber());
-				if (doesQueryFeeDetailsExist === 'available') {
-					finalPartialFee = await this.fetchQueryFeeDetails(
-						block.extrinsics[idx],
-						previousBlockHash,
-						weightInfo.weight,
-						versionedWeight.toString(),
-					);
+				const {
+					class: dispatchClass,
+					partialFee,
+					weight,
+				} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+				const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
 
-					dispatchFeeType = 'postDispatch';
-				} else if (doesQueryFeeDetailsExist === 'unknown') {
-					try {
+				const transactionPaidFeeEvent = xtEvents.find(
+					({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
+				);
+
+				let finalPartialFee = partialFee.toString(),
+					dispatchFeeType = 'preDispatch';
+				if (transactionPaidFeeEvent) {
+					finalPartialFee = transactionPaidFeeEvent.data[1].toString();
+					dispatchFeeType = 'fromEvent';
+				} else {
+					/**
+					 * Call queryFeeDetails. It may not be available in the runtime and will
+					 * error automatically when we try to call it. We cache the runtimes it will error so we
+					 * don't try to call it again given a specVersion.
+					 */
+					const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(specVersion.toNumber());
+					if (doesQueryFeeDetailsExist === 'available') {
 						finalPartialFee = await this.fetchQueryFeeDetails(
 							block.extrinsics[idx],
 							previousBlockHash,
 							weightInfo.weight,
 							versionedWeight.toString(),
 						);
+
 						dispatchFeeType = 'postDispatch';
-						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
-					} catch {
-						this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
-						console.warn('The error above is automatically emitted from polkadot-js, and can be ignored.');
+					} else if (doesQueryFeeDetailsExist === 'unknown') {
+						try {
+							finalPartialFee = await this.fetchQueryFeeDetails(
+								block.extrinsics[idx],
+								previousBlockHash,
+								weightInfo.weight,
+								versionedWeight.toString(),
+							);
+							dispatchFeeType = 'postDispatch';
+							this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
+						} catch {
+							this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
+							console.warn('The error above is automatically emitted from polkadot-js, and can be ignored.');
+						}
 					}
 				}
-			}
 
-			extrinsics[idx].info = {
-				weight: weightInfo.weight,
-				class: dispatchClass,
-				partialFee: api.registry.createType('Balance', finalPartialFee),
-				kind: dispatchFeeType,
-			};
+				extrinsics[idx].info = {
+					weight: weightInfo.weight,
+					class: dispatchClass,
+					partialFee: api.registry.createType('Balance', finalPartialFee),
+					kind: dispatchFeeType,
+				};
+			} else {
+				console.log("Calc fee false", this.calcFee)
+
+				extrinsics[idx].info = {}
+			}
 		}
 
 		const response = {

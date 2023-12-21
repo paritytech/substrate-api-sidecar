@@ -27,7 +27,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
+			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi, options.calcFee),
 		);
 		this.initRoutes();
 	}

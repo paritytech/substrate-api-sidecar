@@ -151,6 +151,19 @@ export class Specs {
 				mandatory: false,
 			}),
 		);
+		// CALC_FEE
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(
+				CONFIG.CALC_FEE,
+				'boolean to calculate or not partial fees',
+				{
+					default: 'true',
+					type: 'boolean',
+					mandatory: false,
+				},
+			),
+		);
 	}
 
 	/**

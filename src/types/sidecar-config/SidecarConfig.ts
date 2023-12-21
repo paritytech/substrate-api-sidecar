@@ -29,6 +29,7 @@ interface ISidecarConfigSubstrate {
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;
 	TYPES: string;
+	CALC_FEE: boolean;
 }
 
 interface ISidecarConfigExpress {
