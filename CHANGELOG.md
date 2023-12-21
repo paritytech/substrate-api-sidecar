@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [17.3.3](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.2..v17.3.3) (2023-12-21)
 
-**NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` where overwhelmed with transactions. `noFees` focuses on removing fee info for the blocks in order to improve performance and for the other cases, there is the `transactionPaidFee` PR, that covers a more wide approach to performance improvement.
+**NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` were overwhelmed with transactions. `noFees` focuses on removing fee info for the blocks in order to improve performance and for the other cases, there is the `transactionPaidFee` PR, that covers a more wide approach to performance improvement.
 
 ### Perf
 
