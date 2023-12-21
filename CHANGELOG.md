@@ -11,8 +11,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Fix
 
-- fix: add finalizedKey query param to /blocks/{blockId} ([#1362](https://github.com/paritytech/substrate-api-sidecar/pull/1362) ([ecd1518](https://github.com/paritytech/substrate-api-sidecar/commit/ecd1518a1e7f6b4465e90cd7ff8f6fd7a115b88b))
+- fix: add finalizedKey query param to /blocks/{blockId} ([#1362](https://github.com/paritytech/substrate-api-sidecar/pull/1362)) ([ecd1518](https://github.com/paritytech/substrate-api-sidecar/commit/ecd1518a1e7f6b4465e90cd7ff8f6fd7a115b88b))
 - fix: added query to calc fees ([#1366](https://github.com/paritytech/substrate-api-sidecar/pull/1366)) ([203a257](https://github.com/paritytech/substrate-api-sidecar/commit/203a257bea3c150ac09d7b7fa956d68e524969bc))
+    NOTE: this added the noFees={bool} query param to specify whether to retrieve or not the fees information of the block for the `/blocks/*` endpoint
 
 ### Test
 
