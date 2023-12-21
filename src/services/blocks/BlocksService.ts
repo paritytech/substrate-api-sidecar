@@ -174,7 +174,7 @@ export class BlocksService extends AbstractService {
 
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
 		/**
-		 * Fee calculation logic. This runs the the extrinsics concurrently.
+		 * Fee calculation logic. This runs the extrinsics concurrently.
 		 */
 		const pQueue = new PromiseQueue(4);
 		const feeTasks = [];
