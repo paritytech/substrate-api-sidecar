@@ -73,6 +73,11 @@ interface FetchBlockOptions {
 	omitFinalizedTag: boolean;
 }
 
+interface ExtrinsicSuccessOrFailedOverride {
+	weight: Weight;
+	class: DispatchInfo;
+}
+
 /**
  * Event methods that we check for.
  */
@@ -227,6 +232,30 @@ export class BlocksService extends AbstractService {
 				continue;
 			}
 
+			const transactionPaidFeeEvent = xtEvents.find(
+				({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
+			);
+			const extrinsicSuccess = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.success);
+			const extrinsicFailed = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.failure);
+
+			const eventFailureOrSuccess = extrinsicSuccess || extrinsicFailed;
+			if (transactionPaidFeeEvent && eventFailureOrSuccess) {
+				let availableData: ExtrinsicSuccessOrFailedOverride;
+				if (extrinsicSuccess) {
+					availableData = eventFailureOrSuccess.data[0] as unknown as ExtrinsicSuccessOrFailedOverride;
+				} else {
+					availableData = eventFailureOrSuccess.data[1] as unknown as ExtrinsicSuccessOrFailedOverride;
+				}
+
+				extrinsics[idx].info = {
+					weight: availableData.weight,
+					class: availableData.class,
+					partialFee: transactionPaidFeeEvent.data[1].toString(),
+					kind: 'fromEvent',
+				};
+				continue;
+			}
+
 			/**
 			 * Grab the initial partialFee, and information required for calculating a partialFee
 			 * if queryFeeDetails is available in the runtime.
@@ -237,10 +266,6 @@ export class BlocksService extends AbstractService {
 				weight,
 			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
 			const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
-
-			const transactionPaidFeeEvent = xtEvents.find(
-				({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
-			);
 
 			let finalPartialFee = partialFee.toString(),
 				dispatchFeeType = 'preDispatch';
