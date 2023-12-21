@@ -19,7 +19,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Option, Struct, Vec } from '@polkadot/types';
+import { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
 import { GenericExtrinsic } from '@polkadot/types/extrinsic';
 import {
 	AccountId32,
@@ -55,6 +55,7 @@ import {
 } from '../../types/responses';
 import { IOption } from '../../types/util';
 import { isPaysFee } from '../../types/util';
+import { PromiseQueue } from '../../util/PromiseQueue';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -172,152 +173,20 @@ export class BlocksService extends AbstractService {
 		}
 
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
-
+		/**
+		 * Fee calculation logic. This runs the extrinsics concurrently.
+		 */
+		const pQueue = new PromiseQueue(4);
+		const feeTasks = [];
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
-			if (noFees) {
-				extrinsics[idx].info = {};
-				continue;
-			}
-
-			if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
-				continue;
-			}
-
-			if (this.minCalcFeeRuntime === null) {
-				extrinsics[idx].info = {
-					error: `Fee calculation not supported for this network`,
-				};
-				continue;
-			}
-
-			if (this.minCalcFeeRuntime > specVersion.toNumber()) {
-				extrinsics[idx].info = {
-					error: `Fee calculation not supported for ${specVersion.toString()}#${specName.toString()}`,
-				};
-				continue;
-			}
-
-			const xtEvents = extrinsics[idx].events;
-			const completedEvent = xtEvents.find(
-				({ method }) => isFrameMethod(method) && (method.method === Event.success || method.method === Event.failure),
+			feeTasks.push(
+				pQueue.run(async () => {
+					await this.resolveExtFees(extrinsics, block, idx, noFees, previousBlockHash, specVersion, specName);
+				}),
 			);
-
-			if (!completedEvent) {
-				extrinsics[idx].info = {
-					error: 'Unable to find success or failure event for extrinsic',
-				};
-
-				continue;
-			}
-
-			const completedData = completedEvent.data;
-			if (!completedData) {
-				extrinsics[idx].info = {
-					error: 'Success or failure event for extrinsic does not contain expected data',
-				};
-
-				continue;
-			}
-
-			// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
-			// types as their final arg
-			const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
-			if (!weightInfo.weight) {
-				extrinsics[idx].info = {
-					error: 'Success or failure event for extrinsic does not specify weight',
-				};
-
-				continue;
-			}
-
-			if (!api.rpc.payment?.queryInfo && !api.call.transactionPaymentApi?.queryInfo) {
-				extrinsics[idx].info = {
-					error: 'Rpc method payment::queryInfo is not available',
-				};
-
-				continue;
-			}
-
-			const transactionPaidFeeEvent = xtEvents.find(
-				({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
-			);
-			const extrinsicSuccess = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.success);
-			const extrinsicFailed = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.failure);
-
-			const eventFailureOrSuccess = extrinsicSuccess || extrinsicFailed;
-			if (transactionPaidFeeEvent && eventFailureOrSuccess) {
-				let availableData: ExtrinsicSuccessOrFailedOverride;
-				if (extrinsicSuccess) {
-					availableData = eventFailureOrSuccess.data[0] as unknown as ExtrinsicSuccessOrFailedOverride;
-				} else {
-					availableData = eventFailureOrSuccess.data[1] as unknown as ExtrinsicSuccessOrFailedOverride;
-				}
-
-				extrinsics[idx].info = {
-					weight: availableData.weight,
-					class: availableData.class,
-					partialFee: transactionPaidFeeEvent.data[1].toString(),
-					kind: 'fromEvent',
-				};
-				continue;
-			}
-
-			/**
-			 * Grab the initial partialFee, and information required for calculating a partialFee
-			 * if queryFeeDetails is available in the runtime.
-			 */
-			const {
-				class: dispatchClass,
-				partialFee,
-				weight,
-			} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
-			const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
-
-			let finalPartialFee = partialFee.toString(),
-				dispatchFeeType = 'preDispatch';
-			if (transactionPaidFeeEvent) {
-				finalPartialFee = transactionPaidFeeEvent.data[1].toString();
-				dispatchFeeType = 'fromEvent';
-			} else {
-				/**
-				 * Call queryFeeDetails. It may not be available in the runtime and will
-				 * error automatically when we try to call it. We cache the runtimes it will error so we
-				 * don't try to call it again given a specVersion.
-				 */
-				const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(specVersion.toNumber());
-				if (doesQueryFeeDetailsExist === 'available') {
-					finalPartialFee = await this.fetchQueryFeeDetails(
-						block.extrinsics[idx],
-						previousBlockHash,
-						weightInfo.weight,
-						versionedWeight.toString(),
-					);
-
-					dispatchFeeType = 'postDispatch';
-				} else if (doesQueryFeeDetailsExist === 'unknown') {
-					try {
-						finalPartialFee = await this.fetchQueryFeeDetails(
-							block.extrinsics[idx],
-							previousBlockHash,
-							weightInfo.weight,
-							versionedWeight.toString(),
-						);
-						dispatchFeeType = 'postDispatch';
-						this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
-					} catch {
-						this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
-						console.warn('The error above is automatically emitted from polkadot-js, and can be ignored.');
-					}
-				}
-			}
-
-			extrinsics[idx].info = {
-				weight: weightInfo.weight,
-				class: dispatchClass,
-				partialFee: api.registry.createType('Balance', finalPartialFee),
-				kind: dispatchFeeType,
-			};
 		}
+
+		await Promise.all(feeTasks);
 
 		const response = {
 			number,
@@ -337,6 +206,162 @@ export class BlocksService extends AbstractService {
 		this.blockStore.set(hash.toString(), response);
 
 		return response;
+	}
+
+	private async resolveExtFees(
+		extrinsics: IExtrinsic[],
+		block: Block,
+		idx: number,
+		noFees: boolean,
+		previousBlockHash: BlockHash,
+		specVersion: u32,
+		specName: Text,
+	) {
+		const { api } = this;
+
+		if (noFees) {
+			extrinsics[idx].info = {};
+			return;
+		}
+
+		if (!extrinsics[idx].paysFee || !block.extrinsics[idx].isSigned) {
+			return;
+		}
+
+		if (this.minCalcFeeRuntime === null) {
+			extrinsics[idx].info = {
+				error: `Fee calculation not supported for this network`,
+			};
+			return;
+		}
+
+		if (this.minCalcFeeRuntime > specVersion.toNumber()) {
+			extrinsics[idx].info = {
+				error: `Fee calculation not supported for ${specVersion.toString()}#${specName.toString()}`,
+			};
+			return;
+		}
+
+		const xtEvents = extrinsics[idx].events;
+		const completedEvent = xtEvents.find(
+			({ method }) => isFrameMethod(method) && (method.method === Event.success || method.method === Event.failure),
+		);
+
+		if (!completedEvent) {
+			extrinsics[idx].info = {
+				error: 'Unable to find success or failure event for extrinsic',
+			};
+
+			return;
+		}
+
+		const completedData = completedEvent.data;
+		if (!completedData) {
+			extrinsics[idx].info = {
+				error: 'Success or failure event for extrinsic does not contain expected data',
+			};
+
+			return;
+		}
+
+		// Both ExtrinsicSuccess and ExtrinsicFailed events have DispatchInfo
+		// types as their final arg
+		const weightInfo = completedData[completedData.length - 1] as DispatchInfo;
+		if (!weightInfo.weight) {
+			extrinsics[idx].info = {
+				error: 'Success or failure event for extrinsic does not specify weight',
+			};
+
+			return;
+		}
+
+		if (!api.rpc.payment?.queryInfo && !api.call.transactionPaymentApi?.queryInfo) {
+			extrinsics[idx].info = {
+				error: 'Rpc method payment::queryInfo is not available',
+			};
+
+			return;
+		}
+
+		const transactionPaidFeeEvent = xtEvents.find(
+			({ method }) => isFrameMethod(method) && method.method === Event.transactionPaidFee,
+		);
+		const extrinsicSuccess = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.success);
+		const extrinsicFailed = xtEvents.find(({ method }) => isFrameMethod(method) && method.method === Event.failure);
+
+		const eventFailureOrSuccess = extrinsicSuccess || extrinsicFailed;
+		if (transactionPaidFeeEvent && eventFailureOrSuccess) {
+			let availableData: ExtrinsicSuccessOrFailedOverride;
+			if (extrinsicSuccess) {
+				availableData = eventFailureOrSuccess.data[0] as unknown as ExtrinsicSuccessOrFailedOverride;
+			} else {
+				availableData = eventFailureOrSuccess.data[1] as unknown as ExtrinsicSuccessOrFailedOverride;
+			}
+
+			extrinsics[idx].info = {
+				weight: availableData.weight,
+				class: availableData.class,
+				partialFee: transactionPaidFeeEvent.data[1].toString(),
+				kind: 'fromEvent',
+			};
+			return;
+		}
+
+		/**
+		 * Grab the initial partialFee, and information required for calculating a partialFee
+		 * if queryFeeDetails is available in the runtime.
+		 */
+		const {
+			class: dispatchClass,
+			partialFee,
+			weight,
+		} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+		const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
+
+		let finalPartialFee = partialFee.toString(),
+			dispatchFeeType = 'preDispatch';
+		if (transactionPaidFeeEvent) {
+			finalPartialFee = transactionPaidFeeEvent.data[1].toString();
+			dispatchFeeType = 'fromEvent';
+		} else {
+			/**
+			 * Call queryFeeDetails. It may not be available in the runtime and will
+			 * error automatically when we try to call it. We cache the runtimes it will error so we
+			 * don't try to call it again given a specVersion.
+			 */
+			const doesQueryFeeDetailsExist = this.hasQueryFeeApi.hasQueryFeeDetails(specVersion.toNumber());
+			if (doesQueryFeeDetailsExist === 'available') {
+				finalPartialFee = await this.fetchQueryFeeDetails(
+					block.extrinsics[idx],
+					previousBlockHash,
+					weightInfo.weight,
+					versionedWeight.toString(),
+				);
+
+				dispatchFeeType = 'postDispatch';
+			} else if (doesQueryFeeDetailsExist === 'unknown') {
+				try {
+					finalPartialFee = await this.fetchQueryFeeDetails(
+						block.extrinsics[idx],
+						previousBlockHash,
+						weightInfo.weight,
+						versionedWeight.toString(),
+					);
+					dispatchFeeType = 'postDispatch';
+					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
+				} catch {
+					this.hasQueryFeeApi.setRegisterWithoutCall(specVersion.toNumber());
+					console.warn('The error above is automatically emitted from polkadot-js, and can be ignored.');
+				}
+			}
+		}
+
+		extrinsics[idx].info = {
+			weight: weightInfo.weight,
+			class: dispatchClass,
+			partialFee: api.registry.createType('Balance', finalPartialFee),
+			kind: dispatchFeeType,
+		};
 	}
 
 	/**
