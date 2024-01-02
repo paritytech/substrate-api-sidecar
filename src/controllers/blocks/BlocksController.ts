@@ -116,7 +116,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async ({ query: { eventDocs, extrinsicDocs, finalized } }, res) => {
+	private getLatestBlock: RequestHandler = async ({ query: { eventDocs, extrinsicDocs, finalized, noFees } }, res) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
@@ -138,6 +138,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead = false;
 			hash = await this.api.rpc.chain.getFinalizedHead();
 		}
+		const noFeesArg = noFees === 'true';
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -145,6 +146,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			noFees: noFeesArg,
 		};
 
 		const historicApi = await this.api.at(hash);
@@ -159,7 +161,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, finalizedKey, decodedXcmMsgs, paraId } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId } },
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -172,6 +174,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const finalizeOverride = finalizedKey === 'false';
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
+		const noFeesArg = noFees === 'true';
 		let omitFinalizedTag = !this.options.finalizes ? true : false;
 
 		if (finalizeOverride) {
@@ -184,6 +187,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkFinalized,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			noFees: noFeesArg,
 		};
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -229,7 +233,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlocks: RequestHandler<unknown, unknown, unknown, IRangeQueryParam> = async (
-		{ query: { range, eventDocs, extrinsicDocs } },
+		{ query: { range, eventDocs, extrinsicDocs, noFees } },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
@@ -241,12 +245,14 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
 		const omitFinalizedTag = !this.options.finalizes ? true : false;
+		const noFeesArg = noFees === 'true';
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
 			checkFinalized: false,
 			queryFinalizedHead,
 			omitFinalizedTag,
+			noFees: noFeesArg,
 		};
 
 		const pQueue = new PromiseQueue(4);

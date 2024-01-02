@@ -42,13 +42,14 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param res Express Response
 	 */
 	private getExtrinsicByTimepoint: RequestHandler<INumberParam> = async (
-		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs } },
+		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees } },
 		res,
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const noFeesArg = noFees === 'true';
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -56,6 +57,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			checkFinalized: true,
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
+			noFees: noFeesArg,
 		};
 
 		const historicApi = await this.api.at(hash);

@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 17.3.2
+  version: 17.3.3
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -576,6 +576,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -617,6 +624,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
         required: false
         schema:
           type: boolean
@@ -768,6 +782,13 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsics.
         required: false
         schema:
           type: boolean

@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import '@polkadot/api-augment';
-import '@moonbeam-network/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import { Bytes } from '@polkadot/types';
@@ -161,11 +160,7 @@ export class XcmDecoder {
 		let instructionLength = 0;
 		while (xcmMessage.length != 0) {
 			let xcmInstructions: Bytes;
-			if (XcmDecoder.specName === 'moonbeam') {
-				xcmInstructions = api.createType('StagingXcmVersionedXcm', xcmMessage);
-			} else {
-				xcmInstructions = api.createType('XcmVersionedXcm', xcmMessage);
-			}
+			xcmInstructions = api.createType('XcmVersionedXcm', xcmMessage);
 			instructions.push(xcmInstructions);
 			instructionLength = xcmInstructions.toU8a().length;
 			xcmMessage = xcmMessage.slice(instructionLength);
