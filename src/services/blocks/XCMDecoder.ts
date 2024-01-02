@@ -159,8 +159,7 @@ export class XcmDecoder {
 		let xcmMessage: string = message;
 		let instructionLength = 0;
 		while (xcmMessage.length != 0) {
-			let xcmInstructions: Bytes;
-			xcmInstructions = api.createType('XcmVersionedXcm', xcmMessage);
+			const xcmInstructions: Bytes = api.createType('XcmVersionedXcm', xcmMessage);
 			instructions.push(xcmInstructions);
 			instructionLength = xcmInstructions.toU8a().length;
 			xcmMessage = xcmMessage.slice(instructionLength);
