@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { RewardDestination, StakingLedger } from '@polkadot/types/interfaces';
-import { AccountId } from '@polkadot/types/interfaces/runtime';
+import type { RewardDestination } from '@polkadot/types/interfaces';
+import type { AccountId } from '@polkadot/types/interfaces/runtime';
+import type { PalletStakingStakingLedger } from '@polkadot/types/lookup';
 
 import { IAt } from '.';
 
@@ -24,5 +25,5 @@ export interface IAccountStakingInfo {
 	controller: AccountId;
 	rewardDestination: RewardDestination;
 	numSlashingSpans: number;
-	staking: StakingLedger;
+	staking: PalletStakingStakingLedger;
 }
