@@ -14,15 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './addresses';
-export * from './mockApi';
-export * from './mockApiBlockXCM';
-export * from './mockAssetHubKusamaApi';
-export * from './mockAssetHubWestendApi';
-export * from './mockBlock523510';
-export * from './mockBlock789629';
-export * from './mockBlock5236177';
-export * from './mockBlock13641102';
-export * from './mockBlock18207445';
-export * from './mockBlockHashes';
-export * from './transactions';
+import { polkadotRegistryV1000001 } from '../../../test-helpers/registries';
+import block18207445 from './data/block18207445.json';
+
+/**
+ * Mock for Polkadot Block #18207445.
+ */
+export const mockBlock18207445 = polkadotRegistryV1000001.createType('Block', block18207445);
+
+/**
+ * BlockHash for Polkadot Block #18207445.
+ */
+export const blockHash18207445 = polkadotRegistryV1000001.createType(
+	'BlockHash',
+	'0xc759aa0846fb1d608f8ac36d7f66b202dbe1424bd6b36ff7b0d2bb7b79cce055',
+);

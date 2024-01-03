@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -26,20 +26,25 @@ import LRU from 'lru-cache';
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
-import { kusamaRegistry, polkadotRegistry } from '../../test-helpers/registries';
+import { kusamaRegistry, polkadotRegistry, polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { IBlock } from '../../types/responses/';
 import {
 	blockHash20000,
 	blockHash100000,
 	blockHash789629,
+	blockHash18207445,
 	defaultMockApi,
+	defaultMockApiXCM,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
+import { events18207445 } from '../test-helpers/mock/data/events18207445Hex';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
+import { validators18207445Hex } from '../test-helpers/mock/data/validators18207445Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
+import block18207445Response from '../test-helpers/responses/blocks/block18207445.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import blocks789629Raw from '../test-helpers/responses/blocks/blocks789629Raw.json';
 import { BlocksService } from './BlocksService';
@@ -475,6 +480,88 @@ describe('BlocksService', () => {
 	describe('fetchBlockRaw', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			expect(sanitizeNumbers(await blocksService.fetchBlockRaw(blockHash789629))).toMatchObject(blocks789629Raw);
+		});
+	});
+
+	describe('fetch XCM Decoded Msgs in polkadot blocks 18207445', () => {
+		it('Should give back XCM', async () => {
+			// Reset LRU cache
+			cache.clear();
+
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+			};
+
+			const validatorsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<ValidatorId>', validators18207445Hex));
+
+			const eventsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<EventRecord>', events18207445));
+
+			const nextFeeMultiplierAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Fixed128', 1000000000));
+
+			const mockHistoricApiXCM = {
+				registry: polkadotRegistryV1000001,
+				call: {
+					transactionPaymentApi: {},
+				},
+				consts: {
+					transactionPayment: {
+						transactionByteFee: polkadotRegistryV1000001.createType('Balance', 1000000),
+						weightToFee: [
+							{
+								coeffFrac: polkadotRegistryV1000001.createType('Perbill', 80000000),
+								coeffInteger: polkadotRegistryV1000001.createType('Balance', 0),
+								degree: polkadotRegistryV1000001.createType('u8', 1),
+								negative: false,
+							},
+						],
+					},
+					system: {
+						extrinsicBaseWeight: polkadotRegistryV1000001.createType('u64', 125000000),
+					},
+				},
+				query: {
+					session: {
+						validators: validatorsAt,
+					},
+					system: {
+						events: eventsAt,
+					},
+					transactionPayment: {
+						nextFeeMultiplier: nextFeeMultiplierAt,
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
+
+			const mockApiXCM = {
+				...defaultMockApiXCM,
+				query: {
+					transactionPayment: {
+						nextFeeMultiplier: { at: nextFeeMultiplierAt },
+					},
+				},
+				at: (_hash: Hash) => mockHistoricApiXCM,
+			} as unknown as ApiPromise;
+
+			// Block Service
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const decodedXcmMsgsArg = true;
+			const block = await blocksServiceXCM.fetchBlock(
+				blockHash18207445,
+				mockHistoricApiXCM,
+				options,
+				decodedXcmMsgsArg,
+			);
+
+			expect(sanitizeNumbers(block)).toMatchObject(block18207445Response);
 		});
 	});
 });
