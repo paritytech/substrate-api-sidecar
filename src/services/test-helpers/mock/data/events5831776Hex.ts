@@ -14,17 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './addresses';
-export * from './mockApi';
-export * from './mockApiBlock18207445';
-export * from './mockAssetHubKusamaApi';
-export * from './mockAssetHubKusamaApiBlock5831776';
-export * from './mockAssetHubWestendApi';
-export * from './mockBlock523510';
-export * from './mockBlock789629';
-export * from './mockBlock5236177';
-export * from './mockBlock5831776';
-export * from './mockBlock13641102';
-export * from './mockBlock18207445';
-export * from './mockBlockHashes';
-export * from './transactions';
+export const events5831776 =
+	'0x1800000000003203c00700007369626c2708000000000000000000000000000000000000000000000000000080c3c9010000000000000000000000000000000000003201c00700003679d1d8e31d312a55f7ca994773b6a4fc7a92f07d898ae86bad4f3cab303c4977b5c9010000000000000000000000000000000000003201c0070000e5c49f7bc76b9e1b91566945e2eb539d960da57ca8e9ccd0e6030e4b11b60099090e00000000000000000000000000000000000000001e0041ced32eed097acb39a0f4d5543771dd7006709ba31856ffb62a8ccb62f9bec641ced32eed097acb39a0f4d5543771dd7006709ba31856ffb62a8ccb62f9bec6a23f304a253800000000000000000265cd1d00020100000100000000002220bd435517020000';

@@ -26,24 +26,34 @@ import LRU from 'lru-cache';
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
-import { kusamaRegistry, polkadotRegistry, polkadotRegistryV1000001 } from '../../test-helpers/registries';
+import {
+	assetHubKusamaRegistryV1000000,
+	kusamaRegistry,
+	polkadotRegistry,
+	polkadotRegistryV1000001,
+} from '../../test-helpers/registries';
 import { IBlock } from '../../types/responses/';
 import {
 	blockHash20000,
 	blockHash100000,
 	blockHash789629,
+	blockHash5831776,
 	blockHash18207445,
 	defaultMockApi,
-	defaultMockApiXCM,
+	defaultMockApiBlock18207445,
+	mockAssetHubKusamaApiBlock5831776,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
+import { events5831776 } from '../test-helpers/mock/data/events5831776Hex';
 import { events18207445 } from '../test-helpers/mock/data/events18207445Hex';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
+import { validators5831776Hex } from '../test-helpers/mock/data/validators5831776Hex';
 import { validators18207445Hex } from '../test-helpers/mock/data/validators18207445Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
+import block5831776Response from '../test-helpers/responses/blocks/block5831776.json';
 import block18207445Response from '../test-helpers/responses/blocks/block18207445.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import blocks789629Raw from '../test-helpers/responses/blocks/blocks789629Raw.json';
@@ -483,20 +493,20 @@ describe('BlocksService', () => {
 		});
 	});
 
-	describe('fetch XCM Decoded Msgs in polkadot blocks 18207445', () => {
-		it('Should give back XCM', async () => {
+	describe('BlockService.decodedXcmMsgsArg', () => {
+		// fetchBlock options
+		const options = {
+			eventDocs: true,
+			extrinsicDocs: true,
+			checkFinalized: false,
+			queryFinalizedHead: false,
+			omitFinalizedTag: false,
+			noFees: false,
+		};
+
+		it('Should give back the decoded upward XCM message for Polkadot block 18207445', async () => {
 			// Reset LRU cache
 			cache.clear();
-
-			// fetchBlock options
-			const options = {
-				eventDocs: true,
-				extrinsicDocs: true,
-				checkFinalized: false,
-				queryFinalizedHead: false,
-				omitFinalizedTag: false,
-				noFees: false,
-			};
 
 			const validatorsAt = (_hash: Hash) =>
 				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<ValidatorId>', validators18207445Hex));
@@ -542,7 +552,7 @@ describe('BlocksService', () => {
 			} as unknown as ApiDecoration<'promise'>;
 
 			const mockApiXCM = {
-				...defaultMockApiXCM,
+				...defaultMockApiBlock18207445,
 				query: {
 					transactionPayment: {
 						nextFeeMultiplier: { at: nextFeeMultiplierAt },
@@ -562,6 +572,73 @@ describe('BlocksService', () => {
 			);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block18207445Response);
+		});
+
+		it('Should give back the decoded horizontal XCM message for Kusama Asset Hub block 5831776', async () => {
+			// Reset LRU cache
+			cache.clear();
+
+			const validatorsAt = (_hash: Hash) =>
+				Promise.resolve().then(() =>
+					assetHubKusamaRegistryV1000000.createType('Vec<ValidatorId>', validators5831776Hex),
+				);
+
+			const eventsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Vec<EventRecord>', events5831776));
+
+			const nextFeeMultiplierAt = (_hash: Hash) =>
+				Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Fixed128', 1000000000));
+
+			const mockHistoricApiXCM = {
+				registry: assetHubKusamaRegistryV1000000,
+				call: {
+					transactionPaymentApi: {},
+				},
+				consts: {
+					transactionPayment: {
+						transactionByteFee: assetHubKusamaRegistryV1000000.createType('Balance', 1000000),
+						weightToFee: [
+							{
+								coeffFrac: assetHubKusamaRegistryV1000000.createType('Perbill', 80000000),
+								coeffInteger: assetHubKusamaRegistryV1000000.createType('Balance', 0),
+								degree: assetHubKusamaRegistryV1000000.createType('u8', 1),
+								negative: false,
+							},
+						],
+					},
+					system: {
+						extrinsicBaseWeight: assetHubKusamaRegistryV1000000.createType('u64', 125000000),
+					},
+				},
+				query: {
+					session: {
+						validators: validatorsAt,
+					},
+					system: {
+						events: eventsAt,
+					},
+					transactionPayment: {
+						nextFeeMultiplier: nextFeeMultiplierAt,
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
+
+			const mockApiXCM = {
+				...mockAssetHubKusamaApiBlock5831776,
+				query: {
+					transactionPayment: {
+						nextFeeMultiplier: { at: nextFeeMultiplierAt },
+					},
+				},
+				at: (_hash: Hash) => mockHistoricApiXCM,
+			} as unknown as ApiPromise;
+
+			// Block Service
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const decodedXcmMsgsArg = true;
+			const block = await blocksServiceXCM.fetchBlock(blockHash5831776, mockHistoricApiXCM, options, decodedXcmMsgsArg);
+
+			expect(sanitizeNumbers(block)).toMatchObject(block5831776Response);
 		});
 	});
 });

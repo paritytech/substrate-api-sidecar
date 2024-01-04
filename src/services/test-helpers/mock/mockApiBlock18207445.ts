@@ -192,7 +192,7 @@ const traceBlock = () =>
  * Deafult Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #18207445, which is what the XCM test in BlockService use.
  */
-export const defaultMockApiXCM = {
+export const defaultMockApiBlock18207445 = {
 	runtimeVersion,
 	call: {
 		transactionPaymentApi: {

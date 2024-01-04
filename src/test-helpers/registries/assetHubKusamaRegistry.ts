@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@ import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
 import { assetHubKusamaV14 } from '../metadata/assetHubKusamaMetadata';
+import { assetHubKusamaV1000000 } from '../metadata/assetHubKusamaMetadataV1000000';
 
 /**
  * Create a type registry for Asset Hub Kusama.
@@ -26,7 +27,7 @@ import { assetHubKusamaV14 } from '../metadata/assetHubKusamaMetadata';
  *
  * @param specVersion Asset Hub Kusama runtime spec version to get type defs for.
  */
-function createAssetHubKusamaRegistry(specVersion: number): TypeRegistry {
+function createAssetHubKusamaRegistry(specVersion: number, metadata: `0x${string}`): TypeRegistry {
 	const registry = new TypeRegistry();
 
 	registry.setChainProperties(
@@ -39,7 +40,7 @@ function createAssetHubKusamaRegistry(specVersion: number): TypeRegistry {
 
 	registry.register(getSpecTypes(registry, 'Statemine', 'statemine', specVersion));
 
-	registry.setMetadata(new Metadata(registry, assetHubKusamaV14));
+	registry.setMetadata(new Metadata(registry, metadata));
 
 	return registry;
 }
@@ -47,4 +48,9 @@ function createAssetHubKusamaRegistry(specVersion: number): TypeRegistry {
 /**
  * Asset Hub Kusama v9430 TypeRegistry.
  */
-export const assetHubKusamaRegistryV9430 = createAssetHubKusamaRegistry(9430);
+export const assetHubKusamaRegistryV9430 = createAssetHubKusamaRegistry(9430, assetHubKusamaV14);
+
+/**
+ * Asset Hub Kusama v1000000 TypeRegistry.
+ */
+export const assetHubKusamaRegistryV1000000 = createAssetHubKusamaRegistry(1000000, assetHubKusamaV1000000);

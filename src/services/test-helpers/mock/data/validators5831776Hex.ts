@@ -14,17 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './addresses';
-export * from './mockApi';
-export * from './mockApiBlock18207445';
-export * from './mockAssetHubKusamaApi';
-export * from './mockAssetHubKusamaApiBlock5831776';
-export * from './mockAssetHubWestendApi';
-export * from './mockBlock523510';
-export * from './mockBlock789629';
-export * from './mockBlock5236177';
-export * from './mockBlock5831776';
-export * from './mockBlock13641102';
-export * from './mockBlock18207445';
-export * from './mockBlockHashes';
-export * from './transactions';
+export const validators5831776Hex =
+	'0x2c50673d59020488a4ffc9d8c6de3062a65977046e6990915617f85fef6d349730fe8102dbc244e7ea2babd9f53236d67403b046154370da5c3ea99def0bd0747a5ecc1b0043fe1fc18950cef3726fa74151bc41f77438ce924c11a9b43823ff4300c703a1cde92ffaf1f8312c1fdb3a81140f7e76789d55ae1f0683025c4286493a6a0745688c52b4709f65fa2e4508dfa0940ccc0d282cd16be9bc043b2f4a04e5c49f7bc76b9e1b91566945e2eb539d960da57ca8e9ccd0e6030e4b11b60099da9f7fd3d9612a68d2ead69dde53297b172b7db514d0d261e7c5be987df7f32af00168a3d082a8ccf93945b1f173fdaecc1ce76fc09bbde18423640194be72125009e192ec169788c9c1f0202fe7c2bc79405ff8b6e1d1ac78fd6152006e606d56495460066a5fab4be4b0634c41f0e550f4f3e4d3436924364ce98d8678372d6610a5024c2a5db3d02056d4344d120ec7be283100d71a6715f09275167e4f38';
