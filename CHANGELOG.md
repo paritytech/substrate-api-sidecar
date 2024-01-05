@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.4](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.3..v17.3.4) (2024-01-05)
+
+### Fix
+
+- fix: ensure statemine, and statemint are still supported ([#1374](https://github.com/paritytech/substrate-api-sidecar/pull/1374)) ([ca5079a](https://github.com/paritytech/substrate-api-sidecar/commit/ca5079a037b8911c6c6d0f8900f0ef6beec369f9))
+
+### Chore
+
+- chore(pjs): update polkadot-js, and fix staking ledger types ([#1371](https://github.com/paritytech/substrate-api-sidecar/pull/1371)) ([ceea8eb](https://github.com/paritytech/substrate-api-sidecar/commit/ceea8ebad59581118b061846c01ed0a80db78ae9))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10500
+- Kusama v10500
+- Westend v10500
+
 ## [17.3.3](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.2..v17.3.3) (2023-12-21)
 
 **NOTE** This release focuses on improving the performance of the tool resolving a regression where `blocks` were overwhelmed with transactions. The `noFees` query parameter focuses on removing fee info for the blocks if the user does not intend on needing fees. For more general cases where fees are necessary we have increased the performance of querying `/blocks` while also calculating fees. This was done with 2 cases: ensuring `transactionPaidFee`, and `ExtrinsicSuccess` or `ExtrinsicFailure` info is used to its fullest so we can avoid making any additional rpc calls, as well as ensuring the extrinsic's are called concurrently.
