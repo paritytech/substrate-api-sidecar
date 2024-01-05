@@ -60,6 +60,8 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'dock-pos-test-runtime': dockTestnetControllers,
 	'asset-hub-kusama': assetHubKusamaControllers,
 	'asset-hub-polkadot': assetHubPolkadotControllers,
+	statemine: assetHubKusamaControllers,
+	statemint: assetHubPolkadotControllers,
 	westmine: assetHubKusamaControllers,
 	'asset-hub-westend': assetHubWestendControllers,
 	westmint: assetHubWestendControllers,
