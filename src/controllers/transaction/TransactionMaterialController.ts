@@ -26,8 +26,8 @@ export type MetadataOpts = 'json' | 'scale';
  * GET all the network information needed to construct a transaction offline.
  *
  * Query
- * - (Optional) `noMeta`: If true, does not return metadata hex. This is useful when metadata is not
- * 		needed and response time is a concern. Defaults to false.
+ * - (Optional) `metadata`: It accepts `json`, or `scale` values. If it is not present, the
+ *   the metadata field will not be included.
  * - (Optional) `at`: Block hash or number at which to query. If not provided, queries
  *   finalized head.
  *
@@ -79,14 +79,11 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	/**
 	 * The metadata args have two options. `json`, and `scale`.
 	 *
-	 * @param noMeta
 	 * @param metadata
 	 */
 	private parseMetadataArgs(metadata: unknown): MetadataOpts | false {
 		/**
-		 * Checks to see if the `metadata` query param is inputted, if it isnt,
-		 * it will default to the old behavior. This is to be removed once after
-		 * the `noMeta` query param is fully deprecated.
+		 * Checks to see if the `metadata` query param is inputted.
 		 */
 		if (metadata) {
 			switch (metadata) {
