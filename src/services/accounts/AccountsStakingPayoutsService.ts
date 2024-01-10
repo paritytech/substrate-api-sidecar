@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -272,12 +272,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 			// Check if the reward has already been claimed
-			let claimed: boolean;
+			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards) {
-				claimed = validatorLedger.legacyClaimedRewards.includes(eraIndex);
+				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
 			} else {
-				claimed = (validatorLedger as unknown as StakingLedger).claimedRewards.includes(eraIndex);
+				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
 			}
+			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
 				continue;
 			}
