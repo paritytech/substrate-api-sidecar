@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.3.5](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.4..v17.3.5) (2024-01-10)
+
+### Fix
+
+- fix: changed how claimed variable is set in staking-payouts ([#1378](https://github.com/paritytech/substrate-api-sidecar/pull/1378)) ([0560806](https://github.com/paritytech/substrate-api-sidecar/commit/056080636e11ceea2364e59bb769bea1be3429a4))
+
+### Perf
+
+- perf: add additional high load benchmarks for /blocks ([#1372](https://github.com/paritytech/substrate-api-sidecar/pull/1372)) ([c3d9d01](https://github.com/paritytech/substrate-api-sidecar/commit/c3d9d012762f5c93fca3d274fa08388d70296737))
+
+### Docs
+
+- docs: update node compatibility ([#1373](https://github.com/paritytech/substrate-api-sidecar/pull/1373)) ([51353c0](https://github.com/paritytech/substrate-api-sidecar/commit/51353c0eee1ced554c8d8c9a0067af69b8e2574c))
+
+### Chore
+
+- chore(deps): bump follow-redirects from 1.15.2 to 1.15.4 in /docs ([#1376](https://github.com/paritytech/substrate-api-sidecar/pull/1376)) ([b2aab7d](https://github.com/paritytech/substrate-api-sidecar/commit/b2aab7dd5ae93b1270e8baba4e2ac7e0c8d3e8ed))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10500
+- Kusama v10500
+- Westend v10500
+
 ## [17.3.4](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.3..v17.3.4) (2024-01-05)
 
 ### Fix
