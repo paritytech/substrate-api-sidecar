@@ -26,7 +26,7 @@ export type MetadataOpts = 'json' | 'scale';
  * GET all the network information needed to construct a transaction offline.
  *
  * Query
- * - (Optional) `metadata`: It accepts `json`, or `scale` values. If it is not present, the
+ * - (Optional) `metadata`: It accepts `json`, or `scale` values. If it is not present,
  *   the metadata field will not be included.
  * - (Optional) `at`: Block hash or number at which to query. If not provided, queries
  *   finalized head.
