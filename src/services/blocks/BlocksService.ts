@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -112,8 +112,18 @@ export class BlocksService extends AbstractService {
 	): Promise<IBlock> {
 		const { api } = this;
 
+		// Create a key for the cache that is a concatenation of the block hash and all the query params/options included in the request
+		const cacheKey =
+			hash.toString() +
+			Number(eventDocs) +
+			Number(extrinsicDocs) +
+			Number(checkFinalized) +
+			Number(queryFinalizedHead) +
+			Number(omitFinalizedTag) +
+			Number(noFees);
+
 		// Before making any api calls check the cache if the queried block exists
-		const isBlockCached = this.blockStore.get(hash.toString());
+		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached && isBlockCached.finalized !== false) {
 			return isBlockCached;
@@ -203,7 +213,7 @@ export class BlocksService extends AbstractService {
 		};
 
 		// Store the block in the cache
-		this.blockStore.set(hash.toString(), response);
+		this.blockStore.set(cacheKey, response);
 
 		return response;
 	}
