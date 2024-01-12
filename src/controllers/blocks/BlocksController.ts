@@ -43,6 +43,12 @@ import AbstractController from '../AbstractController';
  * - (Optional for `/blocks/head`) `finalized`: When set to `false`, it will fetch the head of
  * 	the node's canon chain, which might not be finalized. When set to `true` it
  * 	will fetch the head of the finalized chain.
+ * - (Optional) `noFees`: When set to `true`, it will not calculate the fee for each extrinsic.
+ * - (Optional for `/blocks/{blockId}`) `decodedXcmMsgs`: When set to `true`, it will show the
+ *  decoded XCM messages within the extrinsics of the requested block.
+ * - (Optional for `/blocks/{blockId}) `paraId`: When it is set, it will return only the decoded
+ *  XCM messages for the specified paraId/parachain Id. To activate this functionality, ensure
+ *  that the `decodedXcmMsgs` parameter is set to true.
  *
  *
  * Returns:
@@ -74,6 +80,8 @@ import AbstractController from '../AbstractController';
  *     is `true` and that the extrinsic is signed when reconciling old blocks.
  * - `onFinalize`: Object with an array of `SanitizedEvent`s that occurred during block
  *   finalization with the `method` and `data` for each.
+ * - `decodedXcmMsgs`: An array of the decoded XCM messages found within the extrinsics
+ *   of the requested block.
  *
  * Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
  * canonical chain. It denotes the finalization of block _construction._
