@@ -32,7 +32,7 @@ import BN from 'bn.js';
 
 import { polkadotMetadataRpcV1000001 } from '../../../test-helpers/metadata/polkadotV1000001Metadata';
 import { polkadotRegistryV1000001 } from '../../../test-helpers/registries';
-import { balancesTransferValid, blockHash18207445, mockBlock18207445, testAddressController } from '.';
+import { balancesTransferValid, blockHash18468942, mockBlock18468942, testAddressController } from '.';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { getPalletDispatchables } from './data/mockDispatchablesData';
 import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
@@ -46,19 +46,19 @@ const chain = () =>
 export const getBlockXCM = (_hash: Hash): Promise<{ block: Block }> =>
 	Promise.resolve().then(() => {
 		return {
-			block: mockBlock18207445,
+			block: mockBlock18468942,
 		};
 	});
 
 export const deriveGetBlockXCM = (_hash: Hash): Promise<{ block: Block; author: AccountId }> =>
 	Promise.resolve().then(() => {
 		return {
-			author: polkadotRegistryV1000001.createType('AccountId', '1VzLR7pDbcSsJqXHaRZFzwCtSgjNWEcLddSfWij7Jx3p8FK'),
-			block: mockBlock18207445,
+			author: polkadotRegistryV1000001.createType('AccountId', '16A1zLQ3KjMnxch1NAU44hoijFK3fHUjqb11bVgcHCfoj9z3'),
+			block: mockBlock18468942,
 		};
 	});
 
-const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockBlock18207445.header);
+const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockBlock18468942.header);
 
 const runtimeVersion = {
 	specName: polkadotRegistryV1000001.createType('Text', 'polkadot'),
@@ -79,7 +79,7 @@ const getMetadata = () => Promise.resolve().then(() => polkadotMetadataRpcV10000
 const deriveGetHeader = () =>
 	Promise.resolve().then(() => {
 		return {
-			author: polkadotRegistryV1000001.createType('AccountId', '1VzLR7pDbcSsJqXHaRZFzwCtSgjNWEcLddSfWij7Jx3p8FK'),
+			author: polkadotRegistryV1000001.createType('AccountId', '16A1zLQ3KjMnxch1NAU44hoijFK3fHUjqb11bVgcHCfoj9z3'),
 		};
 	});
 
@@ -162,7 +162,7 @@ const properties = () =>
 		}),
 	);
 
-const getFinalizedHead = () => Promise.resolve().then(() => blockHash18207445);
+const getFinalizedHead = () => Promise.resolve().then(() => blockHash18468942);
 
 const health = () =>
 	Promise.resolve().then(() => polkadotRegistryV1000001.createType('Health', '0x7a000000000000000001'));
@@ -189,10 +189,10 @@ const traceBlock = () =>
 	Promise.resolve().then(() => polkadotRegistryV1000001.createType('TraceBlockResponse', traceBlockRPC.result));
 
 /**
- * Deafult Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
- * #18207445, which is what the XCM test in BlockService use.
+ * Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
+ * #18468942, which is what the XCM test in BlockService use.
  */
-export const defaultMockApiBlock18207445 = {
+export const mockApiBlock18468942 = {
 	runtimeVersion,
 	call: {
 		transactionPaymentApi: {

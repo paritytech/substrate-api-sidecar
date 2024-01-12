@@ -15,17 +15,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { polkadotRegistryV1000001 } from '../../../test-helpers/registries';
-import block18207445 from './data/block18207445.json';
+import block18468942 from './data/block18468942.json';
 
 /**
- * Mock for Polkadot Block #18207445.
+ * Mock for Polkadot Block #18468942.
  */
-export const mockBlock18207445 = polkadotRegistryV1000001.createType('Block', block18207445);
+export const mockBlock18468942 = polkadotRegistryV1000001.createType('Block', block18468942);
 
 /**
- * BlockHash for Polkadot Block #18207445.
+ * BlockHash for Polkadot Block #18468942.
  */
-export const blockHash18207445 = polkadotRegistryV1000001.createType(
+export const blockHash18468942 = polkadotRegistryV1000001.createType(
 	'BlockHash',
-	'0xc759aa0846fb1d608f8ac36d7f66b202dbe1424bd6b36ff7b0d2bb7b79cce055',
+	'0x1ffece02b91e52c4923827843774f705911905c0a66980f7037bed643b746d1d',
 );

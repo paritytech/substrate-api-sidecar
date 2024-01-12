@@ -16,7 +16,7 @@
 
 export * from './addresses';
 export * from './mockApi';
-export * from './mockApiBlock18207445';
+export * from './mockApiBlock18468942';
 export * from './mockAssetHubKusamaApi';
 export * from './mockAssetHubKusamaApiBlock5831776';
 export * from './mockAssetHubWestendApi';
@@ -25,6 +25,6 @@ export * from './mockBlock789629';
 export * from './mockBlock5236177';
 export * from './mockBlock5831776';
 export * from './mockBlock13641102';
-export * from './mockBlock18207445';
+export * from './mockBlock18468942';
 export * from './mockBlockHashes';
 export * from './transactions';
