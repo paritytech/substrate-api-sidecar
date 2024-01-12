@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 17.3.3
+  version: 17.3.5
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -1065,17 +1065,17 @@ paths:
           format: unsignedInteger or $hex
       - name: noMeta
         in: query
+        description: DEPRECATED! This is no longer supported
         schema:
           type: boolean
-          description: DEPRECATED! This is no longer supported
           default: false
       - name: metadata
         in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+          When `metadata` is not inputted, the `metadata` field will be absent.
         schema:
           type: string
-          description: Specifies the format of the metadata to be returned. Accepted values are
-            'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
-            When `metadata` is not inputted, the `metadata` field will be absent.
       responses:
         "200":
           description: successful operation
@@ -4252,9 +4252,7 @@ components:
             does not change `txVersion`.
         metadata:
           type: string
-          description: The chain's metadata. It's default return value is hex, but may be returned in
-            decoded json format.
-          format: hex
+          description: The chain's metadata. It will only be present when the metadata query param is used.
       description: >-
         Note: `chainName`, `specName`, and `specVersion` are used to define a type registry with a set
         of signed extensions and types. For Polkadot and Kusama, `chainName` is not used in defining

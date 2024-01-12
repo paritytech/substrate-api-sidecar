@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,15 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
-import { DeriveEraExposure, DeriveEraExposureNominating } from '@polkadot/api-derive/staking/types';
-import { Option, u32 } from '@polkadot/types';
-import { BalanceOf, BlockHash, EraIndex, Perbill, StakingLedger } from '@polkadot/types/interfaces';
-import { PalletStakingEraRewardPoints } from '@polkadot/types/lookup';
+import type { ApiDecoration } from '@polkadot/api/types';
+import type { DeriveEraExposure, DeriveEraExposureNominating } from '@polkadot/api-derive/staking/types';
+import type { Option, u32 } from '@polkadot/types';
+import type { BalanceOf, BlockHash, EraIndex, Perbill, StakingLedger } from '@polkadot/types/interfaces';
+import type { PalletStakingEraRewardPoints, PalletStakingStakingLedger } from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
-import { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
+import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 /**
@@ -37,7 +37,7 @@ type IErasGeneral = [DeriveEraExposure, PalletStakingEraRewardPoints, Option<Bal
  */
 interface ICommissionAndLedger {
 	commission: Perbill;
-	validatorLedger?: StakingLedger;
+	validatorLedger?: PalletStakingStakingLedger;
 }
 
 /**
@@ -202,7 +202,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		deriveErasExposures: DeriveEraExposure[],
 	): Promise<ICommissionAndLedger[][]> {
 		// Cache StakingLedger to reduce redundant queries to node
-		const validatorLedgerCache: { [id: string]: StakingLedger } = {};
+		const validatorLedgerCache: { [id: string]: PalletStakingStakingLedger } = {};
 
 		const allErasCommissions = deriveErasExposures.map((deriveEraExposure, idx) => {
 			const currEra = idx + startEra;
@@ -272,7 +272,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 			// Check if the reward has already been claimed
-			const claimed = validatorLedger.claimedRewards.includes(eraIndex);
+			let indexOfEra: number;
+			if (validatorLedger.legacyClaimedRewards) {
+				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
+			} else {
+				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
+			}
+			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
 				continue;
 			}
@@ -317,7 +323,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		validatorId: string,
 		era: number,
-		validatorLedgerCache: { [id: string]: StakingLedger },
+		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
 	): Promise<ICommissionAndLedger> {
 		let commission;
 		let validatorLedger;

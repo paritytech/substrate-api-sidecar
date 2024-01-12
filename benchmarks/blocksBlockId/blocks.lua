@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+local highLoadBlocks = require('highLoadBlocks')
+
 local blocks = {
     '28831', -- Sudo setKey(0, -> 1)
     '29258', -- sudo.sudo(forceTransfer)
@@ -58,6 +60,7 @@ local blocks = {
     '1603025', -- staking.withdrawUnbonded
     '6800002', -- blocks.transfer
     '11873016', -- vesting.vest
+    unpack(highLoadBlocks)
 }
 
 return blocks
