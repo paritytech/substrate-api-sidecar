@@ -28,6 +28,7 @@ import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
 import {
 	assetHubKusamaRegistryV1000000,
+	assetHubKusamaRegistryV1000000b,
 	kusamaRegistry,
 	polkadotRegistry,
 	polkadotRegistryV1000001,
@@ -39,21 +40,26 @@ import {
 	blockHash789629,
 	blockHash3356195,
 	blockHash18468942,
+	blockHash6202603,
 	defaultMockApi,
 	mockApiBlock18468942,
 	mockAssetHubKusamaApiBlock3356195,
+	mockAssetHubKusamaApiBlock6202603,
 	mockForkedBlock789629,
 } from '../test-helpers/mock';
 import block789629 from '../test-helpers/mock/data/block789629.json';
 import { events789629 } from '../test-helpers/mock/data/events789629Hex';
 import { events3356195 } from '../test-helpers/mock/data/events3356195Hex';
+import { events6202603 } from '../test-helpers/mock/data/events6202603Hex';
 import { events18468942 } from '../test-helpers/mock/data/events18468942Hex';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { validators3356195Hex } from '../test-helpers/mock/data/validators3356195Hex';
+import { validators6202603Hex } from '../test-helpers/mock/data/validators6202603Hex';
 import { validators18468942Hex } from '../test-helpers/mock/data/validators18468942Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import block3356195Response from '../test-helpers/responses/blocks/block3356195.json';
+import block6202603pId2087Response from '../test-helpers/responses/blocks/block6202603paraId2087.json';
 import block18468942Response from '../test-helpers/responses/blocks/block18468942.json';
 import block18468942pId2000Response from '../test-helpers/responses/blocks/block18468942paraId2000.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
@@ -657,6 +663,74 @@ describe('BlocksService', () => {
 			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options, decodedXcmMsgsArg);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block3356195Response);
+		});
+
+		it('Should give back one of the two available horizontal messages, the one for paraId 2087 for Kusama Asset Hub block 6202603', async () => {
+			// Reset LRU cache
+			cache.clear();
+
+			const validatorsAt = (_hash: Hash) =>
+				Promise.resolve().then(() =>
+					assetHubKusamaRegistryV1000000b.createType('Vec<ValidatorId>', validators6202603Hex),
+				);
+
+			const eventsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => assetHubKusamaRegistryV1000000b.createType('Vec<EventRecord>', events6202603));
+
+			const nextFeeMultiplierAt = (_hash: Hash) =>
+				Promise.resolve().then(() => assetHubKusamaRegistryV1000000b.createType('Fixed128', 1000000000));
+
+			const mockHistoricApiXCM = {
+				registry: assetHubKusamaRegistryV1000000,
+				call: {
+					transactionPaymentApi: {},
+				},
+				consts: {
+					transactionPayment: {
+						transactionByteFee: assetHubKusamaRegistryV1000000b.createType('Balance', 1000000),
+						weightToFee: [
+							{
+								coeffFrac: assetHubKusamaRegistryV1000000b.createType('Perbill', 80000000),
+								coeffInteger: assetHubKusamaRegistryV1000000b.createType('Balance', 0),
+								degree: assetHubKusamaRegistryV1000000b.createType('u8', 1),
+								negative: false,
+							},
+						],
+					},
+					system: {
+						extrinsicBaseWeight: assetHubKusamaRegistryV1000000b.createType('u64', 125000000),
+					},
+				},
+				query: {
+					session: {
+						validators: validatorsAt,
+					},
+					system: {
+						events: eventsAt,
+					},
+					transactionPayment: {
+						nextFeeMultiplier: nextFeeMultiplierAt,
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
+
+			const mockApiXCM = {
+				...mockAssetHubKusamaApiBlock6202603,
+				query: {
+					transactionPayment: {
+						nextFeeMultiplier: { at: nextFeeMultiplierAt },
+					},
+				},
+				at: (_hash: Hash) => mockHistoricApiXCM,
+			} as unknown as ApiPromise;
+
+			// Block Service
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const decodedXcmMsgsArg = true;
+			const paraId = '2087';
+			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options, decodedXcmMsgsArg, paraId);
+
+			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
 		});
 	});
 });

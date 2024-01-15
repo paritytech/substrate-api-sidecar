@@ -20,6 +20,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 
 import { assetHubKusamaV14 } from '../metadata/assetHubKusamaMetadata';
 import { assetHubKusamaV1000000 } from '../metadata/assetHubKusamaMetadataV1000000';
+import { assetHubKusamaV1000000b } from '../metadata/assetHubKusamaMetadataV1000000b';
 
 /**
  * Create a type registry for Asset Hub Kusama.
@@ -54,3 +55,8 @@ export const assetHubKusamaRegistryV9430 = createAssetHubKusamaRegistry(9430, as
  * Asset Hub Kusama v1000000 TypeRegistry.
  */
 export const assetHubKusamaRegistryV1000000 = createAssetHubKusamaRegistry(1000000, assetHubKusamaV1000000);
+
+/**
+ * Asset Hub Kusama v1000000 TypeRegistry for block 6202603 in testing.
+ */
+export const assetHubKusamaRegistryV1000000b = createAssetHubKusamaRegistry(1000000, assetHubKusamaV1000000b);
