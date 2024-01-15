@@ -104,12 +104,22 @@ export class XcmDecoder {
 					data.horizontalMessages.forEach((msgs, index) => {
 						msgs.forEach((msg) => {
 							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-							const horizontalMessage: IHorizontalMessage = {
-								sentAt: msg.sentAt,
-								paraId: index,
-								data: xcmMessageDecoded,
-							};
-							xcmMessages.horizontalMessages?.push(horizontalMessage);
+							let horizontalMessage: IHorizontalMessage;
+							if (paraId !== undefined && index.toString() === paraId) {
+								horizontalMessage = {
+									sentAt: msg.sentAt,
+									paraId: index,
+									data: xcmMessageDecoded,
+								};
+								xcmMessages.horizontalMessages?.push(horizontalMessage);
+							} else if (paraId === undefined) {
+								horizontalMessage = {
+									sentAt: msg.sentAt,
+									paraId: index,
+									data: xcmMessageDecoded,
+								};
+								xcmMessages.horizontalMessages?.push(horizontalMessage);
+							}
 						});
 					});
 				}
