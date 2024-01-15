@@ -39,8 +39,8 @@ import {
 	blockHash100000,
 	blockHash789629,
 	blockHash3356195,
-	blockHash18468942,
 	blockHash6202603,
+	blockHash18468942,
 	defaultMockApi,
 	mockApiBlock18468942,
 	mockAssetHubKusamaApiBlock3356195,
@@ -728,7 +728,13 @@ describe('BlocksService', () => {
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
 			const decodedXcmMsgsArg = true;
 			const paraId = '2087';
-			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options, decodedXcmMsgsArg, paraId);
+			const block = await blocksServiceXCM.fetchBlock(
+				blockHash6202603,
+				mockHistoricApiXCM,
+				options,
+				decodedXcmMsgsArg,
+				paraId,
+			);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
 		});

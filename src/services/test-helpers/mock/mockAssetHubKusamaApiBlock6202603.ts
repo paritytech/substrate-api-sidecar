@@ -53,7 +53,10 @@ export const assetHubKusamaGetBlock6202603 = (_hash: Hash): Promise<{ block: Blo
 export const assetHubKusamaDeriveGetBlock6202603 = (_hash: Hash): Promise<{ block: Block; author: AccountId }> =>
 	Promise.resolve().then(() => {
 		return {
-			author: assetHubKusamaRegistryV1000000b.createType('AccountId', 'EXTRGokoMvv1BKrRKhjsz97tjHo8RCkNc1xcEQukLBN2NNH'),
+			author: assetHubKusamaRegistryV1000000b.createType(
+				'AccountId',
+				'EXTRGokoMvv1BKrRKhjsz97tjHo8RCkNc1xcEQukLBN2NNH',
+			),
 			block: mockBlock6202603,
 		};
 	});
@@ -79,7 +82,10 @@ const getMetadata = () => Promise.resolve().then(() => assetHubKusamaV1000000);
 const deriveGetHeader = () =>
 	Promise.resolve().then(() => {
 		return {
-			author: assetHubKusamaRegistryV1000000b.createType('AccountId', 'EXTRGokoMvv1BKrRKhjsz97tjHo8RCkNc1xcEQukLBN2NNH'),
+			author: assetHubKusamaRegistryV1000000b.createType(
+				'AccountId',
+				'EXTRGokoMvv1BKrRKhjsz97tjHo8RCkNc1xcEQukLBN2NNH',
+			),
 		};
 	});
 
@@ -152,7 +158,8 @@ export const assetHubKusamaQueryInfoAt6202603 = (_extrinsic: string, _hash: Hash
 export const assetHubKusamaSubmitExtrinsic6202603 = (_extrinsic: string): Promise<Hash> =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000b.createType('Hash'));
 
-const getStorage = () => Promise.resolve().then(() => assetHubKusamaRegistryV1000000b.createType('Option<Raw>', '0x00'));
+const getStorage = () =>
+	Promise.resolve().then(() => assetHubKusamaRegistryV1000000b.createType('Option<Raw>', '0x00'));
 
 const chainType = () =>
 	Promise.resolve().then(() =>
