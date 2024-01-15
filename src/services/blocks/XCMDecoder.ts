@@ -37,7 +37,7 @@ enum ChainType {
 }
 
 export class XcmDecoder {
-	readonly messages: IMessages[];
+	readonly messages: IMessages;
 	readonly api: ApiPromise;
 	static curChainType: ChainType;
 	static specName: string;
@@ -58,20 +58,19 @@ export class XcmDecoder {
 		}
 	}
 
-	static getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: string): IMessages[] {
-		const xcmMessages: IMessages[] = [];
+	static getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: string): IMessages {
+		const xcmMessages: IMessages = { horizontalMessages: [], downwardMessages: [], upwardMessages: [] };
 		if (XcmDecoder.curChainType === ChainType.Relay) {
 			extrinsics.forEach((extrinsic) => {
 				const frame = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
-					const upwardMessage: IUpwardMessage[] = [];
 					if (paraId !== undefined) {
 						data.backedCandidates.forEach((candidate) => {
 							if (candidate.candidate.descriptor.paraId.toString() === paraId) {
 								const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
 								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-									upwardMessage.push(msg_decoded);
+									xcmMessages.upwardMessages?.push(msg_decoded);
 								}
 							}
 						});
@@ -79,13 +78,10 @@ export class XcmDecoder {
 						data.backedCandidates.forEach((candidate) => {
 							const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
 							if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-								upwardMessage.push(msg_decoded);
+								xcmMessages.upwardMessages?.push(msg_decoded);
 							}
 						});
 					}
-					xcmMessages.push({
-						upwardMessages: upwardMessage,
-					});
 				}
 			});
 		} else if (XcmDecoder.curChainType === ChainType.Parachain) {
@@ -96,41 +92,24 @@ export class XcmDecoder {
 					data.downwardMessages.forEach((msg) => {
 						const message = msg.msg;
 						if (message && message.toString().length > 0) {
-							const downwardMessage: IDownwardMessage[] = [];
 							const xcmMessageDecoded = this.decodeMsg(api, message);
-							downwardMessage.push({
+							const downwardMessage: IDownwardMessage = {
 								sentAt: msg.sentAt,
 								msg: message.toString(),
 								data: xcmMessageDecoded,
-							});
-							xcmMessages.push({
-								downwardMessages: downwardMessage,
-							});
+							};
+							xcmMessages.downwardMessages?.push(downwardMessage);
 						}
 					});
 					data.horizontalMessages.forEach((msgs, index) => {
 						msgs.forEach((msg) => {
-							const horizontalMessage: IHorizontalMessage[] = [];
 							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-							if (paraId !== undefined && index.toString() === paraId) {
-								horizontalMessage.push({
-									sentAt: msg.sentAt,
-									paraId: index,
-									data: xcmMessageDecoded,
-								});
-								xcmMessages.push({
-									horizontalMessages: horizontalMessage,
-								});
-							} else if (paraId === undefined) {
-								horizontalMessage.push({
-									sentAt: msg.sentAt,
-									paraId: index,
-									data: xcmMessageDecoded,
-								});
-								xcmMessages.push({
-									horizontalMessages: horizontalMessage,
-								});
-							}
+							const horizontalMessage: IHorizontalMessage = {
+								sentAt: msg.sentAt,
+								paraId: index,
+								data: xcmMessageDecoded,
+							};
+							xcmMessages.horizontalMessages?.push(horizontalMessage);
 						});
 					});
 				}

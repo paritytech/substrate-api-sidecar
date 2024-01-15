@@ -34,7 +34,7 @@ export interface IBlock {
 	extrinsics: IExtrinsic[];
 	onFinalize: IOnInitializeOrFinalize;
 	finalized: boolean | undefined;
-	decodedXcmMsgs?: IMessages[] | undefined;
+	decodedXcmMsgs?: IMessages | undefined;
 }
 
 interface IOnInitializeOrFinalize {
