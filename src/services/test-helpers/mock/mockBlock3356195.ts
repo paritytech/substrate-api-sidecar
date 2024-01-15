@@ -14,5 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export const events5831776 =
-	'0x1800000000003203c00700007369626c2708000000000000000000000000000000000000000000000000000080c3c9010000000000000000000000000000000000003201c00700003679d1d8e31d312a55f7ca994773b6a4fc7a92f07d898ae86bad4f3cab303c4977b5c9010000000000000000000000000000000000003201c0070000e5c49f7bc76b9e1b91566945e2eb539d960da57ca8e9ccd0e6030e4b11b60099090e00000000000000000000000000000000000000001e0041ced32eed097acb39a0f4d5543771dd7006709ba31856ffb62a8ccb62f9bec641ced32eed097acb39a0f4d5543771dd7006709ba31856ffb62a8ccb62f9bec6a23f304a253800000000000000000265cd1d00020100000100000000002220bd435517020000';
+import { assetHubKusamaRegistryV1000000 } from '../../../test-helpers/registries';
+import block3356195 from './data/block3356195.json';
+
+/**
+ * Mock for Asset Hub Kusama Block #3356195.
+ */
+export const mockBlock3356195 = assetHubKusamaRegistryV1000000.createType('Block', block3356195);
+
+/**
+ * BlockHash for Asset Hub Kusama Block #3356195.
+ */
+export const blockHash3356195 = assetHubKusamaRegistryV1000000.createType(
+	'BlockHash',
+	'0x5f752962918b7fb98e36d7e9656ddd0f431c4103b370c738bbb8fccf7f4a0578',
+);

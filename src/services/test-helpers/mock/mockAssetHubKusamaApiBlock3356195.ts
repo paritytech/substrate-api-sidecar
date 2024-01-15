@@ -32,7 +32,7 @@ import BN from 'bn.js';
 
 import { assetHubKusamaV1000000 } from '../../../test-helpers/metadata/assetHubKusamaMetadataV1000000';
 import { assetHubKusamaRegistryV1000000 } from '../../../test-helpers/registries';
-import { balancesTransferValid, blockHash5831776, mockBlock5831776, testAddressController } from '.';
+import { balancesTransferValid, blockHash3356195, mockBlock3356195, testAddressController } from '.';
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { getPalletDispatchables } from './data/mockDispatchablesData';
 import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
@@ -43,22 +43,22 @@ const chain = () =>
 		return assetHubKusamaRegistryV1000000.createType('Text', 'Kusama Asset Hub');
 	});
 
-export const assetHubKusamaGetBlock5831776 = (_hash: Hash): Promise<{ block: Block }> =>
+export const assetHubKusamaGetBlock3356195 = (_hash: Hash): Promise<{ block: Block }> =>
 	Promise.resolve().then(() => {
 		return {
-			block: mockBlock5831776,
+			block: mockBlock3356195,
 		};
 	});
 
-export const assetHubKusamaDeriveGetBlock5831776 = (_hash: Hash): Promise<{ block: Block; author: AccountId }> =>
+export const assetHubKusamaDeriveGetBlock3356195 = (_hash: Hash): Promise<{ block: Block; author: AccountId }> =>
 	Promise.resolve().then(() => {
 		return {
-			author: assetHubKusamaRegistryV1000000.createType('AccountId', 'HmatizNhXrZtXwQK2LfntvjCy3x1EuKs1WnRQ6CP3KkNfmA'),
-			block: mockBlock5831776,
+			author: assetHubKusamaRegistryV1000000.createType('AccountId', 'CbLdvHtKPVr1bvt7poBKwJsQUokfjC4kqoMkjeyCDtFs8wQ'),
+			block: mockBlock3356195,
 		};
 	});
 
-const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockBlock5831776.header);
+const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockBlock3356195.header);
 
 const runtimeVersion = {
 	specName: assetHubKusamaRegistryV1000000.createType('Text', 'statemine'),
@@ -66,7 +66,7 @@ const runtimeVersion = {
 	transactionVersion: assetHubKusamaRegistryV1000000.createType('u32', 2),
 	implVersion: assetHubKusamaRegistryV1000000.createType('u32', 0),
 	implName: assetHubKusamaRegistryV1000000.createType('Text', 'parity-kusama'),
-	authoringVersion: assetHubKusamaRegistryV1000000.createType('u32', 0),
+	authoringVersion: assetHubKusamaRegistryV1000000.createType('u32', 1),
 };
 
 const getRuntimeVersion = () =>
@@ -79,14 +79,14 @@ const getMetadata = () => Promise.resolve().then(() => assetHubKusamaV1000000);
 const deriveGetHeader = () =>
 	Promise.resolve().then(() => {
 		return {
-			author: assetHubKusamaRegistryV1000000.createType('AccountId', 'HmatizNhXrZtXwQK2LfntvjCy3x1EuKs1WnRQ6CP3KkNfmA'),
+			author: assetHubKusamaRegistryV1000000.createType('AccountId', 'CbLdvHtKPVr1bvt7poBKwJsQUokfjC4kqoMkjeyCDtFs8wQ'),
 		};
 	});
 
 const version = () =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Text', '0.8.22-c6ee8675-x86_64-linux-gnu'));
 
-export const assetHubKusamaActiveEraAt5831776 = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
+export const assetHubKusamaActiveEraAt3356195 = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
 	Promise.resolve().then(() =>
 		assetHubKusamaRegistryV1000000.createType('Option<ActiveEraInfo>', {
 			index: 49,
@@ -94,16 +94,16 @@ export const assetHubKusamaActiveEraAt5831776 = (_hash: Hash): Promise<Option<Ac
 		}),
 	);
 
-export const assetHubKusamaErasStartSessionIndexAt5831776 = (
+export const assetHubKusamaErasStartSessionIndexAt3356195 = (
 	_hash: Hash,
 	_activeEra: EraIndex,
 ): Promise<Option<SessionIndex>> =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Option<SessionIndex>', 330));
 
-export const assetHubKusamaBondedAt5831776 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+export const assetHubKusamaBondedAt3356195 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Option<AccountId>', testAddressController));
 
-export const assetHubKusamaLedgerAt5831776 = (_hash: Hash, _address: string): Promise<Option<StakingLedger>> =>
+export const assetHubKusamaLedgerAt3356195 = (_hash: Hash, _address: string): Promise<Option<StakingLedger>> =>
 	Promise.resolve().then(() =>
 		assetHubKusamaRegistryV1000000.createType(
 			'Option<StakingLedger>',
@@ -141,15 +141,15 @@ const runtimeDispatchInfoV2 = assetHubKusamaRegistryV1000000.createType('Runtime
 	partialFee: 149000000,
 });
 
-export const assetHubKusamaQueryInfoCall5831776 = (
+export const assetHubKusamaQueryInfoCall3356195 = (
 	_extrinsic: GenericExtrinsic,
 	_length: Uint8Array,
 ): Promise<RuntimeDispatchInfoV2> => Promise.resolve().then(() => runtimeDispatchInfoV2);
 
-export const assetHubKusamaQueryInfoAt5831776 = (_extrinsic: string, _hash: Hash): Promise<RuntimeDispatchInfoV2> =>
+export const assetHubKusamaQueryInfoAt3356195 = (_extrinsic: string, _hash: Hash): Promise<RuntimeDispatchInfoV2> =>
 	Promise.resolve().then(() => runtimeDispatchInfoV2);
 
-export const assetHubKusamaSubmitExtrinsic5831776 = (_extrinsic: string): Promise<Hash> =>
+export const assetHubKusamaSubmitExtrinsic3356195 = (_extrinsic: string): Promise<Hash> =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Hash'));
 
 const getStorage = () => Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Option<Raw>', '0x00'));
@@ -170,7 +170,7 @@ const properties = () =>
 		}),
 	);
 
-const getFinalizedHead = () => Promise.resolve().then(() => blockHash5831776);
+const getFinalizedHead = () => Promise.resolve().then(() => blockHash3356195);
 
 const health = () =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Health', '0x7a000000000000000001'));
@@ -183,16 +183,13 @@ const nodeRoles = () =>
 
 const localPeerId = () =>
 	Promise.resolve().then(() =>
-		assetHubKusamaRegistryV1000000.createType(
-			'Text',
-			'0x313244334b6f6f57415a66686a79717a4674796435357665424a78545969516b5872614d584c704d4d6a355a6f3471756431485a',
-		),
+		assetHubKusamaRegistryV1000000.createType('Text', '12D3KooWA88bs6zSQmvvTvwqgW8RDFos7KsJrfCAXjm9QyDESgtU'),
 	);
 
-export const assetHubKusamaPendingExtrinsics5831776 = (): Promise<Vec<Extrinsic>> =>
+export const assetHubKusamaPendingExtrinsics3356195 = (): Promise<Vec<Extrinsic>> =>
 	Promise.resolve().then(() => assetHubKusamaRegistryV1000000.createType('Vec<Extrinsic>'));
 
-export const assetHubKusamaTx5831776 = (): Extrinsic =>
+export const assetHubKusamaTx3356195 = (): Extrinsic =>
 	assetHubKusamaRegistryV1000000.createType('Extrinsic', balancesTransferValid);
 
 const traceBlock = () =>
@@ -200,13 +197,13 @@ const traceBlock = () =>
 
 /**
  * Deafult Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
- * #5831776, which is what most Service unit tests are based on.
+ * #3356195, which is what most Service unit tests are based on.
  */
-export const mockAssetHubKusamaApiBlock5831776 = {
+export const mockAssetHubKusamaApiBlock3356195 = {
 	runtimeVersion,
 	call: {
 		transactionPaymentApi: {
-			queryInfo: assetHubKusamaQueryInfoCall5831776,
+			queryInfo: assetHubKusamaQueryInfoCall3356195,
 			queryFeeDetails,
 		},
 	},
@@ -256,7 +253,7 @@ export const mockAssetHubKusamaApiBlock5831776 = {
 	rpc: {
 		chain: {
 			getHeader,
-			getBlock: assetHubKusamaGetBlock5831776,
+			getBlock: assetHubKusamaGetBlock3356195,
 			getBlockHash: getBlockHashGenesis,
 			getFinalizedHead,
 		},
@@ -277,18 +274,18 @@ export const mockAssetHubKusamaApiBlock5831776 = {
 			properties,
 		},
 		payment: {
-			queryInfo: assetHubKusamaQueryInfoAt5831776,
+			queryInfo: assetHubKusamaQueryInfoAt3356195,
 			queryFeeDetails,
 		},
 		author: {
-			assetHubKusamaSubmitExtrinsic5831776,
-			assetHubKusamaPendingExtrinsics5831776,
+			assetHubKusamaSubmitExtrinsic3356195,
+			assetHubKusamaPendingExtrinsics3356195,
 		},
 	},
 	derive: {
 		chain: {
 			getHeader: deriveGetHeader,
-			getBlock: assetHubKusamaDeriveGetBlock5831776,
+			getBlock: assetHubKusamaDeriveGetBlock3356195,
 		},
 	},
 	query: {
