@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -58,6 +58,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
 			noFees: noFeesArg,
+			checkDecodedXcmMsgs: false,
+			paraId: undefined,
 		};
 
 		const historicApi = await this.api.at(hash);

@@ -145,6 +145,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
+				checkDecodedXcmMsgs: false,
+				paraId: undefined,
 			};
 
 			expect(sanitizeNumbers(await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options))).toMatchObject(
@@ -170,6 +172,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
+				checkDecodedXcmMsgs: false,
+				paraId: undefined,
 			};
 			const tempGetBlock = mockApi.rpc.chain.getBlock;
 			mockApi.rpc.chain.getBlock = (() =>
@@ -195,6 +199,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: true,
 				noFees: false,
+				checkDecodedXcmMsgs: false,
+				paraId: undefined,
 			};
 
 			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
@@ -383,6 +389,8 @@ describe('BlocksService', () => {
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
 			noFees: false,
+			checkDecodedXcmMsgs: false,
+			paraId: undefined,
 		};
 
 		it('Returns the correct extrinisics object for block 789629', async () => {
@@ -469,6 +477,8 @@ describe('BlocksService', () => {
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
 			noFees: false,
+			checkDecodedXcmMsgs: false,
+			paraId: undefined,
 		};
 
 		it('Should correctly store the most recent queried blocks', async () => {
@@ -501,16 +511,6 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlockService.decodedXcmMsgsArg', () => {
-		// fetchBlock options
-		const options = {
-			eventDocs: true,
-			extrinsicDocs: true,
-			checkFinalized: false,
-			queryFinalizedHead: false,
-			omitFinalizedTag: false,
-			noFees: false,
-		};
-
 		// Reset LRU cache
 		cache.clear();
 
@@ -569,15 +569,21 @@ describe('BlocksService', () => {
 
 		// Block Service
 		const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
-		const decodedXcmMsgsArg = true;
 
 		it('Should give back two decoded upward XCM messages for Polkadot block 18468942, one for paraId=2000 and one for paraId=2012', async () => {
-			const block = await blocksServiceXCM.fetchBlock(
-				blockHash18468942,
-				mockHistoricApiXCM,
-				options,
-				decodedXcmMsgsArg,
-			);
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+				checkDecodedXcmMsgs: true,
+				paraId: undefined,
+			};
+
+			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block18468942Response);
 		});
@@ -586,14 +592,19 @@ describe('BlocksService', () => {
 			// Reset LRU cache
 			cache.clear();
 
-			const paraId = '2000';
-			const block = await blocksServiceXCM.fetchBlock(
-				blockHash18468942,
-				mockHistoricApiXCM,
-				options,
-				decodedXcmMsgsArg,
-				paraId,
-			);
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+				checkDecodedXcmMsgs: true,
+				paraId: '2000',
+			};
+
+			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block18468942pId2000Response);
 		});
@@ -601,6 +612,18 @@ describe('BlocksService', () => {
 		it('Should give back two decoded XCM messages, one horizontal and one downward, for Kusama Asset Hub block 3356195', async () => {
 			// Reset LRU cache
 			cache.clear();
+
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+				checkDecodedXcmMsgs: true,
+				paraId: undefined,
+			};
 
 			const validatorsAt = (_hash: Hash) =>
 				Promise.resolve().then(() =>
@@ -659,8 +682,7 @@ describe('BlocksService', () => {
 
 			// Block Service
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
-			const decodedXcmMsgsArg = true;
-			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options, decodedXcmMsgsArg);
+			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block3356195Response);
 		});
@@ -668,7 +690,17 @@ describe('BlocksService', () => {
 		it('Should give back one of the two available horizontal messages, the one for paraId 2087 for Kusama Asset Hub block 6202603', async () => {
 			// Reset LRU cache
 			cache.clear();
-
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+				checkDecodedXcmMsgs: true,
+				paraId: '2087',
+			};
 			const validatorsAt = (_hash: Hash) =>
 				Promise.resolve().then(() =>
 					assetHubKusamaRegistryV1000000b.createType('Vec<ValidatorId>', validators6202603Hex),
@@ -726,15 +758,7 @@ describe('BlocksService', () => {
 
 			// Block Service
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
-			const decodedXcmMsgsArg = true;
-			const paraId = '2087';
-			const block = await blocksServiceXCM.fetchBlock(
-				blockHash6202603,
-				mockHistoricApiXCM,
-				options,
-				decodedXcmMsgsArg,
-				paraId,
-			);
+			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
 		});

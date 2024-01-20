@@ -155,6 +155,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcmMsgs: false,
+			paraId: undefined,
 		};
 
 		const historicApi = await this.api.at(hash);
@@ -196,16 +198,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcmMsgs: decodedXcmMsgsArg,
+			paraId: paraId as string,
 		};
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
 		const historicApi = await this.api.at(hash);
 
 		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(
-			res,
-			await this.service.fetchBlock(hash, historicApi, options, decodedXcmMsgsArg, paraId as string),
-		);
+		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
 	};
 
 	/**
@@ -261,6 +262,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcmMsgs: false,
+			paraId: undefined,
 		};
 
 		const pQueue = new PromiseQueue(4);

@@ -74,6 +74,8 @@ interface FetchBlockOptions {
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
 	noFees: boolean;
+	checkDecodedXcmMsgs: boolean;
+	paraId: string | undefined;
 }
 
 interface ExtrinsicSuccessOrFailedOverride {
@@ -109,9 +111,16 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
-		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag, noFees }: FetchBlockOptions,
-		decodedXcmMsgsArg?: boolean,
-		paraId?: string,
+		{
+			eventDocs,
+			extrinsicDocs,
+			checkFinalized,
+			queryFinalizedHead,
+			omitFinalizedTag,
+			noFees,
+			checkDecodedXcmMsgs,
+			paraId,
+		}: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
 
@@ -122,7 +131,7 @@ export class BlocksService extends AbstractService {
 			Number(extrinsicDocs) +
 			Number(checkFinalized) +
 			Number(noFees) +
-			Number(decodedXcmMsgsArg) +
+			Number(checkDecodedXcmMsgs) +
 			Number(paraId);
 
 		// Before making any api calls check the cache if the queried block exists
@@ -198,7 +207,7 @@ export class BlocksService extends AbstractService {
 				}),
 			);
 		}
-		const decodedMsgs = decodedXcmMsgsArg ? new XcmDecoder(api, specName.toString(), extrinsics, paraId) : undefined;
+		const decodedMsgs = checkDecodedXcmMsgs ? new XcmDecoder(api, specName.toString(), extrinsics, paraId) : undefined;
 		const decodedXcmMsgs = decodedMsgs?.messages;
 
 		await Promise.all(feeTasks);
