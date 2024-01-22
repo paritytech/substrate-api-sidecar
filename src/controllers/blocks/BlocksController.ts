@@ -155,7 +155,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
-			checkDecodedXcmMsgs: false,
+			checkDecodedXcm: false,
 			paraId: undefined,
 		};
 
@@ -180,7 +180,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
 		const finalizeOverride = finalizedKey === 'false';
 
 		const queryFinalizedHead = !this.options.finalizes ? false : true;
@@ -191,6 +190,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag = true;
 		}
 
+		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
+		const paraIdArg =
+			paraId !== undefined ? this.parseNumberOrThrow(paraId as string, 'paraId must be an integer') : undefined;
+
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
@@ -198,8 +201,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
-			checkDecodedXcmMsgs: decodedXcmMsgsArg,
-			paraId: paraId as string,
+			checkDecodedXcm: decodedXcmMsgsArg,
+			paraId: paraIdArg,
 		};
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -262,7 +265,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
-			checkDecodedXcmMsgs: false,
+			checkDecodedXcm: false,
 			paraId: undefined,
 		};
 

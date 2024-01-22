@@ -58,7 +58,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
 			noFees: noFeesArg,
-			checkDecodedXcmMsgs: false,
+			checkDecodedXcm: false,
 			paraId: undefined,
 		};
 

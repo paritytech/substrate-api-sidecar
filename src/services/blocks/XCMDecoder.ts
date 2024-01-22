@@ -42,7 +42,7 @@ export class XcmDecoder {
 	static curChainType: ChainType;
 	static specName: string;
 
-	constructor(api: ApiPromise, specName: string, extrinsics: IExtrinsic[], paraId?: string) {
+	constructor(api: ApiPromise, specName: string, extrinsics: IExtrinsic[], paraId?: number) {
 		this.api = api;
 		XcmDecoder.specName = specName;
 		XcmDecoder.curChainType = XcmDecoder.getCurChainType(specName);
@@ -58,7 +58,7 @@ export class XcmDecoder {
 		}
 	}
 
-	static getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: string): IMessages {
+	static getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: number): IMessages {
 		const xcmMessages: IMessages = { horizontalMessages: [], downwardMessages: [], upwardMessages: [] };
 		if (XcmDecoder.curChainType === ChainType.Relay) {
 			extrinsics.forEach((extrinsic) => {
@@ -67,7 +67,7 @@ export class XcmDecoder {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
 					if (paraId !== undefined) {
 						data.backedCandidates.forEach((candidate) => {
-							if (candidate.candidate.descriptor.paraId.toString() === paraId) {
+							if (candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
 								const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
 								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
 									xcmMessages.upwardMessages?.push(msg_decoded);
@@ -105,7 +105,7 @@ export class XcmDecoder {
 						msgs.forEach((msg) => {
 							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
 							let horizontalMessage: IHorizontalMessage;
-							if (paraId !== undefined && index.toString() === paraId) {
+							if (paraId !== undefined && index.toString() === paraId.toString()) {
 								horizontalMessage = {
 									sentAt: msg.sentAt,
 									paraId: index,

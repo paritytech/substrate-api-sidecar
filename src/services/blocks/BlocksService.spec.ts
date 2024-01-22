@@ -145,7 +145,7 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: false,
+				checkDecodedXcm: false,
 				paraId: undefined,
 			};
 
@@ -172,7 +172,7 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: false,
+				checkDecodedXcm: false,
 				paraId: undefined,
 			};
 			const tempGetBlock = mockApi.rpc.chain.getBlock;
@@ -199,7 +199,7 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: true,
 				noFees: false,
-				checkDecodedXcmMsgs: false,
+				checkDecodedXcm: false,
 				paraId: undefined,
 			};
 
@@ -389,7 +389,7 @@ describe('BlocksService', () => {
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
 			noFees: false,
-			checkDecodedXcmMsgs: false,
+			checkDecodedXcm: false,
 			paraId: undefined,
 		};
 
@@ -477,7 +477,7 @@ describe('BlocksService', () => {
 			queryFinalizedHead: false,
 			omitFinalizedTag: false,
 			noFees: false,
-			checkDecodedXcmMsgs: false,
+			checkDecodedXcm: false,
 			paraId: undefined,
 		};
 
@@ -579,7 +579,7 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: true,
+				checkDecodedXcm: true,
 				paraId: undefined,
 			};
 
@@ -600,8 +600,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: true,
-				paraId: '2000',
+				checkDecodedXcm: true,
+				paraId: 2000,
 			};
 
 			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, options);
@@ -621,7 +621,7 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: true,
+				checkDecodedXcm: true,
 				paraId: undefined,
 			};
 
@@ -698,8 +698,8 @@ describe('BlocksService', () => {
 				queryFinalizedHead: false,
 				omitFinalizedTag: false,
 				noFees: false,
-				checkDecodedXcmMsgs: true,
-				paraId: '2087',
+				checkDecodedXcm: true,
+				paraId: 2087,
 			};
 			const validatorsAt = (_hash: Hash) =>
 				Promise.resolve().then(() =>
