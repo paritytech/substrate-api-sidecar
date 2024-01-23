@@ -18,8 +18,8 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
-import type { extractAuthor } from '@polkadot/api-derive/type/util';
-import type { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
+import { extractAuthor } from '@polkadot/api-derive/type/util';
+import { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
 import type { GenericExtrinsic } from '@polkadot/types/extrinsic';
 import type {
 	AccountId32,
@@ -44,7 +44,7 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
-import type {
+import {
 	IBlock,
 	IBlockRaw,
 	IExtrinsic,
@@ -54,7 +54,7 @@ import type {
 	isFrameMethod,
 } from '../../types/responses';
 import type { IOption } from '../../types/util';
-import type { isPaysFee } from '../../types/util';
+import { isPaysFee } from '../../types/util';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import { AbstractService } from '../AbstractService';
 import { XcmDecoder } from './XCMDecoder';
