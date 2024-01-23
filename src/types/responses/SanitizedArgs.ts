@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,9 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ISanitizedCall } from '.';
+import { ISanitizedParachainInherentData } from './SanitizedParachainInherentData';
+import { ISanitizedParentInherentData } from './SanitizedParentInherentData';
 
 export interface ISanitizedArgs {
 	call?: ISanitizedCall;
 	calls?: ISanitizedCall[];
-	[key: string]: unknown;
+	data?: ISanitizedParentInherentData | ISanitizedParachainInherentData;
 }

@@ -20,6 +20,7 @@ import { AccountId } from '@polkadot/types/interfaces/runtime';
 import { Codec } from '@polkadot/types/types';
 
 import { IExtrinsic, ISanitizedEvent } from '.';
+import { IMessages } from './BlockXCMMessages';
 
 export interface IBlock {
 	number: Compact<BlockNumber>;
@@ -33,6 +34,7 @@ export interface IBlock {
 	extrinsics: IExtrinsic[];
 	onFinalize: IOnInitializeOrFinalize;
 	finalized: boolean | undefined;
+	decodedXcmMsgs?: IMessages | undefined;
 }
 
 interface IOnInitializeOrFinalize {

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import type { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { BlocksService } from '../../services';
-import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam } from '../../types/requests';
+import type { ControllerOptions } from '../../types/chains-config';
+import type { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
@@ -58,6 +58,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			queryFinalizedHead: false,
 			omitFinalizedTag: true,
 			noFees: noFeesArg,
+			checkDecodedXcm: false,
+			paraId: undefined,
 		};
 
 		const historicApi = await this.api.at(hash);

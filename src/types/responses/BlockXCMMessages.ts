@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2023 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './addresses';
-export * from './mockApi';
-export * from './mockApiBlock18468942';
-export * from './mockAssetHubKusamaApi';
-export * from './mockAssetHubKusamaApiBlock3356195';
-export * from './mockAssetHubKusamaApiBlock6202603';
-export * from './mockAssetHubWestendApi';
-export * from './mockBlock523510';
-export * from './mockBlock789629';
-export * from './mockBlock3356195';
-export * from './mockBlock5236177';
-export * from './mockBlock6202603';
-export * from './mockBlock13641102';
-export * from './mockBlock18468942';
-export * from './mockBlockHashes';
-export * from './transactions';
+export interface IUpwardMessage {
+	paraId: string;
+	data: string;
+}
+
+export interface IDownwardMessage {
+	sentAt: string;
+	msg: string;
+	data: string;
+}
+
+export interface IHorizontalMessage {
+	sentAt: string;
+	paraId: string;
+	data: string;
+}
+
+export interface IMessages {
+	horizontalMessages?: IHorizontalMessage[];
+	downwardMessages?: IDownwardMessage[];
+	upwardMessages?: IUpwardMessage[];
+}

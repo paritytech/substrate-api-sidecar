@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
@@ -43,6 +43,12 @@ import AbstractController from '../AbstractController';
  * - (Optional for `/blocks/head`) `finalized`: When set to `false`, it will fetch the head of
  * 	the node's canon chain, which might not be finalized. When set to `true` it
  * 	will fetch the head of the finalized chain.
+ * - (Optional) `noFees`: When set to `true`, it will not calculate the fee for each extrinsic.
+ * - (Optional for `/blocks/{blockId}`) `decodedXcmMsgs`: When set to `true`, it will show the
+ *  decoded XCM messages within the extrinsics of the requested block.
+ * - (Optional for `/blocks/{blockId}) `paraId`: When it is set, it will return only the decoded
+ *  XCM messages for the specified paraId/parachain Id. To activate this functionality, ensure
+ *  that the `decodedXcmMsgs` parameter is set to true.
  *
  *
  * Returns:
@@ -74,6 +80,8 @@ import AbstractController from '../AbstractController';
  *     is `true` and that the extrinsic is signed when reconciling old blocks.
  * - `onFinalize`: Object with an array of `SanitizedEvent`s that occurred during block
  *   finalization with the `method` and `data` for each.
+ * - `decodedXcmMsgs`: An array of the decoded XCM messages found within the extrinsics
+ *   of the requested block.
  *
  * Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
  * canonical chain. It denotes the finalization of block _construction._
@@ -147,6 +155,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcm: false,
+			paraId: undefined,
 		};
 
 		const historicApi = await this.api.at(hash);
@@ -161,7 +171,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, noFees, finalizedKey } },
+		{ params: { number }, query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId } },
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
@@ -180,6 +190,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			omitFinalizedTag = true;
 		}
 
+		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
+		const paraIdArg =
+			paraId !== undefined ? this.parseNumberOrThrow(paraId as string, 'paraId must be an integer') : undefined;
+
 		const options = {
 			eventDocs: eventDocsArg,
 			extrinsicDocs: extrinsicDocsArg,
@@ -187,6 +201,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcm: decodedXcmMsgsArg,
+			paraId: paraIdArg,
 		};
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -249,6 +265,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
+			checkDecodedXcm: false,
+			paraId: undefined,
 		};
 
 		const pQueue = new PromiseQueue(4);

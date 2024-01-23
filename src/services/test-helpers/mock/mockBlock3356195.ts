@@ -14,19 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './addresses';
-export * from './mockApi';
-export * from './mockApiBlock18468942';
-export * from './mockAssetHubKusamaApi';
-export * from './mockAssetHubKusamaApiBlock3356195';
-export * from './mockAssetHubKusamaApiBlock6202603';
-export * from './mockAssetHubWestendApi';
-export * from './mockBlock523510';
-export * from './mockBlock789629';
-export * from './mockBlock3356195';
-export * from './mockBlock5236177';
-export * from './mockBlock6202603';
-export * from './mockBlock13641102';
-export * from './mockBlock18468942';
-export * from './mockBlockHashes';
-export * from './transactions';
+import { assetHubKusamaRegistryV1000000 } from '../../../test-helpers/registries';
+import block3356195 from './data/block3356195.json';
+
+/**
+ * Mock for Asset Hub Kusama Block #3356195.
+ */
+export const mockBlock3356195 = assetHubKusamaRegistryV1000000.createType('Block', block3356195);
+
+/**
+ * BlockHash for Asset Hub Kusama Block #3356195.
+ */
+export const blockHash3356195 = assetHubKusamaRegistryV1000000.createType(
+	'BlockHash',
+	'0x5f752962918b7fb98e36d7e9656ddd0f431c4103b370c738bbb8fccf7f4a0578',
+);

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ import { polkadotMetadataRpcV9122 } from '../metadata/polkadotV9122Metadata';
 import { polkadotMetadataRpcV9190 } from '../metadata/polkadotV9190Metadata';
 import { polkadotMetadataRpcV9300 } from '../metadata/polkadotV9300Metadata';
 import { polkadotMetadataRpcV9370 } from '../metadata/polkadotV9370Metadata';
+import { polkadotMetadataRpcV1000001 } from '../metadata/polkadotV1000001Metadata';
 /**
  * Create a type registry for Polkadot.
  * Useful for creating types in order to facilitate testing.
@@ -78,3 +79,8 @@ export const polkadotRegistryV9190 = createPolkadotRegistry(9190, polkadotMetada
 export const polkadotRegistryV9300 = createPolkadotRegistry(9300, polkadotMetadataRpcV9300);
 
 export const polkadotRegistryV9370 = createPolkadotRegistry(9370, polkadotMetadataRpcV9370);
+
+/**
+ * Polkadot v1000001 TypeRegistry
+ */
+export const polkadotRegistryV1000001 = createPolkadotRegistry(1000001, polkadotMetadataRpcV1000001);

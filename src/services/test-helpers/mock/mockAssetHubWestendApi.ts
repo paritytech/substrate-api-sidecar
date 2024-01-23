@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { GenericExtrinsic, Vec } from '@polkadot/types';
-import { Option } from '@polkadot/types/codec';
-import {
+import type { ApiPromise } from '@polkadot/api';
+import type { GenericExtrinsic, Vec } from '@polkadot/types';
+import type { Option } from '@polkadot/types/codec';
+import type {
 	AccountId,
 	ActiveEraInfo,
 	Block,
@@ -37,6 +37,7 @@ import { balancesTransferValid, blockHash5236177, mockBlock5236177, testAddressC
 import { localListenAddressesHex } from './data/localListenAddresses';
 import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
 import traceBlockRPC from './data/traceBlock.json';
+import { defaultMockApi } from './mockApi';
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -224,26 +225,7 @@ export const mockAssetHubWestendApi = {
 			blockWeights: {
 				baseBlock: new BN(5481991000),
 				maxBlock: assetHubWestendRegistryV9435.createType('u64', 15),
-				perClass: {
-					normal: {
-						baseExtrinsic: new BN(85212000),
-						maxExtrinsic: new BN(1479914788000),
-						maxTotal: new BN(1500000000000),
-						reserved: new BN(0),
-					},
-					operational: {
-						baseExtrinsic: new BN(85212000),
-						maxExtrinsic: new BN(1979914788000),
-						maxTotal: new BN(2000000000000),
-						reserved: new BN(500000000000),
-					},
-					mandatory: {
-						baseExtrinsic: new BN(85212000),
-						maxExtrinsic: null,
-						maxTotal: null,
-						reserved: null,
-					},
-				},
+				perClass: defaultMockApi.consts.system.blockWeights.perClass,
 			},
 		},
 		transactionPayment: {

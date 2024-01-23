@@ -16,12 +16,12 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 
-import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
 import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
-import { GenericExtrinsic } from '@polkadot/types/extrinsic';
-import {
+import type { GenericExtrinsic } from '@polkadot/types/extrinsic';
+import type {
 	AccountId32,
 	Block,
 	BlockHash,
@@ -35,7 +35,7 @@ import {
 	Weight,
 	WeightV1,
 } from '@polkadot/types/interfaces';
-import { AnyJson, Codec, Registry } from '@polkadot/types/types';
+import type { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
@@ -53,10 +53,11 @@ import {
 	ISanitizedEvent,
 	isFrameMethod,
 } from '../../types/responses';
-import { IOption } from '../../types/util';
+import type { IOption } from '../../types/util';
 import { isPaysFee } from '../../types/util';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import { AbstractService } from '../AbstractService';
+import { XcmDecoder } from './XCMDecoder';
 
 /**
  * Types for fetchBlock's options
@@ -73,6 +74,8 @@ interface FetchBlockOptions {
 	queryFinalizedHead: boolean;
 	omitFinalizedTag: boolean;
 	noFees: boolean;
+	checkDecodedXcm: boolean;
+	paraId?: number;
 }
 
 interface ExtrinsicSuccessOrFailedOverride {
@@ -108,13 +111,28 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
-		{ eventDocs, extrinsicDocs, checkFinalized, queryFinalizedHead, omitFinalizedTag, noFees }: FetchBlockOptions,
+		{
+			eventDocs,
+			extrinsicDocs,
+			checkFinalized,
+			queryFinalizedHead,
+			omitFinalizedTag,
+			noFees,
+			checkDecodedXcm,
+			paraId,
+		}: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
 
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
 		const cacheKey =
-			hash.toString() + Number(eventDocs) + Number(extrinsicDocs) + Number(checkFinalized) + Number(noFees);
+			hash.toString() +
+			Number(eventDocs) +
+			Number(extrinsicDocs) +
+			Number(checkFinalized) +
+			Number(noFees) +
+			Number(checkDecodedXcm) +
+			Number(paraId);
 
 		// Before making any api calls check the cache if the queried block exists
 		const isBlockCached = this.blockStore.get(cacheKey);
@@ -189,6 +207,8 @@ export class BlocksService extends AbstractService {
 				}),
 			);
 		}
+		const decodedMsgs = checkDecodedXcm ? new XcmDecoder(api, specName.toString(), extrinsics, paraId) : undefined;
+		const decodedXcmMsgs = decodedMsgs?.messages;
 
 		await Promise.all(feeTasks);
 
@@ -204,6 +224,7 @@ export class BlocksService extends AbstractService {
 			extrinsics,
 			onFinalize,
 			finalized,
+			decodedXcmMsgs,
 		};
 
 		// Store the block in the cache
