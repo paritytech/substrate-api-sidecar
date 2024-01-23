@@ -225,9 +225,7 @@ export const mockAssetHubWestendApi = {
 			blockWeights: {
 				baseBlock: new BN(5481991000),
 				maxBlock: assetHubWestendRegistryV9435.createType('u64', 15),
-				perClass: Promise.resolve().then(() => {
-					return defaultMockApi.consts.system.blockWeights.perClass;
-				}),
+				perClass: defaultMockApi.consts.system.blockWeights.perClass,
 			},
 		},
 		transactionPayment: {
