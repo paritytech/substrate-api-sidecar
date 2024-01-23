@@ -75,7 +75,7 @@ interface FetchBlockOptions {
 	omitFinalizedTag: boolean;
 	noFees: boolean;
 	checkDecodedXcm: boolean;
-	paraId: number | undefined;
+	paraId?: number;
 }
 
 interface ExtrinsicSuccessOrFailedOverride {
