@@ -14,15 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import '@polkadot/api-augment';
+import type { ApiPromise } from '@polkadot/api';
+import type { Bytes } from '@polkadot/types';
 
-import { ApiPromise } from '@polkadot/api';
-import { Bytes } from '@polkadot/types';
-import { ISanitizedBackedCandidate } from 'src/types/responses/SanitizedBackedCandidate';
-import { ISanitizedParachainInherentData } from 'src/types/responses/SanitizedParachainInherentData';
-import { ISanitizedParentInherentData } from 'src/types/responses/SanitizedParentInherentData';
-
-import {
+import type {
 	IDownwardMessage,
 	IExtrinsic,
 	IFrameMethod,
@@ -30,6 +25,9 @@ import {
 	IMessages,
 	IUpwardMessage,
 } from '../../types/responses';
+import type { ISanitizedBackedCandidate } from '../../types/responses/SanitizedBackedCandidate';
+import type { ISanitizedParachainInherentData } from '../../types/responses/SanitizedParachainInherentData';
+import type { ISanitizedParentInherentData } from '../../types/responses/SanitizedParentInherentData';
 
 enum ChainType {
 	Relay = 'Relay',
@@ -39,28 +37,28 @@ enum ChainType {
 export class XcmDecoder {
 	readonly messages: IMessages;
 	readonly api: ApiPromise;
-	static curChainType: ChainType;
-	static specName: string;
+	readonly curChainType: ChainType;
+	readonly specName: string;
 
 	constructor(api: ApiPromise, specName: string, extrinsics: IExtrinsic[], paraId?: number) {
 		this.api = api;
-		XcmDecoder.specName = specName;
-		XcmDecoder.curChainType = XcmDecoder.getCurChainType(specName);
-		this.messages = XcmDecoder.getMessages(api, extrinsics, paraId);
+		this.specName = specName;
+		this.curChainType = this.getCurChainType(specName);
+		this.messages = this.getMessages(api, extrinsics, paraId);
 	}
 
-	static getCurChainType(specName: string): ChainType {
+	private getCurChainType(specName: string): ChainType {
 		const relay = ['polkadot', 'kusama', 'westend', 'rococo'];
-		if (relay.includes(specName)) {
+		if (relay.includes(specName.toLowerCase())) {
 			return ChainType.Relay;
 		} else {
 			return ChainType.Parachain;
 		}
 	}
 
-	static getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: number): IMessages {
+	private getMessages(api: ApiPromise, extrinsics: IExtrinsic[], paraId?: number): IMessages {
 		const xcmMessages: IMessages = { horizontalMessages: [], downwardMessages: [], upwardMessages: [] };
-		if (XcmDecoder.curChainType === ChainType.Relay) {
+		if (this.curChainType === ChainType.Relay) {
 			extrinsics.forEach((extrinsic) => {
 				const frame = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
@@ -68,7 +66,7 @@ export class XcmDecoder {
 					if (paraId !== undefined) {
 						data.backedCandidates.forEach((candidate) => {
 							if (candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
-								const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
+								const msg_decoded = this.checkUpwardMsg(api, candidate);
 								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
 									xcmMessages.upwardMessages?.push(msg_decoded);
 								}
@@ -76,7 +74,7 @@ export class XcmDecoder {
 						});
 					} else {
 						data.backedCandidates.forEach((candidate) => {
-							const msg_decoded = XcmDecoder.checkUpwardMsg(api, candidate);
+							const msg_decoded = this.checkUpwardMsg(api, candidate);
 							if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
 								xcmMessages.upwardMessages?.push(msg_decoded);
 							}
@@ -84,7 +82,7 @@ export class XcmDecoder {
 					}
 				}
 			});
-		} else if (XcmDecoder.curChainType === ChainType.Parachain) {
+		} else if (this.curChainType === ChainType.Parachain) {
 			extrinsics.forEach((extrinsic) => {
 				const frame: IFrameMethod = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'parachainSystem' && frame.method === 'setValidationData') {
@@ -128,7 +126,7 @@ export class XcmDecoder {
 		return xcmMessages;
 	}
 
-	static checkUpwardMsg(api: ApiPromise, candidate: ISanitizedBackedCandidate): IUpwardMessage | undefined {
+	private checkUpwardMsg(api: ApiPromise, candidate: ISanitizedBackedCandidate): IUpwardMessage | undefined {
 		if (candidate.candidate.commitments.upwardMessages.length > 0) {
 			const xcmMessage = candidate.candidate.commitments.upwardMessages;
 			const paraId: string = candidate.candidate.descriptor.paraId;
@@ -143,7 +141,7 @@ export class XcmDecoder {
 		}
 	}
 
-	static decodeMsg(api: ApiPromise, message: string): string {
+	private decodeMsg(api: ApiPromise, message: string): string {
 		const instructions = [];
 		let xcmMessage: string = message;
 		let instructionLength = 0;
