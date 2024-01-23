@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import type { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { BlocksService } from '../../services';
-import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam } from '../../types/requests';
+import type { ControllerOptions } from '../../types/chains-config';
+import type { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {

@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
-import { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
-import { GenericExtrinsic } from '@polkadot/types';
-import { GenericCall } from '@polkadot/types/generic';
-import { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
+import type { PromiseRpcResult } from '@polkadot/api-base/types/rpc';
+import type { GenericExtrinsic } from '@polkadot/types';
+import type { GenericCall } from '@polkadot/types/generic';
+import type { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 import LRU from 'lru-cache';
 

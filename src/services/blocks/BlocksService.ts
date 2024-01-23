@@ -16,12 +16,12 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 
-import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
-import { extractAuthor } from '@polkadot/api-derive/type/util';
-import { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
-import { GenericExtrinsic } from '@polkadot/types/extrinsic';
-import {
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
+import type { extractAuthor } from '@polkadot/api-derive/type/util';
+import type { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
+import type { GenericExtrinsic } from '@polkadot/types/extrinsic';
+import type {
 	AccountId32,
 	Block,
 	BlockHash,
@@ -35,7 +35,7 @@ import {
 	Weight,
 	WeightV1,
 } from '@polkadot/types/interfaces';
-import { AnyJson, Codec, Registry } from '@polkadot/types/types';
+import type { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
@@ -44,7 +44,7 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import LRU from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
-import {
+import type {
 	IBlock,
 	IBlockRaw,
 	IExtrinsic,
@@ -53,8 +53,8 @@ import {
 	ISanitizedEvent,
 	isFrameMethod,
 } from '../../types/responses';
-import { IOption } from '../../types/util';
-import { isPaysFee } from '../../types/util';
+import type { IOption } from '../../types/util';
+import type { isPaysFee } from '../../types/util';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import { AbstractService } from '../AbstractService';
 import { XcmDecoder } from './XCMDecoder';
