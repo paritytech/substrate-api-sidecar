@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.5..v17.4.0) (2024-01-24)
+
+### Features
+
+- feat: add decoded XCM data in blocks endpoint ([#1364](https://github.com/paritytech/substrate-api-sidecar/pull/1364)) ([555817c](https://github.com/paritytech/substrate-api-sidecar/commit/555817c888c5d4b124d1d891404472c436a4a812))
+
+### Fix
+
+- fix: generated a custom key for the cache in blocks endpoint ([#1381](https://github.com/paritytech/substrate-api-sidecar/pull/1381)) ([17cbd2c](https://github.com/paritytech/substrate-api-sidecar/commit/17cbd2cd6af98a826ee5f64d2868e014a3249bdb))
+
+### Docs
+
+- docs: correct the /transaction/material docs for metadata ([#1377](https://github.com/paritytech/substrate-api-sidecar/pull/1377)) ([ca163c7](https://github.com/paritytech/substrate-api-sidecar/commit/ca163c74e485c13b0d084d8ce8c004e3c92ee592))
+
+### Chore
+
+- chore(deps): bump Swatinem/rust-cache from 2.7.1 to 2.7.2 ([#1380](https://github.com/paritytech/substrate-api-sidecar/pull/1380)) ([8eca817](https://github.com/paritytech/substrate-api-sidecar/commit/8eca8172dbbac90e4c8ea0f6a89716710a6b91cf))
+- chore(deps): bump Swatinem/rust-cache from 2.7.2 to 2.7.3 ([#1382](https://github.com/paritytech/substrate-api-sidecar/pull/1382)) ([792d5bb](https://github.com/paritytech/substrate-api-sidecar/commit/792d5bb4b4d84d8c5ac598771b21a1a1ec4d00d8))
+- chore(deps): bump actions/cache from 3 to 4 ([#1383](https://github.com/paritytech/substrate-api-sidecar/pull/1383)) ([95987f5](https://github.com/paritytech/substrate-api-sidecar/commit/95987f55645463b43570ba8879f807d29162b02a))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10500
+- Kusama v10500
+- Westend v10500
+
 ## [17.3.5](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.4..v17.3.5) (2024-01-10)
 
 ### Fix
