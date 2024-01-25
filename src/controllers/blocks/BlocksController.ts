@@ -124,7 +124,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async ({ query: { eventDocs, extrinsicDocs, finalized, noFees } }, res) => {
+	private getLatestBlock: RequestHandler = async (
+		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId } },
+		res,
+	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 
@@ -147,6 +150,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			hash = await this.api.rpc.chain.getFinalizedHead();
 		}
 		const noFeesArg = noFees === 'true';
+		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
+		const paraIdArg =
+			paraId !== undefined ? this.parseNumberOrThrow(paraId as string, 'paraId must be an integer') : undefined;
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -155,8 +161,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			queryFinalizedHead,
 			omitFinalizedTag,
 			noFees: noFeesArg,
-			checkDecodedXcm: false,
-			paraId: undefined,
+			checkDecodedXcm: decodedXcmMsgsArg,
+			paraId: paraIdArg,
 		};
 
 		const historicApi = await this.api.at(hash);
