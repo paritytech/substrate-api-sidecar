@@ -665,7 +665,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DecodedXcmMsgs'
+                $ref: '#/components/schemas/BlockWithDecodedXcmMsgs'
         "400":
           description: invalid Block identifier supplied
           content:
@@ -793,13 +793,29 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: decodedXcmMsgs
+        in: query
+        description: When set to `true`, this will show the decoded XCM messages within
+          the extrinsics of the requested block.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: paraId
+        in: query
+        description: When it is set, this will return only the decoded XCM messages
+          for the specified paraId/parachain Id. To activate this functionality,
+          ensure that the `decodedXcmMsgs` parameter is set to true.
+        required: false
+        schema:
+          type: string
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Block'
+                $ref: '#/components/schemas/BlockWithDecodedXcmMsgs'
   /blocks/head/header:
     get:
       tags:
@@ -2345,60 +2361,6 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
-    AccountPoolAssetsBalances:
-      type: object
-      properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
-        poolAssets:
-          type: array
-          description: An array of queried assets.
-          items:
-            $ref: '#/components/schemas/AssetsBalance'
-    DecodedXcmMsgs:
-      allOf:
-        - $ref: "#/components/schemas/Block"
-        - $ref: "#/components/schemas/BlockXCM"
-    LiquidityPools:
-      type: object
-      properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
-        pools:
-          type: array
-          description: Array containing existent liquidity pool's token id.
-          items:
-            $ref: '#/components/schemas/LiquidityPool'
-          example: "[{\"reserves\":[{\"parents\":\"1\",\"interior\":{\"here\":
-            null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
-            \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
-            },{\"lpToken\":{\"lpToken\":\"0\"}}]"
-    LiquidityPool:
-      type: object
-      properties:
-        reserves:
-          type: array
-          items:
-            type: object
-            properties:
-              parents:
-                type: string
-                format: unsignedInteger
-              interior:
-                type: object
-        lpToken:
-          type: string
-          format: unsignedInteger
-          description: Liquidity pool token ID.
-    NextAvailableId:
-      type: object
-      properties:
-        at:
-          $ref: '#/components/schemas/BlockIdentifiers'
-        id:
-          type: string
-          description: Next availabe liquidity pool's id.
-          example: "4"
     AccountBalanceInfo:
       type: object
       properties:
@@ -2472,6 +2434,16 @@ components:
         publicKey:
           type: boolean
           description: Whether the given path parameter is a Public Key (hex) or not.
+    AccountPoolAssetsBalances:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        poolAssets:
+          type: array
+          description: An array of queried assets.
+          items:
+            $ref: '#/components/schemas/AssetsBalance'
     AccountStakingInfo:
       type: object
       properties:
@@ -2820,57 +2792,6 @@ components:
             $ref: '#/components/schemas/SanitizedEvent'
       description: Object with an array of `SanitizedEvent`s that occurred during
         block initialization with the `method` and `data` for each.
-    BlockXCM:
-      type: object
-      properties:
-        decodedXcmMsgs:
-          type: object
-          properties:
-            horizontalMessages:
-              type: array
-              items:
-                type: object
-                properties:
-                  sentAt:
-                    type: string
-                    format: unsignedInteger
-                    description: Represents the block number that the XCM message was sent at on the relay chain.
-                  paraId:
-                    type: string
-                    format: unsignedInteger
-                    description: The paraId that the specific XCM message was sent from.
-                  data:
-                    type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
-            downwardMessages:
-              type: array
-              items:
-                type: object
-                properties:
-                  sentAt:
-                    type: string
-                    format: unsignedInteger
-                    description: Represents the block number that the XCM message was sent at on the relay chain.
-                  msg:
-                    type: string
-                    description: Represents the XCM message.
-                  data:
-                    type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
-            upwardMessages:
-              type: array
-              items:
-                type: object
-                properties:
-                  paraId:
-                    type: string
-                    format: unsignedInteger
-                    description: The paraId that the specific XCM message was sent from.
-                  data:
-                    type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
-      description: Object with three arrays, one for every XCM direction. The arrays are populated or left
-        empty based on the direction of the current XCM message that is being decoded.
     BlocksTrace:
       type: object
       properties:
@@ -2903,6 +2824,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    BlockWithDecodedXcmMsgs:
+      allOf:
+        - $ref: "#/components/schemas/Block"
+        - $ref: "#/components/schemas/DecodedXcmMsgs"
     BondedPool:
       type: object
       properties:
@@ -2963,6 +2888,57 @@ components:
       type: object
       description: Metadata used to instantiate a ContractPromise. This metadata can be generated
         by compiling the contract you are querying.
+    DecodedXcmMsgs:
+      type: object
+      properties:
+        decodedXcmMsgs:
+          type: object
+          properties:
+            horizontalMessages:
+              type: array
+              items:
+                type: object
+                properties:
+                  sentAt:
+                    type: string
+                    format: unsignedInteger
+                    description: Represents the block number that the XCM message was sent at on the relay chain.
+                  paraId:
+                    type: string
+                    format: unsignedInteger
+                    description: The paraId that the specific XCM message was sent from.
+                  data:
+                    type: object
+                    description: The decoded instructions and their respective fields that are included in the XCM message.
+            downwardMessages:
+              type: array
+              items:
+                type: object
+                properties:
+                  sentAt:
+                    type: string
+                    format: unsignedInteger
+                    description: Represents the block number that the XCM message was sent at on the relay chain.
+                  msg:
+                    type: string
+                    description: Represents the XCM message.
+                  data:
+                    type: object
+                    description: The decoded instructions and their respective fields that are included in the XCM message.
+            upwardMessages:
+              type: array
+              items:
+                type: object
+                properties:
+                  paraId:
+                    type: string
+                    format: unsignedInteger
+                    description: The paraId that the specific XCM message was sent from.
+                  data:
+                    type: object
+                    description: The decoded instructions and their respective fields that are included in the XCM message.
+      description: Object with three arrays, one for every XCM direction. The arrays are populated or left
+        empty based on the direction of the current XCM message that is being decoded.
     DigestItem:
       type: object
       properties:
@@ -3121,6 +3097,46 @@ components:
           description: Hardcoded constant '0x00'.
           format: hex
       example: "{\"mortalEra\":[\"64\", \"11\"]}"
+    LiquidityPools:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        pools:
+          type: array
+          description: Array containing existent liquidity pool's token id.
+          items:
+            $ref: '#/components/schemas/LiquidityPool'
+          example: "[{\"reserves\":[{\"parents\":\"1\",\"interior\":{\"here\":
+            null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
+            \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
+            },{\"lpToken\":{\"lpToken\":\"0\"}}]"
+    LiquidityPool:
+      type: object
+      properties:
+        reserves:
+          type: array
+          items:
+            type: object
+            properties:
+              parents:
+                type: string
+                format: unsignedInteger
+              interior:
+                type: object
+        lpToken:
+          type: string
+          format: unsignedInteger
+          description: Liquidity pool token ID.
+    NextAvailableId:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        id:
+          type: string
+          description: Next availabe liquidity pool's id.
+          example: "4"
     NodeNetwork:
       type: object
       properties:
