@@ -47,9 +47,7 @@ fn calc_raw(
     estimated_weight: u128,
     actual_weight: u128
 ) -> u128 {
-    // calculate new adjusted_weight_fee, trying to maintain precision:
     let adjusted_weight_fee = Perbill::from_rational(estimated_weight, actual_weight) * adjusted_weight_fee;
 
-    // add the fee components together to get the partial/inclusion fee:
     base_fee.saturating_add(len_fee).saturating_add(adjusted_weight_fee)
 }
