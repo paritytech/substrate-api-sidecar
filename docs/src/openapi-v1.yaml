@@ -367,6 +367,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/proxy-info:
+    get:
+      tags:
+      - accounts
+      summary: Get proxy account information.
+      description: Returns information about a proxy account. This will include 
+        delegated accounts, and deposits held.
+      operationId: getProxyInfo
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query asset approval info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountProxyInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /accounts/{accountId}/staking-info:
     get:
       tags:
@@ -2444,6 +2483,31 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+    AccountProxyInfo:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        delegatedAccounts:
+          type: array
+          items:
+            type: object
+            properties:
+              delegate:
+                type: string
+                description: Delegate address for the given proxy.
+                format: ss58
+              delay:
+                type: string
+                description: The announcement period required of the initial proxy. Will generally be zero.
+                format: unsignedInteger
+              proxyType:
+                type: string
+                description: The permissions allowed for this proxy account.
+        depositHeld:
+          type: string
+          format: unsignedInteger
+          description: The held deposit.
     AccountStakingInfo:
       type: object
       properties:
