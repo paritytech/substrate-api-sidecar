@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Parity Technologies (UK) Ltd. (admin@parity.io)
+// Copyright (C) 2022-2024 Parity Technologies (UK) Ltd. (admin@parity.io)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,24 @@ pub struct CalcPayout {
     era_payout: Balance,
 }
 
+/// ### calc_payout
+/// 
+/// This is a tool to calculate the payout of a staking era, either for a validator 
+/// or a nominator. This is not a predictive estimation, instead it intakes data 
+/// from a concluded [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes)
+/// to arrive to the final amount. For this it takes the following parameters:
+/// - `total_reward_points` are the total [era points](https://wiki.polkadot.network/docs/maintain-guides-validator-payout#era-points)
+///   for a determined [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes). 
+/// - `era_payout` is the [payout](https://wiki.polkadot.network/docs/maintain-guides-validator-payout#payout-scheme)
+///   for a determined [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes).
+/// - `validator_reward_points` are the [era points](https://wiki.polkadot.network/docs/maintain-guides-validator-payout#era-points)
+///   earned by the validator in a determined [era](https://wiki.polkadot.network/docs/kusama-parameters#periods-of-common-actions-and-attributes). 
+/// - `validator_commission` is the commission that the validator takes of its assigned
+///   payout before distribituing the remainder between itself and it's nominators.
+/// - `nominator_exposure` is the amount staked by the nominator or validator,
+///   depending on who we are inquiring about. 
+/// - `total_exposure` the total amount staked.
+/// - `is_validator` is a `bool` that states whether the inquired account is a validator.
 #[wasm_bindgen]
 impl CalcPayout {
     pub fn from_params(total_reward_points: u32, era_payout: &str) -> Self {
@@ -64,47 +82,34 @@ impl CalcPayout {
             is_validator,
         );
 
-        /*
-        This is the fraction of the total reward that will be split between the
-        validator and its nominators
-        */
+        // This is the fraction of the total reward that will be split between the
+        // validator and its nominators
         let validator_total_reward_part: Perbill =
             Perbill::from_rational(validator_reward_points, self.total_reward_points);
 
-        /*
-        Using the previous info, here we calculate the portion of the era's reward
-        that the nominator and its validators are entitled to
-        */
-        let validator_total_payout: u128 = validator_total_reward_part * self.era_payout;
-
-        /*
-        This is the validator's commission, independent of their share of the
-        reward for their stake
-        */
+        // Using the previous info, here we calculate the portion of the era's reward
+        // that the nominator and its validators are entitled to
+        let validator_total_payout: u128 = validator_total_reward_part * self.era_payout;        
+        // This is the validator's commission, independent of their share of the
+        // reward for their stake
         let validator_commission: Perbill = Perbill::from_percent(validator_commission);
         let validator_commission_payout: u128 = validator_commission * validator_total_payout;
 
-        /*
-        Subtracting the validator's commission, how much is left to split between
-        the validator and its nominators
-        */
-        let validator_leftover_payout: u128 = validator_total_payout - validator_commission_payout;
+        // Subtracting the validator's commission, how much is left to split between
+        // the validator and its nominators
+        let validator_leftover_payout: u128 = validator_total_payout.saturating_sub(validator_commission_payout);
 
         let own_exposure: u128 = Balance::from_str(nominator_exposure).unwrap();
         let total_exposure: u128 = Balance::from_str(total_exposure).unwrap();
 
-        /*
-        This is the portion of the validator/nominator's leftover payout that
-        the staker is entitled to
-        */
+        // This is the portion of the validator/nominator's leftover payout that
+        // the staker is entitled to
         let own_exposure_part: Perbill = Perbill::from_rational(own_exposure, total_exposure);
-
-        /*
-        This is the payout for the address we are interested in, depending on
-        whether it's a validator or a nominator
-        */
+        
+        // This is the payout for the address we are interested in, depending on
+        // whether it's a validator or a nominator
         let own_staking_payout: u128 = if is_validator {
-            own_exposure_part * validator_leftover_payout + validator_commission_payout
+            (own_exposure_part * validator_leftover_payout).saturating_add(validator_commission_payout)
         } else {
             own_exposure_part * validator_leftover_payout
         };
