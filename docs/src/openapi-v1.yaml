@@ -373,7 +373,7 @@ paths:
       - accounts
       summary: Get proxy account information.
       description: Returns information about a proxy account. This will include 
-        delegated accounts, and deposits held.
+        delegated accounts and deposits held.
       operationId: getProxyInfo
       parameters:
       - name: accountId
