@@ -385,7 +385,7 @@ paths:
           format: SS58
       - name: at
         in: query
-        description: Block at which to query asset approval info for the
+        description: Block at which to query proxy info for the
           specified account.
         required: false
         schema:
