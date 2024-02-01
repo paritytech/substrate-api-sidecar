@@ -433,6 +433,15 @@ paths:
         schema:
           format: SS58
           type: string
+      - name: at
+        in: query
+        description: Block at which to query staking payouts.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
       - name: depth
         in: query
         description: The number of eras to query for payouts of. Must be less
