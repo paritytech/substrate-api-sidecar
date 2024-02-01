@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './AccountsAssetsService';
-export * from './AccountsBalanceInfoService';
-export * from './AccountsConvertService';
-export * from './AccountsPoolAssetsService';
-export * from './AccountsProxyInfoService';
-export * from './AccountsStakingInfoService';
-export * from './AccountsStakingPayoutsService';
-export * from './AccountsValidateService';
-export * from './AccountsVestingInfoService';
+import type { u128, Vec } from '@polkadot/types';
+import type { PalletProxyProxyDefinition } from '@polkadot/types/lookup';
+
+import type { IAt } from './';
+
+export interface AccountsProxyInfo {
+	at: IAt;
+	delegatedAccounts: Vec<PalletProxyProxyDefinition>;
+	depositHeld: u128;
+}
