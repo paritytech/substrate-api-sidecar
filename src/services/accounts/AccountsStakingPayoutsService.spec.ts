@@ -144,13 +144,29 @@ describe('AccountsStakingPayoutsService', () => {
 
 	describe('Correct succesfull responses', () => {
 		it('Should work when ApiPromise works', async () => {
-			const res = await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 533, true, 534);
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				nominator,
+				1,
+				533,
+				true,
+				534,
+				mockHistoricApi,
+			);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
 		});
 
 		it('Should work when unclaimed is false', async () => {
-			const res = await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 533, false, 534);
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				nominator,
+				1,
+				533,
+				false,
+				534,
+				mockHistoricApi,
+			);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
 		});
@@ -207,7 +223,15 @@ describe('AccountsStakingPayoutsService', () => {
 	describe('Correct errors', () => {
 		it('Should throw an error when the depth is greater than the historyDepth', () => {
 			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 85, 533, true, 534);
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					nominator,
+					85,
+					533,
+					true,
+					534,
+					mockHistoricApi,
+				);
 			};
 
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -216,7 +240,7 @@ describe('AccountsStakingPayoutsService', () => {
 
 		it('Should throw an error inputted era and historydepth is invalid', () => {
 			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 400, true, 534);
+				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 400, true, 534, mockHistoricApi);
 			};
 
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises

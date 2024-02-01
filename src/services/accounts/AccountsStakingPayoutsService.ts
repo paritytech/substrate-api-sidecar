@@ -70,10 +70,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 		unclaimedOnly: boolean,
 		currentEra: number,
+		historicApi: ApiDecoration<'promise'>,
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
-
 		const { number } = await api.rpc.chain.getHeader(hash);
 
 		/**
