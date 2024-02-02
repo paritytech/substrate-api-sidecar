@@ -24,6 +24,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
 		'AccountsBalanceInfo',
+		'AccountsProxyInfo',
 		'AccountsPoolAssets',
 		'AccountsValidate',
 		'Blocks',
