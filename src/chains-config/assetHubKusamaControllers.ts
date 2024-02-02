@@ -32,6 +32,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
+		'PalletsAssetConversion',
 		'PalletsConsts',
 		'PalletsErrors',
 		'PalletsEvents',
