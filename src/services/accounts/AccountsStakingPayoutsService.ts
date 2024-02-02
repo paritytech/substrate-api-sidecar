@@ -76,6 +76,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param depth number of eras to query at and below the specified era
 	 * @param era the most recent era to query
 	 * @param unclaimedOnly whether or not to only show unclaimed payouts
+	 * @param currentEra The current era
+	 * @param historicApi Historic api for querying past blocks
 	 */
 	async fetchAccountStakingPayout(
 		hash: BlockHash,
@@ -460,7 +462,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * themself.
 	 *
 	 * @param address address of the _Stash_  account to get the payouts of
-	 * @param deriveEraExposure result of query api.derive.staking.eraExposure(eraIndex)
+	 * @param deriveEraExposure result of deriveEraExposure
 	 */
 	deriveNominatedExposures(
 		address: string,

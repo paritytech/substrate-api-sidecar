@@ -40,6 +40,12 @@ import stakingPayoutsResponse from '../test-helpers/responses/accounts/stakingPa
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
 /**
+ * TODO:
+ *
+ * Re mock all the data here, and add `query.staking.erasStakersClipped.entries(eraIndex)` to the mockHistoricApi.
+ */
+
+/**
  * Addresses and data below were taken from era 533 around block ~7,760,000,
  * on runtime v9122 Polkadot.
  *
@@ -115,11 +121,6 @@ const mockHistoricApi = {
 
 const mockApi = {
 	...defaultMockApi,
-	derive: {
-		staking: {
-			eraExposure: deriveEraExposure,
-		},
-	},
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
@@ -144,6 +145,12 @@ describe('AccountsStakingPayoutsService', () => {
 
 	describe('Correct succesfull responses', () => {
 		it('Should work when ApiPromise works', async () => {
+			/**
+			 * This is a hack that allows us to not have to mock new data for legacy tests. Because we don't know the
+			 * exact block the tests mock, we would need to re mock all the data here with what `historicApi.query.staking.erasStakersClipped.entries(eraIndex)`
+			 * would return. Instead I force the return value to be the existing derviveEraExposure which is what the api would return anyways.
+			 */
+			(stakingPayoutsService['deriveEraExposure'] as unknown) = deriveEraExposure;
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
 				nominator,
@@ -158,6 +165,12 @@ describe('AccountsStakingPayoutsService', () => {
 		});
 
 		it('Should work when unclaimed is false', async () => {
+			/**
+			 * This is a hack that allows us to not have to mock new data for legacy tests. Because we don't know the
+			 * exact block the tests mock, we would need to re mock all the data here with what `historicApi.query.staking.erasStakersClipped.entries(eraIndex)`
+			 * would return. Instead I force the return value to be the existing derviveEraExposure which is what the api would return anyways.
+			 */
+			(stakingPayoutsService['deriveEraExposure'] as unknown) = deriveEraExposure;
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
 				nominator,
