@@ -14,17 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
-import type { DeriveEraExposure, DeriveEraExposureNominating } from '@polkadot/api-derive/staking/types';
-import type { Option, u32 } from '@polkadot/types';
-import type { BalanceOf, BlockHash, EraIndex, Perbill, StakingLedger } from '@polkadot/types/interfaces';
-import type { PalletStakingEraRewardPoints, PalletStakingStakingLedger } from '@polkadot/types/lookup';
+import type {
+	DeriveEraExposure,
+	DeriveEraExposureNominating,
+	DeriveEraNominatorExposure,
+	DeriveEraValidatorExposure,
+} from '@polkadot/api-derive/staking/types';
+import type { Option, StorageKey, u32 } from '@polkadot/types';
+import type { AccountId, BalanceOf, BlockHash, EraIndex, Perbill, StakingLedger } from '@polkadot/types/interfaces';
+import type {
+	PalletStakingEraRewardPoints,
+	PalletStakingExposure,
+	PalletStakingStakingLedger,
+} from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+
+/**
+ * Copyright 2024 via polkadot-js/api
+ * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
+ */
+type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, PalletStakingExposure][];
 
 /**
  * General information about an era, in tuple form because we initially get it
@@ -110,7 +124,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const startEra = Math.max(0, era - (depth - 1));
 
 		// Fetch general data about the era
-		const allErasGeneral = await this.fetchAllErasGeneral(api, historicApi, startEra, era);
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
@@ -164,7 +178,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param era the last era to get data for
 	 */
 	async fetchAllErasGeneral(
-		api: ApiPromise,
 		historicApi: ApiDecoration<'promise'>,
 		startEra: number,
 		era: number,
@@ -174,7 +187,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
 			const eraGeneralTuple = Promise.all([
-				api.derive.staking.eraExposure(eraIndex),
+				this.deriveEraExposure(historicApi, eraIndex),
 				historicApi.query.staking.erasRewardPoints(eraIndex),
 				historicApi.query.staking.erasValidatorReward(eraIndex),
 			]);
@@ -358,6 +371,45 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		}
 
 		return { commission, validatorLedger };
+	}
+
+	/**
+	 * Copyright 2024 via polkadot-js/api
+	 * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
+	 *
+	 * The original version uses the base ApiDerive implementation which does not include the ApiDecoration implementation.
+	 * It is required in this version to query older blocks for their historic data.
+	 *
+	 * @param historicApi
+	 * @param eraIndex
+	 */
+	private async deriveEraExposure(
+		historicApi: ApiDecoration<'promise'>,
+		eraIndex: EraIndex,
+	): Promise<DeriveEraExposure> {
+		function mapStakers(era: EraIndex, stakers: KeysAndExposures): DeriveEraExposure {
+			const nominators: DeriveEraNominatorExposure = {};
+			const validators: DeriveEraValidatorExposure = {};
+
+			stakers.forEach(([key, exposure]): void => {
+				const validatorId = key.args[1].toString();
+
+				validators[validatorId] = exposure;
+
+				exposure.others.forEach(({ who }, validatorIndex): void => {
+					const nominatorId = who.toString();
+
+					nominators[nominatorId] = nominators[nominatorId] || [];
+					nominators[nominatorId].push({ validatorId, validatorIndex });
+				});
+			});
+
+			return { era, nominators, validators };
+		}
+
+		const eraExposure = await historicApi.query.staking.erasStakersClipped.entries(eraIndex);
+
+		return mapStakers(eraIndex, eraExposure);
 	}
 
 	/**
