@@ -24,6 +24,7 @@ import { defaultMockApi } from '../test-helpers/mock';
 import {
 	bondedAt,
 	deriveEraExposureParam,
+	ERA,
 	erasRewardPointsAt,
 	erasStakersClippedAt,
 	erasValidatorPrefsAt,
@@ -32,7 +33,7 @@ import {
 } from '../test-helpers/mock/accounts';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
-// const era = polkadotRegistryV1000001.createType('EraIndex', 1039);
+const eraIndex = polkadotRegistryV1000001.createType('EraIndex', ERA);
 const historyDepthAt = polkadotRegistryV1000001.createType('u32', 84);
 
 const blockHash = polkadotRegistryV1000001.createType(
@@ -76,9 +77,9 @@ describe('AccountsStakingPayoutsService', () => {
 				blockHash,
 				validator,
 				1,
-				1039,
+				ERA,
 				false,
-				1040,
+				ERA + 1,
 				mockHistoricApi,
 			);
 
@@ -112,9 +113,9 @@ describe('AccountsStakingPayoutsService', () => {
 				blockHash,
 				nominator,
 				1,
-				1039,
+				ERA,
 				false,
-				1040,
+				ERA + 1,
 				mockHistoricApi,
 			);
 
@@ -161,6 +162,13 @@ describe('AccountsStakingPayoutsService', () => {
 				nominatorExposure: '0',
 				totalExposure: '21133134966048676',
 			});
+		});
+	});
+	describe('extractTotalValidatorRewardPoints', () => {
+		it('Should return the correct rewards', async () => {
+			const rewards = await erasRewardPointsAt(eraIndex);
+			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](rewards, validator);
+			expect(sanitizeNumbers(res)).toBe('78920');
 		});
 	});
 });

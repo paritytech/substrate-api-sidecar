@@ -16,7 +16,7 @@
 
 import type { DeriveEraExposure } from '@polkadot/api-derive/staking/types';
 import type { StorageKey, u32 } from '@polkadot/types';
-import type { AccountId32 } from '@polkadot/types/interfaces';
+import type { AccountId32, EraIndex } from '@polkadot/types/interfaces';
 import type { SpStakingExposure } from '@polkadot/types/lookup';
 
 import { polkadotMetadataRpcV1000001 } from '../../../../test-helpers/metadata/polkadotV1000001Metadata';
@@ -27,7 +27,7 @@ const api = createApiWithAugmentations(polkadotMetadataRpcV1000001);
 /**
  * All data here is gathered using block 15000000, for era 1039.
  */
-const ERA = 1039;
+export const ERA = 1039;
 const validatorIds = [
 	'16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib',
 	'1ufRSF5gx9Q8hrYoj7KwpzQzDNqLJdbKrFwC6okxa5gtBRd',
@@ -75,7 +75,7 @@ export const bondedAt = () =>
 		),
 	);
 
-export const erasRewardPointsAt = () =>
+export const erasRewardPointsAt = (_: EraIndex) =>
 	Promise.resolve().then(() =>
 		api.registry.createType(
 			'PalletStakingEraRewardPoints',
