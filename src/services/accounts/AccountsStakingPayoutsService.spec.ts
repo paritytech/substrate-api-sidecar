@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,95 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
-import { DeriveEraExposure } from '@polkadot/api-derive/types';
-import { Option, u32 } from '@polkadot/types';
-import { AccountId32, BalanceOf, EraIndex, Hash } from '@polkadot/types/interfaces';
-import {
-	PalletStakingEraRewardPoints,
-	PalletStakingStakingLedger,
-	PalletStakingValidatorPrefs,
-} from '@polkadot/types/lookup';
-import { Codec } from '@polkadot/types/types';
-import { BadRequest } from 'http-errors';
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
+import type { Hash } from '@polkadot/types/interfaces';
 
-import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistryV9122 } from '../../test-helpers/registries';
+import { sanitizeNumbers } from '../../sanitize';
+import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
 import {
-	mockDeriveNominatedExposure,
-	mockDeriveValidatorExposure,
-	mockEraRewardPoints,
-	mockLedger,
+	bondedAt,
+	deriveEraExposureParam,
+	ERA,
+	erasRewardPointsAt,
+	erasStakersClippedAt,
+	erasValidatorPrefsAt,
+	erasValidatorRewardAt,
+	ledgerAt,
 } from '../test-helpers/mock/accounts';
-import stakingPayoutsResponse from '../test-helpers/responses/accounts/stakingPayout.json';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
-/**
- * TODO:
- *
- * Re mock all the data here, and add `query.staking.erasStakersClipped.entries(eraIndex)` to the mockHistoricApi.
- */
+const eraIndex = polkadotRegistryV1000001.createType('EraIndex', ERA);
+const historyDepthAt = polkadotRegistryV1000001.createType('u32', 84);
 
-/**
- * Addresses and data below were taken from era 533 around block ~7,760,000,
- * on runtime v9122 Polkadot.
- *
- * The real world data has been reduced to fit the unit tests and act as mock data.
- * This test suite also uses polkadotRegistryV9122
- */
-
-/**
- * Acts as a placeholder variable for some tests where the era isn't an instrumental
- * factor to the test logic.
- */
-const era = polkadotRegistryV9122.createType('EraIndex', 532);
-
-const historyDepthAt = polkadotRegistryV9122.createType('u32', 84);
-
-const erasRewardPointsAt = (_eraIndex: EraIndex): Promise<PalletStakingEraRewardPoints | Codec> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('PalletStakingEraRewardPoints', mockEraRewardPoints);
-	});
-
-const erasValidatorRewardAt = (_eraIndex: EraIndex): Promise<Option<BalanceOf>> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('Option<BalanceOf>', 2426740332127971);
-	});
-
-const erasValidatorPrefsAt = (
-	_era: u32 | number,
-	_validatorId: string | AccountId32,
-): Promise<PalletStakingValidatorPrefs | Codec> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('PalletStakingValidatorPrefs', {
-			commission: 10000000,
-			blocked: false,
-		});
-	});
-
-const bondedAt = (_validatorId: string | AccountId32): Promise<Option<AccountId32>> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('Option<AccountId32>', '1ZMbuCR3QiatxRsQdNnJYgydn3CWV4PELcTzpH4TNoNjxno');
-	});
-
-const ledgerAt = (_validatorId: string | AccountId32): Promise<Option<PalletStakingStakingLedger | Codec>> =>
-	Promise.resolve().then(() => {
-		return polkadotRegistryV9122.createType('Option<PalletStakingStakingLedger>', mockLedger);
-	});
-
-const deriveEraExposure = (_eraIndex: EraIndex): Promise<DeriveEraExposure> =>
-	Promise.resolve().then(() => {
-		return {
-			era,
-			nominators: mockDeriveNominatedExposure,
-			validators: mockDeriveValidatorExposure,
-		} as unknown as DeriveEraExposure;
-	});
-
+const blockHash = polkadotRegistryV1000001.createType(
+	'BlockHash',
+	'0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
+);
+const validator = '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27';
+const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
 const mockHistoricApi = {
-	registry: polkadotRegistryV9122,
+	registry: polkadotRegistryV1000001,
 	consts: {
 		staking: {
 			historyDepth: historyDepthAt,
@@ -115,6 +56,9 @@ const mockHistoricApi = {
 			erasValidatorReward: erasValidatorRewardAt,
 			erasValidatorPrefs: erasValidatorPrefsAt,
 			bonded: bondedAt,
+			erasStakersClipped: {
+				entries: erasStakersClippedAt,
+			},
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
@@ -127,142 +71,155 @@ const mockApi = {
 const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
 
 describe('AccountsStakingPayoutsService', () => {
-	/**
-	 * These are the two addresses we test the validator and nominator cases on.
-	 */
-	const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
-	const validator = '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo';
-
-	const blockHash = polkadotRegistryV9122.createType(
-		'BlockHash',
-		'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-	);
-
-	let derivedExposure: DeriveEraExposure;
-	beforeAll(async () => {
-		derivedExposure = await deriveEraExposure(era);
-	});
-
-	describe('Correct succesfull responses', () => {
-		it('Should work when ApiPromise works', async () => {
-			/**
-			 * This is a hack that allows us to not have to mock new data for legacy tests. Because we don't know the
-			 * exact block the tests mock, we would need to re mock all the data here with what `historicApi.query.staking.erasStakersClipped.entries(eraIndex)`
-			 * would return. Instead I force the return value to be the existing derviveEraExposure which is what the api would return anyways.
-			 */
-			(stakingPayoutsService['deriveEraExposure'] as unknown) = deriveEraExposure;
+	describe('fetchAccountStakingPayout', () => {
+		it('Should work with a validator address', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(
 				blockHash,
-				nominator,
-				1,
-				533,
-				true,
-				534,
-				mockHistoricApi,
-			);
-
-			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
-		});
-
-		it('Should work when unclaimed is false', async () => {
-			/**
-			 * This is a hack that allows us to not have to mock new data for legacy tests. Because we don't know the
-			 * exact block the tests mock, we would need to re mock all the data here with what `historicApi.query.staking.erasStakersClipped.entries(eraIndex)`
-			 * would return. Instead I force the return value to be the existing derviveEraExposure which is what the api would return anyways.
-			 */
-			(stakingPayoutsService['deriveEraExposure'] as unknown) = deriveEraExposure;
-			const res = await stakingPayoutsService.fetchAccountStakingPayout(
-				blockHash,
-				nominator,
-				1,
-				533,
-				false,
-				534,
-				mockHistoricApi,
-			);
-
-			expect(sanitizeNumbers(res)).toStrictEqual(stakingPayoutsResponse);
-		});
-
-		it('Should return the correct era rewards for `extractTotalValidatorRewardPoints`', async () => {
-			const rewards = await erasRewardPointsAt(era);
-			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](
-				rewards as unknown as PalletStakingEraRewardPoints,
 				validator,
+				1,
+				ERA,
+				false,
+				ERA + 1,
+				mockHistoricApi,
 			);
-			expect(sanitizeNumbers(res)).toBe('3360');
-		});
 
-		it('`extractExposure` should return the correct value when the address is a nominator', () => {
-			const res = stakingPayoutsService['extractExposure'](nominator, validator, derivedExposure);
 			expect(sanitizeNumbers(res)).toStrictEqual({
-				nominatorExposure: '33223051661066606',
-				totalExposure: '33223251661066606',
+				at: {
+					height: '789629',
+					hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
+				},
+				erasPayouts: [
+					{
+						era: '1039',
+						payouts: [
+							{
+								claimed: true,
+								nominatorExposure: '0',
+								nominatorStakingPayout: '1043968334900993560134832959396203124',
+								totalValidatorExposure: '17302617747768368',
+								totalValidatorRewardPoints: '78920',
+								validatorCommission: '1000000000',
+								validatorId: '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27',
+							},
+						],
+						totalEraPayout: '308747987428782798114933729373649371136',
+						totalEraRewardPoints: '23340160',
+					},
+				],
 			});
 		});
+		it('Should work with a nominator address', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				nominator,
+				1,
+				ERA,
+				false,
+				ERA + 1,
+				mockHistoricApi,
+			);
 
-		it('`extractExposure` should return the correct value when the address is a validator', () => {
-			const res = stakingPayoutsService['extractExposure'](validator, validator, derivedExposure);
 			expect(sanitizeNumbers(res)).toStrictEqual({
-				nominatorExposure: '200000000000',
-				totalExposure: '33223251661066606',
+				at: {
+					height: '789629',
+					hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
+				},
+				erasPayouts: [
+					{
+						era: '1039',
+						payouts: [
+							{
+								claimed: true,
+								nominatorExposure: '21133134966048676',
+								nominatorStakingPayout: '0',
+								totalValidatorExposure: '21133134966048676',
+								totalValidatorRewardPoints: '97620',
+								validatorCommission: '1000000000',
+								validatorId: '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib',
+							},
+						],
+						totalEraPayout: '308747987428782798114933729373649371136',
+						totalEraRewardPoints: '23340160',
+					},
+				],
 			});
 		});
-
-		it('`deriveNominatedExposures` should return the correct value when address is a validator', () => {
-			const res = stakingPayoutsService['deriveNominatedExposures'](
-				'12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
-				derivedExposure,
-			);
-			const expectedResult = [
-				{
-					validatorId: '1HDgY7vpDjafR5NM8dbwm1b3Rrs4zATuSCHHbe7YgpKUKFw',
-					validatorIndex: '0',
-				},
-				{
-					validatorId: '12JZr1HgK8w6zsbBj6oAEVRkvisn8j3MrkXugqtvc4E8uwLo',
-					validatorIndex: '9999',
-				},
-			];
-			expect(sanitizeNumbers(res)).toStrictEqual(expectedResult);
-		});
-
-		it('`deriveNominatedExposures` should return the correct value when the address is a nominator', () => {
-			const res = stakingPayoutsService['deriveNominatedExposures'](nominator, derivedExposure);
-			expect(sanitizeNumbers(res)).toStrictEqual(mockDeriveNominatedExposure[nominator]);
-		});
-	});
-
-	describe('Correct errors', () => {
 		it('Should throw an error when the depth is greater than the historyDepth', () => {
 			const serviceCall = async () => {
 				await stakingPayoutsService.fetchAccountStakingPayout(
 					blockHash,
 					nominator,
 					85,
-					533,
+					ERA,
 					true,
-					534,
+					ERA + 1,
 					mockHistoricApi,
 				);
 			};
-
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(serviceCall()).rejects.toThrow(new BadRequest('Must specify a depth less than history_depth'));
+			expect(serviceCall()).rejects.toThrow('Must specify a depth less than history_depth');
 		});
-
 		it('Should throw an error inputted era and historydepth is invalid', () => {
 			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, 400, true, 534, mockHistoricApi);
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					nominator,
+					1,
+					ERA,
+					true,
+					ERA + 134,
+					mockHistoricApi,
+				);
 			};
-
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(serviceCall()).rejects.toThrow(
-				new BadRequest(
-					'Must specify era and depth such that era - (depth - 1) is less ' +
-						'than or equal to current_era - history_depth.',
-				),
+				'Must specify era and depth such that era - (depth - 1) is less ' +
+					'than or equal to current_era - history_depth.',
 			);
+		});
+	});
+	describe('extractExposure', () => {
+		it('Should work when the address is a nominator', () => {
+			const nom = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
+			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			const res = stakingPayoutsService['extractExposure'](nom, val, deriveEraExposureParam);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '21133134966048676',
+				totalExposure: '21133134966048676',
+			});
+		});
+		it('Should work when the address is a validator', () => {
+			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			const res = stakingPayoutsService['extractExposure'](val, val, deriveEraExposureParam);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '0',
+				totalExposure: '21133134966048676',
+			});
+		});
+	});
+	describe('extractTotalValidatorRewardPoints', () => {
+		it('Should return the correct rewards', async () => {
+			const rewards = await erasRewardPointsAt(eraIndex);
+			const res = stakingPayoutsService['extractTotalValidatorRewardPoints'](rewards, validator);
+			expect(sanitizeNumbers(res)).toBe('78920');
+		});
+	});
+	describe('deriveNominatedExposures', () => {
+		const res = stakingPayoutsService['deriveNominatedExposures'](nominator, deriveEraExposureParam);
+		expect(sanitizeNumbers(res)).toStrictEqual([
+			{
+				validatorId: '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib',
+				validatorIndex: '0',
+			},
+		]);
+	});
+	describe('deriveEraExposure', () => {
+		it('Should return the correct derived value', async () => {
+			const res = await stakingPayoutsService[`deriveEraExposure`](mockHistoricApi, eraIndex);
+			// We check the length of the values since the data is so large.
+			expect(res.era.toString()).toEqual('1039');
+			expect(Object.keys(res.nominators).length).toEqual(201);
+			expect(Object.keys(res.validators).length).toEqual(3);
 		});
 	});
 });
