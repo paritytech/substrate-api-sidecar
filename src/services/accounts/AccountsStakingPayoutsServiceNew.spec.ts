@@ -150,15 +150,32 @@ describe('AccountsStakingPayoutsService', () => {
 					blockHash,
 					nominator,
 					85,
-					533,
+					ERA,
 					true,
-					534,
+					ERA + 1,
 					mockHistoricApi,
 				);
 			};
-
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(serviceCall()).rejects.toThrow('Must specify a depth less than history_depth');
+		});
+		it('Should throw an error inputted era and historydepth is invalid', () => {
+			const serviceCall = async () => {
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					nominator,
+					1,
+					ERA,
+					true,
+					ERA + 134,
+					mockHistoricApi,
+				);
+			};
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(serviceCall()).rejects.toThrow(
+				'Must specify era and depth such that era - (depth - 1) is less ' +
+					'than or equal to current_era - history_depth.',
+			);
 		});
 	});
 	describe('extractExposure', () => {
