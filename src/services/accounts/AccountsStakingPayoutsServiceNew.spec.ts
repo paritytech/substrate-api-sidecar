@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
 import {
@@ -67,8 +68,8 @@ const mockApi = {
 const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
 
 describe('AccountsStakingPayoutsService', () => {
-	it('fetchAccountStakingPayout', () => {
-		const res = stakingPayoutsService.fetchAccountStakingPayout(
+	it('fetchAccountStakingPayout', async () => {
+		const res = await stakingPayoutsService.fetchAccountStakingPayout(
 			blockHash,
 			address,
 			1,
@@ -78,6 +79,29 @@ describe('AccountsStakingPayoutsService', () => {
 			mockHistoricApi,
 		);
 
-		expect(res).toStrictEqual({});
+		expect(sanitizeNumbers(res)).toStrictEqual({
+			at: {
+				height: '789629',
+				hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
+			},
+			erasPayouts: [
+				{
+					era: '1039',
+					payouts: [
+						{
+							claimed: true,
+							nominatorExposure: '0',
+							nominatorStakingPayout: '1043968334900993560134832959396203124',
+							totalValidatorExposure: '17302617747768368',
+							totalValidatorRewardPoints: '78920',
+							validatorCommission: '1000000000',
+							validatorId: '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27',
+						},
+					],
+					totalEraPayout: '308747987428782798114933729373649371136',
+					totalEraRewardPoints: '23340160',
+				},
+			],
+		});
 	});
 });

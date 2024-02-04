@@ -39,11 +39,14 @@ const validatorExposure = [
 ];
 
 export const encodedEraExposures = validatorIds.map((val, idx) => {
-	// TODO fix this storage key
-	const key = new StorageKey(api.registry, api.query.staking.erasStakersClipped.key(ERA, val));
+	const e = api.registry.createType('u32', ERA);
+	const a = api.registry.createType('AccountId32', val);
+	const storageKey = {
+		args: [e, a],
+	} as unknown as StorageKey;
 	const exposure = api.createType('PalletStakingExposure', validatorExposure[idx]);
 
-	return [key, exposure];
+	return [storageKey, exposure];
 });
 
 export const erasStakersClippedAt = () =>
@@ -52,7 +55,7 @@ export const erasStakersClippedAt = () =>
 export const ledgerAt = () =>
 	Promise.resolve().then(() =>
 		api.registry.createType(
-			'PalletStakingStakingLedger',
+			'Option<PalletStakingStakingLedger>',
 			'0xe6e13d835bf8b44914ca24613b9ccd2aa2ff6a187dcdcb11d531701c5fcef9100700d0ed902e0700d0ed902e004d01bc030000bd030000be030000bf030000c0030000c1030000c2030000c3030000c4030000c5030000c6030000c7030000c8030000c9030000ca030000cb030000cc030000cd030000ce030000cf030000d0030000d1030000d2030000d3030000d4030000d5030000d6030000d7030000d8030000d9030000da030000db030000dc030000dd030000de030000df030000e0030000e1030000e2030000e3030000e4030000e5030000e6030000e7030000e8030000e9030000ea030000eb030000ec030000ed030000ee030000f0030000f1030000f2030000f3030000f4030000f5030000f6030000f7030000f8030000f9030000fa030000fb030000fc030000fd030000fe030000ff030000000400000104000002040000030400000404000005040000060400000704000008040000090400000a0400000b0400000c0400000d0400000e0400000f040000',
 		),
 	);
