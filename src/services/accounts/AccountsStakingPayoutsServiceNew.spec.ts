@@ -204,4 +204,13 @@ describe('AccountsStakingPayoutsService', () => {
 			expect(sanitizeNumbers(res)).toBe('78920');
 		});
 	});
+	describe('deriveNominatedExposures', () => {
+		const res = stakingPayoutsService['deriveNominatedExposures'](nominator, deriveEraExposureParam);
+		expect(sanitizeNumbers(res)).toStrictEqual([
+			{
+				validatorId: '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib',
+				validatorIndex: '0',
+			},
+		]);
+	});
 });
