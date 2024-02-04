@@ -144,6 +144,22 @@ describe('AccountsStakingPayoutsService', () => {
 				],
 			});
 		});
+		it('Should throw an error when the depth is greater than the historyDepth', () => {
+			const serviceCall = async () => {
+				await stakingPayoutsService.fetchAccountStakingPayout(
+					blockHash,
+					nominator,
+					85,
+					533,
+					true,
+					534,
+					mockHistoricApi,
+				);
+			};
+
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(serviceCall()).rejects.toThrow('Must specify a depth less than history_depth');
+		});
 	});
 	describe('extractExposure', () => {
 		it('Should work when the address is a nominator', () => {
