@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { ApiDecoration } from '@polkadot/api/types';
-import { Hash } from '@polkadot/types/interfaces';
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
+import type { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
 import {
 	bondedAt,
+	deriveEraExposureParam,
 	erasRewardPointsAt,
 	erasStakersClippedAt,
 	erasValidatorPrefsAt,
@@ -140,6 +141,17 @@ describe('AccountsStakingPayoutsService', () => {
 						totalEraRewardPoints: '23340160',
 					},
 				],
+			});
+		});
+	});
+	describe('extractExposure', () => {
+		it('Should work', () => {
+			const addr1 = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
+			const addr2 = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			const res = stakingPayoutsService['extractExposure'](addr1, addr2, deriveEraExposureParam);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '21133134966048676',
+				totalExposure: '21133134966048676',
 			});
 		});
 	});
