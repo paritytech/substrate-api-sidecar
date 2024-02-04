@@ -145,12 +145,20 @@ describe('AccountsStakingPayoutsService', () => {
 		});
 	});
 	describe('extractExposure', () => {
-		it('Should work', () => {
-			const addr1 = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
-			const addr2 = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
-			const res = stakingPayoutsService['extractExposure'](addr1, addr2, deriveEraExposureParam);
+		it('Should work when the address is a nominator', () => {
+			const nom = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
+			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			const res = stakingPayoutsService['extractExposure'](nom, val, deriveEraExposureParam);
 			expect(sanitizeNumbers(res)).toStrictEqual({
 				nominatorExposure: '21133134966048676',
+				totalExposure: '21133134966048676',
+			});
+		});
+		it('Should work when the address is a validator', () => {
+			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			const res = stakingPayoutsService['extractExposure'](val, val, deriveEraExposureParam);
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				nominatorExposure: '0',
 				totalExposure: '21133134966048676',
 			});
 		});
