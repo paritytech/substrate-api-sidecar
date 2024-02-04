@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -38,7 +38,8 @@ const blockHash = polkadotRegistryV1000001.createType(
 	'BlockHash',
 	'0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
 );
-const address = '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27';
+const validator = '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27';
+const nominator = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
 const mockHistoricApi = {
 	registry: polkadotRegistryV1000001,
 	consts: {
@@ -68,40 +69,78 @@ const mockApi = {
 const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
 
 describe('AccountsStakingPayoutsService', () => {
-	it('fetchAccountStakingPayout', async () => {
-		const res = await stakingPayoutsService.fetchAccountStakingPayout(
-			blockHash,
-			address,
-			1,
-			1039,
-			false,
-			1040,
-			mockHistoricApi,
-		);
+	describe('fetchAccountStakingPayout', () => {
+		it('Should work with a validator address', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				validator,
+				1,
+				1039,
+				false,
+				1040,
+				mockHistoricApi,
+			);
 
-		expect(sanitizeNumbers(res)).toStrictEqual({
-			at: {
-				height: '789629',
-				hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
-			},
-			erasPayouts: [
-				{
-					era: '1039',
-					payouts: [
-						{
-							claimed: true,
-							nominatorExposure: '0',
-							nominatorStakingPayout: '1043968334900993560134832959396203124',
-							totalValidatorExposure: '17302617747768368',
-							totalValidatorRewardPoints: '78920',
-							validatorCommission: '1000000000',
-							validatorId: '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27',
-						},
-					],
-					totalEraPayout: '308747987428782798114933729373649371136',
-					totalEraRewardPoints: '23340160',
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				at: {
+					height: '789629',
+					hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
 				},
-			],
+				erasPayouts: [
+					{
+						era: '1039',
+						payouts: [
+							{
+								claimed: true,
+								nominatorExposure: '0',
+								nominatorStakingPayout: '1043968334900993560134832959396203124',
+								totalValidatorExposure: '17302617747768368',
+								totalValidatorRewardPoints: '78920',
+								validatorCommission: '1000000000',
+								validatorId: '16Divajwsc8nq8NLQUfVyDjbG18xp6GrAS4GSDVBTwm6eY27',
+							},
+						],
+						totalEraPayout: '308747987428782798114933729373649371136',
+						totalEraRewardPoints: '23340160',
+					},
+				],
+			});
+		});
+		it('Should work with a nominator address', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				nominator,
+				1,
+				1039,
+				false,
+				1040,
+				mockHistoricApi,
+			);
+
+			expect(sanitizeNumbers(res)).toStrictEqual({
+				at: {
+					height: '789629',
+					hash: '0xfb8e0fd1366f4b9b3a79864299d7f70a83f44d48cbf9ac135f2d92d9680806a8',
+				},
+				erasPayouts: [
+					{
+						era: '1039',
+						payouts: [
+							{
+								claimed: true,
+								nominatorExposure: '21133134966048676',
+								nominatorStakingPayout: '0',
+								totalValidatorExposure: '21133134966048676',
+								totalValidatorRewardPoints: '97620',
+								validatorCommission: '1000000000',
+								validatorId: '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib',
+							},
+						],
+						totalEraPayout: '308747987428782798114933729373649371136',
+						totalEraRewardPoints: '23340160',
+					},
+				],
+			});
 		});
 	});
 });
