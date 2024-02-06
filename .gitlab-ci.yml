@@ -9,12 +9,6 @@
 
 variables:
   CONTAINER_REPO:                  "docker.io/parity/substrate-api-sidecar"
-  HELM_NAMESPACE:                  "substrate-api-sidecar"
-  HELM_RELEASE_NAME_1:             "kusama-sidecar"
-  HELM_RELEASE_NAME_2:             "polkadot-sidecar"
-  HELM_CUSTOM_VALUES_FILE_1:       "values-kusama.yaml"
-  HELM_CUSTOM_VALUES_FILE_2:       "values-polkadot.yaml"
-  HELM_REPO:                       "helm/"
   DOCKERFILE_DIRECTORY:            "./"
   CI_IMAGE:                        "$BUILDAH_IMAGE" # defined in group variables
   BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
@@ -84,29 +78,19 @@ stages:
     - kubernetes-parity-build
 
 .deploy-k8s:                       &deploy-k8s
-  image:                           paritytech/kubetools:3.5.3
+  image:                           quay.io/argoproj/argocd:v2.7.9
+  variables:
+    ARGOCD_OPTS: --grpc-web --grpc-web-root-path /$DOMAIN
   script:
-    - |-
-      kubectl get cm helm-custom-values -n $HELM_NAMESPACE -o jsonpath='{.data.values-kusama\.yaml}' > values-kusama.yaml
-      kubectl get cm helm-custom-values -n $HELM_NAMESPACE -o jsonpath='{.data.values-polkadot\.yaml}' > values-polkadot.yaml
-    - helm upgrade
-        --install
-        --atomic
-        --timeout 120s
-        --namespace $HELM_NAMESPACE
-        --set image.repository="${CONTAINER_REPO}"
-        --set image.tag="${DOCKER_IMAGE_TAG}"
-        --values ${HELM_CUSTOM_VALUES_FILE_1}
-        ${HELM_RELEASE_NAME_1} ${HELM_REPO}
-    - helm upgrade
-        --install
-        --atomic
-        --timeout 120s
-        --namespace $HELM_NAMESPACE
-        --set image.repository="${CONTAINER_REPO}"
-        --set image.tag="${DOCKER_IMAGE_TAG}"
-        --values ${HELM_CUSTOM_VALUES_FILE_2}
-        ${HELM_RELEASE_NAME_2} ${HELM_REPO}
+    - argocd app list
+    # app1
+    - argocd app set $APP1 --helm-set substrate-api-sidecar.image.tag="${DOCKER_IMAGE_TAG}"
+    - argocd app sync $APP1
+    - argocd app wait $APP1 --timeout 180
+    # app2
+    - argocd app set $APP2 --helm-set substrate-api-sidecar.image.tag="${DOCKER_IMAGE_TAG}"
+    - argocd app sync $APP2
+    - argocd app wait $APP2 --timeout 180
   tags:
     - kubernetes-parity-build
 
@@ -210,16 +194,24 @@ build-docker-pr:
 
 deploy-staging:
   stage:                           deploy-staging
-  <<:                              *deploy-k8s
+  extends:                         .deploy-k8s
   <<:                              *publish-refs
   environment:
     name:                          parity-stg
+  variables:
+    DOMAIN: parity-stg
+    APP1: substrate-api-sidecar-kusama
+    APP2: substrate-api-sidecar-polkadot
 
 deploy-production:
   stage:                           deploy-production
-  <<:                              *deploy-k8s
+  extends:                         .deploy-k8s
   environment:
     name:                          parity-chains
+  variables:
+    DOMAIN: parity-chains
+    APP1: substrate-api-sidecar-kusama
+    APP2: substrate-api-sidecar-polkadot
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
       when: manual
