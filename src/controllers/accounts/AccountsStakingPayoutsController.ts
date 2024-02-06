@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import type { ApiPromise } from '@polkadot/api';
+import type { ApiDecoration } from '@polkadot/api/types';
 import { Option } from '@polkadot/types';
 import BN from 'bn.js';
 import { RequestHandler } from 'express';
@@ -95,10 +96,12 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getStakingPayoutsByAccountId: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { depth, era, unclaimedOnly } },
+		{ params: { address }, query: { depth, era, unclaimedOnly, at } },
 		res,
 	): Promise<void> => {
-		const { hash, eraArg, currentEra } = await this.getEraAndHash(this.verifyAndCastOr('era', era, undefined));
+		const hash = await this.getHashFromAt(at);
+		const apiAt = await this.api.at(hash);
+		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 
 		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;
 
@@ -111,15 +114,15 @@ export default class AccountsStakingPayoutsController extends AbstractController
 				eraArg,
 				unclaimedOnlyArg,
 				currentEra,
+				apiAt,
 			),
 		);
 	};
 
-	private async getEraAndHash(era?: number) {
-		const [hash, activeEraOption, currentEraMaybeOption] = await Promise.all([
-			this.api.rpc.chain.getFinalizedHead(),
-			this.api.query.staking.activeEra(),
-			this.api.query.staking.currentEra(),
+	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
+		const [activeEraOption, currentEraMaybeOption] = await Promise.all([
+			apiAt.query.staking.activeEra(),
+			apiAt.query.staking.currentEra(),
 		]);
 
 		if (activeEraOption.isNone) {
@@ -148,7 +151,6 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		}
 
 		return {
-			hash,
 			eraArg: era === undefined ? activeEra - 1 : era,
 			currentEra,
 		};
