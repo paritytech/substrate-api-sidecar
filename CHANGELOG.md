@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.5.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.4.0..17.5.0)(2024-02-06)
+
+### Feat
+
+- feat: add `at` query param for staking-payouts ([#1388](https://github.com/paritytech/substrate-api-sidecar/pull/1388)) ([a8b96ff](https://github.com/paritytech/substrate-api-sidecar/commit/a8b96ff55afba56325ee4df6c2f9ac6dfcc0e418))
+- feat: Add endpoint `/accounts/{accountId}/proxy-info` ([#1387](https://github.com/paritytech/substrate-api-sidecar/pull/1387)) ([9addf07](https://github.com/paritytech/substrate-api-sidecar/commit/9addf07743940b314259ceac73310fad823e2ec8))
+
+### Fix
+
+- fix: add asset conversion pallet to Kusama Asset Hub ([#1389](https://github.com/paritytech/substrate-api-sidecar/pull/1389)) ([3b447c6](https://github.com/paritytech/substrate-api-sidecar/commit/3b447c60c1fcbc51c0c0a4f0efb2cfb817bd2a04))
+- fix: added decodedXcmMsgs in 'blocks/head' endpoint ([#1385](https://github.com/paritytech/substrate-api-sidecar/pull/1385)) ([90b89de](https://github.com/paritytech/substrate-api-sidecar/commit/90b89de069b6658e7355e57c0f7e36a338e00950))
+
+### Docs
+
+- docs(calc): Updated README for calc package ([#1386](https://github.com/paritytech/substrate-api-sidecar/pull/1386)) ([cc80227](https://github.com/paritytech/substrate-api-sidecar/commit/cc802273cc81164a07658eb579548288335d39bd))
+
+### Ci
+
+- ci: Replace helm deploy with argo cd ([#1391](https://github.com/paritytech/substrate-api-sidecar/pull/1391)) ([1bd0cda](https://github.com/paritytech/substrate-api-sidecar/commit/1bd0cda9f471a344b0edbb9822cdfa45f41d67a3))
+
+### Chore
+
+- chore(deps): update swagger-ui to resolve braintree dep ([#1392](https://github.com/paritytech/substrate-api-sidecar/pull/1392)) ([3a42a38](https://github.com/paritytech/substrate-api-sidecar/commit/3a42a38162b7f928e8ae4a7c56811ffba2a02cb0))
+- chore(yarn): update yarn to 4.1.0 ([#1390](https://github.com/paritytech/substrate-api-sidecar/pull/1390)) ([02166de](https://github.com/paritytech/substrate-api-sidecar/commit/02166de48d3eb386024d6c34cdf635a51112431f))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10500
+- Kusama v10500
+- Westend v10500
+
 ## [17.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.3.5..v17.4.0) (2024-01-24)
 
 ### Features
