@@ -22,7 +22,15 @@ import type {
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
 import type { Option, StorageKey, u32 } from '@polkadot/types';
-import type { AccountId, BalanceOf, BlockHash, EraIndex, Perbill, StakingLedger } from '@polkadot/types/interfaces';
+import type {
+	AccountId,
+	BalanceOf,
+	BlockHash,
+	EraIndex,
+	Perbill,
+	StakingLedger,
+	StakingLedgerTo240,
+} from '@polkadot/types/interfaces';
 import type {
 	PalletStakingEraRewardPoints,
 	PalletStakingExposure,
@@ -285,12 +293,28 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			if (!validatorLedger) {
 				continue;
 			}
-			// Check if the reward has already been claimed
+
+			/**
+			 * Check if the reward has already been claimed.
+			 *
+			 * It is important to note that the following examines types that are both current and historic.
+			 * When going back far enough in certain chains types such as `StakingLedgerTo240` are necessary for grabbing
+			 * any reward data.
+			 */
 			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else {
+			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
 				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
+			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
+				const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
+				if (lastReward.isSome) {
+					indexOfEra = (validatorLedger as unknown as StakingLedgerTo240).lastReward.unwrap().toNumber();
+				} else {
+					continue;
+				}
+			} else {
+				continue;
 			}
 			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
