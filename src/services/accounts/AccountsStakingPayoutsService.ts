@@ -294,7 +294,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			// Check if the reward has already been claimed
+			/**
+			 * Check if the reward has already been claimed.
+			 *
+			 * It is important to note that the following examines types that are both current and historic.
+			 * When going back far enough in certain chains types such as `StakingLedgerTo240` are necessary for grabbing
+			 * any reward data.
+			 */
 			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
