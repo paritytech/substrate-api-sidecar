@@ -294,6 +294,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
+			// Check if the reward has already been claimed
 			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
