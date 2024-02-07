@@ -105,7 +105,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		 * to maintain historical integrity we need to make a check to cover both the
 		 * storage query and the consts.
 		 */
-		let historyDepth: u32;
+		let historyDepth: u32 = historicApi.registry.createType('u32', 84);
+		console.log(Object.keys(historicApi.query.staking));
 		if (historicApi.consts.staking.historyDepth) {
 			historyDepth = historicApi.consts.staking.historyDepth;
 		} else {
