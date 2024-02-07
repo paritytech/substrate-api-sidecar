@@ -289,8 +289,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else {
+			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
 				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
+			} else {
+				continue;
 			}
 			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
