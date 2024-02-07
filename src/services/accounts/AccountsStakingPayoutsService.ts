@@ -162,8 +162,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						...eraCommissions[idx],
 					};
 				});
-				console.log(nominatedExposures);
-				console.log(exposuresWithCommission);
 
 				return {
 					deriveEraExposure,
