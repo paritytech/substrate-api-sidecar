@@ -16,7 +16,7 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
-import { Option } from '@polkadot/types';
+import { Option, u32 } from '@polkadot/types';
 import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -121,7 +121,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 
 	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
 		let currentEra: number;
-		const currentEraMaybeOption = await apiAt.query.session.currentIndex();
+		const currentEraMaybeOption = (await apiAt.query.session.currentIndex()) as u32 & Option<u32>;
 		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
 				throw new InternalServerError('CurrentEra is None when Some was expected');
