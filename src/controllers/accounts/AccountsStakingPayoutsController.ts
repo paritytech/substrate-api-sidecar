@@ -120,17 +120,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	};
 
 	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
-		const [activeEraOption, currentEraMaybeOption] = await Promise.all([
-			apiAt.query.staking.activeEra(),
-			apiAt.query.staking.currentEra(),
-		]);
-
-		if (activeEraOption.isNone) {
-			throw new InternalServerError('ActiveEra is None when Some was expected');
-		}
-		const activeEra = activeEraOption.unwrap().index.toNumber();
-
-		let currentEra;
+		let currentEra: number;
+		const currentEraMaybeOption = await apiAt.query.session.currentIndex();
 		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
 				throw new InternalServerError('CurrentEra is None when Some was expected');
@@ -142,6 +133,24 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			currentEra = (currentEraMaybeOption as BN).toNumber();
 		} else {
 			throw new InternalServerError('Query for current_era returned a non-processable result.');
+		}
+
+		let activeEra;
+		if (apiAt.query.staking.activeEra) {
+			const activeEraOption = await apiAt.query.staking.activeEra();
+			if (activeEraOption.isNone) {
+				throw new InternalServerError('ActiveEra is None when Some was expected');
+			}
+			activeEra = activeEraOption.unwrap().index.toNumber();
+		} else {
+			const sessionIndex = await apiAt.query.session.currentIndex();
+			const idx = sessionIndex.toNumber() % 6;
+			// https://substrate.stackexchange.com/a/2026/1786
+			if (idx > 0) {
+				activeEra = currentEra;
+			} else {
+				activeEra = currentEra - 1;
+			}
 		}
 
 		if (era !== undefined && era > activeEra - 1) {
