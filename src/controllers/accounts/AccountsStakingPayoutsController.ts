@@ -121,7 +121,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 
 	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
 		let currentEra: number;
-		const currentEraMaybeOption = (await apiAt.query.session.currentIndex()) as u32 & Option<u32>;
+		const currentEraMaybeOption = (await apiAt.query.staking.currentEra()) as u32 & Option<u32>;
 		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
 				throw new InternalServerError('CurrentEra is None when Some was expected');
