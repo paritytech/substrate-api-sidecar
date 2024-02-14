@@ -110,13 +110,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			historyDepth = historicApi.consts.staking.historyDepth;
 		} else if (historicApi.query.staking.historyDepth) {
 			historyDepth = await historicApi.query.staking.historyDepth<u32>();
+		} else if (currentEra < 518) {
+			historyDepth = api.registry.createType('u32', 0);
 		}
 
 		// Information is kept for eras in `[current_era - history_depth; current_era]`
-		if (depth > historyDepth.toNumber()) {
+		if (historyDepth.toNumber() !== 0 && depth > historyDepth.toNumber()) {
 			throw new BadRequest('Must specify a depth less than history_depth');
 		}
-		if (era - (depth - 1) < currentEra - historyDepth.toNumber()) {
+		if (era - (depth - 1) < currentEra - historyDepth.toNumber() && historyDepth.toNumber() !== 0) {
 			// In scenarios where depth is not > historyDepth, but the user specifies an era
 			// and historyDepth combo that would lead to querying eras older than history depth
 			throw new BadRequest(
@@ -193,6 +195,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
+		
+		const er = await historicApi.query.staking.currentEraPointsEarned();
+		console.log(er.toHuman())
 		for (let e = startEra; e <= era; e += 1) {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
