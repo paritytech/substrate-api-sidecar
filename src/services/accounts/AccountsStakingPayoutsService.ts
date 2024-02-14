@@ -196,8 +196,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		
-		const er = await historicApi.query.staking.currentEraPointsEarned();
-		console.log(er.toHuman())
 		for (let e = startEra; e <= era; e += 1) {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
