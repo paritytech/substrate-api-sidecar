@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import type { Option, StorageKey, u32 } from '@polkadot/types';
+import { Option, StorageKey, u32 } from '@polkadot/types';
 import type {
 	AccountId,
 	BalanceOf,
@@ -38,6 +38,8 @@ import type {
 } from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
+
+import { Vec } from '@polkadot/types';
 
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -198,11 +200,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const allDeriveQuerys: Promise<IErasGeneral | any>[] = [];
 		let block = Number(blockNumber);
 		for (let e = startEra; e <= era; e += 1) {
+			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
 			if (historicApi.query.staking.erasRewardPoints) {
-
-				const eraIndex = historicApi.registry.createType('EraIndex', e);
-				console.log(eraIndex)
 
 				const eraGeneralTuple = Promise.all([
 					this.deriveEraExposure(historicApi, eraIndex),
@@ -215,27 +215,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
 				const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 				const eraDurationInBlocks = sessionDuration * epochDuration;
-				
+
 				const points = this.fetchHistoricRewardPoints(block);
-				const erass = await historicApi.query.staking.currentEra();
-				console.log(erass.toHuman())
 
 				block = block - eraDurationInBlocks
-				console.log(sessionDuration)
-				console.log(epochDuration)
-				console.log(eraDurationInBlocks)
-
-				// console.log('sessions', historicApi.consts.staking.sessionsPerEra.toHuman())
-				// const eraIndex = historicApi.registry.createType('EraIndex', e);
-
+				
 				const eraGeneralTuple = Promise.all([
-					// this.deriveEraExposure(historicApi, eraIndex),
+					this.deriveEraExposure(historicApi, eraIndex),
 					points,
 					// historicApi.query.staking.erasValidatorReward(eraIndex)
 
 				])
 
-				console.log((await points).toHuman())
 				allDeriveQuerys.push(eraGeneralTuple);
 
 			}
@@ -474,15 +465,83 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					nominators[nominatorId].push({ validatorId, validatorIndex });
 				});
 			});
-
 			return { era, nominators, validators };
 		}
+		let storageKeys: KeysAndExposures = [];
 
-		const eraExposure = await historicApi.query.staking.erasStakersClipped.entries(eraIndex);
+		if (historicApi.query.staking.erasStakersClipped) {
+			storageKeys = await historicApi.query.staking.erasStakersClipped.entries(eraIndex);
+		} else {
+			const validators: Vec<AccountId> = await historicApi.query.staking.currentElected() as Vec<AccountId>;
 
-		return mapStakers(eraIndex, eraExposure);
+			let validatorId: AccountId[] = []
+
+			validators.map((validator) => {
+				validatorId.push(validator)
+			});
+
+			let eraExposure: PalletStakingExposure = {} as PalletStakingExposure;
+
+			for (const validator of validatorId) {
+				let storageKey = {
+					args: [eraIndex, validator]
+				} as unknown as StorageKey<[EraIndex, AccountId]>;
+				eraExposure = await historicApi.query.staking.stakers(validator) as unknown as PalletStakingExposure;
+				storageKeys.push([storageKey, eraExposure])
+			}
+		}
+
+		return mapStakers(eraIndex, storageKeys);
 	}
 
+	// private async deriveHistoricEraExposure(
+	// 	historicApi: ApiDecoration<'promise'>,
+	// 	eraIndex: EraIndex,
+	// ): Promise<DeriveEraExposure> {
+	// 	function mapStakers(era: EraIndex, stakers: KeysAndExposures): DeriveEraExposure {
+	// 		const nominators: DeriveEraNominatorExposure = {};
+	// 		const validators: DeriveEraValidatorExposure = {};
+
+	// 		stakers.forEach(([key, exposure]): void => {
+	// 			const validatorId = key.args[1].toString();
+
+	// 			validators[validatorId] = exposure;
+
+	// 			exposure.others.forEach(({ who }, validatorIndex): void => {
+	// 				const nominatorId = who.toString();
+	// 				console.log('nominator', nominatorId)
+	// 				console.log('validatorIndex', validatorIndex)
+
+	// 				nominators[nominatorId] = nominators[nominatorId] || [];
+	// 				nominators[nominatorId].push({ validatorId, validatorIndex });
+	// 			});
+	// 		});
+	// 		return { era, nominators, validators };
+	// 	}
+
+	// 	const validators: Vec<AccountId> = await historicApi.query.staking.currentElected() as Vec<AccountId>;
+
+	// 	let validatorId: AccountId[] = []
+
+	// 	validators.map((validator) => {
+	// 		validatorId.push(validator)
+	// 	});
+
+	// 	let storageKeys: KeysAndExposures = [];
+
+	// 	let eraExposure: PalletStakingExposure = {} as PalletStakingExposure;
+
+	// 	for (const validator of validatorId) {
+	// 		let storageKey = {
+	// 			args: [eraIndex, validator]
+	// 		} as unknown as StorageKey<[EraIndex, AccountId]>;
+	// 		eraExposure = await historicApi.query.staking.stakers(validator) as unknown as PalletStakingExposure;
+	// 		storageKeys.push([storageKey, eraExposure])
+	// 	}
+
+	// 	return mapStakers(eraIndex, storageKeys);
+
+	// }
 	/**
 	 * Extract the reward points of `validatorId` from `EraRewardPoints`.
 	 *
