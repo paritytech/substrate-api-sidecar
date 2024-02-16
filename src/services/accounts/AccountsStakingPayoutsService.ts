@@ -123,7 +123,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			// and historyDepth combo that would lead to querying eras older than history depth
 			throw new BadRequest(
 				'Must specify era and depth such that era - (depth - 1) is less ' +
-					'than or equal to current_era - history_depth.',
+				'than or equal to current_era - history_depth.',
 			);
 		}
 
@@ -136,7 +136,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const startEra = Math.max(0, era - (depth - 1));
 
 		// Fetch general data about the era
-		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era);
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era, at.height);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
@@ -193,22 +193,64 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		startEra: number,
 		era: number,
-	): Promise<IErasGeneral[]> {
-		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
-		
+		blockNumber: string,
+	): Promise<any[]> {
+		const allDeriveQuerys: Promise<IErasGeneral | any>[] = [];
+		let block = Number(blockNumber);
 		for (let e = startEra; e <= era; e += 1) {
-			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
-			const eraGeneralTuple = Promise.all([
-				this.deriveEraExposure(historicApi, eraIndex),
-				historicApi.query.staking.erasRewardPoints(eraIndex),
-				historicApi.query.staking.erasValidatorReward(eraIndex),
-			]);
+			if (historicApi.query.staking.erasRewardPoints) {
 
-			allDeriveQuerys.push(eraGeneralTuple);
+				const eraIndex = historicApi.registry.createType('EraIndex', e);
+				console.log(eraIndex)
+
+				const eraGeneralTuple = Promise.all([
+					this.deriveEraExposure(historicApi, eraIndex),
+					historicApi.query.staking.erasRewardPoints(eraIndex),
+					historicApi.query.staking.erasValidatorReward(eraIndex),
+				]);
+
+				allDeriveQuerys.push(eraGeneralTuple);
+			} else {
+				const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
+				const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
+				const eraDurationInBlocks = sessionDuration * epochDuration;
+				
+				const points = this.fetchHistoricRewardPoints(block);
+				const erass = await historicApi.query.staking.currentEra();
+				console.log(erass.toHuman())
+
+				block = block - eraDurationInBlocks
+				console.log(sessionDuration)
+				console.log(epochDuration)
+				console.log(eraDurationInBlocks)
+
+				// console.log('sessions', historicApi.consts.staking.sessionsPerEra.toHuman())
+				// const eraIndex = historicApi.registry.createType('EraIndex', e);
+
+				const eraGeneralTuple = Promise.all([
+					// this.deriveEraExposure(historicApi, eraIndex),
+					points,
+					// historicApi.query.staking.erasValidatorReward(eraIndex)
+
+				])
+
+				console.log((await points).toHuman())
+				allDeriveQuerys.push(eraGeneralTuple);
+
+			}
 		}
-
 		return Promise.all(allDeriveQuerys);
+
+	}
+
+	async fetchHistoricRewardPoints(
+		blockNumber: number,
+	): Promise<any> {
+		let hash = await this.api.rpc.chain.getBlockHash(blockNumber);
+		const historicApi = await this.api.at(hash);
+		return historicApi.query.staking.currentEraPointsEarned();
+
 	}
 
 	/**
