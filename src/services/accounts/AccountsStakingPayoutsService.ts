@@ -30,7 +30,6 @@ import type {
 	Perbill,
 	StakingLedger,
 	StakingLedgerTo240,
-	StakingLedgerTo223,
 	EraPoints,
 	ValidatorPrefsWithCommission
 } from '@polkadot/types/interfaces';
@@ -234,7 +233,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 				const eraDurationInBlocks = sessionDuration * epochDuration;
 
-				let reward: Option<u128>;
+				let reward: Option<u128> = historicApi.registry.createType('Option<u128>')
 
 				let blockInfo = await this.api.rpc.chain.getBlock(blockNumber.hash);
 
@@ -255,8 +254,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						});
 				});
 				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(block);
-
-				const rewardPromise: Promise<Option<BalanceOf>> = new Promise((resolve) => {
+				const rewardPromise: Promise<Option<u128>> = new Promise((resolve) => {
 					resolve(reward)
 				})
 
@@ -340,7 +338,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				message: `${address} has no nominations for the era ${eraIndex.toString()}`,
 			};
 		}
-
 		if (erasValidatorRewardOption.isNone) {
 			return {
 				message: `No ErasValidatorReward for the era ${eraIndex.toString()}`,
@@ -391,7 +388,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				} else {
 					continue;
 				}
-			} else if (eraIndex.toNumber() <= 518 )  {
+			} else if (eraIndex.toNumber() < 518) {
 				indexOfEra = eraIndex.toNumber();
 			} else {
 				continue
@@ -601,7 +598,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			address === validatorId // validator is also the nominator we are getting payouts for
 				? deriveEraExposure.validators[address].own
 				: exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
-		
+
 		return {
 			totalExposure,
 			nominatorExposure,
