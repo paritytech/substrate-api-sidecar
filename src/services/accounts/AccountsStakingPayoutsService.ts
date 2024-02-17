@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Option, StorageKey, u32 } from '@polkadot/types';
+import { Option, StorageKey, u32, u128 } from '@polkadot/types';
 import type {
 	AccountId,
 	BalanceOf,
@@ -30,6 +30,7 @@ import type {
 	Perbill,
 	StakingLedger,
 	StakingLedgerTo240,
+	EraPoints
 } from '@polkadot/types/interfaces';
 import type {
 	PalletStakingEraRewardPoints,
@@ -54,7 +55,7 @@ type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, PalletStakingExposur
  * General information about an era, in tuple form because we initially get it
  * by destructuring a Promise.all(...)
  */
-type IErasGeneral = [DeriveEraExposure, PalletStakingEraRewardPoints, Option<BalanceOf>];
+type IErasGeneral = [DeriveEraExposure, PalletStakingEraRewardPoints | EraPoints, Option<BalanceOf>];
 
 /**
  * Commission and staking ledger of a validator
@@ -69,12 +70,17 @@ interface ICommissionAndLedger {
  */
 interface IEraData {
 	deriveEraExposure: DeriveEraExposure;
-	eraRewardPoints: PalletStakingEraRewardPoints;
+	eraRewardPoints: PalletStakingEraRewardPoints | EraPoints;
 	erasValidatorRewardOption: Option<BalanceOf>;
 	exposuresWithCommission?: (ICommissionAndLedger & {
 		validatorId: string;
 	})[];
 	eraIndex: EraIndex;
+}
+
+interface IBlockInfo {
+	height: string,
+	hash: BlockHash
 }
 
 export class AccountsStakingPayoutsService extends AbstractService {
@@ -129,7 +135,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			);
 		}
 
-		const at = {
+		const at: IBlockInfo = {
 			height: number.unwrap().toString(10),
 			hash,
 		};
@@ -138,7 +144,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const startEra = Math.max(0, era - (depth - 1));
 
 		// Fetch general data about the era
-		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era, at.height);
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era, at);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
@@ -195,10 +201,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		startEra: number,
 		era: number,
-		blockNumber: string,
+		blockNumber: IBlockInfo,
 	): Promise<any[]> {
-		const allDeriveQuerys: Promise<IErasGeneral | any>[] = [];
-		let block = Number(blockNumber);
+		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
+		let block = Number(blockNumber.height);
 		for (let e = startEra; e <= era; e += 1) {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
@@ -216,14 +222,38 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 				const eraDurationInBlocks = sessionDuration * epochDuration;
 
-				const points = this.fetchHistoricRewardPoints(block);
+				let reward: Option<u128>;
+
+				let blockInfo = await this.api.rpc.chain.getBlock(blockNumber.hash);
+
+				const allRecords = await historicApi.query.system.events();
+
+				blockInfo.block.extrinsics.forEach((index) => {
+					allRecords
+						.filter(({ phase }) =>
+							phase.isApplyExtrinsic &&
+							phase.asApplyExtrinsic.eq(index)
+						)
+						.forEach(({ event }) => {
+							if (event.method.toString() === 'Reward') {
+								const [dispatchInfo] = event.data;
+
+								reward = historicApi.registry.createType('Option<u128>', dispatchInfo.toString());
+							}
+						});
+				});
+				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(block);
+
+				const rewardPromise: Promise<Option<BalanceOf>> = new Promise((resolve) => {
+					resolve(reward)
+				})
 
 				block = block - eraDurationInBlocks
-				
+
 				const eraGeneralTuple = Promise.all([
 					this.deriveEraExposure(historicApi, eraIndex),
 					points,
-					// historicApi.query.staking.erasValidatorReward(eraIndex)
+					rewardPromise
 
 				])
 
@@ -493,68 +523,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		return mapStakers(eraIndex, storageKeys);
 	}
-
-	// private async deriveHistoricEraExposure(
-	// 	historicApi: ApiDecoration<'promise'>,
-	// 	eraIndex: EraIndex,
-	// ): Promise<DeriveEraExposure> {
-	// 	function mapStakers(era: EraIndex, stakers: KeysAndExposures): DeriveEraExposure {
-	// 		const nominators: DeriveEraNominatorExposure = {};
-	// 		const validators: DeriveEraValidatorExposure = {};
-
-	// 		stakers.forEach(([key, exposure]): void => {
-	// 			const validatorId = key.args[1].toString();
-
-	// 			validators[validatorId] = exposure;
-
-	// 			exposure.others.forEach(({ who }, validatorIndex): void => {
-	// 				const nominatorId = who.toString();
-	// 				console.log('nominator', nominatorId)
-	// 				console.log('validatorIndex', validatorIndex)
-
-	// 				nominators[nominatorId] = nominators[nominatorId] || [];
-	// 				nominators[nominatorId].push({ validatorId, validatorIndex });
-	// 			});
-	// 		});
-	// 		return { era, nominators, validators };
-	// 	}
-
-	// 	const validators: Vec<AccountId> = await historicApi.query.staking.currentElected() as Vec<AccountId>;
-
-	// 	let validatorId: AccountId[] = []
-
-	// 	validators.map((validator) => {
-	// 		validatorId.push(validator)
-	// 	});
-
-	// 	let storageKeys: KeysAndExposures = [];
-
-	// 	let eraExposure: PalletStakingExposure = {} as PalletStakingExposure;
-
-	// 	for (const validator of validatorId) {
-	// 		let storageKey = {
-	// 			args: [eraIndex, validator]
-	// 		} as unknown as StorageKey<[EraIndex, AccountId]>;
-	// 		eraExposure = await historicApi.query.staking.stakers(validator) as unknown as PalletStakingExposure;
-	// 		storageKeys.push([storageKey, eraExposure])
-	// 	}
-
-	// 	return mapStakers(eraIndex, storageKeys);
-
-	// }
 	/**
 	 * Extract the reward points of `validatorId` from `EraRewardPoints`.
 	 *
 	 * @param eraRewardPoints
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * */
-	private extractTotalValidatorRewardPoints(eraRewardPoints: PalletStakingEraRewardPoints, validatorId: string) {
+	private extractTotalValidatorRewardPoints(eraRewardPoints: PalletStakingEraRewardPoints | EraPoints, validatorId: string) {
 		// Ideally we would just use the map's `get`, but that does not seem to be working here
 		for (const [id, points] of eraRewardPoints.individual.entries()) {
 			if (id.toString() === validatorId) {
 				return points;
 			}
 		}
+
 
 		return;
 	}
