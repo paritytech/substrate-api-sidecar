@@ -232,7 +232,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		let nextEraStartBlock: number = Number(blockNumber.height);
-		const currentBlock: number = Number(blockNumber.height);
 		let eraDurationInBlocks: number = 0;
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(blockNumber.hash);
 		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
@@ -260,7 +259,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
 				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
-				const currentEraBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(currentBlock);
+				const currentEraEndBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era].end);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
 
@@ -279,7 +278,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 							}
 						});
 				});
-				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(currentEraBlockHash);
+				const points = this.fetchHistoricRewardPoints(currentEraEndBlockHash);
 				const rewardPromise: Promise<Option<u128>> = new Promise<Option<u128>>((resolve) => {
 					resolve(reward);
 				});
