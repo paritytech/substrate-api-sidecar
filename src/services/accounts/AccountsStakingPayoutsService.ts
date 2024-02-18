@@ -103,6 +103,13 @@ interface IBlockInfo {
 	hash: BlockHash;
 }
 
+interface IEarlyErasBlockInfo {
+	[era: string]: {
+		start: number;
+		end: number;
+	};
+}
+
 export class AccountsStakingPayoutsService extends AbstractService {
 	/**
 	 * Fetch and derive payouts for `address`.
@@ -225,9 +232,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		let nextEraStartBlock: number = Number(blockNumber.height);
-		let currentBlock: number = Number(blockNumber.height);;
+		const currentBlock: number = Number(blockNumber.height);
 		let eraDurationInBlocks: number = 0;
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(blockNumber.hash);
+		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
 		for (let e = startEra; e <= era; e += 1) {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
@@ -245,7 +253,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				if (runtimeInfo.specName.toString() === 'kusama') {
 					// Retrieve the last block of the given era in order
 					// to fetch the Rewards at that block.
-					nextEraStartBlock = kusamaEarlyErasBlockInfo[era + 1].start;
+					nextEraStartBlock = earlyErasBlockInfo[era + 1].start;
 				} else {
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
 					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
@@ -271,7 +279,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 							}
 						});
 				});
-				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(currentEraBlockHash) as Promise<EraPoints>;
+				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(currentEraBlockHash);
 				const rewardPromise: Promise<Option<u128>> = new Promise<Option<u128>>((resolve) => {
 					resolve(reward);
 				});
@@ -287,9 +295,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		return Promise.all(allDeriveQuerys);
 	}
 
-	private async fetchHistoricRewardPoints(hash: BlockHash): Promise<any> {
+	private async fetchHistoricRewardPoints(hash: BlockHash): Promise<EraPoints> {
 		const historicApi = await this.api.at(hash);
-		return historicApi.query.staking.currentEraPointsEarned();
+		return historicApi.query.staking.currentEraPointsEarned() as unknown as EraPoints;
 	}
 
 	/**
@@ -458,7 +466,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				commission = prefs.commission.unwrap();
 			} else {
 				prefs = (await historicApi.query.staking.validators(validatorId)) as ValidatorPrefsWithCommission;
-				commission = prefs[0].commission.unwrap();
+				commission = (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap();
 			}
 		} else {
 			commissionPromise = ancient
@@ -470,7 +478,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				historicApi.query.staking.bonded(validatorId),
 			]);
 
-			commission = ancient ? prefs[0].commission.unwrap() : prefs.commission.unwrap();
+			commission = ancient
+				? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
+				: prefs.commission.unwrap();
 
 			if (validatorControllerOption.isNone) {
 				return {
