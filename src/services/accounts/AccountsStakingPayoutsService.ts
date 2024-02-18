@@ -225,6 +225,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		let nextEraStartBlock = Number(blockNumber.height);
+		let lastEraFinishBlock: number = 0;
 		let eraDurationInBlocks: number = 0;
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(blockNumber.hash);
 		for (let e = startEra; e <= era; e += 1) {
@@ -244,13 +245,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				if (runtimeInfo.specName.toString() === 'kusama') {
 					// Retrieve the last block of the given era in order
 					// to fetch the Rewards at that block.
-					nextEraStartBlock = kusamaEarlyErasBlockInfo[era + 1].end;
+					nextEraStartBlock = kusamaEarlyErasBlockInfo[era].start;
+					lastEraFinishBlock = kusamaEarlyErasBlockInfo[era - 1].end;
 				} else {
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
 					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
 				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
+				const lastEraFinishBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(lastEraFinishBlock);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
 
@@ -269,7 +272,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 							}
 						});
 				});
-				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(nextEraStartBlockHash) as Promise<EraPoints>;
+				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(lastEraFinishBlockHash) as Promise<EraPoints>;
 				const rewardPromise: Promise<Option<u128>> = new Promise<Option<u128>>((resolve) => {
 					resolve(reward);
 				});
