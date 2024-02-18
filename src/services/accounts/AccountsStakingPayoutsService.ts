@@ -46,6 +46,7 @@ import { Vec } from '@polkadot/types';
 
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
 /**
  * Copyright 2024 via polkadot-js/api
@@ -215,7 +216,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		blockNumber: IBlockInfo,
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
-		let block = Number(blockNumber.height);
+		let eraEndBlock = Number(blockNumber.height);
+		let eraDurationInBlocks: number = 0;
+		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(blockNumber.hash);
 		for (let e = startEra; e <= era; e += 1) {
 			const eraIndex = historicApi.registry.createType('EraIndex', e);
 
@@ -229,13 +232,23 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 				allDeriveQuerys.push(eraGeneralTuple);
 			} else {
-				const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
-				const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
-				const eraDurationInBlocks = sessionDuration * epochDuration;
+				let eraEndBlockHash: BlockHash;
+				// We check if we are in the Kusama chain since currently we have
+				// the block info for the early eras only for Kusama.
+				if (runtimeInfo.specName.toString() === 'kusama') {
+					// Retrieve the last block of the given era in order
+					// to fetch the Rewards at that block.
+					eraEndBlock = kusamaEarlyErasBlockInfo[era].end;
+				} else {
+					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
+					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
+					eraDurationInBlocks = sessionDuration * epochDuration;
+				}
+				eraEndBlockHash = await this.api.rpc.chain.getBlockHash(eraEndBlock);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>')
 
-				let blockInfo = await this.api.rpc.chain.getBlock(blockNumber.hash);
+				let blockInfo = await this.api.rpc.chain.getBlock(eraEndBlockHash);
 
 				const allRecords = await historicApi.query.system.events();
 
@@ -253,12 +266,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 							}
 						});
 				});
-				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(block);
+				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(eraEndBlockHash);
 				const rewardPromise: Promise<Option<u128>> = new Promise((resolve) => {
 					resolve(reward)
 				})
-
-				block = block - eraDurationInBlocks
+				if (runtimeInfo.specName.toString() !== 'kusama') {
+					eraEndBlock = eraEndBlock - eraDurationInBlocks;
+				}
 
 				const eraGeneralTuple = Promise.all([
 					this.deriveEraExposure(historicApi, eraIndex),
@@ -275,13 +289,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 	}
 
-	async fetchHistoricRewardPoints(
-		blockNumber: number,
+	private async fetchHistoricRewardPoints(
+		hash: BlockHash
 	): Promise<any> {
-		let hash = await this.api.rpc.chain.getBlockHash(blockNumber);
 		const historicApi = await this.api.at(hash);
 		return historicApi.query.staking.currentEraPointsEarned();
-
 	}
 
 	/**
