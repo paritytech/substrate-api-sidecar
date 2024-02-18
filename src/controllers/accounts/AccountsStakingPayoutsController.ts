@@ -139,12 +139,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		if (apiAt.query.staking.activeEra) {
 			const activeEraOption = await apiAt.query.staking.activeEra();
 			if (activeEraOption.isNone) {
-				let historicActiveEra = await apiAt.query.staking.currentEra();
+				const historicActiveEra = await apiAt.query.staking.currentEra();
 				if (historicActiveEra.isNone) {
 					throw new InternalServerError('ActiveEra is None when Some was expected');
-
 				} else {
-					activeEra = historicActiveEra.unwrap().toNumber()
+					activeEra = historicActiveEra.unwrap().toNumber();
 				}
 			} else {
 				activeEra = activeEraOption.unwrap().index.toNumber();
