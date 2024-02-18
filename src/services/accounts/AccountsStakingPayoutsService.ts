@@ -59,9 +59,16 @@ type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, PalletStakingExposur
  */
 type IErasGeneral = [IAdjustedDeriveEraExposure, PalletStakingEraRewardPoints | EraPoints, Option<BalanceOf>];
 
+/**
+ * Index of the validator for eras previous to 518
+ */
 interface ValidatorIndex {
 	[x: string]: number;
 }
+/**
+ * Adapted AdjustedDeriveEraExposure interface for compatibility with eras
+ * previous to 518
+ */
 interface IAdjustedDeriveEraExposure extends DeriveEraExposure {
 	validatorIndex?: ValidatorIndex;
 }
@@ -87,6 +94,10 @@ interface IEraData {
 	eraIndex: EraIndex;
 }
 
+/**
+ * Block information relevant for compatibility with eras previous
+ * to 518
+ */
 interface IBlockInfo {
 	height: string;
 	hash: BlockHash;
@@ -201,10 +212,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	/**
 	 * Fetch general info about eras in the inclusive range `startEra` .. `era`.
 	 *
-	 * @param api `ApiPromise`
-	 * @param hash `BlockHash` to make call at
+	 * @param historicApi Historic api for querying past blocks
 	 * @param startEra first era to get data for
 	 * @param era the last era to get data for
+	 * @param blockNumber block information to ensure compatibility with older eras
 	 */
 	async fetchAllErasGeneral(
 		historicApi: ApiDecoration<'promise'>,
@@ -213,7 +224,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		blockNumber: IBlockInfo,
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
-		let eraEndBlock = Number(blockNumber.height);
+		let nextEraStartBlock = Number(blockNumber.height);
 		let eraDurationInBlocks: number = 0;
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(blockNumber.hash);
 		for (let e = startEra; e <= era; e += 1) {
@@ -228,23 +239,22 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 				allDeriveQuerys.push(eraGeneralTuple);
 			} else {
-				let eraEndBlockHash: BlockHash;
 				// We check if we are in the Kusama chain since currently we have
 				// the block info for the early eras only for Kusama.
 				if (runtimeInfo.specName.toString() === 'kusama') {
 					// Retrieve the last block of the given era in order
 					// to fetch the Rewards at that block.
-					eraEndBlock = kusamaEarlyErasBlockInfo[era].end;
+					nextEraStartBlock = kusamaEarlyErasBlockInfo[era + 1].end;
 				} else {
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
 					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
-				eraEndBlockHash = await this.api.rpc.chain.getBlockHash(eraEndBlock);
+				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
 
-				const blockInfo = await this.api.rpc.chain.getBlock(eraEndBlockHash);
+				const blockInfo = await this.api.rpc.chain.getBlock(nextEraStartBlockHash);
 
 				const allRecords = await historicApi.query.system.events();
 
@@ -259,12 +269,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 							}
 						});
 				});
-				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(eraEndBlockHash);
-				const rewardPromise: Promise<Option<u128>> = new Promise((resolve) => {
+				const points: Promise<EraPoints> = this.fetchHistoricRewardPoints(nextEraStartBlockHash) as Promise<EraPoints>;
+				const rewardPromise: Promise<Option<u128>> = new Promise<Option<u128>>((resolve) => {
 					resolve(reward);
 				});
 				if (runtimeInfo.specName.toString() !== 'kusama') {
-					eraEndBlock = eraEndBlock - eraDurationInBlocks;
+					nextEraStartBlock = nextEraStartBlock - eraDurationInBlocks;
 				}
 
 				const eraGeneralTuple = Promise.all([this.deriveEraExposure(historicApi, eraIndex), points, rewardPromise]);
@@ -283,8 +293,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	/**
 	 * Fetch the commission & staking ledger for each `validatorId` in `deriveErasExposures`.
 	 *
-	 * @param api `ApiPromise`
-	 * @param hash `BlockHash` to make call at
+	 * @param historicApi Historic api for querying past blocks
 	 * @param address address of the _Stash_  account to get the payouts of
 	 * @param startEra first era to get data for
 	 * @param deriveErasExposures exposures per era for `address`
@@ -424,10 +433,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	/**
 	 * Fetch the `commission` and `StakingLedger` of `validatorId`.
 	 *
-	 * @param api
+	 * @param historicApi Historic api for querying past blocks
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * @param era the era to query
-	 * @param hash `BlockHash` to make call at
 	 * @param validatorLedgerCache object mapping validatorId => StakingLedger to limit redundant queries
 	 */
 	private async fetchCommissionAndLedger(
@@ -436,7 +444,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
 	): Promise<ICommissionAndLedger> {
-		let commission;
+		let commission: Perbill;
 		let validatorLedger;
 		let commissionPromise;
 		const ancient: boolean = era < 518;
@@ -489,8 +497,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * The original version uses the base ApiDerive implementation which does not include the ApiDecoration implementation.
 	 * It is required in this version to query older blocks for their historic data.
 	 *
-	 * @param historicApi
-	 * @param eraIndex
+	 * @param historicApi Historic api for querying past blocks
+	 * @param eraIndex index of the era to query
 	 */
 	private async deriveEraExposure(
 		historicApi: ApiDecoration<'promise'>,
@@ -533,8 +541,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 			const validatorId: AccountId[] = [];
 
-			if (validatorIndex) {
-			}
 			validators.map((validator, index) => {
 				validatorIndex[validator.toString()] = index;
 				validatorId.push(validator);
@@ -558,6 +564,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 *
 	 * @param eraRewardPoints
 	 * @param validatorId accountId of a validator's _Stash_  account
+	 * @param validatorIndex index of the validator in relation to the `EraPoints`
+	 * array
 	 * */
 	private extractTotalValidatorRewardPoints(
 		eraRewardPoints: PalletStakingEraRewardPoints | EraPoints,
@@ -588,7 +596,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 *
 	 * @param address address of the _Stash_  account to get the exposure of behind `validatorId`
 	 * @param validatorId accountId of a validator's _Stash_  account
-	 * @param deriveEraExposure
+	 * @param deriveEraExposure result of deriveEraExposure
 	 */
 	private extractExposure(address: string, validatorId: string, deriveEraExposure: IAdjustedDeriveEraExposure) {
 		// Get total stake behind validator
