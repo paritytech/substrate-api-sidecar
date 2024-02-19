@@ -250,8 +250,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				// We check if we are in the Kusama chain since currently we have
 				// the block info for the early eras only for Kusama.
 				if (runtimeInfo.specName.toString() === 'kusama') {
-					// Retrieve the last block of the given era in order
-					// to fetch the Rewards at that block.
+					// Retrieve the first block of the era following the given era in order
+					// to fetch the `Rewards` event at that block.
 					nextEraStartBlock = earlyErasBlockInfo[era + 1].start;
 				} else {
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
@@ -353,7 +353,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			};
 		}
 		if (erasValidatorRewardOption.isNone && eraIndex.toNumber() !== 0) {
-			console.log(eraIndex.toHuman())
 			const event = eraIndex.toNumber() > 517 ? 'ErasValidatorReward' : 'Reward';
 			return {
 				message: `No ${event} for the era ${eraIndex.toString()}`,
