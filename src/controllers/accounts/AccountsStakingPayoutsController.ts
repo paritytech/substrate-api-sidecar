@@ -23,6 +23,8 @@ import { BadRequest, InternalServerError } from 'http-errors';
 
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
+import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
+import kusamaEarlyErasBlockInfo from '../../services/accounts/kusamaEarlyErasBlockInfo.json';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -99,9 +101,15 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		{ params: { address }, query: { depth, era, unclaimedOnly, at } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
-		const apiAt = await this.api.at(hash);
+		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+		let hash = await this.getHashFromAt(at);
+		let apiAt = await this.api.at(hash);
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+		if (currentEra < 518) {
+			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
+			hash = await this.getHashFromAt(eraStartBlock.toString());
+			apiAt = await this.api.at(hash);
+		}
 
 		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;
 
@@ -152,8 +160,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			const sessionIndex = await apiAt.query.session.currentIndex();
 			const idx = sessionIndex.toNumber() % 6;
 			// https://substrate.stackexchange.com/a/2026/1786
-			if (idx > 0 || currentEra < 518) {
-				activeEra = currentEra !== 0 ? currentEra : 1;
+			if (idx > 0 || currentEra === 0) {
+				activeEra = currentEra;
 			} else {
 				activeEra = currentEra - 1;
 			}

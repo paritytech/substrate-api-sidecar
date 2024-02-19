@@ -103,7 +103,7 @@ interface IBlockInfo {
 	hash: BlockHash;
 }
 
-interface IEarlyErasBlockInfo {
+export interface IEarlyErasBlockInfo {
 	[era: string]: {
 		start: number;
 		end: number;
@@ -133,6 +133,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
 		const { number } = await api.rpc.chain.getHeader(hash);
+
+		const sanitizedEra = era < 0 ? 0 : era;
 
 		/**
 		 * Given https://github.com/polkadot-js/api/issues/5232,
@@ -168,10 +170,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		};
 
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
-		const startEra = Math.max(0, era - (depth - 1));
+		const startEra = Math.max(0, sanitizedEra - (depth - 1));
 
 		// Fetch general data about the era
-		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, era, at);
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, sanitizedEra, at);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
@@ -252,14 +254,17 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				if (runtimeInfo.specName.toString() === 'kusama') {
 					// Retrieve the first block of the era following the given era in order
 					// to fetch the `Rewards` event at that block.
-					nextEraStartBlock = earlyErasBlockInfo[era + 1].start;
+					nextEraStartBlock = era === 0 ? earlyErasBlockInfo[era + 1].start : earlyErasBlockInfo[era].start;
 				} else {
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
 					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
 				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
-				const currentEraEndBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era].end);
+				const currentEraEndBlockHash: BlockHash =
+					era === 0
+						? await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[0].end)
+						: await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era - 1].end);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
 
