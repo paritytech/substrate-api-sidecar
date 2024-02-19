@@ -152,8 +152,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			const sessionIndex = await apiAt.query.session.currentIndex();
 			const idx = sessionIndex.toNumber() % 6;
 			// https://substrate.stackexchange.com/a/2026/1786
-			if (idx > 0) {
-				activeEra = currentEra;
+			if (idx > 0 || currentEra < 518) {
+				activeEra = currentEra !== 0 ? currentEra : 1;
 			} else {
 				activeEra = currentEra - 1;
 			}

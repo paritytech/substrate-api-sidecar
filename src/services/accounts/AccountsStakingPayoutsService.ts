@@ -352,14 +352,17 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				message: `${address} has no nominations for the era ${eraIndex.toString()}`,
 			};
 		}
-		if (erasValidatorRewardOption.isNone) {
+		if (erasValidatorRewardOption.isNone && eraIndex.toNumber() !== 0) {
+			console.log(eraIndex.toHuman())
+			const event = eraIndex.toNumber() > 517 ? 'ErasValidatorReward' : 'Reward';
 			return {
-				message: `No ErasValidatorReward for the era ${eraIndex.toString()}`,
+				message: `No ${event} for the era ${eraIndex.toString()}`,
 			};
 		}
 
 		const totalEraRewardPoints = eraRewardPoints.total;
-		const totalEraPayout = erasValidatorRewardOption.unwrap();
+		const totalEraPayout =
+			eraIndex.toNumber() !== 0 ? erasValidatorRewardOption.unwrap() : this.api.registry.createType('BalanceOf', 0);
 		const calcPayout = CalcPayout.from_params(totalEraRewardPoints.toNumber(), totalEraPayout.toString(10));
 
 		// Iterate through validators that this nominator backs and calculate payouts for the era
