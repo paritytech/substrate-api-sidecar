@@ -246,7 +246,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					historicApi.query.staking.erasRewardPoints(eraIndex),
 					historicApi.query.staking.erasValidatorReward(eraIndex),
 				]);
-
 				allDeriveQuerys.push(eraGeneralTuple);
 			} else {
 				// We check if we are in the Kusama chain since currently we have

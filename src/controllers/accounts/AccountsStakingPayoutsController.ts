@@ -64,7 +64,7 @@ import AbstractController from '../AbstractController';
  *
  * Description:
  * Returns payout information for the last specified eras. If specifying both
- * the depth and era query params, this endpoint will return information for
+ * the depth and era query params, this endpoint will return i1372997nformation for
  * (era - depth) through era. (i.e. if depth=5 and era=20 information will be
  * returned for eras 16 through 20). N.B. You cannot query eras less then
  * `current_era - HISTORY_DEPTH`.
@@ -105,7 +105,11 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let hash = await this.getHashFromAt(at);
 		let apiAt = await this.api.at(hash);
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+		if (currentEra < 518 && depth !== undefined) {
+			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+		}
 		if (currentEra < 518) {
+			// const edgeCase = currentEra === 519 || currentEra === 518;  edgeCase ? earlyErasBlockInfo[518].start :
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
 			apiAt = await this.api.at(hash);
