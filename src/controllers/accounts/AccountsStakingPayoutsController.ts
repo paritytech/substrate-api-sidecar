@@ -105,6 +105,9 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let hash = await this.getHashFromAt(at);
 		let apiAt = await this.api.at(hash);
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+		if (currentEra < 518 && depth !== undefined) {
+			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+		}
 		if (currentEra < 518) {
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
