@@ -108,7 +108,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		if (currentEra <= 519 && depth !== undefined) {
 			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
 		} else if (currentEra <= 519 && era !== undefined) {
-			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
 		}
 		let sanitizedDepth: string | undefined;
 		if (depth) {
