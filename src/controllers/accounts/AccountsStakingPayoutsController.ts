@@ -107,6 +107,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 		if (currentEra <= 519 && depth !== undefined) {
 			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+		} else if (currentEra <= 519 && era !== undefined) {
+			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
 		}
 		let sanitizedDepth: string | undefined;
 		if (depth) {
@@ -168,7 +170,10 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			const sessionIndex = await apiAt.query.session.currentIndex();
 			const idx = sessionIndex.toNumber() % 6;
 			// https://substrate.stackexchange.com/a/2026/1786
-			if (idx > 0 || currentEra === 0) {
+			if (currentEra < 518) {
+				activeEra = currentEra;
+			}
+			else if (idx > 0) {
 				activeEra = currentEra;
 			} else {
 				activeEra = currentEra - 1;
