@@ -115,7 +115,6 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
 		}
 		if (currentEra < 518) {
-			// const edgeCase = currentEra === 519 || currentEra === 518;  edgeCase ? earlyErasBlockInfo[518].start :
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
 			apiAt = await this.api.at(hash);
