@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.5.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.1..v17.5.2) (2024-03-01)
+
+### Fix
+
+- fix: add more historic support for staking-payouts ([#1397](https://github.com/paritytech/substrate-api-sidecar/pull/1397)) ([b1e84be](https://github.com/paritytech/substrate-api-sidecar/commit/b1e84beb5c4883ca78981a064f4dc4f80fac0f97))
+
+### Chore
+
+- chore(deps): bump ip from 1.1.8 to 1.1.9 in /docs ([#1399](https://github.com/paritytech/substrate-api-sidecar/pull/1399)) ([b7480fb](https://github.com/paritytech/substrate-api-sidecar/commit/b7480fbc7826b27f8732824a43e4f8b094fd9d50))
+- chore(deps): bump ip from 2.0.0 to 2.0.1 ([#1398](https://github.com/paritytech/substrate-api-sidecar/pull/1398)) ([d751ba8](https://github.com/paritytech/substrate-api-sidecar/commit/d751ba8518074bd28cbffc94c91156fa45652350))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10500
+- Kusama v10500
+- Westend v10500
+
 ## [17.5.1](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.0..v17.5.1)(2024-02-07)
 
 ### Fix
