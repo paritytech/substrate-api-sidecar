@@ -171,8 +171,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			// https://substrate.stackexchange.com/a/2026/1786
 			if (currentEra < 518) {
 				activeEra = currentEra;
-			}
-			else if (idx > 0) {
+			} else if (idx > 0) {
 				activeEra = currentEra;
 			} else {
 				activeEra = currentEra - 1;
