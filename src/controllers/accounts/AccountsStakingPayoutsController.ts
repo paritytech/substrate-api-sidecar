@@ -16,13 +16,15 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
-import { Option } from '@polkadot/types';
+import { Option, u32 } from '@polkadot/types';
 import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
+import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
+import kusamaEarlyErasBlockInfo from '../../services/accounts/kusamaEarlyErasBlockInfo.json';
 import { IAddressParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
@@ -99,9 +101,24 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		{ params: { address }, query: { depth, era, unclaimedOnly, at } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
-		const apiAt = await this.api.at(hash);
+		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+		let hash = await this.getHashFromAt(at);
+		let apiAt = await this.api.at(hash);
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+		if (currentEra <= 519 && depth !== undefined) {
+			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+		} else if (currentEra <= 519 && era !== undefined) {
+			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
+		}
+		let sanitizedDepth: string | undefined;
+		if (depth) {
+			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
+		}
+		if (currentEra < 518) {
+			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
+			hash = await this.getHashFromAt(eraStartBlock.toString());
+			apiAt = await this.api.at(hash);
+		}
 
 		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;
 
@@ -110,7 +127,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			await this.service.fetchAccountStakingPayout(
 				hash,
 				address,
-				this.verifyAndCastOr('depth', depth, 1) as number,
+				this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
 				eraArg,
 				unclaimedOnlyArg,
 				currentEra,
@@ -120,17 +137,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	};
 
 	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
-		const [activeEraOption, currentEraMaybeOption] = await Promise.all([
-			apiAt.query.staking.activeEra(),
-			apiAt.query.staking.currentEra(),
-		]);
-
-		if (activeEraOption.isNone) {
-			throw new InternalServerError('ActiveEra is None when Some was expected');
-		}
-		const activeEra = activeEraOption.unwrap().index.toNumber();
-
-		let currentEra;
+		let currentEra: number;
+		const currentEraMaybeOption = (await apiAt.query.staking.currentEra()) as u32 & Option<u32>;
 		if (currentEraMaybeOption instanceof Option) {
 			if (currentEraMaybeOption.isNone) {
 				throw new InternalServerError('CurrentEra is None when Some was expected');
@@ -142,6 +150,32 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			currentEra = (currentEraMaybeOption as BN).toNumber();
 		} else {
 			throw new InternalServerError('Query for current_era returned a non-processable result.');
+		}
+
+		let activeEra;
+		if (apiAt.query.staking.activeEra) {
+			const activeEraOption = await apiAt.query.staking.activeEra();
+			if (activeEraOption.isNone) {
+				const historicActiveEra = await apiAt.query.staking.currentEra();
+				if (historicActiveEra.isNone) {
+					throw new InternalServerError('ActiveEra is None when Some was expected');
+				} else {
+					activeEra = historicActiveEra.unwrap().toNumber();
+				}
+			} else {
+				activeEra = activeEraOption.unwrap().index.toNumber();
+			}
+		} else {
+			const sessionIndex = await apiAt.query.session.currentIndex();
+			const idx = sessionIndex.toNumber() % 6;
+			// https://substrate.stackexchange.com/a/2026/1786
+			if (currentEra < 518) {
+				activeEra = currentEra;
+			} else if (idx > 0) {
+				activeEra = currentEra;
+			} else {
+				activeEra = currentEra - 1;
+			}
 		}
 
 		if (era !== undefined && era > activeEra - 1) {
