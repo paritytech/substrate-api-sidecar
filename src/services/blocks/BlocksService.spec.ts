@@ -21,7 +21,7 @@ import type { GenericExtrinsic } from '@polkadot/types';
 import type { GenericCall } from '@polkadot/types/generic';
 import type { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -126,7 +126,7 @@ type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array | undef
 
 // LRU cache used to cache blocks
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const cache = new LRU({ max: 2 }) as LRU<string, IBlock>;
+const cache = new LRUCache({ max: 2 }) as LRUCache<string, IBlock>;
 
 // Block Service
 const blocksService = new BlocksService(mockApi, 0, cache, new QueryFeeDetailsCache(null, null));
@@ -373,7 +373,12 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new LRU({ max: 2 }), new QueryFeeDetailsCache(null, null));
+			const blocksService = new BlocksService(
+				mockApi,
+				0,
+				new LRUCache({ max: 2 }),
+				new QueryFeeDetailsCache(null, null),
+			);
 			expect(await blocksService['isFinalizedBlock'](mockApi, blockNumber, finalizedHead, finalizedHead, true)).toEqual(
 				true,
 			);

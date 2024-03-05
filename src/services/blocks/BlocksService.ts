@@ -41,7 +41,7 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
-import LRU from 'lru-cache';
+import type { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
@@ -96,7 +96,7 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRU<string, IBlock>,
+		private blockStore: LRUCache<string, IBlock>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
 		super(api);
