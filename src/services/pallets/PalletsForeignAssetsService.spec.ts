@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -65,9 +65,9 @@ describe('PalletsForeignAssetsService', () => {
 						},
 						foreignAssetMetadata: {
 							deposit: '0',
-							name: '0x',
-							symbol: '0x',
-							decimals: '0',
+							name: '0x506f6c6b61646f74',
+							symbol: '0x444f54',
+							decimals: '10',
 							isFrozen: false,
 						},
 					},

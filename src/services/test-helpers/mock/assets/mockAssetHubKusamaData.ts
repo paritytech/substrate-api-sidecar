@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -86,9 +86,9 @@ export const foreignAssetsInfo = [foreignAssetInfoDot, foreignAssetInfoTknr];
 const foreignAssetMetadataDot = (): AssetMetadata => {
 	const responseObj = {
 		deposit: balanceOfDot,
-		name: assetHubKusamaRegistryV9430.createType('Bytes', ''),
-		symbol: assetHubKusamaRegistryV9430.createType('Bytes', ''),
-		decimals: assetHubKusamaRegistryV9430.createType('u8', 0),
+		name: assetHubKusamaRegistryV9430.createType('Bytes', 'Polkadot'),
+		symbol: assetHubKusamaRegistryV9430.createType('Bytes', 'DOT'),
+		decimals: assetHubKusamaRegistryV9430.createType('u8', 10),
 		isFrozen: falseBool,
 	};
 
@@ -110,7 +110,7 @@ const foreignAssetMetadataTknr = (): AssetMetadata => {
 export const foreignAssetsMetadata = (location: string): AssetMetadata => {
 	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(/(\d),/g, '$1');
 
-	if (foreignAssetMultiLocationStr == '{"parents":2"interior":{"x1":{"globalConsensus":{"polkadot":null}}}}')
+	if (foreignAssetMultiLocationStr == '{"parents":"2","interior":{"X1":{"GlobalConsensus":"Polkadot"}}}')
 		return foreignAssetMetadataDot();
 	else {
 		return foreignAssetMetadataTknr();

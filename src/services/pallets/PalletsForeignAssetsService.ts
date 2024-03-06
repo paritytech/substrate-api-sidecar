@@ -18,7 +18,6 @@ import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
 import { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
-import { InternalServerError } from 'http-errors';
 
 import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -57,25 +56,10 @@ export class PalletsForeignAssetsService extends AbstractService {
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
 				const foreignAssetMultiLocationStr = JSON.stringify(foreignAssetData[0]).replace(/(\d),/g, '$1');
-				const XcmV3MultiLocation = ['StagingXcmV3MultiLocation', 'XcmV3MultiLocation'];
-				let foreignAssetMultiLocation;
-				try {
-					foreignAssetMultiLocation = api.registry.createType(
-						XcmV3MultiLocation[0],
-						JSON.parse(foreignAssetMultiLocationStr),
-					);
-				} catch (e) {
-					try {
-						foreignAssetMultiLocation = api.registry.createType(
-							XcmV3MultiLocation[1],
-							JSON.parse(foreignAssetMultiLocationStr),
-						);
-					} catch (e) {
-						throw new InternalServerError(`Failed to create MultiLocation type for Foreign Asset`);
-					}
-				}
 
-				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(foreignAssetMultiLocation);
+				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(
+					JSON.parse(foreignAssetMultiLocationStr),
+				);
 
 				if (assetInfo.isSome) {
 					items.push({
