@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -56,12 +56,10 @@ export class PalletsForeignAssetsService extends AbstractService {
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
 				const foreignAssetMultiLocationStr = JSON.stringify(foreignAssetData[0]).replace(/(\d),/g, '$1');
-				const foreignAssetMultiLocation = api.registry.createType(
-					'XcmV3MultiLocation',
+
+				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(
 					JSON.parse(foreignAssetMultiLocationStr),
 				);
-
-				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(foreignAssetMultiLocation);
 
 				if (assetInfo.isSome) {
 					items.push({
