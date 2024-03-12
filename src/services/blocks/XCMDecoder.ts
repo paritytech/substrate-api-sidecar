@@ -26,8 +26,10 @@ import type {
 	IUpwardMessage,
 } from '../../types/responses';
 import type { ISanitizedBackedCandidate } from '../../types/responses/SanitizedBackedCandidate';
+import type { ISanitizedBackedCandidateHorizontalMessage } from '../../types/responses/SanitizedBackedCandidatesHorizontalMessage';
 import type { ISanitizedParachainInherentData } from '../../types/responses/SanitizedParachainInherentData';
 import type { ISanitizedParentInherentData } from '../../types/responses/SanitizedParentInherentData';
+import { IOption } from '../../types/util';
 
 enum ChainType {
 	Relay = 'Relay',
@@ -63,23 +65,28 @@ export class XcmDecoder {
 				const frame = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
-					if (paraId !== undefined) {
-						data.backedCandidates.forEach((candidate) => {
-							if (candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
-								const msg_decoded = this.checkUpwardMsg(api, candidate);
-								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-									xcmMessages.upwardMessages?.push(msg_decoded);
-								}
+					data.backedCandidates.forEach((candidate) => {
+						if (paraId === undefined || candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
+							const horizontalMsgs: IHorizontalMessage[] = this.checkMessagesInRelay(
+								api,
+								candidate,
+								'horizontal',
+								paraId,
+							) as IHorizontalMessage[];
+							if (horizontalMsgs != null && horizontalMsgs.length > 0) {
+								horizontalMsgs.forEach((msg: IHorizontalMessage) => {
+									xcmMessages.horizontalMessages?.push(msg);
+								});
 							}
-						});
-					} else {
-						data.backedCandidates.forEach((candidate) => {
-							const msg_decoded = this.checkUpwardMsg(api, candidate);
-							if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-								xcmMessages.upwardMessages?.push(msg_decoded);
+
+							const upwardMsgs = this.checkMessagesInRelay(api, candidate, 'upward', paraId);
+							if (upwardMsgs != null && upwardMsgs.length > 0) {
+								upwardMsgs.forEach((msg: IUpwardMessage) => {
+									xcmMessages.upwardMessages?.push(msg);
+								});
 							}
-						});
-					}
+						}
+					});
 				}
 			});
 		} else if (this.curChainType === ChainType.Parachain) {
@@ -100,25 +107,17 @@ export class XcmDecoder {
 						}
 					});
 					data.horizontalMessages.forEach((msgs, index) => {
-						msgs.forEach((msg) => {
-							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-							let horizontalMessage: IHorizontalMessage;
-							if (paraId !== undefined && index.toString() === paraId.toString()) {
-								horizontalMessage = {
+						if (paraId === undefined || index.toString() === paraId.toString()) {
+							msgs.forEach((msg) => {
+								const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
+								const horizontalMessage: IHorizontalMessage = {
 									sentAt: msg.sentAt,
 									paraId: index,
 									data: xcmMessageDecoded,
 								};
 								xcmMessages.horizontalMessages?.push(horizontalMessage);
-							} else if (paraId === undefined) {
-								horizontalMessage = {
-									sentAt: msg.sentAt,
-									paraId: index,
-									data: xcmMessageDecoded,
-								};
-								xcmMessages.horizontalMessages?.push(horizontalMessage);
-							}
-						});
+							});
+						}
 					});
 				}
 			});
@@ -126,18 +125,49 @@ export class XcmDecoder {
 		return xcmMessages;
 	}
 
-	private checkUpwardMsg(api: ApiPromise, candidate: ISanitizedBackedCandidate): IUpwardMessage | undefined {
-		if (candidate.candidate.commitments.upwardMessages.length > 0) {
-			const xcmMessage = candidate.candidate.commitments.upwardMessages;
-			const paraId: string = candidate.candidate.descriptor.paraId;
-			const xcmMessageDecoded: string = this.decodeMsg(api, xcmMessage[0]);
-			const upwardMessage = {
-				paraId: paraId,
-				data: xcmMessageDecoded[0],
-			};
-			return upwardMessage;
+	private checkMessagesInRelay(
+		api: ApiPromise,
+		candidate: ISanitizedBackedCandidate,
+		messageType: 'upward' | 'horizontal',
+		paraId?: number,
+	): IOption<IUpwardMessage[] | IHorizontalMessage[]> {
+		const messages: IUpwardMessage[] | IHorizontalMessage[] = [];
+		const xcmMessages =
+			messageType === 'upward'
+				? candidate.candidate.commitments.upwardMessages
+				: candidate.candidate.commitments.horizontalMessages;
+
+		if (xcmMessages.length > 0) {
+			const paraIdCandidate: string = candidate.candidate.descriptor.paraId.toString();
+
+			xcmMessages.forEach((msg: string | ISanitizedBackedCandidateHorizontalMessage) => {
+				const msgData: string =
+					messageType === 'upward'
+						? (msg as string)
+						: (msg as ISanitizedBackedCandidateHorizontalMessage).data.slice(1);
+				const xcmMessageDecoded: string = this.decodeMsg(api, msgData);
+
+				if (paraId === undefined || paraIdCandidate === paraId.toString()) {
+					if (messageType === 'upward') {
+						const upwardMessage: IUpwardMessage = {
+							paraId: paraIdCandidate,
+							data: xcmMessageDecoded,
+						};
+						(messages as IUpwardMessage[]).push(upwardMessage);
+					} else {
+						const horizontalMessage: IHorizontalMessage = {
+							sentAt: (msg as ISanitizedBackedCandidateHorizontalMessage).recipient.toString(),
+							paraId: paraIdCandidate,
+							data: xcmMessageDecoded,
+						};
+						(messages as IHorizontalMessage[]).push(horizontalMessage);
+					}
+				}
+			});
+
+			return messages;
 		} else {
-			return undefined;
+			return null;
 		}
 	}
 

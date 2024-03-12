@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,13 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ISanitizedBackedCandidateHorizontalMessage } from './SanitizedBackedCandidatesHorizontalMessage';
+import { polkadotRegistryV1000001 } from '../../../test-helpers/registries';
+import block19772575 from './data/block19772575.json';
 
-export interface ISanitizedBackedCandidateCommitments {
-	upwardMessages: string[];
-	horizontalMessages: ISanitizedBackedCandidateHorizontalMessage[];
-	newValidationCode: string | undefined;
-	headData: `0x${string}`;
-	processedDownwardMessages: string;
-	hrmpWatermark: string;
-}
+/**
+ * Mock for Polkadot Block #19772575.
+ */
+export const mockBlock19772575 = polkadotRegistryV1000001.createType('Block', block19772575);
+
+/**
+ * BlockHash for Polkadot Block #19772575.
+ */
+export const blockHash19772575 = polkadotRegistryV1000001.createType(
+	'BlockHash',
+	'0xbbb99b1d43d6c1885e09806e4d8fd3beaa30a87046397e8dfc44ced45ed735a9',
+);

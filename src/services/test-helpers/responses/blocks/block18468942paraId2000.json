@@ -4174,70 +4174,72 @@
     "upwardMessages": [
       {
         "paraId": "2000",
-        "data": {
-          "v3": [
-            {
-              "withdrawAsset": [
-                {
-                  "id": {
-                    "concrete": {
-                      "parents": "0",
-                      "interior": {
-                        "here": null
+        "data": [
+          {
+            "v3": [
+              {
+                "withdrawAsset": [
+                  {
+                    "id": {
+                      "concrete": {
+                        "parents": "0",
+                        "interior": {
+                          "here": null
+                        }
                       }
+                    },
+                    "fun": {
+                      "fungible": "1545324000000"
+                    }
+                  }
+                ]
+              },
+              {
+                "clearOrigin": null
+              },
+              {
+                "buyExecution": {
+                  "fees": {
+                    "id": {
+                      "concrete": {
+                        "parents": "0",
+                        "interior": {
+                          "here": null
+                        }
+                      }
+                    },
+                    "fun": {
+                      "fungible": "1545324000000"
                     }
                   },
-                  "fun": {
-                    "fungible": "1545324000000"
+                  "weightLimit": {
+                    "unlimited": null
                   }
                 }
-              ]
-            },
-            {
-              "clearOrigin": null
-            },
-            {
-              "buyExecution": {
-                "fees": {
-                  "id": {
-                    "concrete": {
-                      "parents": "0",
-                      "interior": {
-                        "here": null
-                      }
+              },
+              {
+                "depositAsset": {
+                  "assets": {
+                    "wild": {
+                      "allCounted": "1"
                     }
                   },
-                  "fun": {
-                    "fungible": "1545324000000"
-                  }
-                },
-                "weightLimit": {
-                  "unlimited": null
-                }
-              }
-            },
-            {
-              "depositAsset": {
-                "assets": {
-                  "wild": {
-                    "allCounted": "1"
-                  }
-                },
-                "beneficiary": {
-                  "parents": "0",
-                  "interior": {
-                    "x1": {
-                      "accountId32": {
-                        "network": null,
-                        "id": "0xe9f6bf9df0432c796efbdbe87703df9f743e6c34902ee8208206925790f65ea1"
+                  "beneficiary": {
+                    "parents": "0",
+                    "interior": {
+                      "x1": {
+                        "accountId32": {
+                          "network": null,
+                          "id": "0xe9f6bf9df0432c796efbdbe87703df9f743e6c34902ee8208206925790f65ea1"
+                        }
                       }
                     }
                   }
                 }
               }
-            }
-          ]
-        }
+            ]
+          }
+        ]
       }
     ]
   }
