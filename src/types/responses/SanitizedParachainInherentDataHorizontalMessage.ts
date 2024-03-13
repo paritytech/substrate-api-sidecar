@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IDownwardMessage } from './BlockXCMMessages';
-import { ISanitizedParachainInherentDataHorizontalMessage } from './SanitizedParachainInherentDataHorizontalMessage';
-import { ISanitizedParachainValidationData } from './SanitizedParachainValidationData';
-
-export interface ISanitizedParachainInherentData {
-	validationData: ISanitizedParachainValidationData;
-	relayChainState: `0x${string}`[];
-	downwardMessages: IDownwardMessage[];
-	horizontalMessages: Map<string, ISanitizedParachainInherentDataHorizontalMessage[]>;
+export interface ISanitizedParachainInherentDataHorizontalMessage {
+	sentAt: string;
+	data: string;
 }

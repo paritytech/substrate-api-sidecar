@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export interface IUpwardMessage {
-	paraId: string;
+	originParaId: string;
 	data: string;
 }
 
@@ -25,14 +25,20 @@ export interface IDownwardMessage {
 	data: string;
 }
 
-export interface IHorizontalMessage {
+export interface IHorizontalMessageInParachain {
 	sentAt: string;
-	paraId: string;
+	originParaId: string;
+	data: string;
+}
+
+export interface IHorizontalMessageInRelayChain {
+	originParaId: string;
+	destinationParaId: string;
 	data: string;
 }
 
 export interface IMessages {
-	horizontalMessages?: IHorizontalMessage[];
+	horizontalMessages?: (IHorizontalMessageInParachain | IHorizontalMessageInRelayChain)[];
 	downwardMessages?: IDownwardMessage[];
 	upwardMessages?: IUpwardMessage[];
 }

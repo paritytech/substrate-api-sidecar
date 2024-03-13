@@ -21,7 +21,8 @@ import type {
 	IDownwardMessage,
 	IExtrinsic,
 	IFrameMethod,
-	IHorizontalMessage,
+	IHorizontalMessageInParachain,
+	IHorizontalMessageInRelayChain,
 	IMessages,
 	IUpwardMessage,
 } from '../../types/responses';
@@ -67,19 +68,19 @@ export class XcmDecoder {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
 					data.backedCandidates.forEach((candidate) => {
 						if (paraId === undefined || candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
-							const horizontalMsgs: IHorizontalMessage[] = this.checkMessagesInRelay(
+							const horizontalMsgs: IHorizontalMessageInRelayChain[] = this.checkMessagesInRelay(
 								api,
 								candidate,
 								'horizontal',
 								paraId,
-							) as IHorizontalMessage[];
+							) as IHorizontalMessageInRelayChain[];
 							if (horizontalMsgs != null && horizontalMsgs.length > 0) {
-								horizontalMsgs.forEach((msg: IHorizontalMessage) => {
+								horizontalMsgs.forEach((msg: IHorizontalMessageInRelayChain) => {
 									xcmMessages.horizontalMessages?.push(msg);
 								});
 							}
 
-							const upwardMsgs = this.checkMessagesInRelay(api, candidate, 'upward', paraId);
+							const upwardMsgs = this.checkMessagesInRelay(api, candidate, 'upward', paraId) as IUpwardMessage[];
 							if (upwardMsgs != null && upwardMsgs.length > 0) {
 								upwardMsgs.forEach((msg: IUpwardMessage) => {
 									xcmMessages.upwardMessages?.push(msg);
@@ -110,9 +111,9 @@ export class XcmDecoder {
 						if (paraId === undefined || index.toString() === paraId.toString()) {
 							msgs.forEach((msg) => {
 								const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-								const horizontalMessage: IHorizontalMessage = {
+								const horizontalMessage: IHorizontalMessageInParachain = {
 									sentAt: msg.sentAt,
-									paraId: index,
+									originParaId: index,
 									data: xcmMessageDecoded,
 								};
 								xcmMessages.horizontalMessages?.push(horizontalMessage);
@@ -130,8 +131,8 @@ export class XcmDecoder {
 		candidate: ISanitizedBackedCandidate,
 		messageType: 'upward' | 'horizontal',
 		paraId?: number,
-	): IOption<IUpwardMessage[] | IHorizontalMessage[]> {
-		const messages: IUpwardMessage[] | IHorizontalMessage[] = [];
+	): IOption<IUpwardMessage[] | IHorizontalMessageInRelayChain[]> {
+		const messages: IUpwardMessage[] | IHorizontalMessageInRelayChain[] = [];
 		const xcmMessages =
 			messageType === 'upward'
 				? candidate.candidate.commitments.upwardMessages
@@ -150,17 +151,17 @@ export class XcmDecoder {
 				if (paraId === undefined || paraIdCandidate === paraId.toString()) {
 					if (messageType === 'upward') {
 						const upwardMessage: IUpwardMessage = {
-							paraId: paraIdCandidate,
+							originParaId: paraIdCandidate,
 							data: xcmMessageDecoded,
 						};
 						(messages as IUpwardMessage[]).push(upwardMessage);
 					} else {
-						const horizontalMessage: IHorizontalMessage = {
-							sentAt: (msg as ISanitizedBackedCandidateHorizontalMessage).recipient.toString(),
-							paraId: paraIdCandidate,
+						const horizontalMessage: IHorizontalMessageInRelayChain = {
+							originParaId: paraIdCandidate,
+							destinationParaId: (msg as ISanitizedBackedCandidateHorizontalMessage).recipient.toString(),
 							data: xcmMessageDecoded,
 						};
-						(messages as IHorizontalMessage[]).push(horizontalMessage);
+						(messages as IHorizontalMessageInRelayChain[]).push(horizontalMessage);
 					}
 				}
 			});

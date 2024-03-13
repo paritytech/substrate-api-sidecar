@@ -4366,8 +4366,8 @@
   "decodedXcmMsgs": {
     "horizontalMessages": [
       {
-        "sentAt": "2034",
-        "paraId": "2006",
+        "originParaId": "2006",
+        "destinationParaId": "2034",
         "data": [
           {
             "v3": [
@@ -4445,8 +4445,8 @@
         ]
       },
       {
-        "sentAt": "2004",
-        "paraId": "2104",
+        "originParaId": "2104",
+        "destinationParaId": "2004",
         "data": [
           {
             "v3": [
