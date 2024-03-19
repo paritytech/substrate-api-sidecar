@@ -67,7 +67,7 @@ export class XcmDecoder {
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
 					data.backedCandidates.forEach((candidate) => {
-						if (paraId === undefined || candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
+						if (!paraId || candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
 							const horizontalMsgs: IHorizontalMessageInRelayChain[] = this.checkMessagesInRelay(
 								api,
 								candidate,
@@ -108,7 +108,7 @@ export class XcmDecoder {
 						}
 					});
 					data.horizontalMessages.forEach((msgs, index) => {
-						if (paraId === undefined || index.toString() === paraId.toString()) {
+						if (!paraId || index.toString() === paraId.toString()) {
 							msgs.forEach((msg) => {
 								const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
 								const horizontalMessage: IHorizontalMessageInParachain = {
@@ -148,13 +148,19 @@ export class XcmDecoder {
 						: (msg as ISanitizedBackedCandidateHorizontalMessage).data.slice(1);
 				const xcmMessageDecoded: string = this.decodeMsg(api, msgData);
 
-				if (paraId === undefined || paraIdCandidate === paraId.toString()) {
+				if (!paraId || paraIdCandidate === paraId.toString()) {
 					if (messageType === 'upward') {
-						const upwardMessage: IUpwardMessage = {
-							originParaId: paraIdCandidate,
-							data: xcmMessageDecoded,
-						};
-						(messages as IUpwardMessage[]).push(upwardMessage);
+						if (messages.length > 0 && messages[messages.length - 1].originParaId === paraIdCandidate) {
+							messages[messages.length - 1].data = messages[messages.length - 1].data.concat(
+								xcmMessageDecoded,
+							) as unknown as string;
+						} else {
+							const upwardMessage: IUpwardMessage = {
+								originParaId: paraIdCandidate,
+								data: xcmMessageDecoded,
+							};
+							(messages as IUpwardMessage[]).push(upwardMessage);
+						}
 					} else {
 						const horizontalMessage: IHorizontalMessageInRelayChain = {
 							originParaId: paraIdCandidate,
