@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -104,17 +104,19 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
 		let hash = await this.getHashFromAt(at);
 		let apiAt = await this.api.at(hash);
+		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(hash);
+		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
-		if (currentEra <= 519 && depth !== undefined) {
+		if (currentEra <= 519 && depth !== undefined && isKusama) {
 			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
-		} else if (currentEra <= 519 && era !== undefined) {
+		} else if (currentEra <= 519 && era !== undefined && isKusama) {
 			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
 		}
 		let sanitizedDepth: string | undefined;
-		if (depth) {
+		if (depth && isKusama) {
 			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
 		}
-		if (currentEra < 518) {
+		if (currentEra < 518 && isKusama) {
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
 			apiAt = await this.api.at(hash);
