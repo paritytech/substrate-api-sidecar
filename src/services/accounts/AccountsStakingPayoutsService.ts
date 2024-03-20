@@ -480,18 +480,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				commission = (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap();
 			}
 		} else {
-			commissionPromise = (ancient && specName.toLowerCase() === 'kusama')
-				? historicApi.query.staking.validators(validatorId)
-				: historicApi.query.staking.erasValidatorPrefs(era, validatorId);
+			commissionPromise =
+				ancient && specName.toLowerCase() === 'kusama'
+					? historicApi.query.staking.validators(validatorId)
+					: historicApi.query.staking.erasValidatorPrefs(era, validatorId);
 
 			const [prefs, validatorControllerOption] = await Promise.all([
 				commissionPromise,
 				historicApi.query.staking.bonded(validatorId),
 			]);
 
-			commission = (ancient && specName.toLowerCase() === 'kusama')
-				? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
-				: prefs.commission.unwrap();
+			commission =
+				ancient && specName.toLowerCase() === 'kusama'
+					? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
+					: prefs.commission.unwrap();
 
 			if (validatorControllerOption.isNone) {
 				return {
