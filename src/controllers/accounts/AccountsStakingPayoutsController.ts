@@ -113,7 +113,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
 		}
 		let sanitizedDepth: string | undefined;
-		if (depth) {
+		if (depth && isKusama) {
 			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
 		}
 		if (currentEra < 518 && isKusama) {
