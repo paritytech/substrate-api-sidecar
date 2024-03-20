@@ -144,7 +144,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(at.hash);
-		const specName = runtimeInfo.specName.toString();
+		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 
 		/**
 		 * Given https://github.com/polkadot-js/api/issues/5232,
@@ -157,7 +157,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			historyDepth = historicApi.consts.staking.historyDepth;
 		} else if (historicApi.query.staking.historyDepth) {
 			historyDepth = await historicApi.query.staking.historyDepth<u32>();
-		} else if (currentEra < 518 && specName.toLowerCase() === 'kusama') {
+		} else if (currentEra < 518 && isKusama) {
 			historyDepth = api.registry.createType('u32', 0);
 		}
 
@@ -175,7 +175,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		}
 
 		// Fetch general data about the era
-		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, sanitizedEra, at, specName);
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, sanitizedEra, at, isKusama);
 
 		// With the general data, we can now fetch the commission of each validator `address` nominates
 		const allErasCommissions = await this.fetchAllErasCommissions(
@@ -184,7 +184,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			startEra,
 			// Create an array of `DeriveEraExposure`
 			allErasGeneral.map((eraGeneral) => eraGeneral[0]),
-			specName,
+			isKusama,
 		).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(address, err);
 		});
@@ -217,7 +217,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		return {
 			at,
-			erasPayouts: allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, specName)),
+			erasPayouts: allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama)),
 		};
 	}
 
@@ -234,7 +234,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		startEra: number,
 		era: number,
 		blockNumber: IBlockInfo,
-		specName: string,
+		isKusama: boolean,
 	): Promise<IErasGeneral[]> {
 		const allDeriveQuerys: Promise<IErasGeneral>[] = [];
 		let nextEraStartBlock: number = Number(blockNumber.height);
@@ -253,7 +253,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else {
 				// We check if we are in the Kusama chain since currently we have
 				// the block info for the early eras only for Kusama.
-				if (specName.toLowerCase() === 'kusama') {
+				if (isKusama) {
 					// Retrieve the first block of the era following the given era in order
 					// to fetch the `Rewards` event at that block.
 					nextEraStartBlock = era === 0 ? earlyErasBlockInfo[era + 1].start : earlyErasBlockInfo[era].start;
@@ -289,7 +289,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const rewardPromise: Promise<Option<u128>> = new Promise<Option<u128>>((resolve) => {
 					resolve(reward);
 				});
-				if (specName.toLowerCase() !== 'kusama') {
+				if (!isKusama) {
 					nextEraStartBlock = nextEraStartBlock - eraDurationInBlocks;
 				}
 
@@ -319,7 +319,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		address: string,
 		startEra: number,
 		deriveErasExposures: IAdjustedDeriveEraExposure[],
-		specName: string,
+		isKusama: boolean,
 	): Promise<ICommissionAndLedger[][]> {
 		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: PalletStakingStakingLedger } = {};
@@ -334,7 +334,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 
 			const singleEraCommissions = nominatedExposures.map(({ validatorId }) =>
-				this.fetchCommissionAndLedger(historicApi, validatorId, currEra, validatorLedgerCache, specName),
+				this.fetchCommissionAndLedger(historicApi, validatorId, currEra, validatorLedgerCache, isKusama),
 			);
 
 			return Promise.all(singleEraCommissions);
@@ -354,7 +354,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		address: string,
 		unclaimedOnly: boolean,
 		{ deriveEraExposure, eraRewardPoints, erasValidatorRewardOption, exposuresWithCommission, eraIndex }: IEraData,
-		specName: string,
+		isKusama: boolean,
 	): IEraPayouts | { message: string } {
 		if (!exposuresWithCommission) {
 			return {
@@ -413,7 +413,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				} else {
 					continue;
 				}
-			} else if (eraIndex.toNumber() < 518 && specName.toLowerCase() === 'kusama') {
+			} else if (eraIndex.toNumber() < 518 && isKusama) {
 				indexOfEra = eraIndex.toNumber();
 			} else {
 				continue;
@@ -463,7 +463,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		validatorId: string,
 		era: number,
 		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
-		specName: string,
+		isKusama: boolean,
 	): Promise<ICommissionAndLedger> {
 		let commission: Perbill;
 		let validatorLedger;
@@ -481,7 +481,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 		} else {
 			commissionPromise =
-				ancient && specName.toLowerCase() === 'kusama'
+				ancient && isKusama
 					? historicApi.query.staking.validators(validatorId)
 					: historicApi.query.staking.erasValidatorPrefs(era, validatorId);
 
@@ -491,7 +491,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			]);
 
 			commission =
-				ancient && specName.toLowerCase() === 'kusama'
+				ancient && isKusama
 					? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
 					: prefs.commission.unwrap();
 

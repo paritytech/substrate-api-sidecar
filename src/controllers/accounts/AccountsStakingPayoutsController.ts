@@ -105,17 +105,18 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let hash = await this.getHashFromAt(at);
 		let apiAt = await this.api.at(hash);
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(hash);
+		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
-		if (currentEra <= 519 && depth !== undefined && runtimeInfo.specName.toString() === 'kusama') {
+		if (currentEra <= 519 && depth !== undefined && isKusama) {
 			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
-		} else if (currentEra <= 519 && era !== undefined && runtimeInfo.specName.toString() === 'kusama') {
+		} else if (currentEra <= 519 && era !== undefined && isKusama) {
 			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
 		}
 		let sanitizedDepth: string | undefined;
 		if (depth) {
 			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
 		}
-		if (currentEra < 518 && runtimeInfo.specName.toString() === 'kusama') {
+		if (currentEra < 518 && isKusama) {
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
 			apiAt = await this.api.at(hash);
