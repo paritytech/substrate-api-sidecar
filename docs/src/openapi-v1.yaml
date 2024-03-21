@@ -2901,6 +2901,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/Block"
         - $ref: "#/components/schemas/DecodedXcmMsgs"
+      description: Block information that includes the decoded XCM messages if any are found in the queried block.
+        If not, the decodedXcmMsgs object will be returned with three empty arrays corresponding to each direction,
+        horizontalMessages, downwardMessages, upwardMessages.
     BondedPool:
       type: object
       properties:
@@ -3008,7 +3011,7 @@ components:
         Object with three arrays, one for every XCM direction. The arrays are populated or left empty based on the direction 
         of the current XCM message that is being decoded. The XCM messages can be Upward and/or Horizontal (`in transit`) messages when
         connected to a Relay chain. When connected to a Parachain, the messages can be Downward and/or Horizontal. One or more messages
-        can be present in a single block. In case of multiple messages from the same paraIds (originParaId and destinationParaId), 
+        can be present in a single block. In case of multiple messages from the same paraIds (originParaId and/or destinationParaId),
         the messages will be shown under the field `data`. 
     DecodedXcmMsgsHorizontalMessagesInRelay:
       type: array
