@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Feat
 
-- feat: add in-transit XCM msgs in blocks endpoint ([#1412](https://github.com/paritytech/substrate-api-sidecar/pull/1412)) ([6028086](https://github.com/paritytech/substrate-api-sidecar/commit/6028086ee3e236476c7b7ce5a8db4efe50875e7d))
+- feat!: add in-transit XCM msgs in blocks endpoint ([#1412](https://github.com/paritytech/substrate-api-sidecar/pull/1412)) ([6028086](https://github.com/paritytech/substrate-api-sidecar/commit/6028086ee3e236476c7b7ce5a8db4efe50875e7d))
   - NOTE: This PR introduces breaking changes in the blocks endpoint when decoded XCM messages are enabled. More specifically:
      1. The structure of the Upward Messages response has changed
      1. `paraId` was renamed to `originParaId`
