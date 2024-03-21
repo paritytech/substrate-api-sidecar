@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Option } from '@polkadot/types/codec';
-import {
-	PalletAssetConversionNativeOrAssetId,
+import type {
+	FrameSupportTokensFungibleUnionOfNativeOrWithId,
 	PalletAssetConversionPoolInfo,
-	XcmV3MultiLocation,
+	StagingXcmV3MultiLocation,
 } from '@polkadot/types/lookup';
 import { Codec } from '@polkadot/types/types';
 import type { ITuple } from '@polkadot/types-codec/types';
@@ -33,8 +33,8 @@ export interface ILiquidityId {
 export interface ILiquidityPoolsInfo {
 	reserves: ITuple<
 		[
-			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
-			PalletAssetConversionNativeOrAssetId | XcmV3MultiLocation,
+			FrameSupportTokensFungibleUnionOfNativeOrWithId | StagingXcmV3MultiLocation,
+			FrameSupportTokensFungibleUnionOfNativeOrWithId | StagingXcmV3MultiLocation,
 		]
 	>;
 	lpToken: Option<PalletAssetConversionPoolInfo>;

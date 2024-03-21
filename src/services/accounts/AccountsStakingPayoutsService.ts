@@ -36,9 +36,9 @@ import type {
 } from '@polkadot/types/interfaces';
 import type {
 	PalletStakingEraRewardPoints,
-	PalletStakingExposure,
 	PalletStakingStakingLedger,
 	PalletStakingValidatorPrefs,
+	SpStakingExposure,
 } from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
@@ -51,7 +51,7 @@ import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
  * Copyright 2024 via polkadot-js/api
  * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
  */
-type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, PalletStakingExposure][];
+type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, SpStakingExposure][];
 
 /**
  * General information about an era, in tuple form because we initially get it
@@ -571,13 +571,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				validatorId.push(validator);
 			});
 
-			let eraExposure: PalletStakingExposure = {} as PalletStakingExposure;
+			let eraExposure: SpStakingExposure = {} as SpStakingExposure;
 
 			for (const validator of validatorId) {
 				const storageKey = {
 					args: [eraIndex, validator],
 				} as unknown as StorageKey<[EraIndex, AccountId]>;
-				eraExposure = (await historicApi.query.staking.stakers(validator)) as unknown as PalletStakingExposure;
+				eraExposure = (await historicApi.query.staking.stakers(validator)) as unknown as SpStakingExposure;
 				storageKeys.push([storageKey, eraExposure]);
 			}
 		}

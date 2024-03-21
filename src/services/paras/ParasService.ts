@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
-import { PolkadotPrimitivesV5CandidateReceipt } from '@polkadot/types/lookup';
+import { PolkadotPrimitivesV6CandidateReceipt } from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -410,7 +410,7 @@ export class ParasService extends AbstractService {
 		const paraHeaders: IParasHeaders = {};
 		paraInclusion.forEach(({ event }) => {
 			const { data } = event;
-			const paraData = data[0] as PolkadotPrimitivesV5CandidateReceipt;
+			const paraData = data[0] as PolkadotPrimitivesV6CandidateReceipt;
 			const headerData = data[1] as Bytes;
 			const { paraHead, paraId } = paraData.descriptor;
 			const header = api.createType('Header', headerData);
