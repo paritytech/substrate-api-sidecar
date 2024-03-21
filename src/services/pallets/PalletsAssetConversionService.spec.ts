@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import { StorageEntryBase } from '@polkadot/api/types';
 import { StorageKey } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import type { Hash } from '@polkadot/types/interfaces';
-import { XcmV3MultiLocation } from '@polkadot/types/lookup';
+import type { StagingXcmV3MultiLocation } from '@polkadot/types/lookup';
 import { Codec } from '@polkadot/types/types';
 import type { ITuple } from '@polkadot/types-codec/types';
 import { Observable } from 'rxjs';
@@ -35,16 +35,16 @@ import { PalletsAssetConversionService } from './PalletsAssetConversionService';
 
 const assetHubWestendApi = createApiWithAugmentations(assetHubWestendMetadataRpcV9435);
 
-type StorageEntryFunction = (arg1: [XcmV3MultiLocation, XcmV3MultiLocation]) => Observable<Codec>;
+type StorageEntryFunction = (arg1: [StagingXcmV3MultiLocation, StagingXcmV3MultiLocation]) => Observable<Codec>;
 
 function key(
-	multilocation: [XcmV3MultiLocation, XcmV3MultiLocation],
+	multilocation: [StagingXcmV3MultiLocation, StagingXcmV3MultiLocation],
 	storageEntry: StorageEntryBase<'promise', StorageEntryFunction>,
-): StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> {
+): StorageKey<[ITuple<[StagingXcmV3MultiLocation, StagingXcmV3MultiLocation]>]> {
 	const native = multilocation[0];
 	const asset = multilocation[1];
-	const id: [XcmV3MultiLocation, XcmV3MultiLocation] = [native, asset];
-	const key: StorageKey<[ITuple<[XcmV3MultiLocation, XcmV3MultiLocation]>]> = new StorageKey(
+	const id: [StagingXcmV3MultiLocation, StagingXcmV3MultiLocation] = [native, asset];
+	const key: StorageKey<[ITuple<[StagingXcmV3MultiLocation, StagingXcmV3MultiLocation]>]> = new StorageKey(
 		assetHubWestendRegistryV9435,
 		storageEntry.key(id),
 	);

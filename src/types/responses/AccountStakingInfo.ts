@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { RewardDestination } from '@polkadot/types/interfaces';
+import type { Option } from '@polkadot/types/codec';
 import type { AccountId } from '@polkadot/types/interfaces/runtime';
-import type { PalletStakingStakingLedger } from '@polkadot/types/lookup';
+import type { PalletStakingRewardDestination, PalletStakingStakingLedger } from '@polkadot/types/lookup';
 
 import { IAt } from '.';
 
 export interface IAccountStakingInfo {
 	at: IAt;
 	controller: AccountId;
-	rewardDestination: RewardDestination;
+	rewardDestination: Option<PalletStakingRewardDestination>;
 	numSlashingSpans: number;
 	staking: PalletStakingStakingLedger;
 }
