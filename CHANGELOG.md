@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [18.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.2..v18.0.0) (2024-03-21)
 
-### Feat
+### Breaking Changes
 
 - feat!: add in-transit XCM msgs in blocks endpoint ([#1412](https://github.com/paritytech/substrate-api-sidecar/pull/1412)) ([6028086](https://github.com/paritytech/substrate-api-sidecar/commit/6028086ee3e236476c7b7ce5a8db4efe50875e7d))
   - NOTE: This PR introduces breaking changes in the blocks endpoint when decoded XCM messages are enabled. More specifically:
