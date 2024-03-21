@@ -21,13 +21,16 @@ import type {
 	IDownwardMessage,
 	IExtrinsic,
 	IFrameMethod,
-	IHorizontalMessage,
+	IHorizontalMessageInParachain,
+	IHorizontalMessageInRelayChain,
 	IMessages,
 	IUpwardMessage,
 } from '../../types/responses';
 import type { ISanitizedBackedCandidate } from '../../types/responses/SanitizedBackedCandidate';
+import type { ISanitizedBackedCandidateHorizontalMessage } from '../../types/responses/SanitizedBackedCandidatesHorizontalMessage';
 import type { ISanitizedParachainInherentData } from '../../types/responses/SanitizedParachainInherentData';
 import type { ISanitizedParentInherentData } from '../../types/responses/SanitizedParentInherentData';
+import { IOption } from '../../types/util';
 
 enum ChainType {
 	Relay = 'Relay',
@@ -63,23 +66,28 @@ export class XcmDecoder {
 				const frame = extrinsic.method as IFrameMethod;
 				if (frame.pallet === 'paraInherent' && frame.method === 'enter') {
 					const data = extrinsic.args.data as ISanitizedParentInherentData;
-					if (paraId !== undefined) {
-						data.backedCandidates.forEach((candidate) => {
-							if (candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
-								const msg_decoded = this.checkUpwardMsg(api, candidate);
-								if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-									xcmMessages.upwardMessages?.push(msg_decoded);
-								}
+					data.backedCandidates.forEach((candidate) => {
+						if (!paraId || candidate.candidate.descriptor.paraId.toString() === paraId.toString()) {
+							const horizontalMsgs: IHorizontalMessageInRelayChain[] = this.checkMessagesInRelay(
+								api,
+								candidate,
+								'horizontal',
+								paraId,
+							) as IHorizontalMessageInRelayChain[];
+							if (horizontalMsgs != null && horizontalMsgs.length > 0) {
+								horizontalMsgs.forEach((msg: IHorizontalMessageInRelayChain) => {
+									xcmMessages.horizontalMessages?.push(msg);
+								});
 							}
-						});
-					} else {
-						data.backedCandidates.forEach((candidate) => {
-							const msg_decoded = this.checkUpwardMsg(api, candidate);
-							if (msg_decoded != undefined && Object.keys(msg_decoded).length > 0) {
-								xcmMessages.upwardMessages?.push(msg_decoded);
+
+							const upwardMsgs = this.checkMessagesInRelay(api, candidate, 'upward', paraId) as IUpwardMessage[];
+							if (upwardMsgs != null && upwardMsgs.length > 0) {
+								upwardMsgs.forEach((msg: IUpwardMessage) => {
+									xcmMessages.upwardMessages?.push(msg);
+								});
 							}
-						});
-					}
+						}
+					});
 				}
 			});
 		} else if (this.curChainType === ChainType.Parachain) {
@@ -100,25 +108,17 @@ export class XcmDecoder {
 						}
 					});
 					data.horizontalMessages.forEach((msgs, index) => {
-						msgs.forEach((msg) => {
-							const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
-							let horizontalMessage: IHorizontalMessage;
-							if (paraId !== undefined && index.toString() === paraId.toString()) {
-								horizontalMessage = {
+						if (!paraId || index.toString() === paraId.toString()) {
+							msgs.forEach((msg) => {
+								const xcmMessageDecoded = this.decodeMsg(api, msg.data.slice(1));
+								const horizontalMessage: IHorizontalMessageInParachain = {
 									sentAt: msg.sentAt,
-									paraId: index,
+									originParaId: index,
 									data: xcmMessageDecoded,
 								};
 								xcmMessages.horizontalMessages?.push(horizontalMessage);
-							} else if (paraId === undefined) {
-								horizontalMessage = {
-									sentAt: msg.sentAt,
-									paraId: index,
-									data: xcmMessageDecoded,
-								};
-								xcmMessages.horizontalMessages?.push(horizontalMessage);
-							}
-						});
+							});
+						}
 					});
 				}
 			});
@@ -126,18 +126,55 @@ export class XcmDecoder {
 		return xcmMessages;
 	}
 
-	private checkUpwardMsg(api: ApiPromise, candidate: ISanitizedBackedCandidate): IUpwardMessage | undefined {
-		if (candidate.candidate.commitments.upwardMessages.length > 0) {
-			const xcmMessage = candidate.candidate.commitments.upwardMessages;
-			const paraId: string = candidate.candidate.descriptor.paraId;
-			const xcmMessageDecoded: string = this.decodeMsg(api, xcmMessage[0]);
-			const upwardMessage = {
-				paraId: paraId,
-				data: xcmMessageDecoded[0],
-			};
-			return upwardMessage;
+	private checkMessagesInRelay(
+		api: ApiPromise,
+		candidate: ISanitizedBackedCandidate,
+		messageType: 'upward' | 'horizontal',
+		paraId?: number,
+	): IOption<IUpwardMessage[] | IHorizontalMessageInRelayChain[]> {
+		const messages: IUpwardMessage[] | IHorizontalMessageInRelayChain[] = [];
+		const xcmMessages =
+			messageType === 'upward'
+				? candidate.candidate.commitments.upwardMessages
+				: candidate.candidate.commitments.horizontalMessages;
+
+		if (xcmMessages.length > 0) {
+			const paraIdCandidate: string = candidate.candidate.descriptor.paraId.toString();
+
+			xcmMessages.forEach((msg: string | ISanitizedBackedCandidateHorizontalMessage) => {
+				const msgData: string =
+					messageType === 'upward'
+						? (msg as string)
+						: (msg as ISanitizedBackedCandidateHorizontalMessage).data.slice(1);
+				const xcmMessageDecoded: string = this.decodeMsg(api, msgData);
+
+				if (!paraId || paraIdCandidate === paraId.toString()) {
+					if (messageType === 'upward') {
+						if (messages.length > 0 && messages[messages.length - 1].originParaId === paraIdCandidate) {
+							messages[messages.length - 1].data = messages[messages.length - 1].data.concat(
+								xcmMessageDecoded,
+							) as unknown as string;
+						} else {
+							const upwardMessage: IUpwardMessage = {
+								originParaId: paraIdCandidate,
+								data: xcmMessageDecoded,
+							};
+							(messages as IUpwardMessage[]).push(upwardMessage);
+						}
+					} else {
+						const horizontalMessage: IHorizontalMessageInRelayChain = {
+							originParaId: paraIdCandidate,
+							destinationParaId: (msg as ISanitizedBackedCandidateHorizontalMessage).recipient.toString(),
+							data: xcmMessageDecoded,
+						};
+						(messages as IHorizontalMessageInRelayChain[]).push(horizontalMessage);
+					}
+				}
+			});
+
+			return messages;
 		} else {
-			return undefined;
+			return null;
 		}
 	}
 

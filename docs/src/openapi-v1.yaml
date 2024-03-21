@@ -693,17 +693,17 @@ paths:
           type: boolean
       - name: decodedXcmMsgs
         in: query
-        description: When set to `true`, this will show the decoded XCM messages within
-          the extrinsics of the requested block.
+        description: When set to `true`, this will show the decoded XCM messages within the extrinsics 
+          of the requested block.
         required: false
         schema:
           type: boolean
           default: false
       - name: paraId
         in: query
-        description: When it is set, this will return only the decoded XCM messages
-          for the specified paraId/parachain Id. To activate this functionality,
-          ensure that the `decodedXcmMsgs` parameter is set to true.
+        description: When it is set, this will return only the decoded XCM messages for the specified
+          origin Parachain Id (originParaId). To activate this functionality, ensure that the `decodedXcmMsgs`
+          parameter is set to true.
         required: false
         schema:
           type: string
@@ -843,17 +843,17 @@ paths:
           default: false
       - name: decodedXcmMsgs
         in: query
-        description: When set to `true`, this will show the decoded XCM messages within
-          the extrinsics of the requested block.
+        description: When set to `true`, this will show the decoded XCM messages within the extrinsics 
+          of the requested block.
         required: false
         schema:
           type: boolean
           default: false
       - name: paraId
         in: query
-        description: When it is set, this will return only the decoded XCM messages
-          for the specified paraId/parachain Id. To activate this functionality,
-          ensure that the `decodedXcmMsgs` parameter is set to true.
+        description: When it is set, this will return only the decoded XCM messages for the specified
+          origin Parachain Id (originParaId). To activate this functionality, ensure that the `decodedXcmMsgs`
+          parameter is set to true.
         required: false
         schema:
           type: string
@@ -2901,6 +2901,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/Block"
         - $ref: "#/components/schemas/DecodedXcmMsgs"
+      description: Block information that includes the decoded XCM messages if any are found in the queried block.
+        If not, the decodedXcmMsgs object will be returned with three empty arrays corresponding to each direction,
+        horizontalMessages, downwardMessages, upwardMessages.
     BondedPool:
       type: object
       properties:
@@ -2967,22 +2970,16 @@ components:
         decodedXcmMsgs:
           type: object
           properties:
-            horizontalMessages:
-              type: array
-              items:
-                type: object
-                properties:
-                  sentAt:
-                    type: string
-                    format: unsignedInteger
-                    description: Represents the block number that the XCM message was sent at on the relay chain.
-                  paraId:
-                    type: string
-                    format: unsignedInteger
-                    description: The paraId that the specific XCM message was sent from.
-                  data:
-                    type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
+            horizontalMessages: {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInRelay"
+                },
+                {
+                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInParachain"
+                }
+              ]
+            }
             downwardMessages:
               type: array
               items:
@@ -2997,21 +2994,63 @@ components:
                     description: Represents the XCM message.
                   data:
                     type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
+                    description: The decoded instructions included in the XCM message and their respective fields.
             upwardMessages:
               type: array
               items:
                 type: object
                 properties:
-                  paraId:
+                  originParaId:
                     type: string
                     format: unsignedInteger
-                    description: The paraId that the specific XCM message was sent from.
+                    description: The Parachain id that the specific XCM message was sent from.
                   data:
                     type: object
-                    description: The decoded instructions and their respective fields that are included in the XCM message.
-      description: Object with three arrays, one for every XCM direction. The arrays are populated or left
-        empty based on the direction of the current XCM message that is being decoded.
+                    description: The decoded instructions included in the XCM message and their respective fields.
+      description: 
+        Object with three arrays, one for every XCM direction. The arrays are populated or left empty based on the direction 
+        of the current XCM message that is being decoded. The XCM messages can be Upward and/or Horizontal (`in transit`) messages when
+        connected to a Relay chain. When connected to a Parachain, the messages can be Downward and/or Horizontal. One or more messages
+        can be present in a single block. In case of multiple messages from the same paraIds (originParaId and/or destinationParaId),
+        the messages will be shown under the field `data`. 
+    DecodedXcmMsgsHorizontalMessagesInRelay:
+      type: array
+      items:
+        type: object
+        properties:
+          originParaId:
+            type: string
+            format: unsignedInteger
+            description: The Parachain id that the specific XCM message was sent from.
+          destinationParaId:
+            type: string
+            format: unsignedInteger
+            description: The Parachain id that the specific XCM message was sent to.
+          data:
+            type: object
+            description: The decoded instructions included in the XCM message and their respective fields.
+        description: Array that includes the Horizontal (`in transit`) messages when we are connected to a Relay Chain.
+          Each block can contain one or more messages. If multiple messages share the same origin and destination paraId,
+          they will be displayed within the data field.
+    DecodedXcmMsgsHorizontalMessagesInParachain:
+      type: array
+      items:
+        type: object
+        properties:
+          sentAt:
+            type: string
+            format: unsignedInteger
+            description: Represents the block number that the XCM message was sent at on the relay chain.
+          originParaId:
+            type: string
+            format: unsignedInteger
+            description: The Parachain id that the specific XCM message was sent from.
+          data:
+            type: object
+            description: The decoded instructions included in the XCM message and their respective fields.
+        description: Array that includes the Horizontal Messages when we are connected to a Parachain.
+          Each block can contain one or more messages. If multiple messages originate from the same parachain (originParaId),
+          they will be displayed within the data field.
     DigestItem:
       type: object
       properties:

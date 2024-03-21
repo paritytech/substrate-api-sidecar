@@ -41,8 +41,10 @@ import {
 	blockHash3356195,
 	blockHash6202603,
 	blockHash18468942,
+	blockHash19772575,
 	defaultMockApi,
 	mockApiBlock18468942,
+	mockApiBlock19772575,
 	mockAssetHubKusamaApiBlock3356195,
 	mockAssetHubKusamaApiBlock6202603,
 	mockForkedBlock789629,
@@ -52,16 +54,19 @@ import { events789629 } from '../test-helpers/mock/data/events789629Hex';
 import { events3356195 } from '../test-helpers/mock/data/events3356195Hex';
 import { events6202603 } from '../test-helpers/mock/data/events6202603Hex';
 import { events18468942 } from '../test-helpers/mock/data/events18468942Hex';
+import { events19772575 } from '../test-helpers/mock/data/events19772575Hex';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { validators3356195Hex } from '../test-helpers/mock/data/validators3356195Hex';
 import { validators6202603Hex } from '../test-helpers/mock/data/validators6202603Hex';
 import { validators18468942Hex } from '../test-helpers/mock/data/validators18468942Hex';
+import { validators19772575Hex } from '../test-helpers/mock/data/validators19772575Hex';
 import { parseNumberOrThrow } from '../test-helpers/mock/parseNumberOrThrow';
 import block789629Extrinsic from '../test-helpers/responses/blocks/block789629Extrinsic.json';
 import block3356195Response from '../test-helpers/responses/blocks/block3356195.json';
 import block6202603pId2087Response from '../test-helpers/responses/blocks/block6202603paraId2087.json';
 import block18468942Response from '../test-helpers/responses/blocks/block18468942.json';
 import block18468942pId2000Response from '../test-helpers/responses/blocks/block18468942paraId2000.json';
+import block19772575Response from '../test-helpers/responses/blocks/block19772575.json';
 import blocks789629Response from '../test-helpers/responses/blocks/blocks789629.json';
 import blocks789629Raw from '../test-helpers/responses/blocks/blocks789629Raw.json';
 import { BlocksService } from './BlocksService';
@@ -766,6 +771,82 @@ describe('BlocksService', () => {
 			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
+		});
+
+		it('Should give back two decoded horizontal XCM messages (with different origin & destination paraId) that are `in transit` in Polkadot Relay block 19772575', async () => {
+			// Reset LRU cache
+			cache.clear();
+
+			// fetchBlock options
+			const options = {
+				eventDocs: true,
+				extrinsicDocs: true,
+				checkFinalized: false,
+				queryFinalizedHead: false,
+				omitFinalizedTag: false,
+				noFees: false,
+				checkDecodedXcm: true,
+				paraId: undefined,
+			};
+
+			const validatorsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<ValidatorId>', validators19772575Hex));
+
+			const eventsAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<EventRecord>', events19772575));
+
+			const nextFeeMultiplierAt = (_hash: Hash) =>
+				Promise.resolve().then(() => polkadotRegistryV1000001.createType('Fixed128', 1000000000));
+
+			const mockHistoricApiXCM = {
+				registry: polkadotRegistryV1000001,
+				call: {
+					transactionPaymentApi: {},
+				},
+				consts: {
+					transactionPayment: {
+						transactionByteFee: polkadotRegistryV1000001.createType('Balance', 1000000),
+						weightToFee: [
+							{
+								coeffFrac: polkadotRegistryV1000001.createType('Perbill', 80000000),
+								coeffInteger: polkadotRegistryV1000001.createType('Balance', 0),
+								degree: polkadotRegistryV1000001.createType('u8', 1),
+								negative: false,
+							},
+						],
+					},
+					system: {
+						extrinsicBaseWeight: polkadotRegistryV1000001.createType('u64', 125000000),
+					},
+				},
+				query: {
+					session: {
+						validators: validatorsAt,
+					},
+					system: {
+						events: eventsAt,
+					},
+					transactionPayment: {
+						nextFeeMultiplier: nextFeeMultiplierAt,
+					},
+				},
+			} as unknown as ApiDecoration<'promise'>;
+
+			const mockApiXCM = {
+				...mockApiBlock19772575,
+				query: {
+					transactionPayment: {
+						nextFeeMultiplier: { at: nextFeeMultiplierAt },
+					},
+				},
+				at: (_hash: Hash) => mockHistoricApiXCM,
+			} as unknown as ApiPromise;
+
+			// Block Service
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const block = await blocksServiceXCM.fetchBlock(blockHash19772575, mockHistoricApiXCM, options);
+
+			expect(sanitizeNumbers(block)).toMatchObject(block19772575Response);
 		});
 	});
 });
