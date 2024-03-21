@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.2..v18.0.0) (2024-03-21)
+
+### Breaking Changes
+
+- feat!: add in-transit XCM msgs in blocks endpoint ([#1412](https://github.com/paritytech/substrate-api-sidecar/pull/1412)) ([6028086](https://github.com/paritytech/substrate-api-sidecar/commit/6028086ee3e236476c7b7ce5a8db4efe50875e7d))
+  - NOTE: This PR introduces breaking changes in the blocks endpoint when decoded XCM messages are enabled. More specifically:
+     1. The structure of the Upward Messages response has changed
+     1. `paraId` was renamed to `originParaId`
+
+### Fix
+
+- fix: add Kusama chain check in historic blocks ([#1415](https://github.com/paritytech/substrate-api-sidecar/pull/1415)) ([cfbcddd](https://github.com/paritytech/substrate-api-sidecar/commit/cfbcddd3e1019949dc3bb9fb12e420bde9af47bf))
+- fix: multilocation type in pallets/foreign-assets ([#1408](https://github.com/paritytech/substrate-api-sidecar/pull/1408)) ([b7136d0](https://github.com/paritytech/substrate-api-sidecar/commit/b7136d0a8442532f9a4b5896ef061df6b870db03))
+
+### Chore
+
+- fix(deps): update pjs deps, and fixing types ([#1416](https://github.com/paritytech/substrate-api-sidecar/pull/1416)) ([b5eded8](https://github.com/paritytech/substrate-api-sidecar/commit/b5eded8909afb533d023073a5cdf1f230c9cfe06))
+- chore(deps): bump follow-redirects from 1.15.5 to 1.15.6 in /docs ([#1414](https://github.com/paritytech/substrate-api-sidecar/pull/1414)) ([e20f782](https://github.com/paritytech/substrate-api-sidecar/commit/e20f78249ce7e70aaa90a985cb375b8f39db2cda))
+- chore(deps): update non-pjs deps ([#1407](https://github.com/paritytech/substrate-api-sidecar/pull/1407)) ([96c9f11](https://github.com/paritytech/substrate-api-sidecar/commit/96c9f11d7c4142c6f8a145eb932fb650941ade50))
+
+## Compatibility
+
+Tested against:
+- Polkadot v10800
+- Kusama v10800
+- Westend v10800
+
 ## [17.5.2](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.1..v17.5.2) (2024-03-01)
 
 ### Fix
