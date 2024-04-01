@@ -115,6 +115,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let sanitizedDepth: string | undefined;
 		if (depth && isKusama) {
 			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
+		} else if (depth) {
+			sanitizedDepth = depth as string;
 		}
 		if (currentEra < 518 && isKusama) {
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
