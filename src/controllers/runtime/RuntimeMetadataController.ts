@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -23,6 +23,10 @@ import AbstractController from '../AbstractController';
 /**
  * GET the chain's metadata.
  *
+ * Path params:
+ * - (Optional) `metadataVersion`: The specific version of the Metadata to query.
+ *  The input must conform to the `vX` format, where `X` represents the version number (examples: 'v14', 'v15').
+ *
  * Query:
  * - (Optional) `at`: Block hash or height at which to query. If not provided, queries
  *   finalized head.
@@ -41,7 +45,11 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	}
 
 	protected initRoutes(): void {
-		this.safeMountAsyncGetHandlers([['', this.getMetadata]]);
+		this.safeMountAsyncGetHandlers([
+			['/', this.getMetadata],
+			['/versions', this.getMetadataAvailableVersions],
+			['/:metadataVersion', this.getMetadataVersioned],
+		]);
 	}
 
 	/**
@@ -64,5 +72,65 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		RuntimeMetadataController.sanitizedSend(res, metadata, {
 			metadataOpts: { registry, version: metadata.version },
 		});
+	};
+
+	/**
+	 * Get the chain's metadata at a specific version in a decoded, JSON format.
+	 *
+	 * @param _req Express Request
+	 * @param res Express Response
+	 */
+	private getMetadataVersioned: RequestHandler = async (
+		{ params: { metadataVersion }, query: { at } },
+		res,
+	): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		let api;
+		if (at) {
+			api = await this.api.at(hash);
+		} else {
+			api = this.api;
+		}
+
+		// Validation of the `metadataVersion` path parameter.
+		const versionM = metadataVersion.slice(1);
+		const version = this.parseNumberOrThrow(
+			versionM,
+			`Version ${metadataVersion.slice(1).toString()} of metadata provided is not a number.`,
+		);
+
+		const regExPattern = new RegExp('^[vV][0-9]+$');
+		if (regExPattern.test(metadataVersion) === false) {
+			throw new Error(
+				`${metadataVersion} input is not of the expected 'vX' format, where 'X' represents the version number (examples: 'v14', 'v15').`,
+			);
+		}
+
+		const availableVersions = (await api.call.metadata.metadataVersions()).toHuman() as string[];
+		if (version && availableVersions?.includes(version.toString()) === false) {
+			throw new Error(`Version ${version} of Metadata is not available.`);
+		}
+
+		const registry = api ? api.registry : this.api.registry;
+		const metadata = await this.service.fetchMetadataVersioned(hash, version);
+
+		RuntimeMetadataController.sanitizedSend(res, metadata, {
+			metadataOpts: { registry, version },
+		});
+	};
+
+	/**
+	 * Get the available versions of chain's metadata.
+	 *
+	 * @param _req Express Request
+	 * @param res Express Response
+	 */
+	private getMetadataAvailableVersions: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+		const hash = await this.getHashFromAt(at);
+
+		const metadataVersions = await this.service.fetchMetadataVersions(hash);
+
+		RuntimeMetadataController.sanitizedSend(res, metadataVersions, {});
 	};
 }

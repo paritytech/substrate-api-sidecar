@@ -1153,6 +1153,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /transaction/material/v14:
+    get:
+      tags:
+      - transaction
+      summary: Get all the network information needed to construct a transaction offline and
+        the v14 of metadata.
+      description: Returns the material that is universal to constructing any
+        signed transaction offline and the v14 of metadata. Replaces `/tx/artifacts`
+        from versions < v1.0.0.
+      operationId: getTransactionMaterial
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction
+          material.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+          When `metadata` is not inputted, the `metadata` field will be absent.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /transaction/material/v15:
+    get:
+      tags:
+      - transaction
+      summary: Get all the network information needed to construct a transaction offline and
+        the v15 of metadata.
+      description: Returns the material that is universal to constructing any
+        signed transaction offline and the v15 of metadata. Replaces `/tx/artifacts`
+        from versions < v1.0.0.
+      operationId: getTransactionMaterial
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction
+          material.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+          When `metadata` is not inputted, the `metadata` field will be absent.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/assets/{assetId}/asset-info:
     get:
       tags:
@@ -1753,6 +1833,89 @@ paths:
               schema:
                 type: object
                 description: Response is dependent on the runtime metadata contents.
+  /runtime/metadata/v14:
+    get:
+      tags:
+      - runtime
+      summary: Get the version 14 of runtime metadata in decoded, JSON form.
+      description: >-
+       Returns the version 14 of runtime metadata as a JSON object.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response is dependent on the runtime metadata contents.
+  /runtime/metadata/v15:
+    get:
+      tags:
+      - runtime
+      summary: Get the version 15 of runtime metadata in decoded, JSON form.
+      description: >-
+       Returns the version 15 of runtime metadata as a JSON object.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response is dependent on the runtime metadata contents.
+  /runtime/metadata/versions:
+    get:
+      tags:
+      - runtime
+      summary: Get the available versions of runtime metadata.
+      description: >-
+       Returns the available versions of runtime metadata.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata versions at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: An array with the available metadata versions.
   /runtime/code:
     get:
       tags:

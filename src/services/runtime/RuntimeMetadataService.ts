@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,7 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Metadata } from '@polkadot/types';
-import { BlockHash } from '@polkadot/types/interfaces';
+import type { Option } from '@polkadot/types/codec';
+import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
+import { InternalServerError } from 'http-errors';
 
 import { AbstractService } from '../AbstractService';
 
@@ -31,5 +33,50 @@ export class RuntimeMetadataService extends AbstractService {
 		const metadata = await api.rpc.state.getMetadata(hash);
 
 		return metadata;
+	}
+
+	/**
+	 * Fetch the requested version of `Metadata` in decoded JSON form.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
+	async fetchMetadataVersioned(hash: BlockHash, metadataVersion: number): Promise<Metadata> {
+		const { api } = this;
+		const apiAt = await api.at(hash);
+
+		let metadata: Option<OpaqueMetadata> | undefined;
+		let metadataVersioned: Metadata | undefined;
+		try {
+			if (metadataVersion === 14) {
+				metadata = await apiAt.call.metadata.metadataAtVersion(14);
+			} else if (metadataVersion === 15) {
+				metadata = await apiAt.call.metadata.metadataAtVersion(15);
+			}
+			if (metadata) {
+				metadataVersioned = new Metadata(apiAt.registry, metadata.unwrap());
+			} else {
+				throw new Error(`Metadata for version ${metadataVersion} is not available.`);
+			}
+		} catch {
+			throw new InternalServerError(
+				`An error occured while attempting to fetch ${metadataVersion.toString()} metadata.`,
+			);
+		}
+
+		return metadataVersioned;
+	}
+
+	/**
+	 * Fetch the available `Metadata` versions.
+	 *
+	 * @param hash `BlockHash` to make call at
+	 */
+	async fetchMetadataVersions(hash: BlockHash): Promise<string[]> {
+		const { api } = this;
+		const apiAt = await api.at(hash);
+
+		const availableVersions = (await apiAt.call.metadata.metadataVersions()).toHuman() as string[];
+
+		return availableVersions;
 	}
 }
