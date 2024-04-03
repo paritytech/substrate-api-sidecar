@@ -93,29 +93,6 @@ export class TransactionMaterialService extends AbstractService {
 	): Promise<ITransactionMaterial> {
 		const { api } = this;
 
-		if (!metadataArg) {
-			const [header, genesisHash, name, version] = await Promise.all([
-				api.rpc.chain.getHeader(hash),
-				api.rpc.chain.getBlockHash(0),
-				api.rpc.system.chain(),
-				api.rpc.state.getRuntimeVersion(hash),
-			]);
-
-			const at = {
-				hash,
-				height: header.number.toNumber().toString(10),
-			};
-
-			return {
-				at,
-				genesisHash,
-				chainName: name.toString(),
-				specName: version.specName.toString(),
-				specVersion: version.specVersion,
-				txVersion: version.transactionVersion,
-			};
-		}
-
 		const [header, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.chain.getBlockHash(0),
@@ -128,11 +105,7 @@ export class TransactionMaterialService extends AbstractService {
 		let metadata: Option<OpaqueMetadata> | undefined;
 		let metadataVersioned: Metadata | undefined;
 		try {
-			if (metadataVersion === 14) {
-				metadata = await apiAt.call.metadata.metadataAtVersion(14);
-			} else if (metadataVersion === 15) {
-				metadata = await apiAt.call.metadata.metadataAtVersion(15);
-			}
+			metadata = await apiAt.call.metadata.metadataAtVersion(metadataVersion);
 			if (metadata) {
 				metadataVersioned = new Metadata(apiAt.registry, metadata.unwrap());
 			} else {
@@ -149,7 +122,7 @@ export class TransactionMaterialService extends AbstractService {
 			height: header.number.toNumber().toString(10),
 		};
 
-		const formattedMeta = metadataArg === 'scale' ? metadata.toHex() : metadataVersioned.toJSON();
+		const formattedMeta = metadataArg === 'scale' ? metadata.toString() : metadataVersioned.toJSON();
 
 		return {
 			at,

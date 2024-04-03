@@ -47,11 +47,7 @@ export class RuntimeMetadataService extends AbstractService {
 		let metadata: Option<OpaqueMetadata> | undefined;
 		let metadataVersioned: Metadata | undefined;
 		try {
-			if (metadataVersion === 14) {
-				metadata = await apiAt.call.metadata.metadataAtVersion(14);
-			} else if (metadataVersion === 15) {
-				metadata = await apiAt.call.metadata.metadataAtVersion(15);
-			}
+			metadata = await apiAt.call.metadata.metadataAtVersion(metadataVersion);
 			if (metadata) {
 				metadataVersioned = new Metadata(apiAt.registry, metadata.unwrap());
 			} else {
