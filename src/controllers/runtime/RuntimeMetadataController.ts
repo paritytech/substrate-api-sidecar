@@ -94,10 +94,10 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		}
 
 		// Validation of the `metadataVersion` path parameter.
-		const versionM = metadataVersion.slice(1);
+		const metadataV = metadataVersion.slice(1);
 		const version = this.parseNumberOrThrow(
-			versionM,
-			`Version ${metadataVersion.slice(1).toString()} of metadata provided is not a number.`,
+			metadataV,
+			`Version ${metadataV.toString()} of metadata provided is not a number.`,
 		);
 
 		const regExPattern = new RegExp('^[vV][0-9]+$');

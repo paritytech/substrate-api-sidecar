@@ -107,7 +107,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 	}
 
 	/**
-	 * Get the chain's metadata at the reuqested version in JSON or scale format
+	 * Get the chain's metadata at the requested version in JSON or scale format
 	 * depending on the `metadata` query param.
 	 *
 	 * @param _req Express Request
