@@ -1153,6 +1153,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /transaction/material/{metadataVersion}:
+    get:
+      tags:
+      - transaction
+      summary: Get all the network information needed to construct a transaction offline and
+        the version of metadata specified in `metadataVersion`.
+      description: Returns all the materials necessary for constructing any signed transactions
+        offline.
+      operationId: getTransactionMaterialwithVersionedMetadata
+      parameters:
+      - name: metadataVersion
+        in: path
+        description: The version of metadata. The input is expected in a `vX` format, where `X`
+          represents the version number (e.g. `v14`, `v15`). By default, metadata is outputted
+          in 'json' format, unless the `metadata` query parameter is provided, in which case it
+          can be either in 'json' or 'scale' format.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction
+          material.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/assets/{assetId}/asset-info:
     get:
       tags:
@@ -1753,6 +1800,69 @@ paths:
               schema:
                 type: object
                 description: Response is dependent on the runtime metadata contents.
+  /runtime/metadata/{metadataVersion}:
+    get:
+      tags:
+      - runtime
+      summary: Get the requested version of runtime metadata in decoded, JSON form.
+      description: >-
+       Returns the requested version of runtime metadata as a JSON object.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
+      parameters:
+      - name: metadataVersion
+        in: path
+        description: The version of metadata. The input is expected in a `vX` format, where `X`
+          represents the version number (e.g. `v14`, `v15`).
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response is dependent on the runtime metadata contents.
+  /runtime/metadata/versions:
+    get:
+      tags:
+      - runtime
+      summary: Get the available versions of runtime metadata.
+      description: >-
+       Returns the available versions of runtime metadata.
+       Substrate Reference:
+       - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+       - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the metadata versions at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: An array with the available metadata versions.
   /runtime/code:
     get:
       tags:

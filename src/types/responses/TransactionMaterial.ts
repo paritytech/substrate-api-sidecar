@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
-import { u32 } from '@polkadot/types/primitive';
-import { AnyJson } from '@polkadot/types/types';
+import type { BlockHash } from '@polkadot/types/interfaces';
+import type { u32 } from '@polkadot/types/primitive';
+import type { AnyJson } from '@polkadot/types/types';
 
 import { IAt } from '.';
 

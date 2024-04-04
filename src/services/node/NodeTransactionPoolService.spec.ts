@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,29 +18,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
-import {
-	// blockHash789629,
-	defaultMockApi,
-	pendingExtrinsics,
-} from '../test-helpers/mock';
+import { defaultMockApi, pendingExtrinsics } from '../test-helpers/mock';
 import transactionPoolResponse from '../test-helpers/responses/node/transactionPool.json';
 import transactionPoolWithTipResponse from '../test-helpers/responses/node/transactionPoolWithTip.json';
 import transactionPoolWithTipOperationalResponse from '../test-helpers/responses/node/transactionPoolWithTipOperational.json';
 import { NodeTransactionPoolService } from '.';
 
-const nodeTranstionPoolService = new NodeTransactionPoolService(defaultMockApi);
+const nodeTransactionPoolService = new NodeTransactionPoolService(defaultMockApi);
 
 describe('NodeTransactionPoolService', () => {
 	describe('fetchTransactionPool', () => {
 		it('works when ApiPromiseWorks (no txs)', async () => {
-			expect(
-				sanitizeNumbers(
-					await nodeTranstionPoolService.fetchTransactionPool(
-						// blockHash789629
-						false,
-					),
-				),
-			).toStrictEqual({ pool: [] });
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(false))).toStrictEqual({ pool: [] });
 		});
 
 		it('works when ApiPromiseWorks (1 tx)', async () => {
@@ -52,14 +41,9 @@ describe('NodeTransactionPoolService', () => {
 			const pool = defaultMockApi.createType('Vec<Extrinsic>', [ext]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(
-				sanitizeNumbers(
-					await nodeTranstionPoolService.fetchTransactionPool(
-						// blockHash789629
-						false,
-					),
-				),
-			).toStrictEqual(transactionPoolResponse);
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(false))).toStrictEqual(
+				transactionPoolResponse,
+			);
 
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = pendingExtrinsics;
 		});
@@ -74,7 +58,7 @@ describe('NodeTransactionPoolService', () => {
 			const pool = polkadotRegistryV9300.createType('Vec<Extrinsic>', [normalExt]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(true))).toStrictEqual(
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(true))).toStrictEqual(
 				transactionPoolWithTipResponse,
 			);
 
@@ -89,7 +73,7 @@ describe('NodeTransactionPoolService', () => {
 			const pool = polkadotRegistryV9300.createType('Vec<Extrinsic>', [operationalExt]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(true))).toStrictEqual(
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(true))).toStrictEqual(
 				transactionPoolWithTipOperationalResponse,
 			);
 
