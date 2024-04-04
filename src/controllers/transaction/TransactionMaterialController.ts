@@ -130,7 +130,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 		);
 
 		const regExPattern = new RegExp('^[vV][0-9]+$');
-		if (regExPattern.test(metadataVersion) === false) {
+		if (!regExPattern.test(metadataVersion)) {
 			throw new Error(
 				`${metadataVersion} input is not of the expected 'vX' format, where 'X' represents the version number (examples: 'v14', 'v15').`,
 			);
