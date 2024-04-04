@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiDecoration } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import type { Option } from '@polkadot/types/codec';
 import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
@@ -40,10 +41,7 @@ export class RuntimeMetadataService extends AbstractService {
 	 *
 	 * @param hash `BlockHash` to make call at
 	 */
-	async fetchMetadataVersioned(hash: BlockHash, metadataVersion: number): Promise<Metadata> {
-		const { api } = this;
-		const apiAt = await api.at(hash);
-
+	async fetchMetadataVersioned(apiAt: ApiDecoration<'promise'>, metadataVersion: number): Promise<Metadata> {
 		let metadata: Option<OpaqueMetadata> | undefined;
 		let metadataVersioned: Metadata | undefined;
 		try {

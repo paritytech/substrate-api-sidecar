@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
 
 import { RuntimeMetadataService } from '../../services';
@@ -86,12 +87,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
 
-		let api;
-		if (at) {
-			api = await this.api.at(hash);
-		} else {
-			api = this.api;
-		}
+		const api = at ? await this.api.at(hash) : this.api;
 
 		// Validation of the `metadataVersion` path parameter.
 		const metadataV = metadataVersion.slice(1);
@@ -107,13 +103,18 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 			);
 		}
 
-		const availableVersions = (await api.call.metadata.metadataVersions()).toHuman() as string[];
-		if (version && availableVersions?.includes(version.toString()) === false) {
+		let availableVersions = [];
+		try {
+			availableVersions = (await api.call.metadata.metadataVersions()).toJSON() as unknown as Vec<u32>;
+		} catch {
+			throw new Error(`Function 'api.call.metadata.metadataVersions()' is not available at this block height.`);
+		}
+		if (version && !availableVersions?.includes(version as unknown as u32)) {
 			throw new Error(`Version ${version} of Metadata is not available.`);
 		}
 
-		const registry = api ? api.registry : this.api.registry;
-		const metadata = await this.service.fetchMetadataVersioned(hash, version);
+		const registry = api.registry;
+		const metadata = await this.service.fetchMetadataVersioned(api, version);
 
 		RuntimeMetadataController.sanitizedSend(res, metadata, {
 			metadataOpts: { registry, version },

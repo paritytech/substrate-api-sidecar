@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiDecoration } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import type { Option } from '@polkadot/types/codec';
 import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
@@ -87,6 +88,7 @@ export class TransactionMaterialService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchTransactionMaterialwithVersionedMetadata(
+		apiAt: ApiDecoration<'promise'>,
 		hash: BlockHash,
 		metadataArg: MetadataOpts | false,
 		metadataVersion: number,
@@ -99,8 +101,6 @@ export class TransactionMaterialService extends AbstractService {
 			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(hash),
 		]);
-
-		const apiAt = await api.at(hash);
 
 		let metadata: Option<OpaqueMetadata> | undefined;
 		let metadataVersioned: Metadata | undefined;

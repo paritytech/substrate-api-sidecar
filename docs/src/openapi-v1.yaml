@@ -1159,17 +1159,16 @@ paths:
       - transaction
       summary: Get all the network information needed to construct a transaction offline and
         the version of metadata specified in `metadataVersion`.
-      description: Returns the material that is universal to constructing any
-        signed transaction offline and the v14 of metadata. Replaces `/tx/artifacts`
-        from versions < v1.0.0.
+      description: Returns all the materials necessary for constructing any signed transactions
+        offline.
       operationId: getTransactionMaterialwithVersionedMetadata
       parameters:
       - name: metadataVersion
         in: path
         description: The version of metadata. The input is expected in a `vX` format, where `X`
           represents the version number (e.g. `v14`, `v15`). By default, metadata is outputted
-          in 'JSON' format, unless the `metadata` query parameter is provided, in which case it can be
-          either in 'JSON' or 'SCALE' format.
+          in 'json' format, unless the `metadata` query parameter is provided, in which case it
+          can be either in 'json' or 'scale' format.
         required: true
         schema:
           type: string
