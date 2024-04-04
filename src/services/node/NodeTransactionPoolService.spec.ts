@@ -24,12 +24,12 @@ import transactionPoolWithTipResponse from '../test-helpers/responses/node/trans
 import transactionPoolWithTipOperationalResponse from '../test-helpers/responses/node/transactionPoolWithTipOperational.json';
 import { NodeTransactionPoolService } from '.';
 
-const nodeTranstionPoolService = new NodeTransactionPoolService(defaultMockApi);
+const nodeTransactionPoolService = new NodeTransactionPoolService(defaultMockApi);
 
 describe('NodeTransactionPoolService', () => {
 	describe('fetchTransactionPool', () => {
 		it('works when ApiPromiseWorks (no txs)', async () => {
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(false))).toStrictEqual({ pool: [] });
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(false))).toStrictEqual({ pool: [] });
 		});
 
 		it('works when ApiPromiseWorks (1 tx)', async () => {
@@ -41,7 +41,7 @@ describe('NodeTransactionPoolService', () => {
 			const pool = defaultMockApi.createType('Vec<Extrinsic>', [ext]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(false))).toStrictEqual(
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(false))).toStrictEqual(
 				transactionPoolResponse,
 			);
 
@@ -58,7 +58,7 @@ describe('NodeTransactionPoolService', () => {
 			const pool = polkadotRegistryV9300.createType('Vec<Extrinsic>', [normalExt]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(true))).toStrictEqual(
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(true))).toStrictEqual(
 				transactionPoolWithTipResponse,
 			);
 
@@ -73,7 +73,7 @@ describe('NodeTransactionPoolService', () => {
 			const pool = polkadotRegistryV9300.createType('Vec<Extrinsic>', [operationalExt]);
 			(defaultMockApi.rpc.author as any).pendingExtrinsics = () => Promise.resolve().then(() => pool);
 
-			expect(sanitizeNumbers(await nodeTranstionPoolService.fetchTransactionPool(true))).toStrictEqual(
+			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(true))).toStrictEqual(
 				transactionPoolWithTipOperationalResponse,
 			);
 
