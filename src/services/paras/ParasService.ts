@@ -55,6 +55,10 @@ const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
 export class ParasService extends AbstractService {
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * Get crowdloan information for a `paraId`.
 	 *
 	 * @param hash `BlockHash` to make call at
@@ -101,6 +105,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * List all available crowdloans.
 	 *
 	 * @param hash `BlockHash` to make call at
@@ -134,6 +142,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * Get current and future lease info + lifecycle stage for a given `paraId`.
 	 *
 	 * @param hash Get lease info at this `BlockHash`
@@ -196,6 +208,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * Get the status of the current auction.
 	 *
 	 * Note: most fields will be null if there is no ongoing auction.
@@ -306,6 +322,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * Get general information about the current lease period.
 	 *
 	 * @param hash `BlockHash` to make call at
@@ -351,6 +371,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT SERVICE IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * List all registered paras (parathreads & parachains).
 	 *
 	 * @param hash `BlockHash` to make call at
@@ -392,6 +416,10 @@ export class ParasService extends AbstractService {
 	}
 
 	/**
+	 * ***********************************************************
+	 * DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME
+	 * ***********************************************************
+	 *
 	 * Get the heads of the included (backed or considered available) parachain candidates
 	 * at the specified block height or at the most recent finalized head otherwise.
 	 *

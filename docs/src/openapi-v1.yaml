@@ -2128,7 +2128,7 @@ paths:
       tags:
       - paras
       summary: |
-        List all registered paras (parathreads & parachains).
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] List all registered paras (parathreads & parachains).
       description: Returns all registered parachains and parathreads with lifecycle info.
       parameters:
       - name: at
@@ -2151,7 +2151,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get general information about the current lease period.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get general information about the current lease period.
       description: |
         Returns an overview of the current lease period, including lease holders.
       parameters:
@@ -2185,7 +2185,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get the status of the current auction.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get the status of the current auction.
       description: |
         Returns an overview of the current auction. There is only one auction
         at a time. If there is no auction most fields will be `null`. If the current
@@ -2214,7 +2214,7 @@ paths:
       tags:
       - paras
       summary: |
-        List all stored crowdloans.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] List all stored crowdloans.
       description: |
         Returns a list of all the crowdloans and their associated paraIds.
       parameters:
@@ -2238,7 +2238,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get crowdloan information for a `paraId`.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get crowdloan information for a `paraId`.
       description: |
         Returns crowdloan's `fundInfo` and the set of `leasePeriods` the crowdloan`
         covers.
@@ -2269,7 +2269,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get current and future leases as well as the lifecycle stage for a given `paraId`.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get current and future leases as well as the lifecycle stage for a given `paraId`.
       description: |
         Returns a list of leases that belong to the `paraId` as well as the
         `paraId`'s current lifecycle stage.
@@ -2300,7 +2300,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get the heads of the included (backed and considered available) parachain candidates at the 
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get the heads of the included (backed and considered available) parachain candidates at the
         specified block height or at the most recent finalized head otherwise.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
@@ -2325,7 +2325,7 @@ paths:
       tags:
       - paras
       summary: |
-        Get the heads of the backed parachain candidates at the specified block height or at the most recent finalized head otherwise.
+        [DEPRECATION NOTE: PHASED OUT ENDPOINT IN FAVOR OF CORETIME] Get the heads of the backed parachain candidates at the specified block height or at the most recent finalized head otherwise.
       description: |
         Returns an object with all the parachain id's as keys, and their headers as values.
       parameters:

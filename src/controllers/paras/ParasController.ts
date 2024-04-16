@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -28,6 +28,9 @@ export default class ParasController extends AbstractController<ParasService> {
 		this.initRoutes();
 	}
 
+	// ***************************************************************
+	// DEPRECATION NOTE: PHASED OUT CONTROLLERS IN FAVOR OF CORETIME
+	// ***************************************************************
 	protected initRoutes(): void {
 		this.router.use(this.path + '/paras/leases/current', validateBoolean(['currentLeaseHolders']));
 		this.safeMountAsyncGetHandlers([
