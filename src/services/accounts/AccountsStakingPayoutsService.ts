@@ -411,7 +411,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				if (lastReward.isSome) {
 					indexOfEra = (validatorLedger as unknown as StakingLedgerTo240).lastReward.unwrap().toNumber();
 				} else {
-					continue;
+					indexOfEra = -1;
 				}
 			} else if (eraIndex.toNumber() < 518 && isKusama) {
 				indexOfEra = eraIndex.toNumber();
