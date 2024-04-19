@@ -409,7 +409,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
 				const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
 				if (lastReward.isSome) {
-					indexOfEra = (validatorLedger as unknown as StakingLedgerTo240).lastReward.unwrap().toNumber();
+					indexOfEra = lastReward.unwrap().toNumber();
 				} else {
 					indexOfEra = -1;
 				}
