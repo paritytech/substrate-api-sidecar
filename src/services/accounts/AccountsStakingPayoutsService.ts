@@ -564,23 +564,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 				validators[validatorId] = exposure;
 
-				if (exposure.others) {
-					exposure.others.forEach(({ who }, validatorIndex): void => {
-						const nominatorId = who.toString();
+				const individualExposure = exposure.others
+					? exposure.others
+					: (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others;
+				individualExposure.forEach(({ who }, validatorIndex): void => {
+					const nominatorId = who.toString();
 
-						nominators[nominatorId] = nominators[nominatorId] || [];
-						nominators[nominatorId].push({ validatorId, validatorIndex });
-					});
-				} else {
-					(exposure as unknown as Option<SpStakingExposurePage>)
-						.unwrap()
-						.others.forEach(({ who }, validatorIndex): void => {
-							const nominatorId = who.toString();
-
-							nominators[nominatorId] = nominators[nominatorId] || [];
-							nominators[nominatorId].push({ validatorId, validatorIndex });
-						});
-				}
+					nominators[nominatorId] = nominators[nominatorId] || [];
+					nominators[nominatorId].push({ validatorId, validatorIndex });
+				});
 			});
 			if (Object.keys(validatorIndex).length > 0) {
 				return { era, nominators, validators, validatorIndex, validatorsOverview };
