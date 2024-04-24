@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Option, StorageKey, u32, u128 } from '@polkadot/types';
+import { Compact, Option, StorageKey, u32, u128 } from '@polkadot/types';
 import { Vec } from '@polkadot/types';
 import type {
 	AccountId,
@@ -39,6 +39,9 @@ import type {
 	PalletStakingStakingLedger,
 	PalletStakingValidatorPrefs,
 	SpStakingExposure,
+	SpStakingExposurePage,
+	SpStakingIndividualExposure,
+	SpStakingPagedExposureMetadata,
 } from '@polkadot/types/lookup';
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
@@ -66,11 +69,15 @@ interface ValidatorIndex {
 	[x: string]: number;
 }
 /**
- * Adapted AdjustedDeriveEraExposure interface for compatibility with eras
- * previous to 518 in Kusama chain.
+ * Adapted AdjustedDeriveEraExposure interface for compatibility:
+ * - with eras previous to 518 in Kusama chain (via `validatorIndex` property) and
+ * - with Staking changes (3 new calls including `ErasStakersOverview`) in
+ *   Polkadot v1.2.0 runtime (via `validatorOverview` property). Relevant PR:
+ *   https://github.com/paritytech/polkadot-sdk/pull/1189
  */
 interface IAdjustedDeriveEraExposure extends DeriveEraExposure {
 	validatorIndex?: ValidatorIndex;
+	validatorsOverview?: Record<string, Option<SpStakingPagedExposureMetadata>>;
 }
 
 /**
@@ -533,29 +540,56 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			era: EraIndex,
 			stakers: KeysAndExposures,
 			validatorIndex: ValidatorIndex,
+			validatorsOverviewEntries?: [StorageKey, Option<SpStakingPagedExposureMetadata>][],
 		): IAdjustedDeriveEraExposure {
 			const nominators: DeriveEraNominatorExposure = {};
 			const validators: DeriveEraValidatorExposure = {};
+			const validatorsOverview: Record<string, Option<SpStakingPagedExposureMetadata>> = {};
 
 			stakers.forEach(([key, exposure]): void => {
 				const validatorId = key.args[1].toString();
 
+				if (validatorsOverviewEntries) {
+					for (const validator of validatorsOverviewEntries) {
+						const validatorKey: StorageKey = validator[0];
+						const valKey: [string, string] = validatorKey.toHuman() as unknown as [string, string];
+						if (valKey) {
+							if (valKey[1].toString() === validatorId) {
+								validatorsOverview[validatorId] = validator[1];
+								break;
+							}
+						}
+					}
+				}
+
 				validators[validatorId] = exposure;
 
-				exposure.others.forEach(({ who }, validatorIndex): void => {
-					const nominatorId = who.toString();
+				if (exposure.others) {
+					exposure.others.forEach(({ who }, validatorIndex): void => {
+						const nominatorId = who.toString();
 
-					nominators[nominatorId] = nominators[nominatorId] || [];
-					nominators[nominatorId].push({ validatorId, validatorIndex });
-				});
+						nominators[nominatorId] = nominators[nominatorId] || [];
+						nominators[nominatorId].push({ validatorId, validatorIndex });
+					});
+				} else {
+					(exposure as unknown as Option<SpStakingExposurePage>)
+						.unwrap()
+						.others.forEach(({ who }, validatorIndex): void => {
+							const nominatorId = who.toString();
+
+							nominators[nominatorId] = nominators[nominatorId] || [];
+							nominators[nominatorId].push({ validatorId, validatorIndex });
+						});
+				}
 			});
 			if (Object.keys(validatorIndex).length > 0) {
-				return { era, nominators, validators, validatorIndex };
+				return { era, nominators, validators, validatorIndex, validatorsOverview };
 			} else {
-				return { era, nominators, validators };
+				return { era, nominators, validators, validatorsOverview };
 			}
 		}
 		let storageKeys: KeysAndExposures = [];
+		let validatorsOverviewEntries: [StorageKey, Option<SpStakingPagedExposureMetadata>][] = [];
 
 		const validatorIndex: ValidatorIndex = {};
 
@@ -582,7 +616,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 		}
 
-		return mapStakers(eraIndex, storageKeys, validatorIndex);
+		if (storageKeys.length === 0 && historicApi.query.staking.erasStakersPaged) {
+			storageKeys = await historicApi.query.staking.erasStakersPaged.entries(eraIndex);
+			validatorsOverviewEntries = await historicApi.query.staking.erasStakersOverview.entries(eraIndex);
+		}
+
+		return mapStakers(eraIndex, storageKeys, validatorIndex, validatorsOverviewEntries);
 	}
 	/**
 	 * Extract the reward points of `validatorId` from `EraRewardPoints`.
@@ -625,15 +664,32 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 */
 	private extractExposure(address: string, validatorId: string, deriveEraExposure: IAdjustedDeriveEraExposure) {
 		// Get total stake behind validator
-		const totalExposure = deriveEraExposure.validators[validatorId].total;
+		let totalExposure = {} as Compact<u128>;
+		if (deriveEraExposure.validators[validatorId].total) {
+			totalExposure = deriveEraExposure.validators[validatorId].total;
+		} else if (deriveEraExposure.validatorsOverview) {
+			totalExposure = deriveEraExposure.validatorsOverview[validatorId].unwrap().total;
+		}
 
 		// Get nominators stake behind validator
-		const exposureAllNominators = deriveEraExposure.validators[validatorId].others;
+		let exposureAllNominators = [];
+		if (deriveEraExposure.validators[validatorId].others) {
+			exposureAllNominators = deriveEraExposure.validators[validatorId].others;
+		} else {
+			exposureAllNominators = (
+				deriveEraExposure.validators[validatorId] as unknown as Option<SpStakingExposurePage>
+			).unwrap().others as unknown as SpStakingIndividualExposure[];
+		}
 
-		const nominatorExposure =
-			address === validatorId // validator is also the nominator we are getting payouts for
-				? deriveEraExposure.validators[address].own
-				: exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+		let nominatorExposure;
+		// check `address === validatorId` is when the validator is also the nominator we are getting payouts for
+		if (address === validatorId && deriveEraExposure.validators[address].own) {
+			nominatorExposure = deriveEraExposure.validators[address].own;
+		} else if (address === validatorId && deriveEraExposure.validatorsOverview) {
+			nominatorExposure = deriveEraExposure.validatorsOverview[address].unwrap().own;
+		} else {
+			nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+		}
 
 		return {
 			totalExposure,
