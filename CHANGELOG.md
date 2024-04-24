@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v18.0.0..v19.0.0) (2024-04-24)
+
+### Breaking Changes
+
+- fix!: add new staking storage items ([#1432](https://github.com/paritytech/substrate-api-sidecar/pull/1432)) ([317edba](https://github.com/paritytech/substrate-api-sidecar/commit/317edba2c78dd181b2d0acbf335b412a3355a282))
+  NOTE: This PR introduces breaking changes in the `staking-payouts` endpoint. More specifically:
+    1. The payouts for eras after the v1.2.0 runtime upgrade are now retrieved and returned in the endpoint's response
+    1. The payouts are retrieved by using the new storage items `erasStakersPaged` and `erasStakersOverview`
+    1. The use of `erasStakersClipped` is deprecated but still supported. It will be completely removed in the future
+- fix!: staking payouts change claimed value ([#1429](https://github.com/paritytech/substrate-api-sidecar/pull/1429)) ([abf4d9d](https://github.com/paritytech/substrate-api-sidecar/commit/abf4d9df7b647955d135fbc93084e565d402bdd1))
+  NOTE: This PR introduces breaking changes in the `staking-payouts` endpoint. More specifically:
+    1. Payouts with `claimed` false are now retrieved and returned in the endpoint's response
+    1. Payouts are now retrievable from any block height within the queried era
+
+### Feat
+
+- feat: add metadata versions endpoints ([#1424](https://github.com/paritytech/substrate-api-sidecar/pull/1424)) ([beb02ba](https://github.com/paritytech/substrate-api-sidecar/commit/beb02ba1debb637b212e2032934f628724089912))
+
+### Fix
+
+- fix: add deprecation note for paras endpoints ([#1428](https://github.com/paritytech/substrate-api-sidecar/pull/1428)) ([3ed7cbe](https://github.com/paritytech/substrate-api-sidecar/commit/3ed7cbecd177e5aa367ea4bbd27ccd1c62bce03e))
+- fix: define query param depth in Staking Payouts for all chains ([#1422](https://github.com/paritytech/substrate-api-sidecar/pull/1422)) ([c73c801](https://github.com/paritytech/substrate-api-sidecar/commit/c73c801b77d74db0bca4c4b50deada26c39becc5))
+
+### Chore
+
+- chore(deps): update polkadot-js deps ([#1434](https://github.com/paritytech/substrate-api-sidecar/pull/1434)) ([d2c05f2](https://github.com/paritytech/substrate-api-sidecar/commit/d2c05f2941e62b341f068e117df30fe72325eb7a))
+- chore(deps): update polkadot-js deps ([#1430](https://github.com/paritytech/substrate-api-sidecar/pull/1430)) ([80571f8](https://github.com/paritytech/substrate-api-sidecar/commit/80571f840f1f62789a9b2ee0c41486ae2c46c24d))
+- chore(deps): bump tar from 6.1.15 to 6.2.1 ([#1427](https://github.com/paritytech/substrate-api-sidecar/pull/1427)) ([395b39b](https://github.com/paritytech/substrate-api-sidecar/commit/395b39b84ba66a853e464a0c2856718acfe69eff))
+- chore: bump tar from 6.1.12 to 6.2.1 in /docs ([#1426](https://github.com/paritytech/substrate-api-sidecar/pull/1426)) ([467ecdd](https://github.com/paritytech/substrate-api-sidecar/commit/467ecddb79a6303572e09e7675e4c94ac98e6870))
+- chore: bump undici from 5.28.3 to 5.28.4 in /docs ([#1425](https://github.com/paritytech/substrate-api-sidecar/pull/1425)) ([360b6ab](https://github.com/paritytech/substrate-api-sidecar/commit/360b6abe633301d60132801132c85d9081c39a52))
+- chore(deps): bump express from 4.18.3 to 4.19.2 ([#1420](https://github.com/paritytech/substrate-api-sidecar/pull/1420)) ([5951085](https://github.com/paritytech/substrate-api-sidecar/commit/59510850ff8f71bef4bd403420c1625498ad342d))
+- chore(deps): bump express from 4.18.1 to 4.19.2 in /docs ([#1419](https://github.com/paritytech/substrate-api-sidecar/pull/1419)) ([d4ceb44](https://github.com/paritytech/substrate-api-sidecar/commit/d4ceb44283fa9493f89dc9b93a95e7074ce51f53))
+- chore(deps): bump webpack-dev-middleware from 5.3.1 to 5.3.4 in /docs ([#1418](https://github.com/paritytech/substrate-api-sidecar/pull/1418)) ([51a4a68](https://github.com/paritytech/substrate-api-sidecar/commit/51a4a68f089580adc29f97b5bf22de1753df5020))
+
+## Compatibility
+
+Tested against:
+- Polkadot v11000
+- Kusama v11000
+- Westend v11000
+
 ## [18.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v17.5.2..v18.0.0) (2024-03-21)
 
 ### Breaking Changes
