@@ -566,7 +566,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 				const individualExposure = exposure.others
 					? exposure.others
-					: (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others;
+					: (exposure as unknown as Option<SpStakingExposurePage>).isSome
+					  ? (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others
+					  : [];
 				individualExposure.forEach(({ who }, validatorIndex): void => {
 					const nominatorId = who.toString();
 
@@ -660,7 +662,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		if (deriveEraExposure.validators[validatorId].total) {
 			totalExposure = deriveEraExposure.validators[validatorId].total;
 		} else if (deriveEraExposure.validatorsOverview) {
-			totalExposure = deriveEraExposure.validatorsOverview[validatorId].unwrap().total;
+			totalExposure = deriveEraExposure.validatorsOverview[validatorId].isSome
+				? deriveEraExposure.validatorsOverview[validatorId].unwrap().total
+				: ({} as unknown as Compact<u128>);
 		}
 
 		// Get nominators stake behind validator
@@ -668,21 +672,24 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		if (deriveEraExposure.validators[validatorId].others) {
 			exposureAllNominators = deriveEraExposure.validators[validatorId].others;
 		} else {
-			exposureAllNominators = (
-				deriveEraExposure.validators[validatorId] as unknown as Option<SpStakingExposurePage>
-			).unwrap().others as unknown as SpStakingIndividualExposure[];
-		}
+			const exposure = deriveEraExposure.validators[validatorId] as unknown as Option<SpStakingExposurePage>;
 
+			exposureAllNominators = exposure.isSome
+				? ((exposure as unknown as Option<SpStakingExposurePage>).unwrap()
+						.others as unknown as SpStakingIndividualExposure[])
+				: ([] as SpStakingIndividualExposure[]);
+		}
 		let nominatorExposure;
 		// check `address === validatorId` is when the validator is also the nominator we are getting payouts for
 		if (address === validatorId && deriveEraExposure.validators[address].own) {
 			nominatorExposure = deriveEraExposure.validators[address].own;
 		} else if (address === validatorId && deriveEraExposure.validatorsOverview) {
-			nominatorExposure = deriveEraExposure.validatorsOverview[address].unwrap().own;
+			nominatorExposure = deriveEraExposure.validatorsOverview[address].isSome
+				? deriveEraExposure.validatorsOverview[address].unwrap().own
+				: ({} as unknown as Compact<u128>);
 		} else {
 			nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
 		}
-
 		return {
 			totalExposure,
 			nominatorExposure,
