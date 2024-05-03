@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Compact, Option, StorageKey, u32, u128 } from '@polkadot/types';
+import { Compact, Option, StorageKey, u16, u32, u128 } from '@polkadot/types';
 import { Vec } from '@polkadot/types';
 import type {
 	AccountId,
@@ -152,6 +152,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(at.hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
+		const stakingVersion = await historicApi.query.staking.palletVersion<u16>();
 
 		/**
 		 * Given https://github.com/polkadot-js/api/issues/5232,
@@ -192,6 +193,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			// Create an array of `DeriveEraExposure`
 			allErasGeneral.map((eraGeneral) => eraGeneral[0]),
 			isKusama,
+			stakingVersion.toNumber(),
 		).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(address, err);
 		});
@@ -224,7 +226,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		return {
 			at,
-			erasPayouts: allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama)),
+			erasPayouts: allEraData.map((eraData) =>
+				this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama, Number(stakingVersion)),
+			),
 		};
 	}
 
@@ -327,6 +331,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		startEra: number,
 		deriveErasExposures: IAdjustedDeriveEraExposure[],
 		isKusama: boolean,
+		stakingVersion: number,
 	): Promise<ICommissionAndLedger[][]> {
 		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: PalletStakingStakingLedger } = {};
@@ -341,7 +346,14 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 
 			const singleEraCommissions = nominatedExposures.map(({ validatorId }) =>
-				this.fetchCommissionAndLedger(historicApi, validatorId, currEra, validatorLedgerCache, isKusama),
+				this.fetchCommissionAndLedger(
+					historicApi,
+					validatorId,
+					currEra,
+					validatorLedgerCache,
+					isKusama,
+					stakingVersion,
+				),
 			);
 
 			return Promise.all(singleEraCommissions);
@@ -362,6 +374,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		unclaimedOnly: boolean,
 		{ deriveEraExposure, eraRewardPoints, erasValidatorRewardOption, exposuresWithCommission, eraIndex }: IEraData,
 		isKusama: boolean,
+		stakingVersion: number,
 	): IEraPayouts | { message: string } {
 		if (!exposuresWithCommission) {
 			return {
@@ -409,8 +422,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			 * any reward data.
 			 */
 			let indexOfEra: number;
-			if (validatorLedger.legacyClaimedRewards) {
+			if (validatorLedger.legacyClaimedRewards && stakingVersion < 14) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
+			} else if (validatorLedger.legacyClaimedRewards && stakingVersion >= 14) {
+				indexOfEra = 0;
 			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
 				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
 			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
@@ -471,6 +486,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
 		isKusama: boolean,
+		stakingVersion: number,
 	): Promise<ICommissionAndLedger> {
 		let commission: Perbill;
 		let validatorLedger;
@@ -513,9 +529,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				return {
 					commission,
 				};
+			} else if (stakingVersion < 14) {
+				validatorLedger = validatorLedgerOption.unwrap();
+			} else {
+				const validatorLedgerOpts = validatorLedgerOption.unwrap();
+				const claimed = await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap());
+				validatorLedger = {
+					stash: validatorLedgerOpts.stash,
+					total: validatorLedgerOpts.total,
+					active: validatorLedgerOpts.active,
+					unlocking: validatorLedgerOpts.unlocking,
+					legacyClaimedRewards: claimed,
+				} as PalletStakingStakingLedger;
 			}
 
-			validatorLedger = validatorLedgerOption.unwrap();
 			validatorLedgerCache[validatorId] = validatorLedger;
 		}
 
