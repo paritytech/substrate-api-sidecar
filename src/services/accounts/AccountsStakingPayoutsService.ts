@@ -532,15 +532,21 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else if (stakingVersion < 14) {
 				validatorLedger = validatorLedgerOption.unwrap();
 			} else {
-				const validatorLedgerOpts = validatorLedgerOption.unwrap();
 				const claimed = await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap());
-				validatorLedger = {
-					stash: validatorLedgerOpts.stash,
-					total: validatorLedgerOpts.total,
-					active: validatorLedgerOpts.active,
-					unlocking: validatorLedgerOpts.unlocking,
-					legacyClaimedRewards: claimed,
-				} as PalletStakingStakingLedger;
+				if (claimed.length > 0) {
+					const validatorLedgerOpts = validatorLedgerOption.unwrap();
+					validatorLedger = {
+						stash: validatorLedgerOpts.stash,
+						total: validatorLedgerOpts.total,
+						active: validatorLedgerOpts.active,
+						unlocking: validatorLedgerOpts.unlocking,
+						legacyClaimedRewards: claimed,
+					} as PalletStakingStakingLedger;
+				} else {
+					return {
+						commission,
+					};
+				}
 			}
 
 			validatorLedgerCache[validatorId] = validatorLedger;
