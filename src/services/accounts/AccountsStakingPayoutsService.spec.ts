@@ -30,7 +30,7 @@ import {
 	erasValidatorPrefsAt,
 	erasValidatorRewardAt,
 	ledgerAt,
-	palletVersionAt
+	palletVersionAt,
 } from '../test-helpers/mock/accounts';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
