@@ -83,6 +83,13 @@ export const erasRewardPointsAt = (_: EraIndex) =>
 		),
 	);
 
+export const palletVersionAt = () => Promise.resolve().then(() =>
+	api.registry.createType(
+		'u16',
+		'13',
+	),
+);
+
 export const deriveEraExposureParam = {
 	era: api.registry.createType('EraIndex', ERA),
 	nominators: {

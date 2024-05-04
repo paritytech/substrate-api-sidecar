@@ -30,6 +30,7 @@ import {
 	erasValidatorPrefsAt,
 	erasValidatorRewardAt,
 	ledgerAt,
+	palletVersionAt
 } from '../test-helpers/mock/accounts';
 import { AccountsStakingPayoutsService } from './AccountsStakingPayoutsService';
 
@@ -59,6 +60,7 @@ const mockHistoricApi = {
 			erasStakersClipped: {
 				entries: erasStakersClippedAt,
 			},
+			palletVersion: palletVersionAt,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
