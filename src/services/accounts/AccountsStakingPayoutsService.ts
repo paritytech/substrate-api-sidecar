@@ -424,7 +424,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			let indexOfEra: number;
 			if (validatorLedger.legacyClaimedRewards && stakingVersion < 14) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else if (validatorLedger.legacyClaimedRewards && stakingVersion >= 14) {
+			} else if (stakingVersion >= 14) {
 				indexOfEra = 0;
 			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
 				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
