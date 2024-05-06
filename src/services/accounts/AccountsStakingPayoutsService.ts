@@ -226,9 +226,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		return {
 			at,
-			erasPayouts: allEraData.map((eraData) =>
-				this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama, Number(stakingVersion)),
-			),
+			erasPayouts: allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama)),
 		};
 	}
 
@@ -374,7 +372,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		unclaimedOnly: boolean,
 		{ deriveEraExposure, eraRewardPoints, erasValidatorRewardOption, exposuresWithCommission, eraIndex }: IEraData,
 		isKusama: boolean,
-		stakingVersion: number,
 	): IEraPayouts | { message: string } {
 		if (!exposuresWithCommission) {
 			return {
@@ -422,10 +419,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			 * any reward data.
 			 */
 			let indexOfEra: number;
-			if (validatorLedger.legacyClaimedRewards && stakingVersion < 14) {
+			if (validatorLedger.legacyClaimedRewards) {
 				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else if (stakingVersion >= 14) {
-				indexOfEra = 0;
 			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
 				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
 			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
@@ -532,20 +527,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else if (stakingVersion < 14) {
 				validatorLedger = validatorLedgerOption.unwrap();
 			} else {
+				validatorLedger = validatorLedgerOption.unwrap();
 				const claimed = await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap());
 				if (claimed.length > 0) {
-					const validatorLedgerOpts = validatorLedgerOption.unwrap();
-					validatorLedger = {
-						stash: validatorLedgerOpts.stash,
-						total: validatorLedgerOpts.total,
-						active: validatorLedgerOpts.active,
-						unlocking: validatorLedgerOpts.unlocking,
-						legacyClaimedRewards: claimed,
-					} as PalletStakingStakingLedger;
-				} else {
-					return {
-						commission,
-					};
+					validatorLedger.legacyClaimedRewards.push(era as unknown as u32);
 				}
 			}
 
