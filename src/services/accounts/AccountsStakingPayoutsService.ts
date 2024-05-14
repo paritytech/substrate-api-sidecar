@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Compact, Option, StorageKey, u16, u32, u128 } from '@polkadot/types';
+import { Compact, Option, StorageKey, u32, u128 } from '@polkadot/types';
 import { Vec } from '@polkadot/types';
 import type {
 	AccountId,
@@ -152,7 +152,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(at.hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
-		const stakingVersion = await historicApi.query.staking.palletVersion<u16>();
 
 		/**
 		 * Given https://github.com/polkadot-js/api/issues/5232,
@@ -193,7 +192,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			// Create an array of `DeriveEraExposure`
 			allErasGeneral.map((eraGeneral) => eraGeneral[0]),
 			isKusama,
-			stakingVersion.toNumber(),
 		).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(address, err);
 		});
@@ -329,7 +327,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		startEra: number,
 		deriveErasExposures: IAdjustedDeriveEraExposure[],
 		isKusama: boolean,
-		stakingVersion: number,
 	): Promise<ICommissionAndLedger[][]> {
 		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: PalletStakingStakingLedger } = {};
@@ -350,7 +347,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					currEra,
 					validatorLedgerCache,
 					isKusama,
-					stakingVersion,
 				),
 			);
 
@@ -481,7 +477,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		era: number,
 		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
 		isKusama: boolean,
-		stakingVersion: number,
 	): Promise<ICommissionAndLedger> {
 		let commission: Perbill;
 		let validatorLedger;
@@ -527,7 +522,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else {
 				validatorLedger = validatorLedgerOption.unwrap();
 				if (
-					14 >= stakingVersion &&
+					historicApi.query.staking.claimedRewards &&
 					(await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap())).length ===
 						(await historicApi.query.staking.erasStakersOverview(era, validatorControllerOption.unwrap()))
 							.unwrap()
