@@ -341,13 +341,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 
 			const singleEraCommissions = nominatedExposures.map(({ validatorId }) =>
-				this.fetchCommissionAndLedger(
-					historicApi,
-					validatorId,
-					currEra,
-					validatorLedgerCache,
-					isKusama,
-				),
+				this.fetchCommissionAndLedger(historicApi, validatorId, currEra, validatorLedgerCache, isKusama),
 			);
 
 			return Promise.all(singleEraCommissions);
