@@ -14,16 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { Option } from '@polkadot/types/codec';
+import type { u32, u128, Vec } from '@polkadot/types';
+import type { Compact, Option } from '@polkadot/types/codec';
 import type { AccountId } from '@polkadot/types/interfaces/runtime';
-import type { PalletStakingRewardDestination, PalletStakingStakingLedger } from '@polkadot/types/lookup';
+import type { PalletStakingRewardDestination, PalletStakingUnlockChunk } from '@polkadot/types/lookup';
 
 import { IAt } from '.';
+
+export interface IStakingLedger {
+	stash: AccountId;
+	total: Compact<u128>;
+	active: Compact<u128>;
+	unlocking: Vec<PalletStakingUnlockChunk>;
+	claimedRewards?: u32[];
+}
 
 export interface IAccountStakingInfo {
 	at: IAt;
 	controller: AccountId;
 	rewardDestination: Option<PalletStakingRewardDestination>;
 	numSlashingSpans: number;
-	staking: PalletStakingStakingLedger;
+	staking: IStakingLedger | null;
 }

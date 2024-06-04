@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { u32, Vec } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
-import { IAccountStakingInfo } from 'src/types/responses';
+import { IAccountStakingInfo, IStakingLedger } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
@@ -59,6 +60,33 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
+		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+		const currentEra = currentEraMaybeOption.unwrap().toNumber();
+		let claimedRewards = [];
+		if (stakingLedger?.legacyClaimedRewards) {
+			claimedRewards = stakingLedger?.legacyClaimedRewards;
+		} else {
+			claimedRewards = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
+		}
+		if (historicApi.query.staking?.claimedRewards) {
+			let depth = Number(api.consts.staking.historyDepth.toNumber());
+			if (claimedRewards.length > 0) {
+				depth = currentEra - claimedRewards[claimedRewards.length - 1].toNumber();
+			}
+			const eraStart = currentEra - depth;
+			for (let e = eraStart; e <= currentEra; e++) {
+				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
+				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
+				if (
+					claimedRewardsPerEra.length > 0 &&
+					erasStakersOverview.toHuman() != null &&
+					erasStakersOverview?.unwrap().pageCount.toNumber() === claimedRewardsPerEra.length
+				) {
+					claimedRewards.push(e as unknown as u32);
+				}
+			}
+		}
+
 		if (stakingLedger === null) {
 			// should never throw because by time we get here we know we have a bonded pair
 			throw new InternalServerError(
@@ -73,7 +101,13 @@ export class AccountsStakingInfoService extends AbstractService {
 			controller,
 			rewardDestination,
 			numSlashingSpans,
-			staking: stakingLedger,
+			staking: {
+				stash: stakingLedger.stash,
+				total: stakingLedger.total,
+				active: stakingLedger.active,
+				unlocking: stakingLedger.unlocking,
+				claimedRewards: claimedRewards,
+			},
 		};
 	}
 }
