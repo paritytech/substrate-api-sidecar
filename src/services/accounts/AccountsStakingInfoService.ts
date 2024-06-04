@@ -60,8 +60,12 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
-		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-		const currentEra = currentEraMaybeOption.unwrap().toNumber();
+		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
+			throw new InternalServerError(
+				`Staking ledger could not be found for controller address "${controller.toString()}"`,
+			);
+		}
 		let claimedRewards = [];
 		if (stakingLedger?.legacyClaimedRewards) {
 			claimedRewards = stakingLedger?.legacyClaimedRewards;
@@ -69,6 +73,9 @@ export class AccountsStakingInfoService extends AbstractService {
 			claimedRewards = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
 		}
 		if (historicApi.query.staking?.claimedRewards) {
+			const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+			const currentEra = currentEraMaybeOption.unwrap().toNumber();
+
 			let depth = Number(api.consts.staking.historyDepth.toNumber());
 			if (claimedRewards.length > 0) {
 				depth = currentEra - claimedRewards[claimedRewards.length - 1].toNumber();
@@ -85,13 +92,6 @@ export class AccountsStakingInfoService extends AbstractService {
 					claimedRewards.push(e as unknown as u32);
 				}
 			}
-		}
-
-		if (stakingLedger === null) {
-			// should never throw because by time we get here we know we have a bonded pair
-			throw new InternalServerError(
-				`Staking ledger could not be found for controller address "${controller.toString()}"`,
-			);
 		}
 
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
