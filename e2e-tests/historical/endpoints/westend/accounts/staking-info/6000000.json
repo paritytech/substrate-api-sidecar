@@ -8,6 +8,7 @@
         "staked": null
     },
     "numSlashingSpans": "0",
+    "nominations": null,
     "staking": {
         "stash": "5Ek5JCnrRsyUGYNRaEvkufG1i1EUxEE9cytuWBBjA9oNZVsf",
         "total": "10199950300000000",
