@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -23,9 +23,28 @@ import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/registries';
-import { blockHash789629, defaultMockApi, testAddress, testAddressController } from '../test-helpers/mock';
+import { kusamRegistryV1002000, polkadotRegistry } from '../../test-helpers/registries';
+import {
+	activeEraAt22939322,
+	blockHash789629,
+	blockHash22939322,
+	currentEraAt22939322,
+	defaultMockApi,
+	defaultMockApi22939322,
+	testAddress,
+	testAddressController,
+	testAddressControllerKusama,
+	testAddressKusama,
+	testAddressPayeeKusama,
+} from '../test-helpers/mock';
+import {
+	stakingClaimedRewardsMockedCall,
+	stakingerasStakersOverviewMockedCall,
+	stakingPayeeMockedCall,
+	stakingslashingSpansMockedCall,
+} from '../test-helpers/mock/accounts/stakingInfo';
 import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
+import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 export const bondedAt = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
@@ -63,6 +82,42 @@ const mockApi = {
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
 
+export const bondedAt22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => kusamRegistryV1002000.createType('Option<AccountId>', testAddressControllerKusama));
+
+export const ledgerAt22939322 = (_hash: Hash, _address: string): Promise<Option<StakingLedger>> =>
+	Promise.resolve().then(() =>
+		kusamRegistryV1002000.createType(
+			'Option<StakingLedger>',
+			'0x6c6ed8531e6c0b882af0a42f2f23ef0a102b5d49cb5f5a24ede72d53ffce83170b7962e569db040b7962e569db0400a84719000048190000491900004a1900004b1900004c1900004d1900004e1900004f190000501900005119000052190000531900005419000055190000561900005719000058190000591900005a1900005b1900005c1900005d1900005e1900005f190000601900006119000062190000631900006419000065190000661900006719000068190000691900006a1900006b1900006c1900006d1900006e1900006f19000070190000',
+		),
+	);
+
+export const payee22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => kusamRegistryV1002000.createType('Option<AccountId>', testAddressPayeeKusama));
+
+const historicApi22939322 = {
+	query: {
+		staking: {
+			bonded: bondedAt22939322,
+			ledger: ledgerAt22939322,
+			payee: stakingPayeeMockedCall,
+			slashingSpans: stakingslashingSpansMockedCall,
+			claimedRewards: stakingClaimedRewardsMockedCall,
+			activeEra: activeEraAt22939322,
+			currentEra: currentEraAt22939322,
+			erasStakersOverview: stakingerasStakersOverviewMockedCall,
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApiKusama22939322 = {
+	...defaultMockApi22939322,
+	at: (_hash: Hash) => historicApi22939322,
+} as unknown as ApiPromise;
+
+const accountStakingInfoService22939322 = new AccountsStakingInfoService(mockApiKusama22939322);
+
 describe('AccountsStakingInfoService', () => {
 	describe('fetchAccountStakingInfo', () => {
 		it('works with a valid stash address (block 789629)', async () => {
@@ -95,6 +150,14 @@ describe('AccountsStakingInfoService', () => {
 			);
 
 			(historicApi.query.staking.ledger as any) = ledgerAt;
+		});
+
+		it('works with a valid stash account (block 22939322) and returns an array of claimed eras that include era 6508 (when the migration occurred in Kusama)', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, testAddressKusama),
+				),
+			).toStrictEqual(response22939322);
 		});
 	});
 });

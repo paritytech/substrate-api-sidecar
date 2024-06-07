@@ -14,27 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Stash address to use with tests.
- */
-export const testAddress = '1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE';
+import { kusamRegistryV1002000 } from '../../../test-helpers/registries';
+import block22939322 from './data/block22939322.json';
 
 /**
- * Controller address to use with tests.
+ * Mock for Kusama block #22939322.
  */
-export const testAddressController = '1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE';
+export const mockBlock22939322 = kusamRegistryV1002000.createType('Block', block22939322);
 
 /**
- * Stash address to use with tests.
+ * BlockHash for Kusama block #22939322.
  */
-export const testAddressKusama = 'F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T';
-
-/**
- * Controller address to use with tests.
- */
-export const testAddressControllerKusama = 'F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T';
-
-/**
- * Payee address to use with tests.
- */
-export const testAddressPayeeKusama = 'GLEJRAEdGxLhNEH2AWAtjhUYVrcRWxbYSemvVv2JwxBG2fg';
+export const blockHash22939322 = kusamRegistryV1002000.createType(
+	'BlockHash',
+	'0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098',
+);
