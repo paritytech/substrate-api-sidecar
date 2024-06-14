@@ -152,7 +152,7 @@ describe('AccountsStakingInfoService', () => {
 			(historicApi.query.staking.ledger as any) = ledgerAt;
 		});
 
-		it('works with a valid stash account (block 22939322) and returns an array of claimed eras that include era 6508 (when the migration occurred in Kusama)', async () => {
+		it('works with a valid stash account (block 22939322) and returns an array of claimed eras that include era 6514 (when the migration occurred in Kusama)', async () => {
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, testAddressKusama),

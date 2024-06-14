@@ -21,12 +21,17 @@ import type { PalletStakingRewardDestination, PalletStakingUnlockChunk } from '@
 
 import { IAt } from '.';
 
+export interface IEraStatus {
+	era: number;
+	status: 'claimed' | 'partially claimed' | 'unclaimed';
+}
+
 export interface IStakingLedger {
 	stash: AccountId;
 	total: Compact<u128>;
 	active: Compact<u128>;
 	unlocking: Vec<PalletStakingUnlockChunk>;
-	claimedRewards?: u32[];
+	claimedRewards?: IEraStatus[] | u32[];
 }
 
 export interface IAccountStakingInfo {

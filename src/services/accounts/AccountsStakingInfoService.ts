@@ -17,7 +17,7 @@
 import type { u32, Vec } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
-import { IAccountStakingInfo, IStakingLedger } from 'src/types/responses';
+import { IAccountStakingInfo, IEraStatus, IStakingLedger } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
@@ -66,30 +66,47 @@ export class AccountsStakingInfoService extends AbstractService {
 				`Staking ledger could not be found for controller address "${controller.toString()}"`,
 			);
 		}
-		let claimedRewards = [];
+		let claimedRewardsEras: u32[] = [];
+		let claimedRewards: IEraStatus[] = [];
 		if (stakingLedger?.legacyClaimedRewards) {
-			claimedRewards = stakingLedger?.legacyClaimedRewards;
+			claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
 		} else {
-			claimedRewards = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
+			claimedRewardsEras = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
 		}
+		claimedRewards = claimedRewardsEras.map((element) => ({
+			era: element.toNumber(),
+			status: 'claimed',
+		}));
 		if (historicApi.query.staking?.claimedRewards) {
 			const currentEraMaybeOption = await historicApi.query.staking.currentEra();
 			const currentEra = currentEraMaybeOption.unwrap().toNumber();
 
 			let depth = Number(api.consts.staking.historyDepth.toNumber());
 			if (claimedRewards.length > 0) {
-				depth = currentEra - claimedRewards[claimedRewards.length - 1].toNumber();
+				depth = currentEra - claimedRewards[claimedRewards.length - 1].era - 1;
 			}
 			const eraStart = currentEra - depth;
 			for (let e = eraStart; e <= currentEra; e++) {
 				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
 				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
-				if (
-					claimedRewardsPerEra.length > 0 &&
-					erasStakersOverview.toHuman() != null &&
-					erasStakersOverview?.unwrap().pageCount.toNumber() === claimedRewardsPerEra.length
-				) {
-					claimedRewards.push(e as unknown as u32);
+				let erasStakers = null;
+				if (historicApi.query.staking?.erasStakers) {
+					erasStakers = await historicApi.query.staking.erasStakers(e, stash);
+				}
+				if (erasStakersOverview.isSome) {
+					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+					const eraStatus =
+						claimedRewardsPerEra.length === 0
+							? 'unclaimed'
+							: claimedRewardsPerEra.length === pageCount
+							  ? 'claimed'
+							  : 'partially claimed';
+					claimedRewards.push({ era: e, status: eraStatus });
+				} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
+					// if erasStakers.total > 0, then the pageCount is always 1
+					// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
+					const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
+					claimedRewards.push({ era: e, status: eraStatus });
 				}
 			}
 		}

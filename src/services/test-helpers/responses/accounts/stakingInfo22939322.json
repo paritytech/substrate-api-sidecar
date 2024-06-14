@@ -14,89 +14,342 @@
     "active": "5340420989561",
     "unlocking": [],
     "claimedRewards": [
-      "6471",
-      "6472",
-      "6473",
-      "6474",
-      "6475",
-      "6476",
-      "6477",
-      "6478",
-      "6479",
-      "6480",
-      "6481",
-      "6482",
-      "6483",
-      "6484",
-      "6485",
-      "6486",
-      "6487",
-      "6488",
-      "6489",
-      "6490",
-      "6491",
-      "6492",
-      "6493",
-      "6494",
-      "6495",
-      "6496",
-      "6497",
-      "6498",
-      "6499",
-      "6500",
-      "6501",
-      "6502",
-      "6503",
-      "6504",
-      "6505",
-      "6506",
-      "6507",
-      "6508",
-      "6509",
-      "6510",
-      "6511",
-      "6512",
-      "6514",
-      "6515",
-      "6516",
-      "6517",
-      "6518",
-      "6519",
-      "6520",
-      "6521",
-      "6522",
-      "6523",
-      "6524",
-      "6525",
-      "6526",
-      "6527",
-      "6528",
-      "6529",
-      "6530",
-      "6531",
-      "6532",
-      "6533",
-      "6534",
-      "6535",
-      "6536",
-      "6537",
-      "6538",
-      "6539",
-      "6540",
-      "6541",
-      "6542",
-      "6543",
-      "6544",
-      "6545",
-      "6546",
-      "6547",
-      "6548",
-      "6549",
-      "6550",
-      "6551",
-      "6552",
-      "6553",
-      "6554"
+      {
+        "era": "6471",
+        "status": "claimed"
+      },
+      {
+        "era": "6472",
+        "status": "claimed"
+      },
+      {
+        "era": "6473",
+        "status": "claimed"
+      },
+      {
+        "era": "6474",
+        "status": "claimed"
+      },
+      {
+        "era": "6475",
+        "status": "claimed"
+      },
+      {
+        "era": "6476",
+        "status": "claimed"
+      },
+      {
+        "era": "6477",
+        "status": "claimed"
+      },
+      {
+        "era": "6478",
+        "status": "claimed"
+      },
+      {
+        "era": "6479",
+        "status": "claimed"
+      },
+      {
+        "era": "6480",
+        "status": "claimed"
+      },
+      {
+        "era": "6481",
+        "status": "claimed"
+      },
+      {
+        "era": "6482",
+        "status": "claimed"
+      },
+      {
+        "era": "6483",
+        "status": "claimed"
+      },
+      {
+        "era": "6484",
+        "status": "claimed"
+      },
+      {
+        "era": "6485",
+        "status": "claimed"
+      },
+      {
+        "era": "6486",
+        "status": "claimed"
+      },
+      {
+        "era": "6487",
+        "status": "claimed"
+      },
+      {
+        "era": "6488",
+        "status": "claimed"
+      },
+      {
+        "era": "6489",
+        "status": "claimed"
+      },
+      {
+        "era": "6490",
+        "status": "claimed"
+      },
+      {
+        "era": "6491",
+        "status": "claimed"
+      },
+      {
+        "era": "6492",
+        "status": "claimed"
+      },
+      {
+        "era": "6493",
+        "status": "claimed"
+      },
+      {
+        "era": "6494",
+        "status": "claimed"
+      },
+      {
+        "era": "6495",
+        "status": "claimed"
+      },
+      {
+        "era": "6496",
+        "status": "claimed"
+      },
+      {
+        "era": "6497",
+        "status": "claimed"
+      },
+      {
+        "era": "6498",
+        "status": "claimed"
+      },
+      {
+        "era": "6499",
+        "status": "claimed"
+      },
+      {
+        "era": "6500",
+        "status": "claimed"
+      },
+      {
+        "era": "6501",
+        "status": "claimed"
+      },
+      {
+        "era": "6502",
+        "status": "claimed"
+      },
+      {
+        "era": "6503",
+        "status": "claimed"
+      },
+      {
+        "era": "6504",
+        "status": "claimed"
+      },
+      {
+        "era": "6505",
+        "status": "claimed"
+      },
+      {
+        "era": "6506",
+        "status": "claimed"
+      },
+      {
+        "era": "6507",
+        "status": "claimed"
+      },
+      {
+        "era": "6508",
+        "status": "claimed"
+      },
+      {
+        "era": "6509",
+        "status": "claimed"
+      },
+      {
+        "era": "6510",
+        "status": "claimed"
+      },
+      {
+        "era": "6511",
+        "status": "claimed"
+      },
+      {
+        "era": "6512",
+        "status": "claimed"
+      },
+      {
+        "era": "6514",
+        "status": "claimed"
+      },
+      {
+        "era": "6515",
+        "status": "claimed"
+      },
+      {
+        "era": "6516",
+        "status": "claimed"
+      },
+      {
+        "era": "6517",
+        "status": "claimed"
+      },
+      {
+        "era": "6518",
+        "status": "claimed"
+      },
+      {
+        "era": "6519",
+        "status": "claimed"
+      },
+      {
+        "era": "6520",
+        "status": "claimed"
+      },
+      {
+        "era": "6521",
+        "status": "claimed"
+      },
+      {
+        "era": "6522",
+        "status": "claimed"
+      },
+      {
+        "era": "6523",
+        "status": "claimed"
+      },
+      {
+        "era": "6524",
+        "status": "claimed"
+      },
+      {
+        "era": "6525",
+        "status": "claimed"
+      },
+      {
+        "era": "6526",
+        "status": "claimed"
+      },
+      {
+        "era": "6527",
+        "status": "claimed"
+      },
+      {
+        "era": "6528",
+        "status": "claimed"
+      },
+      {
+        "era": "6529",
+        "status": "claimed"
+      },
+      {
+        "era": "6530",
+        "status": "claimed"
+      },
+      {
+        "era": "6531",
+        "status": "claimed"
+      },
+      {
+        "era": "6532",
+        "status": "claimed"
+      },
+      {
+        "era": "6533",
+        "status": "claimed"
+      },
+      {
+        "era": "6534",
+        "status": "claimed"
+      },
+      {
+        "era": "6535",
+        "status": "claimed"
+      },
+      {
+        "era": "6536",
+        "status": "claimed"
+      },
+      {
+        "era": "6537",
+        "status": "claimed"
+      },
+      {
+        "era": "6538",
+        "status": "claimed"
+      },
+      {
+        "era": "6539",
+        "status": "claimed"
+      },
+      {
+        "era": "6540",
+        "status": "claimed"
+      },
+      {
+        "era": "6541",
+        "status": "claimed"
+      },
+      {
+        "era": "6542",
+        "status": "claimed"
+      },
+      {
+        "era": "6543",
+        "status": "claimed"
+      },
+      {
+        "era": "6544",
+        "status": "claimed"
+      },
+      {
+        "era": "6545",
+        "status": "claimed"
+      },
+      {
+        "era": "6546",
+        "status": "claimed"
+      },
+      {
+        "era": "6547",
+        "status": "claimed"
+      },
+      {
+        "era": "6548",
+        "status": "claimed"
+      },
+      {
+        "era": "6549",
+        "status": "claimed"
+      },
+      {
+        "era": "6550",
+        "status": "claimed"
+      },
+      {
+        "era": "6551",
+        "status": "claimed"
+      },
+      {
+        "era": "6552",
+        "status": "claimed"
+      },
+      {
+        "era": "6553",
+        "status": "claimed"
+      },
+      {
+        "era": "6554",
+        "status": "claimed"
+      },
+      {
+        "era": "6555",
+        "status": "unclaimed"
+      }
     ]
   }
 }
