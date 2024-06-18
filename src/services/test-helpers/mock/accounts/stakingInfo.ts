@@ -71,6 +71,20 @@ export const stakingPayeeMockedCall = (
 		}),
 	);
 
+const kusamaStakersTotal = kusamaRegistryV1002000.createType('Compact<u128>', 1362722538670121);
+const kusamaStakersOwn = kusamaRegistryV1002000.createType('Compact<u128>', 5340420989561);
+const kusamaStakersOthers = kusamaRegistryV1002000.createType('Vec<SpStakingIndividualExposure>', []);
+
+export const kusamaErasStakersMockedCall = (_era: number, _address: string): Promise<SpStakingExposure> => {
+	return Promise.resolve().then(() => {
+		return polkadotRegistryV1002000.createType('SpStakingExposure', {
+			total: kusamaStakersTotal,
+			own: kusamaStakersOwn,
+			others: kusamaStakersOthers,
+		});
+	});
+};
+
 export const polkadotClaimedRewardsMockedCall = (era: number): string[] => {
 	if (
 		era === 1419 ||

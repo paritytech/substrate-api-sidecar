@@ -183,6 +183,10 @@
         "status": "claimed"
       },
       {
+        "era": "6513",
+        "status": "claimed"
+      },
+      {
         "era": "6514",
         "status": "claimed"
       },
@@ -345,10 +349,6 @@
       {
         "era": "6554",
         "status": "claimed"
-      },
-      {
-        "era": "6555",
-        "status": "unclaimed"
       }
     ]
   }

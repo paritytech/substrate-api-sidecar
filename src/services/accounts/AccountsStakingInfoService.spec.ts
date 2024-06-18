@@ -45,6 +45,7 @@ import {
 	testAddressPolkadot,
 } from '../test-helpers/mock';
 import {
+	kusamaErasStakersMockedCall,
 	polkadotClaimedRewardsMockedCall,
 	polkadotErasStakersMockedCall,
 	polkadotErasStakersOverviewMockedCall,
@@ -157,6 +158,7 @@ const historicApi22939322 = {
 			activeEra: activeEraAt22939322,
 			currentEra: currentEraAt22939322,
 			erasStakersOverview: stakingerasStakersOverviewMockedCall,
+			erasStakers: kusamaErasStakersMockedCall,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
@@ -202,7 +204,7 @@ describe('AccountsStakingInfoService', () => {
 			(historicApi.query.staking.ledger as any) = ledgerAt;
 		});
 
-		it('works with a valid stash account (block 22939322) and returns eras claimed & unclaimed that include era 6514 (when the migration occurred in Kusama)', async () => {
+		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, testAddressKusama),

@@ -82,17 +82,20 @@ export class AccountsStakingInfoService extends AbstractService {
 			const currentEra = currentEraMaybeOption.unwrap().toNumber();
 
 			let depth = Number(api.consts.staking.historyDepth.toNumber());
+			let eraStart = currentEra - depth;
 			if (claimedRewards.length > 0) {
-				depth = currentEra - claimedRewards[claimedRewards.length - 1].era - 1;
+				depth = depth - claimedRewards.length;
+				eraStart = claimedRewards[claimedRewards.length - 1].era + 1;
 			}
-			const eraStart = currentEra - depth;
-			for (let e = eraStart; e <= currentEra; e++) {
+
+			for (let e = eraStart; e < eraStart + depth; e++) {
 				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
 				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
 				let erasStakers = null;
 				if (historicApi.query.staking?.erasStakers) {
 					erasStakers = await historicApi.query.staking.erasStakers(e, stash);
 				}
+
 				if (erasStakersOverview.isSome) {
 					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
 					const eraStatus =
