@@ -4259,15 +4259,26 @@ components:
           format: unsignedInteger
         claimedRewards:
           type: array
-          description: Array of eras for which the stakers behind a validator have
-            claimed rewards. Only updated for _validators._ This array is populated with
-            values from `stakingLedger.legacyClaimedRewards` or `stakingLedger.claimedRewards`,
-            as well as the `query.staking.claimedRewards` call, depending on whether the queried block
-            is before or after the migration. For more details on the implementation and the migration,
-            refer to the related PR and linked issue.
+          description: Array of objects, each containing an `era` and its corresponding `status`,
+            which represents the rewards status of the stakers backing a validator. Only updated
+            for _validators._ This array is populated with values from `stakingLedger.legacyClaimedRewards`
+            or `stakingLedger.claimedRewards`, as well as the `query.staking.claimedRewards` call, depending
+            on whether the queried block is before or after the migration. For more details on the implementation
+            and the migration, refer to the related PR and linked issue.
           items:
-            type: string
-            format: unsignedInteger
+            type: object
+            properties:
+              era:
+                type: string
+                description: The era for which we check the rewards status.
+                format: unsignedInteger
+              status:
+                type: string
+                description: The rewards status of the stakers backing a validator.
+                enum:
+                - claimed
+                - unclaimed
+                - partially claimed
       description: The staking ledger.
     StakingProgress:
       type: object
