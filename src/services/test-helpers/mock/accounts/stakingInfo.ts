@@ -19,10 +19,11 @@ import { Hash } from '@polkadot/types/interfaces';
 import type {
 	PalletStakingRewardDestination,
 	PalletStakingSlashingSlashingSpans,
+	SpStakingExposure,
 	SpStakingPagedExposureMetadata,
 } from '@polkadot/types/lookup';
 
-import { kusamRegistryV1002000 } from '../../../../test-helpers/registries';
+import { kusamaRegistryV1002000, polkadotRegistryV1002000 } from '../../../../test-helpers/registries';
 
 export const stakingClaimedRewardsMockedCall = (era: number): string[] => {
 	if (era === 6512 || era === 6555) {
@@ -35,9 +36,9 @@ export const stakingClaimedRewardsMockedCall = (era: number): string[] => {
 export const stakingerasStakersOverviewMockedCall = (era: number): Promise<Option<SpStakingPagedExposureMetadata>> => {
 	return Promise.resolve().then(() => {
 		if (era === 6512 || era === 6513) {
-			return kusamRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', null);
+			return kusamaRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', null);
 		} else {
-			return kusamRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', {
+			return kusamaRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', {
 				total: 140425643066389,
 				own: 5340420989561,
 				nominatorCount: 187,
@@ -52,7 +53,7 @@ export const stakingslashingSpansMockedCall = (
 	_address: string,
 ): Promise<Option<PalletStakingSlashingSlashingSpans>> =>
 	Promise.resolve().then(() =>
-		kusamRegistryV1002000.createType('Option<PalletStakingSlashingSlashingSpans>', {
+		kusamaRegistryV1002000.createType('Option<PalletStakingSlashingSlashingSpans>', {
 			spanIndex: 9,
 			lastStart: 2251,
 			lastNonzeroSlash: 2249,
@@ -65,7 +66,101 @@ export const stakingPayeeMockedCall = (
 	_address: string,
 ): Promise<Option<PalletStakingRewardDestination>> =>
 	Promise.resolve().then(() =>
-		kusamRegistryV1002000.createType('Option<PalletStakingRewardDestination>', {
+		kusamaRegistryV1002000.createType('Option<PalletStakingRewardDestination>', {
 			Account: 'GLEJRAEdGxLhNEH2AWAtjhUYVrcRWxbYSemvVv2JwxBG2fg',
+		}),
+	);
+
+export const polkadotClaimedRewardsMockedCall = (era: number): string[] => {
+	if (
+		era === 1419 ||
+		era === 1421 ||
+		era === 1423 ||
+		(era >= 1426 && era <= 1449) ||
+		era === 1458 ||
+		(era >= 1460 && era <= 1465) ||
+		era === 1468
+	) {
+		return ['0'];
+	} else if (
+		era === 1420 ||
+		era === 1422 ||
+		era === 1424 ||
+		era === 1425 ||
+		(era >= 1450 && era <= 1457) ||
+		era === 1459 ||
+		era === 1466 ||
+		era === 1467
+	) {
+		return ['0', '1'];
+	} else {
+		return [];
+	}
+};
+
+export const polkadotErasStakersOverviewMockedCall = (era: number): Promise<Option<SpStakingPagedExposureMetadata>> => {
+	return Promise.resolve().then(() => {
+		if (era === 1421 || era === 1423 || (era >= 1426 && era <= 1449) || era === 1458 || (era >= 1460 && era <= 1465)) {
+			return polkadotRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', {
+				total: 140425643066389,
+				own: 5340420989561,
+				nominatorCount: 187,
+				pageCount: 1,
+			});
+		} else if (
+			era === 1420 ||
+			era === 1422 ||
+			era === 1424 ||
+			era === 1425 ||
+			(era >= 1450 && era <= 1457) ||
+			era === 1459 ||
+			(era >= 1466 && era <= 1470)
+		) {
+			return polkadotRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', {
+				total: 140425643066389,
+				own: 5340420989561,
+				nominatorCount: 187,
+				pageCount: 2,
+			});
+		} else {
+			return polkadotRegistryV1002000.createType('Option<SpStakingPagedExposureMetadata>', null);
+		}
+	});
+};
+
+const stakersTotal = polkadotRegistryV1002000.createType('Compact<u128>', 140425643066389);
+const stakersOwn = polkadotRegistryV1002000.createType('Compact<u128>', 7749798828817);
+const stakersOthers = polkadotRegistryV1002000.createType('Vec<SpStakingIndividualExposure>', []);
+
+export const polkadotErasStakersMockedCall = (_era: number, _address: string): Promise<SpStakingExposure> => {
+	return Promise.resolve().then(() => {
+		return polkadotRegistryV1002000.createType('SpStakingExposure', {
+			total: stakersTotal,
+			own: stakersOwn,
+			others: stakersOthers,
+		});
+	});
+};
+
+export const polkadotPayeeMockedCall = (
+	_hash: Hash,
+	_address: string,
+): Promise<Option<PalletStakingRewardDestination>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV1002000.createType('Option<PalletStakingRewardDestination>', {
+			Account: '144A3ErZsuQsHauKCRxbrcySvTPEnQNVshpxa2kQ1DrYPPG',
+		}),
+	);
+
+export const polkadotSlashingSpansMockedCall = (
+	_hash: Hash,
+	_address: string,
+): Promise<Option<PalletStakingSlashingSlashingSpans>> =>
+	Promise.resolve().then(() =>
+		kusamaRegistryV1002000.createType('Option<PalletStakingSlashingSlashingSpans>', {
+			spanIndex: 1,
+			lastStart: 225,
+			lastNonzeroSlash: 0,
+			prior: [29],
 		}),
 	);

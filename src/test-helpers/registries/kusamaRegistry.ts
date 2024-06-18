@@ -69,9 +69,9 @@ export const kusamaRegistry = createKusamaRegistryDeprecated();
 /**
  *  Kusama v2025 TypeRegistry.
  */
-export const kusamRegistryV2025 = createKusamaRegistry(2025, kusamaMetadataV2008);
+export const kusamaRegistryV2025 = createKusamaRegistry(2025, kusamaMetadataV2008);
 
 /**
  *  Kusama v1002000 TypeRegistry.
  */
-export const kusamRegistryV1002000 = createKusamaRegistry(1002000, kusamaMetadataV1002000);
+export const kusamaRegistryV1002000 = createKusamaRegistry(1002000, kusamaMetadataV1002000);

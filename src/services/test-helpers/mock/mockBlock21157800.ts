@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { kusamaRegistryV1002000 } from '../../../test-helpers/registries';
-import block22939322 from './data/block22939322.json';
+import { polkadotRegistryV1002000 } from '../../../test-helpers/registries';
+import block21157800 from './data/block21157800.json';
 
 /**
- * Mock for Kusama block #22939322.
+ * Mock for Polkadot block #21157800.
  */
-export const mockBlock22939322 = kusamaRegistryV1002000.createType('Block', block22939322);
+export const mockBlock21157800 = polkadotRegistryV1002000.createType('Block', block21157800);
 
 /**
- * BlockHash for Kusama block #22939322.
+ * BlockHash for Polkadot block #21157800.
  */
-export const blockHash22939322 = kusamaRegistryV1002000.createType(
+export const blockHash21157800 = polkadotRegistryV1002000.createType(
 	'BlockHash',
-	'0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098',
+	'0x59de258cf9999635c866df7bc5f397d152892827f887d3629344cb3cebba134f',
 );
