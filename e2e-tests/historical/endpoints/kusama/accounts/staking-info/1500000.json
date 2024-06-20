@@ -8,11 +8,17 @@
         "stash": null
     },
     "numSlashingSpans": "3",
+    "nominations": null,
     "staking": {
         "stash": "HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK",
         "total": "497576923500",
         "active": "497576923500",
         "unlocking": [],
-        "lastReward": "552"
+        "claimedRewards": [
+            {
+                "era": "552",
+                "status": "claimed"
+            }
+        ]
     }
 }

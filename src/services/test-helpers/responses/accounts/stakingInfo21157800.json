@@ -8,6 +8,7 @@
     "account": "144A3ErZsuQsHauKCRxbrcySvTPEnQNVshpxa2kQ1DrYPPG"
   },
   "numSlashingSpans": "2",
+  "nominations": null,
   "staking": {
     "stash": "11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ",
     "total": "7749798828817",

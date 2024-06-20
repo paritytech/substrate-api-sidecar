@@ -8,30 +8,85 @@
         "stash": null
     },
     "numSlashingSpans": "2",
+    "nominations": null,
     "staking": {
         "stash": "HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK",
         "total": "497576923500",
         "active": "497576923500",
         "unlocking": [],
         "claimedRewards": [
-            "1532",
-            "1533",
-            "1534",
-            "1535",
-            "1536",
-            "1537",
-            "1538",
-            "1539",
-            "1540",
-            "1541",
-            "1542",
-            "1543",
-            "1544",
-            "1545",
-            "1546",
-            "1547",
-            "1548",
-            "1549"
+            {
+                "era": "1532",
+                "status": "claimed"
+            },
+            {
+                "era": "1533",
+                "status": "claimed"
+            },
+            {
+                "era": "1534",
+                "status": "claimed"
+            },
+            {
+                "era": "1535",
+                "status": "claimed"
+            },
+            {
+                "era": "1536",
+                "status": "claimed"
+            },
+            {
+                "era": "1537",
+                "status": "claimed"
+            },
+            {
+                "era": "1538",
+                "status": "claimed"
+            },
+            {
+                "era": "1539",
+                "status": "claimed"
+            },
+            {
+                "era": "1540",
+                "status": "claimed"
+            },
+            {
+                "era": "1541",
+                "status": "claimed"
+            },
+            {
+                "era": "1542",
+                "status": "claimed"
+            },
+            {
+                "era": "1543",
+                "status": "claimed"
+            },
+            {
+                "era": "1544",
+                "status": "claimed"
+            },
+            {
+                "era": "1545",
+                "status": "claimed"
+            },
+            {
+                "era": "1546",
+                "status": "claimed"
+            },
+            {
+                "era": "1547",
+                "status": "claimed"
+            },
+            {
+                "era": "1548",
+                "status": "claimed"
+            },
+            {
+                "era": "1549",
+                "status": "claimed"
+            }
         ]
     }
 }

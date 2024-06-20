@@ -66,17 +66,28 @@ export class AccountsStakingInfoService extends AbstractService {
 				`Staking ledger could not be found for controller address "${controller.toString()}"`,
 			);
 		}
+
 		let claimedRewardsEras: u32[] = [];
 		let claimedRewards: IEraStatus[] = [];
+
+		if ((stakingLedger as unknown as IStakingLedger)?.lastReward) {
+			const e = (stakingLedger as unknown as IStakingLedger)?.lastReward?.unwrap().toNumber();
+			if (e) {
+				claimedRewards.push({ era: e, status: 'claimed' });
+			}
+		}
+
 		if (stakingLedger?.legacyClaimedRewards) {
 			claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
 		} else {
 			claimedRewardsEras = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
 		}
-		claimedRewards = claimedRewardsEras.map((element) => ({
-			era: element.toNumber(),
-			status: 'claimed',
-		}));
+		if (claimedRewardsEras) {
+			claimedRewards = claimedRewardsEras.map((element) => ({
+				era: element.toNumber(),
+				status: 'claimed',
+			}));
+		}
 		if (historicApi.query.staking?.claimedRewards) {
 			const currentEraMaybeOption = await historicApi.query.staking.currentEra();
 			const currentEra = currentEraMaybeOption.unwrap().toNumber();
@@ -116,11 +127,18 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
 
+		let nominations = null;
+		if (historicApi.query.staking.nominators) {
+			const nominationsOption = await historicApi.query.staking.nominators(stash);
+			nominations = nominationsOption.unwrapOr(null);
+		}
+
 		return {
 			at,
 			controller,
 			rewardDestination,
 			numSlashingSpans,
+			nominations,
 			staking: {
 				stash: stakingLedger.stash,
 				total: stakingLedger.total,

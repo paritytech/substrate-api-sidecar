@@ -17,7 +17,11 @@
 import type { u32, u128, Vec } from '@polkadot/types';
 import type { Compact, Option } from '@polkadot/types/codec';
 import type { AccountId } from '@polkadot/types/interfaces/runtime';
-import type { PalletStakingRewardDestination, PalletStakingUnlockChunk } from '@polkadot/types/lookup';
+import type {
+	PalletStakingNominations,
+	PalletStakingRewardDestination,
+	PalletStakingUnlockChunk,
+} from '@polkadot/types/lookup';
 
 import { IAt } from '.';
 
@@ -31,6 +35,7 @@ export interface IStakingLedger {
 	total: Compact<u128>;
 	active: Compact<u128>;
 	unlocking: Vec<PalletStakingUnlockChunk>;
+	lastReward?: Option<u32> | null;
 	claimedRewards?: IEraStatus[] | u32[];
 }
 
@@ -39,5 +44,6 @@ export interface IAccountStakingInfo {
 	controller: AccountId;
 	rewardDestination: Option<PalletStakingRewardDestination>;
 	numSlashingSpans: number;
+	nominations: PalletStakingNominations | null;
 	staking: IStakingLedger | null;
 }
