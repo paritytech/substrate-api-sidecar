@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { u32, Vec } from '@polkadot/types';
-import { BlockHash } from '@polkadot/types/interfaces';
+import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, IStakingLedger } from 'src/types/responses';
 
@@ -70,17 +70,20 @@ export class AccountsStakingInfoService extends AbstractService {
 		let claimedRewardsEras: u32[] = [];
 		let claimedRewards: IEraStatus[] = [];
 
-		if ((stakingLedger as unknown as IStakingLedger)?.lastReward) {
-			const e = (stakingLedger as unknown as IStakingLedger)?.lastReward?.unwrap().toNumber();
-			if (e) {
-				claimedRewards.push({ era: e, status: 'claimed' });
+		if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
+			const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
+			if (lastReward.isSome) {
+				const e = (stakingLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
+				if (e) {
+					claimedRewards.push({ era: e, status: 'claimed' });
+				}
 			}
 		}
 
 		if (stakingLedger?.legacyClaimedRewards) {
 			claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
 		} else {
-			claimedRewardsEras = (stakingLedger as unknown as IStakingLedger)?.claimedRewards as Vec<u32>;
+			claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
 		}
 		if (claimedRewardsEras) {
 			claimedRewards = claimedRewardsEras.map((element) => ({
@@ -90,6 +93,9 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 		if (historicApi.query.staking?.claimedRewards) {
 			const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+			if (currentEraMaybeOption.isNone) {
+				throw new InternalServerError('CurrentEra is None when Some was expected');
+			}
 			const currentEra = currentEraMaybeOption.unwrap().toNumber();
 
 			let depth = Number(api.consts.staking.historyDepth.toNumber());

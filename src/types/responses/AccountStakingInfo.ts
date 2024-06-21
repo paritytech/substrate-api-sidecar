@@ -35,8 +35,7 @@ export interface IStakingLedger {
 	total: Compact<u128>;
 	active: Compact<u128>;
 	unlocking: Vec<PalletStakingUnlockChunk>;
-	lastReward?: Option<u32> | null;
-	claimedRewards?: IEraStatus[] | u32[];
+	claimedRewards?: IEraStatus[];
 }
 
 export interface IAccountStakingInfo {
