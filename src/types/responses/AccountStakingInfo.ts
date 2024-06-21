@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { u32, u128, Vec } from '@polkadot/types';
+import type { u128, Vec } from '@polkadot/types';
 import type { Compact, Option } from '@polkadot/types/codec';
 import type { AccountId } from '@polkadot/types/interfaces/runtime';
 import type {

@@ -17,7 +17,7 @@
 import type { u32, Vec } from '@polkadot/types';
 import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
-import { IAccountStakingInfo, IEraStatus, IStakingLedger } from 'src/types/responses';
+import { IAccountStakingInfo, IEraStatus } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
