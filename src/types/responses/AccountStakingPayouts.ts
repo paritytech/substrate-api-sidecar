@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,6 +15,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { IAt, IEraPayouts } from '.';
+
+export enum IStatus {
+	claimed = 'claimed',
+	partiallyClaimed = 'partially claimed',
+	unclaimed = 'unclaimed',
+	undefined = 'undefined',
+}
+
+export interface IStatusPerEra {
+	[era: number]: IStatus;
+}
 
 export interface IAccountStakingPayouts {
 	at: IAt;

@@ -47,6 +47,7 @@ import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
+import { IStatus, IStatusPerEra } from '../../types/responses/AccountStakingPayouts';
 import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
@@ -83,9 +84,10 @@ interface IAdjustedDeriveEraExposure extends DeriveEraExposure {
 /**
  * Commission and staking ledger of a validator
  */
-interface ICommissionAndLedger {
+interface ICommissionLedgerAndClaimed {
 	commission: Perbill;
 	validatorLedger?: PalletStakingStakingLedger;
+	claimedRewards?: IStatusPerEra;
 }
 
 /**
@@ -95,7 +97,7 @@ interface IEraData {
 	deriveEraExposure: IAdjustedDeriveEraExposure;
 	eraRewardPoints: PalletStakingEraRewardPoints | EraPoints;
 	erasValidatorRewardOption: Option<BalanceOf>;
-	exposuresWithCommission?: (ICommissionAndLedger & {
+	exposuresWithCommission?: (ICommissionLedgerAndClaimed & {
 		validatorId: string;
 	})[];
 	eraIndex: EraIndex;
@@ -327,7 +329,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		startEra: number,
 		deriveErasExposures: IAdjustedDeriveEraExposure[],
 		isKusama: boolean,
-	): Promise<ICommissionAndLedger[][]> {
+	): Promise<ICommissionLedgerAndClaimed[][]> {
 		// Cache StakingLedger to reduce redundant queries to node
 		const validatorLedgerCache: { [id: string]: PalletStakingStakingLedger } = {};
 
@@ -341,7 +343,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 
 			const singleEraCommissions = nominatedExposures.map(({ validatorId }) =>
-				this.fetchCommissionAndLedger(historicApi, validatorId, currEra, validatorLedgerCache, isKusama),
+				this.fetchCommissionLedgerAndClaimed(historicApi, validatorId, currEra, validatorLedgerCache, isKusama),
 			);
 
 			return Promise.all(singleEraCommissions);
@@ -382,7 +384,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// Iterate through validators that this nominator backs and calculate payouts for the era
 		const payouts: IPayout[] = [];
-		for (const { validatorId, commission: validatorCommission, validatorLedger } of exposuresWithCommission) {
+		for (const {
+			validatorId,
+			commission: validatorCommission,
+			validatorLedger,
+			claimedRewards,
+		} of exposuresWithCommission) {
 			const totalValidatorRewardPoints = deriveEraExposure.validatorIndex
 				? this.extractTotalValidatorRewardPoints(eraRewardPoints, validatorId, deriveEraExposure.validatorIndex)
 				: this.extractTotalValidatorRewardPoints(eraRewardPoints, validatorId);
@@ -401,31 +408,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			/**
-			 * Check if the reward has already been claimed.
-			 *
-			 * It is important to note that the following examines types that are both current and historic.
-			 * When going back far enough in certain chains types such as `StakingLedgerTo240` are necessary for grabbing
-			 * any reward data.
-			 */
-			let indexOfEra: number;
-			if (validatorLedger.legacyClaimedRewards) {
-				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
-				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
-			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
-				const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
-				if (lastReward.isSome) {
-					indexOfEra = lastReward.unwrap().toNumber();
-				} else {
-					indexOfEra = -1;
-				}
+			// Setting the value of `claimed` based on `claimedRewards`
+			let claimed;
+			if (claimedRewards && claimedRewards[eraIndex.toNumber()]) {
+				claimed = claimedRewards[eraIndex.toNumber()];
 			} else if (eraIndex.toNumber() < 518 && isKusama) {
-				indexOfEra = eraIndex.toNumber();
+				claimed = IStatus.claimed;
 			} else {
-				continue;
+				claimed = IStatus.undefined;
 			}
-			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
 				continue;
 			}
@@ -465,17 +456,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param era the era to query
 	 * @param validatorLedgerCache object mapping validatorId => StakingLedger to limit redundant queries
 	 */
-	private async fetchCommissionAndLedger(
+	private async fetchCommissionLedgerAndClaimed(
 		historicApi: ApiDecoration<'promise'>,
 		validatorId: string,
 		era: number,
 		validatorLedgerCache: { [id: string]: PalletStakingStakingLedger },
 		isKusama: boolean,
-	): Promise<ICommissionAndLedger> {
+	): Promise<ICommissionLedgerAndClaimed> {
 		let commission: Perbill;
 		let validatorLedger;
 		let commissionPromise;
 		const ancient: boolean = era < 518;
+		const claimedRewards: IStatusPerEra = {};
 		if (validatorId in validatorLedgerCache) {
 			validatorLedger = validatorLedgerCache[validatorId];
 			let prefs: PalletStakingValidatorPrefs | ValidatorPrefsWithCommission;
@@ -515,22 +507,61 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				};
 			} else {
 				validatorLedger = validatorLedgerOption.unwrap();
-				if (
-					historicApi.query.staking.claimedRewards &&
-					(await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap())).length ===
-						(await historicApi.query.staking.erasStakersOverview(era, validatorControllerOption.unwrap()))
-							.unwrap()
-							.pageCount.toNumber()
-				) {
-					const eraVal: u32 = historicApi.registry.createType('u32', era);
-					validatorLedger.legacyClaimedRewards.push(eraVal);
+				/**
+				 * Check if the reward has already been claimed.
+				 *
+				 * It is important to note that the following examines types that are both current and historic.
+				 * When going back far enough in certain chains types such as `StakingLedgerTo240` are necessary for grabbing
+				 * any reward data.
+				 */
+
+				let claimedRewardsEras: u32[] = [];
+				if ((validatorLedger as unknown as StakingLedgerTo240)?.lastReward) {
+					const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
+					if (lastReward.isSome) {
+						const e = (validatorLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
+						if (e) {
+							claimedRewards[e] = IStatus.claimed;
+						}
+					}
+				}
+				if (validatorLedger?.legacyClaimedRewards) {
+					claimedRewardsEras = validatorLedger?.legacyClaimedRewards;
+				} else {
+					claimedRewardsEras = (validatorLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
+				}
+				if (claimedRewardsEras) {
+					claimedRewardsEras.forEach((era) => {
+						claimedRewards[era.toNumber()] = IStatus.claimed;
+					});
+				}
+				if (historicApi.query.staking?.claimedRewards) {
+					const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(era, validatorId);
+					const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(era, validatorId);
+					let erasStakers = null;
+					if (historicApi.query.staking?.erasStakers) {
+						erasStakers = await historicApi.query.staking.erasStakers(era, validatorId);
+					}
+					if (erasStakersOverview.isSome) {
+						const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+						const eraStatus =
+							claimedRewardsPerEra.length === 0
+								? IStatus.unclaimed
+								: claimedRewardsPerEra.length === pageCount
+								  ? IStatus.claimed
+								  : IStatus.partiallyClaimed;
+						claimedRewards[era] = eraStatus;
+					} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
+						// if erasStakers.total > 0, then the pageCount is always 1
+						// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
+						const eraStatus = claimedRewardsPerEra.length === 1 ? IStatus.claimed : IStatus.unclaimed;
+						claimedRewards[era] = eraStatus;
+					}
 				}
 			}
-
-			validatorLedgerCache[validatorId] = validatorLedger;
 		}
 
-		return { commission, validatorLedger };
+		return { commission, validatorLedger, claimedRewards };
 	}
 
 	/**
