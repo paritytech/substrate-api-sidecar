@@ -16,10 +16,12 @@
 
 import { Balance, Perbill, RewardPoint } from '@polkadot/types/interfaces';
 
+import { IStatus } from './AccountStakingPayouts';
+
 export interface IPayout {
 	validatorId: string;
 	nominatorStakingPayout: string;
-	claimed: boolean;
+	claimed: IStatus;
 	validatorCommission: Perbill;
 	totalValidatorRewardPoints: RewardPoint;
 	totalValidatorExposure: Balance;
