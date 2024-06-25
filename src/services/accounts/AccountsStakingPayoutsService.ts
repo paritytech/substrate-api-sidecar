@@ -417,7 +417,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else {
 				claimed = IStatus.undefined;
 			}
-			if (unclaimedOnly && claimed) {
+			if (unclaimedOnly && claimed === IStatus.claimed) {
 				continue;
 			}
 
