@@ -14,6 +14,11 @@
         "total": "497576923500",
         "active": "497576923500",
         "unlocking": [],
-        "lastReward": "552"
+        "claimedRewards": [
+            {
+                "era": "552",
+                "status": "claimed"
+            }
+        ]
     }
 }

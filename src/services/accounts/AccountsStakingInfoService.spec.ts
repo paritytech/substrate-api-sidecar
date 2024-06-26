@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -23,9 +23,42 @@ import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/registries';
-import { blockHash789629, defaultMockApi, testAddress, testAddressController } from '../test-helpers/mock';
+import { kusamaRegistryV1002000, polkadotRegistry, polkadotRegistryV1002000 } from '../../test-helpers/registries';
+import {
+	activeEraAt21157800,
+	activeEraAt22939322,
+	blockHash789629,
+	blockHash21157800,
+	blockHash22939322,
+	currentEraAt21157800,
+	currentEraAt22939322,
+	defaultMockApi,
+	defaultMockApi21157800,
+	defaultMockApi22939322,
+	testAddress,
+	testAddressController,
+	testAddressControllerKusama,
+	testAddressControllerPolkadot,
+	testAddressKusama,
+	testAddressPayeeKusama,
+	testAddressPayeePolkadot,
+	testAddressPolkadot,
+} from '../test-helpers/mock';
+import {
+	kusamaErasStakersMockedCall,
+	polkadotClaimedRewardsMockedCall,
+	polkadotErasStakersMockedCall,
+	polkadotErasStakersOverviewMockedCall,
+	polkadotPayeeMockedCall,
+	polkadotSlashingSpansMockedCall,
+	stakingClaimedRewardsMockedCall,
+	stakingerasStakersOverviewMockedCall,
+	stakingPayeeMockedCall,
+	stakingslashingSpansMockedCall,
+} from '../test-helpers/mock/accounts/stakingInfo';
 import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
+import response21157800 from '../test-helpers/responses/accounts/stakingInfo21157800.json';
+import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 export const bondedAt = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
@@ -63,6 +96,80 @@ const mockApi = {
 
 const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
 
+export const bondedAt21157800 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Option<AccountId>', testAddressControllerPolkadot));
+
+export const ledgerAt21157800 = (_hash: Hash, _address: string): Promise<Option<StakingLedger>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV1002000.createType(
+			'Option<StakingLedger>',
+			'0x005fa73637062be3fbfb972174a5bc85a2f6cc0350cb84aa9d657422796bfdf10b119b01640c070b119b01640c070088690500006a0500006b0500006c0500006d0500006e0500006f050000700500007105000072050000730500007405000075050000760500007705000078050000790500007a0500007b0500007c0500007d0500007e0500007f050000800500008105000082050000830500008405000085050000860500008705000088050000890500008a050000',
+		),
+	);
+
+export const payee21157800 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Option<AccountId>', testAddressPayeePolkadot));
+
+const historicApi21157800 = {
+	query: {
+		staking: {
+			bonded: bondedAt21157800,
+			ledger: ledgerAt21157800,
+			payee: polkadotPayeeMockedCall,
+			slashingSpans: polkadotSlashingSpansMockedCall,
+			claimedRewards: polkadotClaimedRewardsMockedCall,
+			activeEra: activeEraAt21157800,
+			currentEra: currentEraAt21157800,
+			erasStakersOverview: polkadotErasStakersOverviewMockedCall,
+			erasStakers: polkadotErasStakersMockedCall,
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApiPolkadot21157800 = {
+	...defaultMockApi21157800,
+	at: (_hash: Hash) => historicApi21157800,
+} as unknown as ApiPromise;
+
+const accountStakingInfoService21157800 = new AccountsStakingInfoService(mockApiPolkadot21157800);
+
+export const bondedAt22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Option<AccountId>', testAddressControllerKusama));
+
+export const ledgerAt22939322 = (_hash: Hash, _address: string): Promise<Option<StakingLedger>> =>
+	Promise.resolve().then(() =>
+		kusamaRegistryV1002000.createType(
+			'Option<StakingLedger>',
+			'0x6c6ed8531e6c0b882af0a42f2f23ef0a102b5d49cb5f5a24ede72d53ffce83170b7962e569db040b7962e569db0400a84719000048190000491900004a1900004b1900004c1900004d1900004e1900004f190000501900005119000052190000531900005419000055190000561900005719000058190000591900005a1900005b1900005c1900005d1900005e1900005f190000601900006119000062190000631900006419000065190000661900006719000068190000691900006a1900006b1900006c1900006d1900006e1900006f19000070190000',
+		),
+	);
+
+export const payee22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
+	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Option<AccountId>', testAddressPayeeKusama));
+
+const historicApi22939322 = {
+	query: {
+		staking: {
+			bonded: bondedAt22939322,
+			ledger: ledgerAt22939322,
+			payee: stakingPayeeMockedCall,
+			slashingSpans: stakingslashingSpansMockedCall,
+			claimedRewards: stakingClaimedRewardsMockedCall,
+			activeEra: activeEraAt22939322,
+			currentEra: currentEraAt22939322,
+			erasStakersOverview: stakingerasStakersOverviewMockedCall,
+			erasStakers: kusamaErasStakersMockedCall,
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApiKusama22939322 = {
+	...defaultMockApi22939322,
+	at: (_hash: Hash) => historicApi22939322,
+} as unknown as ApiPromise;
+
+const accountStakingInfoService22939322 = new AccountsStakingInfoService(mockApiKusama22939322);
+
 describe('AccountsStakingInfoService', () => {
 	describe('fetchAccountStakingInfo', () => {
 		it('works with a valid stash address (block 789629)', async () => {
@@ -95,6 +202,22 @@ describe('AccountsStakingInfoService', () => {
 			);
 
 			(historicApi.query.staking.ledger as any) = ledgerAt;
+		});
+
+		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, testAddressKusama),
+				),
+			).toStrictEqual(response22939322);
+		});
+
+		it('works with a valid stash account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419) & partially claimed (era 1468) (Polkadot)', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService21157800.fetchAccountStakingInfo(blockHash21157800, testAddressPolkadot),
+				),
+			).toStrictEqual(response21157800);
 		});
 	});
 });
