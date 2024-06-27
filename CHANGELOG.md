@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.1..v19.0.2) (2024-06-27)
+
+### Fix
+
+- fix: add nominations in staking-info endpoint ([#1448](https://github.com/paritytech/substrate-api-sidecar/pull/1448)) ([b048648](https://github.com/paritytech/substrate-api-sidecar/commit/b04864823e16e4a450b76c9d6c9953b13bc9baaf))
+
+### Chore
+
+- chore(deps): update polkadot-js deps ([#1458](https://github.com/paritytech/substrate-api-sidecar/pull/1458)) ([2f7a4f1](https://github.com/paritytech/substrate-api-sidecar/commit/2f7a4f116e3405148f5742e65d2a1178bc8240f1))
+- chore(deps): bump ws from 8.16.0 to 8.17.1 ([#1456](https://github.com/paritytech/substrate-api-sidecar/pull/1456)) ([92f39d0](https://github.com/paritytech/substrate-api-sidecar/commit/92f39d05269cbf7aa0e8abf522177f22186dae68))
+- chore: bump ws from 8.5.0 to 8.17.1 in /docs ([#1455](https://github.com/paritytech/substrate-api-sidecar/pull/1455)) ([2b63e9b](https://github.com/paritytech/substrate-api-sidecar/commit/2b63e9b785d8d603dece2588f8bd7c19d4c553cf))
+- chore(deps): bump braces from 3.0.2 to 3.0.3 ([#1451](https://github.com/paritytech/substrate-api-sidecar/pull/1451)) ([9fffaff](https://github.com/paritytech/substrate-api-sidecar/commit/9fffaff4af4f53a7be662575dd8ce5394b4249e4))
+- chore: bump braces from 3.0.2 to 3.0.3 in /docs ([#1450](https://github.com/paritytech/substrate-api-sidecar/pull/1450)) ([edb6049](https://github.com/paritytech/substrate-api-sidecar/commit/edb604910f8a03255b2cc34524bdb47d4edd4703))
+- chore(yarn): bump yarn to 4.2.2 ([#1444](https://github.com/paritytech/substrate-api-sidecar/pull/1444)) ([1fe1b46](https://github.com/paritytech/substrate-api-sidecar/commit/1fe1b46f9529f50e9256016a74284c796e288245))
+
+## Compatibility
+
+Tested against:
+- Polkadot v1013000
+- Kusama v1013000
+- Westend v1013000
+
 ## [19.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.0..v19.0.1) (2024-05-24)
 
 ### Fix
