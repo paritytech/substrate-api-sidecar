@@ -6,6 +6,16 @@ Make sure the polkadot-js deps are up to date. A complete guide can be found [he
 
 **Frequency**: A good update frequency is every week, but we should also monitor Polkadot runtime upgrades, as they may impact PJS and, consequently, Sidecar. In that case, we should implement any necessary changes as soon as possible.
 
+### Monitor runtime upgrades
+[Monitoring runtime upgrades](https://wiki.polkadot.network/docs/learn-runtime-upgrades#monitoring-runtime-changes) is another essential task for the maintainer and it involves several key steps:
+- Review issues and pull requests that will be included in the upcoming releases of both the [polkadot-sdk](https://github.com/paritytech/polkadot-sdk) and [polkadot-fellows/runtimes](https://github.com/polkadot-fellows/runtimes) repositories.
+- Understand the changes thoroughly to identify any potential impact or disruptions to Sidecar endpoints.
+- Create a tracking issue (or directly a pull request) to highlight the updates needed in Sidecar for the new release, ensuring backward compatibility with historical blocks.
+- Stay updated with changes being implemented in the [polkadot-js API](https://github.com/polkadot-js/api) that might be helpful with the necessary modifications in Sidecar.
+- Evaluate how these changes may impact critical Sidecar users, such as exchanges, wallets and custodians, and determine if a notification message needs to be sent (this should be coordinated with the Core Fellowship).
+- Changes are first implemented in a testnet, such as Westend, so the maintainer can apply the corresponding updates in Sidecar and test them against the testnet.
+- Later, these changes are also applied in production chains (e.g. Kusama, Polkadot) through runtime upgrades. These upgrades can be tracked via the corresponding proposals/referenda and their enactment blocks and dates. It is also recommended to test Sidecar functionality against the production chain once the release is live.
+
 ### Provide support
 - Monitor the repository for new issues and respond or provide the necessary fixes as soon as possible.
 - Monitor [Substrate & Polkadot Stack Exchange](https://substrate.stackexchange.com/) for any Sidecar related questions and respond promptly.
@@ -90,6 +100,7 @@ The frequency is somewhat flexible.
     - Keep polkadot-js dependencies up to date.
 
 - Biweekly
+    - Monitor runtime upgrades.
     - Keep other dependencies up to date.
     - Perform a release.
 
