@@ -352,6 +352,9 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
 
+### Guide
+A more complete list of the maintainer's tasks can be found in the [MAINTENANCE.md](./guides/MAINTENANCE.md) guide.
+
 ## Hardware requirements
 
 ### Disk Space
