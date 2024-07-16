@@ -46,6 +46,7 @@ import { polymeshControllers } from './polymeshControllers';
 import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
+import { availControllers } from './availControllers';
 
 const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
@@ -77,6 +78,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	bifrost_polkadot: bifrostPolkadotControllers,
 	heiko: heikoControllers,
 	parallel: parallelControllers,
+	avail: availControllers,
 };
 
 /**
