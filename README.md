@@ -331,8 +331,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 ### Updating polkadot-js dependencies
 
-1. Every Monday the polkadot-js ecosystem will usually come out with a new release. It's important that we keep up,
-and read the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions run `yarn up "@polkadot/*"`.
+1. Whenever the polkadot-js ecosystem releases a new version, it's important to keep up with these updates and review the release notes for any breaking changes or high priority updates. In order to update all the dependencies and resolutions, create a new branch, such as `yourname-update-pjs`, and then run `yarn up "@polkadot/*"` in that branch.
 
     - @polkadot/api [release notes](https://github.com/polkadot-js/api/releases)
     - @polkadot/util-crypto [release notes](https://github.com/polkadot-js/common/releases)
@@ -349,9 +348,12 @@ and read the release notes for any breaking changes or high priority updates. In
    yarn test:latest-e2e-tests
    ```
 
-1. Commit the dependency updates with a name like `fix(deps): update pjs api` (title depending on what got updated, see commit history for other examples of this), and wait to get it merged.
+1. Commit the dependency updates with a name like `chore(deps): update polkadot-js deps` (adjust the title based on what was updated; refer to the commit history for examples). Then, wait for it to be merged.
 
 1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
+
+### Guide
+A more complete list of the maintainer's tasks can be found in the [MAINTENANCE.md](./guides/MAINTENANCE.md) guide.
 
 ## Hardware requirements
 

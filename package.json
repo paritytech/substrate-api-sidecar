@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "19.0.2",
   "name": "@substrate/api-sidecar",
   "description": "REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.",
   "homepage": "https://github.com/paritytech/substrate-api-sidecar#readme",
@@ -50,25 +50,25 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot/api": "^11.0.2",
-    "@polkadot/api-contract": "^11.0.2",
+    "@polkadot/api": "^12.0.1",
+    "@polkadot/api-contract": "^12.0.1",
     "@polkadot/util-crypto": "^12.6.2",
     "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",
     "confmgr": "^1.0.10",
-    "express": "^4.18.3",
+    "express": "^4.19.2",
     "express-winston": "^4.2.0",
     "http-errors": "^2.0.0",
-    "lru-cache": "^10.2.0",
-    "prom-client": "^15.1.0",
+    "lru-cache": "^10.2.2",
+    "prom-client": "^15.1.2",
     "rxjs": "^7.8.1",
-    "winston": "^3.12.0"
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@substrate/dev": "^0.7.1",
-    "@types/argparse": "2.0.15",
+    "@types/argparse": "2.0.16",
     "@types/express": "^4.17.21",
-    "@types/express-serve-static-core": "^4.17.43",
+    "@types/express-serve-static-core": "^4.19.1",
     "@types/http-errors": "2.0.4",
     "@types/lru-cache": "^7.10.10",
     "@types/morgan": "1.9.9",
@@ -82,5 +82,5 @@
     "polkadot",
     "kusama"
   ],
-  "packageManager": "yarn@4.1.0"
+  "packageManager": "yarn@4.2.2"
 }

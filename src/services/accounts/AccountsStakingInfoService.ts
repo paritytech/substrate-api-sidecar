@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -68,11 +68,18 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
 
+		let nominations = null;
+		if (historicApi.query.staking.nominators) {
+			const nominationsOption = await historicApi.query.staking.nominators(stash);
+			nominations = nominationsOption.unwrapOr(null);
+		}
+
 		return {
 			at,
 			controller,
 			rewardDestination,
 			numSlashingSpans,
+			nominations,
 			staking: stakingLedger,
 		};
 	}

@@ -97,6 +97,7 @@ interface IEraData {
 	erasValidatorRewardOption: Option<BalanceOf>;
 	exposuresWithCommission?: (ICommissionAndLedger & {
 		validatorId: string;
+		nominatorIndex: number;
 	})[];
 	eraIndex: EraIndex;
 }
@@ -204,13 +205,32 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const nominatedExposures = this.deriveNominatedExposures(address, deriveEraExposure);
 
 				// Zip the `validatorId` with its associated `commission`, making the data easier to reason
-				// about downstream
-				const exposuresWithCommission = nominatedExposures?.map(({ validatorId }, idx) => {
-					return {
-						validatorId,
-						...eraCommissions[idx],
-					};
-				});
+				// about downstream. In this object we added the `nominatorIndex` to account for the rare cases
+				// where a nominator has multiple nominations (with different stakes) on the same validator and
+				// at the same era.
+				const exposuresWithCommission = [];
+				if (nominatedExposures) {
+					for (let idx = 0; idx < nominatedExposures.length; idx++) {
+						let index = 0;
+						const { validatorId } = nominatedExposures[idx];
+						const nominatorInstances = nominatedExposures.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						const exposuresValidatorLen = exposuresWithCommission.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						if (nominatorInstances > 1) {
+							index = exposuresValidatorLen;
+						}
+						if (eraCommissions[idx]) {
+							exposuresWithCommission.push({
+								validatorId,
+								...eraCommissions[idx],
+								nominatorIndex: index,
+							});
+						}
+					}
+				}
 
 				return {
 					deriveEraExposure,
@@ -382,7 +402,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// Iterate through validators that this nominator backs and calculate payouts for the era
 		const payouts: IPayout[] = [];
-		for (const { validatorId, commission: validatorCommission, validatorLedger } of exposuresWithCommission) {
+		for (const {
+			validatorId,
+			commission: validatorCommission,
+			validatorLedger,
+			nominatorIndex,
+		} of exposuresWithCommission) {
 			const totalValidatorRewardPoints = deriveEraExposure.validatorIndex
 				? this.extractTotalValidatorRewardPoints(eraRewardPoints, validatorId, deriveEraExposure.validatorIndex)
 				: this.extractTotalValidatorRewardPoints(eraRewardPoints, validatorId);
@@ -391,7 +416,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const { totalExposure, nominatorExposure } = this.extractExposure(address, validatorId, deriveEraExposure);
+			const { totalExposure, nominatorExposure } = this.extractExposure(
+				address,
+				validatorId,
+				deriveEraExposure,
+				nominatorIndex,
+			);
 
 			if (nominatorExposure === undefined) {
 				// This should not happen once at this point, but here for safety
@@ -656,7 +686,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * @param deriveEraExposure result of deriveEraExposure
 	 */
-	private extractExposure(address: string, validatorId: string, deriveEraExposure: IAdjustedDeriveEraExposure) {
+	private extractExposure(
+		address: string,
+		validatorId: string,
+		deriveEraExposure: IAdjustedDeriveEraExposure,
+		nominatorIndex: number,
+	) {
 		// Get total stake behind validator
 		let totalExposure = {} as Compact<u128>;
 		if (deriveEraExposure.validators[validatorId].total) {
@@ -688,7 +723,17 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				? deriveEraExposure.validatorsOverview[address].unwrap().own
 				: ({} as unknown as Compact<u128>);
 		} else {
-			nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+			// We need to account for the rare cases where a nominator has multiple nominations (with different stakes)
+			// on the same validator and at the same era.
+			const nominatorInstancesLen = exposureAllNominators.filter(
+				(exposure) => exposure.who.toString() === address,
+			).length;
+			const nominatorInstances = exposureAllNominators.filter((exposure) => exposure.who.toString() === address);
+			if (nominatorInstancesLen > 1) {
+				nominatorExposure = nominatorInstances[nominatorIndex].value;
+			} else {
+				nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+			}
 		}
 		return {
 			totalExposure,
