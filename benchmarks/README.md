@@ -79,6 +79,8 @@ In order to run each benchmark you should `cd` into the appropriate directory yo
 
 NOTE: Some benchmarks might have multiple `sh` scripts with different names in order to run specific benchmarks.
 
+There is also the option to run all the benchmarks' init.sh files by running `sh init.sh` from `./benchmarks`.
+
 ### Running via Scripts (Root)
 
 Below are flags, and examples on how to run these benchmarks from the root of the repository. See <root>/scripts/README.md for more information. 
