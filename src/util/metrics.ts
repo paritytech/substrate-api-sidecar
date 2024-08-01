@@ -176,7 +176,7 @@ export default class Metrics_App {
 		return route;
 	}
 
-	middleware() {
+	preMiddleware() {
 		return (req: Request, res: Response, next: () => void) => {
 			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
 
@@ -210,6 +210,7 @@ export default class Metrics_App {
 				// blocks/:id
 				if (this.getRoute(req).includes('blocks') && req.params?.number) {
 					console.log('blocks/:id', this.getRoute(req), req.params?.number);
+					console.log(res);
 				}
 				// blocks?range
 				if (this.getRoute(req).includes('blocks') && req.query?.range) {
