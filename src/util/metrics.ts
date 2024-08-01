@@ -186,7 +186,6 @@ export default class Metrics_App {
 			const end = request_duration_seconds.startTimer();
 
 			res.once('finish', () => {
-
 				if (res.statusCode >= 400) {
 					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
 					request_errors.inc();
