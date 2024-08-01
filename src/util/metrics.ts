@@ -5,40 +5,69 @@ import client from 'prom-client';
 import { Log } from '../logging/Log';
 import { parseArgs } from '../parseArgs';
 
-export const httpErrorCounter = new client.Counter({
-	name: 'sas_http_errors',
-	help: 'Number of HTTP Errors',
-});
-
-export const httpRouteHistogram = new client.Histogram({
-	name: 'sas_https_request_duration_seconds',
-	help: 'Duration of HTTP requests in seconds',
-	labelNames: ['method', 'route', 'status_code'],
-	buckets: [0.1, 0.5, 1, 1.5, 2, 3, 4, 5],
-});
-
-export const httpResponseSizeHistogram = new client.Histogram({
-	name: 'sas_http_response_size_bytes',
-	help: 'Size of HTTP responses in bytes',
-	labelNames: ['method', 'route', 'status_code'],
-	buckets: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000],
-});
-
-export const httpResponseSizeLatencyRatio = new client.Histogram({
-	name: 'sas_http_response_size_latency_ratio',
-	help: 'Ratio of response size to latency',
-	labelNames: ['method', 'route', 'status_code'],
-	buckets: [64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144],
-});
-
 interface IAppConfiguration {
 	port: number;
 	host: string;
 }
 
+interface IMetric {
+	name: string;
+	help: string;
+	type: MetricType;
+	buckets?: number[];
+	labels?: string[];
+}
+
+export const enum MetricType {
+	Counter = 'counter',
+	Gauge = 'gauge',
+	Histogram = 'histogram',
+	Summary = 'summary',
+}
+
+const metrics: IMetric[] = [
+	{
+		name: 'request_errors',
+		help: 'Number of HTTP Errors',
+		type: MetricType.Counter,
+	},
+	{
+		name: 'request_success',
+		help: 'Number of HTTP Success',
+		type: MetricType.Counter,
+	},
+	{
+		name: 'total_requests',
+		help: 'Total number of HTTP Requests',
+		type: MetricType.Counter,
+	},
+	{
+		name: 'request_duration_seconds',
+		help: 'Duration of HTTP requests in seconds',
+		labels: ['method', 'route', 'status_code'],
+		buckets: [0.1, 0.5, 1, 1.5, 2, 3, 4, 5],
+		type: MetricType.Histogram,
+	},
+	{
+		name: 'response_size_bytes',
+		help: 'Size of HTTP responses in bytes',
+		labels: ['method', 'route', 'status_code'],
+		buckets: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000],
+		type: MetricType.Histogram,
+	},
+	{
+		name: 'response_size_latency_ratio',
+		help: 'Ratio of response size to latency',
+		labels: ['method', 'route', 'status_code'],
+		buckets: [64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144],
+		type: MetricType.Histogram,
+	},
+];
+
 export default class Metrics_App {
 	private app: Application;
 	private registry: client.Registry;
+	private metrics: Record<string, client.Metric>;
 	private includeQueryParams: boolean;
 	private readonly port: number;
 	private readonly host: string;
@@ -54,8 +83,8 @@ export default class Metrics_App {
 		this.app = express();
 		this.host = host;
 		this.registry = new client.Registry();
-
-		this.metricsEndpoint();
+		this.metrics = {};
+		this.init();
 	}
 
 	listen(): void {
@@ -63,6 +92,46 @@ export default class Metrics_App {
 		this.app.listen(this.port, this.host, () => {
 			logger.info(`Metrics Server started at http://${this.host}:${this.port}/metrics`);
 		});
+	}
+
+	private createMetricByType(prefix = 'sas', metric: IMetric) {
+		const prefixedName = prefix + '_' + metric.name;
+		if (prefixedName in this.metrics) {
+			return this.metrics[prefixedName];
+		}
+
+		switch (metric.type) {
+			case MetricType.Counter: {
+				const counter = new client.Counter({
+					name: prefixedName,
+					help: metric.help,
+					labelNames: metric.labels || [],
+					registers: [this.registry],
+				});
+
+				this.registry.registerMetric(counter);
+				this.metrics[prefixedName] = counter;
+				return counter;
+			}
+			case MetricType.Histogram: {
+				const histogram = new client.Histogram({
+					name: prefixedName,
+					help: metric.help,
+					labelNames: metric.labels || [],
+					registers: [this.registry],
+					buckets: metric.buckets || [0.1, 0.5, 1, 1.5, 2, 3, 4, 5],
+				});
+
+				this.metrics[prefixedName] = histogram;
+				return histogram;
+			}
+			case MetricType.Gauge:
+				throw new Error('Gauge not implemented');
+			case MetricType.Summary:
+				throw new Error('Summary not implemented');
+			default:
+				throw new Error('Unknown metric type');
+		}
 	}
 
 	private getRoute(req: Request) {
@@ -109,42 +178,57 @@ export default class Metrics_App {
 
 	middleware() {
 		return (req: Request, res: Response, next: () => void) => {
-			const responseTimer = httpRouteHistogram.startTimer();
+			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
+
+			// request count metrics
+			tot_requests.inc();
+			const request_duration_seconds = this.metrics['sas_request_duration_seconds'] as client.Histogram;
+			const end = request_duration_seconds.startTimer();
+
 			res.once('finish', () => {
+
+				if (res.statusCode >= 400) {
+					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
+					request_errors.inc();
+				} else {
+					const request_success = this.metrics['sas_request_success'] as client.Counter;
+					request_success.inc();
+				}
+
 				let resContentLength = '0';
 				if ('_contentLength' in res && res['_contentLength'] != null) {
 					resContentLength = res['_contentLength'] as string;
 				} else {
-					// Try header
 					if (res.hasHeader('Content-Length')) {
 						resContentLength = res.getHeader('Content-Length') as string;
 					}
 				}
 
-				// measures the response size
-				httpResponseSizeHistogram
+				// response size metrics
+				const response_size_bytes = this.metrics['sas_response_size_bytes'] as client.Histogram;
+				response_size_bytes
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength));
+				// latency metrics
+				end({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
 
-				// measures the response time
-				responseTimer({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
-
-				// measures the ratio of response size to latency
-				httpResponseSizeLatencyRatio
+				// response size to latency ratio
+				const response_size_latency_ratio = this.metrics['sas_response_size_latency_ratio'] as client.Histogram;
+				response_size_latency_ratio
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-					.observe(parseFloat(resContentLength) / responseTimer());
+					.observe(parseFloat(resContentLength) / end());
 			});
+
 			next();
 		};
 	}
 
-	private metricsEndpoint() {
-		this.registry.registerMetric(httpErrorCounter);
-		this.registry.registerMetric(httpRouteHistogram);
-		this.registry.registerMetric(httpResponseSizeHistogram);
-		this.registry.registerMetric(httpResponseSizeLatencyRatio);
+	private init() {
+		// Set up
+		metrics.forEach((metric) => this.createMetricByType('sas', metric));
 
-		client.collectDefaultMetrics({ ...this.registry, prefix: 'sas_' });
+		client.collectDefaultMetrics({ register: this.registry, prefix: 'sas_' });
+
 		// Set up the metrics endpoint
 		this.app.get('/metrics', (_req: Request, res: Response) => {
 			void (async () => {
