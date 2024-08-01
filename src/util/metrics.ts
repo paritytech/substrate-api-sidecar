@@ -338,23 +338,6 @@ export default class Metrics_App {
 		};
 	}
 
-	postMiddleware() {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		return (_err: unknown, _req: Request, res: Response, next: () => void) => {
-			// try {
-			// 	const oldJSON = res.json;
-			// 	res.json = async (value) => {
-			// 		const data = await Promise.resolve(value);
-			// 		log.debug({ user, resBody: data }, "response info.");
-			// 		return oldJSON.call(res, data);
-			// 	}
-			// } catch (error) {
-			// 	return next(error);
-			// }
-			next();
-		};
-	}
-
 	private init() {
 		// Set up
 		metrics.forEach((metric) => this.createMetricByType('sas', metric));
