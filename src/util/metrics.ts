@@ -188,6 +188,8 @@ export default class Metrics_App {
 			res.once('finish', () => {
 				if (res.statusCode >= 400) {
 					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
+
+					console.log('request_errors', request_errors);
 					request_errors.inc();
 				} else {
 					const request_success = this.metrics['sas_request_success'] as client.Counter;
@@ -202,7 +204,17 @@ export default class Metrics_App {
 						resContentLength = res.getHeader('Content-Length') as string;
 					}
 				}
+				// route specific metrics
+				// ------ blocks -------
 
+				// blocks/:id
+				if (this.getRoute(req).includes('blocks') && req.params?.number) {
+					console.log('blocks/:id', this.getRoute(req), req.params?.number);
+				}
+				// blocks?range
+				if (this.getRoute(req).includes('blocks') && req.query?.range) {
+					console.log('blocks?range', this.getRoute(req), req.query?.range);
+				}
 				// response size metrics
 				const response_size_bytes = this.metrics['sas_response_size_bytes'] as client.Histogram;
 				response_size_bytes
