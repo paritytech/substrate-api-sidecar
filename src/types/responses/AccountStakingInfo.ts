@@ -27,7 +27,7 @@ import { IAt } from '.';
 
 export interface IEraStatus {
 	era: number;
-	status: 'claimed' | 'partially claimed' | 'unclaimed';
+	status: 'claimed' | 'unclaimed' | 'undefined';
 }
 
 export interface IStakingLedger {

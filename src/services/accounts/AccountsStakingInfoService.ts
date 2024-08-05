@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { ApiDecoration } from '@polkadot/api/types';
 import type { u32, Vec } from '@polkadot/types';
 import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -67,45 +68,61 @@ export class AccountsStakingInfoService extends AbstractService {
 			);
 		}
 
-		let claimedRewardsEras: u32[] = [];
+		let nominations = null;
+		if (historicApi.query.staking.nominators) {
+			const nominationsOption = await historicApi.query.staking.nominators(stash);
+			nominations = nominationsOption.unwrapOr(null);
+		}
+
 		let claimedRewards: IEraStatus[] = [];
 
-		if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
-			const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
-			if (lastReward.isSome) {
-				const e = (stakingLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
-				if (e) {
-					claimedRewards.push({ era: e, status: 'claimed' });
+		const depth = Number(api.consts.staking.historyDepth.toNumber());
+
+		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+		if (currentEraMaybeOption.isNone) {
+			throw new InternalServerError('CurrentEra is None when Some was expected');
+		}
+		const currentEra = currentEraMaybeOption.unwrap().toNumber();
+		console.log('currentEra: ', currentEra);
+
+		const eraStart = currentEra - depth;
+		let oldCallChecked = false;
+		for (let e = eraStart; e < eraStart + depth; e++) {
+			let claimedRewardsEras: u32[] = [];
+
+			// Setting as claimed only the era that is defined in the lastReward field
+			if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
+				const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
+				if (lastReward.isSome) {
+					const e = (stakingLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
+					if (e) {
+						claimedRewards.push({ era: e, status: 'claimed' });
+					}
 				}
+			} else if (stakingLedger?.legacyClaimedRewards) {
+				claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
+			} else {
+				claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
 			}
-		}
-
-		if (stakingLedger?.legacyClaimedRewards) {
-			claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
-		} else {
-			claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
-		}
-		if (claimedRewardsEras) {
-			claimedRewards = claimedRewardsEras.map((element) => ({
-				era: element.toNumber(),
-				status: 'claimed',
-			}));
-		}
-		if (historicApi.query.staking?.claimedRewards) {
-			const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-			if (currentEraMaybeOption.isNone) {
-				throw new InternalServerError('CurrentEra is None when Some was expected');
+			if (!oldCallChecked) {
+				if (claimedRewardsEras.length > 0) {
+					claimedRewards = claimedRewardsEras.map((element) => ({
+						era: element.toNumber(),
+						status: 'claimed',
+					}));
+					e = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber() + 1;
+				}
+				oldCallChecked = true;
 			}
-			const currentEra = currentEraMaybeOption.unwrap().toNumber();
+			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
+				const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+				if (currentEraMaybeOption.isNone) {
+					throw new InternalServerError('CurrentEra is None when Some was expected');
+				}
+				// const currentEra = currentEraMaybeOption.unwrap().toNumber();
+				// let eraStart = currentEra - depth;
 
-			let depth = Number(api.consts.staking.historyDepth.toNumber());
-			let eraStart = currentEra - depth;
-			if (claimedRewards.length > 0) {
-				depth = depth - claimedRewards.length;
-				eraStart = claimedRewards[claimedRewards.length - 1].era + 1;
-			}
-
-			for (let e = eraStart; e < eraStart + depth; e++) {
+				// for (let e = eraStart; e < eraStart + depth; e++) {
 				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
 				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
 				let erasStakers = null;
@@ -113,31 +130,47 @@ export class AccountsStakingInfoService extends AbstractService {
 					erasStakers = await historicApi.query.staking.erasStakers(e, stash);
 				}
 
-				if (erasStakersOverview.isSome) {
-					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
-					const eraStatus =
-						claimedRewardsPerEra.length === 0
-							? 'unclaimed'
-							: claimedRewardsPerEra.length === pageCount
-							  ? 'claimed'
-							  : 'partially claimed';
-					claimedRewards.push({ era: e, status: eraStatus });
-				} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
-					// if erasStakers.total > 0, then the pageCount is always 1
-					// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
-					const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
-					claimedRewards.push({ era: e, status: eraStatus });
+				const validators = (await historicApi.query.session.validators()).toHuman() as string[];
+				const isValidator = validators.includes(stash);
+				/**
+				 * If the account is a validator, then the rewards from their own stake + commission are claimed
+				 * if at least one page of the erasStakersPaged is claimed (it can be any page).
+				 * https://github.com/paritytech/polkadot-sdk/blob/776e95748901b50ff2833a7d27ea83fd91fbf9d1/substrate/frame/staking/src/pallet/impls.rs#L357C30-L357C54
+				 * code that shows that when `do_payout_stakers_by_page` is called, first the validator is paid out.
+				 */
+				if (isValidator) {
+					if (erasStakersOverview.isSome) {
+						const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+						let nominatorClaimed = false;
+						if (claimedRewardsPerEra.length != pageCount) {
+							nominatorClaimed = await this.getNominatorClaimed(historicApi, e, stash, pageCount, claimedRewardsPerEra);
+						}
+						const eraStatus =
+							claimedRewardsPerEra.length === 0
+								? 'unclaimed'
+								: claimedRewardsPerEra.length === pageCount
+								  ? 'claimed'
+								  : (!isValidator && nominatorClaimed === true) || (isValidator && claimedRewardsPerEra.length != 0)
+								    ? 'claimed'
+								    : !isValidator && nominatorClaimed === false
+								      ? 'unclaimed'
+								      : 'undefined';
+						claimedRewards.push({ era: e, status: eraStatus });
+					} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
+						// if erasStakers.total > 0, then the pageCount is always 1
+						// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
+						const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
+						claimedRewards.push({ era: e, status: eraStatus });
+					}
+				} else {
+					nominations?.forEach((nomination) => {
+						console.log('nomination', nomination);
+						// this.getValidatorInfo(historicApi, e, nomination, pageCount, claimedRewardsPerEra);
+					});
 				}
 			}
 		}
-
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
-
-		let nominations = null;
-		if (historicApi.query.staking.nominators) {
-			const nominationsOption = await historicApi.query.staking.nominators(stash);
-			nominations = nominationsOption.unwrapOr(null);
-		}
 
 		return {
 			at,
@@ -154,4 +187,30 @@ export class AccountsStakingInfoService extends AbstractService {
 			},
 		};
 	}
+
+	private async getNominatorClaimed(
+		historicApi: ApiDecoration<'promise'>,
+		era: number,
+		stash: string,
+		pageCount: number,
+		claimedRewardsPerEra: Vec<u32>,
+	): Promise<boolean> {
+		for (let i = 0; i < pageCount; i++) {
+			const nominatorsRewardsPerPage = await historicApi.query.staking.erasStakersPaged(era, stash, i);
+			// const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+			const nominatorFound = nominatorsRewardsPerPage.isSome
+				? nominatorsRewardsPerPage.unwrap().others.find((nominator) => nominator.who.toString() === stash)
+				: null;
+			const claimedEra = claimedRewardsPerEra.find((era) => era === (i as unknown as u32));
+			if (nominatorFound && claimedEra) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// private async getValidatorInfo(historicApi: ApiDecoration<'promise'>, stash: string): any {
+	// 	const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
+	// 	return [erasStakersOverview];
+	// }
 }

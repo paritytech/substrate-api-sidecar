@@ -30,6 +30,7 @@ import {
 	blockHash789629,
 	blockHash21157800,
 	blockHash22939322,
+	currentEraAt,
 	currentEraAt21157800,
 	currentEraAt22939322,
 	defaultMockApi,
@@ -56,6 +57,8 @@ import {
 	stakingPayeeMockedCall,
 	stakingslashingSpansMockedCall,
 } from '../test-helpers/mock/accounts/stakingInfo';
+import { validators21157800Hex } from '../test-helpers/mock/data/validators21157800Hex';
+import { validators22939322Hex } from '../test-helpers/mock/data/validators22939322Hex';
 import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
 import response21157800 from '../test-helpers/responses/accounts/stakingInfo21157800.json';
 import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
@@ -85,6 +88,7 @@ const historicApi = {
 			ledger: ledgerAt,
 			payee: payeeAt,
 			slashingSpans: slashingSpansAt,
+			currentEra: currentEraAt,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
@@ -110,6 +114,9 @@ export const ledgerAt21157800 = (_hash: Hash, _address: string): Promise<Option<
 export const payee21157800 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Option<AccountId>', testAddressPayeePolkadot));
 
+const validatorsAt21157800 = () =>
+	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Vec<AccountId32>', validators21157800Hex));
+
 const historicApi21157800 = {
 	query: {
 		staking: {
@@ -122,6 +129,10 @@ const historicApi21157800 = {
 			currentEra: currentEraAt21157800,
 			erasStakersOverview: polkadotErasStakersOverviewMockedCall,
 			erasStakers: polkadotErasStakersMockedCall,
+			erasStakersPaged: polkadotErasStakersMockedCall,
+		},
+		session: {
+			validators: validatorsAt21157800,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
@@ -147,6 +158,9 @@ export const ledgerAt22939322 = (_hash: Hash, _address: string): Promise<Option<
 export const payee22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Option<AccountId>', testAddressPayeeKusama));
 
+const validatorsAt22939322 = () =>
+	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Vec<AccountId32>', validators22939322Hex));
+
 const historicApi22939322 = {
 	query: {
 		staking: {
@@ -159,6 +173,9 @@ const historicApi22939322 = {
 			currentEra: currentEraAt22939322,
 			erasStakersOverview: stakingerasStakersOverviewMockedCall,
 			erasStakers: kusamaErasStakersMockedCall,
+		},
+		session: {
+			validators: validatorsAt22939322,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;

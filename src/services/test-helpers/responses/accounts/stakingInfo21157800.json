@@ -349,7 +349,11 @@
       },
       {
         "era": "1468",
-        "status": "partially claimed"
+        "status": "claimed"
+      },
+      {
+        "era": "1469",
+        "status": "unclaimed"
       }
     ]
   }
