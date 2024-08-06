@@ -19,7 +19,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/plugins
 /docs/.yarn
-
+yarn.lock
 # Tests
 /coverage
 /.nyc_output
