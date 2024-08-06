@@ -5,6 +5,7 @@
 /target
 yarn-error.log
 **/*.rs.bk
+.env
 .env.*
 !.env.local
 !.env.docker
@@ -18,6 +19,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/plugins
 /docs/.yarn
+.yarn.lock
 
 # Tests
 /coverage

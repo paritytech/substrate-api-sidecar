@@ -18,6 +18,8 @@ servers:
   description: Polkadot Asset Hub Parity public sidecar
 - url: https://kusama-asset-hub-public-sidecar.parity-chains.parity.io/
   description: Kusama Asset Hub Parity public sidecar
+- url: http://localhost:8080
+  description: Localhost
 tags:
 - name: accounts
 - name: blocks

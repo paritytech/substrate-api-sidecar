@@ -5,8 +5,6 @@ import client from 'prom-client';
 import { Log } from '../logging/Log';
 import { parseArgs } from '../parseArgs';
 
-// TODO: cleanup code regarding route specific metrics (possibly implement a more generic solution)
-
 interface IAppConfiguration {
 	port: number;
 	host: string;
@@ -94,6 +92,18 @@ const metrics: IMetric[] = [
 	},
 ];
 
+type Body = {
+	extrinsics?: Record<string, unknown>[];
+	[key: string]: unknown;
+};
+
+interface Query extends Request {
+	route: {
+		path: string;
+		[key: string]: unknown;
+	};
+}
+
 export default class Metrics_App {
 	private app: Application;
 	private registry: client.Registry;
@@ -164,12 +174,10 @@ export default class Metrics_App {
 		}
 	}
 
-	private getRoute(req: Request) {
+	private getRoute(req: Query) {
 		let route = req.baseUrl;
 		if (req.route) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (req.route?.path !== '/') {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+			if (req.route.path !== '/') {
 				route = route ? route + req.route?.path : req.route?.path;
 			}
 
@@ -206,24 +214,21 @@ export default class Metrics_App {
 		return route;
 	}
 
-	private blocksControllerMetrics(req: Request, res: Response, end: () => number) {
-		if (req.params?.number) {
-			const response_size_bytes = this.metrics['sas_extrinsics_per_request'] as client.Histogram;
-			response_size_bytes
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-				.observe(res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0);
+	private blocksControllerMetrics(req: Query, res: Response, end: () => number) {
+		const body = res.locals.body as Body | Body[];
+
+		if (req.params?.number && !Array.isArray(body)) {
+			const extrinscs = body.extrinsics ? body.extrinsics.length : 0;
 
 			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
 			const seconds = end();
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-			const extrinscs = res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0;
+
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(extrinscs / seconds);
 
 			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const blocks = 1;
 			extrinsics_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
@@ -237,9 +242,8 @@ export default class Metrics_App {
 
 		if (req.query?.range) {
 			let totExtrinsics = 0;
-			if (Array.isArray(res.locals.body)) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				totExtrinsics = res.locals.body.reduce((current: number, block: { [x: string]: unknown }) => {
+			if (Array.isArray(body)) {
+				totExtrinsics = body.reduce((current: number, block: { [x: string]: unknown }) => {
 					const extrinsics = block['extrinsics'];
 
 					if (Array.isArray(extrinsics)) {
@@ -249,8 +253,7 @@ export default class Metrics_App {
 					return current;
 				}, 0);
 			} else {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				const extrinsics = res.locals.body['extrinsics'];
+				const extrinsics = body['extrinsics'];
 				if (Array.isArray(extrinsics)) {
 					totExtrinsics = extrinsics.length;
 				}
@@ -263,15 +266,12 @@ export default class Metrics_App {
 
 			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
 			const seconds = end();
-			// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			// console.log({ totExtrinsics });
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics / seconds);
 
 			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const blocks = Array.isArray(res.locals.body) ? res.locals.body.length : 1;
+			const blocks = Array.isArray(body) ? body.length : 1;
 			extrinsics_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics / blocks);
@@ -284,7 +284,7 @@ export default class Metrics_App {
 	}
 
 	preMiddleware() {
-		return (req: Request, res: Response, next: () => void) => {
+		return (req: Query, res: Response, next: () => void) => {
 			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
 
 			// request count metrics
@@ -293,8 +293,7 @@ export default class Metrics_App {
 			const end = request_duration_seconds.startTimer();
 
 			const oldJson = res.json;
-			res.json = (body) => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			res.json = (body: Body) => {
 				res.locals.body = body;
 				return oldJson.call(res, body);
 			};
