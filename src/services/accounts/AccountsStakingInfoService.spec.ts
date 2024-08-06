@@ -229,7 +229,7 @@ describe('AccountsStakingInfoService', () => {
 			).toStrictEqual(response22939322);
 		});
 
-		it('works with a valid stash account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419) & partially claimed (era 1468) (Polkadot)', async () => {
+		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService21157800.fetchAccountStakingInfo(blockHash21157800, testAddressPolkadot),

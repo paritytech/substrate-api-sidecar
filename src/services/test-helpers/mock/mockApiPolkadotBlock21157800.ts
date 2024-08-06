@@ -197,7 +197,7 @@ const traceBlock = () =>
 	Promise.resolve().then(() => polkadotRegistryV1002000.createType('TraceBlockResponse', traceBlockRPC.result));
 
 /**
- * Deafult Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
+ * Default Mock polkadot-js ApiPromise. Values are largely meant to be accurate for block
  * #21157800, which is what most Service unit tests are based on.
  */
 export const defaultMockApi21157800 = {

@@ -83,9 +83,7 @@ export class AccountsStakingInfoService extends AbstractService {
 			throw new InternalServerError('CurrentEra is None when Some was expected');
 		}
 		const currentEra = currentEraMaybeOption.unwrap().toNumber();
-		console.log('currentEra: ', currentEra);
-
-		const eraStart = currentEra - depth;
+		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
 		let oldCallChecked = false;
 		for (let e = eraStart; e < eraStart + depth; e++) {
 			let claimedRewardsEras: u32[] = [];
@@ -119,10 +117,6 @@ export class AccountsStakingInfoService extends AbstractService {
 				if (currentEraMaybeOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
-				// const currentEra = currentEraMaybeOption.unwrap().toNumber();
-				// let eraStart = currentEra - depth;
-
-				// for (let e = eraStart; e < eraStart + depth; e++) {
 				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
 				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
 				let erasStakers = null;
@@ -150,11 +144,13 @@ export class AccountsStakingInfoService extends AbstractService {
 								? 'unclaimed'
 								: claimedRewardsPerEra.length === pageCount
 								  ? 'claimed'
-								  : (!isValidator && nominatorClaimed === true) || (isValidator && claimedRewardsPerEra.length != 0)
-								    ? 'claimed'
-								    : !isValidator && nominatorClaimed === false
-								      ? 'unclaimed'
-								      : 'undefined';
+								  : isValidator && claimedRewardsPerEra.length != pageCount
+								    ? 'partially claimed'
+								    : !isValidator && nominatorClaimed === true
+								      ? 'claimed'
+								      : !isValidator && nominatorClaimed === false
+								        ? 'unclaimed'
+								        : 'undefined';
 						claimedRewards.push({ era: e, status: eraStatus });
 					} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
 						// if erasStakers.total > 0, then the pageCount is always 1
@@ -168,6 +164,8 @@ export class AccountsStakingInfoService extends AbstractService {
 						// this.getValidatorInfo(historicApi, e, nomination, pageCount, claimedRewardsPerEra);
 					});
 				}
+			} else {
+				break;
 			}
 		}
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
