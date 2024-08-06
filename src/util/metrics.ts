@@ -206,6 +206,83 @@ export default class Metrics_App {
 		return route;
 	}
 
+	private blocksControllerMetrics(req: Request, res: Response, end: () => number) {
+		if (req.params?.number) {
+			const response_size_bytes = this.metrics['sas_extrinsics_per_request'] as client.Histogram;
+			response_size_bytes
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+				.observe(res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0);
+
+			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
+			const seconds = end();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+			const extrinscs = res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0;
+			extrinsics_per_second
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(extrinscs / seconds);
+
+			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const blocks = 1;
+			extrinsics_per_block
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(extrinscs / blocks);
+
+			const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
+			seconds_per_block
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(seconds / blocks);
+		}
+
+		if (req.query?.range) {
+			let totExtrinsics = 0;
+			if (Array.isArray(res.locals.body)) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				totExtrinsics = res.locals.body.reduce((current: number, block: { [x: string]: unknown }) => {
+					const extrinsics = block['extrinsics'];
+
+					if (Array.isArray(extrinsics)) {
+						return current + extrinsics.length;
+					}
+
+					return current;
+				}, 0);
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const extrinsics = res.locals.body['extrinsics'];
+				if (Array.isArray(extrinsics)) {
+					totExtrinsics = extrinsics.length;
+				}
+			}
+
+			const extrinsics_in_request = this.metrics['sas_extrinsics_in_request'] as client.Histogram;
+			extrinsics_in_request
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(totExtrinsics);
+
+			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
+			const seconds = end();
+			// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			// console.log({ totExtrinsics });
+			extrinsics_per_second
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(totExtrinsics / seconds);
+
+			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const blocks = Array.isArray(res.locals.body) ? res.locals.body.length : 1;
+			extrinsics_per_block
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(totExtrinsics / blocks);
+
+			const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
+			seconds_per_block
+				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
+				.observe(seconds / blocks);
+		}
+	}
+
 	preMiddleware() {
 		return (req: Request, res: Response, next: () => void) => {
 			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
@@ -239,84 +316,11 @@ export default class Metrics_App {
 						resContentLength = res.getHeader('Content-Length') as string;
 					}
 				}
+
 				// route specific metrics
-				// ------ blocks -------
 
-				// blocks/:id
-				if (this.getRoute(req).includes('blocks') && req.params?.number) {
-					const response_size_bytes = this.metrics['sas_extrinsics_per_request'] as client.Histogram;
-					response_size_bytes
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-						.observe(res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0);
-
-					const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
-					const seconds = end();
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-					const extrinscs = res.locals.body['extrinsics'] ? res.locals.body['extrinsics'].length || 0 : 0;
-					extrinsics_per_second
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(extrinscs / seconds);
-
-					const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					const blocks = 1;
-					extrinsics_per_block
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(extrinscs / blocks);
-
-					const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
-					seconds_per_block
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(seconds / blocks);
-				}
-
-				// blocks?range
-				if (this.getRoute(req).includes('blocks') && req.query?.range) {
-					let totExtrinsics = 0;
-					if (Array.isArray(res.locals.body)) {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						totExtrinsics = res.locals.body.reduce((current: number, block: { [x: string]: unknown }) => {
-							const extrinsics = block['extrinsics'];
-
-							if (Array.isArray(extrinsics)) {
-								return current + extrinsics.length;
-							}
-
-							return current;
-						}, 0);
-					} else {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-						const extrinsics = res.locals.body['extrinsics'];
-						if (Array.isArray(extrinsics)) {
-							totExtrinsics = extrinsics.length;
-						}
-					}
-
-					const extrinsics_in_request = this.metrics['sas_extrinsics_in_request'] as client.Histogram;
-					extrinsics_in_request
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(totExtrinsics);
-
-					const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
-					const seconds = end();
-					// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					// console.log({ totExtrinsics });
-					extrinsics_per_second
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(totExtrinsics / seconds);
-
-					const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					const blocks = Array.isArray(res.locals.body) ? res.locals.body.length : 1;
-					extrinsics_per_block
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(totExtrinsics / blocks);
-
-					const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
-					seconds_per_block
-						.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-						.observe(seconds / blocks);
+				if (this.getRoute(req).includes('blocks')) {
+					this.blocksControllerMetrics(req, res, end);
 				}
 
 				// response size metrics
@@ -333,7 +337,6 @@ export default class Metrics_App {
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength) / end());
 			});
-
 			next();
 		};
 	}
