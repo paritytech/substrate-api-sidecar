@@ -32,6 +32,10 @@ export const parseArgs = (): Namespace => {
 		default: 9100,
 		help: 'specify the port number on which the prometheus metrics are exposed [default: 9100]',
 	});
+	parser.add_argument('-pq', '--prometheus-queryparams', {
+		action: 'store_true',
+		help: 'enambles query parameters in the prometheus metrics',
+	});
 
 	return parser.parse_args() as Namespace;
 };

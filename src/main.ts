@@ -65,9 +65,24 @@ async function main() {
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
+	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
+
+	if (args.prometheus) {
+		// Create Metrics App
+		const metricsApp = new Metrics_App({
+			port: 9100,
+			host: config.EXPRESS.HOST,
+		});
+
+		// Generate metrics middleware
+		preMiddlewares.push(metricsApp.preMiddleware());
+		// Start the Metrics server
+		metricsApp.listen();
+	}
+
 	// Create our App
 	const app = new App({
-		preMiddleware: [json(), middleware.httpLoggerCreate(logger)],
+		preMiddleware: preMiddlewares,
 		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
 			middleware.txError,
@@ -85,16 +100,6 @@ async function main() {
 
 	server.keepAliveTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT;
 	server.headersTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT + 5000;
-
-	if (args.prometheus) {
-		// Create Metrics App
-		const metricsApp = new Metrics_App({
-			port: 9100,
-			host: config.EXPRESS.HOST,
-		});
-		// Start the Metrics server
-		metricsApp.listen();
-	}
 }
 
 /**

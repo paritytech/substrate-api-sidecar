@@ -256,12 +256,33 @@ You can also define a custom port by running :
 yarn start --prometheus --prometheus-port=<YOUR_CUSTOM_PORT>
 ```
 
+You can also expand the metrics tracking capabilities to include query params by running:
+
+```bash
+yarn start --prometheus --prometheus-queryparams
+```
+
 The metrics endpoint can then be accessed :
 - on the default port : `http://127.0.0.1:9100/metrics` or
 - on your custom port if you defined one : `http://127.0.0.1:<YOUR_CUSTOM_PORT>/metrics`
 
-That way you will have access to the default prometheus metrics and one extra custom metric called `sas_http_errors` (of type counter). This counter is increased by 1 every time an http error has occured in sidecar.
+A JSON format response is available at `http://127.0.0.1:9100/metrics.json`.
 
+That way you will have access to the default prometheus node instance metrics and the following metrics will be emitted for each route:
+
+- `sas_request_errors_total`: type counter and tracks http errors occuring in sidecar
+- `sas_request_success_total`: type counter and tracks successfull http requests
+- `sas_requests_total`: type counter and tracks all http requests
+- `sas_request_duration_seconds`: type histogram and tracks the latency of the requests
+- `sas_response_size_bytes_seconds`: type histogram and tracks the response size of the requests
+- `sas_response_size_latency_ratio_seconds`: type histogram and tracks the response bytes per second of the requests
+
+The blocks controller also includes the following route-specific metrics:
+
+- `sas_extrinsics_in_request_count`: type histogram and tracks the number of extrinsics returned in the request when a range of blocks is queried
+- `sas_extrinsics_per_second_count`: type histogram and tracks the returned extrinics per second
+- `sas_extrinsics_per_block_count`: type histogram and tracks the returned extrinsics per block
+- `sas_seconds_per_block_count`: type histogram and tracks the request time per block
 
 ## Debugging fee and staking payout calculations
 
