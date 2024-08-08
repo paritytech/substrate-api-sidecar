@@ -268,13 +268,21 @@ The metrics endpoint can then be accessed :
 
 A JSON format response is available at `http://127.0.0.1:9100/metrics.json`.
 
-That way you will have access to the default prometheus metrics and a generic custom metric called `sas_http_errors` (of type counter). This counter is increased by 1 every time an http error has occured in sidecar.
+That way you will have access to the default prometheus node instance metrics and the following metrics will be emitted for each route:
 
-Moreover, the following metrics will be emitted for each route:
-- `sas_https_request_duration_seconds`: type histogram and tracks the latency of the requests
-- `sas_http_response_size_bytes`: type histogram and tracks the response size of the requests
-- `sas_http_response_size_latency_ratio`: type histogram and tracks the response bytes per second of the requests
+- `sas_request_errors`: type counter and tracks http errors occuring in sidecar
+- `sas_request_success`: type counter and tracks successfull http requests
+- `sas_total_requests`: type counter and tracks all http requests
+- `sas_request_duration_seconds`: type histogram and tracks the latency of the requests
+- `sas_response_size_bytes`: type histogram and tracks the response size of the requests
+- `sas_response_size_latency_ratio`: type histogram and tracks the response bytes per second of the requests
 
+The blocks controller also includes the following route-specific metrics:
+
+- `sas_extrinsics_in_request`: type histogram and tracks the number of extrinsics returned in the request
+- `sas_extrinsics_per_second`: type histogram and tracks the returned extrinics per second
+- `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
+- `sas_seconds_per_block`: type histogram and tracks the request time per block
 
 ## Debugging fee and staking payout calculations
 
