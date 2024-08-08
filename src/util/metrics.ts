@@ -220,21 +220,21 @@ export default class Metrics_App {
 		if (req.params?.number && !Array.isArray(body)) {
 			const extrinscs = body.extrinsics ? body.extrinsics.length : 0;
 
-			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
+			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
 			const seconds = end();
 
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(extrinscs / seconds);
 
-			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
+			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block_count'] as client.Histogram;
 
 			const blocks = 1;
 			extrinsics_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(extrinscs / blocks);
 
-			const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
+			const seconds_per_block = this.metrics['sas_seconds_per_block_count'] as client.Histogram;
 			seconds_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(seconds / blocks);
@@ -259,24 +259,24 @@ export default class Metrics_App {
 				}
 			}
 
-			const extrinsics_in_request = this.metrics['sas_extrinsics_in_request'] as client.Histogram;
+			const extrinsics_in_request = this.metrics['sas_extrinsics_in_request_count'] as client.Histogram;
 			extrinsics_in_request
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics);
 
-			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second'] as client.Histogram;
+			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
 			const seconds = end();
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics / seconds);
 
-			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block'] as client.Histogram;
+			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block_count'] as client.Histogram;
 			const blocks = Array.isArray(body) ? body.length : 1;
 			extrinsics_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics / blocks);
 
-			const seconds_per_block = this.metrics['sas_seconds_per_block'] as client.Histogram;
+			const seconds_per_block = this.metrics['sas_seconds_per_block_count'] as client.Histogram;
 			seconds_per_block
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(seconds / blocks);
@@ -285,7 +285,7 @@ export default class Metrics_App {
 
 	preMiddleware() {
 		return (req: Query, res: Response, next: () => void) => {
-			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
+			const tot_requests = this.metrics['sas_requests_total'] as client.Counter;
 
 			// request count metrics
 			if (req.originalUrl != '/favicon.ico') {
@@ -305,7 +305,7 @@ export default class Metrics_App {
 					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
 					request_errors.inc();
 				} else if (res.statusCode < 400) {
-					const request_success = this.metrics['sas_request_success'] as client.Counter;
+					const request_success = this.metrics['sas_request_errors_total'] as client.Counter;
 					request_success.inc();
 				}
 
@@ -322,7 +322,7 @@ export default class Metrics_App {
 				}
 
 				// response size metrics
-				const response_size_bytes = this.metrics['sas_response_size_bytes'] as client.Histogram;
+				const response_size_bytes = this.metrics['sas_response_size_bytes_seconds'] as client.Histogram;
 				response_size_bytes
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength));
@@ -330,7 +330,7 @@ export default class Metrics_App {
 				const latency = end({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
 
 				// response size to latency ratio
-				const response_size_latency_ratio = this.metrics['sas_response_size_latency_ratio'] as client.Histogram;
+				const response_size_latency_ratio = this.metrics['sas_response_size_latency_ratio_seconds'] as client.Histogram;
 				response_size_latency_ratio
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength) / latency);

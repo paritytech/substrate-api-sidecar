@@ -279,7 +279,7 @@ That way you will have access to the default prometheus node instance metrics an
 
 The blocks controller also includes the following route-specific metrics:
 
-- `sas_extrinsics_in_request_count`: type histogram and tracks the number of extrinsics returned in the request
+- `sas_extrinsics_in_request_count`: type histogram and tracks the number of extrinsics returned in the request when a range of blocks is queried
 - `sas_extrinsics_per_second_count`: type histogram and tracks the returned extrinics per second
 - `sas_extrinsics_per_block_count`: type histogram and tracks the returned extrinsics per block
 - `sas_seconds_per_block_count`: type histogram and tracks the request time per block
