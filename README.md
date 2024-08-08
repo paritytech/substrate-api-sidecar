@@ -21,11 +21,6 @@
 
 <br /><br />
 
-## Note
-
-v1.0.0 was released on 2020-10-23. This major release introduced several renamed endpoints as breaking changes. It is important that users complete the transition to the new endpoints ASAP so they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](./guides/MIGRATION_GUIDE.md) to
-learn more.
-
 ## Prerequisites
 
 ### <= v15.0.0
@@ -373,7 +368,7 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
 
-### Guide
+### Maintenance Guide
 A more complete list of the maintainer's tasks can be found in the [MAINTENANCE.md](./guides/MAINTENANCE.md) guide.
 
 ## Hardware requirements
