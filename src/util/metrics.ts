@@ -288,7 +288,9 @@ export default class Metrics_App {
 			const tot_requests = this.metrics['sas_total_requests'] as client.Counter;
 
 			// request count metrics
-			tot_requests.inc();
+			if (req.originalUrl != '/favicon.ico') {
+				tot_requests.inc();
+			}
 			const request_duration_seconds = this.metrics['sas_request_duration_seconds'] as client.Histogram;
 			const end = request_duration_seconds.startTimer();
 
@@ -299,10 +301,10 @@ export default class Metrics_App {
 			};
 
 			res.once('finish', () => {
-				if (res.statusCode >= 400) {
+				if (res.statusCode >= 400 && req.originalUrl != '/favicon.ico') {
 					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
 					request_errors.inc();
-				} else {
+				} else if (res.statusCode < 400) {
 					const request_success = this.metrics['sas_request_success'] as client.Counter;
 					request_success.inc();
 				}
@@ -310,14 +312,11 @@ export default class Metrics_App {
 				let resContentLength = '0';
 				if ('_contentLength' in res && res['_contentLength'] != null) {
 					resContentLength = res['_contentLength'] as string;
-				} else {
-					if (res.hasHeader('Content-Length')) {
-						resContentLength = res.getHeader('Content-Length') as string;
-					}
+				} else if (res.hasHeader('Content-Length')) {
+					resContentLength = res.getHeader('Content-Length') as string;
 				}
 
 				// route specific metrics
-
 				if (this.getRoute(req).includes('blocks')) {
 					this.blocksControllerMetrics(req, res, end);
 				}
@@ -328,13 +327,13 @@ export default class Metrics_App {
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength));
 				// latency metrics
-				end({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
+				const latency = end({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
 
 				// response size to latency ratio
 				const response_size_latency_ratio = this.metrics['sas_response_size_latency_ratio'] as client.Histogram;
 				response_size_latency_ratio
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-					.observe(parseFloat(resContentLength) / end());
+					.observe(parseFloat(resContentLength) / latency);
 			});
 			next();
 		};
