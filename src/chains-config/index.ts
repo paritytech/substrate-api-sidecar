@@ -28,11 +28,13 @@ import { astarControllers } from './astarControllers';
 import { bifrostControllers } from './bifrostControllers';
 import { bifrostPolkadotControllers } from './bifrostPolkadotControllers';
 import { calamariControllers } from './calamariControllers';
+import { canaryControllers } from './canaryControllers';
 import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
 import { dockPoSMainnetControllers } from './dockPoSMainnetControllers';
 import { dockTestnetControllers } from './dockPoSTestnetControllers';
+import { enjinControllers } from './enjinControllers';
 import { heikoControllers } from './heikoControllers';
 import { karuraControllers } from './karuraControllers';
 import { kiltControllers } from './kiltControllers';
@@ -77,6 +79,8 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	bifrost_polkadot: bifrostPolkadotControllers,
 	heiko: heikoControllers,
 	parallel: parallelControllers,
+	enjin: enjinControllers,
+	canary: canaryControllers,
 };
 
 /**
