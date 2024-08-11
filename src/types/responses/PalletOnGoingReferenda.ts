@@ -14,16 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from '././PalletsErrorsService';
-export * from '././PalletsEventsService';
-export * from './PalletsAssetConversionService';
-export * from './PalletsAssetsService';
-export * from './PalletsConstantsService';
-export * from './PalletsDispatchablesService';
-export * from './PalletsForeignAssetsService';
-export * from './PalletsNominationPoolsService';
-export * from './PalletsOnGoingReferendaService';
-export * from './PalletsPoolAssetsService';
-export * from './PalletsStakingProgressService';
-export * from './PalletsStakingValidatorsService';
-export * from './PalletsStorageService';
+import { u32 } from '@polkadot/types';
+import {
+	FrameSupportScheduleDispatchTime,
+	PalletReferendaDecidingStatus,
+	PalletReferendaDeposit,
+} from '@polkadot/types/lookup';
+
+import { IAt } from './At';
+
+export interface IReferendaInfo {
+	id: string;
+	decisionDeposit: PalletReferendaDeposit | null;
+	enactment: FrameSupportScheduleDispatchTime;
+	submitted: u32;
+	deciding: PalletReferendaDecidingStatus | null;
+}
+
+export interface IPalletOnGoingReferenda {
+	at: IAt;
+	referenda: IReferendaInfo[];
+}
