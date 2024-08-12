@@ -18,8 +18,12 @@ import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import type { Hash } from '@polkadot/types/interfaces';
 
+import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
-import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
+import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
+import { blockHash13641102, blockHash21275366, defaultMockApi, mockBlock21275366 } from '../test-helpers/mock';
+import { referendaEntries } from '../test-helpers/mock/data/referendaEntries';
+import fetchOnGoingReferenda21275366Response from '../test-helpers/responses/pallets/fetchOnGoingReferenda21275366.json';
 import { PalletsOnGoingReferendaService } from './PalletsOnGoingReferendaService';
 
 const mockHistoricApi = {
@@ -34,16 +38,47 @@ const mockApi = {
 /**
  * Mock PalletsOnGoingReferendaService instance.
  */
-const palletsOnGoingReferendaService = new PalletsOnGoingReferendaService(mockApi);
+const palletsOnGoingReferendaService13641102 = new PalletsOnGoingReferendaService(mockApi);
+
+const referendaEntriesAt = () => Promise.resolve().then(() => referendaEntries());
+
+const mockHistoricApi21275366 = {
+	registry: polkadotRegistryV1000001,
+	query: {
+		referenda: {
+			referendumInfoFor: {
+				entries: referendaEntriesAt,
+			},
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
+
+const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockBlock21275366.header);
+
+const mockApi21275366 = {
+	rpc: {
+		chain: {
+			getHeader,
+		},
+	},
+	at: (_hash: Hash) => mockHistoricApi21275366,
+} as unknown as ApiPromise;
+
+const palletsOnGoingReferendaService21275366 = new PalletsOnGoingReferendaService(mockApi21275366);
 
 describe('PalletOnGoingReferendaService', () => {
 	describe('derivePalletOnGoingReferenda', () => {
 		it('throws error for block 13641102', async () => {
 			await expect(
-				palletsOnGoingReferendaService.derivePalletOnGoingReferenda(blockHash13641102),
+				palletsOnGoingReferendaService13641102.derivePalletOnGoingReferenda(blockHash13641102),
 			).rejects.toStrictEqual(
 				new Error(`The runtime does not include the module 'api.query.referenda' at this block height.`),
 			);
+		});
+		it('works for block 21275366 (Polkadot) & returns 7 referendas, 2 of which are runtime upgrades', async () => {
+			expect(
+				sanitizeNumbers(await palletsOnGoingReferendaService21275366.derivePalletOnGoingReferenda(blockHash21275366)),
+			).toStrictEqual(fetchOnGoingReferenda21275366Response);
 		});
 	});
 });
