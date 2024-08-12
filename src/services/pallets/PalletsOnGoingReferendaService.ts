@@ -28,32 +28,33 @@ export class PalletsOnGoingReferendaService extends AbstractService {
 	async derivePalletOnGoingReferenda(hash: BlockHash): Promise<IPalletOnGoingReferenda> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		const [{ number }, referendaEntries] = await Promise.all([
-			api.rpc.chain.getHeader(hash),
-			historicApi.query.referenda.referendumInfoFor.entries(),
-		]);
-
+		const [{ number }] = await Promise.all([api.rpc.chain.getHeader(hash)]);
 		const referenda: IReferendaInfo[] = [];
-		for (const referendum of referendaEntries) {
-			const referendumInfo = referendum[1];
-			if (referendumInfo.isSome) {
-				const refUnwrapped = referendumInfo.unwrap();
-				const refId = referendum[0].toHuman() as string[];
-				if (
-					refUnwrapped.type == 'Ongoing' &&
-					(refUnwrapped.asOngoing.track.toHuman() == '0' || refUnwrapped.asOngoing.track.toHuman() == '1')
-				) {
-					const decisionDeposit = refUnwrapped.asOngoing.decisionDeposit.isSome
-						? refUnwrapped.asOngoing.decisionDeposit.unwrap()
-						: null;
-					const enactment = refUnwrapped.asOngoing.enactment;
-					const submitted = refUnwrapped.asOngoing.submitted;
-					const deciding = refUnwrapped.asOngoing.deciding.isSome ? refUnwrapped.asOngoing.deciding.unwrap() : null;
+		if (historicApi.query.referenda) {
+			const referendaEntries = await historicApi.query.referenda.referendumInfoFor.entries();
+			for (const referendum of referendaEntries) {
+				const referendumInfo = referendum[1];
+				if (referendumInfo.isSome) {
+					const refUnwrapped = referendumInfo.unwrap();
+					const refId = referendum[0].toHuman() as string[];
+					if (
+						refUnwrapped.type == 'Ongoing' &&
+						(refUnwrapped.asOngoing.track.toHuman() == '0' || refUnwrapped.asOngoing.track.toHuman() == '1')
+					) {
+						const decisionDeposit = refUnwrapped.asOngoing.decisionDeposit.isSome
+							? refUnwrapped.asOngoing.decisionDeposit.unwrap()
+							: null;
+						const enactment = refUnwrapped.asOngoing.enactment;
+						const submitted = refUnwrapped.asOngoing.submitted;
+						const deciding = refUnwrapped.asOngoing.deciding.isSome ? refUnwrapped.asOngoing.deciding.unwrap() : null;
 
-					const refInfo = { id: refId[0], decisionDeposit, enactment, submitted, deciding };
-					referenda.push(refInfo);
+						const refInfo = { id: refId[0], decisionDeposit, enactment, submitted, deciding };
+						referenda.push(refInfo);
+					}
 				}
 			}
+		} else {
+			throw new Error(`The runtime does not include the module 'api.query.referenda' at this block height.`);
 		}
 
 		const at = {
