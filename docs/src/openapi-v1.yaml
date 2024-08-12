@@ -1372,6 +1372,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsNominationPool'
+  /pallets/on-going-referenda:
+      get:
+        tags:
+          - pallets
+        summary: Get a list of all on-going referenda that have track `root (0)` and `whitelisted (1)`,
+          along with their associated information.
+        description: Returns information associated with on-going referenda which includes
+          the referendum's `enactment`, `submitted` and `deciding` fields.
+        operationId: getPalletOnGoingReferenda
+        parameters:
+        - name: at
+          in: query
+          description: Block at which to retrieve the on-going referenda.
+          required: false
+          schema:
+            type: string
+            description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+        responses:
+          "200":
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/PalletsOnGoingReferenda'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -3796,6 +3821,55 @@ components:
             type: number
         minJoinBond:
             type: number
+    PalletsOnGoingReferenda:
+          type: object
+          properties:
+            at:
+              $ref: '#/components/schemas/BlockIdentifiers'
+            referenda:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Referendum's id.
+                  decisionDeposit:
+                    type: object
+                    properties:
+                      who:
+                        type: string
+                        description: The account who placed the referendum's decision deposit.
+                      amount:
+                        type: string
+                        format: unsignedInteger
+                        description: The amount of the decision deposit.
+                    description: A deposit which is required for a referendum to progress to the decision phase.
+                  enactment:
+                    type: string
+                    enum:
+                    - at
+                    - after
+                    description: The enactment period of the referendum. It can be defined using either the `at` option,
+                      which specifies the exact block height when the referendum will be enacted, or the `after` option,
+                      which indicates the number of blocks after which the enactment will occur.
+                  submitted:
+                    type: string
+                    format: unsignedInteger
+                    description: The block number at which the referendum was submitted.
+                  deciding:
+                    type: object
+                    properties:
+                      since:
+                        type: string
+                        format: unsignedInteger
+                        description: The block number at which the referendum started being `decided`.
+                      confirming:
+                        type: string
+                        format: unsignedInteger
+                        description: The block number at which the referendum's confirmation stage will end at as long as
+                          it doesn't lose its approval in the meantime.
+              description: A list of ongoing referenda and their details.
     PalletsPoolAssetsInfo:
       type: object
       properties:
