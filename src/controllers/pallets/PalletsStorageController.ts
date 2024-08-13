@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
+import client from 'prom-client';
 
 import { PalletsStorageService } from '../../services';
 import { IPalletsStorageParam, IPalletsStorageQueryParam } from '../../types/requests';
@@ -36,8 +37,8 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
-	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api), metricsRegistry);
 
 		this.initRoutes();
 	}

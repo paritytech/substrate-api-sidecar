@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
@@ -23,8 +24,8 @@ import { AccountsProxyInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class AccountsProxyInfoController extends AbstractController<AccountsProxyInfoService> {
-	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/proxy-info', new AccountsProxyInfoService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/accounts/:address/proxy-info', new AccountsProxyInfoService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

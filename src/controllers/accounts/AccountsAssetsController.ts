@@ -17,11 +17,11 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
+import client from 'prom-client';
 
 import { validateAddress } from '../../middleware';
 import { AccountsAssetsService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
-
 /**
  * Get asset information for an address.
  *
@@ -66,8 +66,8 @@ import AbstractController from '../AbstractController';
  *
  */
 export default class AccountsAssetsController extends AbstractController<AccountsAssetsService> {
-	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address', new AccountsAssetsService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/accounts/:address', new AccountsAssetsService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

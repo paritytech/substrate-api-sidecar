@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
+import client from 'prom-client';
 
 import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
@@ -25,8 +26,8 @@ import { IBodyContractMetadata, IContractQueryParam, IPostRequestHandler } from 
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
-	constructor(api: ApiPromise) {
-		super(api, '/contracts/ink/:address', new ContractsInkService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/contracts/ink/:address', new ContractsInkService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

@@ -20,6 +20,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
+import client from 'prom-client';
 import { AbstractService } from 'src/services/AbstractService';
 import { AnyJson } from 'src/types/polkadot-js';
 import {
@@ -35,6 +36,13 @@ import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
 import { verifyNonZeroUInt, verifyUInt } from '../util/integers/verifyInt';
+
+interface Query extends Request {
+	route: {
+		path: string;
+		[key: string]: unknown;
+	};
+}
 
 type SidecarRequestHandler =
 	| RequestHandler<unknown, unknown, unknown, IRangeQueryParam>
@@ -54,6 +62,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		protected api: ApiPromise,
 		private _path: string,
 		protected service: T,
+		protected metricsRegistry: Record<string, client.Metric>,
 	) {}
 
 	get path(): string {
@@ -72,6 +81,38 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 */
 	protected abstract initRoutes(): void;
 
+	getRoutePath(req: Query): string {
+		let route = req.baseUrl;
+		if (req.route) {
+			if (req.route.path !== '/') {
+				route = route ? route + req.route?.path : req.route?.path;
+			}
+
+			if (!route || route === '' || typeof route !== 'string') {
+				route = req.originalUrl.split('?')[0];
+			} else {
+				const splittedRoute = route.split('/');
+				const splittedUrl = req.originalUrl.split('?')[0].split('/');
+				const routeIndex = splittedUrl.length - splittedRoute.length + 1;
+
+				const baseUrl = splittedUrl.slice(0, routeIndex).join('/');
+				route = baseUrl + route;
+			}
+		}
+
+		if (typeof req.params === 'object') {
+			Object.keys(req.params).forEach((paramName) => {
+				route = route.replace(req.params[paramName], ':' + paramName);
+			});
+		}
+
+		if (!route || route === '') {
+			// if (!req.route && res && res.statusCode === 404) {
+			route = 'N/A';
+		}
+
+		return route;
+	}
 	/**
 	 * Safely mount async GET routes by wrapping them with an express
 	 * handler friendly try / catch block and then mounting on the controllers

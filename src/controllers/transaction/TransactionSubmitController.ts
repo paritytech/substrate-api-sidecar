@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import client from 'prom-client';
 
 import { TransactionSubmitService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
@@ -38,8 +39,8 @@ import AbstractController from '../AbstractController';
  *   - `cause`: The error message from parsing or from the client.
  */
 export default class TransactionSubmitController extends AbstractController<TransactionSubmitService> {
-	constructor(api: ApiPromise) {
-		super(api, '/transaction', new TransactionSubmitService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/transaction', new TransactionSubmitService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

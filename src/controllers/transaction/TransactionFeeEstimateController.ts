@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import client from 'prom-client';
 
 import { TransactionFeeEstimateService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
@@ -47,8 +48,8 @@ import AbstractController from '../AbstractController';
  * - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
  */
 export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
-	constructor(api: ApiPromise) {
-		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

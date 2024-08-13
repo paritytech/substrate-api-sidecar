@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { RuntimeMetadataService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -40,8 +41,8 @@ import AbstractController from '../AbstractController';
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
 export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
-	constructor(api: ApiPromise) {
-		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/runtime/metadata', new RuntimeMetadataService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

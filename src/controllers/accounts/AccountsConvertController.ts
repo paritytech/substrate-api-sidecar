@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
+import client from 'prom-client';
 
 import { validateBoolean } from '../../middleware';
 import { AccountsConvertService } from '../../services/accounts';
@@ -24,8 +25,8 @@ import { IAddressParam, IConvertQueryParams } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class AccountsConvertController extends AbstractController<AccountsConvertService> {
-	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/convert', new AccountsConvertService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/accounts/:address/convert', new AccountsConvertService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

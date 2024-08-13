@@ -17,14 +17,15 @@
 import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
+import client from 'prom-client';
 import { IPalletsEventsParam } from 'src/types/requests';
 
 import { PalletsEventsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsEventsController extends AbstractController<PalletsEventsService> {
-	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/events', new PalletsEventsService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/pallets/:palletId/events', new PalletsEventsService(api), metricsRegistry);
 
 		this.initRoutes();
 	}

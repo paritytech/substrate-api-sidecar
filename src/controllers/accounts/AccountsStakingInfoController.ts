@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress } from '../../middleware';
@@ -64,8 +65,8 @@ import AbstractController from '../AbstractController';
  * - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
  */
 export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
-	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

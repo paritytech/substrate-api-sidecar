@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { RuntimeCodeService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -32,8 +33,8 @@ import AbstractController from '../AbstractController';
  * - `code`: Runtime code Wasm blob.
  */
 export default class RuntimeCodeController extends AbstractController<RuntimeCodeService> {
-	constructor(api: ApiPromise) {
-		super(api, '/runtime/code', new RuntimeCodeService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/runtime/code', new RuntimeCodeService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

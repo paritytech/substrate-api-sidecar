@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express-serve-static-core';
+import client from 'prom-client';
 
 import { validateBoolean } from '../../middleware';
 import { BlocksTraceService } from '../../services';
@@ -23,8 +24,8 @@ import AbstractController from '../AbstractController';
 import BlocksController from './BlocksController';
 
 export default class BlocksTraceController extends AbstractController<BlocksTraceService> {
-	constructor(api: ApiPromise) {
-		super(api, '/experimental/blocks', new BlocksTraceService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/experimental/blocks', new BlocksTraceService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
@@ -23,11 +24,12 @@ import { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, options: ControllerOptions) {
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>, options: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics-raw',
 			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
+			metricsRegistry,
 		);
 		this.initRoutes();
 	}
@@ -41,9 +43,18 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async ({ params: { blockId } }, res): Promise<void> => {
+	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async (
+		{ params: { blockId }, method, baseUrl },
+		res,
+	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
+		const rawBlock = await this.service.fetchBlockRaw(hash);
+		BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
 
-		BlocksRawExtrinsicsController.sanitizedSend(res, await this.service.fetchBlockRaw(hash));
+		const extrinsics_per_block_metrics = this.metricsRegistry['sas_extrinsics_per_block_count'] as client.Histogram;
+		// TODO: make sure the route is complete by adding a getRoute to the abstractController
+		extrinsics_per_block_metrics
+			.labels({ method: method, route: baseUrl, status_code: res.statusCode })
+			.observe(rawBlock.extrinsics.length / 1);
 	};
 }

@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { TransactionMaterialService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -58,8 +59,8 @@ export type MetadataOpts = 'json' | 'scale';
  * -  FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  */
 export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
-	constructor(api: ApiPromise) {
-		super(api, '/transaction/material', new TransactionMaterialService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/transaction/material', new TransactionMaterialService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

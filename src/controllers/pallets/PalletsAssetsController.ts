@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { PalletsAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -62,8 +63,8 @@ import AbstractController from '../AbstractController';
  * - `AssetDetails`: https://crates.parity.io/pallet_assets/struct.AssetDetails.html
  */
 export default class PalletsAssetsController extends AbstractController<PalletsAssetsService> {
-	constructor(api: ApiPromise) {
-		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

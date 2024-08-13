@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -81,8 +82,8 @@ import AbstractController from '../AbstractController';
  * - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
  */
 export default class PalletsStakingProgressController extends AbstractController<PalletsStakingProgressService> {
-	constructor(api: ApiPromise) {
-		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

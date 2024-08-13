@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { NodeVersionService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -29,8 +30,8 @@ import AbstractController from '../AbstractController';
  * - `chain`: Node's chain name.
  */
 export default class NodeVersionController extends AbstractController<NodeVersionService> {
-	constructor(api: ApiPromise) {
-		super(api, '/node/version', new NodeVersionService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/node/version', new NodeVersionService(api), metricsRegistry);
 		this.initRoutes();
 	}
 

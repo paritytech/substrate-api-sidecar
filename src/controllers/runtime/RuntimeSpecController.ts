@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { RuntimeSpecService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -46,8 +47,8 @@ import AbstractController from '../AbstractController';
  * - `properties`: Arbitrary properties defined in the chain spec.
  */
 export default class RuntimeSpecController extends AbstractController<RuntimeSpecService> {
-	constructor(api: ApiPromise) {
-		super(api, '/runtime/spec', new RuntimeSpecService(api));
+	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
+		super(api, '/runtime/spec', new RuntimeSpecService(api), metricsRegistry);
 		this.initRoutes();
 	}
 
