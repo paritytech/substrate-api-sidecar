@@ -28,7 +28,7 @@ export class PalletsOnGoingReferendaService extends AbstractService {
 	async derivePalletOnGoingReferenda(hash: BlockHash): Promise<IPalletOnGoingReferenda> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		const [{ number }] = await Promise.all([api.rpc.chain.getHeader(hash)]);
+		const { number } = await api.rpc.chain.getHeader(hash);
 		const referenda: IReferendaInfo[] = [];
 		if (historicApi.query.referenda) {
 			const referendaEntries = await historicApi.query.referenda.referendumInfoFor.entries();
