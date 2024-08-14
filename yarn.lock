@@ -381,12 +381,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.20.13":
-  version: 7.20.13
-  resolution: "@babel/runtime@npm:7.20.13"
+"@babel/runtime@npm:7.25.0":
+  version: 7.25.0
+  resolution: "@babel/runtime@npm:7.25.0"
   dependencies:
-    regenerator-runtime: "npm:^0.13.11"
-  checksum: 10/7a2f4d8d2ed40ea9fa70c1debc94c9ca1afa86f2cad851eb040489c1f46c1233779e5f25fda4ddc2f7ed471067cd0072cb3caf329b4c0427e1ad828541f30017
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/6870e9e0e9125075b3aeba49a266f442b10820bfc693019eb6c1785c5a0edbe927e98b8238662cdcdba17842107c040386c3b69f39a0a3b217f9d00ffe685b27
   languageName: node
   linkType: hard
 
@@ -437,14 +437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@colors/colors@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@colors/colors@npm:1.5.0"
-  checksum: 10/9d226461c1e91e95f067be2bdc5e6f99cfe55a721f45afb44122e23e4b8602eeac4ff7325af6b5a369f36396ee1514d3809af3f57769066d80d83790d8e53339
-  languageName: node
-  linkType: hard
-
-"@colors/colors@npm:^1.6.0":
+"@colors/colors@npm:1.6.0, @colors/colors@npm:^1.6.0":
   version: 1.6.0
   resolution: "@colors/colors@npm:1.6.0"
   checksum: 10/66d00284a3a9a21e5e853b256942e17edbb295f4bd7b9aa7ef06bbb603568d5173eb41b0f64c1e51748bc29d382a23a67d99956e57e7431c64e47e74324182d9
@@ -1468,21 +1461,21 @@ __metadata:
     "@substrate/dev": "npm:^0.7.1"
     "@types/argparse": "npm:2.0.16"
     "@types/express": "npm:^4.17.21"
-    "@types/express-serve-static-core": "npm:^4.19.1"
+    "@types/express-serve-static-core": "npm:^4.19.5"
     "@types/http-errors": "npm:2.0.4"
     "@types/lru-cache": "npm:^7.10.10"
     "@types/morgan": "npm:1.9.9"
     "@types/triple-beam": "npm:^1.3.5"
     argparse: "npm:^2.0.1"
-    confmgr: "npm:^1.0.10"
+    confmgr: "npm:^1.1.0"
     express: "npm:^4.19.2"
     express-winston: "npm:^4.2.0"
     http-errors: "npm:^2.0.0"
-    lru-cache: "npm:^10.2.2"
-    prom-client: "npm:^15.1.2"
+    lru-cache: "npm:^10.4.3"
+    prom-client: "npm:^15.1.3"
     rxjs: "npm:^7.8.1"
     ts-node-dev: "npm:^2.0.0"
-    winston: "npm:^3.13.0"
+    winston: "npm:^3.14.1"
   bin:
     substrate-api-sidecar: ./build/src/main.js
   languageName: unknown
@@ -1685,15 +1678,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^4.17.33, @types/express-serve-static-core@npm:^4.19.1":
-  version: 4.19.1
-  resolution: "@types/express-serve-static-core@npm:4.19.1"
+"@types/express-serve-static-core@npm:^4.17.33, @types/express-serve-static-core@npm:^4.19.5":
+  version: 4.19.5
+  resolution: "@types/express-serve-static-core@npm:4.19.5"
   dependencies:
     "@types/node": "npm:*"
     "@types/qs": "npm:*"
     "@types/range-parser": "npm:*"
     "@types/send": "npm:*"
-  checksum: 10/a400e2c6a2d64373290f0fa25fa2d70bad44fbb1d12a56237a8dfb3bf300bc102d6f5fa6aaed2ce853e37226589905ce0d658ad1b9c0115d9cd7ce446608140c
+  checksum: 10/49350c6315eeb7d640e13e6138ba6005121b3b610b1e25746fccd5b86b559be810a4ba384b9bd7eee288975b5bd8cf67c1772c646254b812beaa488774eb5513
   languageName: node
   linkType: hard
 
@@ -2688,15 +2681,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confmgr@npm:^1.0.10":
-  version: 1.0.10
-  resolution: "confmgr@npm:1.0.10"
+"confmgr@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "confmgr@npm:1.1.0"
   dependencies:
-    "@babel/runtime": "npm:7.20.13"
+    "@babel/runtime": "npm:7.25.0"
     chalk: "npm:~4"
-    dotenv: "npm:16.0.3"
-    yaml: "npm:2.2.1"
-  checksum: 10/8079b86e91d132265e31364c0b74d8a0285c76c2c5af0c4c9c9250527767f7b960f02addb7935810fd907152a5c74003e7bcf737c1ad31fa8667e2fe8608bed2
+    dotenv: "npm:16.4.5"
+    yaml: "npm:2.5.0"
+  checksum: 10/d128950db986f9e768f6f00302dfb8df8c39478ae52ce3be7852922b69b77a6ede857decc1bab920184c9c3287f1cd905a631471a2236a017661cf0a2dd2aa9b
   languageName: node
   linkType: hard
 
@@ -2929,10 +2922,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:16.0.3":
-  version: 16.0.3
-  resolution: "dotenv@npm:16.0.3"
-  checksum: 10/d6788c8e40b35ad9a9ca29249dccf37fa6b3ad26700fcbc87f2f41101bf914f5193a04e36a3d23de70b1dcb8e5d5a3b21e151debace2c4cd08d868be500a1b29
+"dotenv@npm:16.4.5":
+  version: 16.4.5
+  resolution: "dotenv@npm:16.4.5"
+  checksum: 10/55a3134601115194ae0f924e54473459ed0d9fc340ae610b676e248cca45aa7c680d86365318ea964e6da4e2ea80c4514c1adab5adb43d6867fb57ff068f95c8
   languageName: node
   linkType: hard
 
@@ -4754,24 +4747,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"logform@npm:^2.3.2, logform@npm:^2.4.0":
-  version: 2.5.1
-  resolution: "logform@npm:2.5.1"
+"logform@npm:^2.3.2, logform@npm:^2.6.0":
+  version: 2.6.1
+  resolution: "logform@npm:2.6.1"
   dependencies:
-    "@colors/colors": "npm:1.5.0"
+    "@colors/colors": "npm:1.6.0"
     "@types/triple-beam": "npm:^1.3.2"
     fecha: "npm:^4.2.0"
     ms: "npm:^2.1.1"
     safe-stable-stringify: "npm:^2.3.1"
     triple-beam: "npm:^1.3.0"
-  checksum: 10/8f8add6f6a9b1cd03b7d093bf4a7577a45803c771d37ac04833d4507f79523f26e4ce70638828e7693e2fc8cd52d89a7a8e3738ed0e9762d8b3737c6ec04da39
+  checksum: 10/e67f414787fbfe1e6a997f4c84300c7e06bee3d0bd579778af667e24b36db3ea200ed195d41b61311ff738dab7faabc615a07b174b22fe69e0b2f39e985be64b
   languageName: node
   linkType: hard
 
-"lru-cache@npm:*, lru-cache@npm:^10.2.2, lru-cache@npm:^9.1.1 || ^10.0.0":
-  version: 10.2.2
-  resolution: "lru-cache@npm:10.2.2"
-  checksum: 10/ff1a496d30b5eaec2c9079080965bb0cede203cf878371f7033a007f1e54cd4aa13cc8abf7ccec4c994a83a22ed5476e83a55bb57cc07e6c1547a42937e42c37
+"lru-cache@npm:*, lru-cache@npm:^10.4.3, lru-cache@npm:^9.1.1 || ^10.0.0":
+  version: 10.4.3
+  resolution: "lru-cache@npm:10.4.3"
+  checksum: 10/e6e90267360476720fa8e83cc168aa2bf0311f3f2eea20a6ba78b90a885ae72071d9db132f40fda4129c803e7dcec3a6b6a6fbb44ca90b081630b810b5d6a41a
   languageName: node
   linkType: hard
 
@@ -5487,13 +5480,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prom-client@npm:^15.1.2":
-  version: 15.1.2
-  resolution: "prom-client@npm:15.1.2"
+"prom-client@npm:^15.1.3":
+  version: 15.1.3
+  resolution: "prom-client@npm:15.1.3"
   dependencies:
     "@opentelemetry/api": "npm:^1.4.0"
     tdigest: "npm:^0.1.1"
-  checksum: 10/f7edcba54d27eff4066ae7ebfe5692e6bb1914cf728efa89f7ab63766fef62679782c41c97d55b6fd6b2a8bb35b0d168ac8f1b9513c9a5770ea35c170691e24c
+  checksum: 10/eba75e15ab896845d39359e3a4d6f7913ea05339b3122d8dde8c8c374669ad1a1d1ab2694ab2101c420bd98086a564e4f2a18aa29018fc14a4732e57c1c19aec
   languageName: node
   linkType: hard
 
@@ -5610,10 +5603,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.11":
-  version: 0.13.11
-  resolution: "regenerator-runtime@npm:0.13.11"
-  checksum: 10/d493e9e118abef5b099c78170834f18540c4933cedf9bfabc32d3af94abfb59a7907bd7950259cbab0a929ebca7db77301e8024e5121e6482a82f78283dfd20c
+"regenerator-runtime@npm:^0.14.0":
+  version: 0.14.1
+  resolution: "regenerator-runtime@npm:0.14.1"
+  checksum: 10/5db3161abb311eef8c45bcf6565f4f378f785900ed3945acf740a9888c792f75b98ecb77f0775f3bf95502ff423529d23e94f41d80c8256e8fa05ed4b07cf471
   languageName: node
   linkType: hard
 
@@ -6589,22 +6582,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "winston@npm:3.13.0"
+"winston@npm:^3.14.1":
+  version: 3.14.1
+  resolution: "winston@npm:3.14.1"
   dependencies:
     "@colors/colors": "npm:^1.6.0"
     "@dabh/diagnostics": "npm:^2.0.2"
     async: "npm:^3.2.3"
     is-stream: "npm:^2.0.0"
-    logform: "npm:^2.4.0"
+    logform: "npm:^2.6.0"
     one-time: "npm:^1.0.0"
     readable-stream: "npm:^3.4.0"
     safe-stable-stringify: "npm:^2.3.1"
     stack-trace: "npm:0.0.x"
     triple-beam: "npm:^1.3.0"
     winston-transport: "npm:^4.7.0"
-  checksum: 10/436675598359af27e4eabde2ce578cf77da893ffd57d0479f037fef939e8eb721031f0102b14399eee93b3412b545946c431d1fff23db3beeac2ffa395537f7b
+  checksum: 10/b9158dc0600a095b5326ec95a3918f63e5f1eb9fdc8f70b858d43ab4e2c3fca61e69aca4444ce918f86d8ded1d82f6e8e7504dfd4d4fa4d7974b5452c55f54c1
   languageName: node
   linkType: hard
 
@@ -6690,10 +6683,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.2.1":
-  version: 2.2.1
-  resolution: "yaml@npm:2.2.1"
-  checksum: 10/2e443fed323db4d5ae0c7134c6dbd30cb920e0c8f79a6ce78677731409af83ee2d74a09563fce01503a07f9a02274d42784d816f87294a53b47b955bc83dc655
+"yaml@npm:2.5.0":
+  version: 2.5.0
+  resolution: "yaml@npm:2.5.0"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/72e903fdbe3742058885205db4a6c9ff38e5f497f4e05e631264f7756083c05e7d10dfb5e4ce9d7a95de95338f9b20d19dd0b91c60c65f7d7608b6b3929820ad
   languageName: node
   linkType: hard
 
