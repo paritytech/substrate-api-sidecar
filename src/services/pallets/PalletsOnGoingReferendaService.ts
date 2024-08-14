@@ -27,8 +27,7 @@ export class PalletsOnGoingReferendaService extends AbstractService {
 	 */
 	async derivePalletOnGoingReferenda(hash: BlockHash): Promise<IPalletOnGoingReferenda> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
-		const { number } = await api.rpc.chain.getHeader(hash);
+		const [historicApi, { number }] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
 		const referenda: IReferendaInfo[] = [];
 		if (historicApi.query.referenda) {
 			const referendaEntries = await historicApi.query.referenda.referendumInfoFor.entries();
@@ -54,7 +53,11 @@ export class PalletsOnGoingReferendaService extends AbstractService {
 				}
 			}
 		} else {
-			throw new Error(`The runtime does not include the module 'api.query.referenda' at this block height.`);
+			throw new Error(
+				`The runtime does not include the module 'api.query.referenda' at this block height: ${number
+					.unwrap()
+					.toString(10)}`,
+			);
 		}
 
 		const at = {
