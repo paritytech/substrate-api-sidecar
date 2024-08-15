@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { NodeNetworkService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -47,8 +46,8 @@ import AbstractController from '../AbstractController';
  * - `NodeRole`: https://github.com/paritytech/substrate/blob/master/client/rpc-api/src/system/helpers.rs#L80
  */
 export default class NodeNetworkController extends AbstractController<NodeNetworkService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/node/network', new NodeNetworkService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/node/network', new NodeNetworkService(api));
 		this.initRoutes();
 	}
 

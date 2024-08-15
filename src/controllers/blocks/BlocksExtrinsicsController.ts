@@ -16,7 +16,6 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { BlocksService } from '../../services';
 import type { ControllerOptions } from '../../types/chains-config';
@@ -24,12 +23,11 @@ import type { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>, options: ControllerOptions) {
+	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
 			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
-			metricsRegistry,
 		);
 		this.initRoutes();
 	}

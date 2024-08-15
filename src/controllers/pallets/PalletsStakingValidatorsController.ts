@@ -16,14 +16,13 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { PalletsStakingValidatorsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsStakingValidatorsController extends AbstractController<PalletsStakingValidatorsService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/pallets/staking/validators', new PalletsStakingValidatorsService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/pallets/staking/validators', new PalletsStakingValidatorsService(api));
 		this.initRoutes();
 	}
 

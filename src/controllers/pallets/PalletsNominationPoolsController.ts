@@ -16,14 +16,13 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { PalletsNominationPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsNominationPoolController extends AbstractController<PalletsNominationPoolService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/pallets/nomination-pools', new PalletsNominationPoolService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/pallets/nomination-pools', new PalletsNominationPoolService(api));
 		this.initRoutes();
 	}
 

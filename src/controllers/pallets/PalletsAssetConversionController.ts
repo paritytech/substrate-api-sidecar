@@ -16,14 +16,13 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { PalletsAssetConversionService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsAssetConversionController extends AbstractController<PalletsAssetConversionService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/pallets/asset-conversion', new PalletsAssetConversionService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/pallets/asset-conversion', new PalletsAssetConversionService(api));
 		this.initRoutes();
 	}
 

@@ -18,7 +18,6 @@ import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
-import client from 'prom-client';
 
 import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
@@ -98,14 +97,12 @@ import AbstractController from '../AbstractController';
 export default class BlocksController extends AbstractController<BlocksService> {
 	constructor(
 		api: ApiPromise,
-		metricsRegistry: Record<string, client.Metric>,
 		private readonly options: ControllerOptions,
 	) {
 		super(
 			api,
 			'/blocks',
 			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
-			metricsRegistry,
 		);
 		this.initRoutes();
 	}
@@ -133,7 +130,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-
+		console.log(res.locals);
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.

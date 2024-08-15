@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { validateBoolean } from '../../middleware';
 import { NodeTransactionPoolService } from '../../services';
@@ -35,8 +34,8 @@ import AbstractController from '../AbstractController';
  * 		- `partialFee`: PartialFee for a transaction. Available when the `includeFee` query param is set to true.
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/node/transaction-pool', new NodeTransactionPoolService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/node/transaction-pool', new NodeTransactionPoolService(api));
 		this.initRoutes();
 	}
 

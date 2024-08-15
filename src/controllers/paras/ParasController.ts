@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { validateBoolean } from '../../middleware';
 import { ParasService } from '../../services';
@@ -24,8 +23,8 @@ import { IParaIdParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ParasController extends AbstractController<ParasService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '', new ParasService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '', new ParasService(api));
 		this.initRoutes();
 	}
 

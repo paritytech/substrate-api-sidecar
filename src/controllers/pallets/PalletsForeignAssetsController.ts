@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { PalletsForeignAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -37,8 +36,8 @@ import AbstractController from '../AbstractController';
  * - Foreign Assets Pallet Instance in Kusama Asset Hub: https://github.com/paritytech/cumulus/blob/master/parachains/runtimes/assets/asset-hub-kusama/src/lib.rs#L295
  */
 export default class PalletsForeignAssetsController extends AbstractController<PalletsForeignAssetsService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/pallets/foreign-assets', new PalletsForeignAssetsService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/pallets/foreign-assets', new PalletsForeignAssetsService(api));
 		this.initRoutes();
 	}
 

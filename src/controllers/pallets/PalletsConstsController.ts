@@ -17,7 +17,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
-import client from 'prom-client';
 
 import { PalletsConstantsService } from '../../services';
 import { IPalletsConstantsParam } from '../../types/requests';
@@ -35,8 +34,8 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsConstantsController extends AbstractController<PalletsConstantsService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/pallets/:palletId/consts', new PalletsConstantsService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/pallets/:palletId/consts', new PalletsConstantsService(api));
 
 		this.initRoutes();
 	}

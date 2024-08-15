@@ -138,14 +138,26 @@ export default class Metrics_App {
 		return route;
 	}
 
-	private blocksControllerMetrics(req: Query, res: Response, end: () => number) {
+	private blocksControllerMetrics(
+		req: Query,
+		res: Response<
+			unknown,
+			{
+				metrics: {
+					timer: () => number;
+					registry: Record<string, client.Metric>;
+				};
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				[key: string]: any;
+			}
+		>,
+	) {
 		const body = res.locals.body as Body | Body[];
-
+		const seconds = res.locals.metrics.timer();
 		if (req.params?.number && !Array.isArray(body)) {
 			const extrinscs = body.extrinsics ? body.extrinsics.length : 0;
 
 			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
-			const seconds = end();
 
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
@@ -189,7 +201,6 @@ export default class Metrics_App {
 				.observe(totExtrinsics);
 
 			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
-			const seconds = end();
 			extrinsics_per_second
 				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 				.observe(totExtrinsics / seconds);
@@ -218,6 +229,11 @@ export default class Metrics_App {
 			const request_duration_seconds = this.metrics['sas_request_duration_seconds'] as client.Histogram;
 			const end = request_duration_seconds.startTimer();
 
+			res.locals.metrics = {
+				timer: end,
+				registry: this.metrics,
+			};
+
 			const oldJson = res.json;
 			res.json = (body: Body) => {
 				res.locals.body = body;
@@ -242,7 +258,10 @@ export default class Metrics_App {
 
 				// route specific metrics
 				if (this.getRoute(req).includes('blocks')) {
-					this.blocksControllerMetrics(req, res, end);
+					this.blocksControllerMetrics(
+						req,
+						res as Response<unknown, { metrics: { timer: () => number; registry: Record<string, client.Metric> } }>,
+					);
 				}
 
 				// response size metrics

@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { BadRequest } from 'http-errors';
-import client from 'prom-client';
 
 import { TransactionDryRunService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
@@ -46,8 +45,8 @@ import AbstractController from '../AbstractController';
  * issue is to pass the `--rpc-external` flag to that node.
  */
 export default class TransactionDryRunController extends AbstractController<TransactionDryRunService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/transaction/dry-run', new TransactionDryRunService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/transaction/dry-run', new TransactionDryRunService(api));
 		this.initRoutes();
 	}
 
