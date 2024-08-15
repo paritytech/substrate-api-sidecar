@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.2..v19.1.0) (2024-08-15)
+
+### Feat
+
+- feat: add pallets/on-going-referenda endpoint ([#1471](https://github.com/paritytech/substrate-api-sidecar/pull/1471)) ([386fbb3](https://github.com/paritytech/substrate-api-sidecar/commit/386fbb360b60ee92f5ca9e543532f0d0092f995f))
+- feat: Add route based metrics across API ([#1465](https://github.com/paritytech/substrate-api-sidecar/pull/1465)) ([a4bbcb8](https://github.com/paritytech/substrate-api-sidecar/commit/a4bbcb8ff2de3257fa012d832e853cedb67a0508))
+
+### Docs
+
+- docs: Remove old stable version note ([#1466](https://github.com/paritytech/substrate-api-sidecar/pull/1466)) ([250b613](https://github.com/paritytech/substrate-api-sidecar/commit/250b6133d78375a95f2d4ac125cb1b3bb8312fb2))
+- docs: add maintenance guide ([#1460](https://github.com/paritytech/substrate-api-sidecar/pull/1460)) ([58bf51d](https://github.com/paritytech/substrate-api-sidecar/commit/58bf51dbce8f522ac34c48c127ef9b0a634f66e2))
+
+### Chore
+
+- chore(deps): update all non polkadot-js deps in root & docs folder ([#1475](https://github.com/paritytech/substrate-api-sidecar/pull/1475)) ([c766c1d](https://github.com/paritytech/substrate-api-sidecar/commit/c766c1df8757d44aa0263b4ca296f6d43363dfe2))
+- chore: bump axios from 1.6.7 to 1.7.4 in /docs ([#1474](https://github.com/paritytech/substrate-api-sidecar/pull/1474)) ([82c61df](https://github.com/paritytech/substrate-api-sidecar/commit/82c61df511ad1a56c62f80d0ca8bb6051dfd20ec))
+- chore(deps): update polkadot-js deps ([#1473](https://github.com/paritytech/substrate-api-sidecar/pull/1473)) ([0317ec9](https://github.com/paritytech/substrate-api-sidecar/commit/0317ec9fab569c6f560db313a3aa20ef2265a5ec))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.15.0 (Polkadot stable2407)
+- Kusama v1.15.0 (Polkadot stable2407)
+- Westend v1.15.0 (Polkadot stable2407)
+
+Tested against the following runtime releases:
+- Polkadot v1002007
+- Kusama v1002006
+- Westend v1015000
+
 ## [19.0.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.1..v19.0.2) (2024-06-27)
 
 ### Fix
@@ -20,9 +51,9 @@ All notable changes to this project will be documented in this file. See [standa
 ## Compatibility
 
 Tested against:
-- Polkadot v1013000
-- Kusama v1013000
-- Westend v1013000
+- Polkadot v11300
+- Kusama v11300
+- Westend v11300
 
 ## [19.0.1](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.0..v19.0.1) (2024-05-24)
 
