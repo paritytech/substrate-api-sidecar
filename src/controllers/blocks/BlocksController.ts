@@ -130,7 +130,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		console.log(res.locals);
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.

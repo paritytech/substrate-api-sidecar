@@ -20,7 +20,6 @@ import { Option, u32 } from '@polkadot/types';
 import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
-import client from 'prom-client';
 
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
@@ -81,8 +80,8 @@ import AbstractController from '../AbstractController';
  *
  */
 export default class AccountsStakingPayoutsController extends AbstractController<AccountsStakingPayoutsService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
 		this.initRoutes();
 	}
 

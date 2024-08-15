@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import client from 'prom-client';
 
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
@@ -86,18 +85,14 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
  * @param api ApiPromise to inject into controllers
  * @param implName
  */
-export function getControllersForSpec(
-	api: ApiPromise,
-	specName: string,
-	metricsRegistry: Record<string, client.Metric>,
-): AbstractController<AbstractService>[] {
+export function getControllersForSpec(api: ApiPromise, specName: string): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(api, specToControllerMap[specName], metricsRegistry);
+		return getControllersFromConfig(api, specToControllerMap[specName]);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(api, defaultControllers, metricsRegistry);
+	return getControllersFromConfig(api, defaultControllers);
 }
 
 /**
@@ -107,15 +102,11 @@ export function getControllersForSpec(
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(
-	api: ApiPromise,
-	config: ControllerConfig,
-	metricsRegistry: Record<string, client.Metric>,
-) {
+function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](api, metricsRegistry, config.options));
+		acc.push(new controllers[controller](api, config.options));
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);

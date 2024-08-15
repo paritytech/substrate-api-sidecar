@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import client from 'prom-client';
 
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
@@ -41,18 +42,29 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockRawExtrinsics: RequestHandler<INumberParam> = async (
-		{ params: { blockId }, method, baseUrl },
-		res,
-	): Promise<void> => {
+	private getBlockRawExtrinsics: RequestHandler<
+		INumberParam,
+		unknown,
+		unknown,
+		unknown,
+		{
+			metrics?: {
+				registry: Record<string, client.Metric>;
+				timer: () => number;
+			};
+		}
+	> = async ({ params: { blockId }, method, baseUrl }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 		const rawBlock = await this.service.fetchBlockRaw(hash);
 		BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
 
-		const extrinsics_per_block_metrics = res.locals.metrics.registry['sas_extrinsics_per_block_count'] as client.Histogram;
-		// TODO: make sure the route is complete by adding a getRoute to the abstractController
-		extrinsics_per_block_metrics
-			.labels({ method: method, route: baseUrl, status_code: res.statusCode })
-			.observe(rawBlock.extrinsics.length / 1);
+		if (res.locals.metrics) {
+			const extrinsics_per_block_metrics = res.locals.metrics.registry[
+				'sas_extrinsics_per_block_count'
+			] as client.Histogram;
+			extrinsics_per_block_metrics
+				.labels({ method: method, route: baseUrl, status_code: res.statusCode })
+				.observe(rawBlock.extrinsics.length / 1);
+		}
 	};
 }

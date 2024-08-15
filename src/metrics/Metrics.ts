@@ -257,12 +257,12 @@ export default class Metrics_App {
 				}
 
 				// route specific metrics
-				if (this.getRoute(req).includes('blocks')) {
-					this.blocksControllerMetrics(
-						req,
-						res as Response<unknown, { metrics: { timer: () => number; registry: Record<string, client.Metric> } }>,
-					);
-				}
+				// if (this.getRoute(req).includes('blocks')) {
+				// 	this.blocksControllerMetrics(
+				// 		req,
+				// 		res as Response<unknown, { metrics: { timer: () => number; registry: Record<string, client.Metric> } }>,
+				// 	);
+				// }
 
 				// response size metrics
 				const response_size_bytes = this.metrics['sas_response_size_bytes_seconds'] as client.Histogram;

@@ -17,7 +17,6 @@
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
-import client from 'prom-client';
 
 import { validateAddress } from '../../middleware';
 import { AccountsPoolAssetsService } from '../../services/accounts';
@@ -67,8 +66,8 @@ import AbstractController from '../AbstractController';
  *
  */
 export default class AccountsPoolAssetsController extends AbstractController<AccountsPoolAssetsService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/accounts/:address', new AccountsPoolAssetsService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/accounts/:address', new AccountsPoolAssetsService(api));
 		this.initRoutes();
 	}
 

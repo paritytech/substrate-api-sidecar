@@ -16,14 +16,13 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 
 import { AccountsValidateService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
 export default class ValidateAddressController extends AbstractController<AccountsValidateService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/accounts/:address/validate', new AccountsValidateService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/accounts/:address/validate', new AccountsValidateService(api));
 		this.initRoutes();
 	}
 

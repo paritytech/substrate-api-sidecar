@@ -16,7 +16,6 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
-import client from 'prom-client';
 import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress, validateBoolean } from '../../middleware';
@@ -57,8 +56,8 @@ import AbstractController from '../AbstractController';
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
 export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
-	constructor(api: ApiPromise, metricsRegistry: Record<string, client.Metric>) {
-		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api), metricsRegistry);
+	constructor(api: ApiPromise) {
+		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}
 
