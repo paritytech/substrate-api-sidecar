@@ -23,10 +23,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## Compatibility
 
-Tested against:
-- Polkadot v11500 (v1.15.0 / stable2407)
-- Kusama v11500 (v1.15.0 / stable2407)
-- Westend v11500 (v1.15.0 / stable2407)
+Tested against the following node releases:
+- Polkadot v1.15.0 (Polkadot stable2407)
+- Kusama v1.15.0 (Polkadot stable2407)
+- Westend v1.15.0 (Polkadot stable2407)
+
+Tested against the following runtime releases:
+- Polkadot v1002007
+- Kusama v1002006
+- Westend v1015000
 
 ## [19.0.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.1..v19.0.2) (2024-06-27)
 
