@@ -284,6 +284,8 @@ The blocks controller also includes the following route-specific metrics:
 - `sas_extrinsics_per_block_count`: type histogram and tracks the returned extrinsics per block
 - `sas_seconds_per_block_count`: type histogram and tracks the request time per block
 
+The metrics registry is injected in the Response object when the `-prometheus` flag is selected, allowing to extend the controller based metrics to any given controller from within the controller functions.
+
 ## Debugging fee and staking payout calculations
 
 It is possible to get more information about the fee and staking payout calculation process logged to
