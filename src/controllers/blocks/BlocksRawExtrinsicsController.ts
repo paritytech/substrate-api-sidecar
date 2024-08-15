@@ -53,18 +53,21 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 				timer: () => number;
 			};
 		}
-	> = async ({ params: { blockId }, method, baseUrl }, res): Promise<void> => {
+	> = async ({ params: { blockId }, method, route }, res): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 		const rawBlock = await this.service.fetchBlockRaw(hash);
 		BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		const path = route.path as string;
 
 		if (res.locals.metrics) {
 			const extrinsics_per_block_metrics = res.locals.metrics.registry[
 				'sas_extrinsics_per_block_count'
 			] as client.Histogram;
 			extrinsics_per_block_metrics
-				.labels({ method: method, route: baseUrl, status_code: res.statusCode })
-				.observe(rawBlock.extrinsics.length / 1);
+				.labels({ method: method, route: path, status_code: res.statusCode })
+				.observe(rawBlock.extrinsics.length);
 		}
 	};
 }
