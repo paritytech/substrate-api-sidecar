@@ -138,86 +138,6 @@ export default class Metrics_App {
 		return route;
 	}
 
-	private blocksControllerMetrics(
-		req: Query,
-		res: Response<
-			unknown,
-			{
-				metrics: {
-					timer: () => number;
-					registry: Record<string, client.Metric>;
-				};
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				[key: string]: any;
-			}
-		>,
-	) {
-		const body = res.locals.body as Body | Body[];
-		const seconds = res.locals.metrics.timer();
-		if (req.params?.number && !Array.isArray(body)) {
-			const extrinscs = body.extrinsics ? body.extrinsics.length : 0;
-
-			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
-
-			extrinsics_per_second
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(extrinscs / seconds);
-
-			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block_count'] as client.Histogram;
-
-			const blocks = 1;
-			extrinsics_per_block
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(extrinscs / blocks);
-
-			const seconds_per_block = this.metrics['sas_seconds_per_block_count'] as client.Histogram;
-			seconds_per_block
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(seconds / blocks);
-		}
-
-		if (req.query?.range) {
-			let totExtrinsics = 0;
-			if (Array.isArray(body)) {
-				totExtrinsics = body.reduce((current: number, block: { [x: string]: unknown }) => {
-					const extrinsics = block['extrinsics'];
-
-					if (Array.isArray(extrinsics)) {
-						return current + extrinsics.length;
-					}
-
-					return current;
-				}, 0);
-			} else {
-				const extrinsics = body['extrinsics'];
-				if (Array.isArray(extrinsics)) {
-					totExtrinsics = extrinsics.length;
-				}
-			}
-
-			const extrinsics_in_request = this.metrics['sas_extrinsics_in_request_count'] as client.Histogram;
-			extrinsics_in_request
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(totExtrinsics);
-
-			const extrinsics_per_second = this.metrics['sas_extrinsics_per_second_count'] as client.Histogram;
-			extrinsics_per_second
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(totExtrinsics / seconds);
-
-			const extrinsics_per_block = this.metrics['sas_extrinsics_per_block_count'] as client.Histogram;
-			const blocks = Array.isArray(body) ? body.length : 1;
-			extrinsics_per_block
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(totExtrinsics / blocks);
-
-			const seconds_per_block = this.metrics['sas_seconds_per_block_count'] as client.Histogram;
-			seconds_per_block
-				.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
-				.observe(seconds / blocks);
-		}
-	}
-
 	preMiddleware() {
 		return (req: Query, res: Response, next: () => void) => {
 			const tot_requests = this.metrics['sas_requests_total'] as client.Counter;
@@ -242,10 +162,10 @@ export default class Metrics_App {
 
 			res.once('finish', () => {
 				if (res.statusCode >= 400 && req.originalUrl != '/favicon.ico') {
-					const request_errors = this.metrics['sas_request_errors'] as client.Counter;
+					const request_errors = this.metrics['sas_request_errors_total'] as client.Counter;
 					request_errors.inc();
 				} else if (res.statusCode < 400) {
-					const request_success = this.metrics['sas_request_errors_total'] as client.Counter;
+					const request_success = this.metrics['sas_request_success_total'] as client.Counter;
 					request_success.inc();
 				}
 
@@ -255,29 +175,23 @@ export default class Metrics_App {
 				} else if (res.hasHeader('Content-Length')) {
 					resContentLength = res.getHeader('Content-Length') as string;
 				}
-
-				// route specific metrics
-				// if (this.getRoute(req).includes('blocks')) {
-				// 	this.blocksControllerMetrics(
-				// 		req,
-				// 		res as Response<unknown, { metrics: { timer: () => number; registry: Record<string, client.Metric> } }>,
-				// 	);
-				// }
-
+				// Generic Metrics per route (latency, response size, response size to latency ratio)
 				// response size metrics
-				const response_size_bytes = this.metrics['sas_response_size_bytes_seconds'] as client.Histogram;
+				const response_size_bytes = this.metrics['sas_response_size_bytes'] as client.Histogram;
 				response_size_bytes
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength));
+
 				// latency metrics
 				const latency = end({ method: req.method, route: this.getRoute(req), status_code: res.statusCode });
 
 				// response size to latency ratio
-				const response_size_latency_ratio = this.metrics['sas_response_size_latency_ratio_seconds'] as client.Histogram;
+				const response_size_latency_ratio = this.metrics['sas_response_size_bytes_seconds'] as client.Histogram;
 				response_size_latency_ratio
 					.labels({ method: req.method, route: this.getRoute(req), status_code: res.statusCode })
 					.observe(parseFloat(resContentLength) / latency);
 			});
+
 			next();
 		};
 	}

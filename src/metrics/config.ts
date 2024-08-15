@@ -26,14 +26,14 @@ export const metric_list: IMetric[] = [
 		type: MetricType.Histogram,
 	},
 	{
-		name: 'response_size_bytes_seconds',
+		name: 'response_size_bytes',
 		help: 'Size of HTTP responses in bytes',
 		labels: ['method', 'route', 'status_code'],
 		buckets: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000],
 		type: MetricType.Histogram,
 	},
 	{
-		name: 'response_size_latency_ratio_seconds',
+		name: 'response_size_bytes_seconds',
 		help: 'Ratio of response size to latency',
 		labels: ['method', 'route', 'status_code'],
 		buckets: [64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144],
