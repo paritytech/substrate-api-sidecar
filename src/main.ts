@@ -66,7 +66,6 @@ async function main() {
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
-	let metrics = {};
 	if (args.prometheus) {
 		// Create Metrics App
 		const metricsApp = new MetricsApp({
@@ -76,7 +75,6 @@ async function main() {
 
 		// Generate metrics middleware
 		preMiddlewares.push(metricsApp.preMiddleware());
-		metrics = metricsApp.getRegisteredMetrics();
 		// Start the Metrics server
 		metricsApp.listen();
 	}
@@ -84,7 +82,7 @@ async function main() {
 	// Create our App
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllersForSpec(api, specName.toString(), metrics),
+		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
