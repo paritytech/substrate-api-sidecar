@@ -21,6 +21,7 @@ import { BadRequest } from 'http-errors';
 import { validateAddress } from '../../middleware';
 import { AccountsAssetsService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
+
 /**
  * Get asset information for an address.
  *
