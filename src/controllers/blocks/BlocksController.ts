@@ -18,7 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
-import client from 'prom-client';
+import type client from 'prom-client';
 
 import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
@@ -169,7 +169,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
-		const paraIdArg = paraId !== undefined ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
+		const paraIdArg = paraId ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -264,7 +264,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		}
 
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
-		const paraIdArg = paraId !== undefined ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
+		const paraIdArg = paraId ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
 
 		const options = {
 			eventDocs: eventDocsArg,
