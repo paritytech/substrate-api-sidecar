@@ -15,12 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { RequestHandler } from 'express';
 import client from 'prom-client';
 
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam } from '../../types/requests';
+import { INumberParam, IRequestHandlerWithMetrics } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
@@ -42,18 +41,10 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockRawExtrinsics: RequestHandler<
-		INumberParam,
-		unknown,
-		unknown,
-		unknown,
-		{
-			metrics?: {
-				registry: Record<string, client.Metric>;
-				timer: () => number;
-			};
-		}
-	> = async ({ params: { blockId }, method, route }, res): Promise<void> => {
+	private getBlockRawExtrinsics: IRequestHandlerWithMetrics<INumberParam> = async (
+		{ params: { blockId }, method, route },
+		res,
+	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 		const rawBlock = await this.service.fetchBlockRaw(hash);
 		BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);

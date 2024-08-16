@@ -23,7 +23,7 @@ import type client from 'prom-client';
 import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam, IRangeQueryParam } from '../../types/requests';
+import { IBlockQueryParams, INumberParam, IRangeQueryParam, IRequestHandlerWithMetrics } from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
@@ -125,25 +125,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler<
-		unknown,
-		unknown,
-		unknown,
-		{
-			finalized?: string;
-			eventDocs?: string;
-			extrinsicDocs?: string;
-			noFees?: string;
-			decodedXcmMsgs?: string;
-			paraId?: string;
-		},
-		{
-			metrics?: {
-				registry: Record<string, client.Metric>;
-				timer: () => number;
-			};
-		}
-	> = async (
+	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
 		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId }, method, route },
 		res,
 	) => {
@@ -221,25 +203,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockById: RequestHandler<
-		INumberParam,
-		unknown,
-		unknown,
-		{
-			eventDocs?: string;
-			extrinsicDocs?: string;
-			noFees?: string;
-			finalizedKey?: string;
-			decodedXcmMsgs?: string;
-			paraId?: string;
-		},
-		{
-			metrics?: {
-				registry: Record<string, client.Metric>;
-				timer: () => number;
-			};
-		}
-	> = async (
+	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
 		{
 			params: { number },
 			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId },
@@ -341,18 +305,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: RequestHandler<
-		unknown,
-		unknown,
-		unknown,
-		IRangeQueryParam,
-		{
-			metrics?: {
-				registry: Record<string, client.Metric>;
-				timer: () => number;
-			};
-		}
-	> = async ({ query: { range, eventDocs, extrinsicDocs, noFees }, method, route }, res): Promise<void> => {
+	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam> = async (
+		{ query: { range, eventDocs, extrinsicDocs, noFees }, method, route },
+		res,
+	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 
 		// We set a max range to 500 blocks.
