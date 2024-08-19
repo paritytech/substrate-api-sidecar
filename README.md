@@ -248,7 +248,7 @@ commands `ln` and `unlink` for more info.)
 
 ### Prometheus server
 
-Prometheus metrics can be enabled by running sidecar with the following env configuration : `SAS_METRICS_ENABLED`=true
+Prometheus metrics can be enabled by running sidecar with the following env configuration: `SAS_METRICS_ENABLED`=true
 
 You can also expand the metrics tracking capabilities to include query params by running:
 
@@ -278,7 +278,17 @@ The blocks controller also includes the following route-specific metrics:
 - `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
 - `sas_seconds_per_block`: type histogram and tracks the request time per block
 
-The metrics registry is injected in the Response object when the `-prometheus` flag is selected, allowing to extend the controller based metrics to any given controller from within the controller functions.
+The metrics registry is injected in the Response object when the `ENABLED` flag is true in .env, allowing to extend the controller based metrics to any given controller from within the controller functions.
+
+To successfully run and access the metrics and logs in Grafana (for example) the following are required:
+
+- prometheus server (info [here](https://prometheus.io/docs/prometheus/latest/getting_started/))
+- loki server and promtail (info [here](https://grafana.com/docs/loki/latest/setup/install/))
+
+For mac users using homebrew:
+```bash
+brew install prometheus loki promtail
+```
 
 ## Debugging fee and staking payout calculations
 
