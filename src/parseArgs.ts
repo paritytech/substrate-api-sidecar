@@ -23,18 +23,9 @@ export const parseArgs = (): Namespace => {
 		action: 'store_true',
 		help: 'print substrate-api-sidecar version',
 	});
-	parser.add_argument('-p', '--prometheus', {
+	parser.add_argument('-mq', '--metrics_queryparams', {
 		action: 'store_true',
-		help: 'enable the prometheus metrics endpoint',
-	});
-	parser.add_argument('-pp', '--prometheus-port', {
-		type: 'int',
-		default: 9100,
-		help: 'specify the port number on which the prometheus metrics are exposed [default: 9100]',
-	});
-	parser.add_argument('-pq', '--prometheus-queryparams', {
-		action: 'store_true',
-		help: 'enambles query parameters in the prometheus metrics',
+		help: 'enables query parameters in the prometheus metrics',
 	});
 
 	return parser.parse_args() as Namespace;

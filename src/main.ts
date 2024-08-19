@@ -66,11 +66,12 @@ async function main() {
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
-	if (args.prometheus) {
+
+	if (config.METRICS.ENABLED) {
 		// Create Metrics App
-		const metricsApp = new MetricsApp({
-			port: 9100,
-			host: config.EXPRESS.HOST,
+		const metricsApp = new Metrics_App({
+			port: config.METRICS.PROM_PORT,
+			host: config.METRICS.PROM_HOST,
 		});
 
 		// Generate metrics middleware

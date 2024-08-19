@@ -19,12 +19,13 @@ import { ConsoleTransportInstance, FileTransportInstance } from 'winston/lib/win
 
 import { SidecarConfig } from '../SidecarConfig';
 import { consoleTransport, fileTransport } from './transports';
+import LokiTransport from 'winston-loki';
 
 /**
  * Access a singleton winston.Logger that will be intialized on first use.
  */
 export class Log {
-	private static _transports: (ConsoleTransportInstance | FileTransportInstance)[] | undefined;
+	private static _transports: (ConsoleTransportInstance | FileTransportInstance | LokiTransport)[] | undefined;
 	private static _logger: Logger | undefined;
 	private static create(): Logger {
 		if (this._logger) {
@@ -38,6 +39,14 @@ export class Log {
 		 */
 		if (SidecarConfig.config.LOG.WRITE) {
 			this._transports.push(fileTransport('logs.log'));
+		}
+
+		if (SidecarConfig.config.METRICS.ENABLED) {
+			this._transports.push(new LokiTransport({
+				host: `http://${SidecarConfig.config.METRICS.LOKI_HOST}:${SidecarConfig.config.METRICS.LOKI_PORT}`,
+				useWinstonMetaAsLabels: true,
+				json: true,
+			}))
 		}
 
 		this._logger = createLogger({
