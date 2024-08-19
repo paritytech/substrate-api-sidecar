@@ -16,10 +16,10 @@
 
 import { createLogger, Logger } from 'winston';
 import { ConsoleTransportInstance, FileTransportInstance } from 'winston/lib/winston/transports';
+import LokiTransport from 'winston-loki';
 
 import { SidecarConfig } from '../SidecarConfig';
 import { consoleTransport, fileTransport } from './transports';
-import LokiTransport from 'winston-loki';
 
 /**
  * Access a singleton winston.Logger that will be intialized on first use.
@@ -42,11 +42,13 @@ export class Log {
 		}
 
 		if (SidecarConfig.config.METRICS.ENABLED) {
-			this._transports.push(new LokiTransport({
-				host: `http://${SidecarConfig.config.METRICS.LOKI_HOST}:${SidecarConfig.config.METRICS.LOKI_PORT}`,
-				useWinstonMetaAsLabels: true,
-				json: true,
-			}))
+			this._transports.push(
+				new LokiTransport({
+					host: `http://${SidecarConfig.config.METRICS.LOKI_HOST}:${SidecarConfig.config.METRICS.LOKI_PORT}`,
+					useWinstonMetaAsLabels: true,
+					json: true,
+				}),
+			);
 		}
 
 		this._logger = createLogger({

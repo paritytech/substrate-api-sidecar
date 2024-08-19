@@ -69,7 +69,7 @@ async function main() {
 
 	if (config.METRICS.ENABLED) {
 		// Create Metrics App
-		const metricsApp = new Metrics_App({
+		const metricsApp = new MetricsApp({
 			port: config.METRICS.PROM_PORT,
 			host: config.METRICS.PROM_HOST,
 		});
