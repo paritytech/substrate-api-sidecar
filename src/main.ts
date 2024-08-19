@@ -29,11 +29,11 @@ import App from './App';
 import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
+import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
 import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
-import Metrics_App from './util/metrics';
 
 async function main() {
 	const { config } = SidecarConfig;
@@ -66,10 +66,9 @@ async function main() {
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
-
 	if (args.prometheus) {
 		// Create Metrics App
-		const metricsApp = new Metrics_App({
+		const metricsApp = new MetricsApp({
 			port: 9100,
 			host: config.EXPRESS.HOST,
 		});

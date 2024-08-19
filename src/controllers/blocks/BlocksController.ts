@@ -16,13 +16,20 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
+import type client from 'prom-client';
 
 import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam, IRangeQueryParam } from '../../types/requests';
+import {
+	IBlockQueryParams,
+	IMetrics,
+	INumberParam,
+	IRangeQueryParam,
+	IRequestHandlerWithMetrics,
+} from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
@@ -118,19 +125,54 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		]);
 	}
 
+	private emitExtrinsicMetrics = (
+		totExtrinsics: number,
+		totBlocks: number,
+		method: string,
+		path: string,
+		res: Response<unknown, IMetrics>,
+	): void => {
+		if (res.locals.metrics) {
+			const seconds = res.locals.metrics.timer();
+
+			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request'] as client.Histogram;
+			extrinsics_in_request.labels({ method: method, route: path, status_code: res.statusCode }).observe(totExtrinsics);
+
+			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second'] as client.Histogram;
+			extrinsics_per_second
+				.labels({ method: method, route: path, status_code: res.statusCode })
+				.observe(totExtrinsics / seconds);
+
+			const extrinsicsPerBlockMetrics = res.locals.metrics.registry['sas_extrinsics_per_block'] as client.Histogram;
+			extrinsicsPerBlockMetrics
+				.labels({ method: 'GET', route: path, status_code: res.statusCode })
+				.observe(totExtrinsics / totBlocks);
+
+			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block'] as client.Histogram;
+			seconds_per_block
+				.labels({ method: method, route: path, status_code: res.statusCode })
+				.observe(seconds / totBlocks);
+
+			if (totBlocks > 1) {
+				const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block'] as client.Histogram;
+				seconds_per_block
+					.labels({ method: method, route: path, status_code: res.statusCode })
+					.observe(seconds / totBlocks);
+			}
+		}
+	};
 	/**
 	 * Get the latest block.
 	 *
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlock: RequestHandler = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId } },
+	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
+		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId }, method, route },
 		res,
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-
 		let hash, queryFinalizedHead, omitFinalizedTag;
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
@@ -151,8 +193,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
-		const paraIdArg =
-			paraId !== undefined ? this.parseNumberOrThrow(paraId as string, 'paraId must be an integer') : undefined;
+		const paraIdArg = paraId ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -167,7 +208,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const historicApi = await this.api.at(hash);
 
-		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
+		const block = await this.service.fetchBlock(hash, historicApi, options);
+		BlocksController.sanitizedSend(res, block);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		const path = route.path as string;
+
+		if (res.locals.metrics) {
+			this.emitExtrinsicMetrics(block.extrinsics.length, 1, method, path, res);
+		}
 	};
 
 	/**
@@ -176,12 +225,16 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockById: RequestHandler<INumberParam> = async (
-		{ params: { number }, query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId } },
+	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
+		{
+			params: { number },
+			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId },
+			method,
+			route,
+		},
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
-
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
@@ -197,8 +250,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		}
 
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
-		const paraIdArg =
-			paraId !== undefined ? this.parseNumberOrThrow(paraId as string, 'paraId must be an integer') : undefined;
+		const paraIdArg = paraId ? this.parseNumberOrThrow(paraId, 'paraId must be an integer') : undefined;
 
 		const options = {
 			eventDocs: eventDocsArg,
@@ -213,9 +265,14 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
 		const historicApi = await this.api.at(hash);
-
+		const block = await this.service.fetchBlock(hash, historicApi, options);
 		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(res, await this.service.fetchBlock(hash, historicApi, options));
+		BlocksController.sanitizedSend(res, block);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		const path = route.path as string;
+		if (res.locals.metrics) {
+			this.emitExtrinsicMetrics(block.extrinsics.length, 1, method, path, res);
+		}
 	};
 
 	/**
@@ -250,8 +307,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: RequestHandler<unknown, unknown, unknown, IRangeQueryParam> = async (
-		{ query: { range, eventDocs, extrinsicDocs, noFees } },
+	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam> = async (
+		{ query: { range, eventDocs, extrinsicDocs, noFees }, method, route },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
@@ -298,5 +355,19 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		blocks.sort((a, b) => a.number.toNumber() - b.number.toNumber());
 
 		BlocksController.sanitizedSend(res, blocks);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		const path = route.path as string;
+		if (res.locals.metrics) {
+			const totExtrinsics = blocks.reduce((current: number, block) => {
+				const extrinsics = block.extrinsics;
+
+				if (Array.isArray(extrinsics)) {
+					return current + extrinsics.length;
+				}
+
+				return current;
+			}, 0);
+			this.emitExtrinsicMetrics(totExtrinsics, blocks.length, method, path, res);
+		}
 	};
 }
