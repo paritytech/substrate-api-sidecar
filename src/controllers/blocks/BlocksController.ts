@@ -16,14 +16,20 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
 import type client from 'prom-client';
 
 import { validateBoolean } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
-import { IBlockQueryParams, INumberParam, IRangeQueryParam, IRequestHandlerWithMetrics } from '../../types/requests';
+import {
+	IBlockQueryParams,
+	IMetrics,
+	INumberParam,
+	IRangeQueryParam,
+	IRequestHandlerWithMetrics,
+} from '../../types/requests';
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
@@ -119,6 +125,44 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		]);
 	}
 
+	private emitExtrinsicMetrics = (
+		totExtrinsics: number,
+		totBlocks: number,
+		method: string,
+		path: string,
+		res: Response<unknown, IMetrics>,
+	): void => {
+		if (res.locals.metrics) {
+			const seconds = res.locals.metrics.timer();
+
+			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request_count'] as client.Histogram;
+			extrinsics_in_request.labels({ method: method, route: path, status_code: res.statusCode }).observe(totExtrinsics);
+
+			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second_count'] as client.Histogram;
+			extrinsics_per_second
+				.labels({ method: method, route: path, status_code: res.statusCode })
+				.observe(totExtrinsics / seconds);
+
+			const extrinsicsPerBlockMetrics = res.locals.metrics.registry[
+				'sas_extrinsics_per_block_count'
+			] as client.Histogram;
+			extrinsicsPerBlockMetrics
+				.labels({ method: 'GET', route: path, status_code: res.statusCode })
+				.observe(totExtrinsics / totBlocks);
+
+			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
+			seconds_per_block
+				.labels({ method: method, route: path, status_code: res.statusCode })
+				.observe(seconds / totBlocks);
+
+			if (totBlocks > 1) {
+				const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
+				seconds_per_block
+					.labels({ method: method, route: path, status_code: res.statusCode })
+					.observe(seconds / totBlocks);
+			}
+		}
+	};
 	/**
 	 * Get the latest block.
 	 *
@@ -173,27 +217,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const path = route.path as string;
 
 		if (res.locals.metrics) {
-			const seconds = res.locals.metrics.timer();
-
-			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request_count'] as client.Histogram;
-			extrinsics_in_request
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length);
-
-			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second_count'] as client.Histogram;
-			extrinsics_per_second
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length / seconds);
-
-			const extrinsicsPerBlockMetrics = res.locals.metrics.registry[
-				'sas_extrinsics_per_block_count'
-			] as client.Histogram;
-			extrinsicsPerBlockMetrics
-				.labels({ method: 'GET', route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length);
-
-			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
-			seconds_per_block.labels({ method: method, route: path, status_code: res.statusCode }).observe(seconds);
+			this.emitExtrinsicMetrics(block.extrinsics.length, 1, method, path, res);
 		}
 	};
 
@@ -249,27 +273,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 		if (res.locals.metrics) {
-			const seconds = res.locals.metrics.timer();
-
-			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request_count'] as client.Histogram;
-			extrinsics_in_request
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length);
-
-			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second_count'] as client.Histogram;
-			extrinsics_per_second
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length / seconds);
-
-			const extrinsicsPerBlockMetrics = res.locals.metrics.registry[
-				'sas_extrinsics_per_block_count'
-			] as client.Histogram;
-			extrinsicsPerBlockMetrics
-				.labels({ method: 'GET', route: path, status_code: res.statusCode })
-				.observe(block.extrinsics.length);
-
-			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
-			seconds_per_block.labels({ method: method, route: path, status_code: res.statusCode }).observe(seconds);
+			this.emitExtrinsicMetrics(block.extrinsics.length, 1, method, path, res);
 		}
 	};
 
@@ -356,7 +360,6 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 		if (res.locals.metrics) {
-			const seconds = res.locals.metrics.timer();
 			const totExtrinsics = blocks.reduce((current: number, block) => {
 				const extrinsics = block.extrinsics;
 
@@ -366,24 +369,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 				return current;
 			}, 0);
-
-			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request_count'] as client.Histogram;
-			extrinsics_in_request.labels({ method: method, route: path, status_code: res.statusCode }).observe(totExtrinsics);
-
-			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second_count'] as client.Histogram;
-			extrinsics_per_second
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(totExtrinsics / seconds);
-
-			const extrinsics_per_block = res.locals.metrics.registry['sas_extrinsics_per_block_count'] as client.Histogram;
-			extrinsics_per_block
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(totExtrinsics / blocks.length);
-
-			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
-			seconds_per_block
-				.labels({ method: method, route: path, status_code: res.statusCode })
-				.observe(seconds / blocks.length);
+			this.emitExtrinsicMetrics(totExtrinsics, blocks.length, method, path, res);
 		}
 	};
 }
