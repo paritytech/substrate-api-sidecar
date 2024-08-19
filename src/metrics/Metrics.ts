@@ -140,7 +140,7 @@ export default class Metrics_App {
 
 	preMiddleware() {
 		return (req: Query, res: Response, next: () => void) => {
-			const tot_requests = this.metrics['sas_requests_total'] as client.Counter;
+			const tot_requests = this.metrics['sas_http_requests'] as client.Counter;
 
 			// request count metrics
 			if (req.originalUrl != '/favicon.ico') {
@@ -162,10 +162,10 @@ export default class Metrics_App {
 
 			res.once('finish', () => {
 				if (res.statusCode >= 400 && req.originalUrl != '/favicon.ico') {
-					const request_errors = this.metrics['sas_request_errors_total'] as client.Counter;
+					const request_errors = this.metrics['sas_http_request_error'] as client.Counter;
 					request_errors.inc();
 				} else if (res.statusCode < 400) {
-					const request_success = this.metrics['sas_request_success_total'] as client.Counter;
+					const request_success = this.metrics['sas_http_request_success'] as client.Counter;
 					request_success.inc();
 				}
 

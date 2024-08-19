@@ -270,19 +270,19 @@ A JSON format response is available at `http://127.0.0.1:9100/metrics.json`.
 
 That way you will have access to the default prometheus node instance metrics and the following metrics will be emitted for each route:
 
-- `sas_request_errors_total`: type counter and tracks http errors occuring in sidecar
-- `sas_request_success_total`: type counter and tracks successfull http requests
-- `sas_requests_total`: type counter and tracks all http requests
+- `sas_http_request_error`: type counter and tracks http errors occuring in sidecar
+- `sas_http_request_success`: type counter and tracks successfull http requests
+- `sas_http_requests`: type counter and tracks all http requests
 - `sas_request_duration_seconds`: type histogram and tracks the latency of the requests
 - `sas_response_size_bytes_seconds`: type histogram and tracks the response size of the requests
 - `sas_response_size_latency_ratio_seconds`: type histogram and tracks the response bytes per second of the requests
 
 The blocks controller also includes the following route-specific metrics:
 
-- `sas_extrinsics_in_request_count`: type histogram and tracks the number of extrinsics returned in the request when a range of blocks is queried
-- `sas_extrinsics_per_second_count`: type histogram and tracks the returned extrinics per second
-- `sas_extrinsics_per_block_count`: type histogram and tracks the returned extrinsics per block
-- `sas_seconds_per_block_count`: type histogram and tracks the request time per block
+- `sas_extrinsics_in_request`: type histogram and tracks the number of extrinsics returned in the request when a range of blocks is queried
+- `sas_extrinsics_per_second`: type histogram and tracks the returned extrinics per second
+- `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
+- `sas_seconds_per_block`: type histogram and tracks the request time per block
 
 The metrics registry is injected in the Response object when the `-prometheus` flag is selected, allowing to extend the controller based metrics to any given controller from within the controller functions.
 

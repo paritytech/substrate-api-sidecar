@@ -53,9 +53,7 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 		const path = route.path as string;
 
 		if (res.locals.metrics) {
-			const extrinsics_per_block_metrics = res.locals.metrics.registry[
-				'sas_extrinsics_per_block_count'
-			] as client.Histogram;
+			const extrinsics_per_block_metrics = res.locals.metrics.registry['sas_extrinsics_per_block'] as client.Histogram;
 			extrinsics_per_block_metrics
 				.labels({ method: method, route: path, status_code: res.statusCode })
 				.observe(rawBlock.extrinsics.length);

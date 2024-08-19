@@ -135,28 +135,26 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		if (res.locals.metrics) {
 			const seconds = res.locals.metrics.timer();
 
-			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request_count'] as client.Histogram;
+			const extrinsics_in_request = res.locals.metrics.registry['sas_extrinsics_in_request'] as client.Histogram;
 			extrinsics_in_request.labels({ method: method, route: path, status_code: res.statusCode }).observe(totExtrinsics);
 
-			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second_count'] as client.Histogram;
+			const extrinsics_per_second = res.locals.metrics.registry['sas_extrinsics_per_second'] as client.Histogram;
 			extrinsics_per_second
 				.labels({ method: method, route: path, status_code: res.statusCode })
 				.observe(totExtrinsics / seconds);
 
-			const extrinsicsPerBlockMetrics = res.locals.metrics.registry[
-				'sas_extrinsics_per_block_count'
-			] as client.Histogram;
+			const extrinsicsPerBlockMetrics = res.locals.metrics.registry['sas_extrinsics_per_block'] as client.Histogram;
 			extrinsicsPerBlockMetrics
 				.labels({ method: 'GET', route: path, status_code: res.statusCode })
 				.observe(totExtrinsics / totBlocks);
 
-			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
+			const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block'] as client.Histogram;
 			seconds_per_block
 				.labels({ method: method, route: path, status_code: res.statusCode })
 				.observe(seconds / totBlocks);
 
 			if (totBlocks > 1) {
-				const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block_count'] as client.Histogram;
+				const seconds_per_block = res.locals.metrics.registry['sas_seconds_per_block'] as client.Histogram;
 				seconds_per_block
 					.labels({ method: method, route: path, status_code: res.statusCode })
 					.observe(seconds / totBlocks);

@@ -4,17 +4,17 @@ import { IMetric, MetricType } from '../types/metrics';
 
 export const metric_list: IMetric[] = [
 	{
-		name: 'request_errors_total',
+		name: 'http_request_error',
 		help: 'Number of HTTP Errors',
 		type: MetricType.Counter,
 	},
 	{
-		name: 'request_success_total',
+		name: 'http_request_success',
 		help: 'Number of HTTP Success',
 		type: MetricType.Counter,
 	},
 	{
-		name: 'requests_total',
+		name: 'http_requests',
 		help: 'Total number of HTTP Requests',
 		type: MetricType.Counter,
 	},
@@ -40,28 +40,28 @@ export const metric_list: IMetric[] = [
 		type: MetricType.Histogram,
 	},
 	{
-		name: 'extrinsics_in_request_count',
+		name: 'extrinsics_in_request',
 		help: 'Number of extrinsics in a request',
 		type: MetricType.Histogram,
 		buckets: [5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240, 20480],
 		labels: ['method', 'route', 'status_code'],
 	},
 	{
-		name: 'extrinsics_per_second_count',
+		name: 'extrinsics_per_second',
 		help: 'Number of extrinsics per second',
 		type: MetricType.Histogram,
 		labels: ['method', 'route', 'status_code'],
 		buckets: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
 	},
 	{
-		name: 'extrinsics_per_block_count',
+		name: 'extrinsics_per_block',
 		help: 'Average number of extrinsics per block',
 		type: MetricType.Histogram,
 		labels: ['method', 'route', 'status_code'],
 		buckets: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
 	},
 	{
-		name: 'seconds_per_block_count',
+		name: 'seconds_per_block',
 		help: 'Average seconds per block',
 		type: MetricType.Histogram,
 		labels: ['method', 'route', 'status_code'],
