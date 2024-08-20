@@ -78,6 +78,7 @@ export class SidecarConfig {
 				PROM_PORT: config.Get(MODULES.METRICS, CONFIG.PROM_PORT) as number,
 				LOKI_HOST: config.Get(MODULES.METRICS, CONFIG.LOKI_HOST) as string,
 				LOKI_PORT: config.Get(MODULES.METRICS, CONFIG.LOKI_PORT) as number,
+				INCLUDE_QUERYPARAMS: config.Get(MODULES.METRICS, CONFIG.INCLUDE_QUERYPARAMS) as boolean,
 			},
 		};
 

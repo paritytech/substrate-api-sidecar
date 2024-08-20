@@ -289,5 +289,14 @@ export class Specs {
 				type: 'number',
 			}),
 		);
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.INCLUDE_QUERYPARAMS, 'Include query params in the labels of the metrics', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+			}),
+		);
 	}
 }

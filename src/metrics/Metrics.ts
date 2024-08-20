@@ -1,9 +1,9 @@
 import express from 'express';
 import { Application, Request, Response } from 'express';
 import client from 'prom-client';
+import { SidecarConfig } from 'src/SidecarConfig';
 
 import { Log } from '../logging/Log';
-import { parseArgs } from '../parseArgs';
 import { IMetric, MetricType } from '../types/metrics';
 import { config } from '.';
 
@@ -36,9 +36,7 @@ export default class Metrics_App {
 	 * @param appConfig configuration for app.
 	 */
 	constructor({ host, port }: IAppConfiguration) {
-		const args = parseArgs();
-
-		this.includeQueryParams = !!args.prometheus_queryparams;
+		this.includeQueryParams = SidecarConfig.config.METRICS.INCLUDE_QUERYPARAMS;
 		this.port = port;
 		this.app = express();
 		this.host = host;

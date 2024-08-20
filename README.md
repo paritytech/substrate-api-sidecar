@@ -250,11 +250,7 @@ commands `ln` and `unlink` for more info.)
 
 Prometheus metrics can be enabled by running sidecar with the following env configuration: `SAS_METRICS_ENABLED`=true
 
-You can also expand the metrics tracking capabilities to include query params by running:
-
-```bash
-yarn start --prometheus --prometheus-queryparams
-```
+You can also expand the metrics tracking capabilities to include query params by adding to the env configuration: `INCLUDE_QUERYPARAMS`=true
 
 The metrics endpoint can then be accessed :
 - on the default port : `http://127.0.0.1:9100/metrics` or

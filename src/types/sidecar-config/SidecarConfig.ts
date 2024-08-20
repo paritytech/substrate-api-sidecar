@@ -55,4 +55,5 @@ interface ISidecarConfigMetrics {
 	PROM_PORT: number;
 	LOKI_HOST: string;
 	LOKI_PORT: number;
+	INCLUDE_QUERYPARAMS: boolean;
 }
