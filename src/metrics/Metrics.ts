@@ -1,9 +1,9 @@
 import express from 'express';
 import { Application, Request, Response } from 'express';
 import client from 'prom-client';
-import { SidecarConfig } from 'src/SidecarConfig';
 
 import { Log } from '../logging/Log';
+import { SidecarConfig } from '../SidecarConfig';
 import { IMetric, MetricType } from '../types/metrics';
 import { config } from '.';
 
