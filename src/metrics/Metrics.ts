@@ -35,11 +35,11 @@ export default class Metrics_App {
 	/**
 	 * @param appConfig configuration for app.
 	 */
-	constructor({ host }: IAppConfiguration) {
+	constructor({ host, port }: IAppConfiguration) {
 		const args = parseArgs();
 
 		this.includeQueryParams = !!args.prometheus_queryparams;
-		this.port = Number(args.prometheus_port);
+		this.port = port;
 		this.app = express();
 		this.host = host;
 		this.registry = new client.Registry();
