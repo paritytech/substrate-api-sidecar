@@ -172,7 +172,7 @@ For more information on our configuration manager visit its readme [here](https:
 
 ### Metrics Server
 
-- `SAS_METRICS_ENABLED`: Boolean to enable the metrics server instance with prometheus (server metrics) and loki (logging) connections.
+- `SAS_METRICS_ENABLED`: Boolean to enable the metrics server instance with Prometheus (server metrics) and Loki (logging) connections. Defaults to false.
 - `SAS_METRICS_PROM_HOST`: The host of the prometheus server used to listen to metrics emitted, defaults to `127.0.0.1`.
 - `SAS_METRICS_PROM_PORT`: The port of the prometheus server, defaults to `9100`.
 - `SAS_METRICS_LOKI_HOST`: The host of the loki server used to pull the logs, defaults to `127.0.0.1`.
@@ -274,7 +274,7 @@ The blocks controller also includes the following route-specific metrics:
 - `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
 - `sas_seconds_per_block`: type histogram and tracks the request time per block
 
-The metrics registry is injected in the Response object when the `ENABLED` flag is true in .env, allowing to extend the controller based metrics to any given controller from within the controller functions.
+The metrics registry is injected in the Response object when the `SAS_METRICS_ENABLED` flag is set to `true` in the `.env` file, allowing to extend the controller based metrics to any given controller from within the controller functions.
 
 To successfully run and access the metrics and logs in Grafana (for example) the following are required:
 
