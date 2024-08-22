@@ -15,8 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { ApiDecoration } from '@polkadot/api/types';
-import type { u32, Vec } from '@polkadot/types';
+import { Option, u32, Vec } from '@polkadot/types';
 import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
+import type { SpStakingExposure, SpStakingPagedExposureMetadata } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus } from 'src/types/responses';
 
@@ -67,6 +68,11 @@ export class AccountsStakingInfoService extends AbstractService {
 				`Staking ledger could not be found for controller address "${controller.toString()}"`,
 			);
 		}
+		let isValidator = false;
+		if (historicApi.query.session) {
+			const validators = (await historicApi.query.session.validators()).toHuman() as string[];
+			isValidator = validators.includes(stash);
+		}
 
 		let nominations = null;
 		if (historicApi.query.staking.nominators) {
@@ -74,10 +80,10 @@ export class AccountsStakingInfoService extends AbstractService {
 			nominations = nominationsOption.unwrapOr(null);
 		}
 
+		// Checking if rewards were claimed for each era
 		let claimedRewards: IEraStatus[] = [];
-
+		// Defining for which range of eras to check if rewards were claimed
 		const depth = Number(api.consts.staking.historyDepth.toNumber());
-
 		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
 		if (currentEraMaybeOption.isNone) {
 			throw new InternalServerError('CurrentEra is None when Some was expected');
@@ -85,10 +91,12 @@ export class AccountsStakingInfoService extends AbstractService {
 		const currentEra = currentEraMaybeOption.unwrap().toNumber();
 		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
 		let oldCallChecked = false;
+		// Checking each era one by one
 		for (let e = eraStart; e < eraStart + depth; e++) {
 			let claimedRewardsEras: u32[] = [];
 
-			// Setting as claimed only the era that is defined in the lastReward field
+			// Checking first the old call of `lastReward` and setting as claimed only the era that
+			// is defined in the lastReward field. I do not make any assumptions for any other eras.
 			if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
 				const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
 				if (lastReward.isSome) {
@@ -97,72 +105,60 @@ export class AccountsStakingInfoService extends AbstractService {
 						claimedRewards.push({ era: e, status: 'claimed' });
 					}
 				}
+				// Second check is another old call called `legacyClaimedRewards` from stakingLedger
 			} else if (stakingLedger?.legacyClaimedRewards) {
 				claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
+				// If none of the above are present, we try the `claimedRewards` from stakingLedger
 			} else {
 				claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
 			}
+			/**
+			 * Here we check if we already checked/used the info from the old calls. If not we will use them and
+			 * populate the claimedRewards array with the eras that are claimed. The data from the old calls
+			 * can also be empty (no results) and claimedRewards array will be populated with the data only from
+			 * the new call `query.staking?.claimedRewards` further below.
+			 */
 			if (!oldCallChecked) {
 				if (claimedRewardsEras.length > 0) {
 					claimedRewards = claimedRewardsEras.map((element) => ({
 						era: element.toNumber(),
 						status: 'claimed',
 					}));
-					e = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber() + 1;
+					const claimedRewardsErasMax = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber();
+					/**
+					 * Added this check because from old calls sometimes I would get other eras than the ones I am checking.
+					 * In that case, I need to check if the era is in the range I am checking.
+					 */
+					if (eraStart <= claimedRewardsErasMax) {
+						e = claimedRewardsErasMax + 1;
+					} else {
+						claimedRewards = [];
+					}
 				}
 				oldCallChecked = true;
 			}
+			/**
+			 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
+			 * `query.staking.claimedRewards` is available then we go into this check.
+			 */
 			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
 				const currentEraMaybeOption = await historicApi.query.staking.currentEra();
 				if (currentEraMaybeOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
-				const claimedRewardsPerEra = await historicApi.query.staking.claimedRewards(e, stash);
-				const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
-				let erasStakers = null;
-				if (historicApi.query.staking?.erasStakers) {
-					erasStakers = await historicApi.query.staking.erasStakers(e, stash);
-				}
+				// Populating `claimedRewardsPerEra` for validator
+				const claimedRewardsPerEra: Vec<u32> = await historicApi.query.staking.claimedRewards(e, stash);
 
-				const validators = (await historicApi.query.session.validators()).toHuman() as string[];
-				const isValidator = validators.includes(stash);
-				/**
-				 * If the account is a validator, then the rewards from their own stake + commission are claimed
-				 * if at least one page of the erasStakersPaged is claimed (it can be any page).
-				 * https://github.com/paritytech/polkadot-sdk/blob/776e95748901b50ff2833a7d27ea83fd91fbf9d1/substrate/frame/staking/src/pallet/impls.rs#L357C30-L357C54
-				 * code that shows that when `do_payout_stakers_by_page` is called, first the validator is paid out.
-				 */
 				if (isValidator) {
-					if (erasStakersOverview.isSome) {
-						const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
-						let nominatorClaimed = false;
-						if (claimedRewardsPerEra.length != pageCount) {
-							nominatorClaimed = await this.getNominatorClaimed(historicApi, e, stash, pageCount, claimedRewardsPerEra);
-						}
-						const eraStatus =
-							claimedRewardsPerEra.length === 0
-								? 'unclaimed'
-								: claimedRewardsPerEra.length === pageCount
-								  ? 'claimed'
-								  : isValidator && claimedRewardsPerEra.length != pageCount
-								    ? 'partially claimed'
-								    : !isValidator && nominatorClaimed === true
-								      ? 'claimed'
-								      : !isValidator && nominatorClaimed === false
-								        ? 'unclaimed'
-								        : 'undefined';
-						claimedRewards.push({ era: e, status: eraStatus });
-					} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
-						// if erasStakers.total > 0, then the pageCount is always 1
-						// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
-						const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
-						claimedRewards.push({ era: e, status: eraStatus });
-					}
+					claimedRewards = await this.fetchErasStatusForValidator(
+						historicApi,
+						e,
+						stash,
+						claimedRewardsPerEra,
+						claimedRewards,
+					);
 				} else {
-					nominations?.forEach((nomination) => {
-						console.log('nomination', nomination);
-						// this.getValidatorInfo(historicApi, e, nomination, pageCount, claimedRewardsPerEra);
-					});
+					// Call function for Nominator
 				}
 			} else {
 				break;
@@ -186,29 +182,37 @@ export class AccountsStakingInfoService extends AbstractService {
 		};
 	}
 
-	private async getNominatorClaimed(
+	private async fetchErasStatusForValidator(
 		historicApi: ApiDecoration<'promise'>,
-		era: number,
+		e: number,
 		stash: string,
-		pageCount: number,
 		claimedRewardsPerEra: Vec<u32>,
-	): Promise<boolean> {
-		for (let i = 0; i < pageCount; i++) {
-			const nominatorsRewardsPerPage = await historicApi.query.staking.erasStakersPaged(era, stash, i);
-			// const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
-			const nominatorFound = nominatorsRewardsPerPage.isSome
-				? nominatorsRewardsPerPage.unwrap().others.find((nominator) => nominator.who.toString() === stash)
-				: null;
-			const claimedEra = claimedRewardsPerEra.find((era) => era === (i as unknown as u32));
-			if (nominatorFound && claimedEra) {
-				return true;
-			}
+		claimedRewards: IEraStatus[],
+	): Promise<IEraStatus[]> {
+		const erasStakersOverview: Option<SpStakingPagedExposureMetadata> =
+			await historicApi.query.staking.erasStakersOverview(e, stash);
+		let erasStakers: SpStakingExposure | null = null;
+		if (historicApi.query.staking?.erasStakers) {
+			erasStakers = await historicApi.query.staking.erasStakers(e, stash);
 		}
-		return false;
-	}
 
-	// private async getValidatorInfo(historicApi: ApiDecoration<'promise'>, stash: string): any {
-	// 	const erasStakersOverview = await historicApi.query.staking.erasStakersOverview(e, stash);
-	// 	return [erasStakersOverview];
-	// }
+		if (erasStakersOverview.isSome) {
+			const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+			const eraStatus =
+				claimedRewardsPerEra.length === 0
+					? 'unclaimed'
+					: claimedRewardsPerEra.length === pageCount
+					  ? 'claimed'
+					  : claimedRewardsPerEra.length != pageCount
+					    ? 'partially claimed'
+					    : 'undefined';
+			claimedRewards.push({ era: e, status: eraStatus });
+		} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
+			// if erasStakers.total > 0, then the pageCount is always 1
+			// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
+			const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
+			claimedRewards.push({ era: e, status: eraStatus });
+		}
+		return claimedRewards;
+	}
 }
