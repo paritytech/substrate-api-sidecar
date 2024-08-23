@@ -196,7 +196,6 @@ export class BlocksService extends AbstractService {
 
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
 		const prevBlockHistoricApi = await api.at(previousBlockHash);
-		// get previous block hash historic api and inject it where needed to save calls per extrinic
 		/**
 		 * Fee calculation logic. This runs the extrinsics concurrently.
 		 */
@@ -256,7 +255,6 @@ export class BlocksService extends AbstractService {
 		historicApi?: ApiDecoration<'promise'>,
 	) {
 		const { api } = this;
-		// Inject historic api here or undefined if not available
 		if (noFees) {
 			extrinsics[idx].info = {};
 			return;
@@ -420,6 +418,7 @@ export class BlocksService extends AbstractService {
 		historicApi?: ApiDecoration<'promise'>,
 	): Promise<string> {
 		const { api } = this;
+		// Get injected historicApi for previousBlockHash or create a new one
 		const apiAt = historicApi || (await api.at(previousBlockHash));
 
 		let inclusionFee;
@@ -449,7 +448,7 @@ export class BlocksService extends AbstractService {
 		historicApi?: ApiDecoration<'promise'>,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
-		// mMove historic api to an injection and only if undefined get it
+		// Get injected historicApi for previousBlockHash or create a new one
 		const apiAt = historicApi || (await api.at(previousBlockHash));
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
 			const u8a = ext.toU8a();
