@@ -296,10 +296,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						: await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era - 1].end);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
-
-				const blockInfo = await this.api.rpc.chain.getBlock(nextEraStartBlockHash);
-
-				const allRecords = await historicApi.query.system.events();
+				const [blockInfo, allRecords] = await Promise.all([
+					this.api.rpc.chain.getBlock(nextEraStartBlockHash),
+					historicApi.query.system.events(),
+				]);
 
 				blockInfo.block.extrinsics.forEach((index) => {
 					allRecords

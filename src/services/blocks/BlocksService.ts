@@ -682,7 +682,7 @@ export class BlocksService extends AbstractService {
 	 * @param registry type registry of the block the call belongs to
 	 */
 	private parseGenericCall(genericCall: GenericCall, registry: Registry): ISanitizedCall {
-		const newArgs = {};
+		const newArgs: Record<string, unknown> = {};
 
 		// Pull out the struct of arguments to this call
 		const callArgs = genericCall.get('args') as Struct;
