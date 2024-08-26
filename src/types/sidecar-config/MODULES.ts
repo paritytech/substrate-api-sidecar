@@ -21,4 +21,5 @@ export enum MODULES {
 	EXPRESS = 'EXPRESS',
 	SUBSTRATE = 'SUBSTRATE',
 	LOG = 'LOG',
+	METRICS = 'METRICS',
 }

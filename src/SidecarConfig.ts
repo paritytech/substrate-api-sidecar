@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -71,6 +71,14 @@ export class SidecarConfig {
 				WRITE_PATH: config.Get(MODULES.LOG, CONFIG.WRITE_PATH) as string,
 				WRITE_MAX_FILE_SIZE: config.Get(MODULES.LOG, CONFIG.WRITE_MAX_FILE_SIZE) as number,
 				WRITE_MAX_FILES: config.Get(MODULES.LOG, CONFIG.WRITE_MAX_FILES) as number,
+			},
+			METRICS: {
+				ENABLED: config.Get(MODULES.METRICS, CONFIG.ENABLED) as boolean,
+				PROM_HOST: config.Get(MODULES.METRICS, CONFIG.PROM_HOST) as string,
+				PROM_PORT: config.Get(MODULES.METRICS, CONFIG.PROM_PORT) as number,
+				LOKI_HOST: config.Get(MODULES.METRICS, CONFIG.LOKI_HOST) as string,
+				LOKI_PORT: config.Get(MODULES.METRICS, CONFIG.LOKI_PORT) as number,
+				INCLUDE_QUERYPARAMS: config.Get(MODULES.METRICS, CONFIG.INCLUDE_QUERYPARAMS) as boolean,
 			},
 		};
 

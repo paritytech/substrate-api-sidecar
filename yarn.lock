@@ -847,6 +847,97 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@napi-rs/snappy-android-arm-eabi@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-android-arm-eabi@npm:7.2.2"
+  conditions: os=android & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-android-arm64@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-android-arm64@npm:7.2.2"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-darwin-arm64@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-darwin-arm64@npm:7.2.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-darwin-x64@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-darwin-x64@npm:7.2.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-freebsd-x64@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-freebsd-x64@npm:7.2.2"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-linux-arm-gnueabihf@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-linux-arm-gnueabihf@npm:7.2.2"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-linux-arm64-gnu@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-linux-arm64-gnu@npm:7.2.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-linux-arm64-musl@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-linux-arm64-musl@npm:7.2.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-linux-x64-gnu@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-linux-x64-gnu@npm:7.2.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-linux-x64-musl@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-linux-x64-musl@npm:7.2.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-win32-arm64-msvc@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-win32-arm64-msvc@npm:7.2.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-win32-ia32-msvc@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-win32-ia32-msvc@npm:7.2.2"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@napi-rs/snappy-win32-x64-msvc@npm:7.2.2":
+  version: 7.2.2
+  resolution: "@napi-rs/snappy-win32-x64-msvc@npm:7.2.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@noble/curves@npm:^1.3.0":
   version: 1.3.0
   resolution: "@noble/curves@npm:1.3.0"
@@ -1418,6 +1509,79 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@protobufjs/aspromise@npm:1.1.2"
+  checksum: 10/8a938d84fe4889411296db66b29287bd61ea3c14c2d23e7a8325f46a2b8ce899857c5f038d65d7641805e6c1d06b495525c7faf00c44f85a7ee6476649034969
+  languageName: node
+  linkType: hard
+
+"@protobufjs/base64@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@protobufjs/base64@npm:1.1.2"
+  checksum: 10/c71b100daeb3c9bdccab5cbc29495b906ba0ae22ceedc200e1ba49717d9c4ab15a6256839cebb6f9c6acae4ed7c25c67e0a95e734f612b258261d1a3098fe342
+  languageName: node
+  linkType: hard
+
+"@protobufjs/codegen@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@protobufjs/codegen@npm:2.0.4"
+  checksum: 10/c6ee5fa172a8464f5253174d3c2353ea520c2573ad7b6476983d9b1346f4d8f2b44aa29feb17a949b83c1816bc35286a5ea265ed9d8fdd2865acfa09668c0447
+  languageName: node
+  linkType: hard
+
+"@protobufjs/eventemitter@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@protobufjs/eventemitter@npm:1.1.0"
+  checksum: 10/03af3e99f17ad421283d054c88a06a30a615922a817741b43ca1b13e7c6b37820a37f6eba9980fb5150c54dba6e26cb6f7b64a6f7d8afa83596fafb3afa218c3
+  languageName: node
+  linkType: hard
+
+"@protobufjs/fetch@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@protobufjs/fetch@npm:1.1.0"
+  dependencies:
+    "@protobufjs/aspromise": "npm:^1.1.1"
+    "@protobufjs/inquire": "npm:^1.1.0"
+  checksum: 10/67ae40572ad536e4ef94269199f252c024b66e3059850906bdaee161ca1d75c73d04d35cd56f147a8a5a079f5808e342b99e61942c1dae15604ff0600b09a958
+  languageName: node
+  linkType: hard
+
+"@protobufjs/float@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@protobufjs/float@npm:1.0.2"
+  checksum: 10/634c2c989da0ef2f4f19373d64187e2a79f598c5fb7991afb689d29a2ea17c14b796b29725945fa34b9493c17fb799e08ac0a7ccaae460ee1757d3083ed35187
+  languageName: node
+  linkType: hard
+
+"@protobufjs/inquire@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@protobufjs/inquire@npm:1.1.0"
+  checksum: 10/c09efa34a5465cb120775e1a482136f2340a58b4abce7e93d72b8b5a9324a0e879275016ef9fcd73d72a4731639c54f2bb755bb82f916e4a78892d1d840bb3d2
+  languageName: node
+  linkType: hard
+
+"@protobufjs/path@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@protobufjs/path@npm:1.1.2"
+  checksum: 10/bb709567935fd385a86ad1f575aea98131bbd719c743fb9b6edd6b47ede429ff71a801cecbd64fc72deebf4e08b8f1bd8062793178cdaed3713b8d15771f9b83
+  languageName: node
+  linkType: hard
+
+"@protobufjs/pool@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@protobufjs/pool@npm:1.1.0"
+  checksum: 10/b9c7047647f6af28e92aac54f6f7c1f7ff31b201b4bfcc7a415b2861528854fce3ec666d7e7e10fd744da905f7d4aef2205bbcc8944ca0ca7a82e18134d00c46
+  languageName: node
+  linkType: hard
+
+"@protobufjs/utf8@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@protobufjs/utf8@npm:1.1.0"
+  checksum: 10/131e289c57534c1d73a0e55782d6751dd821db1583cb2f7f7e017c9d6747addaebe79f28120b2e0185395d990aad347fb14ffa73ef4096fa38508d61a0e64602
+  languageName: node
+  linkType: hard
+
 "@scure/base@npm:^1.1.1, @scure/base@npm:^1.1.5":
   version: 1.1.5
   resolution: "@scure/base@npm:1.1.5"
@@ -1476,6 +1640,7 @@ __metadata:
     rxjs: "npm:^7.8.1"
     ts-node-dev: "npm:^2.0.0"
     winston: "npm:^3.14.1"
+    winston-loki: "npm:^6.1.2"
   bin:
     substrate-api-sidecar: ./build/src/main.js
   languageName: unknown
@@ -1796,6 +1961,15 @@ __metadata:
   version: 20.5.4
   resolution: "@types/node@npm:20.5.4"
   checksum: 10/c2d34419ffbbb9dfdf7cd46d9ab51092c009884aa0df1d8114024601c616477d2d7234d91f1f9cc500c41a3ea411d7f811e19b178c3441624ec0abc4f9548cdc
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:>=13.7.0":
+  version: 22.3.0
+  resolution: "@types/node@npm:22.3.0"
+  dependencies:
+    undici-types: "npm:~6.18.2"
+  checksum: 10/c31a798ed722a7417727f018ea6d621db038a613c626da643174cc6f3dcf4ce2fc9933a010aec289103d9564da2c2f9b054c9aa398828f00e17269a78c64d4ec
   languageName: node
   linkType: hard
 
@@ -2215,6 +2389,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-exit-hook@npm:2.0.1":
+  version: 2.0.1
+  resolution: "async-exit-hook@npm:2.0.1"
+  checksum: 10/fffabbe5ef194ec8283efed48eaf8f4b7982d547de6d4cf7aadf83c8690f0f7929ad01b7cb5de99935ea8f3deb2c21fd009892d8215a43b5a2dcc55c04d42c9f
+  languageName: node
+  linkType: hard
+
 "async@npm:^3.2.3":
   version: 3.2.4
   resolution: "async@npm:3.2.4"
@@ -2419,6 +2600,15 @@ __metadata:
   dependencies:
     node-int64: "npm:^0.4.0"
   checksum: 10/edba1b65bae682450be4117b695997972bd9a3c4dfee029cab5bcb72ae5393a79a8f909b8bc77957eb0deec1c7168670f18f4d5c556f46cdd3bca5f3b3a8d020
+  languageName: node
+  linkType: hard
+
+"btoa@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "btoa@npm:1.2.1"
+  bin:
+    btoa: bin/btoa.js
+  checksum: 10/29f2ca93837e10427184626bdfd5d00065dff28b604b822aa9849297dac8c8d6ad385cc96eed812ebf153d80c24a4556252afdbb97c7a712938baeaad7547705
   languageName: node
   linkType: hard
 
@@ -4747,7 +4937,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"logform@npm:^2.3.2, logform@npm:^2.6.0":
+"logform@npm:^2.3.2, logform@npm:^2.6.0, logform@npm:^2.6.1":
   version: 2.6.1
   resolution: "logform@npm:2.6.1"
   dependencies:
@@ -4758,6 +4948,13 @@ __metadata:
     safe-stable-stringify: "npm:^2.3.1"
     triple-beam: "npm:^1.3.0"
   checksum: 10/e67f414787fbfe1e6a997f4c84300c7e06bee3d0bd579778af667e24b36db3ea200ed195d41b61311ff738dab7faabc615a07b174b22fe69e0b2f39e985be64b
+  languageName: node
+  linkType: hard
+
+"long@npm:^5.0.0":
+  version: 5.2.3
+  resolution: "long@npm:5.2.3"
+  checksum: 10/9167ec6947a825b827c30da169a7384eec6c0c9ec2f0b9c74da2e93d81159bbe39fb09c3f13dae9721d4b807ccfa09797a7dd1012f5d478e3e33ca3c78b608e6
   languageName: node
   linkType: hard
 
@@ -5517,6 +5714,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"protobufjs@npm:^7.2.4":
+  version: 7.3.2
+  resolution: "protobufjs@npm:7.3.2"
+  dependencies:
+    "@protobufjs/aspromise": "npm:^1.1.2"
+    "@protobufjs/base64": "npm:^1.1.2"
+    "@protobufjs/codegen": "npm:^2.0.4"
+    "@protobufjs/eventemitter": "npm:^1.1.0"
+    "@protobufjs/fetch": "npm:^1.1.0"
+    "@protobufjs/float": "npm:^1.0.2"
+    "@protobufjs/inquire": "npm:^1.1.0"
+    "@protobufjs/path": "npm:^1.1.2"
+    "@protobufjs/pool": "npm:^1.1.0"
+    "@protobufjs/utf8": "npm:^1.1.0"
+    "@types/node": "npm:>=13.7.0"
+    long: "npm:^5.0.0"
+  checksum: 10/816604aa0649a93fd5d3ef2858ef038f482d18eebcfb4201fe85c0d3bcccc12410f9e3e73262f1219e6b5bed4f27b28c3bf7c931c409dfb1fd563a304d541d89
+  languageName: node
+  linkType: hard
+
 "proxy-addr@npm:~2.0.7":
   version: 2.0.7
   resolution: "proxy-addr@npm:2.0.7"
@@ -5583,7 +5800,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^3.4.0, readable-stream@npm:^3.6.0":
+"readable-stream@npm:^3.4.0, readable-stream@npm:^3.6.0, readable-stream@npm:^3.6.2":
   version: 3.6.2
   resolution: "readable-stream@npm:3.6.2"
   dependencies:
@@ -5919,6 +6136,54 @@ __metadata:
   dependencies:
     ws: "npm:^8.8.1"
   checksum: 10/8d63720ff7aee9ff4cbfb3d6952c68781aaaecf49fcb20d8b76919e854975b029071778c4c3bd50a18a4c3e0c96857b2b6daa526bbad4a3bee20f2aad8dfe388
+  languageName: node
+  linkType: hard
+
+"snappy@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "snappy@npm:7.2.2"
+  dependencies:
+    "@napi-rs/snappy-android-arm-eabi": "npm:7.2.2"
+    "@napi-rs/snappy-android-arm64": "npm:7.2.2"
+    "@napi-rs/snappy-darwin-arm64": "npm:7.2.2"
+    "@napi-rs/snappy-darwin-x64": "npm:7.2.2"
+    "@napi-rs/snappy-freebsd-x64": "npm:7.2.2"
+    "@napi-rs/snappy-linux-arm-gnueabihf": "npm:7.2.2"
+    "@napi-rs/snappy-linux-arm64-gnu": "npm:7.2.2"
+    "@napi-rs/snappy-linux-arm64-musl": "npm:7.2.2"
+    "@napi-rs/snappy-linux-x64-gnu": "npm:7.2.2"
+    "@napi-rs/snappy-linux-x64-musl": "npm:7.2.2"
+    "@napi-rs/snappy-win32-arm64-msvc": "npm:7.2.2"
+    "@napi-rs/snappy-win32-ia32-msvc": "npm:7.2.2"
+    "@napi-rs/snappy-win32-x64-msvc": "npm:7.2.2"
+  dependenciesMeta:
+    "@napi-rs/snappy-android-arm-eabi":
+      optional: true
+    "@napi-rs/snappy-android-arm64":
+      optional: true
+    "@napi-rs/snappy-darwin-arm64":
+      optional: true
+    "@napi-rs/snappy-darwin-x64":
+      optional: true
+    "@napi-rs/snappy-freebsd-x64":
+      optional: true
+    "@napi-rs/snappy-linux-arm-gnueabihf":
+      optional: true
+    "@napi-rs/snappy-linux-arm64-gnu":
+      optional: true
+    "@napi-rs/snappy-linux-arm64-musl":
+      optional: true
+    "@napi-rs/snappy-linux-x64-gnu":
+      optional: true
+    "@napi-rs/snappy-linux-x64-musl":
+      optional: true
+    "@napi-rs/snappy-win32-arm64-msvc":
+      optional: true
+    "@napi-rs/snappy-win32-ia32-msvc":
+      optional: true
+    "@napi-rs/snappy-win32-x64-msvc":
+      optional: true
+  checksum: 10/cc6ee627d32325c3b3a7220f57bf7f87906372431072b77dfacf5d875a21c54043df8d6f328eadf8d58bda3d9bb558b3f00e1daaa757441cfa1ec20004f715f1
   languageName: node
   linkType: hard
 
@@ -6441,6 +6706,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~6.18.2":
+  version: 6.18.2
+  resolution: "undici-types@npm:6.18.2"
+  checksum: 10/5c863f3cc65d012498cf0f8562b9d81e785c2b8b8a8d66343b9f4351ff40a3a29b500fbaea10667626fd91a32433d4c876810aafa5ab561369de702b62d4b323
+  languageName: node
+  linkType: hard
+
 "unique-filename@npm:^3.0.0":
   version: 3.0.0
   resolution: "unique-filename@npm:3.0.0"
@@ -6493,6 +6765,13 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10/b271ca7e3d46b7160222e3afa3e531505161c9a4e097febae9664e4b59912f4cbe94861361a4175edac3a03fee99d91e44b6a58c17a634bc5a664b19fc76fbcb
+  languageName: node
+  linkType: hard
+
+"url-polyfill@npm:^1.1.12":
+  version: 1.1.12
+  resolution: "url-polyfill@npm:1.1.12"
+  checksum: 10/27b50354e0852228a6396a18ad6231d31b34b82b7b10d71bd48057d156178a581554c05fd6c9cf32931c1f826c67efb6b1c3881a410ef61609f502787b007416
   languageName: node
   linkType: hard
 
@@ -6568,6 +6847,34 @@ __metadata:
   dependencies:
     string-width: "npm:^1.0.2 || 2 || 3 || 4"
   checksum: 10/d5f8027b9a8255a493a94e4ec1b74a27bff6679d5ffe29316a3215e4712945c84ef73ca4045c7e20ae7d0c72f5f57f296e04a4928e773d4276a2f1222e4c2e99
+  languageName: node
+  linkType: hard
+
+"winston-loki@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "winston-loki@npm:6.1.2"
+  dependencies:
+    async-exit-hook: "npm:2.0.1"
+    btoa: "npm:^1.2.1"
+    protobufjs: "npm:^7.2.4"
+    snappy: "npm:^7.2.2"
+    url-polyfill: "npm:^1.1.12"
+    winston-transport: "npm:^4.3.0"
+  dependenciesMeta:
+    snappy:
+      optional: true
+  checksum: 10/faad904f3a4c8e1e8de0614fdea5d435bb4ad9934d5dc28ce7f1577b5721cb3b72860f4755ce5d5f5ab3284915043bdf1802c12be9b92b51124b0ea4eeae6ea6
+  languageName: node
+  linkType: hard
+
+"winston-transport@npm:^4.3.0":
+  version: 4.7.1
+  resolution: "winston-transport@npm:4.7.1"
+  dependencies:
+    logform: "npm:^2.6.1"
+    readable-stream: "npm:^3.6.2"
+    triple-beam: "npm:^1.3.0"
+  checksum: 10/bc48c921ec9b4a71c1445bf274aa6b00c01089a6c26fc0b19534f8a32fa2710c6766c9e6db53a23492c20772934025d312dd9fb08df157ccb6579ad6b9dae9a7
   languageName: node
   linkType: hard
 

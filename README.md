@@ -170,6 +170,14 @@ For more information on our configuration manager visit its readme [here](https:
 - `SAS_SUBSTRATE_URL`: URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`. Accepts both a websocket, and http URL.
 
+### Metrics Server
+
+- `SAS_METRICS_ENABLED`: Boolean to enable the metrics server instance with Prometheus (server metrics) and Loki (logging) connections. Defaults to false.
+- `SAS_METRICS_PROM_HOST`: The host of the prometheus server used to listen to metrics emitted, defaults to `127.0.0.1`.
+- `SAS_METRICS_PROM_PORT`: The port of the prometheus server, defaults to `9100`.
+- `SAS_METRICS_LOKI_HOST`: The host of the loki server used to pull the logs, defaults to `127.0.0.1`.
+- `SAS_METRICS_LOKI_PORT`: The port of the loki server, defaults to `3100`
+
 #### Custom substrate types
 
 Some chains require custom type definitions in order for Sidecar to know how to decode the data
@@ -239,23 +247,10 @@ file you can `symlink` it with `.env.test`. For example you could run
 commands `ln` and `unlink` for more info.)
 
 ### Prometheus server
-Prometheus metrics can be enabled by running sidecar with the following flag :
 
-```bash
-yarn start --prometheus
-```
+Prometheus metrics can be enabled by running sidecar with the following env configuration: `SAS_METRICS_ENABLED`=true
 
-You can also define a custom port by running :
-
-```bash
-yarn start --prometheus --prometheus-port=<YOUR_CUSTOM_PORT>
-```
-
-You can also expand the metrics tracking capabilities to include query params by running:
-
-```bash
-yarn start --prometheus --prometheus-queryparams
-```
+You can also expand the metrics tracking capabilities to include query params by adding to the env configuration: `SAS_METRICS_INCLUDE_QUERYPARAMS`=true
 
 The metrics endpoint can then be accessed :
 - on the default port : `http://127.0.0.1:9100/metrics` or
@@ -279,7 +274,17 @@ The blocks controller also includes the following route-specific metrics:
 - `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
 - `sas_seconds_per_block`: type histogram and tracks the request time per block
 
-The metrics registry is injected in the Response object when the `-prometheus` flag is selected, allowing to extend the controller based metrics to any given controller from within the controller functions.
+The metrics registry is injected in the Response object when the `SAS_METRICS_ENABLED` flag is set to `true` in the `.env` file, allowing to extend the controller based metrics to any given controller from within the controller functions.
+
+To successfully run and access the metrics and logs in Grafana (for example) the following are required:
+
+- prometheus server (info [here](https://prometheus.io/docs/prometheus/latest/getting_started/))
+- loki server and promtail (info [here](https://grafana.com/docs/loki/latest/setup/install/))
+
+For mac users using homebrew:
+```bash
+brew install prometheus loki promtail
+```
 
 ## Debugging fee and staking payout calculations
 
