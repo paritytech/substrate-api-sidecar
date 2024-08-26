@@ -18,7 +18,6 @@ updates:
     commit-message:
       # Prefix all commit messages with "chore"
       # include a list of updated dependencies
-      prefix: "chore:"
-      include: "scope"
+      prefix: "chore(deps):"
     labels:
-      - "dependencies"
+      - "D0 - Dependencies"
