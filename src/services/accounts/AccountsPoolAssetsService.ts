@@ -67,12 +67,10 @@ export class AccountsPoolAssetsService extends AbstractService {
 		assets: number[],
 	): Promise<IAccountPoolAssetsBalances> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
+		const [historicApi, { number }] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
 
 		// Check if this runtime has the PoolAssets pallet
 		this.checkPoolAssetsError(historicApi);
-
-		const { number } = await api.rpc.chain.getHeader(hash);
 
 		let response;
 		if (assets.length === 0) {

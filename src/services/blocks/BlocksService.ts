@@ -195,6 +195,7 @@ export class BlocksService extends AbstractService {
 		}
 
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
+		const prevBlockHistoricApi = await api.at(previousBlockHash);
 		/**
 		 * Fee calculation logic. This runs the extrinsics concurrently.
 		 */
@@ -203,7 +204,17 @@ export class BlocksService extends AbstractService {
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			feeTasks.push(
 				pQueue.run(async () => {
-					await this.resolveExtFees(extrinsics, block, idx, noFees, previousBlockHash, specVersion, specName);
+					await this.resolveExtFees(
+						extrinsics,
+						block,
+						idx,
+						noFees,
+						previousBlockHash,
+						specVersion,
+						specName,
+						// Inject historic api here or undefined if not available, should save at least two calls per extrinsic
+						prevBlockHistoricApi,
+					);
 				}),
 			);
 		}
@@ -241,9 +252,9 @@ export class BlocksService extends AbstractService {
 		previousBlockHash: BlockHash,
 		specVersion: u32,
 		specName: Text,
+		historicApi?: ApiDecoration<'promise'>,
 	) {
 		const { api } = this;
-
 		if (noFees) {
 			extrinsics[idx].info = {};
 			return;
@@ -340,7 +351,7 @@ export class BlocksService extends AbstractService {
 			class: dispatchClass,
 			partialFee,
 			weight,
-		} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+		} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash, historicApi);
 		const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
 
 		let finalPartialFee = partialFee.toString(),
@@ -361,6 +372,7 @@ export class BlocksService extends AbstractService {
 					previousBlockHash,
 					weightInfo.weight,
 					versionedWeight.toString(),
+					historicApi,
 				);
 
 				dispatchFeeType = 'postDispatch';
@@ -371,6 +383,7 @@ export class BlocksService extends AbstractService {
 						previousBlockHash,
 						weightInfo.weight,
 						versionedWeight.toString(),
+						historicApi,
 					);
 					dispatchFeeType = 'postDispatch';
 					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
@@ -402,9 +415,11 @@ export class BlocksService extends AbstractService {
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
 		estWeight: string,
+		historicApi?: ApiDecoration<'promise'>,
 	): Promise<string> {
 		const { api } = this;
-		const apiAt = await api.at(previousBlockHash);
+		// Get injected historicApi for previousBlockHash or create a new one
+		const apiAt = historicApi || (await api.at(previousBlockHash));
 
 		let inclusionFee;
 		if (apiAt.call.transactionPaymentApi.queryFeeDetails) {
@@ -430,9 +445,11 @@ export class BlocksService extends AbstractService {
 	private async fetchQueryInfo(
 		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
+		historicApi?: ApiDecoration<'promise'>,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
-		const apiAt = await api.at(previousBlockHash);
+		// Get injected historicApi for previousBlockHash or create a new one
+		const apiAt = historicApi || (await api.at(previousBlockHash));
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
 			const u8a = ext.toU8a();
 			return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
@@ -682,7 +699,7 @@ export class BlocksService extends AbstractService {
 	 * @param registry type registry of the block the call belongs to
 	 */
 	private parseGenericCall(genericCall: GenericCall, registry: Registry): ISanitizedCall {
-		const newArgs = {};
+		const newArgs: Record<string, unknown> = {};
 
 		// Pull out the struct of arguments to this call
 		const callArgs = genericCall.get('args') as Struct;

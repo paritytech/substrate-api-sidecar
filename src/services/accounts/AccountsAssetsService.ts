@@ -63,12 +63,9 @@ export class AccountsAssetsService extends AbstractService {
 	 */
 	async fetchAssetBalances(hash: BlockHash, address: string, assets: number[]): Promise<IAccountAssetsBalances> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
-
+		const [historicApi, { number }] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
 		// Check if this runtime has the assets pallet
 		this.checkAssetsError(historicApi);
-
-		const { number } = await api.rpc.chain.getHeader(hash);
 
 		let response;
 		if (assets.length === 0) {
