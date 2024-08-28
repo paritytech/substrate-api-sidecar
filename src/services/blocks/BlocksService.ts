@@ -409,6 +409,7 @@ export class BlocksService extends AbstractService {
 	 * @param previousBlockHash
 	 * @param extrinsicSuccessWeight
 	 * @param estWeight
+	 * @param historicApi
 	 */
 	private async fetchQueryFeeDetails(
 		ext: GenericExtrinsic,
