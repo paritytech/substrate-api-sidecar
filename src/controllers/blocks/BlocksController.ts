@@ -18,6 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
+import type { LRUCache } from 'lru-cache';
 import type client from 'prom-client';
 
 import { validateBoolean } from '../../middleware/validate';
@@ -102,16 +103,14 @@ import AbstractController from '../AbstractController';
  * - `OnFinalize`: https://crates.parity.io/frame_support/traits/trait.OnFinalize.html
  */
 export default class BlocksController extends AbstractController<BlocksService> {
+	private blockStore: LRUCache<string, IBlock>;
 	constructor(
 		api: ApiPromise,
 		private readonly options: ControllerOptions,
 	) {
-		super(
-			api,
-			'/blocks',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
-		);
+		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
 		this.initRoutes();
+		this.blockStore = options.blockStore;
 	}
 
 	protected initRoutes(): void {
@@ -205,10 +204,28 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			checkDecodedXcm: decodedXcmMsgsArg,
 			paraId: paraIdArg,
 		};
+		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
+		const cacheKey =
+			hash.toString() +
+			Number(eventDocs) +
+			Number(extrinsicDocs) +
+			Number(options.checkFinalized) +
+			Number(noFees) +
+			Number(options.checkDecodedXcm) +
+			Number(paraId);
+
+		const isBlockCached = this.blockStore.get(cacheKey);
+
+		if (isBlockCached) {
+			BlocksController.sanitizedSend(res, isBlockCached);
+			return;
+		}
 
 		const historicApi = await this.api.at(hash);
 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
+		this.blockStore.set(cacheKey, block);
+
 		BlocksController.sanitizedSend(res, block);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -263,9 +280,28 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			paraId: paraIdArg,
 		};
 
+		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
+
+		const cacheKey =
+			hash.toString() +
+			Number(eventDocs) +
+			Number(extrinsicDocs) +
+			Number(options.checkFinalized) +
+			Number(noFees) +
+			Number(options.checkDecodedXcm) +
+			Number(paraId);
+
+		const isBlockCached = this.blockStore.get(cacheKey);
+
+		if (isBlockCached) {
+			BlocksController.sanitizedSend(res, isBlockCached);
+			return;
+		}
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
 		const historicApi = await this.api.at(hash);
 		const block = await this.service.fetchBlock(hash, historicApi, options);
+
+		this.blockStore.set(cacheKey, block);
 		// We set the last param to true because we haven't queried the finalizedHead
 		BlocksController.sanitizedSend(res, block);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -348,7 +384,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		}
 
 		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
-
+		blocksPromise.length = 0;
 		/**
 		 * Sort blocks from least to greatest.
 		 */

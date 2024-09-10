@@ -41,7 +41,6 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
-import type { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
@@ -96,7 +95,6 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRUCache<string, IBlock>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
 		super(api);
@@ -123,24 +121,6 @@ export class BlocksService extends AbstractService {
 		}: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
-
-		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-		const cacheKey =
-			hash.toString() +
-			Number(eventDocs) +
-			Number(extrinsicDocs) +
-			Number(checkFinalized) +
-			Number(noFees) +
-			Number(checkDecodedXcm) +
-			Number(paraId);
-
-		// Before making any api calls check the cache if the queried block exists
-		const isBlockCached = this.blockStore.get(cacheKey);
-
-		if (isBlockCached && isBlockCached.finalized !== false) {
-			return isBlockCached;
-		}
-
 		const [{ block }, { specName, specVersion }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			api.rpc.state.getRuntimeVersion(hash),
@@ -223,6 +203,7 @@ export class BlocksService extends AbstractService {
 
 		await Promise.all(feeTasks);
 
+		feeTasks.length = 0;
 		const response = {
 			number,
 			hash,
@@ -237,10 +218,6 @@ export class BlocksService extends AbstractService {
 			finalized,
 			decodedXcmMsgs,
 		};
-
-		// Store the block in the cache
-		this.blockStore.set(cacheKey, response);
-
 		return response;
 	}
 
