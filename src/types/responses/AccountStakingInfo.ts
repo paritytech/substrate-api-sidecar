@@ -25,9 +25,12 @@ import type {
 
 import { IAt } from '.';
 
-export interface IEraStatus {
+export type ValidatorStatus = 'claimed' | 'unclaimed' | 'partially claimed' | 'undefined';
+export type NominatorStatus = 'claimed' | 'unclaimed' | 'undefined';
+
+export interface IEraStatus<T> {
 	era: number;
-	status: 'claimed' | 'unclaimed' | 'partially claimed' | 'undefined';
+	status: T;
 }
 
 export interface IStakingLedger {
@@ -35,7 +38,7 @@ export interface IStakingLedger {
 	total: Compact<u128>;
 	active: Compact<u128>;
 	unlocking: Vec<PalletStakingUnlockChunk>;
-	claimedRewards?: IEraStatus[];
+	claimedRewards?: IEraStatus<ValidatorStatus | NominatorStatus>[];
 }
 
 export interface IAccountStakingInfo {

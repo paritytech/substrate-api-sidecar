@@ -19,7 +19,7 @@ import { Option, u32, Vec } from '@polkadot/types';
 import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
 import type { SpStakingExposure, SpStakingPagedExposureMetadata } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
-import { IAccountStakingInfo, IEraStatus } from 'src/types/responses';
+import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
@@ -82,7 +82,8 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		// Checking if rewards were claimed for each era
-		let claimedRewards: IEraStatus[] = [];
+		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
+		let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
 		// Defining for which range of eras to check if rewards were claimed
 		const depth = Number(api.consts.staking.historyDepth.toNumber());
 		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
@@ -166,19 +167,23 @@ export class AccountsStakingInfoService extends AbstractService {
 					const nominatingValidators = await historicApi.query.staking.nominators(stash);
 					const validatorsUnwrapped = nominatingValidators.unwrap().targets.toHuman() as string[];
 
-					const [era, claimedRewardsNom] = await this.fetchErasStatusForNominator(
+					const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
 						historicApi,
 						e,
 						eraStart,
-						claimedRewards,
+						claimedRewardsNom,
 						validatorsUnwrapped,
+						stash,
 					);
 					e = era;
-					claimedRewards = claimedRewardsNom;
+					claimedRewardsNom = claimedRewardsNom1;
 				}
 			} else {
 				break;
 			}
+		}
+		if (!isValidator) {
+			claimedRewards = claimedRewardsNom;
 		}
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
 
@@ -193,7 +198,7 @@ export class AccountsStakingInfoService extends AbstractService {
 				total: stakingLedger.total,
 				active: stakingLedger.active,
 				unlocking: stakingLedger.unlocking,
-				claimedRewards: claimedRewards,
+				claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
 			},
 		};
 	}
@@ -203,8 +208,8 @@ export class AccountsStakingInfoService extends AbstractService {
 		e: number,
 		stash: string,
 		claimedRewardsPerEra: Vec<u32>,
-		claimedRewards: IEraStatus[],
-	): Promise<IEraStatus[]> {
+		claimedRewards: IEraStatus<ValidatorStatus>[],
+	): Promise<IEraStatus<ValidatorStatus>[]> {
 		const erasStakersOverview: Option<SpStakingPagedExposureMetadata> =
 			await historicApi.query.staking.erasStakersOverview(e, stash);
 		let erasStakers: SpStakingExposure | null = null;
@@ -236,24 +241,24 @@ export class AccountsStakingInfoService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		e: number,
 		eraStart: number,
-		claimedRewards: IEraStatus[],
+		claimedRewardsNom: IEraStatus<NominatorStatus>[],
 		validatorsUnwrapped: string[],
-	): Promise<[number, IEraStatus[]]> {
-		let eraStatusVal: 'claimed' | 'unclaimed' | 'partially claimed' | 'undefined' = 'undefined';
+		nominatorStash: string,
+	): Promise<[number, IEraStatus<NominatorStatus>[]]> {
 		// Iterate through all validators that the nominator is nominating and
 		// check if the rewards are claimed or not.
 		for (const [idx, validatorStash] of validatorsUnwrapped.entries()) {
 			let oldCallChecked = false;
-			if (claimedRewards.length == 0) {
+			if (claimedRewardsNom.length == 0) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
 					e,
 					eraStart,
-					claimedRewards,
+					claimedRewardsNom,
 					validatorStash,
 					oldCallChecked,
 				);
-				claimedRewards = claimedRewardsOld;
+				claimedRewardsNom = claimedRewardsOld;
 				oldCallChecked = oldCallCheck;
 				e = era;
 			} else {
@@ -281,35 +286,39 @@ export class AccountsStakingInfoService extends AbstractService {
 
 				if (erasStakersOverview.isSome) {
 					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
-					const eraStatus =
+					const eraStatus: NominatorStatus =
 						claimedRewardsPerEra.length === 0
 							? 'unclaimed'
 							: claimedRewardsPerEra.length === pageCount
 							  ? 'claimed'
 							  : claimedRewardsPerEra.length != pageCount
-							    ? 'partially claimed'
+							    ? await this.ErasStatusNominatorForValPartiallyClaimed(
+											historicApi,
+											e,
+											validatorStash,
+											pageCount,
+											nominatorStash,
+											claimedRewardsPerEra,
+							      )
 							    : 'undefined';
-					claimedRewards.push({ era: e, status: eraStatus });
-					eraStatusVal = eraStatus;
+					claimedRewardsNom.push({ era: e, status: eraStatus });
 					break;
 				} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
 					// if erasStakers.total > 0, then the pageCount is always 1
 					// https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825
 					const eraStatus = claimedRewardsPerEra.length === 1 ? 'claimed' : 'unclaimed';
-					claimedRewards.push({ era: e, status: eraStatus });
-					eraStatusVal = eraStatus;
+					claimedRewardsNom.push({ era: e, status: eraStatus });
 					break;
 				} else {
-					eraStatusVal = 'undefined';
 					if (idx === validatorsUnwrapped.length - 1) {
-						claimedRewards.push({ era: e, status: eraStatusVal });
+						claimedRewardsNom.push({ era: e, status: 'undefined' });
 					} else {
 						continue;
 					}
 				}
 			}
 		}
-		return [e, claimedRewards];
+		return [e, claimedRewardsNom];
 	}
 
 	/**
@@ -320,13 +329,13 @@ export class AccountsStakingInfoService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		e: number,
 		eraStart: number,
-		claimedRewards: IEraStatus[],
-		stash: string,
+		claimedRewards: IEraStatus<NominatorStatus>[],
+		validatorStash: string,
 		oldCallChecked: boolean,
-	): Promise<[number, IEraStatus[], boolean]> {
+	): Promise<[number, IEraStatus<NominatorStatus>[], boolean]> {
 		let claimedRewardsEras: u32[] = [];
 		// SAME CODE AS IN MAIN FUNCTION - fetchAccountStakingInfo -
-		const controllerOption = await historicApi.query.staking.bonded(stash);
+		const controllerOption = await historicApi.query.staking.bonded(validatorStash);
 
 		if (controllerOption.isNone) {
 			// throw new BadRequest(`The address ${stash} is not a stash address.`);
@@ -337,10 +346,10 @@ export class AccountsStakingInfoService extends AbstractService {
 
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
 			historicApi.query.staking.ledger(controller),
-			historicApi.query.staking.payee(stash),
-			historicApi.query.staking.slashingSpans(stash),
+			historicApi.query.staking.payee(validatorStash),
+			historicApi.query.staking.slashingSpans(validatorStash),
 		]).catch((err: Error) => {
-			throw this.createHttpErrorForAddr(stash, err);
+			throw this.createHttpErrorForAddr(validatorStash, err);
 		});
 
 		const stakingLedgerValNom = stakingLedgerOption.unwrapOr(null);
@@ -393,5 +402,40 @@ export class AccountsStakingInfoService extends AbstractService {
 			oldCallChecked = true;
 		}
 		return [e, claimedRewards, oldCallChecked];
+	}
+
+	private async ErasStatusNominatorForValPartiallyClaimed(
+		historicApi: ApiDecoration<'promise'>,
+		e: number,
+		validatorStash: string,
+		pageCount: number,
+		nominatorStash: string,
+		claimedRewardsPerEra: Vec<u32>,
+	): Promise<NominatorStatus> {
+		// If era is partially claimed from the side of the validator that means that the validator
+		// has more than one page of nominators. In this case, I need to check in which page the nominator is
+		// and if that page was claimed or not.
+		for (let page = 0; page < pageCount; page++) {
+			if (historicApi.query.staking?.erasStakersPaged) {
+				const erasStakers = await historicApi.query.staking.erasStakersPaged(e, validatorStash, page);
+				const erasStakersPaged = erasStakers.unwrapOr(null);
+				if (erasStakersPaged?.others) {
+					for (const nominator of erasStakersPaged.others.entries()) {
+						if (nominatorStash === nominator[1].who.toString()) {
+							if (claimedRewardsPerEra.length > 0) {
+								const pageIncluded = claimedRewardsPerEra?.some((reward) => reward.eq(page as unknown as u32));
+								if (pageIncluded) {
+									return 'claimed';
+								} else {
+									return 'unclaimed';
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		return 'undefined';
 	}
 }

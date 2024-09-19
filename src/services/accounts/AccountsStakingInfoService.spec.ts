@@ -57,6 +57,7 @@ import {
 	stakingPayeeMockedCall,
 	stakingslashingSpansMockedCall,
 } from '../test-helpers/mock/accounts/stakingInfo';
+import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import { validators21157800Hex } from '../test-helpers/mock/data/validators21157800Hex';
 import { validators22939322Hex } from '../test-helpers/mock/data/validators22939322Hex';
 import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
@@ -81,6 +82,9 @@ const payeeAt = (_hash: Hash, _address: string) =>
 const slashingSpansAt = (_hash: Hash, _address: string) =>
 	Promise.resolve().then(() => polkadotRegistry.createType('SlashingSpans'));
 
+const validatorsAt789629 = () =>
+	Promise.resolve().then(() => polkadotRegistry.createType('Vec<AccountId32>', validators789629Hex));
+
 const historicApi = {
 	query: {
 		staking: {
@@ -89,6 +93,9 @@ const historicApi = {
 			payee: payeeAt,
 			slashingSpans: slashingSpansAt,
 			currentEra: currentEraAt,
+		},
+		session: {
+			validators: validatorsAt789629,
 		},
 	},
 } as unknown as ApiDecoration<'promise'>;
