@@ -16,6 +16,8 @@
 
 import type { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import { LRUCache } from 'lru-cache';
+import { IBlock } from 'src/types/responses';
 
 import { BlocksService } from '../../services';
 import type { ControllerOptions } from '../../types/chains-config';
@@ -23,13 +25,15 @@ import type { INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
+	private blockStore: LRUCache<string, IBlock>;
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
-			new BlocksService(api, options.minCalcFeeRuntime, options.blockStore, options.hasQueryFeeApi),
+			new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi),
 		);
 		this.initRoutes();
+		this.blockStore = options.blockStore;
 	}
 
 	protected initRoutes(): void {
@@ -62,10 +66,23 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			paraId: undefined,
 		};
 
+		const cacheKey =
+			hash.toString() +
+			Number(options.eventDocs) +
+			Number(options.extrinsicDocs) +
+			Number(options.checkFinalized) +
+			Number(options.noFees) +
+			Number(options.checkDecodedXcm);
+
+		const isBlockCached = this.blockStore.get(cacheKey);
+
 		const historicApi = await this.api.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
 
+		if (!isBlockCached) {
+			this.blockStore.set(cacheKey, block);
+		}
 		/**
 		 * Verify our param `extrinsicIndex` is an integer represented as a string
 		 */

@@ -50,6 +50,7 @@ type SidecarRequestHandler =
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
+
 	constructor(
 		protected api: ApiPromise,
 		private _path: string,
