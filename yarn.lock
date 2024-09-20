@@ -1632,14 +1632,14 @@ __metadata:
     "@types/triple-beam": "npm:^1.3.5"
     argparse: "npm:^2.0.1"
     confmgr: "npm:^1.1.0"
-    express: "npm:^4.19.2"
+    express: "npm:^4.21.0"
     express-winston: "npm:^4.2.0"
     http-errors: "npm:^2.0.0"
-    lru-cache: "npm:^10.4.3"
+    lru-cache: "npm:^11.0.1"
     prom-client: "npm:^15.1.3"
     rxjs: "npm:^7.8.1"
     ts-node-dev: "npm:^2.0.0"
-    winston: "npm:^3.14.1"
+    winston: "npm:^3.14.2"
     winston-loki: "npm:^6.1.2"
   bin:
     substrate-api-sidecar: ./build/src/main.js
@@ -3532,7 +3532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.19.2":
+"express@npm:^4.21.0":
   version: 4.21.0
   resolution: "express@npm:4.21.0"
   dependencies:
@@ -5030,10 +5030,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:*, lru-cache@npm:^10.4.3, lru-cache@npm:^9.1.1 || ^10.0.0":
+"lru-cache@npm:*, lru-cache@npm:^9.1.1 || ^10.0.0":
   version: 10.4.3
   resolution: "lru-cache@npm:10.4.3"
   checksum: 10/e6e90267360476720fa8e83cc168aa2bf0311f3f2eea20a6ba78b90a885ae72071d9db132f40fda4129c803e7dcec3a6b6a6fbb44ca90b081630b810b5d6a41a
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "lru-cache@npm:11.0.1"
+  checksum: 10/26688a1b2a4d7fb97e9ea1ffb15348f1ab21b7110496814f5ce9190d50258fbba8c1444ae7232876deae1fc54adb230aa63dd1efc5bd47f240620ba8bf218041
   languageName: node
   linkType: hard
 
@@ -6976,9 +6983,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.14.1":
-  version: 3.14.1
-  resolution: "winston@npm:3.14.1"
+"winston@npm:^3.14.2":
+  version: 3.14.2
+  resolution: "winston@npm:3.14.2"
   dependencies:
     "@colors/colors": "npm:^1.6.0"
     "@dabh/diagnostics": "npm:^2.0.2"
@@ -6991,7 +6998,7 @@ __metadata:
     stack-trace: "npm:0.0.x"
     triple-beam: "npm:^1.3.0"
     winston-transport: "npm:^4.7.0"
-  checksum: 10/b9158dc0600a095b5326ec95a3918f63e5f1eb9fdc8f70b858d43ab4e2c3fca61e69aca4444ce918f86d8ded1d82f6e8e7504dfd4d4fa4d7974b5452c55f54c1
+  checksum: 10/ba818714606175f27c38c42b22913e65f17987a0c8c41bcc73d55f3be8d70d629313f45e312ec02eea7bf074f9abee3f228746140245eb5258487c4161f3a798
   languageName: node
   linkType: hard
 
