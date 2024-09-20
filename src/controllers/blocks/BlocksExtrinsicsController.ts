@@ -68,10 +68,10 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 		const cacheKey =
 			hash.toString() +
-			Number(eventDocs) +
-			Number(extrinsicDocs) +
+			Number(options.eventDocs) +
+			Number(options.extrinsicDocs) +
 			Number(options.checkFinalized) +
-			Number(noFees) +
+			Number(options.noFees) +
 			Number(options.checkDecodedXcm);
 
 		const isBlockCached = this.blockStore.get(cacheKey);
