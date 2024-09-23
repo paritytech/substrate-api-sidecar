@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.1.0..v19.2.0) (2024-09-23)
+
+### Feat
+
+- feat: add loki functionality to transport logs ([#1479](https://github.com/paritytech/substrate-api-sidecar/pull/1479)) ([85a4cca](https://github.com/paritytech/substrate-api-sidecar/commit/85a4cca46ea9102c18e6369bcda62e812c7aeadd))
+- feat: Inject metrics registry in route controllers ([#1477](https://github.com/paritytech/substrate-api-sidecar/pull/1477)) ([11c0173](https://github.com/paritytech/substrate-api-sidecar/commit/11c0173ab1a79cf7cc464b1ad8446d367fd2bb16))
+
+### Fix
+
+- fix: Moves the LRUcache to Controller level ([#1489](https://github.com/paritytech/substrate-api-sidecar/pull/1489)) ([890c06b](https://github.com/paritytech/substrate-api-sidecar/commit/890c06ba185da796f9d731b8beb766a788b38076))
+- fix: dependabot yaml ([#1482](https://github.com/paritytech/substrate-api-sidecar/pull/1482)) ([2e6efc0](https://github.com/paritytech/substrate-api-sidecar/commit/2e6efc07a717c1ddc44cfa59e2d28649f4585914))
+- fix: Improve performance of blocks service by dependency injection ([#1483](https://github.com/paritytech/substrate-api-sidecar/pull/1483)) ([6eaca88](https://github.com/paritytech/substrate-api-sidecar/commit/6eaca881c570efbeb978ba959d09ebe830f526b4))
+
+### Chore
+
+- chore(deps): update polkadot-js deps ([#1496](https://github.com/paritytech/substrate-api-sidecar/pull/1496)) ([112994e](https://github.com/paritytech/substrate-api-sidecar/commit/112994e6d2d814aa037d72dcad4914251cb7a478))
+- chore(deps): update polkadot-js deps ([#1495](https://github.com/paritytech/substrate-api-sidecar/pull/1495)) ([0115afc](https://github.com/paritytech/substrate-api-sidecar/commit/0115afcbbbf6b6157df9e057465c25f779813fbe))
+- chore(deps): update non pjs deps & in docs ([#1494](https://github.com/paritytech/substrate-api-sidecar/pull/1494)) ([968f522](https://github.com/paritytech/substrate-api-sidecar/commit/968f522193292d4dc21478bfd813336ee49499cb))
+- chore(deps): bump express from 4.19.2 to 4.20.0 ([#1491](https://github.com/paritytech/substrate-api-sidecar/pull/1491)) ([a5b8a36](https://github.com/paritytech/substrate-api-sidecar/commit/a5b8a3673bc130f8edddb3e9dbe83335ecbf2f53))
+- chore: bump express from 4.19.2 to 4.21.0 in /docs ([#1490](https://github.com/paritytech/substrate-api-sidecar/pull/1490)) ([02a3797](https://github.com/paritytech/substrate-api-sidecar/commit/02a37973d414e32516a7d1d743396d2be5e2a3fb))
+- chore: bump webpack from 5.93.0 to 5.94.0 in /docs ([#1484](https://github.com/paritytech/substrate-api-sidecar/pull/1484)) ([6286442](https://github.com/paritytech/substrate-api-sidecar/commit/628644297ff05cceec5ec87c1c617be13d9c5ec4))
+- chore(deps): bump micromatch from 4.0.5 to 4.0.8 ([#1481](https://github.com/paritytech/substrate-api-sidecar/pull/1481)) ([373ec9b](https://github.com/paritytech/substrate-api-sidecar/commit/373ec9b8f45a22f6c0157e96d0546d6f9f522f3d))
+- chore: bump micromatch from 4.0.4 to 4.0.8 in /docs ([#1480](https://github.com/paritytech/substrate-api-sidecar/pull/1480)) ([1ca7f9b](https://github.com/paritytech/substrate-api-sidecar/commit/1ca7f9b913ce74a538e46b3ae2ca24f47bbd36f4))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.15.2 (Polkadot stable2407-2)
+- Kusama v1.15.2 (Polkadot stable2407-2)
+- Westend v1.15.2 (Polkadot stable2407-2)
+
+Tested against the following runtime releases:
+- Polkadot v1003000
+- Kusama v1003000
+- Westend v1016000
+
 ## [19.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.0.2..v19.1.0) (2024-08-15)
 
 ### Feat
