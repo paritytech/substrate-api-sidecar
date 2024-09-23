@@ -50,8 +50,8 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot/api": "^13.1.1",
-    "@polkadot/api-contract": "^13.1.1",
+    "@polkadot/api": "^13.2.1",
+    "@polkadot/api-contract": "^13.2.1",
     "@polkadot/util-crypto": "^13.1.1",
     "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",
