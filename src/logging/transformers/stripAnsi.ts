@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ function stripAnsiShellCodes(data: unknown): unknown {
 	}
 
 	if (typeof data === 'object' && data !== null) {
-		const sanitizedData = {};
+		const sanitizedData: { [key: string]: unknown } = {};
 		for (const [k, v] of Object.entries(data)) {
 			sanitizedData[k] = stripAnsiShellCodes(v);
 		}

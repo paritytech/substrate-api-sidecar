@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ const accountAt = (_address: string) =>
 		),
 	);
 
-const accountDataAt = (_address: String) =>
+const accountDataAt = (_address: string) =>
 	Promise.resolve().then(() => {
 		return {
 			data: polkadotRegistryV9370.createType('AccountData', {
