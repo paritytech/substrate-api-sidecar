@@ -544,9 +544,20 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				return {
 					commission,
 				};
+			} else {
+				validatorLedger = validatorLedgerOption.unwrap();
+				if (
+					historicApi.query.staking.claimedRewards &&
+					(await historicApi.query.staking.claimedRewards(era, validatorControllerOption.unwrap())).length ===
+						(await historicApi.query.staking.erasStakersOverview(era, validatorControllerOption.unwrap()))
+							.unwrap()
+							.pageCount.toNumber()
+				) {
+					const eraVal: u32 = historicApi.registry.createType('u32', era);
+					validatorLedger.legacyClaimedRewards.push(eraVal);
+				}
 			}
 
-			validatorLedger = validatorLedgerOption.unwrap();
 			validatorLedgerCache[validatorId] = validatorLedger;
 		}
 
