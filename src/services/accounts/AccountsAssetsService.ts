@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -196,7 +196,7 @@ export class AccountsAssetsService extends AbstractService {
 
 				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
 				// of `sufficient`.
-				if (assetBalance['isSufficient'] as bool) {
+				if ((assetBalance as unknown as LegacyPalletAssetsAssetBalance).isSufficient) {
 					const balanceProps = assetBalance as unknown as LegacyPalletAssetsAssetBalance;
 
 					return {

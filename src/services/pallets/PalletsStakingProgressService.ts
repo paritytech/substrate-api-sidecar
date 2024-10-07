@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -107,7 +107,7 @@ export class PalletsStakingProgressService extends AbstractService {
 				? {
 						status: eraElectionStatus.toJSON(),
 						toggleEstimate: toggle?.toString(10) ?? null,
-				  }
+					}
 				: 'Deprecated, see docs',
 			idealValidatorCount: validatorCount.toString(10),
 			validatorSet: validators.map((accountId) => accountId.toString()),

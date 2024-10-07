@@ -41,7 +41,7 @@ export const referendaEntries = () => {
 								? null
 								: polkadotRegistryV1000001.createType('Balance', decisionDeposit.amount),
 						who: polkadotRegistryV1000001.createType('AccountId', decisionDeposit.who),
-				  };
+					};
 		const decidingVal =
 			deciding === null
 				? null
@@ -51,7 +51,7 @@ export const referendaEntries = () => {
 								? null
 								: polkadotRegistryV1000001.createType('Compact<BlockNumber>', deciding.confirming),
 						since: polkadotRegistryV1000001.createType('Compact<BlockNumber>', deciding.since),
-				  };
+					};
 
 		const onGoingRefInfo = {
 			ongoing: {

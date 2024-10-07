@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -51,11 +51,11 @@ export class PalletsEventsService extends AbstractPalletsService {
 			palletMeta,
 			eventItemId,
 			metadataFieldType,
-		) as EventMetadataLatest;
+		) as unknown as [string, EventMetadataLatest];
 
 		let palletEventMetadata: EventMetadataLatest | undefined;
 		if (metadata) {
-			palletEventMetadata = (eventItemMetadata[1] as IsEvent<AnyTuple>).meta;
+			palletEventMetadata = (eventItemMetadata[1] as unknown as IsEvent<AnyTuple>).meta;
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);

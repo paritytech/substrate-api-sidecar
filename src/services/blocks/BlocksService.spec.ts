@@ -123,7 +123,7 @@ const mockApi = {
 /**
  * For type casting mock getBlock functions so tsc does not complain
  */
-type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>>;
+type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array) => Promise<SignedBlock>>;
 
 // Block Service
 const blocksService = new BlocksService(mockApi, 0, new QueryFeeDetailsCache(null, null));
