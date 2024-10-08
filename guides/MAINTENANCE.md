@@ -46,6 +46,8 @@ Review the security alerts raised by Dependabot [here](https://github.com/parity
 
 **NOTE**: This dependency is mentioned separately from the general ones because it is critical, requiring manual checks and thorough testing before updating.
 
+**Frequency**: Monthly or longer.
+
 ### Express version
 - Check if there is a new major version of [Express](https://github.com/expressjs/express).
 - Update the version by running the command `yarn add express@^X.X.X`, e.g. `yarn add express@^5.0.0`.
