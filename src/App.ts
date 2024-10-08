@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -97,15 +97,15 @@ export default class App {
 	 */
 	private initRoot() {
 		// Set up a root route
-		this.app.get('/', (_req: Request, res: Response) =>
+		this.app.get('/', (_req: Request, res: Response) => {
 			res.send({
 				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
 				github: 'https://github.com/paritytech/substrate-api-sidecar',
 				version: packageJson.version,
 				listen: `${this.host}:${this.port}`,
 				routes: this.getRoutes(),
-			}),
-		);
+			});
+		});
 	}
 
 	/**
