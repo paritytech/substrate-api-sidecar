@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Copyright 2017-2022 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
@@ -14,36 +16,85 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
+import { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { GenericExtrinsicPayload } from '@polkadot/types/extrinsic';
+import { EXTRINSIC_VERSION } from '@polkadot/types/extrinsic/v4/Extrinsic';
+import type { BlockHash, CallDryRunEffects, Header, XcmDryRunApiError } from '@polkadot/types/interfaces';
+import type { ISubmittableResult } from '@polkadot/types/types';
+import type { Result } from '@polkadot/types-codec';
 
-import { ITransactionDryRun, TransactionResultType, ValidityErrorType } from '../../types/responses';
+import { ITransactionDryRun, TransactionResultType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
+export type SignedOriginCaller = {
+	System: {
+		Signed: string;
+	};
+};
+
+export type Format = 'payload' | 'call' | 'submittable';
+
+/**
+ * The Format types possible for a constructed transaction.
+ */
+export type ConstructedFormat<T> = T extends 'payload'
+	? GenericExtrinsicPayload
+	: T extends 'call'
+	  ? `0x${string}`
+	  : T extends 'submittable'
+	    ? SubmittableExtrinsic<'promise', ISubmittableResult>
+	    : never;
+
 export class TransactionDryRunService extends AbstractService {
-	async dryRuntExtrinsic(hash: BlockHash, transaction: string): Promise<ITransactionDryRun> {
+	async dryRuntExtrinsic<T extends Format>(
+		hash: BlockHash,
+		senderAddress: string,
+		transaction: ConstructedFormat<T>,
+		format: T,
+	): Promise<ITransactionDryRun> {
 		const { api } = this;
 
 		try {
-			const [applyExtrinsicResult, { number }] = await Promise.all([
-				api.rpc.system.dryRun(transaction, hash),
-				api.rpc.chain.getHeader(hash),
-			]);
+			const originCaller: SignedOriginCaller = {
+				System: {
+					Signed: senderAddress,
+				},
+			};
+			// let dryRunResponse: Result<CallDryRunEffects, XcmDryRunApiError> | null = null;
+
+			const promises: Promise<Result<CallDryRunEffects, XcmDryRunApiError> | Header>[] = [];
+
+			if (format === 'payload') {
+				const extrinsicPayload = api.registry.createType('ExtrinsicPayload', transaction, {
+					version: EXTRINSIC_VERSION,
+				});
+				const call = api.registry.createType('Call', extrinsicPayload.method);
+
+				promises.push(api.call.dryRunApi.dryRunCall(originCaller, call.toHex()));
+			} else if (format === 'call' || format === 'submittable') {
+				promises.push(api.call.dryRunApi.dryRunCall(originCaller, transaction));
+			}
+
+			const [dryRunResponse, header] = await Promise.all([...promises, api.rpc.chain.getHeader(hash)]);
 
 			let dryRunResult;
-			if (applyExtrinsicResult.isOk) {
-				dryRunResult = {
-					resultType: TransactionResultType.DispatchOutcome,
-					result: applyExtrinsicResult.asOk,
-				};
-			} else {
-				const { asErr } = applyExtrinsicResult;
-				dryRunResult = {
-					resultType: TransactionResultType.TransactionValidityError,
-					result: asErr.isInvalid ? asErr.asInvalid : asErr.asUnknown,
-					validityErrorType: asErr.isInvalid ? ValidityErrorType.Invalid : ValidityErrorType.Unknown,
-				};
+
+			if (dryRunResponse && 'isOk' in dryRunResponse) {
+				if (dryRunResponse.isOk) {
+					dryRunResult = {
+						resultType: TransactionResultType.DispatchOutcome,
+						result: dryRunResponse?.asOk,
+					};
+				} else {
+					dryRunResult = {
+						resultType: TransactionResultType.TransactionValidityError,
+						result: dryRunResponse?.asErr,
+						validityErrorType: dryRunResponse?.asErr.type,
+					};
+				}
 			}
+			const { number } = header as Header;
 
 			return {
 				at: {
