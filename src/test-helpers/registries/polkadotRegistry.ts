@@ -26,6 +26,7 @@ import { polkadotMetadataRpcV9190 } from '../metadata/polkadotV9190Metadata';
 import { polkadotMetadataRpcV9300 } from '../metadata/polkadotV9300Metadata';
 import { polkadotMetadataRpcV9370 } from '../metadata/polkadotV9370Metadata';
 import { polkadotMetadataRpcV1000001 } from '../metadata/polkadotV1000001Metadata';
+import { polkadotMetadataRpcV1003000 } from '../metadata/polkadotV1003000Metadata';
 /**
  * Create a type registry for Polkadot.
  * Useful for creating types in order to facilitate testing.
@@ -84,3 +85,8 @@ export const polkadotRegistryV9370 = createPolkadotRegistry(9370, polkadotMetada
  * Polkadot v1000001 TypeRegistry
  */
 export const polkadotRegistryV1000001 = createPolkadotRegistry(1000001, polkadotMetadataRpcV1000001);
+
+/**
+ * Polkadot v1003000 TypeRegistry
+ */
+export const polkadotRegistryV1003000 = createPolkadotRegistry(1003000, polkadotMetadataRpcV1003000);
