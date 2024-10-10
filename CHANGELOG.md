@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.1..v19.2.2) (2024-10-10)
+
+### Fix
+
+- fix: how to access router in getRoutes ([#1510](https://github.com/paritytech/substrate-api-sidecar/pull/1510)) ([f0d662b](https://github.com/paritytech/substrate-api-sidecar/commit/f0d662bb12661b5e04a948f20f4da6d62fd0cb45))
+  
+    **IMPORTANT NOTE**: This patch release fixes an issue that was introduced in v19.2.1, caused by the upgrade to Express v5.0.0.
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.15.2 (Polkadot stable2407-2)
+- Kusama v1.15.2 (Polkadot stable2407-2)
+- Westend v1.15.2 (Polkadot stable2407-2)
+
+Tested against the following runtime releases:
+- Polkadot v1003000
+- Kusama v1003000
+- Westend v1016000
+
 ## [19.2.1](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.0..v19.2.1) (2024-10-09)
 
 ### Fix
