@@ -114,7 +114,7 @@ export default class App {
 	 * checked that this works as expected whenever updating Express dependencies.
 	 */
 	private getRoutes() {
-		return (this.app._router as IRegisteredRoutes).stack.reduce(
+		return (this.app.router as unknown as IRegisteredRoutes).stack.reduce(
 			(acc, middleware) => {
 				if (middleware.route) {
 					// This middleware is a route mounted directly on the app (i.e. app.get('/test', fn)
