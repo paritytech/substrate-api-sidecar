@@ -41,6 +41,10 @@ export default class App {
 	 */
 	constructor({ controllers, preMiddleware, postMiddleware, host, port }: IAppConfiguration) {
 		this.app = express();
+		// Change needed because of upgrading Express v4 to v5
+		// Set query parser to 'extended' to correctly handle [] in query params
+		// Ref: https://github.com/expressjs/express/issues/5060
+		this.app.set('query parser', 'extended');
 		this.port = port;
 		this.host = host;
 

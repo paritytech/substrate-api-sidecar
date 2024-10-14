@@ -6,6 +6,10 @@
 
 1. Make sure to be in the `master` branch, and `git pull origin master`.
 
+1. Ensure that all CI/CD jobs from the last merged commit are passing. You can verify this by checking the [commits](https://github.com/paritytech/substrate-api-sidecar/commits/master/) on the master branch, where a green check (✅) should be present. If you see a red cross (❌) then you can click on it and do the following checks:
+    - If the failed job is related to benchmarks, e.g. `continuous-integration/gitlab-bench-polkadot` or `continuous-integration/gitlab-push-benchmark`, it is not critical, and you can proceed with the next steps of the release.
+    - If the failed job is related to staging deployment, e.g. `continuous-integration/gitlab-deploy-staging`, this is critical. In this case, you should check with the CI/CD team to get the relevant logs and fix the issue before continuing with the release.
+
 1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
 
 1. Checkout a branch with the format `name-v5-0-1` (with `name` being the name of the person doing the release, e.g. `tarik-v5-0-1`). When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
