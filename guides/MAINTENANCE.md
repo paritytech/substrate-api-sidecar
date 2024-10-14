@@ -52,6 +52,9 @@ Review the security alerts raised by Dependabot [here](https://github.com/parity
 - Check if there is a new major version of [Express](https://github.com/expressjs/express).
 - Update the version by running the command `yarn add express@^X.X.X`, e.g. `yarn add express@^5.0.0`.
 - After upgrading, we can do the usual sanity checks (e.g. `yarn`, `yarn dedupe`, `yarn build`, `yarn lint --fix`).
+- Changes made due to the upgrade from Express v4 to v5, which should be double checked in next major Express release:
+    - Using `this.app.set('query parser', 'extended')` in `App.ts` to allow `[]` in query params.
+    - Direct access of private members like `_router` is not recommended/allowed in v5 (PR [#1510](https://github.com/paritytech/substrate-api-sidecar/pull/1510)).
 
 **Frequency**: Yearly or longer.
 
