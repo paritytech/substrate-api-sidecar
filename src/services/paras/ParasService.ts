@@ -49,10 +49,6 @@ import {
 import { IOption, isNull, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
 
-// This was the orgiginal value in the rococo test net. Once the exposed metadata
-// consts makes its way into `rococo-v1` this can be taken out.
-const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
-
 export class ParasService extends AbstractService {
 	/**
 	 * ***********************************************************
@@ -298,8 +294,7 @@ export class ParasService extends AbstractService {
 			winning = null;
 		}
 
-		const leasePeriodsPerSlot =
-			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() || LEASE_PERIODS_PER_SLOT_FALLBACK;
+		const leasePeriodsPerSlot = (historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber();
 		const leasePeriods = isSome(leasePeriodIndex)
 			? Array(leasePeriodsPerSlot)
 					.fill(0)
@@ -563,8 +558,7 @@ export class ParasService extends AbstractService {
 	 */
 	private enumerateLeaseSets(historicApi: ApiDecoration<'promise'>, leasePeriodIndex: BN): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
-		const lPPS =
-			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() || LEASE_PERIODS_PER_SLOT_FALLBACK;
+		const lPPS = (historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber();
 
 		const ranges: number[][] = [];
 		for (let start = 0; start < lPPS; start += 1) {

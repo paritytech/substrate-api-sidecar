@@ -51,7 +51,7 @@ export class XcmDecoder {
 	}
 
 	private getCurChainType(specName: string): ChainType {
-		const relay = ['polkadot', 'kusama', 'westend', 'rococo'];
+		const relay = ['polkadot', 'kusama', 'westend', 'paseo'];
 		if (relay.includes(specName.toLowerCase())) {
 			return ChainType.Relay;
 		} else {
