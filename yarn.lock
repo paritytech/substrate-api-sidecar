@@ -1594,15 +1594,15 @@ __metadata:
     "@types/triple-beam": "npm:^1.3.5"
     argparse: "npm:^2.0.1"
     confmgr: "npm:^1.1.0"
-    express: "npm:^5.0.0"
+    express: "npm:^5.0.1"
     express-winston: "npm:^4.2.0"
     http-errors: "npm:^2.0.0"
     lru-cache: "npm:^11.0.1"
     prom-client: "npm:^15.1.3"
     rxjs: "npm:^7.8.1"
     ts-node-dev: "npm:^2.0.0"
-    winston: "npm:^3.14.2"
-    winston-loki: "npm:^6.1.2"
+    winston: "npm:^3.15.0"
+    winston-loki: "npm:^6.1.3"
   bin:
     substrate-api-sidecar: ./build/src/main.js
   languageName: unknown
@@ -2841,10 +2841,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.6.0":
-  version: 0.6.0
-  resolution: "cookie@npm:0.6.0"
-  checksum: 10/c1f8f2ea7d443b9331680598b0ae4e6af18a618c37606d1bbdc75bec8361cce09fe93e727059a673f2ba24467131a9fb5a4eec76bb1b149c1b3e1ccb268dc583
+"cookie@npm:0.7.1":
+  version: 0.7.1
+  resolution: "cookie@npm:0.7.1"
+  checksum: 10/aec6a6aa0781761bf55d60447d6be08861d381136a0fe94aa084fddd4f0300faa2b064df490c6798adfa1ebaef9e0af9b08a189c823e0811b8b313b3d9a03380
   languageName: node
   linkType: hard
 
@@ -3430,15 +3430,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "express@npm:5.0.0"
+"express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "express@npm:5.0.1"
   dependencies:
     accepts: "npm:^2.0.0"
     body-parser: "npm:^2.0.1"
     content-disposition: "npm:^1.0.0"
     content-type: "npm:~1.0.4"
-    cookie: "npm:0.6.0"
+    cookie: "npm:0.7.1"
     cookie-signature: "npm:^1.2.1"
     debug: "npm:4.3.6"
     depd: "npm:2.0.0"
@@ -3466,7 +3466,7 @@ __metadata:
     type-is: "npm:^2.0.0"
     utils-merge: "npm:1.0.1"
     vary: "npm:~1.1.2"
-  checksum: 10/279049949d2d5a963d250c4dd5c229aec4b56e57a43220d22e68e5316bc69c8576678fc2df817acd12cd54d1b8db41436ea6839623c36d5fdb65c31b1db81012
+  checksum: 10/b6afed019b6c22cb697a658d4dd70966e34f117ad6c83a2d32080c3ec4541443b15be770b4f7ac58bc6c07451a9bd0788121c5c4583c930beea48d8a17ee5c60
   languageName: node
   linkType: hard
 
@@ -6795,9 +6795,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-loki@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "winston-loki@npm:6.1.2"
+"winston-loki@npm:^6.1.3":
+  version: 6.1.3
+  resolution: "winston-loki@npm:6.1.3"
   dependencies:
     async-exit-hook: "npm:2.0.1"
     btoa: "npm:^1.2.1"
@@ -6808,7 +6808,7 @@ __metadata:
   dependenciesMeta:
     snappy:
       optional: true
-  checksum: 10/faad904f3a4c8e1e8de0614fdea5d435bb4ad9934d5dc28ce7f1577b5721cb3b72860f4755ce5d5f5ab3284915043bdf1802c12be9b92b51124b0ea4eeae6ea6
+  checksum: 10/db8cccecefb1c4476d66281967092d018f02b32b574753949a50622295cde976d36a7350aed2a074289fb030df3d944156c8441fd78b39f204b3659b252986c1
   languageName: node
   linkType: hard
 
@@ -6823,9 +6823,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.14.2":
-  version: 3.14.2
-  resolution: "winston@npm:3.14.2"
+"winston@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "winston@npm:3.15.0"
   dependencies:
     "@colors/colors": "npm:^1.6.0"
     "@dabh/diagnostics": "npm:^2.0.2"
@@ -6838,7 +6838,7 @@ __metadata:
     stack-trace: "npm:0.0.x"
     triple-beam: "npm:^1.3.0"
     winston-transport: "npm:^4.7.0"
-  checksum: 10/ba818714606175f27c38c42b22913e65f17987a0c8c41bcc73d55f3be8d70d629313f45e312ec02eea7bf074f9abee3f228746140245eb5258487c4161f3a798
+  checksum: 10/60e55eb3621e4de1a764a4e43ee1d242c71957d3e0eb359cb8f16fe2b9d9543fd4c31a8d3baf96fa7e43ef5df383c43c1a98aff4bd714ea0082303504b0e3cdc
   languageName: node
   linkType: hard
 
