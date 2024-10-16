@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import { BadRequest } from 'http-errors';
 import { TransactionDryRunService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
-
+//  TODO: update this readme
 /**
  * Dry run an transaction.
  *
@@ -54,13 +54,16 @@ export default class TransactionDryRunController extends AbstractController<Tran
 		this.router.post(this.path, TransactionDryRunController.catchWrap(this.dryRunTransaction));
 	}
 
-	private dryRunTransaction: IPostRequestHandler<ITx> = async ({ body: { tx }, query: { at } }, res): Promise<void> => {
+	private dryRunTransaction: IPostRequestHandler<ITx> = ({ body: { tx } }, _res): void => {
 		if (!tx) {
 			throw new BadRequest('Missing field `tx` on request body.');
 		}
 
-		const hash = await this.getHashFromAt(at);
+		// const hash = await this.getHashFromAt(at);
 
-		TransactionDryRunController.sanitizedSend(res, await this.service.dryRuntExtrinsic(hash, tx));
+		// TransactionDryRunController.sanitizedSend(
+		// 	res,
+		// 	await this.service.dryRuntExtrinsic(hash, senderAddress, tx, format),
+		// );
 	};
 }

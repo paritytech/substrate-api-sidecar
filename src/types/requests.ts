@@ -23,6 +23,8 @@ import type client from 'prom-client';
  */
 export interface ITx {
 	tx: string;
+	senderAddress: string;
+	format: 'payload' | 'call' | 'submittable';
 }
 
 /**

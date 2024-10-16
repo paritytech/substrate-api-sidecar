@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Copyright 2017-2022 Parity Technologies (UK) Ltd.
@@ -23,7 +24,7 @@ import type { BlockHash, CallDryRunEffects, Header, XcmDryRunApiError } from '@p
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { Result } from '@polkadot/types-codec';
 
-import { ITransactionDryRun, TransactionResultType } from '../../types/responses';
+import { ITransactionDryRun } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
@@ -41,10 +42,10 @@ export type Format = 'payload' | 'call' | 'submittable';
 export type ConstructedFormat<T> = T extends 'payload'
 	? GenericExtrinsicPayload
 	: T extends 'call'
-	  ? `0x${string}`
-	  : T extends 'submittable'
-	    ? SubmittableExtrinsic<'promise', ISubmittableResult>
-	    : never;
+		? `0x${string}`
+		: T extends 'submittable'
+			? SubmittableExtrinsic<'promise', ISubmittableResult>
+			: never;
 
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic<T extends Format>(
@@ -61,7 +62,6 @@ export class TransactionDryRunService extends AbstractService {
 					Signed: senderAddress,
 				},
 			};
-			// let dryRunResponse: Result<CallDryRunEffects, XcmDryRunApiError> | null = null;
 
 			const promises: Promise<Result<CallDryRunEffects, XcmDryRunApiError> | Header>[] = [];
 
@@ -78,22 +78,21 @@ export class TransactionDryRunService extends AbstractService {
 
 			const [dryRunResponse, header] = await Promise.all([...promises, api.rpc.chain.getHeader(hash)]);
 
-			let dryRunResult;
+			let result;
 
 			if (dryRunResponse && 'isOk' in dryRunResponse) {
 				if (dryRunResponse.isOk) {
-					dryRunResult = {
-						resultType: TransactionResultType.DispatchOutcome,
-						result: dryRunResponse?.asOk,
-					};
+					result = dryRunResponse.asOk.executionResult.asOk;
 				} else {
-					dryRunResult = {
-						resultType: TransactionResultType.TransactionValidityError,
-						result: dryRunResponse?.asErr,
-						validityErrorType: dryRunResponse?.asErr.type,
-					};
+					// error in dry run method
+					result = dryRunResponse?.asErr;
 				}
 			}
+
+			if (!result) {
+				throw new Error('Dry run failed');
+			}
+
 			const { number } = header as Header;
 
 			return {
@@ -101,7 +100,7 @@ export class TransactionDryRunService extends AbstractService {
 					hash,
 					height: number.unwrap().toString(10),
 				},
-				dryRunResult,
+				result,
 			};
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);

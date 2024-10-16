@@ -1,4 +1,5 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { CallDryRunEffects } from '@polkadot/types/interfaces';
-import { DispatchOutcome, InvalidTransaction, UnknownTransaction } from '@polkadot/types/interfaces';
+import type { DispatchError, PostDispatchInfo, XcmDryRunApiError } from '@polkadot/types/interfaces';
 
-import { IAt } from '.';
+import { IAt } from './At';
 
 export enum TransactionResultType {
 	TransactionValidityError = 'TransactionValidityError',
@@ -29,13 +29,7 @@ export enum ValidityErrorType {
 	Unknown = 'UnknownTransaction',
 }
 
-export type TransactionResult = DispatchOutcome | InvalidTransaction | UnknownTransaction;
-
 export interface ITransactionDryRun {
 	at: IAt;
-	dryRunResult: {
-		resultType: TransactionResultType;
-		result: CallDryRunEffects;
-		validityErrorType?: ValidityErrorType;
-	};
+	result: PostDispatchInfo | XcmDryRunApiError | DispatchError;
 }
