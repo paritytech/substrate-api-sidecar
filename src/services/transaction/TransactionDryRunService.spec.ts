@@ -26,10 +26,9 @@ describe('TransactionDryRunService', () => {
 	const sendersAddress = '5HBuLJz9LdkUNseUEL6DLeVkx2bqEi6pQr8Ea7fS4bzx7i7E';
 	it('Should correctly execute a dry run for a submittable executable', async () => {
 		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			blockHash22887036,
 			sendersAddress,
 			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
+			blockHash22887036,
 		);
 
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
@@ -42,15 +41,13 @@ describe('TransactionDryRunService', () => {
 			'0xf81f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de16010400000204320504009101000000000045022800010000e0510f00040000000000000000000000000000000000000000000000000000000000000000000000be2554aa8a0151eb4d706308c47d16996af391e4c5e499c7cbef24259b7d4503';
 
 		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			blockHash22887036,
 			sendersAddress,
 			payloadTx,
+			blockHash22887036,
 		);
 
 		const resData = executionResult?.result as PostDispatchInfo;
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
 	});
 
@@ -58,16 +55,12 @@ describe('TransactionDryRunService', () => {
 		const callTx =
 			'0x1f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000' as `0x${string}`;
 
-		// expect(callTxResult.localXcmFees![1]).toEqual({ xcmFee: '3500000000000000' });
-
 		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			blockHash22887036,
 			sendersAddress,
 			callTx,
 		);
 
-		expect(executionResult?.at.hash).toEqual(blockHash22887036);
+		expect(executionResult?.at.hash).toEqual('');
 		const resData = executionResult?.result as PostDispatchInfo;
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
 	});

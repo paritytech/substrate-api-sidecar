@@ -29,9 +29,9 @@ export type SignedOriginCaller = {
 
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
-		hash: BlockHash,
 		senderAddress: string,
 		transaction: `0x${string}`,
+		hash?: BlockHash,
 	): Promise<ITransactionDryRun> {
 		const { api } = this;
 
@@ -42,17 +42,17 @@ export class TransactionDryRunService extends AbstractService {
 				},
 			};
 
-			const [dryRunResponse, header] = await Promise.all([
+			const [dryRunResponse, { number }] = await Promise.all([
 				api.call.dryRunApi.dryRunCall(originCaller, transaction),
-				api.rpc.chain.getHeader(hash),
+				hash ? api.rpc.chain.getHeader(hash) : { number: null },
 			]);
 
 			const response = dryRunResponse as Result<CallDryRunEffects, XcmDryRunApiError>;
 
 			return {
 				at: {
-					hash,
-					height: header.number.unwrap().toString(10),
+					hash: hash ? hash : '',
+					height: number ? number.unwrap().toString(10) : '0',
 				},
 				result: response.isOk ? response.asOk.executionResult.asOk : response.asErr,
 			};
