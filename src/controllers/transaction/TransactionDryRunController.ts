@@ -20,25 +20,28 @@ import { BadRequest } from 'http-errors';
 import { TransactionDryRunService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
-//  TODO: update this readme
 /**
- * Dry run an transaction.
+ * Dry run a transaction.
  *
  * Returns:
  * - `at`:
  * 		- `hash`: The block's hash.
  * 		- `height`: The block's height.
- * - `dryRunResult`:
- * 		- `resultType`: Either `DispatchOutcome` if the construction is valid
- * 			or `TransactionValidityError` if the transaction has invalid construction.
- * 		- `result`: If there was an error it will be the cause of the error. If the
- * 			transaction executed correctly it will be `Ok: []`.
- * 		- `validityErrorType`: Only present if the `resultType` is
- * 			`TransactionValidityError`. Either `InvalidTransaction` or `UnknownTransaction`.
+ * - `result`:
+ * 		- Successfull dry run:
+ * 			- `actualWeight`: The actual weight of the transaction.
+ * 			- `paysFee`: The fee to be paid.
+ * 		- Failed dry run:
+ * 			- error reason.
+ * 		- Dry run not possible to run:
+ * 			- `isUnimplemented`: The dry run is not implemented.
+ * 			- `isVersionedConversionFailed`: The versioned conversion failed.
+ * 			- `type`: 'Unimplemented' | 'VersionedConversionFailed';.
  *
  * References:
- * - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
- * - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
+ * - `DispatchError`: https://docs.rs/sp-runtime/39.0.1/sp_runtime/enum.DispatchError.html
+ * - `PostDispatchInfo`: https://docs.rs/frame-support/38.0.0/frame_support/dispatch/struct.PostDispatchInfo.html
+ * - `Error Type`: https://paritytech.github.io/polkadot-sdk/master/xcm_runtime_apis/dry_run/enum.Error.html
  *
  * Note: If you get the error `-32601: Method not found` it means that the node sidecar
  * is connected to does not expose the `system_dryRun` RPC. One way to resolve this
@@ -54,16 +57,24 @@ export default class TransactionDryRunController extends AbstractController<Tran
 		this.router.post(this.path, TransactionDryRunController.catchWrap(this.dryRunTransaction));
 	}
 
-	private dryRunTransaction: IPostRequestHandler<ITx> = ({ body: { tx } }, _res): void => {
+	private dryRunTransaction: IPostRequestHandler<ITx> = async (
+		{ body: { tx, at, senderAddress } },
+		res,
+	): Promise<void> => {
 		if (!tx) {
 			throw new BadRequest('Missing field `tx` on request body.');
 		}
 
-		// const hash = await this.getHashFromAt(at);
+		if (!at) {
+			throw new BadRequest('Missing field `at` on request body.');
+		}
 
-		// TransactionDryRunController.sanitizedSend(
-		// 	res,
-		// 	await this.service.dryRuntExtrinsic(hash, senderAddress, tx, format),
-		// );
+		if (!senderAddress) {
+			throw new BadRequest('Missing field `senderAddress` on request body.');
+		}
+
+		const hash = await this.getHashFromAt(at);
+
+		TransactionDryRunController.sanitizedSend(res, await this.service.dryRuntExtrinsic(hash, senderAddress, tx));
 	};
 }

@@ -16,31 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { GenericExtrinsicPayload } from '@polkadot/types/extrinsic';
 import type { PostDispatchInfo } from '@polkadot/types/interfaces';
-import type { ISubmittableResult } from '@polkadot/types/types';
 
 import { blockHash22887036, mockAssetHubWestendApi } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { TransactionDryRunService } from './TransactionDryRunService';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const mockSubmittableExt = mockAssetHubWestendApi.registry.createType(
-	'Extrinsic',
-	'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
-) as SubmittableExtrinsic<'promise', ISubmittableResult>;
-
 describe('TransactionDryRunService', () => {
 	const sendersAddress = '5HBuLJz9LdkUNseUEL6DLeVkx2bqEi6pQr8Ea7fS4bzx7i7E';
 	it('Should correctly execute a dry run for a submittable executable', async () => {
-		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic<'submittable'>(
+		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			blockHash22887036,
 			sendersAddress,
-			mockSubmittableExt,
-			'submittable',
+			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
 		);
+
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
 		const resData = executionResult?.result as PostDispatchInfo;
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
@@ -50,13 +41,11 @@ describe('TransactionDryRunService', () => {
 		const payloadTx: `0x${string}` =
 			'0xf81f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de16010400000204320504009101000000000045022800010000e0510f00040000000000000000000000000000000000000000000000000000000000000000000000be2554aa8a0151eb4d706308c47d16996af391e4c5e499c7cbef24259b7d4503';
 
-		const tx = new GenericExtrinsicPayload(mockAssetHubWestendApi.registry, payloadTx);
-		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic<'payload'>(
+		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			blockHash22887036,
 			sendersAddress,
-			tx,
-			'payload',
+			payloadTx,
 		);
 
 		const resData = executionResult?.result as PostDispatchInfo;
@@ -71,12 +60,11 @@ describe('TransactionDryRunService', () => {
 
 		// expect(callTxResult.localXcmFees![1]).toEqual({ xcmFee: '3500000000000000' });
 
-		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic<'call'>(
+		const executionResult = await new TransactionDryRunService(mockAssetHubWestendApi).dryRuntExtrinsic(
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			blockHash22887036,
 			sendersAddress,
 			callTx,
-			'call',
 		);
 
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
