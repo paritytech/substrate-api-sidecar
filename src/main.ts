@@ -43,12 +43,12 @@ async function main() {
 
 	logger.info(`Version: ${packageJSON.version}`);
 
-	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
+	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
 		provider: config.SUBSTRATE.URL.startsWith('http')
-			? new HttpProvider(config.SUBSTRATE.URL)
-			: new WsProvider(config.SUBSTRATE.URL),
+			? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
+			: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE ? (require(TYPES_BUNDLE) as OverrideBundleType) : (tempTypesBundle as OverrideBundleType),
 		typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,

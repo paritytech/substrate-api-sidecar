@@ -30,6 +30,7 @@ interface ISidecarConfigSubstrate {
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;
 	TYPES: string;
+	CACHE_CAPACITY: number;
 }
 
 interface ISidecarConfigExpress {
