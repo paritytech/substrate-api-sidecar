@@ -31,5 +31,8 @@ export enum ValidityErrorType {
 
 export interface ITransactionDryRun {
 	at: IAt;
-	result: PostDispatchInfo | XcmDryRunApiError | DispatchError;
+	result: {
+		resultType: TransactionResultType;
+		result: PostDispatchInfo | XcmDryRunApiError | DispatchError;
+	};
 }

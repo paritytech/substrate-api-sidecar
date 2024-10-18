@@ -17,7 +17,7 @@
 import type { BlockHash, CallDryRunEffects, XcmDryRunApiError } from '@polkadot/types/interfaces';
 import type { Result } from '@polkadot/types-codec';
 
-import { ITransactionDryRun } from '../../types/responses';
+import { ITransactionDryRun, TransactionResultType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
@@ -54,7 +54,12 @@ export class TransactionDryRunService extends AbstractService {
 					hash: hash ? hash : '',
 					height: number ? number.unwrap().toString(10) : '0',
 				},
-				result: response.isOk ? response.asOk.executionResult.asOk : response.asErr,
+				result: {
+					resultType: response.isOk
+						? TransactionResultType.DispatchOutcome
+						: TransactionResultType.TransactionValidityError,
+					result: response.isOk ? response.asOk.executionResult.asOk : response.asErr,
+				},
 			};
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);

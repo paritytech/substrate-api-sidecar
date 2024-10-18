@@ -18,6 +18,7 @@
 
 import type { PostDispatchInfo } from '@polkadot/types/interfaces';
 
+import { TransactionResultType } from '../../types/responses';
 import { blockHash22887036, mockAssetHubWestendApi } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { TransactionDryRunService } from './TransactionDryRunService';
@@ -32,7 +33,8 @@ describe('TransactionDryRunService', () => {
 		);
 
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
-		const resData = executionResult?.result as PostDispatchInfo;
+		const resData = executionResult?.result.result as PostDispatchInfo;
+		expect(executionResult?.result.resultType).toEqual(TransactionResultType.DispatchOutcome);
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
 	});
 
@@ -46,7 +48,7 @@ describe('TransactionDryRunService', () => {
 			blockHash22887036,
 		);
 
-		const resData = executionResult?.result as PostDispatchInfo;
+		const resData = executionResult?.result.result as PostDispatchInfo;
 
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
 	});
@@ -61,7 +63,7 @@ describe('TransactionDryRunService', () => {
 		);
 
 		expect(executionResult?.at.hash).toEqual('');
-		const resData = executionResult?.result as PostDispatchInfo;
+		const resData = executionResult?.result.result as PostDispatchInfo;
 		expect(resData.paysFee.toString()).toEqual(mockDryRunCallResult.Ok.executionResult.Ok.paysFee);
 	});
 });
