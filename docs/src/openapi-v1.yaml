@@ -1067,7 +1067,7 @@ paths:
       description: Use the dryrun call to practice submission of a transaction.
       operationId: dryrunTransaction
       requestBody:
-        $ref: '#/components/requestBodies/Transaction'
+        $ref: '#/components/requestBodies/TransactionDryRun'
       responses:
         "200":
           description: successful operation
@@ -4494,6 +4494,18 @@ components:
         tx:
           type: string
           format: hex
+    DryRunBody:
+      type: object
+      properties: 
+        at: 
+          type: string
+          format: unsignedInteger
+        tx: 
+          type: string
+          format: hex
+        senderAddress:
+          type: string
+          format: ss58
     TransactionDryRun:
       type: object
       properties:
@@ -4504,32 +4516,20 @@ components:
           - TransactionValidityError
           description: Either `DispatchOutcome` if the transaction is valid or `TransactionValidityError` if the result is invalid.
         result:
-          type: string
-          enum:
-          - Ok
-          - CannotLookup
-          - NoUnsignedValidator
-          - Custom(u8)
-          - Call
-          - Payment
-          - Future
-          - Stale
-          - BadProof
-          - AncientBirthBlock
-          - ExhaustsResources
-          - BadMandatory
-          - MandatoryDispatch
-          description: 'If there was an error it will be the cause of the error. If the
-            transaction executed correctly it will be `Ok: []`'
-        validityErrorType:
-          type: string
-          enum:
-          - InvalidTransaction
-          - UnknownTransaction
+          type: object
+          properties:
+            actualWeight:
+              type: string
+              format: unsignedInteger
+              description: The actual weight of the transaction.
+            paysFee:
+              type: string
+              format: boolean
+              description: Whether the transaction pays a fee.
       description: >-
         References:
-        - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
-        - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
+          - `PostDispatchInfo`: https://docs.rs/frame-support/38.0.0/frame_support/dispatch/struct.PostDispatchInfo.html
+          - `Error Type`: https://paritytech.github.io/polkadot-sdk/master/xcm_runtime_apis/dry_run/enum.Error.html
     TransactionFailedToParse:
       type: object
       properties:
@@ -4766,6 +4766,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Transaction'
+      required: true
+    TransactionDryRun:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DryRunBody'
       required: true
     ContractMetadata:
       content:
