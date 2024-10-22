@@ -22,7 +22,9 @@ import type client from 'prom-client';
  * Body for RequestHandlerTx. In other words, the body of a POST route that sends an encoded transaction.
  */
 export interface ITx {
-	tx: string;
+	tx: `0x${string}`;
+	senderAddress: string;
+	at: string;
 }
 
 /**
