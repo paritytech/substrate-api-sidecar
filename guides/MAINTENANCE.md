@@ -48,6 +48,16 @@ Review the security alerts raised by Dependabot [here](https://github.com/parity
 
 **Frequency**: Monthly or longer.
 
+### Express version
+- Check if there is a new major version of [Express](https://github.com/expressjs/express).
+- Update the version by running the command `yarn add express@^X.X.X`, e.g. `yarn add express@^5.0.0`.
+- After upgrading, we can do the usual sanity checks (e.g. `yarn`, `yarn dedupe`, `yarn build`, `yarn lint --fix`).
+- Changes made due to the upgrade from Express v4 to v5, which should be double checked in next major Express release:
+    - Using `this.app.set('query parser', 'extended')` in `App.ts` to allow `[]` in query params.
+    - Direct access of private members like `_router` is not recommended/allowed in v5 (PR [#1510](https://github.com/paritytech/substrate-api-sidecar/pull/1510)).
+
+**Frequency**: Yearly or longer.
+
 ### Keep `substrate-js-dev` repository up to date
 Sidecar is using [substrate-js-dev](https://github.com/paritytech/substrate-js-dev) repository as a dependency. For instance, running `yarn lint` in sidecar triggers the `substrate-dev-run-lint` script which is defined [here](https://github.com/paritytech/substrate-js-dev/blob/58fe47c55610a797c2e780c5cfef0f3dd2fae7ca/scripts/substrate-dev-run-lint.cjs). Therefore, it is important to keep this repository's dependencies up to date as well. This can be done by running `yarn upgrade-interactive` and following the process mentioned in the previous step. Last, we would need to make a new release in that repository and then update the package version in Sidecar.
 
@@ -113,3 +123,6 @@ The frequency is somewhat flexible.
     - Check Public instances of Sidecar.
     - Docker images of Sidecar.
     - Review repository branches.
+
+- Yearly
+    - Express version.

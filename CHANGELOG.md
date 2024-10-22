@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.1..v19.2.2) (2024-10-10)
+
+### Fix
+
+- fix: how to access router in getRoutes ([#1510](https://github.com/paritytech/substrate-api-sidecar/pull/1510)) ([f0d662b](https://github.com/paritytech/substrate-api-sidecar/commit/f0d662bb12661b5e04a948f20f4da6d62fd0cb45))
+  
+    **IMPORTANT NOTE**: This patch release fixes an issue that was introduced in v19.2.1, caused by the upgrade to Express v5.0.0.
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.15.2 (Polkadot stable2407-2)
+- Kusama v1.15.2 (Polkadot stable2407-2)
+- Westend v1.15.2 (Polkadot stable2407-2)
+
+Tested against the following runtime releases:
+- Polkadot v1003000
+- Kusama v1003000
+- Westend v1016000
+
+## [19.2.1](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.0..v19.2.1) (2024-10-09)
+
+### Fix
+
+- fix: queryInfo call in fee-estimate endpoint ([#1505](https://github.com/paritytech/substrate-api-sidecar/pull/1505)) ([68be48b](https://github.com/paritytech/substrate-api-sidecar/commit/68be48b715e1f53abcc91eb54ac447432715f26f))
+
+### Chore
+
+- chore(deps): update express to v5 & jest deprecations ([#1502](https://github.com/paritytech/substrate-api-sidecar/pull/1502)) ([28e039e](https://github.com/paritytech/substrate-api-sidecar/commit/28e039e8cfa54b3080e584f1598ccf8cb9a978bc))
+- chore(deps): update substrate dev package & types ([#1500](https://github.com/paritytech/substrate-api-sidecar/pull/1500)) ([cf2b58b](https://github.com/paritytech/substrate-api-sidecar/commit/cf2b58bff7855bd97c90badc2192cb3f55e1835e))
+- chore(yarn): bump yarn to 4.5.0 ([#1498](https://github.com/paritytech/substrate-api-sidecar/pull/1498)) ([6aac632](https://github.com/paritytech/substrate-api-sidecar/commit/6aac63270701ceb75b2a8cf87cd3f86a9baa1c67))
+
+### Test
+
+- test: add test for fee-estimate fix ([#1506](https://github.com/paritytech/substrate-api-sidecar/pull/1506)) ([c365490](https://github.com/paritytech/substrate-api-sidecar/commit/c3654903f258f5186e648989be1f1f79a5503c33))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.15.2 (Polkadot stable2407-2)
+- Kusama v1.15.2 (Polkadot stable2407-2)
+- Westend v1.15.2 (Polkadot stable2407-2)
+
+Tested against the following runtime releases:
+- Polkadot v1003000
+- Kusama v1003000
+- Westend v1016000
+
 ## [19.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.1.0..v19.2.0) (2024-09-23)
 
 ### Feat

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ const mockReq = {} as Request;
 export const callsNextWithErr =
 	(ware: ErrorRequestHandler) =>
 	(name: string, err: unknown): void => {
-		it(`calls next on error of type ${name}`, () => {
+		it(`calls next on error of type ${name}`, async () => {
 			const next = jest.fn();
 			const send = jest.fn();
 			const status = jest.fn((_code: number) => {
@@ -40,10 +40,10 @@ export const callsNextWithErr =
 				};
 			});
 
-			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
-			expect(status).not.toBeCalled();
-			expect(send).not.toBeCalled();
-			expect(next).toBeCalledTimes(1);
+			await ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
+			expect(status).not.toHaveBeenCalled();
+			expect(send).not.toHaveBeenCalled();
+			expect(next).toHaveBeenCalledTimes(1);
 		});
 	};
 
@@ -59,7 +59,7 @@ export const callsNextWithErr =
 export const catchesErrWithStatus =
 	(ware: ErrorRequestHandler) =>
 	(name: string, err: unknown, code: number): void => {
-		it(`catches ${name} and sends status code ${code}`, () => {
+		it(`catches ${name} and sends status code ${code}`, async () => {
 			const next = jest.fn();
 			const send = jest.fn();
 			const status = jest.fn((_code: number) => {
@@ -68,11 +68,11 @@ export const catchesErrWithStatus =
 				};
 			});
 
-			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
-			expect(send).toBeCalledTimes(1);
-			expect(status).toBeCalledWith<[number]>(code);
-			expect(status).toBeCalledTimes(1);
-			expect(next).not.toBeCalled();
+			await ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
+			expect(send).toHaveBeenCalledTimes(1);
+			expect(status).toHaveBeenCalledWith<[number]>(code);
+			expect(status).toHaveBeenCalledTimes(1);
+			expect(next).not.toHaveBeenCalled();
 		});
 	};
 
@@ -89,7 +89,7 @@ export const catchesErrWithStatus =
 export const catchesErrWithResponse =
 	(ware: ErrorRequestHandler) =>
 	(name: string, err: unknown, code: number, response: unknown): void => {
-		it(`catches ${name} and sends status code ${code}`, () => {
+		it(`catches ${name} and sends status code ${code}`, async () => {
 			const next = jest.fn();
 			const send = jest.fn();
 			const status = jest.fn((_code: number) => {
@@ -98,17 +98,17 @@ export const catchesErrWithResponse =
 				};
 			});
 
-			ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
-			expect(send).toBeCalledTimes(1);
-			expect(send).toBeCalledWith(response);
-			expect(status).toBeCalledWith<[number]>(code);
-			expect(status).toBeCalledTimes(1);
-			expect(next).not.toBeCalled();
+			await ware(err, mockReq, { headersSent: false, status } as unknown as Response, next);
+			expect(send).toHaveBeenCalledTimes(1);
+			expect(send).toHaveBeenCalledWith(response);
+			expect(status).toHaveBeenCalledWith<[number]>(code);
+			expect(status).toHaveBeenCalledTimes(1);
+			expect(next).not.toHaveBeenCalled();
 		});
 	};
 
 export function callsNextWithSentHeaders(ware: ErrorRequestHandler, err: unknown): void {
-	it('calls next if the headers have been sent', () => {
+	it('calls next if the headers have been sent', async () => {
 		const next = jest.fn();
 		const send = jest.fn();
 		const status = jest.fn((_code: number) => {
@@ -117,7 +117,7 @@ export function callsNextWithSentHeaders(ware: ErrorRequestHandler, err: unknown
 			};
 		});
 
-		ware(err, mockReq, { headersSent: true, status } as unknown as Response, next);
+		await ware(err, mockReq, { headersSent: true, status } as unknown as Response, next);
 		expect(send).not.toBeCalled();
 		expect(status).not.toBeCalled();
 		expect(next).toBeCalledTimes(1);

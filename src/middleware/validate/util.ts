@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -24,11 +24,11 @@ import { RequestHandler } from 'express-serve-static-core';
  * @param req Express Request containing thing it errors on.
  */
 export const doesNotErrorWith = (name: string, req: Request, middleware: RequestHandler): void => {
-	it(`does not error with ${name}`, () => {
+	it(`does not error with ${name}`, async () => {
 		const next = jest.fn();
-		middleware(req, null as unknown as Response, next);
-		expect(next).toBeCalledTimes(1);
-		expect(next).toBeCalledWith();
+		await middleware(req, null as unknown as Response, next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith();
 	});
 };
 
@@ -41,11 +41,11 @@ export const doesNotErrorWith = (name: string, req: Request, middleware: Request
  * @param err Expected error that it passes to next.
  */
 export const errorsWith = (name: string, req: Request, err: unknown, middleware: RequestHandler): void => {
-	it(`errors with ${name}`, () => {
+	it(`errors with ${name}`, async () => {
 		const next = jest.fn();
 
-		middleware(req, null as unknown as Response, next);
-		expect(next).toBeCalledTimes(1);
-		expect(next).toBeCalledWith(err);
+		await middleware(req, null as unknown as Response, next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith(err);
 	});
 };
