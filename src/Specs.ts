@@ -145,10 +145,20 @@ export class Specs {
 				},
 			),
 		);
+		// Types
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
 			this._specs.getSpec(CONFIG.TYPES, 'absolute path to file with `typesSpec` type definitions for @polkadot/api', {
 				default: '',
+				mandatory: false,
+			}),
+		);
+
+		// CACHE_CAPACITY
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.CACHE_CAPACITY, 'max cache size for @polkadot/api caching system, 0 bypasses cache', {
+				default: 0,
 				mandatory: false,
 			}),
 		);
