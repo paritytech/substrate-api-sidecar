@@ -1589,7 +1589,7 @@ __metadata:
     "@polkadot/util-crypto": "npm:^13.2.1"
     "@substrate/calc": "npm:^0.3.1"
     "@substrate/dev": "npm:^0.8.0"
-    "@types/argparse": "npm:2.0.16"
+    "@types/argparse": "npm:2.0.17"
     "@types/express": "npm:^5.0.0"
     "@types/express-serve-static-core": "npm:^5.0.0"
     "@types/http-errors": "npm:2.0.4"
@@ -1733,10 +1733,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/argparse@npm:2.0.16":
-  version: 2.0.16
-  resolution: "@types/argparse@npm:2.0.16"
-  checksum: 10/4eb7c73e8a79dbc9a52bd85b63047002b47f0e2ac25f23cb8809745707b62bdc9b6f090d79d76d88972290b201f2b9316a8805516a305e5cfd6c2d0956a055dc
+"@types/argparse@npm:2.0.17":
+  version: 2.0.17
+  resolution: "@types/argparse@npm:2.0.17"
+  checksum: 10/23ee58602e5bf5a70adbf358643b0137fa5f068f0fe02b7d9d348acd34cdd6867c1f6702c52cee235f709d2fef6cc336ef66e8335936e5c3f514e13541188d26
   languageName: node
   linkType: hard
 
