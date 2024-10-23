@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@substrate/dev": "^0.8.0",
-    "@types/argparse": "2.0.16",
+    "@types/argparse": "2.0.17",
     "@types/express": "^5.0.0",
     "@types/express-serve-static-core": "^5.0.0",
     "@types/http-errors": "2.0.4",
