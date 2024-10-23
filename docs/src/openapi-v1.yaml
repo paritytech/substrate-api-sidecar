@@ -1064,7 +1064,9 @@ paths:
       tags:
       - transaction
       summary: Dry run an extrinsic.
-      description: Use the dryrun call to practice submission of a transaction.
+      description: Use the `dryRun` call to simulate the submission of a transaction
+        without executing it so that you can check for potential errors and
+        validate the expected outcome.
       operationId: dryrunTransaction
       requestBody:
         $ref: '#/components/requestBodies/TransactionDryRun'
@@ -3107,16 +3109,11 @@ components:
         decodedXcmMsgs:
           type: object
           properties:
-            horizontalMessages: {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInRelay"
-                },
-                {
-                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInParachain"
-                }
-              ]
-            }
+            horizontalMessages:
+              type: object
+              oneOf:
+                - $ref: "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInRelay"
+                - $ref: "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInParachain"
             downwardMessages:
               type: array
               items:
@@ -4494,6 +4491,50 @@ components:
         tx:
           type: string
           format: hex
+    TransactionDispatchOutcome:
+      type: object
+      description: The result of a valid transaction submitted via the `dry-run` endpoint.
+      properties:
+        actualWeight:
+          type: string
+          format: unsignedInteger
+          description: The actual weight of the transaction.
+        paysFee:
+          type: string
+          format: boolean
+          description: Whether the transaction pays a fee.
+    TransactionDispatchError:
+      type: object
+      description: The reason why the dispatch call failed.
+      properties:
+        errorType:
+          type: string
+          enum:
+            - Other
+            - CannotLookup
+            - BadOrigin
+            - ModuleError
+            - ConsumerRemaining
+            - NoProviders
+            - TooManyConsumers
+            - TokenError
+            - ArithmeticError
+            - TransactionalError
+            - Exhausted
+            - Corruption
+            - Unavailable
+            - RootNotAllowed
+          description: The type of transaction error.
+    TransactionValidityError:
+      type: object
+      description: The error result from an invalid transaction submitted via the `dry-run` endpoint.
+      properties:
+        errorType:
+          type: string
+          enum:
+            - Unimplemented
+            - VersionedConversionFailed
+          description: The type of transaction error, either `Unimplemented` or `VersionedConversionFailed`.
     DryRunBody:
       type: object
       properties: 
@@ -4513,22 +4554,19 @@ components:
           type: string
           enum:
           - DispatchOutcome
+          - DispatchError
           - TransactionValidityError
-          description: Either `DispatchOutcome` if the transaction is valid or `TransactionValidityError` if the result is invalid.
+          description: The result will be either a `DispatchOutcome` if the transaction is valid, a `DispatchError`
+            if the transaction failed, or a `TransactionValidityError` if the transaction is invalid.
         result:
-          type: object
-          properties:
-            actualWeight:
-              type: string
-              format: unsignedInteger
-              description: The actual weight of the transaction.
-            paysFee:
-              type: string
-              format: boolean
-              description: Whether the transaction pays a fee.
+          oneOf:
+            - $ref: '#/components/schemas/TransactionDispatchOutcome'
+            - $ref: '#/components/schemas/TransactionDispatchError'
+            - $ref: '#/components/schemas/TransactionValidityError'
       description: >-
         References:
           - `PostDispatchInfo`: https://docs.rs/frame-support/38.0.0/frame_support/dispatch/struct.PostDispatchInfo.html
+          - `DispatchError`: https://docs.rs/sp-runtime/39.0.1/sp_runtime/enum.DispatchError.html
           - `Error Type`: https://paritytech.github.io/polkadot-sdk/master/xcm_runtime_apis/dry_run/enum.Error.html
     TransactionFailedToParse:
       type: object
