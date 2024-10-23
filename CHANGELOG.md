@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.2..v19.3.0) (2024-10-23)
+
+### Features
+
+- feat: update dry run endpoint to use new runtime api call ([#1519](https://github.com/paritytech/substrate-api-sidecar/pull/1519)) ([aeef4dc](https://github.com/paritytech/substrate-api-sidecar/commit/aeef4dcd1208d0d4424aea929dfa37f699e3f230))
+- feat: improve performance with new version of PJS ([#1520](https://github.com/paritytech/substrate-api-sidecar/pull/1520)) ([e0ad7c1](https://github.com/paritytech/substrate-api-sidecar/commit/e0ad7c1f097e20b9b4a342decf2685f55095e2e8))
+
+### Fix
+
+- fix: dependabot yaml & explicit pjs deps declaration ([#1523](https://github.com/paritytech/substrate-api-sidecar/pull/1523)) ([95dfe4d](https://github.com/paritytech/substrate-api-sidecar/commit/95dfe4d46f530905015bf98c3e9470fb7c57b476))
+- fix: rococo deprecation changes ([#1517](https://github.com/paritytech/substrate-api-sidecar/pull/1517)) ([7422fd2](https://github.com/paritytech/substrate-api-sidecar/commit/7422fd2a7afe0c6fc436f292dcd197c8f796d43b))
+- fix: filtering in assets endpoint & update guides ([#1512](https://github.com/paritytech/substrate-api-sidecar/pull/1512)) ([b67bdcf](https://github.com/paritytech/substrate-api-sidecar/commit/b67bdcfd4c512079b305b84b47d8d283acf9c1f9))
+
+    **IMPORTANT NOTE**: This release resolves the filtering issue in the assets endpoint.
+
+### Docs
+
+- docs: update docs for dry-run endpoint ([#1524](https://github.com/paritytech/substrate-api-sidecar/pull/1524)) ([f4c2d6c](https://github.com/paritytech/substrate-api-sidecar/commit/f4c2d6ced1a1b844db8f937b4ef0e35a3e032155))
+
+### Chores
+
+- chore(deps): bump http-proxy-middleware from 2.0.6 to 2.0.7 in /docs ([#1525](https://github.com/paritytech/substrate-api-sidecar/pull/1525)) ([fd3faae](https://github.com/paritytech/substrate-api-sidecar/commit/fd3faae0bc510af81348aed1321b082a729cea8c))
+- chore(deps-dev): bump @types/argparse from 2.0.16 to 2.0.17 ([#1526](https://github.com/paritytech/substrate-api-sidecar/pull/1526)) ([df7065](https://github.com/paritytech/substrate-api-sidecar/commit/bdf70657dd768a2d9af921600f439b56c5786527))
+- chore(deps): update polkadot-js deps & guides ([#1522](https://github.com/paritytech/substrate-api-sidecar/pull/1522)) ([bb00db1](https://github.com/paritytech/substrate-api-sidecar/commit/bb00db1d6861da275743959ddbcb3bd4c597e9d8))
+- chore(deps): update non pjs deps in root & docs folder ([#1518](https://github.com/paritytech/substrate-api-sidecar/pull/1518)) ([1a3de02](https://github.com/paritytech/substrate-api-sidecar/commit/1a3de029213ebf6ea26f68bed3f6978221520e12))
+- chore(deps): bump Swatinem/rust-cache from 2.7.3 to 2.7.5 ([#1514](https://github.com/paritytech/substrate-api-sidecar/pull/1514)) ([22a143a](https://github.com/paritytech/substrate-api-sidecar/commit/22a143a53a20af766345d858d6c61d56dfdd2c66))
+- chore(deps): update polkadot-js deps to v14.0.1 ([#1515](https://github.com/paritytech/substrate-api-sidecar/pull/1515)) ([e35c191](https://github.com/paritytech/substrate-api-sidecar/commit/e35c191c42ab83d81b558077701469dc919a51df))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.16.1 (Polkadot stable2409-1)
+- Kusama v1.16.1 (Polkadot stable2409-1)
+- Westend v1.16.1 (Polkadot stable2409-1)
+
+Tested against the following runtime releases:
+- Polkadot v1003003
+- Kusama v1003000
+- Westend v1016002
+
 ## [19.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v19.2.1..v19.2.2) (2024-10-10)
 
 ### Fix
