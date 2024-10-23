@@ -1044,7 +1044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api-augment@npm:14.1.1":
+"@polkadot/api-augment@npm:14.1.1, @polkadot/api-augment@npm:^14.1.1":
   version: 14.1.1
   resolution: "@polkadot/api-augment@npm:14.1.1"
   dependencies:
@@ -1220,7 +1220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/types-codec@npm:14.1.1":
+"@polkadot/types-codec@npm:14.1.1, @polkadot/types-codec@npm:^14.1.1":
   version: 14.1.1
   resolution: "@polkadot/types-codec@npm:14.1.1"
   dependencies:
@@ -1266,7 +1266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/types@npm:14.1.1":
+"@polkadot/types@npm:14.1.1, @polkadot/types@npm:^14.1.1":
   version: 14.1.1
   resolution: "@polkadot/types@npm:14.1.1"
   dependencies:
@@ -1581,7 +1581,11 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@polkadot/api": "npm:^14.1.1"
+    "@polkadot/api-augment": "npm:^14.1.1"
     "@polkadot/api-contract": "npm:^14.1.1"
+    "@polkadot/types": "npm:^14.1.1"
+    "@polkadot/types-codec": "npm:^14.1.1"
+    "@polkadot/util": "npm:^13.2.1"
     "@polkadot/util-crypto": "npm:^13.2.1"
     "@substrate/calc": "npm:^0.3.1"
     "@substrate/dev": "npm:^0.8.0"

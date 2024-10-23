@@ -51,7 +51,11 @@
   },
   "dependencies": {
     "@polkadot/api": "^14.1.1",
+    "@polkadot/api-augment": "^14.1.1",
     "@polkadot/api-contract": "^14.1.1",
+    "@polkadot/types": "^14.1.1",
+    "@polkadot/types-codec": "^14.1.1",
+    "@polkadot/util": "^13.2.1",
     "@polkadot/util-crypto": "^13.2.1",
     "@substrate/calc": "^0.3.1",
     "argparse": "^2.0.1",
