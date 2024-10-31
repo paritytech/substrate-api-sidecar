@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     # The type of runner that the job will run on
@@ -21,7 +25,7 @@ jobs:
       - name: Install Node v18
         uses: actions/setup-node@v4
         with:
-          node-version: '18.14'
+          node-version: "18.14"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -41,7 +45,7 @@ jobs:
       - name: Linter.
         run: yarn lint
   tests:
-      # The type of runner that the job will run on
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     steps:
@@ -51,7 +55,7 @@ jobs:
       - name: Install Node v18
         uses: actions/setup-node@v4
         with:
-          node-version: '18.14'
+          node-version: "18.14"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -82,7 +86,7 @@ jobs:
       - name: Install Node v18
         uses: actions/setup-node@v4
         with:
-          node-version: '18.14'
+          node-version: "18.14"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -113,7 +117,7 @@ jobs:
       - name: Install Node v18
         uses: actions/setup-node@v4
         with:
-          node-version: '18.14'
+          node-version: "18.14"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -134,11 +138,11 @@ jobs:
         run: yarn build:docs
 
   build-npm-release:
-      # This test is to make sure sidecar can release a binary without any errors.
-      # This script does not publish a release, but instead uses yarn to create a tarball and
-      # install it locally. Once installed a binary is attached to sidecars node_modules, and that
-      # binary is then tested against. For more in depth information reference the docs at
-      # `../../scripts/README.md`.
+    # This test is to make sure sidecar can release a binary without any errors.
+    # This script does not publish a release, but instead uses yarn to create a tarball and
+    # install it locally. Once installed a binary is attached to sidecars node_modules, and that
+    # binary is then tested against. For more in depth information reference the docs at
+    # `../../scripts/README.md`.
 
     runs-on: ubuntu-latest
 
@@ -147,10 +151,10 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn
-    - run: yarn test:test-release
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn
+      - run: yarn test:test-release

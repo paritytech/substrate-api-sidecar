@@ -1,0 +1,37 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    container:
+      image: node:18
+    strategy:
+      matrix:
+        include:
+          - chain-name: westend
+            chain-url: wss://westend-rpc.polkadot.io
+          - chain-name: kusama
+            chain-url: wss://apps-kusama-rpc.polkadot.io
+          - chain-name: polkadot
+            chain-url: wss://apps-rpc.polkadot.io
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: e2e tests
+        run: |
+          yarn --immutable
+          echo "Tests for ${{ matrix.chain-name }}"
+          yarn test:latest-e2e-tests --log-level info --chain ${{ matrix.chain-name }} --local ${{ matrix.chain-url }}
