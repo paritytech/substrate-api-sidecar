@@ -1,0 +1,32 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: benchmark
+    runs-on: ubuntu-latest
+    container:
+      image: paritytech/node-wrk:latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: benchmarks
+        run: |
+          yarn --immutable
+          echo "Benchmarks for polkadot"
+          mkdir -p artifacts
+          yarn bench --log-level info --ws-url wss://rpc.polkadot.io
+          mv benchmarks.txt artifacts/

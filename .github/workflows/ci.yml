@@ -174,3 +174,27 @@ jobs:
           push: false
           tags: |
             docker.io/parity/substrate-api-sidecar:latest
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    container:
+      image: node:18
+    strategy:
+      matrix:
+        include:
+          - chain-name: westend
+            chain-url: wss://westend-rpc.polkadot.io
+          - chain-name: kusama
+            chain-url: wss://apps-kusama-rpc.polkadot.io
+          - chain-name: polkadot
+            chain-url: wss://apps-rpc.polkadot.io
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: e2e tests
+        run: |
+          yarn --immutable
+          echo "Tests for ${{ matrix.chain-name }}"
+          yarn test:latest-e2e-tests --log-level info --chain ${{ matrix.chain-name }} --local ${{ matrix.chain-url }}
