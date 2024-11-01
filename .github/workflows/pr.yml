@@ -158,3 +158,19 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn
       - run: yarn test:test-release
+
+  build_docker:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: |
+            docker.io/parity/substrate-api-sidecar:latest
