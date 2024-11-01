@@ -67,7 +67,7 @@ jobs:
           tags: |
             docker.io/parity/substrate-api-sidecar:${{ env.VERSION }}
 
-  deploy-stg:
+  deploy-stg-kusama:
     name: Deploy Staging
     runs-on: ubuntu-latest
     needs: [set-variables, build_push_docker]
@@ -81,32 +81,76 @@ jobs:
         with:
           environment: "parity-stg"
           tag: "${{ env.VERSION }}"
-          app_name: "${{ env.APP }}"
+          app_name: "substrate-api-sidecar-kusama"
           app_packages: "${{ env.APP }}"
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: ${{ env.APP }}
           teleport_app_name: "argocd-stg"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
-  deploy-prod:
-    name: Deploy Production
+  deploy-stg-polkadot:
+    name: Deploy Staging
     runs-on: ubuntu-latest
-    needs: [set-variables, deploy-stg]
-    # Deploy only if the tag is v*
-    if: startsWith(github.ref, 'refs/tags/v')
-    environment: parity-prod
+    needs: [set-variables, build_push_docker]
+    environment: parity-stg
     env:
       VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-prod.teleport.parity.io"
+      ARGOCD_SERVER: "argocd-stg.teleport.parity.io"
     steps:
       - name: Deploy to ArgoCD
         uses: paritytech/argocd-deployment-action@main
         with:
-          environment: "parity-prod"
+          environment: "parity-stg"
           tag: "${{ env.VERSION }}"
-          app_name: "${{ env.APP }}"
+          app_name: "substrate-api-sidecar-polkadot"
           app_packages: "${{ env.APP }}"
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: ${{ env.APP }}
-          teleport_app_name: "argocd-prod"
+          teleport_app_name: "argocd-stg"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+
+  deploy-prod-kusama:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [set-variables, deploy-stg-kusama, deploy-stg-polkadot]
+    # Deploy only if the tag is v*
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: parity-chains
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-chains"
+          tag: "${{ env.VERSION }}"
+          app_name: "substrate-api-sidecar-kusama"
+          app_packages: "${{ env.APP }}"
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: ${{ env.APP }}
+          teleport_app_name: "argocd-chains"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+
+  deploy-prod-polkadot:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [set-variables, deploy-stg-kusama, deploy-stg-polkadot]
+    # Deploy only if the tag is v*
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: parity-chains
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-chains"
+          tag: "${{ env.VERSION }}"
+          app_name: "substrate-api-sidecar-polkadot"
+          app_packages: "${{ env.APP }}"
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: ${{ env.APP }}
+          teleport_app_name: "argocd-chains"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
