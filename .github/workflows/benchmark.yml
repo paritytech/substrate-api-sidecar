@@ -30,3 +30,9 @@ jobs:
           mkdir -p artifacts
           yarn bench --log-level info --ws-url wss://rpc.polkadot.io
           mv benchmarks.txt artifacts/
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmarks
+          path: ./artifacts
