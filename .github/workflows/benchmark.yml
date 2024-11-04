@@ -23,6 +23,12 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.GH_APP_SAS_APP_ID }}
+          private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
+
       - name: benchmarks
         run: |
           yarn --immutable
@@ -36,12 +42,6 @@ jobs:
         with:
           name: benchmarks
           path: ./artifacts
-
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: ${{ secrets.POLKADOTSDK_GHPAGES_APP_ID }}
-          private-key: ${{ secrets.POLKADOTSDK_GHPAGES_APP_KEY }}
 
       - name: Modify benches result for benhcmark action
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
