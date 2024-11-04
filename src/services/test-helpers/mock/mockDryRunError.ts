@@ -3,10 +3,10 @@ export const mockDryRunCallError = {
 		executionResult: {
 			Err: {
 				Token: 'NoFunds',
-			}
+			},
 		},
 		emittedEvents: [],
 		localXcm: null,
-		forwardedXcms: []
-	}
+		forwardedXcms: [],
+	},
 };

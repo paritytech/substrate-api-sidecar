@@ -16,9 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { PostDispatchInfo, DispatchError  } from '@polkadot/types/interfaces';
-
 import type { ApiPromise } from '@polkadot/api';
+import type { DispatchError, PostDispatchInfo } from '@polkadot/types/interfaces';
+
 import { TransactionResultType } from '../../types/responses';
 import { blockHash22887036, mockAssetHubWestendApi, mockDryRunCall, mockDryRunError } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
@@ -68,10 +68,7 @@ describe('TransactionDryRunService', () => {
 		const callTx =
 			'0x1f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000' as `0x${string}`;
 
-		const executionResult = await new TransactionDryRunService(mockAHWApi).dryRuntExtrinsic(
-			sendersAddress,
-			callTx,
-		);
+		const executionResult = await new TransactionDryRunService(mockAHWApi).dryRuntExtrinsic(sendersAddress, callTx);
 
 		expect(executionResult?.at.hash).toEqual('');
 		const resData = executionResult?.result.result as PostDispatchInfo;
@@ -91,10 +88,7 @@ describe('TransactionDryRunService', () => {
 		const callTx =
 			'0x0a0000fe06fc3db07fb1a4ce89a76eaed1e54519b5940d2652b8d6794ad4ddfcdcb16c0f00d0eca2b99401' as `0x${string}`;
 
-		const executionResult = await new TransactionDryRunService(mockAHWApiErr).dryRuntExtrinsic(
-			sendersAddress,
-			callTx,
-		);
+		const executionResult = await new TransactionDryRunService(mockAHWApiErr).dryRuntExtrinsic(sendersAddress, callTx);
 
 		expect(executionResult?.at.hash).toEqual('');
 		const resData = executionResult?.result.result as DispatchError;
