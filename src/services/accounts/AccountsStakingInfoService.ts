@@ -223,10 +223,10 @@ export class AccountsStakingInfoService extends AbstractService {
 				claimedRewardsPerEra.length === 0
 					? 'unclaimed'
 					: claimedRewardsPerEra.length === pageCount
-					  ? 'claimed'
-					  : claimedRewardsPerEra.length != pageCount
-					    ? 'partially claimed'
-					    : 'undefined';
+						? 'claimed'
+						: claimedRewardsPerEra.length != pageCount
+							? 'partially claimed'
+							: 'undefined';
 			claimedRewards.push({ era: e, status: eraStatus });
 		} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
 			// if erasStakers.total > 0, then the pageCount is always 1
@@ -290,17 +290,17 @@ export class AccountsStakingInfoService extends AbstractService {
 						claimedRewardsPerEra.length === 0
 							? 'unclaimed'
 							: claimedRewardsPerEra.length === pageCount
-							  ? 'claimed'
-							  : claimedRewardsPerEra.length != pageCount
-							    ? await this.ErasStatusNominatorForValPartiallyClaimed(
+								? 'claimed'
+								: claimedRewardsPerEra.length != pageCount
+									? await this.ErasStatusNominatorForValPartiallyClaimed(
 											historicApi,
 											e,
 											validatorStash,
 											pageCount,
 											nominatorStash,
 											claimedRewardsPerEra,
-							      )
-							    : 'undefined';
+										)
+									: 'undefined';
 					claimedRewardsNom.push({ era: e, status: eraStatus });
 					break;
 				} else if (erasStakers && erasStakers.total.toBigInt() > 0) {
