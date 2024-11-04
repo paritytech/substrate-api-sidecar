@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
+      - as-move-ci # temporary for testing
     tags:
       - v*
-  # temporary for testing
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -18,6 +16,7 @@ jobs:
   benchmark:
     name: benchmark
     runs-on: ubuntu-latest
+    environment: master_n_tags
     container:
       image: paritytech/node-wrk:latest
     steps:
@@ -38,6 +37,12 @@ jobs:
           name: benchmarks
           path: ./artifacts
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.POLKADOTSDK_GHPAGES_APP_ID }}
+          private-key: ${{ secrets.POLKADOTSDK_GHPAGES_APP_KEY }}
+
       - name: Modify benches result for benhcmark action
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
@@ -48,4 +53,4 @@ jobs:
           output-file-path: artifacts/benchmarks.json
           # Push and deploy GitHub pages branch automatically
           auto-push: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
