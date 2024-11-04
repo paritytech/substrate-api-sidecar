@@ -338,7 +338,6 @@ export class AccountsStakingInfoService extends AbstractService {
 		const controllerOption = await historicApi.query.staking.bonded(validatorStash);
 
 		if (controllerOption.isNone) {
-			// throw new BadRequest(`The address ${stash} is not a stash address.`);
 			return [e, claimedRewards, oldCallChecked];
 		}
 
@@ -423,7 +422,7 @@ export class AccountsStakingInfoService extends AbstractService {
 					for (const nominator of erasStakersPaged.others.entries()) {
 						if (nominatorStash === nominator[1].who.toString()) {
 							if (claimedRewardsPerEra.length > 0) {
-								const pageIncluded = claimedRewardsPerEra?.some((reward) => reward.eq(page as unknown as u32));
+								const pageIncluded = claimedRewardsPerEra?.some((reward) => Number(reward) === Number(page));
 								if (pageIncluded) {
 									return 'claimed';
 								} else {

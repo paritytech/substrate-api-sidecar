@@ -20,6 +20,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Option } from '@polkadot/types';
 import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
+import type { PalletStakingNominations } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -44,12 +45,14 @@ import {
 	testAddressPayeeKusama,
 	testAddressPayeePolkadot,
 	testAddressPolkadot,
+	testNominatorAddressPolkadot,
 } from '../test-helpers/mock';
 import {
 	kusamaErasStakersMockedCall,
 	polkadotClaimedRewardsMockedCall,
 	polkadotErasStakersMockedCall,
 	polkadotErasStakersOverviewMockedCall,
+	polkadotErasStakersPagedMockedCall,
 	polkadotPayeeMockedCall,
 	polkadotSlashingSpansMockedCall,
 	stakingClaimedRewardsMockedCall,
@@ -62,6 +65,7 @@ import { validators21157800Hex } from '../test-helpers/mock/data/validators21157
 import { validators22939322Hex } from '../test-helpers/mock/data/validators22939322Hex';
 import response789629 from '../test-helpers/responses/accounts/stakingInfo789629.json';
 import response21157800 from '../test-helpers/responses/accounts/stakingInfo21157800.json';
+import response21157800nominator from '../test-helpers/responses/accounts/stakingInfo21157800nominator.json';
 import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
@@ -124,6 +128,14 @@ export const payee21157800 = (_hash: Hash, _address: string): Promise<Option<Acc
 const validatorsAt21157800 = () =>
 	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Vec<AccountId32>', validators21157800Hex));
 
+const nominations21157800 = (_hash: Hash): Promise<Option<PalletStakingNominations>> =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV1002000.createType(
+			'Option<PalletStakingNominations>',
+			'0x04005fa73637062be3fbfb972174a5bc85a2f6cc0350cb84aa9d657422796bfdf16705000000',
+		),
+	);
+
 const historicApi21157800 = {
 	query: {
 		staking: {
@@ -136,7 +148,7 @@ const historicApi21157800 = {
 			currentEra: currentEraAt21157800,
 			erasStakersOverview: polkadotErasStakersOverviewMockedCall,
 			erasStakers: polkadotErasStakersMockedCall,
-			erasStakersPaged: polkadotErasStakersMockedCall,
+			nominators: null,
 		},
 		session: {
 			validators: validatorsAt21157800,
@@ -144,12 +156,29 @@ const historicApi21157800 = {
 	},
 } as unknown as ApiDecoration<'promise'>;
 
-const mockApiPolkadot21157800 = {
+const mockApiPolkadot21157800val = {
 	...defaultMockApi21157800,
 	at: (_hash: Hash) => historicApi21157800,
 } as unknown as ApiPromise;
 
-const accountStakingInfoService21157800 = new AccountsStakingInfoService(mockApiPolkadot21157800);
+const accountStakingInfoService21157800val = new AccountsStakingInfoService(mockApiPolkadot21157800val);
+
+const mockApiPolkadot21157800nom = {
+	...defaultMockApi21157800,
+	at: (_hash: Hash) => ({
+		...historicApi21157800,
+		query: {
+			...historicApi21157800.query,
+			staking: {
+				...historicApi21157800.query.staking,
+				nominators: nominations21157800,
+				erasStakersPaged: polkadotErasStakersPagedMockedCall,
+			},
+		},
+	}),
+} as unknown as ApiPromise;
+
+const accountStakingInfoService21157800nom = new AccountsStakingInfoService(mockApiPolkadot21157800nom);
 
 export const bondedAt22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Option<AccountId>', testAddressControllerKusama));
@@ -239,9 +268,19 @@ describe('AccountsStakingInfoService', () => {
 		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
 			expect(
 				sanitizeNumbers(
-					await accountStakingInfoService21157800.fetchAccountStakingInfo(blockHash21157800, testAddressPolkadot),
+					await accountStakingInfoService21157800val.fetchAccountStakingInfo(blockHash21157800, testAddressPolkadot),
 				),
 			).toStrictEqual(response21157800);
+		});
+		it('works with a nominator account (block 21157800) & returns claimed & unclaimed eras (Polkadot)', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService21157800nom.fetchAccountStakingInfo(
+						blockHash21157800,
+						testNominatorAddressPolkadot,
+					),
+				),
+			).toStrictEqual(response21157800nominator);
 		});
 	});
 });

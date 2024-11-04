@@ -20,10 +20,12 @@ import type {
 	PalletStakingRewardDestination,
 	PalletStakingSlashingSlashingSpans,
 	SpStakingExposure,
+	SpStakingExposurePage,
 	SpStakingPagedExposureMetadata,
 } from '@polkadot/types/lookup';
 
 import { kusamaRegistryV1002000, polkadotRegistryV1002000 } from '../../../../test-helpers/registries';
+import { erasStakersPagedHex } from '../data/erasStakersPaged';
 
 export const stakingClaimedRewardsMockedCall = (era: number): string[] => {
 	if (era === 6512 || era === 6555) {
@@ -153,6 +155,15 @@ export const polkadotErasStakersMockedCall = (_era: number, _address: string): P
 			own: stakersOwn,
 			others: stakersOthers,
 		});
+	});
+};
+
+export const polkadotErasStakersPagedMockedCall = (
+	_era: number,
+	_address: string,
+): Promise<Option<SpStakingExposurePage>> => {
+	return Promise.resolve().then(() => {
+		return polkadotRegistryV1002000.createType('Option<SpStakingExposurePage>', erasStakersPagedHex);
 	});
 };
 

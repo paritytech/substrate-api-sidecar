@@ -45,6 +45,11 @@ export const testAddressPayeeKusama = 'GLEJRAEdGxLhNEH2AWAtjhUYVrcRWxbYSemvVv2Jw
 export const testAddressPolkadot = '11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ';
 
 /**
+ * Stash address in Polkadot to use with test in staking-info endpoint.
+ */
+export const testNominatorAddressPolkadot = '15AXn2iupExTQ6H3pyVbCfCuzENsxapmtP754NZwzqX4GLSH';
+
+/**
  * Controller address in Polkadot to use with test in staking-info endpoint.
  */
 export const testAddressControllerPolkadot = '13vxvvF6uQpxq6eEp94TrDZfR6afFfbBeipnJwCgctyc7bNX';
