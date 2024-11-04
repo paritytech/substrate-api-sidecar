@@ -39,7 +39,7 @@ jobs:
           path: ./artifacts
 
       - name: Modify benches result for benhcmark action
-        run: ./scripts/ci/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
+        run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@d48d326b4ca9ba73ca0cd0d59f108f9e02a381c7 #1.20.4
