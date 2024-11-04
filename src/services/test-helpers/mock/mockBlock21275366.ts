@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,27 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Metadata } from '@polkadot/types';
-import { TypeRegistry } from '@polkadot/types';
-import { getSpecTypes } from '@polkadot/types-known';
-
-import { rococoMetadataV228 } from '../metadata/rococoMetadata';
+import { polkadotRegistryV1000001 } from '../../../test-helpers/registries';
+import block21275366 from './data/block21275366.json';
 
 /**
- * Create a type registry for Rococo.
- * Useful for creating types in order to facilitate testing.
+ * Mock for Polkadot Block #21275366.
  */
-function createRococoRegistry(): TypeRegistry {
-	const registry = new TypeRegistry();
-
-	registry.register(getSpecTypes(registry, 'Rococo', 'rococo', 228));
-
-	registry.setMetadata(new Metadata(registry, rococoMetadataV228));
-
-	return registry;
-}
+export const mockBlock21275366 = polkadotRegistryV1000001.createType('Block', block21275366);
 
 /**
- * Rococo v228 TypeRegistry.
+ * BlockHash for Polkadot Block #21275366.
  */
-export const rococoRegistry = createRococoRegistry();
+export const blockHash21275366 = polkadotRegistryV1000001.createType(
+	'BlockHash',
+	'0x109d98b52cd3c76801e6881ec5c746eac9a3d5e6017b0b2883a85d6b2907f5dc',
+);

@@ -18,8 +18,6 @@ import { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
 
 import { Log } from '../../logging/Log';
-import { parseArgs } from '../../parseArgs';
-import { httpErrorCounter } from '../../util/metrics';
 /**
  * Handle HttpError instances.
  *
@@ -35,7 +33,6 @@ export const httpErrorMiddleware: ErrorRequestHandler = (err: unknown, _req, res
 	if (res.headersSent || !(err instanceof HttpError)) {
 		return next(err);
 	}
-	const args = parseArgs();
 	const code = err.status;
 
 	const info = {
@@ -43,9 +40,7 @@ export const httpErrorMiddleware: ErrorRequestHandler = (err: unknown, _req, res
 		message: err.message,
 		stack: err.stack,
 	};
-	if (args.prometheus) {
-		httpErrorCounter.inc();
-	}
+
 	Log.logger.error(info);
 
 	res.status(code).send(info);

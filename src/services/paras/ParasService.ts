@@ -28,7 +28,7 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
-import { PolkadotPrimitivesV6CandidateReceipt } from '@polkadot/types/lookup';
+import { PolkadotPrimitivesV7CandidateReceipt } from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -48,10 +48,6 @@ import {
 } from '../../types/responses';
 import { IOption, isNull, isSome } from '../../types/util';
 import { AbstractService } from '../AbstractService';
-
-// This was the orgiginal value in the rococo test net. Once the exposed metadata
-// consts makes its way into `rococo-v1` this can be taken out.
-const LEASE_PERIODS_PER_SLOT_FALLBACK = 4;
 
 export class ParasService extends AbstractService {
 	/**
@@ -298,8 +294,7 @@ export class ParasService extends AbstractService {
 			winning = null;
 		}
 
-		const leasePeriodsPerSlot =
-			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() || LEASE_PERIODS_PER_SLOT_FALLBACK;
+		const leasePeriodsPerSlot = (historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber();
 		const leasePeriods = isSome(leasePeriodIndex)
 			? Array(leasePeriodsPerSlot)
 					.fill(0)
@@ -438,7 +433,7 @@ export class ParasService extends AbstractService {
 		const paraHeaders: IParasHeaders = {};
 		paraInclusion.forEach(({ event }) => {
 			const { data } = event;
-			const paraData = data[0] as PolkadotPrimitivesV6CandidateReceipt;
+			const paraData = data[0] as PolkadotPrimitivesV7CandidateReceipt;
 			const headerData = data[1] as Bytes;
 			const { paraHead, paraId } = paraData.descriptor;
 			const header = api.createType('Header', headerData);
@@ -563,8 +558,7 @@ export class ParasService extends AbstractService {
 	 */
 	private enumerateLeaseSets(historicApi: ApiDecoration<'promise'>, leasePeriodIndex: BN): number[][] {
 		const leasePeriodIndexNumber = leasePeriodIndex.toNumber();
-		const lPPS =
-			(historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber() || LEASE_PERIODS_PER_SLOT_FALLBACK;
+		const lPPS = (historicApi.consts.auctions.leasePeriodsPerSlot as u32)?.toNumber();
 
 		const ranges: number[][] = [];
 		for (let start = 0; start < lPPS; start += 1) {

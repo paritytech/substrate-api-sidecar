@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -336,11 +336,11 @@ export class Trace {
 
 				phase = secondarySpans[0]
 					? // This case catches `onInitialize` spans since they are the secondary
-					  // spans of `initBlock`
-					  stringCamelCase(secondarySpans[0]?.name)
+						// spans of `initBlock`
+						stringCamelCase(secondarySpans[0]?.name)
 					: // This case catches `onFinalize` since `onFinalize` spans are
-					  // identified by the priamry spans name.
-					  stringCamelCase(primary.name);
+						// identified by the priamry spans name.
+						stringCamelCase(primary.name);
 			}
 
 			const primarySpanEvents = eventsByParentId.get(primary.id);

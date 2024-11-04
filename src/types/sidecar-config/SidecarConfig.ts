@@ -21,6 +21,7 @@ export interface ISidecarConfig {
 	EXPRESS: ISidecarConfigExpress;
 	SUBSTRATE: ISidecarConfigSubstrate;
 	LOG: ISidecarConfigLog;
+	METRICS: ISidecarConfigMetrics;
 }
 
 interface ISidecarConfigSubstrate {
@@ -29,6 +30,7 @@ interface ISidecarConfigSubstrate {
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;
 	TYPES: string;
+	CACHE_CAPACITY: number;
 }
 
 interface ISidecarConfigExpress {
@@ -46,4 +48,13 @@ interface ISidecarConfigLog {
 	WRITE_PATH: string;
 	WRITE_MAX_FILE_SIZE: number;
 	WRITE_MAX_FILES: number;
+}
+
+interface ISidecarConfigMetrics {
+	ENABLED: boolean;
+	PROM_HOST: string;
+	PROM_PORT: number;
+	LOKI_HOST: string;
+	LOKI_PORT: number;
+	INCLUDE_QUERYPARAMS: boolean;
 }

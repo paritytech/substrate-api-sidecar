@@ -23,15 +23,6 @@ export const parseArgs = (): Namespace => {
 		action: 'store_true',
 		help: 'print substrate-api-sidecar version',
 	});
-	parser.add_argument('-p', '--prometheus', {
-		action: 'store_true',
-		help: 'enable the prometheus metrics endpoint',
-	});
-	parser.add_argument('-pp', '--prometheus-port', {
-		type: 'int',
-		default: 9100,
-		help: 'specify the port number on which the prometheus metrics are exposed [default: 9100]',
-	});
 
 	return parser.parse_args() as Namespace;
 };

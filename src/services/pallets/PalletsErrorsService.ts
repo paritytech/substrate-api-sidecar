@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -50,11 +50,11 @@ export class PalletsErrorsService extends AbstractPalletsService {
 			palletMeta,
 			errorItemId,
 			metadataFieldType,
-		) as ErrorMetadataLatest;
+		) as unknown as [string, ErrorMetadataLatest];
 
 		let palletErrorMetadata: ErrorMetadataLatest | undefined;
 		if (metadata) {
-			palletErrorMetadata = (errorItemMetadata[1] as IsError).meta;
+			palletErrorMetadata = (errorItemMetadata[1] as unknown as IsError).meta;
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);

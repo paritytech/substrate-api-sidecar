@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -97,9 +97,10 @@ export class NodeTransactionPoolService extends AbstractService {
 		const sanitizedClass = this.defineDispatchClassType(dispatchClass);
 
 		// Check which versions of Weight we are using by checking to see if refTime exists.
-		const versionedWeight = weight['refTime']
-			? (weight as unknown as WeightV2).refTime.unwrap().toBn()
-			: (weight as WeightV1).toBn();
+		const versionedWeight =
+			(weight as unknown as WeightV2)?.refTime != undefined
+				? (weight as unknown as WeightV2).refTime.unwrap().toBn()
+				: (weight as WeightV1).toBn();
 		const maxBlockWeight = api.consts.system.blockWeights.maxBlock.refTime
 			? api.consts.system.blockWeights.maxBlock.refTime.unwrap()
 			: (api.consts.system.blockWeights.maxBlock as unknown as u64);

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ export class PalletsStakingProgressService extends AbstractService {
 			api.rpc.chain.getHeader(hash),
 		]);
 
-		let eraElectionStatus;
+		let eraElectionPromise;
 		/**
 		 * Polkadot runtimes v0.8.30 and above do not support eraElectionStatus, so we check
 		 * to see if eraElectionStatus is mounted to the api, and if were running on a
@@ -48,11 +48,10 @@ export class PalletsStakingProgressService extends AbstractService {
 		 * we do nothing and let `eraElectionStatus` stay undefined.
 		 */
 		if (historicApi.query.staking.eraElectionStatus) {
-			eraElectionStatus = await historicApi.query.staking.eraElectionStatus();
+			eraElectionPromise = await historicApi.query.staking.eraElectionStatus();
 		}
-
-		const { eraLength, eraProgress, sessionLength, sessionProgress, activeEra } =
-			await this.deriveSessionAndEraProgress(historicApi);
+		const [eraElectionStatus, { eraLength, eraProgress, sessionLength, sessionProgress, activeEra }] =
+			await Promise.all([eraElectionPromise, this.deriveSessionAndEraProgress(historicApi)]);
 
 		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes(activeEra);
 
@@ -108,7 +107,7 @@ export class PalletsStakingProgressService extends AbstractService {
 				? {
 						status: eraElectionStatus.toJSON(),
 						toggleEstimate: toggle?.toString(10) ?? null,
-				  }
+					}
 				: 'Deprecated, see docs',
 			idealValidatorCount: validatorCount.toString(10),
 			validatorSet: validators.map((accountId) => accountId.toString()),
