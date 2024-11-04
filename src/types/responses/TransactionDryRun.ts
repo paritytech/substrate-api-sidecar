@@ -20,8 +20,8 @@ import type { DispatchError, PostDispatchInfo, XcmDryRunApiError } from '@polkad
 import { IAt } from './At';
 
 export enum TransactionResultType {
-	TransactionValidityError = 'TransactionValidityError',
 	DispatchOutcome = 'DispatchOutcome',
+	DispatchError = 'DispatchError',
 }
 
 export enum ValidityErrorType {
@@ -32,7 +32,7 @@ export enum ValidityErrorType {
 export interface ITransactionDryRun {
 	at: IAt;
 	result: {
-		resultType: TransactionResultType;
+		resultType: TransactionResultType | ValidityErrorType;
 		result: PostDispatchInfo | XcmDryRunApiError | DispatchError;
 	};
 }

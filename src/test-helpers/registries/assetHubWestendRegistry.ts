@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import { assetHubWestendMetadataRpcV9435 } from '../metadata/assetHubWestendMeta
  * Create a type registry for Asset Hub Westend.
  * Useful for creating types in order to facilitate testing.
  */
-function createAssetHubWestendRegistry(): TypeRegistry {
+function createAssetHubWestendRegistry(specVersion: number, metadata: `0x${string}`): TypeRegistry {
 	const registry = new TypeRegistry();
 	registry.setChainProperties(
 		registry.createType('ChainProperties', {
@@ -34,9 +34,9 @@ function createAssetHubWestendRegistry(): TypeRegistry {
 		}),
 	);
 
-	registry.register(getSpecTypes(registry, 'westmint', 'westmint', 9435));
+	registry.register(getSpecTypes(registry, 'Westend Asset Hub', 'westmint', specVersion));
 
-	registry.setMetadata(new Metadata(registry, assetHubWestendMetadataRpcV9435));
+	registry.setMetadata(new Metadata(registry, metadata));
 
 	return registry;
 }
@@ -44,4 +44,4 @@ function createAssetHubWestendRegistry(): TypeRegistry {
 /**
  * Asset Hub Westend v9435 TypeRegistry.
  */
-export const assetHubWestendRegistryV9435 = createAssetHubWestendRegistry();
+export const assetHubWestendRegistryV9435 = createAssetHubWestendRegistry(9435, assetHubWestendMetadataRpcV9435);
