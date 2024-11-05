@@ -39,6 +39,7 @@ import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseDa
 import traceBlockRPC from './data/traceBlock.json';
 import { defaultMockApi } from './mockApi';
 import { mockDryRunCallResult } from './mockDryRunCall';
+import { mockDryRunCallError } from './mockDryRunError';
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -147,12 +148,19 @@ const runtimeDryRun = assetHubWestendRegistryV9435.createType(
 	mockDryRunCallResult,
 );
 
+const runtimeDryRunError = assetHubWestendRegistryV9435.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallError,
+);
+
 export const assetHubWestendQueryInfoCall = (
 	_extrinsic: GenericExtrinsic,
 	_length: Uint8Array,
 ): Promise<RuntimeDispatchInfo> => Promise.resolve().then(() => runtimeDispatchInfo);
 
-const mockDryRunCall = () => Promise.resolve().then(() => runtimeDryRun);
+export const mockDryRunCall = () => Promise.resolve().then(() => runtimeDryRun);
+
+export const mockDryRunError = () => Promise.resolve().then(() => runtimeDryRunError);
 
 export const assetHubWestendQueryInfoAt = (_extrinsic: string, _hash: Hash): Promise<RuntimeDispatchInfo> =>
 	Promise.resolve().then(() => runtimeDispatchInfo);
@@ -219,9 +227,6 @@ export const mockAssetHubWestendApi = {
 		transactionPaymentApi: {
 			queryInfo: assetHubWestendQueryInfoCall,
 			queryFeeDetails,
-		},
-		dryRunApi: {
-			dryRunCall: mockDryRunCall,
 		},
 	},
 	consts: {
