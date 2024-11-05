@@ -16,8 +16,14 @@
 
 import type { ApiDecoration } from '@polkadot/api/types';
 import { Option, u32, Vec } from '@polkadot/types';
-import { BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
-import type { SpStakingExposure, SpStakingPagedExposureMetadata } from '@polkadot/types/lookup';
+import { AccountId32, BlockHash, StakingLedger, StakingLedgerTo240 } from '@polkadot/types/interfaces';
+import type {
+	PalletStakingRewardDestination,
+	PalletStakingSlashingSlashingSpans,
+	PalletStakingStakingLedger,
+	SpStakingExposure,
+	SpStakingPagedExposureMetadata,
+} from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
@@ -34,6 +40,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
+		// Fetching initial data
 		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.staking.bonded(stash), // Option<AccountId> representing the controller
@@ -51,17 +58,14 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		const controller = controllerOption.unwrap();
-
-		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
-			historicApi.query.staking.ledger(controller),
-			historicApi.query.staking.payee(stash),
-			historicApi.query.staking.slashingSpans(stash),
-		]).catch((err: Error) => {
-			throw this.createHttpErrorForAddr(stash, err);
-		});
-
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await this.fetchStakingData(
+			historicApi,
+			controller,
+			stash,
+		);
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
+		// Checking if the account is a validator
 		let isValidator = false;
 		if (historicApi.query.session) {
 			const validators = (await historicApi.query.session.validators()).toHuman() as string[];
@@ -75,71 +79,38 @@ export class AccountsStakingInfoService extends AbstractService {
 			);
 		}
 
-		let nominations = null;
-		if (historicApi.query.staking.nominators) {
-			const nominationsOption = await historicApi.query.staking.nominators(stash);
-			nominations = nominationsOption.unwrapOr(null);
-		}
+		// Fetching the list of validators that a nominator is nominating. This is only relevant for nominators.
+		// The stash account that we use as key is the nominator's stash account.
+		// https://polkadot.js.org/docs/substrate/storage/#nominatorsaccountid32-optionpalletstakingnominations
+		const nominations = historicApi.query.staking.nominators
+			? (await historicApi.query.staking.nominators(stash)).unwrapOr(null)
+			: null;
 
-		// Checking if rewards were claimed for each era
+		// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
 		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
 		let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
-		// Defining for which range of eras to check if rewards were claimed
-		const depth = Number(api.consts.staking.historyDepth.toNumber());
-		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-		if (currentEraMaybeOption.isNone) {
-			throw new InternalServerError('CurrentEra is None when Some was expected');
-		}
-		const currentEra = currentEraMaybeOption.unwrap().toNumber();
-		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
+
+		const [eraStart, depth] = await this.fetchErasInfo(api, historicApi);
+
 		let oldCallChecked = false;
 		// Checking each era one by one
 		for (let e = eraStart; e < eraStart + depth; e++) {
 			let claimedRewardsEras: u32[] = [];
 
-			// Checking first the old call of `lastReward` and setting as claimed only the era that
-			// is defined in the lastReward field. I do not make any assumptions for any other eras.
-			if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
-				const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
-				if (lastReward.isSome) {
-					const e = (stakingLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
-					if (e) {
-						claimedRewards.push({ era: e, status: 'claimed' });
-					}
-				}
-				// Second check is another old call called `legacyClaimedRewards` from stakingLedger
-			} else if (stakingLedger?.legacyClaimedRewards) {
-				claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
-				// If none of the above are present, we try the `claimedRewards` from stakingLedger
-			} else {
-				claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
-			}
+			[claimedRewardsEras, claimedRewards] = this.fetchClaimedInfoFromOldCalls(
+				stakingLedger,
+				claimedRewardsEras,
+				claimedRewards,
+			);
 
-			/**
-			 * Here we check if we already checked/used the info from the old calls. If not we will use them and
-			 * populate the claimedRewards array with the eras that are claimed. The data from the old calls
-			 * can also be empty (no results) and claimedRewards array will be populated with the data only from
-			 * the new call `query.staking?.claimedRewards` further below.
-			 */
-			if (!oldCallChecked) {
-				if (claimedRewardsEras.length > 0) {
-					claimedRewards = claimedRewardsEras.map((element) => ({
-						era: element.toNumber(),
-						status: 'claimed',
-					}));
-					const claimedRewardsErasMax = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber();
-					/**
-					 * Added this check because from old calls sometimes I would get other eras than the ones I am checking.
-					 * In that case, I need to check if the era is in the range I am checking.
-					 */
-					if (eraStart <= claimedRewardsErasMax) {
-						e = claimedRewardsErasMax + 1;
-					} else {
-						claimedRewards = [];
-					}
-				}
-				oldCallChecked = true;
-			}
+			[oldCallChecked, claimedRewards, e] = this.isOldCallsChecked(
+				oldCallChecked,
+				claimedRewardsEras,
+				claimedRewards,
+				eraStart,
+				e,
+			);
+
 			/**
 			 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
 			 * `query.staking.claimedRewards` is available then we go into this check.
@@ -201,6 +172,27 @@ export class AccountsStakingInfoService extends AbstractService {
 				claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
 			},
 		};
+	}
+
+	private async fetchStakingData(
+		historicApi: ApiDecoration<'promise'>,
+		controller: AccountId32,
+		stash: string,
+	): Promise<
+		[
+			Option<PalletStakingStakingLedger>,
+			Option<PalletStakingRewardDestination>,
+			Option<PalletStakingSlashingSlashingSpans>,
+		]
+	> {
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
+			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
+			historicApi.query.staking.payee(stash),
+			historicApi.query.staking.slashingSpans(stash),
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
+		return [stakingLedgerOption, rewardDestination, slashingSpansOption];
 	}
 
 	private async fetchErasStatusForValidator(
@@ -322,7 +314,6 @@ export class AccountsStakingInfoService extends AbstractService {
 	}
 
 	/**
-	 *
 	 * This function takes a specific stash account and gives back the era and status of the rewards for that era.
 	 */
 	private async fetchErasFromOldCalls(
@@ -334,7 +325,6 @@ export class AccountsStakingInfoService extends AbstractService {
 		oldCallChecked: boolean,
 	): Promise<[number, IEraStatus<NominatorStatus>[], boolean]> {
 		let claimedRewardsEras: u32[] = [];
-		// SAME CODE AS IN MAIN FUNCTION - fetchAccountStakingInfo -
 		const controllerOption = await historicApi.query.staking.bonded(validatorStash);
 
 		if (controllerOption.isNone) {
@@ -342,64 +332,23 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		const controller = controllerOption.unwrap();
-
-		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
-			historicApi.query.staking.ledger(controller),
-			historicApi.query.staking.payee(validatorStash),
-			historicApi.query.staking.slashingSpans(validatorStash),
-		]).catch((err: Error) => {
-			throw this.createHttpErrorForAddr(validatorStash, err);
-		});
-
+		const [stakingLedgerOption, ,] = await this.fetchStakingData(historicApi, controller, validatorStash);
 		const stakingLedgerValNom = stakingLedgerOption.unwrapOr(null);
-		rewardDestination;
-		slashingSpansOption;
-		stakingLedgerValNom;
 
-		// --- END --- same code as in main method
-		// Checking first the old call of `lastReward` and setting as claimed only the era that
-		// is defined in the lastReward field. I do not make any assumptions for any other eras.
-		if ((stakingLedgerValNom as unknown as StakingLedgerTo240)?.lastReward) {
-			const lastReward = (stakingLedgerValNom as unknown as StakingLedgerTo240).lastReward;
-			if (lastReward.isSome) {
-				const e = (stakingLedgerValNom as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
-				if (e) {
-					claimedRewards.push({ era: e, status: 'claimed' });
-				}
-			}
-			// Second check is another old call called `legacyClaimedRewards` from stakingLedger
-		} else if (stakingLedgerValNom?.legacyClaimedRewards) {
-			claimedRewardsEras = stakingLedgerValNom?.legacyClaimedRewards;
-			// If none of the above are present, we try the `claimedRewards` from stakingLedger
-		} else {
-			claimedRewardsEras = (stakingLedgerValNom as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
-		}
-		claimedRewardsEras;
-		/**
-		 * Here we check if we already checked/used the info from the old calls. If not we will use them and
-		 * populate the claimedRewards array with the eras that are claimed. The data from the old calls
-		 * can also be empty (no results) and claimedRewards array will be populated with the data only from
-		 * the new call `query.staking?.claimedRewards` further below.
-		 */
-		if (!oldCallChecked) {
-			if (claimedRewardsEras.length > 0) {
-				claimedRewards = claimedRewardsEras.map((element) => ({
-					era: element.toNumber(),
-					status: 'claimed',
-				}));
-				const claimedRewardsErasMax = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber();
-				/**
-				 * Added this check because from old calls sometimes I would get other eras than the ones I am checking.
-				 * In that case, I need to check if the era is in the range I am checking.
-				 */
-				if (eraStart <= claimedRewardsErasMax) {
-					e = claimedRewardsErasMax + 1;
-				} else {
-					claimedRewards = [];
-				}
-			}
-			oldCallChecked = true;
-		}
+		[claimedRewardsEras, claimedRewards] = this.fetchClaimedInfoFromOldCalls(
+			stakingLedgerValNom,
+			claimedRewardsEras,
+			claimedRewards,
+		) as [u32[], IEraStatus<NominatorStatus>[]];
+
+		[oldCallChecked, claimedRewards, e] = this.isOldCallsChecked(
+			oldCallChecked,
+			claimedRewardsEras,
+			claimedRewards,
+			eraStart,
+			e,
+		) as [boolean, IEraStatus<NominatorStatus>[], number];
+
 		return [e, claimedRewards, oldCallChecked];
 	}
 
@@ -436,5 +385,84 @@ export class AccountsStakingInfoService extends AbstractService {
 			}
 		}
 		return 'undefined';
+	}
+
+	/**
+	 * This function retrieves the eras information (eraStart and depth),
+	 * which defines the range of eras to check if rewards were claimed or not.
+	 */
+	private async fetchErasInfo(api: ApiDecoration<'promise'>, historicApi: ApiDecoration<'promise'>) {
+		const depth = Number(api.consts.staking.historyDepth.toNumber());
+		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
+		if (currentEraMaybeOption.isNone) {
+			throw new InternalServerError('CurrentEra is None when Some was expected');
+		}
+		const currentEra = currentEraMaybeOption.unwrap().toNumber();
+		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
+		return [eraStart, depth];
+	}
+
+	/**
+	 * This function verifies if the information from old calls has already been checked/used. If not,
+	 * it proceeds to use it and populate the `claimedRewards` array with the eras that have been claimed.
+	 * Note that data from old calls may also be empty (no results), in which case the `claimedRewards` array
+	 * will only be populated with data from the new `query.staking?.claimedRewards` call
+	 * (later in the main function's code).
+	 *
+	 * Returns a boolean flag `oldCallChecked` that indicates if the old calls have already been checked/used or not.
+	 *
+	 */
+	private isOldCallsChecked(
+		oldCallChecked: boolean,
+		claimedRewardsEras: u32[],
+		claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[],
+		eraStart: number,
+		e: number,
+	): [boolean, IEraStatus<ValidatorStatus | NominatorStatus>[], number] {
+		if (!oldCallChecked) {
+			if (claimedRewardsEras.length > 0) {
+				claimedRewards = claimedRewardsEras.map((element) => ({
+					era: element.toNumber(),
+					status: 'claimed',
+				}));
+				const claimedRewardsErasMax = claimedRewardsEras[claimedRewardsEras.length - 1].toNumber();
+				/**
+				 * This check was added because old calls would sometimes return eras outside the intended range.
+				 * In such cases, I need to verify if the era falls within the specific range I am checking.
+				 */
+				if (eraStart <= claimedRewardsErasMax) {
+					e = claimedRewardsErasMax + 1;
+				} else {
+					claimedRewards = [];
+				}
+			}
+			oldCallChecked = true;
+		}
+		return [oldCallChecked, claimedRewards, e];
+	}
+
+	private fetchClaimedInfoFromOldCalls(
+		stakingLedger: PalletStakingStakingLedger | null,
+		claimedRewardsEras: u32[],
+		claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[],
+	): [u32[], IEraStatus<ValidatorStatus | NominatorStatus>[]] {
+		// Checking first the old call of `lastReward` and setting as claimed only the era that
+		// is defined in the lastReward field. I do not make any assumptions for any other eras.
+		if ((stakingLedger as unknown as StakingLedgerTo240)?.lastReward) {
+			const lastReward = (stakingLedger as unknown as StakingLedgerTo240).lastReward;
+			if (lastReward.isSome) {
+				const e = (stakingLedger as unknown as StakingLedgerTo240)?.lastReward?.unwrap().toNumber();
+				if (e) {
+					claimedRewards.push({ era: e, status: 'claimed' });
+				}
+			}
+			// Second check is another old call called `legacyClaimedRewards` from stakingLedger
+		} else if (stakingLedger?.legacyClaimedRewards) {
+			claimedRewardsEras = stakingLedger?.legacyClaimedRewards;
+			// If none of the above are present, we try the `claimedRewards` from stakingLedger
+		} else {
+			claimedRewardsEras = (stakingLedger as unknown as StakingLedger)?.claimedRewards as Vec<u32>;
+		}
+		return [claimedRewardsEras, claimedRewards];
 	}
 }
