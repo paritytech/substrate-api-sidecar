@@ -13,11 +13,15 @@ on:
       - opened
       - edited
       - synchronize
-  
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-title:
     permissions:
-      pull-requests: read  # for amannn/action-semantic-pull-request to analyze PRs
+      pull-requests: read # for amannn/action-semantic-pull-request to analyze PRs
     name: Validate PR Title
     runs-on: ubuntu-latest
     steps:
