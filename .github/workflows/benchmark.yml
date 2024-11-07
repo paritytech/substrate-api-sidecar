@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - as-move-ci
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -29,10 +30,10 @@ jobs:
           mv benchmarks.txt artifacts/
 
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks
-          path: ./artifacts
+          path: ./artifacts/
 
   benchmark-publish:
     name: benchmark publish
@@ -50,10 +51,10 @@ jobs:
           private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
 
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: benchmarks
-          path: ./artifacts
+          path: artifacts
 
       - name: Modify benches result for benhcmark action
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
