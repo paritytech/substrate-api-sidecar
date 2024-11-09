@@ -149,7 +149,7 @@ describe('BlocksService', () => {
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
-			// Create a block with undefined as the first extrinisic and the last extrinsic removed
+			// Create a block with undefined as the first extrinsic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType('Block', block789629);
 
 			mockBlock789629BadExt.extrinsics.pop();
@@ -377,7 +377,7 @@ describe('BlocksService', () => {
 			paraId: undefined,
 		};
 
-		it('Returns the correct extrinisics object for block 789629', async () => {
+		it('Returns the correct extrinsics object for block 789629', async () => {
 			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
 
 			/**
