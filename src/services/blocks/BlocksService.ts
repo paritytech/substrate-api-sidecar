@@ -438,7 +438,7 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * Retrieve the blockHash for the previous block to the one getting queried.
-	 * If the block is the geneisis hash it will return the same blockHash.
+	 * If the block is the genesis hash it will return the same blockHash.
 	 *
 	 * @param blockNumber The blockId being queried
 	 */
@@ -590,7 +590,7 @@ export class BlocksService extends AbstractService {
 					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
 					const extrinsic = extrinsics[extrinsicIdx];
 
-					if (!extrinsic) {
+					if (!extrinsic && event.section != 'multiBlockMigrations') {
 						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`);
 					}
 
@@ -610,7 +610,9 @@ export class BlocksService extends AbstractService {
 						}
 					}
 
-					extrinsic.events.push(sanitizedEvent);
+					if (extrinsic) {
+						extrinsic.events.push(sanitizedEvent);
+					}
 				} else if (phase.isFinalization) {
 					onFinalize.events.push(sanitizedEvent);
 				} else if (phase.isInitialization) {
@@ -789,7 +791,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Fetch a block with raw extrinics values.
+	 * Fetch a block with raw extrinsics values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
