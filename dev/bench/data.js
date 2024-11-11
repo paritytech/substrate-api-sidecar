@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731339608010,
+  "lastUpdate": 1731347481053,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -743,6 +743,150 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/paritytech/substrate-api-sidecar/commit/158a1f824ae099e3d22a73551d29030df11f1d54"
         },
         "date": 1731339607375,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b59928c8da5d4c5d35e01661eb26757908a61d3e",
+          "message": "chore(deps): bump the pjs group across 1 directory with 7 updates (#1546)\n\nBumps the pjs group with 7 updates in the / directory:\r\n\r\n| Package | From | To |\r\n| --- | --- | --- |\r\n| [@polkadot/api](https://github.com/polkadot-js/api/tree/HEAD/packages/api) | `14.1.1` | `14.2.3` |\r\n| [@polkadot/api-augment](https://github.com/polkadot-js/api/tree/HEAD/packages/api-augment) | `14.1.1` | `14.2.3` |\r\n| [@polkadot/api-contract](https://github.com/polkadot-js/api/tree/HEAD/packages/api-contract) | `14.1.1` | `14.2.3` |\r\n| [@polkadot/types](https://github.com/polkadot-js/api/tree/HEAD/packages/types) | `14.1.1` | `14.2.3` |\r\n| [@polkadot/types-codec](https://github.com/polkadot-js/api/tree/HEAD/packages/types-codec) | `14.1.1` | `14.2.3` |\r\n| [@polkadot/util](https://github.com/polkadot-js/common/tree/HEAD/packages/util) | `13.2.1` | `13.2.3` |\r\n| [@polkadot/util-crypto](https://github.com/polkadot-js/common/tree/HEAD/packages/util-crypto) | `13.2.1` | `13.2.3` |\r\n\r\n\r\n\r\nUpdates `@polkadot/api` from 14.1.1 to 14.2.3\r\n- [Release notes](https://github.com/polkadot-js/api/releases)\r\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/api/commits/v14.2.3/packages/api)\r\n\r\nUpdates `@polkadot/api-augment` from 14.1.1 to 14.2.3\r\n- [Release notes](https://github.com/polkadot-js/api/releases)\r\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/api/commits/v14.2.3/packages/api-augment)\r\n\r\nUpdates `@polkadot/api-contract` from 14.1.1 to 14.2.3\r\n- [Release notes](https://github.com/polkadot-js/api/releases)\r\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/api/commits/v14.2.3/packages/api-contract)\r\n\r\nUpdates `@polkadot/types` from 14.1.1 to 14.2.3\r\n- [Release notes](https://github.com/polkadot-js/api/releases)\r\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/api/commits/v14.2.3/packages/types)\r\n\r\nUpdates `@polkadot/types-codec` from 14.1.1 to 14.2.3\r\n- [Release notes](https://github.com/polkadot-js/api/releases)\r\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/api/commits/v14.2.3/packages/types-codec)\r\n\r\nUpdates `@polkadot/util` from 13.2.1 to 13.2.3\r\n- [Release notes](https://github.com/polkadot-js/common/releases)\r\n- [Changelog](https://github.com/polkadot-js/common/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/common/commits/v13.2.3/packages/util)\r\n\r\nUpdates `@polkadot/util-crypto` from 13.2.1 to 13.2.3\r\n- [Release notes](https://github.com/polkadot-js/common/releases)\r\n- [Changelog](https://github.com/polkadot-js/common/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/polkadot-js/common/commits/v13.2.3/packages/util-crypto)\r\n\r\n---\r\nupdated-dependencies:\r\n- dependency-name: \"@polkadot/api\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/api-augment\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/api-contract\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/types\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/types-codec\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/util\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-patch\r\n  dependency-group: pjs\r\n- dependency-name: \"@polkadot/util-crypto\"\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-patch\r\n  dependency-group: pjs\r\n...\r\n\r\nSigned-off-by: dependabot[bot] <support@github.com>\r\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2024-11-11T18:17:32+01:00",
+          "tree_id": "9df391e37865813fa0b16a47a1dcb3c5f1dbe5a9",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/b59928c8da5d4c5d35e01661eb26757908a61d3e"
+        },
+        "date": 1731347480612,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
