@@ -24,3 +24,4 @@ updates:
       include: "scope"
     labels:
       - "D0 - Dependencies"
+    versioning-strategy: increase
