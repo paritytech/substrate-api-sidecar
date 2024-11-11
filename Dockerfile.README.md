@@ -35,3 +35,9 @@ curl -s http://0.0.0.0:8080/blocks/head | jq
 ```
 
 **N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
+
+### Build Summaries
+
+Starting with [v6.0.0](https://github.com/docker/build-push-action/releases/tag/v6.0.0) of `docker/build-push-action` package, Docker-build summaries are generated and exported by default.
+Currently in Sidecar we do not have a major need to keep records of Docker builds, so we have disabled this feature by setting the `DOCKER_BUILD_RECORD_UPLOAD` and `DOCKER_BUILD_SUMMARY` environment variables to `false`.
+If this is needed in the future maybe for debugging reasons, we can adjust these variables accordingly.
