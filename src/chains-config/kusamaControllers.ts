@@ -53,6 +53,7 @@ export const kusamaControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
+		'Coretime',
 	],
 	options: {
 		finalizes: true,

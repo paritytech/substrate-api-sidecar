@@ -47,6 +47,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
+		'Coretime',
 	],
 	options: {
 		finalizes: true,

@@ -39,6 +39,7 @@ export const acalaControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
+		'Coretime',
 	],
 	options: {
 		finalizes: true,

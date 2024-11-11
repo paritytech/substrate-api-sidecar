@@ -52,6 +52,7 @@ export const westendControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
+		'Coretime',
 	],
 	options: {
 		finalizes: true,

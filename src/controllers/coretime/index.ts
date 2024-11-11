@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,12 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './accounts';
-export * from './blocks';
-export * from './contracts';
-export * from './coretime';
-export * from './node';
-export * from './pallets';
-export * from './paras';
-export * from './runtime';
-export * from './transaction';
+export { default as Coretime } from './CoretimeController';

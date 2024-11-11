@@ -71,7 +71,9 @@ export default class App {
 	 * @param controllers array of Controllers
 	 */
 	private initControllers(controllers: AbstractController<AbstractService>[]): void {
+		console.info('Mounting controllers');
 		for (const c of controllers) {
+			console.info(`Mounting controller at ${c.path}`);
 			this.app.use('/', c.router);
 		}
 	}

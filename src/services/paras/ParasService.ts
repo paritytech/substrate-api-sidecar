@@ -65,7 +65,6 @@ export class ParasService extends AbstractService {
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
-
 		const [fund, { number }] = await Promise.all([
 			historicApi.query.crowdloan.funds<Option<FundInfo>>(paraId),
 			api.rpc.chain.getHeader(hash),
