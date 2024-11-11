@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransformableInfo } from 'logform';
 import { format, transports } from 'winston';
 
 import { SidecarConfig } from '../../SidecarConfig';
-import { ITransformableInfo } from '../../types/logging';
 import { filterApiRpc, nodeUtilFormat, stripAnsi, stripTimestamp, timeStamp } from '../transformers';
 
 /**
@@ -28,15 +28,15 @@ export function consoleTransport(): transports.ConsoleTransportInstance {
 		config: { LOG },
 	} = SidecarConfig;
 	/**
-	 * A simple printing format for how `ITransformableInfo` shows up.
+	 * A simple printing format for how `TransformableInfo` shows up.
 	 */
-	const simplePrint = format.printf((info: ITransformableInfo) => {
+	const simplePrint = format.printf((info: TransformableInfo) => {
 		if (info?.stack) {
 			// If there is a stack dump (e.g. error middleware), show that in console
-			return `${info?.timestamp} ${info?.level}: ${info?.message} \n ${info?.stack}`;
+			return `${info?.timestamp as string} ${info?.level}: ${info?.message as string} \n ${info?.stack as string}`;
 		}
 
-		return `${info?.timestamp} ${info?.level}: ${info?.message}`;
+		return `${info?.timestamp as string} ${info?.level}: ${info?.message as string}`;
 	});
 
 	const transformers = [stripTimestamp(), nodeUtilFormat(), timeStamp];

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransformableInfo } from 'logform';
 import { format } from 'winston';
-
-import { ITransformableInfo } from '../../types/logging';
 
 /**
  * Regex that matches timestamps with the format of `YYYY-MM-DD HH:MM`
@@ -27,9 +26,9 @@ const timestampRegex = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0
  * Slice out the timestamp from a message so it is not redundant with the winston
  * timestamp. This is for the polkadot-js console statements.
  */
-export const stripTimestamp = format((info: ITransformableInfo, _opts: unknown) => {
-	if (timestampRegex.exec(info?.message)) {
-		info.message = info.message.slice(24).trim();
+export const stripTimestamp = format((info: TransformableInfo) => {
+	if (timestampRegex.exec(info?.message as string)) {
+		info.message = (info.message as string).slice(24).trim();
 	}
 
 	return info;
