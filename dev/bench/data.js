@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731347481053,
+  "lastUpdate": 1731366711899,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -887,6 +887,150 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/paritytech/substrate-api-sidecar/commit/b59928c8da5d4c5d35e01661eb26757908a61d3e"
         },
         "date": 1731347480612,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "fb81a16197ee45719fa7f12217f6aa2de13ee8ec",
+          "message": "chore(deps): bump winston from 3.16.0 to 3.17.0 (#1545)\n\n* chore(deps): bump winston from 3.16.0 to 3.17.0\r\n\r\nBumps [winston](https://github.com/winstonjs/winston) from 3.16.0 to 3.17.0.\r\n- [Release notes](https://github.com/winstonjs/winston/releases)\r\n- [Changelog](https://github.com/winstonjs/winston/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/winstonjs/winston/compare/v3.16.0...v3.17.0)\r\n\r\n---\r\nupdated-dependencies:\r\n- dependency-name: winston\r\n  dependency-type: direct:production\r\n  update-type: version-update:semver-minor\r\n...\r\n\r\nSigned-off-by: dependabot[bot] <support@github.com>\r\n\r\n* use of TransformableInfo type & casting to string\r\n\r\n---------\r\n\r\nSigned-off-by: dependabot[bot] <support@github.com>\r\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\r\nCo-authored-by: Imod7 <dominique@imodworks.io>",
+          "timestamp": "2024-11-11T23:38:06+01:00",
+          "tree_id": "93e766524cce10619ff1259ef2c99fac56289d3e",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/fb81a16197ee45719fa7f12217f6aa2de13ee8ec"
+        },
+        "date": 1731366710922,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
