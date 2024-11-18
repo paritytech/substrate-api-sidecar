@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731941818345,
+  "lastUpdate": 1731946049025,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -1175,6 +1175,150 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/paritytech/substrate-api-sidecar/commit/3ff1e48008c39f4001caf165d09b791bb8710d20"
         },
         "date": 1731941817238,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c7b3f86677b26e2c895ca46e7fd8b80ced2800cd",
+          "message": "chore(deps): bump cross-spawn from 7.0.3 to 7.0.6 in /docs (#1548)\n\nBumps [cross-spawn](https://github.com/moxystudio/node-cross-spawn) from 7.0.3 to 7.0.6.\r\n- [Changelog](https://github.com/moxystudio/node-cross-spawn/blob/master/CHANGELOG.md)\r\n- [Commits](https://github.com/moxystudio/node-cross-spawn/compare/v7.0.3...v7.0.6)\r\n\r\n---\r\nupdated-dependencies:\r\n- dependency-name: cross-spawn\r\n  dependency-type: indirect\r\n...\r\n\r\nSigned-off-by: dependabot[bot] <support@github.com>\r\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2024-11-18T16:33:12+01:00",
+          "tree_id": "5656e64189e2a44aa5a494f43d738dca1b61fcde",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/c7b3f86677b26e2c895ca46e7fd8b80ced2800cd"
+        },
+        "date": 1731946048417,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
