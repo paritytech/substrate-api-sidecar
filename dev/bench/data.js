@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1732008327152,
+  "lastUpdate": 1732032031039,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -1463,6 +1463,150 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/paritytech/substrate-api-sidecar/commit/156ad7a9b458a3b86016f21afbc011356c50666f"
         },
         "date": 1732008326645,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dominique@imodworks.io",
+            "name": "Dominique",
+            "username": "Imod7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bcf03ace6c732819aba7600c7038545894fdd62c",
+          "message": "chore(release): 19.3.1 (#1551)",
+          "timestamp": "2024-11-19T16:26:14+01:00",
+          "tree_id": "52bd0114d43f89f8e5ff70d7344e0713c71a2cd2",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/bcf03ace6c732819aba7600c7038545894fdd62c"
+        },
+        "date": 1732032030393,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
