@@ -5,12 +5,12 @@ on:
     branches:
       - master
     paths:
-      - "docs/**"
+      - "docs/src/openapi-v1.yaml"
   pull_request:
     branches:
       - master
     paths:
-      - "docs/**"
+      - "docs/src/openapi-v1.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
