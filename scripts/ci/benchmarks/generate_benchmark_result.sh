@@ -25,7 +25,7 @@ do
     result_value=${result::-2}
     echo "  {"
     echo "    \"name\": \"${benchmark_name}\","
-    echo "    \"result\": ${result_value},"
+    echo "    \"value\": ${result_value},"
     echo "    \"unit\": \"${unit}\""
     if [ $COUNTER -eq $NBENCHMARKS ]
     then
