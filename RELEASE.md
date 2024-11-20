@@ -42,7 +42,7 @@ _Estimated Time Needed: Depending on your machine and the syncing mode you choos
 
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
-1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`.
+1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. No need to run `yarn build:docs` (refer to the [README](./docs/README) for more info)
 
      Note: you can double check that the version is updated by opening the page `index.html` (from folder `docs/dist`) on your browser. The version badge is located on the top of the page next to the title.
 
