@@ -112,3 +112,7 @@ ex3:
 $ yarn
 $ yarn bench --log-level=info --time=30s  --endpoint=/accounts/{accountId}/balance-info
 ```
+
+### Benchmarks Published
+
+Benchmarks are automatically published in Github pages under the url https://paritytech.github.io/substrate-api-sidecar/dev/bench/. The data in the graphs are updated with every new commit/push in the `master` branch (refer to the [benchmark.yml](https://github.com/paritytech/substrate-api-sidecar/blob/master/.github/workflows/benchmark.yml) for more details).
