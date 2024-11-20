@@ -74,10 +74,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: doc-${{ github.sha }}
-          path: dist/
+          path: tmp/
       - name: Check files
         run: |
           ls -la
+          rm -rf dist/
+          mv tmp/dist/ dist/
+          rm -rf tmp/
           git status
       # - name: Push changes to gh-pages
       #   env:
@@ -88,8 +91,7 @@ jobs:
       #     NC: "\e[0m"
       #   run: |
       #     echo "${Green}Git add${NC}"
-      #     git add book/
-      #     git add ${REF_NAME}/
+      #     git add dist/
 
       #     echo "${Green}git status | wc -l${NC}"
       #     git status | wc -l
