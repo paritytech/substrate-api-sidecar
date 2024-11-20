@@ -1,4 +1,4 @@
-name: pr
+name: Docs
 
 on:
   push:
