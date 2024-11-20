@@ -70,12 +70,7 @@ jobs:
       #     app-id: ${{ secrets.GH_APP_SAS_APP_ID }}
       #     private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
 
-      - name: Download rustdocs
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ github.sha }}-doc
-          path: ${{ github.head_ref || github.ref_name }}
-      - name: Download guide
+      - name: Download docs
         uses: actions/download-artifact@v4
         with:
           name: doc-${{ github.sha }}
