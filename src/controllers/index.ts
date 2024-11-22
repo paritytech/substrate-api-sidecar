@@ -27,7 +27,7 @@ import {
 } from './accounts';
 import { Blocks, BlocksExtrinsics, BlocksRawExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
-import { Coretime } from './coretime';
+import { CoretimeChain, CoretimeGeneric, CoretimeRelay } from './coretime';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
 import {
 	PalletsAssetConversion,
@@ -90,5 +90,7 @@ export const controllers = {
 	TransactionMaterial,
 	TransactionSubmit,
 	Paras,
-	Coretime,
+	CoretimeGeneric,
+	CoretimeChain,
+	CoretimeRelay,
 };

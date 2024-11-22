@@ -53,7 +53,8 @@ export const polkadotControllers: ControllerConfig = {
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
 		'TransactionSubmit',
-		'Coretime',
+		'CoretimeGeneric',
+		'CoretimeRelay',
 	],
 	options: {
 		finalizes: true,

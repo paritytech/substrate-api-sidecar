@@ -28,6 +28,7 @@ import { astarControllers } from './astarControllers';
 import { bifrostControllers } from './bifrostControllers';
 import { bifrostPolkadotControllers } from './bifrostPolkadotControllers';
 import { calamariControllers } from './calamariControllers';
+import { coretimeControllers } from './coretimeControllers';
 import { crustControllers } from './crustControllers';
 import { defaultControllers } from './defaultControllers';
 import { dockMainnetControllers } from './dockMainnetControllers';
@@ -77,6 +78,9 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	bifrost_polkadot: bifrostPolkadotControllers,
 	heiko: heikoControllers,
 	parallel: parallelControllers,
+	'coretime-westend': coretimeControllers,
+	'coretime-polkadot': coretimeControllers,
+	'coretime-kusama': coretimeControllers,
 };
 
 /**

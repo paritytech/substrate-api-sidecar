@@ -14,4 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as Coretime } from './CoretimeController';
+export { default as CoretimeChain } from './CoretimeChainController';
+export { default as CoretimeGeneric } from './CoretimeGenericController';
+export { default as CoretimeRelay } from './CoretimeRelayController';

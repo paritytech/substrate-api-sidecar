@@ -20,44 +20,41 @@ import { RequestHandler } from 'express';
 import { CoretimeService } from '../../services';
 import AbstractController from '../AbstractController';
 
-export default class CoretimeController extends AbstractController<CoretimeService> {
+export default class CoretimeRelayController extends AbstractController<CoretimeService> {
 	constructor(api: ApiPromise) {
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
 	}
-
+	// TODO: check if its either coretime or relay chain, if neither error out
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
+			// sale info
+			//  configuration
+			// status
 			['/parachains', this.getParachains],
-			// ['/paras/crowdloans', this.getCrowdloans],
-			// ['/paras/:paraId/crowdloan-info', this.getCrowdloanInfo],
-			// ['/paras/:paraId/lease-info', this.getLeaseInfo],
-			// ['/paras/leases/current', this.getLeasesCurrent],
-			// ['/paras/auctions/current', this.getAuctionsCurrent],
-			// ['/paras/head/included-candidates', this.getParasHeadIncludedCandidates],
-			// ['/paras/head/backed-candidates', this.getParasHeadBackedCandidates],
+			// ondemand status
+			// ['/ondemand', this.getParachains],
 		]);
 	}
-	// USE broker in api.query.broker to check if tehe connected parachain is using the latest coretime
-	// connect
+	/*
+        relay => => use coretimeAssignmentProvider || onDemandAssignmentProvider
+        coretime => bulk time info => use broker
 
-	// get info about chains on coretime
+		from relay chains: 
+			-
+    */
 
-	private getParachains: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		// this.checkParasModule();
-		console.log(at);
-		const hash = await this.getHashFromAt(at);
-		// parachain, id, name, etc, core number, type, last block
-		CoretimeController.sanitizedSend(res, await this.service.getCoretimeParachains(hash));
+	private checkCoretimeModule = (): void => {
+		if (this.api.query.onDemandAssignmentProvider && this.api.query.coretimeAssignmentProvider) {
+			return;
+		}
+		throw new Error('One or more required coretime modules are not available on this network.');
 	};
 
-	// get renewal statuses of parachains
-
-	// by parachain id
-
-	// private checkParasModule = (): void => {
-	// 	if (!this.api.query.broker) {
-	// 		throw new Error('Parachains are not yet supported on this network.');
-	// 	}
-	// };
+	private getParachains: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+		this.checkCoretimeModule();
+		const hash = await this.getHashFromAt(at);
+		// parachain, id, name, etc, core number, type, last block
+		CoretimeRelayController.sanitizedSend(res, await this.service.getCoretimeParachains(hash));
+	};
 }
