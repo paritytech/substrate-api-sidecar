@@ -390,7 +390,7 @@ export class CoretimeService extends AbstractService {
 				coreId ? this.getAndDecodeWorkplan(historicApi, parseInt(coreId, 10)) : [],
 				this.getAndDecodeLeases(historicApi, coreId ? parseInt(coreId, 10) : undefined),
 				this.getAndDecodeReservations(historicApi, coreId ? parseInt(coreId, 10) : undefined),
-				coreId ? this.getAndDecodeRegions(historicApi, parseInt(coreId, 10)) : [],
+				this.getAndDecodeRegions(historicApi, coreId ? parseInt(coreId, 10) : undefined),
 			]);
 
 			const cores = workload.reduce(
@@ -409,6 +409,20 @@ export class CoretimeService extends AbstractService {
 					>,
 					wl,
 				) => {
+					const tasks = wl.info.map((info) => info.task);
+
+					let type = 'unknown';
+					let details: unknown[] = [];
+					if (leases.find((f) => tasks.includes(f.task))) {
+						type = 'lease';
+						details = leases.filter((f) => tasks.includes(f.task));
+					}
+					if (reservations.find((f) => tasks.includes(f.task))) {
+						type = 'reservation';
+						details = reservations.filter((f) => tasks.includes(f.task));
+					}
+					const coreRegions = regions.filter((region) => region.core === wl.core);
+					console.log(wl.core, type, details, coreRegions);
 					// workload
 					// workplan,
 					// type
@@ -428,24 +442,25 @@ export class CoretimeService extends AbstractService {
 							leases
 							reservations
 					*/
-					if (acc[wl.core]) {
-						acc[wl.core] = [
-							...acc[wl.core],
-							{
-								workload: wl,
-								workplan: workplan.filter((wp) => wp.core === wl.core),
-								regions: regions.filter((region) => region.core === wl.core),
-							},
-						];
-					} else {
-						acc[wl.core] = [
-							{
-								workload: wl,
-								workplan: workplan.filter((wp) => wp.core === wl.core) || [],
-								regions: regions.filter((region) => region.core === wl.core) || [],
-							},
-						];
-					}
+					// if (acc[wl.core]) {
+					// 	acc[wl.core] = [
+					// 		...acc[wl.core],
+					// 		{
+					// 			workload: wl,
+					// 			workplan: workplan.filter((wp) => wp.core === wl.core),
+					// 			regions: regions.filter((region) => region.core === wl.core),
+					// 		},
+					// 	];
+					// } else {
+					// 	acc[wl.core] = [
+					// 		{
+					// 			workload: wl,
+					// 			workplan: workplan.filter((wp) => wp.core === wl.core) || [],
+					// 			regions: regions.filter((region) => region.core === wl.core) || [],
+					// 		},
+					// 	];
+					// }
+					// return acc;
 					return acc;
 				},
 				{},
