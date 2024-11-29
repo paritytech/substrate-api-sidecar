@@ -1,6 +1,8 @@
 import { StorageKey } from '@polkadot/types';
+import { ParaId } from '@polkadot/types/interfaces';
 import {
 	PalletBrokerConfigRecord,
+	PalletBrokerCoretimeInterfaceCoreAssignment,
 	PalletBrokerLeaseRecordItem,
 	PalletBrokerPotentialRenewalId,
 	PalletBrokerPotentialRenewalRecord,
@@ -9,9 +11,28 @@ import {
 	PalletBrokerSaleInfoRecord,
 	PalletBrokerScheduleItem,
 	PalletBrokerStatusRecord,
+	PolkadotRuntimeParachainsAssignerCoretimeAssignmentState,
+	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
+	PolkadotRuntimeParachainsAssignerCoretimeQueueDescriptor,
+	PolkadotRuntimeParachainsAssignerCoretimeWorkState,
+	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
-import { Option, U32, Vec } from '@polkadot/types-codec';
+import { Option, u32, Vec } from '@polkadot/types-codec';
 import { BN } from '@polkadot/util';
+
+import {
+	TConfigInfo,
+	TCoreDescriptor,
+	TLeaseInfo,
+	TParaLifecycle,
+	TPotentialRenewalInfo,
+	TRegionInfo,
+	TReservationInfo,
+	TSaleInfo,
+	TStatusInfo,
+	TWorkloadInfo,
+	TWorkplanInfo,
+} from '../../types/responses';
 
 export function sortByCore<T extends { core: number }>(dataArray?: T | T[]): T[] {
 	if (!dataArray) {
@@ -46,39 +67,17 @@ export function processHexMask(mask: PalletBrokerScheduleItem['mask'] | undefine
 	return buffArr;
 }
 
-export type TWorkloadInfo = {
-	core: number;
-	info: {
-		isPool: boolean;
-		isTask: boolean;
-		mask: string;
-		task: string;
-	}[];
-};
-
-export function extractWorkloadInfo(info: Vec<PalletBrokerScheduleItem>, core: StorageKey<[U32]>): TWorkloadInfo {
-	const workloadInfo = core.args[0];
+export function extractWorkloadInfo(info: Vec<PalletBrokerScheduleItem>, core: number): TWorkloadInfo {
 	return {
-		core: workloadInfo.toNumber(),
+		core,
 		info: info.map((c) => ({
 			isPool: c.assignment.isPool,
 			isTask: c.assignment.isTask,
 			mask: c.mask.toHex(),
 			task: c.assignment.isTask ? c.assignment.asTask.toString() : c.assignment.isPool ? 'Pool' : 'Idle',
-		})),
+		}))[0],
 	};
 }
-
-export type TWorkplanInfo = {
-	core: number;
-	timeslice: number;
-	info: {
-		isPool: boolean;
-		isTask: boolean;
-		mask: string;
-		task: string;
-	}[];
-};
 
 export function extractWorkplanInfo(
 	info: Option<Vec<PalletBrokerScheduleItem>>,
@@ -99,11 +98,6 @@ export function extractWorkplanInfo(
 	};
 }
 
-export type TReservationInfo = {
-	mask: string;
-	task: string;
-};
-
 export function extractReservationInfo(info: PalletBrokerScheduleItem[]): TReservationInfo {
 	return {
 		mask: info[0]?.mask.toHex(),
@@ -114,15 +108,6 @@ export function extractReservationInfo(info: PalletBrokerScheduleItem[]): TReser
 				: '',
 	};
 }
-
-export type TPotentialRenewalInfo = {
-	completion?: string;
-	core: number;
-	mask: string | null;
-	price?: BN;
-	task: string;
-	when: number;
-};
 
 export function extractPotentialRenewalInfo(
 	info: Option<PalletBrokerPotentialRenewalRecord>,
@@ -160,11 +145,6 @@ export function extractPotentialRenewalInfo(
 	};
 }
 
-export type TLeaseInfo = {
-	task: string;
-	until: number;
-};
-
 export function extractLeaseInfo(info: PalletBrokerLeaseRecordItem, core?: number): TLeaseInfo {
 	return {
 		...(core ? { core } : {}),
@@ -172,19 +152,6 @@ export function extractLeaseInfo(info: PalletBrokerLeaseRecordItem, core?: numbe
 		until: info.until.toNumber(),
 	};
 }
-
-export type TSaleInfo = {
-	saleStart: number;
-	leadinLength: number;
-	endPrice: BN;
-	regionBegin: number;
-	regionEnd: number;
-	idealCoresSold: number;
-	coresOffered: number;
-	firstCore: number;
-	selloutPrice?: BN;
-	coresSold: number;
-};
 
 export function extractSaleInfo(info: PalletBrokerSaleInfoRecord): TSaleInfo {
 	return {
@@ -201,14 +168,6 @@ export function extractSaleInfo(info: PalletBrokerSaleInfoRecord): TSaleInfo {
 	};
 }
 
-export type TStatusInfo = {
-	coreCount?: number;
-	privatePoolSize?: number;
-	systemPoolSize?: number;
-	lastCommittedTimeslice?: number;
-	lastTimeslice?: number;
-};
-
 export function extractStatusInfo(info: Option<PalletBrokerStatusRecord>): TStatusInfo {
 	const unwrapped: PalletBrokerStatusRecord | null = info.isSome ? info.unwrap() : null;
 
@@ -220,15 +179,6 @@ export function extractStatusInfo(info: Option<PalletBrokerStatusRecord>): TStat
 		lastTimeslice: unwrapped?.lastTimeslice.toNumber(),
 	};
 }
-
-export type TRegionInfo = {
-	core: number;
-	begin: number;
-	end?: number;
-	owner?: string;
-	paid?: number;
-	mask: string;
-};
 
 export function extractRegionInfo(
 	info: [StorageKey<[PalletBrokerRegionId]>, Option<PalletBrokerRegionRecord>],
@@ -245,17 +195,6 @@ export function extractRegionInfo(
 	};
 }
 
-export type TConfigInfo = {
-	advanceNotice: number;
-	interludeLength: number;
-	leadinLength: number;
-	regionLength: number;
-	idealBulkProportion: number;
-	limitCoresOffered?: number;
-	renewalBump: number;
-	contributionTimeout: number;
-};
-
 export function extractConfigInfo(info: Option<PalletBrokerConfigRecord>): TConfigInfo {
 	return {
 		advanceNotice: info.unwrap().advanceNotice.toNumber(),
@@ -266,5 +205,60 @@ export function extractConfigInfo(info: Option<PalletBrokerConfigRecord>): TConf
 		limitCoresOffered: info.unwrap().limitCoresOffered.unwrapOr(undefined)?.toNumber(),
 		renewalBump: info.unwrap().renewalBump.toNumber(),
 		contributionTimeout: info.unwrap().contributionTimeout.toNumber(),
+	};
+}
+
+export function extractCoreDescriptorInfo(
+	_core: StorageKey<[u32]>,
+	info: PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
+): TCoreDescriptor {
+	const currentWork: PolkadotRuntimeParachainsAssignerCoretimeWorkState | null = info?.currentWork.isSome
+		? info.currentWork.unwrap()
+		: null;
+	const queue: PolkadotRuntimeParachainsAssignerCoretimeQueueDescriptor | null = info?.queue.isSome
+		? info.queue.unwrap()
+		: null;
+	const assignments = currentWork?.assignments || [];
+
+	return {
+		info: {
+			currentWork: {
+				assignments: assignments?.map(
+					(
+						assgn: [
+							PalletBrokerCoretimeInterfaceCoreAssignment,
+							PolkadotRuntimeParachainsAssignerCoretimeAssignmentState,
+						],
+					) => {
+						return {
+							isPool: assgn[0]?.isPool,
+							isTask: assgn[0]?.isTask,
+							ratio: assgn[1]?.ratio.toNumber(),
+							remaining: assgn[1]?.remaining.toNumber(),
+							task: assgn[0]?.isTask ? assgn[0]?.asTask.toString() : assgn[0]?.isPool ? 'Pool' : 'Idle',
+						};
+					},
+				),
+				endHint: currentWork?.endHint.isSome ? currentWork?.endHint?.unwrap().toBn() : null,
+				pos: currentWork?.pos.toNumber() || 0,
+				step: currentWork?.step.toNumber() || 0,
+			},
+			queue: {
+				first: queue?.first.toBn() || new BN(0),
+				last: queue?.last.toBn() || new BN(0),
+			},
+		},
+	};
+}
+
+export function extractCoreScheduleInfo() {}
+
+export function extractParachainLifecycleInfo(
+	key: StorageKey<[ParaId]>,
+	val: Option<PolkadotRuntimeParachainsParasParaLifecycle>,
+): TParaLifecycle {
+	return {
+		paraId: key.args[0].toNumber(),
+		type: val.isSome ? val.unwrap().toString() : null,
 	};
 }

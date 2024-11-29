@@ -28,20 +28,12 @@ export default class CoretimeChainController extends AbstractController<Coretime
 	// TODO: check if its either coretime or relay chain, if neither error out
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			['/sale', this.getCoretimeSaleInfo],
-			['/bulk', this.getBulk],
-			['/leases', this.getLeases],
+			['/leases', this.getLeases], // :taskId
 			['/regions', this.getRegions],
-			['/cores', this.getWorkload],
+			['/renewals', this.getRenewals],
+			['/reservations', this.getReservations],
 		]);
 	}
-	/*
-        relay => => use coretimeAssignmentProvider || onDemandAssignmentProvider
-        coretime => bulk time info => use broker
-
-		from relay chains: 
-			-
-    */
 
 	private checkCoretimeModule = (): void => {
 		if (this.api.query.onDemandAssignmentProvider && this.api.query.coretimeAssignmentProvider) {
@@ -49,17 +41,7 @@ export default class CoretimeChainController extends AbstractController<Coretime
 		} else if (this.api.query.broker) {
 			return;
 		}
-		console.log(this.api.consts);
 		throw new Error('One or more coretime modules are not available on this network.');
-	};
-
-	// get overview on coretime
-	private getBulk: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
-		const hash = await this.getHashFromAt(at);
-
-		CoretimeChainController.sanitizedSend(res, await this.service.getBulkInfo(hash));
 	};
 
 	private getLeases: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
@@ -70,14 +52,6 @@ export default class CoretimeChainController extends AbstractController<Coretime
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeLeases(hash));
 	};
 
-	private getCoretimeSaleInfo: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
-		const hash = await this.getHashFromAt(at);
-
-		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeSaleInfo(hash));
-	};
-
 	private getRegions: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkCoretimeModule();
 
@@ -86,11 +60,19 @@ export default class CoretimeChainController extends AbstractController<Coretime
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeRegions(hash));
 	};
 
-	private getWorkload: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+	private getReservations: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkCoretimeModule();
 
 		const hash = await this.getHashFromAt(at);
 
-		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeCores(hash));
+		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeReservations(hash));
+	};
+
+	private getRenewals: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+		this.checkCoretimeModule();
+
+		const hash = await this.getHashFromAt(at);
+
+		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeRenewals(hash));
 	};
 }

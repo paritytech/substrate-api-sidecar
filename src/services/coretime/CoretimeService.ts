@@ -19,8 +19,8 @@
 
 // import { QueryableModuleStorage } from '@polkadot/api/types';
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { Option, StorageKey, U16, U32, Vec } from '@polkadot/types';
-import { BlockHash } from '@polkadot/types/interfaces';
+import { Option, StorageKey, U16, U32, u32, Vec } from '@polkadot/types';
+import { BlockHash, ParaId } from '@polkadot/types/interfaces';
 import {
 	PalletBrokerConfigRecord,
 	PalletBrokerLeaseRecordItem,
@@ -31,14 +31,35 @@ import {
 	PalletBrokerSaleInfoRecord,
 	PalletBrokerScheduleItem,
 	PalletBrokerStatusRecord,
-	PolkadotRuntimeParachainsAssignerCoretimeQueueDescriptor,
-	PolkadotRuntimeParachainsAssignerCoretimeWorkState,
+	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
+	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
 
+import {
+	ICoretimeCores,
+	ICoretimeInfo,
+	ICoretimeLeases,
+	ICoretimeRegions,
+	ICoretimeRenewals,
+	ICoretimeReservations,
+	LeaseWithCore,
+	TConfigInfo,
+	TCoreDescriptor,
+	TLeaseInfo,
+	TParaLifecycle,
+	TPotentialRenewalInfo,
+	TRegionInfo,
+	TReservationInfo,
+	TSaleInfo,
+	TWorkloadInfo,
+	TWorkplanInfo,
+} from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import {
 	extractConfigInfo,
+	extractCoreDescriptorInfo,
 	extractLeaseInfo,
+	extractParachainLifecycleInfo,
 	extractPotentialRenewalInfo,
 	extractRegionInfo,
 	extractReservationInfo,
@@ -47,13 +68,6 @@ import {
 	extractWorkloadInfo,
 	extractWorkplanInfo,
 	sortByCore,
-	TLeaseInfo,
-	TPotentialRenewalInfo,
-	TRegionInfo,
-	TReservationInfo,
-	TSaleInfo,
-	TWorkloadInfo,
-	TWorkplanInfo,
 } from './util';
 
 enum ChainType {
@@ -61,32 +75,39 @@ enum ChainType {
 	Parachain = 'Parachain',
 }
 
-interface LeaseWithCore extends TLeaseInfo {
-	core: number;
-}
-
 export class CoretimeService extends AbstractService {
 	private getAndDecodeRegions = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TRegionInfo[]> => {
 		const regions = await api.query.broker.regions.entries();
 		const regs = regions as unknown as [StorageKey<[PalletBrokerRegionId]>, Option<PalletBrokerRegionRecord>][];
-		return regs.map((region) => {
+		const regionsInfo = regs.map((region) => {
 			return extractRegionInfo([region[0], region[1]]);
 		});
+
+		return coreId ? regionsInfo.filter((region) => region.core === coreId) : regionsInfo;
 	};
 
-	private getAndDecodeLeases = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TLeaseInfo[]> => {
+	private getAndDecodeLeases = async (api: ApiDecoration<'promise'>): Promise<TLeaseInfo[]> => {
 		const leases = await api.query.broker.leases();
-
 		return (leases as unknown as Vec<PalletBrokerLeaseRecordItem>).map((lease) => extractLeaseInfo(lease));
 	};
 
 	private getAndDecodeWorkload = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TWorkloadInfo[]> => {
+		if (coreId) {
+			const workload = await api.query.broker.workload.multi([coreId]);
+			const wls = workload as unknown as [Vec<PalletBrokerScheduleItem>];
+			return sortByCore(
+				wls.map((workload) => {
+					return extractWorkloadInfo(workload, coreId);
+				}),
+			);
+		}
+
 		const workloads = await api.query.broker.workload.entries();
 
 		const wls = workloads as unknown as [StorageKey<[U32]>, Vec<PalletBrokerScheduleItem>][];
 		return sortByCore(
 			wls.map((workload) => {
-				return extractWorkloadInfo(workload[1], workload[0]);
+				return extractWorkloadInfo(workload[1], workload[0].args[0].toNumber());
 			}),
 		);
 	};
@@ -94,17 +115,29 @@ export class CoretimeService extends AbstractService {
 	private getAndDecodeWorkplan = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TWorkplanInfo[]> => {
 		const workplans = await api.query.broker.workplan.entries();
 		const wpls = workplans as unknown as [StorageKey<[U32, U16]>, Option<Vec<PalletBrokerScheduleItem>>][];
-		return sortByCore(
+		const wplsInfo = sortByCore(
 			wpls.map(([key, val]) => {
 				const [timeslice, core] = key.args[0].toArray();
 				return extractWorkplanInfo(val, core, timeslice);
 			}),
 		);
+
+		return coreId ? wplsInfo.filter((workplan) => workplan.core === coreId) : wplsInfo;
 	};
 
-	private getAndDecodeSaleInfo = async (api: ApiDecoration<'promise'>): Promise<TSaleInfo | {}> => {
+	private getAndDecodeSaleInfo = async (api: ApiDecoration<'promise'>): Promise<TSaleInfo | null> => {
 		const saleInfo = (await api.query.broker.saleInfo()) as unknown as Option<PalletBrokerSaleInfoRecord>;
-		return saleInfo.unwrap() ? extractSaleInfo(saleInfo.unwrap()) : {};
+		return saleInfo.isSome ? extractSaleInfo(saleInfo.unwrap()) : null;
+	};
+
+	private getSalePhase = (blockNumber: number, saleInfo: TSaleInfo): string => {
+		if (blockNumber < saleInfo.saleStart) {
+			return 'interlude';
+		} else if (blockNumber < saleInfo.saleStart + saleInfo.leadinLength) {
+			return 'leading';
+		} else {
+			return 'regular';
+		}
 	};
 
 	private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<Record<string, unknown>> => {
@@ -113,7 +146,7 @@ export class CoretimeService extends AbstractService {
 		return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
 	};
 
-	private getAndDecodeConfiguration = async (api: ApiDecoration<'promise'>): Promise<Record<string, unknown>> => {
+	private getAndDecodeConfiguration = async (api: ApiDecoration<'promise'>): Promise<TConfigInfo> => {
 		const configuration = await api.query.broker.configuration();
 
 		return extractConfigInfo(configuration as unknown as Option<PalletBrokerConfigRecord>);
@@ -122,27 +155,53 @@ export class CoretimeService extends AbstractService {
 	private getAndDecodePotentialRenewals = async (
 		api: ApiDecoration<'promise'>,
 		coreId?: number,
-	): Promise<(TPotentialRenewalInfo | undefined)[]> => {
+	): Promise<TPotentialRenewalInfo[]> => {
 		const potentialRenewals = await api.query.broker.potentialRenewals.entries();
 		const renewals = potentialRenewals as unknown as [
 			StorageKey<[PalletBrokerPotentialRenewalId]>,
 			Option<PalletBrokerPotentialRenewalRecord>,
 		][];
 
-		return sortByCore(renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])));
+		const potentialRenewalsInfo = sortByCore(
+			renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
+		);
+
+		return coreId ? potentialRenewalsInfo.filter((renewal) => renewal.core === coreId) : potentialRenewalsInfo;
 	};
 
-	private getAndDecodeReservations = async (
-		api: ApiDecoration<'promise'>,
-		coreId?: number,
-	): Promise<TReservationInfo[]> => {
+	private getAndDecodeReservations = async (api: ApiDecoration<'promise'>): Promise<TReservationInfo[]> => {
 		const reservations = await api.query.broker.reservations();
 
 		return (reservations as unknown as Vec<Vec<PalletBrokerScheduleItem>>).map((res) => extractReservationInfo(res));
 	};
 
+	private getAndDecodeCoreSchedules = async (api: ApiDecoration<'promise'>): Promise<Record<string, unknown>[]> => {
+		const coreSchedules = await api.query.coretimeAssignmentProvider.coreSchedules.entries();
+		return coreSchedules as unknown as Record<string, unknown>[];
+	};
+
+	private getAndDecodeCoreDescriptors = async (api: ApiDecoration<'promise'>): Promise<TCoreDescriptor[]> => {
+		const coreDescriptors = await api.query.coretimeAssignmentProvider.coreDescriptors.entries();
+
+		const descriptors = coreDescriptors as unknown as [
+			StorageKey<[u32]>,
+			PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
+		][];
+		return descriptors.map((descriptor) => extractCoreDescriptorInfo(descriptor[0], descriptor[1]));
+	};
+
+	private getAndDecodeParachainsLifecycle = async (api: ApiDecoration<'promise'>): Promise<TParaLifecycle[]> => {
+		const parachains = await api.query.paras.paraLifecycles.entries();
+		return parachains.map((para) =>
+			extractParachainLifecycleInfo(
+				para[0] as unknown as StorageKey<[ParaId]>,
+				para[1] as unknown as Option<PolkadotRuntimeParachainsParasParaLifecycle>,
+			),
+		);
+	};
+
 	// both relay and coretime chain
-	async getCoretimeInfo(hash: BlockHash): Promise<unknown> {
+	async getCoretimeInfo(hash: BlockHash): Promise<ICoretimeInfo> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -156,73 +215,31 @@ export class CoretimeService extends AbstractService {
 		if (this.getChainType(specName.toString()) === ChainType.Relay) {
 			this.assertCoretimeModule(historicApi, ChainType.Relay);
 
-			const [brokerId, palletVersion, coreSchedules, coreDescriptors] = await Promise.all([
+			const [brokerId, maxHistoricalRevenue, palletVersion] = await Promise.all([
 				historicApi.consts.coretime.brokerId,
+				historicApi.consts.onDemandAssignmentProvider.maxHistoricalRevenue,
 				historicApi.query.coretimeAssignmentProvider.palletVersion(),
-				historicApi.query.coretimeAssignmentProvider.coreSchedules.entries(),
-				historicApi.query.coretimeAssignmentProvider.coreDescriptors.entries(),
 			]);
-
-			const schedules = coreSchedules.reduce((acc, core) => {
-				return [...acc, [core[0].toHuman(), core[1].toHuman()]];
-			}, []);
-
-			const cores = {
-				total: coreDescriptors.length,
-				systemReserved: 0,
-				leased: 0,
-				renewal: 0,
-				generalSale: 0,
-				availableToPurchase: 0,
-			};
-
-			const descriptors = coreDescriptors.reduce((acc, core) => {
-				const coreKey = core[0].toHuman();
-				const coreValue = core[1] as unknown as {
-					queue: Option<PolkadotRuntimeParachainsAssignerCoretimeQueueDescriptor>;
-					currentWork: Option<PolkadotRuntimeParachainsAssignerCoretimeWorkState>;
-				};
-
-				const currentWork = coreValue.currentWork.unwrapOr(null);
-				if (currentWork?.assignments[0].length && currentWork?.assignments[0].length) {
-					if (
-						coreValue?.currentWork.unwrapOr(null)?.assignments[0][0] &&
-						typeof coreValue?.currentWork.unwrapOr(null)?.assignments[0][0] === 'object'
-					) {
-						if (coreValue?.currentWork.unwrapOr(null)?.assignments[0][0]) {
-							const assignment = coreValue?.currentWork.unwrapOr(null)?.assignments[0][0]?.toJSON() as unknown as
-								| string
-								| Record<string, number>;
-							if ('task' in assignment && assignment.task < 2000) {
-								cores.systemReserved += 1;
-							} else if ('task' in assignment && assignment.task >= 2000 && assignment.task >= 2000) {
-								cores.leased += 1;
-							}
-						}
-					}
-				}
-
-				return [...acc, [coreKey, coreValue]];
-			}, []);
 
 			return {
 				at: {
 					hash,
 					height: blockNumber.toString(10),
 				},
-				brokerId: brokerId as unknown,
-				palletVersion: palletVersion as unknown,
-				coreSchedules: coreSchedules as unknown,
-				cores,
+				brokerId: brokerId as unknown as number,
+				palletVersion: palletVersion as unknown as number,
+				maxHistoricalRevenue: maxHistoricalRevenue as unknown as number,
 			};
 		} else {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
-			const [config, status, saleInfo] = await Promise.all([
+			const [config, saleInfo, timeslicePeriod] = await Promise.all([
 				this.getAndDecodeConfiguration(historicApi),
-				this.getAndDecodeStatus(historicApi),
 				this.getAndDecodeSaleInfo(historicApi),
+				historicApi.consts.broker.timeslicePeriod,
 			]);
+
+			const blocksPerTimeslice = timeslicePeriod as unknown as U32;
 
 			return {
 				at: {
@@ -230,42 +247,47 @@ export class CoretimeService extends AbstractService {
 					height: blockNumber.toString(10),
 				},
 				configuration: config,
-				saleInfo: saleInfo,
-				status: status,
+				...(saleInfo && {
+					saleInfo: {
+						phase: saleInfo ? this.getSalePhase(blockNumber.toNumber(), saleInfo) : 'unknown',
+						...saleInfo,
+						blocksPerTimeslice: blocksPerTimeslice.toNumber(),
+					},
+				}),
 			};
 		}
 	}
 
 	// coretime chain only
 
-	async getCoretimeSaleInfo(hash: BlockHash) {
-		const { api } = this;
+	// async getCoretimeSaleInfo(hash: BlockHash) {
+	// 	const { api } = this;
 
-		const [{ specName }, { number }, historicApi] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(hash),
-			api.rpc.chain.getHeader(hash),
-			api.at(hash),
-		]);
+	// 	const [{ specName }, { number }, historicApi] = await Promise.all([
+	// 		api.rpc.state.getRuntimeVersion(hash),
+	// 		api.rpc.chain.getHeader(hash),
+	// 		api.at(hash),
+	// 	]);
 
-		const blockNumber = number.unwrap();
+	// 	const blockNumber = number.unwrap();
 
-		if (this.getChainType(specName.toString()) === ChainType.Relay) {
-			throw new Error('This endpoint is only available on coretime chains.');
-		} else {
-			// coretime chain or parachain
-			this.assertCoretimeModule(historicApi, ChainType.Parachain);
-			const saleInfo = await this.getAndDecodeSaleInfo(historicApi);
-			return {
-				at: {
-					hash,
-					height: blockNumber.toString(10),
-				},
-				saleInfo: saleInfo,
-			};
-		}
-	}
+	// 	if (this.getChainType(specName.toString()) === ChainType.Relay) {
+	// 		throw new Error('This endpoint is only available on coretime chains.');
+	// 	} else {
+	// 		// coretime chain or parachain
+	// 		this.assertCoretimeModule(historicApi, ChainType.Parachain);
+	// 		const saleInfo = await this.getAndDecodeSaleInfo(historicApi);
+	// 		return {
+	// 			at: {
+	// 				hash,
+	// 				height: blockNumber.toString(10),
+	// 			},
+	// 			saleInfo: saleInfo,
+	// 		};
+	// 	}
+	// }
 
-	async getCoretimeLeases(hash: BlockHash) {
+	async getCoretimeLeases(hash: BlockHash): Promise<ICoretimeLeases> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -287,7 +309,7 @@ export class CoretimeService extends AbstractService {
 			]);
 
 			const leasesWithCore: LeaseWithCore[] = leases.reduce((acc: LeaseWithCore[], lease) => {
-				const core = workload.find((wl) => wl.info.map((el) => el.task).includes(lease.task))?.core;
+				const core = workload.find((wl) => wl.info.task.includes(lease.task))?.core;
 				return [
 					...acc,
 					{
@@ -307,7 +329,7 @@ export class CoretimeService extends AbstractService {
 		}
 	}
 
-	async getCoretimeRegions(hash: BlockHash, coreId?: number): Promise<Record<string, unknown>> {
+	async getCoretimeRegions(hash: BlockHash, coreId?: number): Promise<ICoretimeRegions> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -315,7 +337,6 @@ export class CoretimeService extends AbstractService {
 			api.rpc.chain.getHeader(hash),
 			api.at(hash),
 		]);
-		//  by core? by region? by broker?
 
 		const blockNumber = number.unwrap();
 
@@ -325,19 +346,19 @@ export class CoretimeService extends AbstractService {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 
-			const regions = await this.getAndDecodeRegions(historicApi);
+			const regions = await this.getAndDecodeRegions(historicApi, coreId);
 
 			return {
 				at: {
 					hash,
 					height: blockNumber.toString(10),
 				},
-				regions: regions,
+				regions: sortByCore(regions),
 			};
 		}
 	}
 
-	async getBulkInfo(hash: BlockHash): Promise<Record<string, unknown>> {
+	async getCoretimeReservations(hash: BlockHash): Promise<ICoretimeReservations> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -353,118 +374,150 @@ export class CoretimeService extends AbstractService {
 		} else {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
-			const [config, potentialRenewals, reservations] = await Promise.all([
-				this.getAndDecodeConfiguration(historicApi),
-				this.getAndDecodePotentialRenewals(historicApi),
-				this.getAndDecodeReservations(historicApi),
+
+			const reservations = await this.getAndDecodeReservations(historicApi);
+
+			return {
+				at: {
+					hash,
+					height: blockNumber.toString(10),
+				},
+				reservations,
+			};
+		}
+	}
+
+	async getCoretimeRenewals(hash: BlockHash, coreId?: number): Promise<ICoretimeRenewals> {
+		const { api } = this;
+
+		const [{ specName }, { number }, historicApi] = await Promise.all([
+			api.rpc.state.getRuntimeVersion(hash),
+			api.rpc.chain.getHeader(hash),
+			api.at(hash),
+		]);
+
+		const blockNumber = number.unwrap();
+
+		if (this.getChainType(specName.toString()) === ChainType.Relay) {
+			throw new Error('This endpoint is only available on coretime chains.');
+		} else {
+			// coretime chain or parachain
+			this.assertCoretimeModule(historicApi, ChainType.Parachain);
+
+			const renewals = await this.getAndDecodePotentialRenewals(historicApi, coreId);
+
+			return {
+				at: {
+					hash,
+					height: blockNumber.toString(10),
+				},
+				renewals: sortByCore(renewals),
+			};
+		}
+	}
+
+	async getCoretimeCores(hash: BlockHash, coreId?: string): Promise<ICoretimeCores> {
+		const { api } = this;
+
+		const [{ specName }, { number }, historicApi] = await Promise.all([
+			api.rpc.state.getRuntimeVersion(hash),
+			api.rpc.chain.getHeader(hash),
+			api.at(hash),
+		]);
+
+		const blockNumber = number.unwrap();
+
+		if (this.getChainType(specName.toString()) === ChainType.Relay) {
+			const [parachains, schedules, descriptors] = await Promise.all([
+				this.getAndDecodeParachainsLifecycle(historicApi),
+				this.getAndDecodeCoreSchedules(historicApi),
+				this.getAndDecodeCoreDescriptors(historicApi),
 			]);
 
+			const descriptorsWithParas = parachains.reduce<(TParaLifecycle & TCoreDescriptor)[]>((acc, para) => {
+				const core = descriptors.find((f) => {
+					const assignments = f.info.currentWork.assignments.find((assgn) => assgn.task === para.paraId.toString());
+					return !!assignments;
+				});
+				if (core) {
+					acc.push({
+						...para,
+						...core,
+					});
+				}
+				return acc;
+			}, []);
+
 			return {
 				at: {
 					hash,
 					height: blockNumber.toString(10),
 				},
-				configuration: config,
-				renewals: potentialRenewals,
-				reservations: reservations,
+				coreDescriptors: descriptorsWithParas,
+				coreSchedules: schedules,
 			};
-		}
-	}
-
-	async getCoretimeCores(hash: BlockHash, coreId?: string): Promise<Record<string, unknown>> {
-		const { api } = this;
-
-		const [{ specName }, { number }, historicApi] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(hash),
-			api.rpc.chain.getHeader(hash),
-			api.at(hash),
-		]);
-
-		const blockNumber = number.unwrap();
-
-		if (this.getChainType(specName.toString()) === ChainType.Relay) {
-			throw new Error('This endpoint is only available on coretime chains.');
 		} else {
 			const [workload, workplan, leases, reservations, regions] = await Promise.all([
 				this.getAndDecodeWorkload(historicApi, coreId ? parseInt(coreId, 10) : undefined),
 				coreId ? this.getAndDecodeWorkplan(historicApi, parseInt(coreId, 10)) : [],
-				this.getAndDecodeLeases(historicApi, coreId ? parseInt(coreId, 10) : undefined),
-				this.getAndDecodeReservations(historicApi, coreId ? parseInt(coreId, 10) : undefined),
+				this.getAndDecodeLeases(historicApi),
+				this.getAndDecodeReservations(historicApi),
 				this.getAndDecodeRegions(historicApi, coreId ? parseInt(coreId, 10) : undefined),
 			]);
 
-			const cores = workload.reduce(
-				(
-					acc: Record<
-						number,
-						{
-							workload: TWorkloadInfo;
-							workplan?: TWorkplanInfo[];
-							type: {
-								condition: 'reservation' | 'lease' | 'ondemand' | 'idle';
-								details: typeof reservations | typeof leases;
-							};
-							regions?: TRegionInfo[];
-						}[]
-					>,
-					wl,
-				) => {
-					const tasks = wl.info.map((info) => info.task);
+			const systemParas = reservations.map((el) => el.task);
+			const cores = [];
 
-					let type = 'unknown';
-					let details: unknown[] = [];
-					if (leases.find((f) => tasks.includes(f.task))) {
-						type = 'lease';
-						details = leases.filter((f) => tasks.includes(f.task));
+			if (coreId) {
+				const coreType = systemParas.includes(workload[0].info.task)
+					? 'reservation'
+					: leases.map((f) => f.task).includes(workload[0].info.task)
+						? 'lease'
+						: 'bulk';
+
+				cores.push({
+					coreId,
+					taskId: workload[0].info.task,
+					workload: workload[0].info,
+					workplan: workplan,
+					type: {
+						condition: coreType,
+						details:
+							coreType === 'reservation'
+								? { mask: reservations.find((f) => f.task === workload[0].info.task)?.mask }
+								: coreType === 'lease'
+									? { until: leases.find((f) => f.task === workload[0].info.task)?.until }
+									: undefined,
+					},
+					regions,
+				});
+			} else {
+				workload.map((wl) => {
+					const coreType = systemParas.includes(wl.info.task)
+						? 'reservation'
+						: leases.map((f) => f.task).includes(wl.info.task)
+							? 'lease'
+							: 'bulk';
+
+					let details = undefined;
+
+					if (coreType === 'reservation') {
+						details = { mask: reservations.find((f) => f.task === wl.info.task)?.mask };
+					} else if (coreType === 'lease') {
+						details = { until: leases.find((f) => f.task === wl.info.task)?.until };
 					}
-					if (reservations.find((f) => tasks.includes(f.task))) {
-						type = 'reservation';
-						details = reservations.filter((f) => tasks.includes(f.task));
-					}
+
 					const coreRegions = regions.filter((region) => region.core === wl.core);
-					console.log(wl.core, type, details, coreRegions);
-					// workload
-					// workplan,
-					// type
-					// leases
-					// reservations
-					/* 
-						cores => 
-							current load
-							regions	
-							type of core
+					cores.push({
+						coreId: wl.core,
+						taskId: wl.info.task,
+						workload: wl.info,
+						type: { condition: coreType, details },
+						regions: coreRegions,
+					});
+				});
+			}
 
-						core/:id => 
-							current load
-							regions	
-							type of core
-							workplan
-							leases
-							reservations
-					*/
-					// if (acc[wl.core]) {
-					// 	acc[wl.core] = [
-					// 		...acc[wl.core],
-					// 		{
-					// 			workload: wl,
-					// 			workplan: workplan.filter((wp) => wp.core === wl.core),
-					// 			regions: regions.filter((region) => region.core === wl.core),
-					// 		},
-					// 	];
-					// } else {
-					// 	acc[wl.core] = [
-					// 		{
-					// 			workload: wl,
-					// 			workplan: workplan.filter((wp) => wp.core === wl.core) || [],
-					// 			regions: regions.filter((region) => region.core === wl.core) || [],
-					// 		},
-					// 	];
-					// }
-					// return acc;
-					return acc;
-				},
-				{},
-			);
 			return {
 				at: {
 					hash,
@@ -475,38 +528,6 @@ export class CoretimeService extends AbstractService {
 		}
 	}
 
-	// relay chain only
-	async getCoretimeParachains(hash: BlockHash) {
-		const { api } = this;
-
-		const [{ specName }, { number }, historicApi] = await Promise.all([
-			api.rpc.state.getRuntimeVersion(hash),
-			api.rpc.chain.getHeader(hash),
-			api.at(hash),
-		]);
-
-		const blockNumber = number.unwrap();
-
-		if (this.getChainType(specName.toString()) === ChainType.Relay) {
-			this.assertCoretimeModule(historicApi, ChainType.Relay);
-
-			const [coreSchedules, coreDescriptors] = await Promise.all([
-				historicApi.query.coretimeAssignmentProvider.coreSchedules.entries(),
-				historicApi.query.coretimeAssignmentProvider.coreDescriptors.multi,
-			]);
-
-			return {
-				at: {
-					hash,
-					height: blockNumber.toString(10),
-				},
-				coreSchedules: coreSchedules as unknown,
-				coreDescriptors: coreDescriptors as unknown,
-			};
-		} else {
-			throw new Error('This endpoint is only available on relay chains.');
-		}
-	}
 	/**
 	 * Coretime pallets and modules are not available on all runtimes. This
 	 * verifies that by checking if the module exists. If it doesnt it will throw an error

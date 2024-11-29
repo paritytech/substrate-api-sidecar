@@ -54,7 +54,6 @@ export const polkadotControllers: ControllerConfig = {
 		'TransactionMaterial',
 		'TransactionSubmit',
 		'CoretimeGeneric',
-		'CoretimeRelay',
 	],
 	options: {
 		finalizes: true,

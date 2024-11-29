@@ -28,26 +28,11 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 	// TODO: check if its either coretime or relay chain, if neither error out
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
-			// sale info
-			//  configuration
-			// status
 			['/info', this.getCoretimeOverview],
-			// bulk leases
-			// leases and regions?
-			// ['/workload', this.getParachains],
-			// ondemand status
-			// ['/workplan', this.getParachains],
+			['/cores', this.getCoretimeCores],
 		]);
 	}
-	/*
-        relay => => use coretimeAssignmentProvider || onDemandAssignmentProvider
-        coretime => bulk time info => use broker
 
-		from relay chains: 
-			-
-    */
-
-	// get overview on coretime
 	private getCoretimeOverview: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkCoretimeModule();
 
@@ -56,13 +41,22 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeInfo(hash));
 	};
 
+	private getCoretimeCores: RequestHandler = async ({ query: { at, core } }, res): Promise<void> => {
+		this.checkCoretimeModule();
+
+		const hash = await this.getHashFromAt(at);
+
+		const coreId = core ? (core as unknown as string) : undefined;
+
+		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeCores(hash, coreId));
+	};
+
 	private checkCoretimeModule = (): void => {
 		if (this.api.query.onDemandAssignmentProvider && this.api.query.coretimeAssignmentProvider) {
 			return;
 		} else if (this.api.query.broker) {
 			return;
 		}
-		console.log(this.api.consts);
 		throw new Error('One or more coretime modules are not available on this network.');
 	};
 }

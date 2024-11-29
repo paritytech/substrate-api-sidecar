@@ -16,4 +16,3 @@
 
 export { default as CoretimeChain } from './CoretimeChainController';
 export { default as CoretimeGeneric } from './CoretimeGenericController';
-export { default as CoretimeRelay } from './CoretimeRelayController';
