@@ -30,7 +30,6 @@ import {
 	PalletBrokerRegionRecord,
 	PalletBrokerSaleInfoRecord,
 	PalletBrokerScheduleItem,
-	PalletBrokerStatusRecord,
 	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
@@ -64,7 +63,6 @@ import {
 	extractRegionInfo,
 	extractReservationInfo,
 	extractSaleInfo,
-	extractStatusInfo,
 	extractWorkloadInfo,
 	extractWorkplanInfo,
 	sortByCore,
@@ -83,7 +81,7 @@ export class CoretimeService extends AbstractService {
 			return extractRegionInfo([region[0], region[1]]);
 		});
 
-		return coreId ? regionsInfo.filter((region) => region.core === coreId) : regionsInfo;
+		return typeof coreId === 'number' ? regionsInfo.filter((region) => region.core === coreId) : regionsInfo;
 	};
 
 	private getAndDecodeLeases = async (api: ApiDecoration<'promise'>): Promise<TLeaseInfo[]> => {
@@ -122,7 +120,7 @@ export class CoretimeService extends AbstractService {
 			}),
 		);
 
-		return coreId ? wplsInfo.filter((workplan) => workplan.core === coreId) : wplsInfo;
+		return typeof coreId === 'number' ? wplsInfo.filter((workplan) => workplan.core === coreId) : wplsInfo;
 	};
 
 	private getAndDecodeSaleInfo = async (api: ApiDecoration<'promise'>): Promise<TSaleInfo | null> => {
@@ -140,11 +138,11 @@ export class CoretimeService extends AbstractService {
 		}
 	};
 
-	private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<Record<string, unknown>> => {
-		const status = await api.query.broker.status();
+	// private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<TStatusInfo> => {
+	// 	const status = await api.query.broker.status();
 
-		return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
-	};
+	// 	return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
+	// };
 
 	private getAndDecodeConfiguration = async (api: ApiDecoration<'promise'>): Promise<TConfigInfo> => {
 		const configuration = await api.query.broker.configuration();
@@ -166,7 +164,9 @@ export class CoretimeService extends AbstractService {
 			renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
 		);
 
-		return coreId ? potentialRenewalsInfo.filter((renewal) => renewal.core === coreId) : potentialRenewalsInfo;
+		return typeof coreId === 'number'
+			? potentialRenewalsInfo.filter((renewal) => renewal.core === coreId)
+			: potentialRenewalsInfo;
 	};
 
 	private getAndDecodeReservations = async (api: ApiDecoration<'promise'>): Promise<TReservationInfo[]> => {
@@ -470,7 +470,9 @@ export class CoretimeService extends AbstractService {
 
 			if (coreId) {
 				const coreType = systemParas.includes(workload[0].info.task)
-					? 'reservation'
+					? workload[0].info.task === 'Pool'
+						? 'ondemand'
+						: 'reservation'
 					: leases.map((f) => f.task).includes(workload[0].info.task)
 						? 'lease'
 						: 'bulk';
@@ -494,7 +496,9 @@ export class CoretimeService extends AbstractService {
 			} else {
 				workload.map((wl) => {
 					const coreType = systemParas.includes(wl.info.task)
-						? 'reservation'
+						? wl.info.task === 'Pool'
+							? 'ondemand'
+							: 'reservation'
 						: leases.map((f) => f.task).includes(wl.info.task)
 							? 'lease'
 							: 'bulk';
