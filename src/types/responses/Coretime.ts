@@ -151,7 +151,7 @@ export interface ICoretimeReservations {
 }
 
 export interface ICoretimeSaleInfo extends TSaleInfo {
-	blocksPerTimeslice?: number;
+	RelayBlocksPerTimeslice?: number;
 	phase?: string;
 }
 export interface ICoretimeInfo {
