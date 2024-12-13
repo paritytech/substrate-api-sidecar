@@ -19,6 +19,7 @@ import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
 import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
+import { kusamaMetadataV1003003 } from '../metadata/kusamaMetadataV1003003';
 
 /**
  * Create a type registry for Kusama.
@@ -62,6 +63,30 @@ function createKusamaRegistry(specVersion: number): TypeRegistry {
 }
 
 /**
+ * Create a type registry for Kusama.
+ * Useful for creating types in order to facilitate testing.
+ *
+ * @param specVersion Kusama runtime spec version to get type defs for.
+ */
+function createKusamaRegistryV1003003(specVersion: number): TypeRegistry {
+	const registry = new TypeRegistry();
+
+	registry.setChainProperties(
+		registry.createType('ChainProperties', {
+			ss58Format: 2,
+			tokenDecimals: 12,
+			tokenSymbol: 'KSM',
+		}),
+	);
+
+	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
+
+	registry.setMetadata(new Metadata(registry, kusamaMetadataV1003003));
+
+	return registry;
+}
+
+/**
  * Kusama v2008 TypeRegistry.
  */
 export const kusamaRegistry = createKusamaRegistryDeprecated();
@@ -70,3 +95,5 @@ export const kusamaRegistry = createKusamaRegistryDeprecated();
  *  Kusama v2025 TypeRegistry.
  */
 export const kusamRegistryV2025 = createKusamaRegistry(2025);
+
+export const kusamaRegistryV1003003 = createKusamaRegistryV1003003(1003003);

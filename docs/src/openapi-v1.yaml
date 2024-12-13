@@ -24,6 +24,7 @@ tags:
 - name: accounts
 - name: blocks
 - name: contracts
+- name: coretime
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -985,6 +986,145 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /coretime/leases:
+    get:
+      tags:
+      - coretime
+      summary: Get all the leases currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeLeases
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+  /coretime/regions:
+    get:
+      tags:
+      - coretime
+      summary: Get all the regions currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRegions
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+  /coretime/renewals:
+    get:
+      tags:
+      - coretime
+      summary: Get all the potential renewals currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRenewals
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+  /coretime/reservations:
+    get:
+      tags:
+      - coretime
+      summary: Get all the reservations currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeReservations
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+  /coretime/info:
+    get:
+      tags:
+      - coretime
+      summary: Get all the reservations currently registered on coretime chain.
+      description: ''
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      - name: core
+        in: query
+        description: Core identifier.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      operationId: getCoretimeInfo
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+  /coretime/cores:
+    get:
+      tags:
+      - coretime
+      summary: Get all the reservations currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeCores
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
   /node/network:
     get:
       tags:

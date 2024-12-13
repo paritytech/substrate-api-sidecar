@@ -21,6 +21,7 @@ import { kusamaRegistry } from '../registries/kusamaRegistry';
 import { polkadotRegistry, polkadotRegistryV29, polkadotRegistryV9300 } from '../registries/polkadotRegistry';
 import { assetHubWestendMetadataRpcV9435 } from './assetHubWestendMetadata';
 import { kusamaMetadataV2008 } from './kusamaV2008Metadata';
+import { kusamaMetadataV1003003 } from './kusamaMetadataV1003003';
 import { polkadotMetadataRpcV16 } from './polkadotV16Metadata';
 import { polkadotMetadataRpcV29 } from './polkadotV29Metadata';
 import { polkadotMetadataRpcV9300 } from './polkadotV9300Metadata';
@@ -48,3 +49,5 @@ export const polkadotMetadataV9300 = new Metadata(polkadotRegistryV9300, polkado
  * Metadata of assetHubWestendRegistry (v9435)
  */
 export const assetHubWestendMetadata = new Metadata(assetHubWestendRegistryV9435, assetHubWestendMetadataRpcV9435);
+
+export const kusamaMetadataV1003003M = new Metadata(kusamaRegistry, kusamaMetadataV1003003);

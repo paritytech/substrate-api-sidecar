@@ -18,6 +18,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import type { Option } from '@polkadot/types/codec';
 import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
+import * as fs from 'fs';
 import { InternalServerError } from 'http-errors';
 
 import { AbstractService } from '../AbstractService';
@@ -30,6 +31,10 @@ export class RuntimeMetadataService extends AbstractService {
 	 */
 	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
 		const { api } = this;
+
+		const metadataBytes = await api.call.metadata.metadata();
+
+		fs.writeFileSync('coretimeKusamaMetadata.ts', metadataBytes.toHex());
 
 		const metadata = await api.rpc.state.getMetadata(hash);
 

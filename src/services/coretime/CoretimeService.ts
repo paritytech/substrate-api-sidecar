@@ -132,7 +132,7 @@ export class CoretimeService extends AbstractService {
 		if (blockNumber < saleInfo.saleStart) {
 			return 'interlude';
 		} else if (blockNumber < saleInfo.saleStart + saleInfo.leadinLength) {
-			return 'leading';
+			return 'leadin';
 		} else {
 			return 'regular';
 		}
@@ -251,41 +251,12 @@ export class CoretimeService extends AbstractService {
 					saleInfo: {
 						phase: saleInfo ? this.getSalePhase(blockNumber.toNumber(), saleInfo) : 'unknown',
 						...saleInfo,
-						blocksPerTimeslice: blocksPerTimeslice.toNumber(),
+						RelayBlocksPerTimeslice: blocksPerTimeslice.toNumber(),
 					},
 				}),
 			};
 		}
 	}
-
-	// coretime chain only
-
-	// async getCoretimeSaleInfo(hash: BlockHash) {
-	// 	const { api } = this;
-
-	// 	const [{ specName }, { number }, historicApi] = await Promise.all([
-	// 		api.rpc.state.getRuntimeVersion(hash),
-	// 		api.rpc.chain.getHeader(hash),
-	// 		api.at(hash),
-	// 	]);
-
-	// 	const blockNumber = number.unwrap();
-
-	// 	if (this.getChainType(specName.toString()) === ChainType.Relay) {
-	// 		throw new Error('This endpoint is only available on coretime chains.');
-	// 	} else {
-	// 		// coretime chain or parachain
-	// 		this.assertCoretimeModule(historicApi, ChainType.Parachain);
-	// 		const saleInfo = await this.getAndDecodeSaleInfo(historicApi);
-	// 		return {
-	// 			at: {
-	// 				hash,
-	// 				height: blockNumber.toString(10),
-	// 			},
-	// 			saleInfo: saleInfo,
-	// 		};
-	// 	}
-	// }
 
 	async getCoretimeLeases(hash: BlockHash): Promise<ICoretimeLeases> {
 		const { api } = this;
