@@ -17,48 +17,52 @@
 import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 
-import { blockHash22887036, defaultMockApi, mockApiBlock22887036 } from '../test-helpers/mock';
+import { blockHash22887036 } from '../test-helpers/mock';
+import { blockHash26187139 } from '../test-helpers/mock/mockBlock26187139';
+import { mockKusamaCoretimeApiBlock26187139 } from '../test-helpers/mock/mockCoretimeChainApi';
+import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { CoretimeService } from './CoretimeService';
 
-// const mockCoretimeApi = {
-// 	...defaultMockApi,
-// 	consts: {
-// 		...defaultMockApi.consts,
-// 		coretime: {
-// 			brokerId: 1,
-// 			onDemandAssignmentProvider: {
-// 				maxHistoricalRevenue: {},
-// 			},
-// 		},
-// 	},
-// 	query: {
-// 		coretimeAssignmentProvider: {
-// 			coreSchedules: {
-// 				entries: () => [],
-// 			},
-// 			coreDescriptors: {
-// 				entries: () => [],
-// 			},
-// 			palletVersion: {},
-// 		},
-// 		onDemandAssignmentProvider: {
-// 			palletVersion: () => {},
-// 		},
-// 		paras: {
-// 			paraLifecycles: {
-// 				entries: () => [],
-// 			},
-// 		},
-// 	},
-// } as unknown as ApiPromise;
+const mockKusamaApi = {
+	...mockKusamaApiBlock26187139,
+	at: (_hash: Hash) => mockKusamaApi,
+	consts: {
+		...mockKusamaApiBlock26187139.consts,
+		coretime: {
+			brokerId: 1,
+			onDemandAssignmentProvider: {
+				maxHistoricalRevenue: {},
+			},
+		},
+	},
+	query: {
+		coretimeAssignmentProvider: {
+			coreSchedules: {
+				entries: () => [],
+			},
+			coreDescriptors: {
+				entries: () => [],
+			},
+			palletVersion: {},
+		},
+		onDemandAssignmentProvider: {
+			palletVersion: () => {},
+		},
+		paras: {
+			paraLifecycles: {
+				entries: () => [],
+			},
+		},
+	},
+} as unknown as ApiPromise;
 
 const renewalsEntries = () => Promise.resolve().then(() => []);
 
-const mockApi = {
-	...mockApiBlock22887036,
-	at: (_hash: Hash) => mockApi,
+const mockCoretimeApi = {
+	...mockKusamaCoretimeApiBlock26187139,
+	at: (_hash: Hash) => mockCoretimeApi,
 	consts: {
-		...defaultMockApi.consts,
+		...mockKusamaApiBlock26187139.consts,
 		broker: {
 			timeslicePeriod: 1,
 		},
@@ -66,7 +70,9 @@ const mockApi = {
 	query: {
 		broker: {
 			configuration: () =>
-				Promise.resolve().then(() => mockApiBlock22887036.registry.createType('Option<PalletBrokerConfigRecord>', {})),
+				Promise.resolve().then(() =>
+					mockKusamaCoretimeApiBlock26187139.registry.createType('Option<PalletBrokerConfigRecord>', {}),
+				),
 			potentialRenewals: {
 				entries: renewalsEntries,
 			},
@@ -92,21 +98,21 @@ const mockApi = {
 	},
 } as unknown as ApiPromise;
 
-// const CoretimeServiceAtCoretimeChain = new CoretimeService(mockCoretimeApi);
+const CoretimeServiceAtCoretimeChain = new CoretimeService(mockCoretimeApi);
 
-const CoretimeServiceAtRelayChain = new CoretimeService(mockApi);
+const CoretimeServiceAtRelayChain = new CoretimeService(mockKusamaApi);
 
 describe('CoretimeService', () => {
 	describe('getRegions', () => {
-        console.log(mockApi.query.broker.configuration());
 		it('should error with an invalid chain', async () => {
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
 		});
-		it('should return regions', () => {
+		it('should return regions', async () => {
 			// regions and at given block
 			// test for coretime and relaychain
+			console.log(await CoretimeServiceAtCoretimeChain.getCoretimeRegions(blockHash26187139));
 			return;
 		});
 

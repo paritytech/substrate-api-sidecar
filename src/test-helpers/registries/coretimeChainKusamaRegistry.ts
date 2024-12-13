@@ -35,7 +35,7 @@ function createCoretimeKusamaRegistry(specVersion: number, metadata: `0x${string
 		}),
 	);
 
-	registry.register(getSpecTypes(registry, 'Statemine', 'statemine', specVersion));
+	registry.register(getSpecTypes(registry, 'Coretime', 'coretime-kusama', specVersion));
 
 	registry.setMetadata(new Metadata(registry, metadata));
 
@@ -45,4 +45,4 @@ function createCoretimeKusamaRegistry(specVersion: number, metadata: `0x${string
 /**
  * Coretime kusama v1003003 TypeRegistry.
  */
-export const coretimeKusamaRegistryV9435 = createCoretimeKusamaRegistry(1003003, kusamaCoretimeMetadata);
+export const coretimeKusamaRegistryV1003003 = createCoretimeKusamaRegistry(1003003, kusamaCoretimeMetadata);

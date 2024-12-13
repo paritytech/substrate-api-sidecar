@@ -18,8 +18,8 @@ import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
-import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
 import { kusamaMetadataV1003003 } from '../metadata/kusamaMetadataV1003003';
+import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
 
 /**
  * Create a type registry for Kusama.
@@ -80,7 +80,6 @@ function createKusamaRegistryV1003003(specVersion: number): TypeRegistry {
 	);
 
 	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
-
 	registry.setMetadata(new Metadata(registry, kusamaMetadataV1003003));
 
 	return registry;
