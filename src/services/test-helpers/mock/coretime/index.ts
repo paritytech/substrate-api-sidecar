@@ -17,6 +17,17 @@ export const mockRegions = [
 	},
 ];
 
+export const mockWorkloads = [
+	{
+		key: '95',
+		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2023 } },
+	},
+	{
+		key: '20',
+		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2222 } },
+	},
+];
+
 export const potentialRenewalsMocks = [
 	{
 		key: '0x4dcb50595177a3177648411a42aca0f5689a1593a634a1c1e2cd84ab4db3337ffc046620dd7b3b82380018e60400',

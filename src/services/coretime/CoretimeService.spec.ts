@@ -22,7 +22,13 @@ import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusa
 // import { coretimeKusamaRegistryV1003003 } from '../../test-helpers/registries/coretimeChainKusamaRegistry';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
 import { blockHash22887036 } from '../test-helpers/mock';
-import { mockLeases, mockRegions, mockReservations, potentialRenewalsMocks } from '../test-helpers/mock/coretime';
+import {
+	mockLeases,
+	mockRegions,
+	mockReservations,
+	mockWorkloads,
+	potentialRenewalsMocks,
+} from '../test-helpers/mock/coretime';
 import { blockHash26187139 } from '../test-helpers/mock/mockBlock26187139';
 import { mockKusamaCoretimeApiBlock26187139 } from '../test-helpers/mock/mockCoretimeChainApi';
 import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
@@ -35,9 +41,9 @@ const mockKusamaApi = {
 		...mockKusamaApiBlock26187139.consts,
 		coretime: {
 			brokerId: 1,
-			onDemandAssignmentProvider: {
-				maxHistoricalRevenue: {},
-			},
+		},
+		onDemandAssignmentProvider: {
+			maxHistoricalRevenue: '50',
 		},
 	},
 	query: {
@@ -48,7 +54,7 @@ const mockKusamaApi = {
 			coreDescriptors: {
 				entries: () => [],
 			},
-			palletVersion: {},
+			palletVersion: () => Promise.resolve().then(() => '1'),
 		},
 		onDemandAssignmentProvider: {
 			palletVersion: () => {},
@@ -61,32 +67,6 @@ const mockKusamaApi = {
 	},
 } as unknown as ApiPromise;
 
-// const mockRenewals = [
-// 	{
-// 		completion: 'Complete',
-// 		core: '7',
-// 		mask: '0xffffffffffffffffffff',
-// 		price: '7767758517',
-// 		task: '2004',
-// 		when: '336168',
-// 	},
-// 	{
-// 		completion: 'Complete',
-// 		core: '8',
-// 		mask: '0xffffffffffffffffffff',
-// 		price: '7769145866',
-// 		task: '2011',
-// 		when: '326088',
-// 	},
-// 	{
-// 		completion: 'Complete',
-// 		core: '11',
-// 		mask: '0xffffffffffffffffffff',
-// 		price: '7767758517',
-// 		task: '2095',
-// 		when: '336168',
-// 	},
-// ];
 const coretimeApi = createApiWithAugmentations(kusamaCoretimeMetadata);
 const coretimeTypeFactory = new TypeFactory(coretimeApi);
 
@@ -124,13 +104,22 @@ const potentialRenewalsEntries = () =>
 		}),
 	);
 
+const workloadsEntries = () =>
+	Promise.resolve().then(() =>
+		mockWorkloads.map((workload) => {
+			const storageEntry = coretimeApi.query.broker.workload;
+			const key = coretimeTypeFactory.storageKey(workload.key, 'U32', storageEntry);
+			return [key, [mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerScheduleItem', workload)]];
+		}),
+	);
+
 const mockCoretimeApi = {
 	...mockKusamaCoretimeApiBlock26187139,
 	at: (_hash: Hash) => mockCoretimeApi,
 	consts: {
 		...mockKusamaApiBlock26187139.consts,
 		broker: {
-			timeslicePeriod: 1,
+			timeslicePeriod: mockKusamaCoretimeApiBlock26187139.registry.createType('U32', '80'),
 		},
 	},
 	query: {
@@ -160,7 +149,7 @@ const mockCoretimeApi = {
 			leases: leases,
 			saleInfo: () =>
 				Promise.resolve().then(() =>
-					mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerSaleInfoRecord', {
+					mockKusamaCoretimeApiBlock26187139.registry.createType('Option<PalletBrokerSaleInfoRecord>', {
 						saleStart: 1705849,
 						leadinLength: 50400,
 						endPrice: 776775851,
@@ -178,7 +167,7 @@ const mockCoretimeApi = {
 			},
 			workload: {
 				multi: () => [],
-				entries: () => [],
+				entries: workloadsEntries,
 			},
 			regions: {
 				entries: regionsEntries,
@@ -271,10 +260,31 @@ describe('CoretimeService', () => {
 	});
 
 	describe('getInfo', () => {
-		return;
+		it('should return info data for relay chain coretime', async () => {
+			const info = await CoretimeServiceAtRelayChain.getCoretimeInfo(blockHash22887036);
+			expect(info).toHaveProperty('at');
+			expect(info).toHaveProperty('brokerId');
+			expect(info.brokerId).not.toBeNull();
+			expect(info).toHaveProperty('palletVersion');
+			expect(info.palletVersion).not.toBeNull();
+		});
+
+		it('should return info data for coretime chain coretime', async () => {
+			const info = await CoretimeServiceAtCoretimeChain.getCoretimeInfo(blockHash26187139);
+			expect(info).toHaveProperty('at');
+			expect(info).toHaveProperty('configuration');
+			expect(info.configuration).not.toBeNull();
+			expect(info.configuration?.advanceNotice).toBe(10);
+			expect(info).toHaveProperty('saleInfo');
+			expect(info.saleInfo).not.toBeNull();
+		});
 	});
 
 	describe('getCores', () => {
-		return;
+		it('should get workloads', async () => {
+			const cores = await CoretimeServiceAtCoretimeChain.getCoretimeCores(blockHash26187139);
+			expect(cores.cores).toHaveLength(2);
+			expect(cores.at).toHaveProperty('hash');
+		});
 	});
 });
