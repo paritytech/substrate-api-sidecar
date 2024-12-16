@@ -48,3 +48,18 @@ export const mockLeases = [
 		until: '340200',
 	},
 ];
+
+export const mockReservations = [
+	{
+		mask: '0xffffffffffffffffffff',
+		task: '1000',
+	},
+	{
+		mask: '0xffffffffffffffffffff',
+		task: '1001',
+	},
+	{
+		mask: '0xffffffffffffffffffff',
+		task: '1002',
+	},
+];

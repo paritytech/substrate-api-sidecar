@@ -22,7 +22,7 @@ import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusa
 // import { coretimeKusamaRegistryV1003003 } from '../../test-helpers/registries/coretimeChainKusamaRegistry';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
 import { blockHash22887036 } from '../test-helpers/mock';
-import { mockLeases, mockRegions, potentialRenewalsMocks } from '../test-helpers/mock/coretime';
+import { mockLeases, mockRegions, mockReservations, potentialRenewalsMocks } from '../test-helpers/mock/coretime';
 import { blockHash26187139 } from '../test-helpers/mock/mockBlock26187139';
 import { mockKusamaCoretimeApiBlock26187139 } from '../test-helpers/mock/mockCoretimeChainApi';
 import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
@@ -137,14 +137,42 @@ const mockCoretimeApi = {
 		broker: {
 			configuration: () =>
 				Promise.resolve().then(() =>
-					mockKusamaCoretimeApiBlock26187139.registry.createType('Option<PalletBrokerConfigRecord>', {}),
+					mockKusamaCoretimeApiBlock26187139.registry.createType('Option<PalletBrokerConfigRecord>', {
+						advanceNotice: 10,
+						interludeLength: 50400,
+						leadinLength: 50400,
+						regionLength: 5040,
+						idealBulkProportion: 1000000000,
+						limitCoresOffered: null,
+						renewalBump: 30000000,
+						contributionTimeout: 5040,
+					}),
 				),
 			potentialRenewals: {
 				entries: potentialRenewalsEntries,
 			},
-			reservations: () => [],
+			reservations: () =>
+				Promise.resolve().then(() =>
+					mockReservations.map((reservation) => {
+						return [mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerScheduleItem', reservation)];
+					}),
+				),
 			leases: leases,
-			saleInfo: () => {},
+			saleInfo: () =>
+				Promise.resolve().then(() =>
+					mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerSaleInfoRecord', {
+						saleStart: 1705849,
+						leadinLength: 50400,
+						endPrice: 776775851,
+						regionBegin: 331128,
+						regionEnd: 336168,
+						idealCoresSold: 81,
+						coresOffered: 81,
+						firstCore: 19,
+						selloutPrice: 32205681617,
+						coresSold: 69,
+					}),
+				),
 			workplan: {
 				entries: () => [],
 			},
@@ -213,6 +241,14 @@ describe('CoretimeService', () => {
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
+		});
+
+		it('should return reservations', async () => {
+			const reservations = await CoretimeServiceAtCoretimeChain.getCoretimeReservations(blockHash26187139);
+			expect(reservations.reservations).toHaveLength(3);
+			expect(reservations.at).toHaveProperty('hash');
+			expect(reservations.reservations[0]).toHaveProperty('mask');
+			expect(reservations.reservations[0]).toHaveProperty('task');
 		});
 	});
 
