@@ -77,6 +77,7 @@ export class CoretimeService extends AbstractService {
 	private getAndDecodeRegions = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TRegionInfo[]> => {
 		const regions = await api.query.broker.regions.entries();
 		const regs = regions as unknown as [StorageKey<[PalletBrokerRegionId]>, Option<PalletBrokerRegionRecord>][];
+
 		const regionsInfo = regs.map((region) => {
 			return extractRegionInfo([region[0], region[1]]);
 		});
@@ -159,7 +160,6 @@ export class CoretimeService extends AbstractService {
 			StorageKey<[PalletBrokerPotentialRenewalId]>,
 			Option<PalletBrokerPotentialRenewalRecord>,
 		][];
-
 		const potentialRenewalsInfo = sortByCore(
 			renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
 		);
