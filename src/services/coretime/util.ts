@@ -17,7 +17,7 @@ import {
 	PolkadotRuntimeParachainsAssignerCoretimeWorkState,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
-import { Option, u32, Vec } from '@polkadot/types-codec';
+import { Option, U32, Vec } from '@polkadot/types-codec';
 import { BN } from '@polkadot/util';
 
 import {
@@ -209,7 +209,7 @@ export function extractConfigInfo(info: Option<PalletBrokerConfigRecord>): TConf
 }
 
 export function extractCoreDescriptorInfo(
-	_core: StorageKey<[u32]>,
+	_key: StorageKey<[U32]>,
 	info: PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 ): TCoreDescriptor {
 	const currentWork: PolkadotRuntimeParachainsAssignerCoretimeWorkState | null = info?.currentWork.isSome
@@ -219,7 +219,6 @@ export function extractCoreDescriptorInfo(
 		? info.queue.unwrap()
 		: null;
 	const assignments = currentWork?.assignments || [];
-
 	return {
 		info: {
 			currentWork: {

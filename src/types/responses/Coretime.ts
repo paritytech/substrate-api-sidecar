@@ -165,22 +165,24 @@ export interface ICoretimeInfo {
 
 export interface ICoretimeCores {
 	at: IAt;
-	cores?: {
-		coreId: string;
-		taskId: string;
-		workload: TWorkloadInfo['info'];
-		type: {
-			condition: string;
-			details?:
-				| {
-						mask?: string;
-				  }
-				| {
-						until?: number;
-				  };
-		};
-		regions: TRegionInfo[];
-	}[];
-	coreDescriptors?: (TParaLifecycle & TCoreDescriptor)[];
+	cores?: (
+		| {
+				coreId: string;
+				taskId: string;
+				workload: TWorkloadInfo['info'];
+				type: {
+					condition: string;
+					details?:
+						| {
+								mask?: string;
+						  }
+						| {
+								until?: number;
+						  };
+				};
+				regions: TRegionInfo[];
+		  }
+		| (TParaLifecycle & TCoreDescriptor)
+	)[];
 	coreSchedules?: Record<string, unknown>[];
 }

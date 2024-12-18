@@ -19,7 +19,7 @@
 
 // import { QueryableModuleStorage } from '@polkadot/api/types';
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { Option, StorageKey, U16, U32, u32, Vec } from '@polkadot/types';
+import { Option, StorageKey, U16, U32, Vec } from '@polkadot/types';
 import { BlockHash, ParaId } from '@polkadot/types/interfaces';
 import {
 	PalletBrokerConfigRecord,
@@ -182,11 +182,11 @@ export class CoretimeService extends AbstractService {
 
 	private getAndDecodeCoreDescriptors = async (api: ApiDecoration<'promise'>): Promise<TCoreDescriptor[]> => {
 		const coreDescriptors = await api.query.coretimeAssignmentProvider.coreDescriptors.entries();
-
 		const descriptors = coreDescriptors as unknown as [
-			StorageKey<[u32]>,
+			StorageKey<[U32]>,
 			PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 		][];
+
 		return descriptors.map((descriptor) => extractCoreDescriptorInfo(descriptor[0], descriptor[1]));
 	};
 
@@ -424,13 +424,13 @@ export class CoretimeService extends AbstractService {
 					hash,
 					height: blockNumber.toString(10),
 				},
-				coreDescriptors: descriptorsWithParas,
+				cores: descriptorsWithParas,
 				coreSchedules: schedules,
 			};
 		} else {
 			const [workload, workplan, leases, reservations, regions] = await Promise.all([
 				this.getAndDecodeWorkload(historicApi, coreId ? parseInt(coreId, 10) : undefined),
-				coreId ? this.getAndDecodeWorkplan(historicApi, parseInt(coreId, 10)) : [],
+				this.getAndDecodeWorkplan(historicApi),
 				this.getAndDecodeLeases(historicApi),
 				this.getAndDecodeReservations(historicApi),
 				this.getAndDecodeRegions(historicApi, coreId ? parseInt(coreId, 10) : undefined),

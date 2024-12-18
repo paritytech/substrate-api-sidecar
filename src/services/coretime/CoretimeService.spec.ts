@@ -15,18 +15,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-// import { StorageKey } from '@polkadot/types';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusamaMetadata';
-// import { coretimeKusamaRegistryV1003003 } from '../../test-helpers/registries/coretimeChainKusamaRegistry';
+import { kusamaMetadataV1003003 } from '../../test-helpers/metadata/kusamaMetadataV1003003';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
 import { blockHash22887036 } from '../test-helpers/mock';
 import {
+	mockCoreDescriptors,
 	mockLeases,
+	mockParasLifeCycles,
 	mockRegions,
 	mockReservations,
 	mockWorkloads,
+	mockWorkplans,
 	potentialRenewalsMocks,
 } from '../test-helpers/mock/coretime';
 import { blockHash26187139 } from '../test-helpers/mock/mockBlock26187139';
@@ -34,41 +36,11 @@ import { mockKusamaCoretimeApiBlock26187139 } from '../test-helpers/mock/mockCor
 import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { CoretimeService } from './CoretimeService';
 
-const mockKusamaApi = {
-	...mockKusamaApiBlock26187139,
-	at: (_hash: Hash) => mockKusamaApi,
-	consts: {
-		...mockKusamaApiBlock26187139.consts,
-		coretime: {
-			brokerId: 1,
-		},
-		onDemandAssignmentProvider: {
-			maxHistoricalRevenue: '50',
-		},
-	},
-	query: {
-		coretimeAssignmentProvider: {
-			coreSchedules: {
-				entries: () => [],
-			},
-			coreDescriptors: {
-				entries: () => [],
-			},
-			palletVersion: () => Promise.resolve().then(() => '1'),
-		},
-		onDemandAssignmentProvider: {
-			palletVersion: () => {},
-		},
-		paras: {
-			paraLifecycles: {
-				entries: () => [],
-			},
-		},
-	},
-} as unknown as ApiPromise;
-
 const coretimeApi = createApiWithAugmentations(kusamaCoretimeMetadata);
+const kusamaApi = createApiWithAugmentations(kusamaMetadataV1003003);
+
 const coretimeTypeFactory = new TypeFactory(coretimeApi);
+const kusamaTypeFactory = new TypeFactory(kusamaApi);
 
 const regionsEntries = () =>
 	Promise.resolve().then(() =>
@@ -112,6 +84,108 @@ const workloadsEntries = () =>
 			return [key, [mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerScheduleItem', workload)]];
 		}),
 	);
+
+const parasLifeCyclesEntries = () =>
+	Promise.resolve().then(() =>
+		mockParasLifeCycles.map((parasLifeCycle) => {
+			const storageEntry = kusamaApi.query.paras.paraLifecycles;
+			const key = kusamaTypeFactory.storageKey(parasLifeCycle.key, 'U32', storageEntry);
+			return [
+				key,
+				mockKusamaApiBlock26187139.registry.createType(
+					'Option<PolkadotRuntimeParachainsParasParaLifecycle>',
+					parasLifeCycle.value,
+				),
+			];
+		}),
+	);
+
+const coreDescriptorsEntries = () =>
+	Promise.resolve().then(() => {
+		return mockCoreDescriptors.map((coreDescriptor) => {
+			const storageEntry = kusamaApi.query.coretimeAssignmentProvider.coreDescriptors;
+			const key = kusamaTypeFactory.storageKey(coreDescriptor.key, 'U32', storageEntry);
+
+			const currentWork = mockKusamaApiBlock26187139.registry.createType(
+				'Option<PolkadotRuntimeParachainsAssignerCoretimeWorkState>',
+				coreDescriptor.value.currentWork,
+			);
+
+			const queue = mockKusamaApiBlock26187139.registry.createType(
+				'Option<PolkadotRuntimeParachainsAssignerCoretimeQueueDescriptor>',
+				coreDescriptor.value.queue,
+			);
+
+			return [
+				key,
+				mockKusamaApiBlock26187139.registry.createType('PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor', {
+					...coreDescriptor.value,
+					currentWork,
+					queue,
+				}),
+			];
+		});
+	});
+
+const coreSchedulesEntries = () =>
+	Promise.resolve().then(() => {
+		return [];
+	});
+
+const workplanEntries = () =>
+	Promise.resolve().then(() =>
+		mockWorkplans.map((workplan) => {
+			const storageEntry = coretimeApi.query.broker.workplan;
+			const key = coretimeTypeFactory.storageKey(workplan.key, 'StorageKey', storageEntry);
+			return [
+				key,
+				mockKusamaCoretimeApiBlock26187139.registry.createType('Option<Vec<PalletBrokerScheduleItem>>', workplan.value),
+			];
+		}),
+	);
+
+const workplanMultiEntries = () =>
+	Promise.resolve().then(() => {
+		const storageEntry = coretimeApi.query.broker.workplan;
+		const key = coretimeTypeFactory.storageKey(mockWorkplans[0].key, 'StorageKey', storageEntry);
+		return [
+			key,
+			mockKusamaCoretimeApiBlock26187139.registry.createType(
+				'Option<Vec<PalletBrokerScheduleItem>>',
+				mockWorkplans[0].value,
+			),
+		];
+	});
+const mockKusamaApi = {
+	...mockKusamaApiBlock26187139,
+	at: (_hash: Hash) => mockKusamaApi,
+	consts: {
+		...mockKusamaApiBlock26187139.consts,
+		coretime: {
+			brokerId: 1,
+		},
+		onDemandAssignmentProvider: {
+			maxHistoricalRevenue: '50',
+		},
+	},
+	query: {
+		coretimeAssignmentProvider: {
+			coreSchedules: {
+				entries: coreSchedulesEntries,
+			},
+			coreDescriptors: {
+				entries: coreDescriptorsEntries,
+			},
+			palletVersion: () => Promise.resolve().then(() => '1'),
+		},
+		onDemandAssignmentProvider: {},
+		paras: {
+			paraLifecycles: {
+				entries: parasLifeCyclesEntries,
+			},
+		},
+	},
+} as unknown as ApiPromise;
 
 const mockCoretimeApi = {
 	...mockKusamaCoretimeApiBlock26187139,
@@ -163,19 +237,14 @@ const mockCoretimeApi = {
 					}),
 				),
 			workplan: {
-				entries: () => [],
+				entries: workplanEntries,
 			},
 			workload: {
-				multi: () => [],
+				multi: workplanMultiEntries,
 				entries: workloadsEntries,
 			},
 			regions: {
 				entries: regionsEntries,
-			},
-		},
-		paras: {
-			paraLifecycles: {
-				entries: () => [],
 			},
 		},
 	},
@@ -281,10 +350,28 @@ describe('CoretimeService', () => {
 	});
 
 	describe('getCores', () => {
-		it('should get workloads', async () => {
+		it('should get cores for coretime chain', async () => {
 			const cores = await CoretimeServiceAtCoretimeChain.getCoretimeCores(blockHash26187139);
 			expect(cores.cores).toHaveLength(2);
 			expect(cores.at).toHaveProperty('hash');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('coreId');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('regions');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('taskId');
+		});
+
+		it('should get cores for relay chain', async () => {
+			const cores = await CoretimeServiceAtRelayChain.getCoretimeCores(blockHash26187139);
+			console.log(cores);
+			expect(cores.cores).toHaveLength(2);
+			expect(cores.at).toHaveProperty('hash');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('paraId');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('type');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('info');
+			const coresData = cores.cores;
+			if (coresData && 'info' in coresData[0]) {
+				expect(coresData[0].info).toHaveProperty('currentWork');
+				expect(coresData[0].info.currentWork).toHaveProperty('assignments');
+			}
 		});
 	});
 });

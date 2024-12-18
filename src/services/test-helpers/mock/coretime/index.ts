@@ -20,11 +20,49 @@ export const mockRegions = [
 export const mockWorkloads = [
 	{
 		key: '95',
-		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2023 } },
+		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2032 } },
 	},
 	{
 		key: '20',
-		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2222 } },
+		value: { mask: '0xffffffffffffffffffff', assignment: { task: 2007 } },
+	},
+];
+
+export const mockParasLifeCycles = [
+	{
+		key: '2007',
+		value: 'Parathread',
+	},
+	{
+		key: '2032',
+		value: 'Parachain',
+	},
+];
+
+export const mockCoreDescriptors = [
+	{
+		key: '10',
+		value: {
+			queue: null,
+			currentWork: {
+				assignments: [[{ task: 2007 }, { ratio: 57600, remaining: 57600 }]],
+				endHint: null,
+				pos: 1,
+				step: 57600,
+			},
+		},
+	},
+	{
+		key: '11',
+		value: {
+			queue: null,
+			currentWork: {
+				assignments: [[{ task: 2032 }, { ratio: 57600, remaining: 57600 }]],
+				endHint: null,
+				pos: 1,
+				step: 57600,
+			},
+		},
 	},
 ];
 
@@ -34,7 +72,7 @@ export const potentialRenewalsMocks = [
 		value: {
 			price: '55066361452',
 			completion: {
-				Complete: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2274' } }],
+				Complete: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2007' } }],
 			},
 		},
 	},
@@ -43,7 +81,7 @@ export const potentialRenewalsMocks = [
 		value: {
 			price: '76754134107',
 			completion: {
-				Complete: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2007' } }],
+				Complete: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2032' } }],
 			},
 		},
 	},
@@ -51,11 +89,11 @@ export const potentialRenewalsMocks = [
 
 export const mockLeases = [
 	{
-		task: '2000',
+		task: '2007',
 		until: '340200',
 	},
 	{
-		task: '2084',
+		task: '2032',
 		until: '340200',
 	},
 ];
@@ -72,5 +110,16 @@ export const mockReservations = [
 	{
 		mask: '0xffffffffffffffffffff',
 		task: '1002',
+	},
+];
+
+export const mockWorkplans = [
+	{
+		key: '0x4dcb50595177a3177648411a42aca0f5b20f0cdcf1dc08a3b45e596567ea076aefdd76257bb6014b780d05000800',
+		value: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2032' } }],
+	},
+	{
+		key: '0x4dcb50595177a3177648411a42aca0f5b20f0cdcf1dc08a3b45e596567ea076af9bf2a8f54b8466c780d05001800',
+		value: [{ mask: '0xffffffffffffffffffff', assignment: { Task: '2007' } }],
 	},
 ];
