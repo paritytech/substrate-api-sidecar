@@ -1088,13 +1088,6 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
-      - name: core
-        in: query
-        description: Core identifier.
-        required: false
-        schema:
-          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
-          type: string
       operationId: getCoretimeInfo
       responses:
         "200":
@@ -1102,7 +1095,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainInfoResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayInfoResponse'
   /coretime/cores:
     get:
       tags:
@@ -1118,13 +1113,22 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
+      - name: coreId
+        in: query
+        description: Core identifier.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainCoresResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayCoresResponse'
   /node/network:
     get:
       tags:
@@ -3212,7 +3216,212 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CoretimeRenewal'
-    # TODO: info, cores 
+    CoretimeChainInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        configuration:
+          $ref: '#/components/schemas/CoretimeConfig'
+        saleInfo:
+          $ref: '#/components/schemas/CoretimeSaleInfo'
+    CoretimeRelayInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        brokerId:
+          type: string
+          description: The broker parachain id.
+        palletVersion:
+          type: string
+          description: The pallet version.
+        maxHistoricalRevenue:
+          type: string
+          description: The maximum historical revenue.
+    CoretimeChainCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeCore'
+    CoretimeRelayCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRelayCoreDescriptor'
+    CoretimeRelayCoreDescriptor:
+      type: object
+      properties:
+        paraId:
+          type: string
+          description: The parachain id.
+        type: 
+          type: string
+          description: The parachain type.
+        info:
+          type: object
+          properties: 
+            currentWork: 
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      isPool:
+                        type: boolean
+                        description: Whether the workload is a pool.
+                      isTask:
+                        type: boolean
+                        description: Whether the workload is a task.
+                      ratio: 
+                        type: string
+                        description: The ratio of the workload.
+                      remaining:
+                        type: string
+                        description: The remaining workload.
+                      task:
+                        type: string
+                        description: The parachain id.
+                endHint:
+                  type: string
+                  description: The end hint.
+                pos: 
+                  type: string
+                  description: The position.
+                step: 
+                  type: string
+                  description: The step.
+            queue: 
+              type: object
+              properties:
+                first: 
+                  type: string
+                  description: The first assignment in queue.
+                last:
+                  type: string
+                  description: The last assignment in queue.
+    CoretimeCore:
+      type: object
+      properties:
+        coreId:
+          type: string
+          description: The core id.
+        taskId:
+          type: string
+          description: The parachain core.
+        workload:
+          type: object
+          $ref: '#/components/schemas/CoretimeWorkload'
+        type:
+          description: The paid price.
+          type: object
+          properties:
+            condition: 
+              type: string
+              description: Type of assignment.
+            details:
+              type: object
+              oneOf: 
+                - $ref: '#/components/schemas/CoretimeUntil'
+                - $ref: '#/components/schemas/CoretimeMask'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeConfig:
+      type: object
+      properties:
+        advanceNotice:
+          type: string
+          description: The advance notice.
+        interludeLength:
+          type: string
+          description: The interlude length.
+        leadinLength:
+          type: string
+          description: The leadin length.
+        regionLength:
+          type: string
+          description: The region length.
+        idealBulkProportion:
+          type: string
+          description: The ideal bulk proportion.
+        renewalBump:
+          type: string
+          description: The renewal bump.
+        contributionTimeout:
+          type: string
+          description: The contribution timeout.
+    CoretimeSaleInfo:
+        type: object
+        properties:
+          phase:
+            type: string
+            description: The phase of the sale.
+          saleStart:
+            type: string
+            description: The sale start.
+          leadinLength:
+            type: string
+            description: The leading length.
+          endPrice:
+            type: string
+            description: The end price.
+          regionBegin:
+            type: string
+            description: The region start time.
+          regionEnd:
+            type: string
+            description: The region end time.
+          idealCoresSold:
+            type: string
+            description: The ideal number of cores sold.
+          coresOffered:
+            type: string
+            description: The number of cores on sale.
+          firstCore:
+            type: string
+            description: The first core id.
+          selloutPrice:
+            type: string
+            description: The sellout price.
+          coresSold:
+            type: string
+            description: The number of cores sold.
+          RelayBlocksPerTimeslice:
+            type: string
+            description: The number of relay chain blocks per timeslice.
+    CoretimeMask:
+      type: string
+      description: The mask.
+    CoretimeUntil:
+      type: string
+      description: The lease expiry time.
+    CoretimeWorkload:
+      type: object
+      properties:
+        isPool: 
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
     CoretimeRegion:
       type: object
       properties:
