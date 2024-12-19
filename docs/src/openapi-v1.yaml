@@ -1007,7 +1007,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                $ref: '#/components/schemas/CoretimeLeasesResponse'
   /coretime/regions:
     get:
       tags:
@@ -1029,7 +1029,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                $ref: '#/components/schemas/CoretimeRegionsResponse'
   /coretime/renewals:
     get:
       tags:
@@ -1051,7 +1051,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                $ref: '#/components/schemas/CoretimeRenewalsResponse'
   /coretime/reservations:
     get:
       tags:
@@ -1073,12 +1073,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockRaw'
+                $ref: '#/components/schemas/CoretimeReservationsResponse'
   /coretime/info:
     get:
       tags:
       - coretime
-      summary: Get all the reservations currently registered on coretime chain.
+      summary: Get the generic information about coretime, either on coretime chain or relay chain.
       description: ''
       parameters:
       - name: blockId
@@ -1107,7 +1107,7 @@ paths:
     get:
       tags:
       - coretime
-      summary: Get all the reservations currently registered on coretime chain.
+      summary: Get all the cores information either on coretime chain or relay chain.
       description: ''
       operationId: getCoretimeCores
       parameters:
@@ -3176,6 +3176,106 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    CoretimeRegionsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeLeasesResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeLease'
+    CoretimeReservationsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeReservation'
+    CoretimeRenewalsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRenewal'
+    # TODO: info, cores 
+    CoretimeRegion:
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        begin:
+          type: string
+          description: The begin time.
+        end:
+          type: string
+          description: The end time.
+        owner: 
+          type: string
+          description: The owner of the region.
+        paid:
+          type: string
+          description: The paid price.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeLease:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        until: 
+          type: string
+          description: The lease expiry time.
+        core:
+          type: string
+          description: The core id.
+    CoretimeReservation:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeRenewal:
+      type: object
+      properties:
+        completion:
+          type: string
+          description: The completion status.
+        core: 
+          type: string
+          description: The core id.
+        mask:
+          type: string
+          description: The mask.
+        price: 
+          type: string
+          description: The renewal price.
+        task: 
+          type: string
+          description: The parachain id.
+        when: 
+          type: string
+          description: The renewal time.
     BlockWithDecodedXcmMsgs:
       allOf:
         - $ref: "#/components/schemas/Block"
