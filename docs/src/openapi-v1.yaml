@@ -1098,7 +1098,7 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/CoretimeChainInfoResponse'
                   - $ref: '#/components/schemas/CoretimeRelayInfoResponse'
-  /coretime/cores:
+  /coretime/overview:
     get:
       tags:
       - coretime

@@ -29,7 +29,7 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/info', this.getCoretimeOverview],
-			['/cores', this.getCoretimeCores],
+			['/overview', this.getCoretimeCores],
 		]);
 	}
 
