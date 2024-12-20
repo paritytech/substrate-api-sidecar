@@ -539,9 +539,7 @@ export class CoretimeService extends AbstractService {
 			]);
 
 			const systemParas = reservations.map((el) => el.task);
-			const cores = [];
-
-			workload.map((wl) => {
+			const cores = workload.map((wl) => {
 				const coreType = systemParas.includes(wl.info.task)
 					? wl.info.task === 'Pool'
 						? 'ondemand'
@@ -559,13 +557,14 @@ export class CoretimeService extends AbstractService {
 				}
 
 				const coreRegions = regions.filter((region) => region.core === wl.core);
-				cores.push({
+				return {
 					coreId: wl.core,
-					taskId: wl.info.task,
+					paraId: wl.info.task,
 					workload: wl.info,
+					workplan: workplan.filter((f) => f.core === wl.core),
 					type: { condition: coreType, details },
 					regions: coreRegions,
-				});
+				};
 			});
 
 			return {

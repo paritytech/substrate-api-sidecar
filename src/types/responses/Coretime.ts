@@ -189,8 +189,8 @@ export interface ICoretimeCores {
 	at: IAt;
 	cores?: (
 		| {
-				coreId: string;
-				taskId: string;
+				coreId: number;
+				paraId: string;
 				workload: TWorkloadInfo['info'];
 				type: {
 					condition: string;

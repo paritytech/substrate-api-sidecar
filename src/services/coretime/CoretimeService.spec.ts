@@ -198,6 +198,16 @@ const mockCoretimeApi = {
 	},
 	query: {
 		broker: {
+			status: () =>
+				Promise.resolve().then(() =>
+					mockKusamaCoretimeApiBlock26187139.registry.createType('PalletBrokerStatusRecord', {
+						coreCount: 100,
+						privatePoolSize: 0,
+						systemPoolSize: 80,
+						lastCommittedTimeslice: 328585,
+						lastTimeslice: 328585,
+					}),
+				),
 			configuration: () =>
 				Promise.resolve().then(() =>
 					mockKusamaCoretimeApiBlock26187139.registry.createType('Option<PalletBrokerConfigRecord>', {
@@ -333,19 +343,30 @@ describe('CoretimeService', () => {
 			const info = await CoretimeServiceAtRelayChain.getCoretimeInfo(blockHash22887036);
 			expect(info).toHaveProperty('at');
 			expect(info).toHaveProperty('brokerId');
-			expect(info.brokerId).not.toBeNull();
-			expect(info).toHaveProperty('palletVersion');
-			expect(info.palletVersion).not.toBeNull();
+
+			if ('brokerId' in info) {
+				expect(info.brokerId).not.toBeNull();
+				expect(info).toHaveProperty('palletVersion');
+				expect(info.palletVersion).not.toBeNull();
+			} else {
+				throw new Error('BrokerId is not present in the info object');
+			}
 		});
 
 		it('should return info data for coretime chain coretime', async () => {
 			const info = await CoretimeServiceAtCoretimeChain.getCoretimeInfo(blockHash26187139);
 			expect(info).toHaveProperty('at');
 			expect(info).toHaveProperty('configuration');
-			expect(info.configuration).not.toBeNull();
-			expect(info.configuration?.advanceNotice).toBe(10);
-			expect(info).toHaveProperty('saleInfo');
-			expect(info.saleInfo).not.toBeNull();
+			if ('configuration' in info) {
+				expect(info.configuration).not.toBeNull();
+				expect(info.configuration?.leadinLength).toBe(50400);
+				expect(info).toHaveProperty('currentRegion');
+				expect(info).toHaveProperty('cores');
+				expect(info).toHaveProperty('phase');
+				expect(info.currentRegion).not.toBeNull();
+			} else {
+				throw new Error('Configuration is not present in the info object');
+			}
 		});
 	});
 
@@ -356,12 +377,11 @@ describe('CoretimeService', () => {
 			expect(cores.at).toHaveProperty('hash');
 			expect(cores.cores && cores.cores[0]).toHaveProperty('coreId');
 			expect(cores.cores && cores.cores[0]).toHaveProperty('regions');
-			expect(cores.cores && cores.cores[0]).toHaveProperty('taskId');
+			expect(cores.cores && cores.cores[0]).toHaveProperty('paraId');
 		});
 
 		it('should get cores for relay chain', async () => {
 			const cores = await CoretimeServiceAtRelayChain.getCoretimeCores(blockHash26187139);
-			console.log(cores);
 			expect(cores.cores).toHaveLength(2);
 			expect(cores.at).toHaveProperty('hash');
 			expect(cores.cores && cores.cores[0]).toHaveProperty('paraId');
