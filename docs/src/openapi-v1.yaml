@@ -3338,12 +3338,16 @@ components:
         coreId:
           type: string
           description: The core id.
-        taskId:
+        paraId:
           type: string
           description: The parachain core.
         workload:
           type: object
           $ref: '#/components/schemas/CoretimeWorkload'
+        workplan:
+          type: array
+          items: 
+            $ref: '#/components/schemas/CoretimeWorkplan'
         type:
           description: The paid price.
           type: object
@@ -3420,6 +3424,34 @@ components:
     CoretimeUntil:
       type: string
       description: The lease expiry time.
+    CoretimeWorkplan: 
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        timeslice: 
+          type: string
+          description: The timeslice.
+        info:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeWorkplanInfo'
+    CoretimeWorkplanInfo:
+      type: object
+      properties: 
+        isPool:
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
     CoretimeWorkload:
       type: object
       properties:
