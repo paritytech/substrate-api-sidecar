@@ -41,14 +41,12 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeInfo(hash));
 	};
 
-	private getCoretimeCores: RequestHandler = async ({ query: { at, core } }, res): Promise<void> => {
+	private getCoretimeCores: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		this.checkCoretimeModule();
 
 		const hash = await this.getHashFromAt(at);
 
-		const coreId = core ? (core as unknown as string) : undefined;
-
-		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeCores(hash, coreId));
+		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeCores(hash));
 	};
 
 	private checkCoretimeModule = (): void => {

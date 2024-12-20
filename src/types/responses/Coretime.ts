@@ -150,17 +150,39 @@ export interface ICoretimeReservations {
 	reservations: TReservationInfo[];
 }
 
-export interface ICoretimeSaleInfo extends TSaleInfo {
-	RelayBlocksPerTimeslice?: number;
-	phase?: string;
-}
-export interface ICoretimeInfo {
+export interface ICoretimeRelayInfo {
 	at: IAt;
-	configuration?: TConfigInfo;
-	saleInfo?: ICoretimeSaleInfo;
 	brokerId?: number;
 	palletVersion?: number;
 	maxHistoricalRevenue?: number;
+}
+
+export interface ICoretimeChainInfo {
+	at: IAt;
+	configuration?: Pick<TConfigInfo, 'regionLength' | 'interludeLength' | 'leadinLength'> & {
+		relayBlocksPerTimeslice: number;
+	};
+	status?: TStatusInfo;
+	currentRegion?: {
+		start: number | null;
+		end: number | null;
+	};
+	cores: {
+		available: number;
+		sold: number;
+		total: number;
+		currentCorePrice: BN;
+		selloutPrice?: BN;
+		firstCore?: number;
+	};
+	phase: {
+		config: {
+			phaseName: string;
+			lastRelayBlock: number;
+			lastTimeslice: number;
+		}[];
+		currentPhase: string;
+	};
 }
 
 export interface ICoretimeCores {

@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// import { QueryableModuleStorage } from '@polkadot/api/types';
 import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
 import { Option, StorageKey, U16, U32, Vec } from '@polkadot/types';
 import { BlockHash, ParaId } from '@polkadot/types/interfaces';
@@ -30,15 +29,18 @@ import {
 	PalletBrokerRegionRecord,
 	PalletBrokerSaleInfoRecord,
 	PalletBrokerScheduleItem,
+	PalletBrokerStatusRecord,
 	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
+import { BN } from '@polkadot/util';
 
 import {
+	ICoretimeChainInfo,
 	ICoretimeCores,
-	ICoretimeInfo,
 	ICoretimeLeases,
 	ICoretimeRegions,
+	ICoretimeRelayInfo,
 	ICoretimeRenewals,
 	ICoretimeReservations,
 	LeaseWithCore,
@@ -50,6 +52,7 @@ import {
 	TRegionInfo,
 	TReservationInfo,
 	TSaleInfo,
+	TStatusInfo,
 	TWorkloadInfo,
 	TWorkplanInfo,
 } from '../../types/responses';
@@ -63,6 +66,7 @@ import {
 	extractRegionInfo,
 	extractReservationInfo,
 	extractSaleInfo,
+	extractStatusInfo,
 	extractWorkloadInfo,
 	extractWorkplanInfo,
 	sortByCore,
@@ -73,8 +77,10 @@ enum ChainType {
 	Parachain = 'Parachain',
 }
 
+const SCALE = new BN(10000);
+
 export class CoretimeService extends AbstractService {
-	private getAndDecodeRegions = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TRegionInfo[]> => {
+	private getAndDecodeRegions = async (api: ApiDecoration<'promise'>): Promise<TRegionInfo[]> => {
 		const regions = await api.query.broker.regions.entries();
 		const regs = regions as unknown as [StorageKey<[PalletBrokerRegionId]>, Option<PalletBrokerRegionRecord>][];
 
@@ -82,7 +88,7 @@ export class CoretimeService extends AbstractService {
 			return extractRegionInfo([region[0], region[1]]);
 		});
 
-		return typeof coreId === 'number' ? regionsInfo.filter((region) => region.core === coreId) : regionsInfo;
+		return regionsInfo;
 	};
 
 	private getAndDecodeLeases = async (api: ApiDecoration<'promise'>): Promise<TLeaseInfo[]> => {
@@ -90,17 +96,7 @@ export class CoretimeService extends AbstractService {
 		return (leases as unknown as Vec<PalletBrokerLeaseRecordItem>).map((lease) => extractLeaseInfo(lease));
 	};
 
-	private getAndDecodeWorkload = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TWorkloadInfo[]> => {
-		if (coreId) {
-			const workload = await api.query.broker.workload.multi([coreId]);
-			const wls = workload as unknown as [Vec<PalletBrokerScheduleItem>];
-			return sortByCore(
-				wls.map((workload) => {
-					return extractWorkloadInfo(workload, coreId);
-				}),
-			);
-		}
-
+	private getAndDecodeWorkload = async (api: ApiDecoration<'promise'>): Promise<TWorkloadInfo[]> => {
 		const workloads = await api.query.broker.workload.entries();
 
 		const wls = workloads as unknown as [StorageKey<[U32]>, Vec<PalletBrokerScheduleItem>][];
@@ -111,7 +107,7 @@ export class CoretimeService extends AbstractService {
 		);
 	};
 
-	private getAndDecodeWorkplan = async (api: ApiDecoration<'promise'>, coreId?: number): Promise<TWorkplanInfo[]> => {
+	private getAndDecodeWorkplan = async (api: ApiDecoration<'promise'>): Promise<TWorkplanInfo[]> => {
 		const workplans = await api.query.broker.workplan.entries();
 		const wpls = workplans as unknown as [StorageKey<[U32, U16]>, Option<Vec<PalletBrokerScheduleItem>>][];
 		const wplsInfo = sortByCore(
@@ -121,7 +117,7 @@ export class CoretimeService extends AbstractService {
 			}),
 		);
 
-		return typeof coreId === 'number' ? wplsInfo.filter((workplan) => workplan.core === coreId) : wplsInfo;
+		return wplsInfo;
 	};
 
 	private getAndDecodeSaleInfo = async (api: ApiDecoration<'promise'>): Promise<TSaleInfo | null> => {
@@ -129,21 +125,11 @@ export class CoretimeService extends AbstractService {
 		return saleInfo.isSome ? extractSaleInfo(saleInfo.unwrap()) : null;
 	};
 
-	private getSalePhase = (blockNumber: number, saleInfo: TSaleInfo): string => {
-		if (blockNumber < saleInfo.saleStart) {
-			return 'interlude';
-		} else if (blockNumber < saleInfo.saleStart + saleInfo.leadinLength) {
-			return 'leadin';
-		} else {
-			return 'regular';
-		}
+	private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<TStatusInfo> => {
+		const status = await api.query.broker.status();
+
+		return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
 	};
-
-	// private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<TStatusInfo> => {
-	// 	const status = await api.query.broker.status();
-
-	// 	return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
-	// };
 
 	private getAndDecodeConfiguration = async (api: ApiDecoration<'promise'>): Promise<TConfigInfo> => {
 		const configuration = await api.query.broker.configuration();
@@ -151,10 +137,7 @@ export class CoretimeService extends AbstractService {
 		return extractConfigInfo(configuration as unknown as Option<PalletBrokerConfigRecord>);
 	};
 
-	private getAndDecodePotentialRenewals = async (
-		api: ApiDecoration<'promise'>,
-		coreId?: number,
-	): Promise<TPotentialRenewalInfo[]> => {
+	private getAndDecodePotentialRenewals = async (api: ApiDecoration<'promise'>): Promise<TPotentialRenewalInfo[]> => {
 		const potentialRenewals = await api.query.broker.potentialRenewals.entries();
 		const renewals = potentialRenewals as unknown as [
 			StorageKey<[PalletBrokerPotentialRenewalId]>,
@@ -164,9 +147,7 @@ export class CoretimeService extends AbstractService {
 			renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
 		);
 
-		return typeof coreId === 'number'
-			? potentialRenewalsInfo.filter((renewal) => renewal.core === coreId)
-			: potentialRenewalsInfo;
+		return potentialRenewalsInfo;
 	};
 
 	private getAndDecodeReservations = async (api: ApiDecoration<'promise'>): Promise<TReservationInfo[]> => {
@@ -200,8 +181,102 @@ export class CoretimeService extends AbstractService {
 		);
 	};
 
+	private leadinFactorAt = (scaledWhen: BN): BN => {
+		const scaledHalf = SCALE.div(new BN(2)); // 0.5 scaled to 10000
+
+		if (scaledWhen.lte(scaledHalf)) {
+			// First half of the graph, steeper slope
+			return SCALE.mul(new BN(100)).sub(scaledWhen.mul(new BN(180)));
+		} else {
+			// Second half of the graph, flatter slope
+			return SCALE.mul(new BN(19)).sub(scaledWhen.mul(new BN(18)));
+		}
+	};
+
+	private getCorePriceAt = (blockNumber: number, saleInfo: TSaleInfo) => {
+		const { endPrice, leadinLength, saleStart } = saleInfo;
+		// Explicit conversion to BN
+		const blockNowBn = new BN(blockNumber);
+		const saleStartBn = new BN(saleStart);
+		const leadinLengthBn = new BN(leadinLength);
+
+		// Elapsed time since the start of the sale, constrained to not exceed the total lead-in period
+		const elapsedTimeSinceSaleStart = blockNowBn.sub(saleStartBn);
+		const cappedElapsedTime = elapsedTimeSinceSaleStart.lt(leadinLengthBn) ? elapsedTimeSinceSaleStart : leadinLengthBn;
+
+		const scaledProgress = cappedElapsedTime.mul(new BN(10000)).div(leadinLengthBn);
+
+		/**
+		 * Progress is a normalized value between 0 and 1, where:
+		 *
+		 * 0 means the sale just started.
+		 * 1 means the sale is at the end of the lead-in period.
+		 *
+		 * We are scaling it to avoid floating point precision issues.
+		 */
+		const leadinFactor = this.leadinFactorAt(scaledProgress);
+		const scaledPrice = leadinFactor.mul(endPrice).div(SCALE);
+
+		return scaledPrice;
+	};
+
+	private getPhaseConfiguration = (
+		currentRegionStart: number,
+		regionLength: number,
+		interludeLengthTs: number,
+		leadInLengthTs: number,
+		lastCommittedTimeslice: number,
+	): {
+		config: {
+			phaseName: string;
+			lastTimeslice: number;
+		}[];
+		currentPhaseName: string;
+	} => {
+		const renewalsEndTs = currentRegionStart + interludeLengthTs;
+		const priceDiscoveryEndTs = renewalsEndTs + leadInLengthTs;
+		const fixedPriceLenght = regionLength - interludeLengthTs - leadInLengthTs;
+		const fixedPriceEndTs = priceDiscoveryEndTs + fixedPriceLenght;
+
+		const progress = lastCommittedTimeslice - currentRegionStart;
+		let phaseName = 'fixedPrice';
+
+		if (progress < interludeLengthTs) {
+			phaseName = 'renewals';
+		}
+
+		if (progress < interludeLengthTs + leadInLengthTs) {
+			phaseName = 'priceDiscovery';
+		}
+
+		return {
+			config: [
+				{
+					phaseName: 'renewals',
+					lastTimeslice: renewalsEndTs,
+				},
+				{
+					phaseName: 'priceDiscovery',
+					lastTimeslice: priceDiscoveryEndTs,
+				},
+				{
+					phaseName: 'fixedPrice',
+					lastTimeslice: fixedPriceEndTs,
+				},
+			],
+			currentPhaseName: phaseName,
+		};
+	};
+
+	private getCurrentRegionStartEndTs = (saleInfo: TSaleInfo, regionLength: number) => {
+		return {
+			currentRegionEnd: saleInfo.regionBegin,
+			currentRegionStart: saleInfo.regionBegin - regionLength,
+		};
+	};
+
 	// both relay and coretime chain
-	async getCoretimeInfo(hash: BlockHash): Promise<ICoretimeInfo> {
+	async getCoretimeInfo(hash: BlockHash): Promise<ICoretimeRelayInfo | ICoretimeChainInfo> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -233,27 +308,54 @@ export class CoretimeService extends AbstractService {
 		} else {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
-			const [config, saleInfo, timeslicePeriod] = await Promise.all([
+			const [config, saleInfo, timeslicePeriod, status] = await Promise.all([
 				this.getAndDecodeConfiguration(historicApi),
 				this.getAndDecodeSaleInfo(historicApi),
 				historicApi.consts.broker.timeslicePeriod,
+				this.getAndDecodeStatus(historicApi),
 			]);
 
 			const blocksPerTimeslice = timeslicePeriod as unknown as U32;
+			const currentRegionStats = saleInfo && this.getCurrentRegionStartEndTs(saleInfo, config.regionLength);
+			const phaseConfig = this.getPhaseConfiguration(
+				currentRegionStats?.currentRegionStart || 0,
+				config.regionLength,
+				config.interludeLength,
+				saleInfo?.leadinLength || 0,
+				status.lastCommittedTimeslice || 0,
+			);
 
 			return {
 				at: {
 					hash,
 					height: blockNumber.toString(10),
 				},
-				configuration: config,
-				...(saleInfo && {
-					saleInfo: {
-						phase: saleInfo ? this.getSalePhase(blockNumber.toNumber(), saleInfo) : 'unknown',
-						...saleInfo,
-						RelayBlocksPerTimeslice: blocksPerTimeslice.toNumber(),
-					},
-				}),
+				configuration: {
+					regionLength: config.regionLength,
+					interludeLength: config.interludeLength,
+					leadinLength: saleInfo?.leadinLength || 0,
+					relayBlocksPerTimeslice: blocksPerTimeslice.toNumber(),
+				},
+				currentRegion: {
+					start: currentRegionStats?.currentRegionStart || null,
+					end: currentRegionStats?.currentRegionEnd || null,
+				},
+				cores: {
+					available: Number(saleInfo?.coresOffered) - Number(saleInfo?.coresSold),
+					sold: Number(saleInfo?.coresSold),
+					total: Number(saleInfo?.coresOffered),
+					currentCorePrice: this.getCorePriceAt(blockNumber.toNumber(), saleInfo!),
+					selloutPrice: saleInfo?.selloutPrice,
+					firstCore: saleInfo?.firstCore,
+				},
+				phase: {
+					currentPhase: phaseConfig.currentPhaseName,
+					config: phaseConfig.config.map((c) => ({
+						phaseName: c.phaseName,
+						lastRelayBlock: c.lastTimeslice * blocksPerTimeslice.toNumber(),
+						lastTimeslice: c.lastTimeslice,
+					})),
+				},
 			};
 		}
 	}
@@ -300,7 +402,7 @@ export class CoretimeService extends AbstractService {
 		}
 	}
 
-	async getCoretimeRegions(hash: BlockHash, coreId?: number): Promise<ICoretimeRegions> {
+	async getCoretimeRegions(hash: BlockHash): Promise<ICoretimeRegions> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -317,7 +419,7 @@ export class CoretimeService extends AbstractService {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 
-			const regions = await this.getAndDecodeRegions(historicApi, coreId);
+			const regions = await this.getAndDecodeRegions(historicApi);
 
 			return {
 				at: {
@@ -358,7 +460,7 @@ export class CoretimeService extends AbstractService {
 		}
 	}
 
-	async getCoretimeRenewals(hash: BlockHash, coreId?: number): Promise<ICoretimeRenewals> {
+	async getCoretimeRenewals(hash: BlockHash): Promise<ICoretimeRenewals> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -375,7 +477,7 @@ export class CoretimeService extends AbstractService {
 			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 
-			const renewals = await this.getAndDecodePotentialRenewals(historicApi, coreId);
+			const renewals = await this.getAndDecodePotentialRenewals(historicApi);
 
 			return {
 				at: {
@@ -387,7 +489,7 @@ export class CoretimeService extends AbstractService {
 		}
 	}
 
-	async getCoretimeCores(hash: BlockHash, coreId?: string): Promise<ICoretimeCores> {
+	async getCoretimeCores(hash: BlockHash): Promise<ICoretimeCores> {
 		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
@@ -429,69 +531,42 @@ export class CoretimeService extends AbstractService {
 			};
 		} else {
 			const [workload, workplan, leases, reservations, regions] = await Promise.all([
-				this.getAndDecodeWorkload(historicApi, coreId ? parseInt(coreId, 10) : undefined),
+				this.getAndDecodeWorkload(historicApi),
 				this.getAndDecodeWorkplan(historicApi),
 				this.getAndDecodeLeases(historicApi),
 				this.getAndDecodeReservations(historicApi),
-				this.getAndDecodeRegions(historicApi, coreId ? parseInt(coreId, 10) : undefined),
+				this.getAndDecodeRegions(historicApi),
 			]);
 
 			const systemParas = reservations.map((el) => el.task);
 			const cores = [];
 
-			if (coreId) {
-				const coreType = systemParas.includes(workload[0].info.task)
-					? workload[0].info.task === 'Pool'
+			workload.map((wl) => {
+				const coreType = systemParas.includes(wl.info.task)
+					? wl.info.task === 'Pool'
 						? 'ondemand'
 						: 'reservation'
-					: leases.map((f) => f.task).includes(workload[0].info.task)
+					: leases.map((f) => f.task).includes(wl.info.task)
 						? 'lease'
 						: 'bulk';
 
+				let details = undefined;
+
+				if (coreType === 'reservation') {
+					details = { mask: reservations.find((f) => f.task === wl.info.task)?.mask };
+				} else if (coreType === 'lease') {
+					details = { until: leases.find((f) => f.task === wl.info.task)?.until };
+				}
+
+				const coreRegions = regions.filter((region) => region.core === wl.core);
 				cores.push({
-					coreId,
-					taskId: workload[0].info.task,
-					workload: workload[0].info,
-					workplan: workplan,
-					type: {
-						condition: coreType,
-						details:
-							coreType === 'reservation'
-								? { mask: reservations.find((f) => f.task === workload[0].info.task)?.mask }
-								: coreType === 'lease'
-									? { until: leases.find((f) => f.task === workload[0].info.task)?.until }
-									: undefined,
-					},
-					regions,
+					coreId: wl.core,
+					taskId: wl.info.task,
+					workload: wl.info,
+					type: { condition: coreType, details },
+					regions: coreRegions,
 				});
-			} else {
-				workload.map((wl) => {
-					const coreType = systemParas.includes(wl.info.task)
-						? wl.info.task === 'Pool'
-							? 'ondemand'
-							: 'reservation'
-						: leases.map((f) => f.task).includes(wl.info.task)
-							? 'lease'
-							: 'bulk';
-
-					let details = undefined;
-
-					if (coreType === 'reservation') {
-						details = { mask: reservations.find((f) => f.task === wl.info.task)?.mask };
-					} else if (coreType === 'lease') {
-						details = { until: leases.find((f) => f.task === wl.info.task)?.until };
-					}
-
-					const coreRegions = regions.filter((region) => region.core === wl.core);
-					cores.push({
-						coreId: wl.core,
-						taskId: wl.info.task,
-						workload: wl.info,
-						type: { condition: coreType, details },
-						regions: coreRegions,
-					});
-				});
-			}
+			});
 
 			return {
 				at: {

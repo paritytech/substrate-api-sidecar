@@ -1113,13 +1113,6 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
-      - name: coreId
-        in: query
-        description: Core identifier.
-        required: false
-        schema:
-          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
-          type: string
       responses:
         "200":
           description: successful operation
@@ -3223,8 +3216,37 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         configuration:
           $ref: '#/components/schemas/CoretimeConfig'
-        saleInfo:
-          $ref: '#/components/schemas/CoretimeSaleInfo'
+        currentRegion:
+          type: object
+          properties: 
+            start: 
+              type: string
+              description: The start time.
+            end: 
+              type: string
+              description: The end time.
+        cores:
+          type: object
+          properties: 
+            total: 
+              type: string
+              description: The total number of cores.
+            available: 
+              type: string
+              description: The number of free cores.
+            sold: 
+              type: string
+              description: The number of reserved cores.
+            currentCorePrice: 
+              type: string
+              description: The current core price.
+            selloutPrice: 
+              type: string
+              description: The sellout price.
+            firstCore:
+              type: string
+              description: The first core id.
+        
     CoretimeRelayInfoResponse:
       type: object
       properties:
@@ -3341,9 +3363,6 @@ components:
     CoretimeConfig:
       type: object
       properties:
-        advanceNotice:
-          type: string
-          description: The advance notice.
         interludeLength:
           type: string
           description: The interlude length.
@@ -3353,15 +3372,9 @@ components:
         regionLength:
           type: string
           description: The region length.
-        idealBulkProportion:
+        RelayBlocksPerTimeslice:
           type: string
-          description: The ideal bulk proportion.
-        renewalBump:
-          type: string
-          description: The renewal bump.
-        contributionTimeout:
-          type: string
-          description: The contribution timeout.
+          description: The number of relay chain blocks per timeslice.
     CoretimeSaleInfo:
         type: object
         properties:
