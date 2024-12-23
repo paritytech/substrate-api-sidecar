@@ -251,8 +251,6 @@ export function extractCoreDescriptorInfo(
 	};
 }
 
-export function extractCoreScheduleInfo() {}
-
 export function extractParachainLifecycleInfo(
 	key: StorageKey<[ParaId]>,
 	val: Option<PolkadotRuntimeParachainsParasParaLifecycle>,
