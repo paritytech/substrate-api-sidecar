@@ -17,7 +17,8 @@ import {
 	PolkadotRuntimeParachainsAssignerCoretimeWorkState,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
-import { Option, U32, Vec } from '@polkadot/types-codec';
+import { Option, Vec } from '@polkadot/types-codec';
+import { AnyTuple } from '@polkadot/types-codec/types';
 import { BN } from '@polkadot/util';
 
 import {
@@ -209,7 +210,7 @@ export function extractConfigInfo(info: Option<PalletBrokerConfigRecord>): TConf
 }
 
 export function extractCoreDescriptorInfo(
-	_key: StorageKey<[U32]>,
+	_key: StorageKey<AnyTuple>,
 	info: PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 ): TCoreDescriptor {
 	const currentWork: PolkadotRuntimeParachainsAssignerCoretimeWorkState | null = info?.currentWork.isSome

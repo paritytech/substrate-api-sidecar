@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { Hash } from '@polkadot/types/interfaces';
+import type { ApiPromise } from '@polkadot/api';
+import type { Hash } from '@polkadot/types/interfaces';
 
 import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusamaMetadata';
 import { kusamaMetadataV1003003 } from '../../test-helpers/metadata/kusamaMetadataV1003003';

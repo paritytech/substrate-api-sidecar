@@ -17,25 +17,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
-import { Option, StorageKey, U16, U32, Vec } from '@polkadot/types';
-import { BlockHash, ParaId } from '@polkadot/types/interfaces';
-import {
-	PalletBrokerConfigRecord,
-	PalletBrokerLeaseRecordItem,
-	PalletBrokerPotentialRenewalId,
-	PalletBrokerPotentialRenewalRecord,
-	PalletBrokerRegionId,
-	PalletBrokerRegionRecord,
-	PalletBrokerSaleInfoRecord,
-	PalletBrokerScheduleItem,
-	PalletBrokerStatusRecord,
+import type { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types';
+import type { Option, StorageKey, U32 } from '@polkadot/types';
+import type { BlockHash, ParaId } from '@polkadot/types/interfaces';
+import type {
+	// PalletBrokerConfigRecord,
+	// PalletBrokerLeaseRecordItem,
+	// PalletBrokerPotentialRenewalId,
+	// PalletBrokerPotentialRenewalRecord,
+	// PalletBrokerRegionId,
+	// PalletBrokerRegionRecord,
+	// PalletBrokerSaleInfoRecord,
+	// PalletBrokerScheduleItem,
+	// PalletBrokerStatusRecord,
 	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
 import { BN } from '@polkadot/util';
 
-import {
+import type {
 	ICoretimeChainInfo,
 	ICoretimeCores,
 	ICoretimeLeases,
@@ -82,9 +82,7 @@ const SCALE = new BN(10000);
 export class CoretimeService extends AbstractService {
 	private getAndDecodeRegions = async (api: ApiDecoration<'promise'>): Promise<TRegionInfo[]> => {
 		const regions = await api.query.broker.regions.entries();
-		const regs = regions as unknown as [StorageKey<[PalletBrokerRegionId]>, Option<PalletBrokerRegionRecord>][];
-
-		const regionsInfo = regs.map((region) => {
+		const regionsInfo = regions.map((region) => {
 			return extractRegionInfo([region[0], region[1]]);
 		});
 
@@ -93,15 +91,14 @@ export class CoretimeService extends AbstractService {
 
 	private getAndDecodeLeases = async (api: ApiDecoration<'promise'>): Promise<TLeaseInfo[]> => {
 		const leases = await api.query.broker.leases();
-		return (leases as unknown as Vec<PalletBrokerLeaseRecordItem>).map((lease) => extractLeaseInfo(lease));
+		return leases.map((lease) => extractLeaseInfo(lease));
 	};
 
 	private getAndDecodeWorkload = async (api: ApiDecoration<'promise'>): Promise<TWorkloadInfo[]> => {
 		const workloads = await api.query.broker.workload.entries();
 
-		const wls = workloads as unknown as [StorageKey<[U32]>, Vec<PalletBrokerScheduleItem>][];
 		return sortByCore(
-			wls.map((workload) => {
+			workloads.map((workload) => {
 				return extractWorkloadInfo(workload[1], workload[0].args[0].toNumber());
 			}),
 		);
@@ -109,10 +106,10 @@ export class CoretimeService extends AbstractService {
 
 	private getAndDecodeWorkplan = async (api: ApiDecoration<'promise'>): Promise<TWorkplanInfo[]> => {
 		const workplans = await api.query.broker.workplan.entries();
-		const wpls = workplans as unknown as [StorageKey<[U32, U16]>, Option<Vec<PalletBrokerScheduleItem>>][];
+
 		const wplsInfo = sortByCore(
-			wpls.map(([key, val]) => {
-				const [timeslice, core] = key.args[0].toArray();
+			workplans.map(([key, val]) => {
+				const [timeslice, core] = key.args[0].map((a) => a.toNumber());
 				return extractWorkplanInfo(val, core, timeslice);
 			}),
 		);
@@ -121,30 +118,27 @@ export class CoretimeService extends AbstractService {
 	};
 
 	private getAndDecodeSaleInfo = async (api: ApiDecoration<'promise'>): Promise<TSaleInfo | null> => {
-		const saleInfo = (await api.query.broker.saleInfo()) as unknown as Option<PalletBrokerSaleInfoRecord>;
+		const saleInfo = await api.query.broker.saleInfo();
 		return saleInfo.isSome ? extractSaleInfo(saleInfo.unwrap()) : null;
 	};
 
 	private getAndDecodeStatus = async (api: ApiDecoration<'promise'>): Promise<TStatusInfo> => {
 		const status = await api.query.broker.status();
 
-		return extractStatusInfo(status as unknown as Option<PalletBrokerStatusRecord>);
+		return extractStatusInfo(status);
 	};
 
 	private getAndDecodeConfiguration = async (api: ApiDecoration<'promise'>): Promise<TConfigInfo> => {
 		const configuration = await api.query.broker.configuration();
 
-		return extractConfigInfo(configuration as unknown as Option<PalletBrokerConfigRecord>);
+		return extractConfigInfo(configuration);
 	};
 
 	private getAndDecodePotentialRenewals = async (api: ApiDecoration<'promise'>): Promise<TPotentialRenewalInfo[]> => {
 		const potentialRenewals = await api.query.broker.potentialRenewals.entries();
-		const renewals = potentialRenewals as unknown as [
-			StorageKey<[PalletBrokerPotentialRenewalId]>,
-			Option<PalletBrokerPotentialRenewalRecord>,
-		][];
+
 		const potentialRenewalsInfo = sortByCore(
-			renewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
+			potentialRenewals.map((renewal) => extractPotentialRenewalInfo(renewal[1], renewal[0])),
 		);
 
 		return potentialRenewalsInfo;
@@ -153,7 +147,7 @@ export class CoretimeService extends AbstractService {
 	private getAndDecodeReservations = async (api: ApiDecoration<'promise'>): Promise<TReservationInfo[]> => {
 		const reservations = await api.query.broker.reservations();
 
-		return (reservations as unknown as Vec<Vec<PalletBrokerScheduleItem>>).map((res) => extractReservationInfo(res));
+		return reservations.map((res) => extractReservationInfo(res));
 	};
 
 	private getAndDecodeCoreSchedules = async (api: ApiDecoration<'promise'>): Promise<Record<string, unknown>[]> => {
@@ -591,7 +585,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	private getChainType(specName: string): ChainType {
-		const relay = ['polkadot', 'kusama', 'westend', 'rococo', 'paseo'];
+		const relay = ['polkadot', 'kusama', 'westend', 'paseo'];
 		if (relay.includes(specName.toLowerCase())) {
 			return ChainType.Relay;
 		} else {
