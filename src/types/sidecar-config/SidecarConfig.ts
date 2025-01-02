@@ -37,6 +37,7 @@ interface ISidecarConfigExpress {
 	HOST: string;
 	PORT: number;
 	KEEP_ALIVE_TIMEOUT: number;
+	MAX_BODY: string;
 }
 
 interface ISidecarConfigLog {

@@ -65,7 +65,7 @@ async function main() {
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
-	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
+	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
 
 	if (config.METRICS.ENABLED) {
 		// Create Metrics App

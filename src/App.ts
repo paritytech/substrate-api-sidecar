@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import express from 'express';
-import { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
+import express, { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
 import { Server } from 'http';
 
 import packageJson from '../package.json';
