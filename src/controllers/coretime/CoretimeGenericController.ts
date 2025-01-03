@@ -25,7 +25,7 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
 	}
-	// TODO: check if its either coretime or relay chain, if neither error out
+
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/info', this.getCoretimeOverview],
@@ -34,27 +34,14 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 	}
 
 	private getCoretimeOverview: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeInfo(hash));
 	};
 
 	private getCoretimeCores: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeGenericController.sanitizedSend(res, await this.service.getCoretimeCores(hash));
-	};
-
-	private checkCoretimeModule = (): void => {
-		if (this.api.query.onDemandAssignmentProvider && this.api.query.coretimeAssignmentProvider) {
-			return;
-		} else if (this.api.query.broker) {
-			return;
-		}
-		throw new Error('One or more coretime modules are not available on this network.');
 	};
 }

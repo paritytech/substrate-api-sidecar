@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,15 +21,6 @@ import type { ApiDecoration, QueryableModuleStorage } from '@polkadot/api/types'
 import type { Option, StorageKey, U32 } from '@polkadot/types';
 import type { BlockHash, ParaId } from '@polkadot/types/interfaces';
 import type {
-	// PalletBrokerConfigRecord,
-	// PalletBrokerLeaseRecordItem,
-	// PalletBrokerPotentialRenewalId,
-	// PalletBrokerPotentialRenewalRecord,
-	// PalletBrokerRegionId,
-	// PalletBrokerRegionRecord,
-	// PalletBrokerSaleInfoRecord,
-	// PalletBrokerScheduleItem,
-	// PalletBrokerStatusRecord,
 	PolkadotRuntimeParachainsAssignerCoretimeCoreDescriptor,
 	PolkadotRuntimeParachainsParasParaLifecycle,
 } from '@polkadot/types/lookup';
@@ -269,7 +260,6 @@ export class CoretimeService extends AbstractService {
 		};
 	};
 
-	// both relay and coretime chain
 	async getCoretimeInfo(hash: BlockHash): Promise<ICoretimeRelayInfo | ICoretimeChainInfo> {
 		const { api } = this;
 
@@ -300,7 +290,6 @@ export class CoretimeService extends AbstractService {
 				maxHistoricalRevenue: maxHistoricalRevenue as unknown as number,
 			};
 		} else {
-			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 			const [config, saleInfo, timeslicePeriod, status] = await Promise.all([
 				this.getAndDecodeConfiguration(historicApi),
@@ -368,7 +357,6 @@ export class CoretimeService extends AbstractService {
 		if (this.getChainType(specName.toString()) === ChainType.Relay) {
 			throw new Error('This endpoint is only available on coretime chains.');
 		} else {
-			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 			const [leases, workload] = await Promise.all([
 				this.getAndDecodeLeases(historicApi),
@@ -410,7 +398,6 @@ export class CoretimeService extends AbstractService {
 		if (this.getChainType(specName.toString()) === ChainType.Relay) {
 			throw new Error('This endpoint is only available on coretime chains.');
 		} else {
-			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 
 			const regions = await this.getAndDecodeRegions(historicApi);
@@ -468,7 +455,6 @@ export class CoretimeService extends AbstractService {
 		if (this.getChainType(specName.toString()) === ChainType.Relay) {
 			throw new Error('This endpoint is only available on coretime chains.');
 		} else {
-			// coretime chain or parachain
 			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 
 			const renewals = await this.getAndDecodePotentialRenewals(historicApi);
@@ -495,6 +481,7 @@ export class CoretimeService extends AbstractService {
 		const blockNumber = number.unwrap();
 
 		if (this.getChainType(specName.toString()) === ChainType.Relay) {
+			this.assertCoretimeModule(historicApi, ChainType.Relay);
 			const [parachains, schedules, descriptors] = await Promise.all([
 				this.getAndDecodeParachainsLifecycle(historicApi),
 				this.getAndDecodeCoreSchedules(historicApi),
@@ -524,6 +511,7 @@ export class CoretimeService extends AbstractService {
 				coreSchedules: schedules,
 			};
 		} else {
+			this.assertCoretimeModule(historicApi, ChainType.Parachain);
 			const [workload, workplan, leases, reservations, regions] = await Promise.all([
 				this.getAndDecodeWorkload(historicApi),
 				this.getAndDecodeWorkplan(historicApi),

@@ -3187,7 +3187,7 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
-        regions:
+        leases:
           type: array
           items:
             $ref: '#/components/schemas/CoretimeLease'
@@ -3196,7 +3196,7 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
-        regions:
+        reservations:
           type: array
           items:
             $ref: '#/components/schemas/CoretimeReservation'
@@ -3205,7 +3205,7 @@ components:
       properties:
         at:
           $ref: '#/components/schemas/BlockIdentifiers'
-        regions:
+        renewals:
           type: array
           items:
             $ref: '#/components/schemas/CoretimeRenewal'

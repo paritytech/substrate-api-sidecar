@@ -25,7 +25,7 @@ export default class CoretimeChainController extends AbstractController<Coretime
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
 	}
-	// TODO: check if its either coretime or relay chain, if neither error out
+
 	protected initRoutes(): void {
 		this.safeMountAsyncGetHandlers([
 			['/leases', this.getLeases], // :taskId
@@ -35,42 +35,25 @@ export default class CoretimeChainController extends AbstractController<Coretime
 		]);
 	}
 
-	private checkCoretimeModule = (): void => {
-		if (this.api.query.onDemandAssignmentProvider && this.api.query.coretimeAssignmentProvider) {
-			return;
-		} else if (this.api.query.broker) {
-			return;
-		}
-		throw new Error('One or more coretime modules are not available on this network.');
-	};
-
 	private getLeases: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeLeases(hash));
 	};
 
 	private getRegions: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeRegions(hash));
 	};
 
 	private getReservations: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeReservations(hash));
 	};
 
 	private getRenewals: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkCoretimeModule();
-
 		const hash = await this.getHashFromAt(at);
 
 		CoretimeChainController.sanitizedSend(res, await this.service.getCoretimeRenewals(hash));
