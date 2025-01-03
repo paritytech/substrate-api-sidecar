@@ -3414,9 +3414,6 @@ components:
           coresSold:
             type: string
             description: The number of cores sold.
-          RelayBlocksPerTimeslice:
-            type: string
-            description: The number of relay chain blocks per timeslice.
     CoretimeMask:
       type: string
       description: The mask.
