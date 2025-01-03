@@ -3246,7 +3246,6 @@ components:
             firstCore:
               type: string
               description: The first core id.
-        
     CoretimeRelayInfoResponse:
       type: object
       properties:
