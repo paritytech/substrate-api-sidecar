@@ -3375,7 +3375,7 @@ components:
         regionLength:
           type: string
           description: The region length.
-        RelayBlocksPerTimeslice:
+        relayBlocksPerTimeslice:
           type: string
           description: The number of relay chain blocks per timeslice.
     CoretimeSaleInfo:
