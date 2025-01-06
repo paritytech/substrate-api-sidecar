@@ -87,6 +87,14 @@ export class Specs {
 				type: 'number',
 			}),
 		);
+
+		this._specs.appendSpec(
+			MODULES.EXPRESS,
+			this._specs.getSpec(CONFIG.MAX_BODY, 'Max size of request payload body. It will default to 100kb.', {
+				default: '100kb',
+				type: 'string',
+			}),
+		);
 	}
 
 	/**
