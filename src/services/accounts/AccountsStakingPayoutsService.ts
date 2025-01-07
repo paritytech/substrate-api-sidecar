@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
 /**
- * Copyright 2024 via polkadot-js/api
+ * Copyright 2025 via polkadot-js/api
  * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
  */
 type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, SpStakingExposure][];
@@ -554,7 +554,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Copyright 2024 via polkadot-js/api
+	 * Copyright 2025 via polkadot-js/api
 	 * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
 	 *
 	 * The original version uses the base ApiDerive implementation which does not include the ApiDecoration implementation.
