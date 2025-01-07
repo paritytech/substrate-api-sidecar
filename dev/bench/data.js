@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1736198897704,
+  "lastUpdate": 1736246200091,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -2945,6 +2945,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 218.03,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "filippo@parity.io",
+            "name": "filvecchiato",
+            "username": "filvecchiato"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3a921963ee5d4d8ee2c5dcfb0edf83428e706b45",
+          "message": "feat: coretime implementation (#1558)\n\n* init coretime\r\n\r\n* prep for coretime support\r\n\r\n* update coretime service:\r\n\r\n* feat: first iteration at coretime impl\r\n\r\n* fix coretime service\r\n\r\n* update blocks per timeslice\r\n\r\n* impl registries kusama and coretime chain v1003003\r\n\r\n* housekeep for coretime tests\r\n\r\n* linting\r\n\r\n* tests passing for leases, renewals, regions\r\n\r\n* passing reservations\r\n\r\n* passing tests cores info\r\n\r\n* tests for cores endpoint\r\n\r\n* prep for api docs for coretime\r\n\r\n* coretime docs updated\r\n\r\n* reworked coretime/info endpoint to be more informative\r\n\r\n* change endpoint from cores to overview\r\n\r\n* passing tests\r\n\r\n* update docs\r\n\r\n* Delete .env\r\n\r\n* partial removal of typecasting\r\n\r\n* removal artifact code\r\n\r\n* patches to coretime controllers\r\n\r\n* patches to coretime controllers\r\n\r\n* patches to coretime controllers\r\n\r\n* patch docs",
+          "timestamp": "2025-01-07T11:02:50+01:00",
+          "tree_id": "3ea3dafbc8db07c54a71a37e9cd55fac04c32fdc",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/3a921963ee5d4d8ee2c5dcfb0edf83428e706b45"
+        },
+        "date": 1736246199096,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 159.42,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 137.49,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 235.73,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 11589.44,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.38,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.37,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1618.3,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 162.03,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 818.08,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 169.96,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 114.42,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 256.81,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 116.94,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 134.66,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 116.8,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 129.89,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 122,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 138.68,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 392.89,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 180.99,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 171.08,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 149.47,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 172.67,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 147.43,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 146.03,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 210.5,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 110.03,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 107.63,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 255.36,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 233.29,
             "unit": "ms"
           }
         ]
