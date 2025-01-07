@@ -41,6 +41,7 @@ Review the security alerts raised by Dependabot [here](https://github.com/parity
 
 ### Yarn Berry version
 - Check if there is a new version of Yarn Berry [here](https://github.com/yarnpkg/berry).
+- To determine which version of Yarn Sidecar is using, we can check the `yarn-X.X.X.cjs` in the [.yarn/releases](https://github.com/paritytech/substrate-api-sidecar/tree/master/.yarn/releases) folder.
 - To update the version, run the command `yarn set version stable`.
 - After upgrading, we can do the usual sanity checks (e.g. `yarn`, `yarn dedupe`).
 
