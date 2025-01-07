@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2024 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,46 +18,37 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Westend configuration for Sidecar.
+ * Polkadot configuration for Sidecar.
  */
-export const westendControllers: ControllerConfig = {
+export const coretimeControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
 		'AccountsConvert',
 		'AccountsProxyInfo',
-		'AccountsStakingInfo',
-		'AccountsStakingPayouts',
-		'AccountsValidate',
-		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksTrace',
 		'BlocksRawExtrinsics',
 		'NodeNetwork',
-		'NodeTransactionPool',
 		'NodeVersion',
-		'PalletsDispatchables',
 		'PalletsConsts',
 		'PalletsErrors',
 		'PalletsEvents',
 		'PalletsNominationPools',
+		'PalletsOnGoingReferenda',
 		'PalletsStakingProgress',
 		'PalletsStakingValidators',
 		'PalletsStorage',
-		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
-		'TransactionDryRun',
-		'TransactionFeeEstimate',
-		'TransactionMaterial',
-		'TransactionSubmit',
 		'CoretimeGeneric',
+		'CoretimeChain',
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 6,
+		minCalcFeeRuntime: 0,
 		blockStore: initLRUCache(),
-		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
+		hasQueryFeeApi: new QueryFeeDetailsCache(27, 28),
 	},
 };

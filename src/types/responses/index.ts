@@ -27,6 +27,7 @@ export * from './At';
 export * from './Block';
 export * from './BlockRaw';
 export * from './BlockXCMMessages';
+export * from './Coretime';
 export * from './EraPayouts';
 export * from './Extrinsic';
 export * from './ForeignAssets';

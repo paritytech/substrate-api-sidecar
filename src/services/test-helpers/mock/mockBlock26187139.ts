@@ -14,23 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { expandMetadata } from '@polkadot/types/metadata/decorate';
-
-import { kusamaRegistry, kusamaRegistryV1003003 } from '../registries/kusamaRegistry';
-import { polkadotRegistry } from '../registries/polkadotRegistry';
-import { kusamaMetadata, kusamaMetadataV1003003M, polkadotMetadata } from './metadata';
+import { kusamaRegistryV1003003 } from '../../../test-helpers/registries';
+import block26187139 from './data/block26187139.json';
 
 /**
- * Decorated metadata of the kusamaRegistry (v2008).
+ * Mock for Polkadot block #22887036.
  */
-export const decoratedKusamaMetadata = expandMetadata(kusamaRegistry, kusamaMetadata);
+export const mockBlock26187139 = kusamaRegistryV1003003.createType('Block', block26187139);
 
 /**
- * Decorated metadata of the polkadotRegistry (v16).
+ * BlockHash for Polkadot block #22887036.
  */
-export const decoratedPolkadotMetadata = expandMetadata(polkadotRegistry, polkadotMetadata);
-
-/**
- * Decorated metadata of the kusamaRegistry (v1003003).
- */
-export const decoratedKusamaMetadataV1003003 = expandMetadata(kusamaRegistryV1003003, kusamaMetadataV1003003M);
+export const blockHash26187139 = kusamaRegistryV1003003.createType(
+	'BlockHash',
+	'0x3be638a88bca46eed23b32ce49554f99d3308be753a172fcb114e22155105674',
+);
