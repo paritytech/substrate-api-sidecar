@@ -108,9 +108,10 @@ export class AccountsStakingInfoService extends AbstractService {
 				claimedRewardsEras,
 				claimedRewards,
 				eraStart,
+				depth,
 				e,
 			);
-
+			claimedRewardsNom = claimedRewards as IEraStatus<NominatorStatus>[];
 			/**
 			 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
 			 * `query.staking.claimedRewards` is available then we go into this check.
@@ -141,6 +142,7 @@ export class AccountsStakingInfoService extends AbstractService {
 					const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
 						historicApi,
 						e,
+						depth,
 						eraStart,
 						claimedRewardsNom,
 						validatorsUnwrapped,
@@ -232,6 +234,7 @@ export class AccountsStakingInfoService extends AbstractService {
 	private async fetchErasStatusForNominator(
 		historicApi: ApiDecoration<'promise'>,
 		e: number,
+		depth: number,
 		eraStart: number,
 		claimedRewardsNom: IEraStatus<NominatorStatus>[],
 		validatorsUnwrapped: string[],
@@ -245,6 +248,7 @@ export class AccountsStakingInfoService extends AbstractService {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
 					e,
+					depth,
 					eraStart,
 					claimedRewardsNom,
 					validatorStash,
@@ -319,6 +323,7 @@ export class AccountsStakingInfoService extends AbstractService {
 	private async fetchErasFromOldCalls(
 		historicApi: ApiDecoration<'promise'>,
 		e: number,
+		depth: number,
 		eraStart: number,
 		claimedRewards: IEraStatus<NominatorStatus>[],
 		validatorStash: string,
@@ -346,6 +351,7 @@ export class AccountsStakingInfoService extends AbstractService {
 			claimedRewardsEras,
 			claimedRewards,
 			eraStart,
+			depth,
 			e,
 		) as [boolean, IEraStatus<NominatorStatus>[], number];
 
@@ -417,6 +423,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		claimedRewardsEras: u32[],
 		claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[],
 		eraStart: number,
+		depth: number,
 		e: number,
 	): [boolean, IEraStatus<ValidatorStatus | NominatorStatus>[], number] {
 		if (!oldCallChecked) {
@@ -432,6 +439,10 @@ export class AccountsStakingInfoService extends AbstractService {
 				 */
 				if (eraStart <= claimedRewardsErasMax) {
 					e = claimedRewardsErasMax + 1;
+				} else if (depth == claimedRewardsEras.length) {
+					if (claimedRewardsEras[0].toNumber() == eraStart) {
+						e = eraStart + depth;
+					}
 				} else {
 					claimedRewards = [];
 				}
