@@ -190,70 +190,108 @@ The possible rewards status values of `claimed` for a Nominator account are the 
 - `claimed`
 - `undefined`
 
-## Different Cases
-### Case  `staking.erasStakersOverview.pageCount` == `staking.claimedRewards.length`
-This is the case when
-- Validator has 
-	- 1 or more pages of nominators (`erasStakersOverview` -> `pageCount`) per era and 
-	- these pages are equal to the length of the contents found in `claimedRewards` array
-### Example
-- Account `DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv` - [subscan](https://kusama.subscan.io/validator/DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv?tab=reward)
+## Different Scenarios
+
+### Case `erasStakersOverview.pageCount` == `claimedRewards.length`
+This is when a **Validator** Account has:
+- 1 or more pages of nominators (`erasStakersOverview` -> `pageCount`) per era and
+- these pages are equal to the length of the `claimedRewards` array.
+
+For example:
+- pageCount = 1 and claimedRewards.length = 1
+- pageCount = 2 and claimedRewards.length = 2
+- and so on
+
+#### Expected output
+The returned era should have status `claimed`.
+
+#### Example
+Validator has one page of nominators and this page was claimed.
+
+- Account [DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv](https://kusama.subscan.io/validator/DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv?tab=reward)
 - Era `6577` in Kusama chain
-- at block = `23032300`
-- block hash = `0xf9362e71ed123c3a057b75bce389a4c0758ad405556125fee00529569a433898`
-- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fkusama-rpc.dwellir.com#/chainstate) 
-	- `staking.claimedRewards` = `[0]`
-	- `staking.erasStakersOverview.pageCount` = `1`
+- At block = `23032300`
+- Block hash = `0xf9362e71ed123c3a057b75bce389a4c0758ad405556125fee00529569a433898`
+- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fkusama-rpc.dwellir.com#/chainstate):
+  - `erasStakersOverview.pageCount` = `1`
+  - `claimedRewards` = `[0]`
 
-![stak1](https://github.com/paritytech/substrate-api-sidecar/assets/12569221/d74c3f04-9aca-42c7-88f0-c31c2fb88838)
+      ![stak1](https://github.com/paritytech/substrate-api-sidecar/assets/12569221/d74c3f04-9aca-42c7-88f0-c31c2fb88838)
 
 
-- Sidecar `http://127.0.0.1:8080/accounts/DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv/staking-info?at=23032300`
-	- Era `6577` - Claimed
-### Case Handled
-This case is handled by setting queried era as claimed.
+- Sidecar
+  ```
+  http://127.0.0.1:8080/accounts/DteShXKaQQy2un2VizKwwhViN5e7F47UrkAZDkxgK22LdBv/staking-info?at=23032300
+  ```
+  era `6577`: claimed
 
-### Case  `staking.erasStakersOverview.pageCount` != `staking.claimedRewards.length`
-This is the case when a validator has multiple pages of nominators and only some of these pages were claimed. 
-### Example
+### Case  `erasStakersOverview.pageCount` != `claimedRewards.length`
+
+This is when a **Validator** Account has:
+- 1 or more pages of nominators (`erasStakersOverview` -> `pageCount`) per era and
+- only some of these pages were claimed thus these pages are not equal to the length of the `claimedRewards` array.
+
+
+For example:
+- pageCount = 1 and claimedRewards.length = 0
+- pageCount = 2 and claimedRewards.length = 0 or 1
+- pageCount = 4 and claimedRewards.length = 0, 1, 2 or 3
+- and so on
+
+#### Expected output
+The returned era should have status `partially claimed`.
+
+#### Example
+
 - Account [11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ](https://polkadot.subscan.io/validator/11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ?tab=reward)
-- Era `1470` in Polkadot chain
-- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.dotters.network%2Fpolkadot#/chainstate) 
-	- era `1468`
-	- at block = 21157800
-	- block hash = `0x59de258cf9999635c866df7bc5f397d152892827f887d3629344cb3cebba134f`
-- claimedRewards = `[0]`
-- erasStakersOverview = 2
+- Era `1468` in Polkadot chain
+- At block = 21157800
+- Block hash = `0x59de258cf9999635c866df7bc5f397d152892827f887d3629344cb3cebba134f`
+- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.dotters.network%2Fpolkadot#/chainstate):
+  - `erasStakersOverview.pageCount` = `2`
+  - `claimedRewards` = `[0]`
 
-- Sidecar `http://127.0.0.1:8080/accounts/11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ/staking-info?at=21157800`
-	- Era `1468` - `Partially Claimed`
+- Sidecar
+    ```
+    http://127.0.0.1:8080/accounts/11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ/staking-info?at=21157800
+    ```
+  era `1468`: partially claimed
 
-### Case handled
-This case is handled currently by setting queried era as **partially claimed**.
+### Case  `erasStakersOverview = null` and `erasStakers > 0`
+When `staking.erasStakersOverview` is `null`, we check if we can retrieve the `pageCount` (the number of pages of the validator's stakers/nominators) from `erasStakers` instead. If we can, then we can compare this with `staking.claimedRewards`.
 
-### Case  `staking.erasStakersOverview` = `null` & `staking.claimedRewards` = `[0]`
-This is a case where `staking.erasStakersOverview` is `null` so the information about the `pageCount` (in how many pages the stakers are divided into) needs to be retrieved from `erasStakers` and then compare it with `staking.claimedRewards`.
-### Example
+#### Expected output
+- If `erasStakers > 0` (hence pageCount == 1) and `staking.claimedRewards == [0]` (hence length == 1) -> era is set to `claimed`.
+- If `erasStakers > 0` (hence pageCount == 1) and `staking.claimedRewards == []` (hence length == 0) -> era is set to `unclaimed`.
+- If `erasStakers == 0` then we continue to the next `else` statement.
+
+#### Example
 - Account [F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T](https://kusama.subscan.io/reward?address=F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T&role=validator&category=Reward&page=9)
-- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.dotters.network%2Fpolkadot#/chainstate) 
-	- era `6513` in Kusama chain
-	- at block = 22939322
-	- block hash = `0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098`
-- claimedRewards = `[0]`
-- erasStakersOverview = `null`
+- Era `6513` in Kusama chain
+- At block = 22939322
+- Block hash = `0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098`
+- [pjs apps](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.dotters.network%2Fpolkadot#/chainstate)
+  - `erasStakersOverview` = `null`
+  - `claimedRewards` = `[0]`
 
-![Screenshot 2024-06-13 at 11 14 36](https://github.com/paritytech/substrate-api-sidecar/assets/12569221/550d77e8-142e-41bc-8491-f1467aa17a56)
+    ![Screenshot 2024-06-13 at 11 14 36](https://github.com/paritytech/substrate-api-sidecar/assets/12569221/550d77e8-142e-41bc-8491-f1467aa17a56)
 
-- Sidecar `http://127.0.0.1:8080/accounts/F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T/staking-info?at=22939322`
-	- Era `6513` - `Claimed`
+- Sidecar
+  ```
+  http://127.0.0.1:8080/accounts/F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T/staking-info?at=22939322
+  ```
+  era `6513`: claimed
 
-### Case handled
-This case is handled by checking if `erasStakers > 0` (hence pageCount == 1) && `staking.claimedRewards` is equal to `[0]` (hence length is 1) -> which is true for era `6513` so era is set to `claimed`.
+### Case  `erasStakersOverview = null` and `erasStakers = 0`
+THIS CASE NEEDS TO BE UPDATED
 
-### Case  `staking.erasStakersOverview` = `null` & `erasStakers` = 0
-Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825), exposure is not found so we cannot conclude in a status for this specific era. An example is the below request in which only 48 eras are returned since for the rest 36 -> `staking.erasStakersOverview` = `null` & `erasStakers` = 0.
+- We take 25 eras (6462 until 6512) from the old call `legacyClaimedRewards`
+- 6513 from eraStakers
+- 6514 from erasStakersOverview
 
-### Response (old code)
+Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomment-2077011825), exposure is not found so we cannot conclude in a status for this specific era. An example is the below request in which only 48 eras are returned since for the rest 36 -> `staking.erasStakersOverview = null` & `erasStakers = 0`.
+
+#### Response (old code)
 `http://127.0.0.1:8080/accounts/CmjHFdR59QAZMuyjDF5Sn4mwTgGbKMH2cErUFuf6UT51UwS/staking-info?at=22869643`
 
 ```
@@ -295,7 +333,7 @@ Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomm
 }
 ```
 
-### Response (new code)
+#### Response (new code)
 ```
 {
   "at": {
@@ -311,158 +349,11 @@ Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomm
         "era": "6462",
         "status": "claimed"
       },
-      {
-        "era": "6463",
-        "status": "claimed"
-      },
-      {
-        "era": "6467",
-        "status": "claimed"
-      },
-      {
-        "era": "6468",
-        "status": "claimed"
-      },
-      {
-        "era": "6469",
-        "status": "claimed"
-      },
-      {
-        "era": "6470",
-        "status": "claimed"
-      },
-      {
-        "era": "6471",
-        "status": "claimed"
-      },
-      {
-        "era": "6472",
-        "status": "claimed"
-      },
-      {
-        "era": "6473",
-        "status": "claimed"
-      },
-      {
-        "era": "6474",
-        "status": "claimed"
-      },
-      {
-        "era": "6495",
-        "status": "claimed"
-      },
-      {
-        "era": "6496",
-        "status": "claimed"
-      },
-      {
-        "era": "6497",
-        "status": "claimed"
-      },
-      {
-        "era": "6498",
-        "status": "claimed"
-      },
-      {
-        "era": "6499",
-        "status": "claimed"
-      },
-      {
-        "era": "6503",
-        "status": "claimed"
-      },
-      {
-        "era": "6504",
-        "status": "claimed"
-      },
-      {
-        "era": "6505",
-        "status": "claimed"
-      },
-      {
-        "era": "6506",
-        "status": "claimed"
-      },
-      {
-        "era": "6507",
-        "status": "claimed"
-      },
-      {
-        "era": "6508",
-        "status": "claimed"
-      },
-      {
-        "era": "6509",
-        "status": "claimed"
-      },
-      {
-        "era": "6510",
-        "status": "claimed"
-      },
-      {
-        "era": "6511",
-        "status": "claimed"
-      },
-      {
-        "era": "6512",
-        "status": "claimed"
-      },
-      {
-        "era": "6513",
-        "status": "claimed"
-      },
-      {
-        "era": "6514",
-        "status": "claimed"
-      },
-      {
-        "era": "6515",
-        "status": "claimed"
-      },
-      {
-        "era": "6516",
-        "status": "claimed"
-      },
-      {
-        "era": "6517",
-        "status": "claimed"
-      },
-      {
-        "era": "6518",
-        "status": "claimed"
-      },
-      {
-        "era": "6519",
-        "status": "claimed"
-      },
-      {
-        "era": "6520",
-        "status": "claimed"
-      },
-      {
-        "era": "6521",
-        "status": "claimed"
-      },
-      {
-        "era": "6522",
-        "status": "claimed"
-      },
-      {
-        "era": "6523",
-        "status": "claimed"
-      },
-      {
-        "era": "6524",
-        "status": "claimed"
-      },
-      {
-        "era": "6525",
-        "status": "claimed"
-      },
-      {
-        "era": "6526",
-        "status": "claimed"
-      },
+      ...
+      ...
+      all eras in between claimed
+      ...
+      ...
       {
         "era": "6527",
         "status": "claimed"
@@ -506,7 +397,7 @@ Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomm
 
 
 ### Testing
-- [x] Tested for account and blocks that include the eras before and after the migration (when the logic changed).
+- Tested for account and blocks that include the eras before and after the migration (when the logic changed).
 
 ### 🗒️ Implementation Notes
 - ‼️ The response time of the endpoint is significantly slower now.
