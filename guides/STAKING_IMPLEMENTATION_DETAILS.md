@@ -1,7 +1,7 @@
 # Implementation Details of Claimed Rewards
 This document outlines the implementation details for the `claimed` field returned by Sidecar's `/accounts/{accountId}/staking-info` endpoint (related [PR](https://github.com/paritytech/substrate-api-sidecar/pull/1445/files)).
 
-Helper guide in this [HackMd](https://hackmd.io/@LwMsxe3-SFmNXxugAXOKgg/ryPwFoezyl).
+Before proceeding, please check out the introductory helper guide in this [HackMd](https://hackmd.io/@LwMsxe3-SFmNXxugAXOKgg/ryPwFoezyl).
 
 ## Description
 In Sidecar, the `/accounts/{accountId}/staking-info` endpoint ([docs](https://paritytech.github.io/substrate-api-sidecar/dist/)) takes two parameters: 
@@ -36,8 +36,16 @@ At this point, it is important to mention the calls that correspond to the old l
 
 In the following sections, we mention the old logic calls (1st & 2nd check), but the focus is primarily on the new logic (from the `query.staking.claimedRewards` call / 3rd check), explaining how it works and pinpointing the corresponding changes in the `StakingInfo` code.
 
-### Depth & Eras
-First we need to calculate for how many eras we need to check if the rewards were claimed or not (`fetchErasInfo` function). For this we use the `depth` and `current_era` information to calculate `eraStart`. Having that, we can start from `eraStart` until `eraStart + depth` and perform the following checks.
+### Eras & Depth
+The aforementioned calls are closely related to the eras (_our starting era and the number of eras to check_) that we check the rewards for.
+The initial calculation for `eraStart` (_our starting era_) and `depth` (_the number of eras to check_) happens in `fetchErasInfo` function. For this we use the `depth` and `current_era` information to calculate `eraStart`. Having that, we can start from `eraStart` until `eraStart + depth` and perform the checks mentioned in the following sections.
+
+### Change of Eras to check
+After the initial calculation, the eras we check can change in the `isOldCallsChecked` function.
+First, we need to mention that the old calls are checked in the `fetchClaimedInfoFromOldCalls` function which returns `claimedRewardsEras` and `claimedRewards`. Then in `isOldCallsChecked` we check if `claimedRewardsEras` has any values and if yes then we take these values and populate the `claimedRewards` array in the new format of claimed response (`{era: ...,  status: ...}`). We might encounter some specific cases:
+- The `eraStart` <= max length of `claimedRewardsEras` array: in this case we continue checking the eras from `claimedRewardsEras.length + 1` onwards.
+- `depth == claimedRewardsEras.length`: in this case we do not need to check any further eras and we take the information that we already have.
+- in all other cases we reset `claimedRewards` which means that we need to check if rewards were claimed for all eras from `eraStart` until `eraStart + depth` with the new call. This was added because for historical blocks we encountered the case where `eraStart` > max length of `claimedRewardsEras`. Then the algorithm would need to use the new call to get the claimed info but in these blocks it was not available. So, we would have no claimed info returned.
 
 
 ### 1st Check
@@ -170,7 +178,7 @@ The payout for the validator in polkadot-sdk codebase is done [here](https://git
 
 
 ### Nominator Account
-If the account queried in the endpoint is a `nominator` account, the logic implemented is described in the following subsections.
+If the account queried in the endpoint is a `nominator` account, the logic is implemented in the `fetchErasStatusForNominator` function. As mentioned in the code's comments, to verify the reward status `claimed` of an era for a Nominator's account, we need to check the status of that era in one of their associated Validators' accounts. The logic is implemented in the . The function's comments describe most of the steps/checks implemented there.
 
 #### 💰 Reward Types
 A nominator receives one type of reward:
@@ -181,9 +189,6 @@ The possible rewards status values of `claimed` for a Nominator account are the 
 - `unclaimed`
 - `claimed`
 - `undefined`
-
-#### Logic implemented in the code
-The logic is implemented in the `fetchErasStatusForNominator` function.
 
 ## Different Cases
 ### Case  `staking.erasStakersOverview.pageCount` == `staking.claimedRewards.length`

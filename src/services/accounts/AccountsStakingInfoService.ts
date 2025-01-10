@@ -134,8 +134,8 @@ export class AccountsStakingInfoService extends AbstractService {
 						claimedRewards,
 					);
 				} else {
-					// If the account is a Nominator, then to determine if an era is claimed or not, I need to check
-					// if the era of one of their Validators is claimed or not.
+					// To verify the reward status `claimed` of an era for a Nominator's account,
+					// we need to check the status of that era in one of their associated Validators' accounts.
 					const nominatingValidators = await historicApi.query.staking.nominators(stash);
 					const validatorsUnwrapped = nominatingValidators.unwrap().targets.toHuman() as string[];
 
@@ -318,7 +318,7 @@ export class AccountsStakingInfoService extends AbstractService {
 	}
 
 	/**
-	 * This function takes a specific stash account and gives back the era and status of the rewards for that era.
+	 * This function returns the era and its reward status information for a given stash account.
 	 */
 	private async fetchErasFromOldCalls(
 		historicApi: ApiDecoration<'promise'>,
@@ -394,8 +394,8 @@ export class AccountsStakingInfoService extends AbstractService {
 	}
 
 	/**
-	 * This function retrieves the eras information (eraStart and depth),
-	 * which defines the range of eras to check if rewards were claimed or not.
+	 * This function determines which eras to check for claimed rewards
+	 * by returning the starting era (`eraStart`) and the number of eras to check (`depth`)
 	 */
 	private async fetchErasInfo(api: ApiDecoration<'promise'>, historicApi: ApiDecoration<'promise'>) {
 		const depth = Number(api.consts.staking.historyDepth.toNumber());
