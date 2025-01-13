@@ -65,12 +65,22 @@ export class AccountsStakingInfoService extends AbstractService {
 		);
 		const stakingLedger = stakingLedgerOption.unwrapOr(null);
 
-		// Checking if the account is a validator
-		let isValidator = false;
-		if (historicApi.query.session) {
-			const validators = (await historicApi.query.session.validators()).toHuman() as string[];
-			isValidator = validators.includes(stash);
-		}
+		/**
+		 * `isValidator`: checking if the account is a validator or not.
+		 *
+		 * `nominations`: fetching the list of validators that a nominator is nominating. This is only relevant for nominators.
+		 *                The stash account that we use as key is the nominator's stash account.
+		 *                https://polkadot.js.org/docs/substrate/storage/#nominatorsaccountid32-optionpalletstakingnominations
+		 *
+		 * `currentEra`: fetching the current era.
+		 */
+		const [isValidator, nominations, currentEraOption] = await Promise.all([
+			historicApi.query.session
+				? ((await historicApi.query.session.validators()).toHuman() as string[]).includes(stash)
+				: false,
+			historicApi.query.staking.nominators ? (await historicApi.query.staking.nominators(stash)).unwrapOr(null) : null,
+			historicApi.query.staking.currentEra(),
+		]);
 
 		if (stakingLedger === null) {
 			// should never throw because by time we get here we know we have a bonded pair
@@ -78,13 +88,6 @@ export class AccountsStakingInfoService extends AbstractService {
 				`Staking ledger could not be found for controller address "${controller.toString()}"`,
 			);
 		}
-
-		// Fetching the list of validators that a nominator is nominating. This is only relevant for nominators.
-		// The stash account that we use as key is the nominator's stash account.
-		// https://polkadot.js.org/docs/substrate/storage/#nominatorsaccountid32-optionpalletstakingnominations
-		const nominations = historicApi.query.staking.nominators
-			? (await historicApi.query.staking.nominators(stash)).unwrapOr(null)
-			: null;
 
 		// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
 		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
@@ -117,8 +120,7 @@ export class AccountsStakingInfoService extends AbstractService {
 			 * `query.staking.claimedRewards` is available then we go into this check.
 			 */
 			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
-				const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-				if (currentEraMaybeOption.isNone) {
+				if (currentEraOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
 
@@ -204,12 +206,11 @@ export class AccountsStakingInfoService extends AbstractService {
 		claimedRewardsPerEra: Vec<u32>,
 		claimedRewards: IEraStatus<ValidatorStatus>[],
 	): Promise<IEraStatus<ValidatorStatus>[]> {
-		const erasStakersOverview: Option<SpStakingPagedExposureMetadata> =
-			await historicApi.query.staking.erasStakersOverview(e, stash);
-		let erasStakers: SpStakingExposure | null = null;
-		if (historicApi.query.staking?.erasStakers) {
-			erasStakers = await historicApi.query.staking.erasStakers(e, stash);
-		}
+		const [erasStakersOverview, erasStakers]: [Option<SpStakingPagedExposureMetadata>, SpStakingExposure | null] =
+			await Promise.all([
+				historicApi.query.staking.erasStakersOverview(e, stash),
+				historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, stash) : null,
+			]);
 
 		if (erasStakersOverview.isSome) {
 			const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
@@ -264,8 +265,8 @@ export class AccountsStakingInfoService extends AbstractService {
 			// Checking if the new call is available then I can check if rewards of nominator are claimed or not.
 			// If not available, I will set the status to 'undefined'.
 			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
-				const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-				if (currentEraMaybeOption.isNone) {
+				const currentEraOption = await historicApi.query.staking.currentEra();
+				if (currentEraOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
 				// Populating `claimedRewardsPerEra` for validator
@@ -273,12 +274,11 @@ export class AccountsStakingInfoService extends AbstractService {
 
 				// Doing similar checks as in fetchErasStatusForValidator function
 				// but with slight changes to adjust to nominator's case
-				const erasStakersOverview: Option<SpStakingPagedExposureMetadata> =
-					await historicApi.query.staking.erasStakersOverview(e, validatorStash);
-				let erasStakers: SpStakingExposure | null = null;
-				if (historicApi.query.staking?.erasStakers) {
-					erasStakers = await historicApi.query.staking.erasStakers(e, validatorStash);
-				}
+				const [erasStakersOverview, erasStakers]: [Option<SpStakingPagedExposureMetadata>, SpStakingExposure | null] =
+					await Promise.all([
+						historicApi.query.staking.erasStakersOverview(e, validatorStash),
+						historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, validatorStash) : null,
+					]);
 
 				if (erasStakersOverview.isSome) {
 					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
@@ -399,11 +399,11 @@ export class AccountsStakingInfoService extends AbstractService {
 	 */
 	private async fetchErasInfo(api: ApiDecoration<'promise'>, historicApi: ApiDecoration<'promise'>) {
 		const depth = Number(api.consts.staking.historyDepth.toNumber());
-		const currentEraMaybeOption = await historicApi.query.staking.currentEra();
-		if (currentEraMaybeOption.isNone) {
+		const currentEraOption = await historicApi.query.staking.currentEra();
+		if (currentEraOption.isNone) {
 			throw new InternalServerError('CurrentEra is None when Some was expected');
 		}
-		const currentEra = currentEraMaybeOption.unwrap().toNumber();
+		const currentEra = currentEraOption.unwrap().toNumber();
 		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
 		return [eraStart, depth];
 	}
