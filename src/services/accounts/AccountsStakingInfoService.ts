@@ -93,7 +93,8 @@ export class AccountsStakingInfoService extends AbstractService {
 		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
 		let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
 
-		const [eraStart, depth] = await this.fetchErasInfo(api, historicApi);
+		const eraDepth = Number(api.consts.staking.historyDepth.toNumber());
+		const [eraStart, depth] = this.fetchErasInfo(currentEraOption, eraDepth);
 
 		let oldCallChecked = false;
 		// Checking each era one by one
@@ -138,8 +139,7 @@ export class AccountsStakingInfoService extends AbstractService {
 				} else {
 					// To verify the reward status `claimed` of an era for a Nominator's account,
 					// we need to check the status of that era in one of their associated Validators' accounts.
-					const nominatingValidators = await historicApi.query.staking.nominators(stash);
-					const validatorsUnwrapped = nominatingValidators.unwrap().targets.toHuman() as string[];
+					const validatorsUnwrapped = nominations?.targets.toHuman() as string[];
 
 					const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
 						historicApi,
@@ -149,6 +149,7 @@ export class AccountsStakingInfoService extends AbstractService {
 						claimedRewardsNom,
 						validatorsUnwrapped,
 						stash,
+						currentEraOption,
 					);
 					e = era;
 					claimedRewardsNom = claimedRewardsNom1;
@@ -240,6 +241,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		claimedRewardsNom: IEraStatus<NominatorStatus>[],
 		validatorsUnwrapped: string[],
 		nominatorStash: string,
+		currentEraOption: Option<u32>,
 	): Promise<[number, IEraStatus<NominatorStatus>[]]> {
 		// Iterate through all validators that the nominator is nominating and
 		// check if the rewards are claimed or not.
@@ -265,7 +267,6 @@ export class AccountsStakingInfoService extends AbstractService {
 			// Checking if the new call is available then I can check if rewards of nominator are claimed or not.
 			// If not available, I will set the status to 'undefined'.
 			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
-				const currentEraOption = await historicApi.query.staking.currentEra();
 				if (currentEraOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
@@ -395,17 +396,15 @@ export class AccountsStakingInfoService extends AbstractService {
 
 	/**
 	 * This function determines which eras to check for claimed rewards
-	 * by returning the starting era (`eraStart`) and the number of eras to check (`depth`)
+	 * by returning the starting era (`eraStart`) and the number of eras to check (`eraDepth`)
 	 */
-	private async fetchErasInfo(api: ApiDecoration<'promise'>, historicApi: ApiDecoration<'promise'>) {
-		const depth = Number(api.consts.staking.historyDepth.toNumber());
-		const currentEraOption = await historicApi.query.staking.currentEra();
+	private fetchErasInfo(currentEraOption: Option<u32>, eraDepth: number): [number, number] {
 		if (currentEraOption.isNone) {
 			throw new InternalServerError('CurrentEra is None when Some was expected');
 		}
-		const currentEra = currentEraOption.unwrap().toNumber();
-		const eraStart = currentEra - depth > 0 ? currentEra - depth : 0;
-		return [eraStart, depth];
+		const currentEraNumber = currentEraOption.unwrap().toNumber();
+		const eraStart = Math.max(0, currentEraNumber - eraDepth);
+		return [eraStart, eraDepth];
 	}
 
 	/**
