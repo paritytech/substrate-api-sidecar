@@ -31,6 +31,17 @@ At this point, it is important to mention the calls that correspond to the old l
   - ✅ The code is the same regardless of whether the account is a validator or a nominator.
 - The last call, `query.staking.claimedRewards`, which reflects the new logic for how rewards are claimed, can be found in `fetchAccountStakingInfo` and `fetchErasStatusForNominator` functions. 
   - ❗There are some important code differences depending on whether it is a validator or a nominator account.
+- Depending on the block height/era that we are querying and the chain (runtime) we are connected to, we can have one of the following cases:
+  - **Case 1**
+    - OldCalls exist ✅
+    - NewCall does not exist ❌
+  - **Case 2**
+    - OldCalls exist ✅
+    - NewCall exists also ✅
+  - **Case 3**
+    - OldCalls does not exist ❌
+    - NewCall exists ✅
+
 
 **IMPORTANT NOTE**
 
@@ -38,11 +49,19 @@ In the following sections, we mention the old logic calls (1st & 2nd check), but
 
 ### Eras & Depth
 The aforementioned calls are closely related to the eras (_our starting era and the number of eras to check_) that we check the rewards for.
-The initial calculation for `eraStart` (_our starting era_) and `depth` (_the number of eras to check_) happens in `fetchErasInfo` function. For this we use the `depth` and `current_era` information to calculate `eraStart`. Having that, we can start from `eraStart` until `eraStart + depth` and perform the checks mentioned in the following sections.
+The initial calculation for `eraStart` (_our starting era_) happens in `fetchErasStart` function. We use `current_era` (and not active era) and `eraDepth` information to calculate `eraStart`.
 
-### Change of Eras to check
-After the initial calculation, the eras we check can change in the `isOldCallsChecked` function.
-First, we need to mention that the old calls are checked in the `fetchClaimedInfoFromOldCalls` function which returns `claimedRewardsEras` and `claimedRewards`. Then in `isOldCallsChecked` we check if `claimedRewardsEras` has any values and if yes then we take these values and populate the `claimedRewards` array in the new format of claimed response (`{era: ...,  status: ...}`). We might encounter some specific cases:
+The initial loop starts from `eraStart` up until `eraStart + eraDepth` but the era (variable `e`) can be modified by the result of the calls `isOldCallsChecked` and `fetchErasStatusForNominator`.
+
+#### Possible Eras scenarios
+If only the new call is available and we are querying a validator account, the number of eras that we check will be  `current era - depth`. Example: if the initial eras calculation is `eraStart` = 1454 and `eraDepth` = 84 then we will loop from 1454 until 1538 (1454 + 84).
+
+If old calls are present then the era (variable `e`) of the initial loop will be updated depending on `claimedRewardsEras` array and `claimedRewardsErasMax`.
+Example: initial eras calculation is `eraStart` = 100 and `eraDepth` = 84 but then oldCalls return `claimedRewardsEras.length` = 20. Then we check also the new call:
+- if new call is available: we will check 64 more eras starting from era = 121 (since the status of the first 20 eras was already retrieved from `claimedRewardsEras` array).
+- if new call is not available: we will ignore the initial eraDepth = 84 and only return the status of the 20 eras we already retrieved. This happens because we have no other way (available call) to find the status of the rest of the eras. Also this logic is aligned and the same as the result that Sidecar was returning before (it was returning what it would find in the Staking Ledger).
+
+In the code, the checks in `isOldCallsChecked` can be explained as follows:
 - The `eraStart` <= max length of `claimedRewardsEras` array: in this case we continue checking the eras from `claimedRewardsEras.length + 1` onwards.
 - `depth == claimedRewardsEras.length`: in this case we do not need to check any further eras and we take the information that we already have.
 - in all other cases we reset `claimedRewards` which means that we need to check if rewards were claimed for all eras from `eraStart` until `eraStart + depth` with the new call. This was added because for historical blocks we encountered the case where `eraStart` > max length of `claimedRewardsEras`. Then the algorithm would need to use the new call to get the claimed info but in these blocks it was not available. So, we would have no claimed info returned.
@@ -178,7 +197,7 @@ The payout for the validator in polkadot-sdk codebase is done [here](https://git
 
 
 ### Nominator Account
-If the account queried in the endpoint is a `nominator` account, the logic is implemented in the `fetchErasStatusForNominator` function. As mentioned in the code's comments, to verify the reward status `claimed` of an era for a Nominator's account, we need to check the status of that era in one of their associated Validators' accounts. The logic is implemented in the . The function's comments describe most of the steps/checks implemented there.
+If the account queried in the endpoint is a `nominator` account, the logic is implemented in the `fetchErasStatusForNominator` function. As mentioned in the code's comments, to verify the reward status `claimed` of an era for a Nominator's account, we need to check the status of that era in one of their associated Validators' accounts. It is important to note that everytime this function is called and for every nominator's validator, we set the `oldCallChecked` variable to `false`. We do that because when we check for Nominator account -> the nominator address does not matter anymore for the `OldCallsChecked`. We have to reset and check again the OldCalls for each of the validators of this nominator. Otherwise in every loop for every validator that we check -> we would assume that we already checked the old calls which we did not.
 
 #### 💰 Reward Types
 A nominator receives one type of reward:
@@ -399,10 +418,14 @@ Based on this [comment](https://github.com/polkadot-js/api/issues/5859#issuecomm
 ### Testing
 - Tested for account and blocks that include the eras before and after the migration (when the logic changed).
 
-### 🗒️ Implementation Notes
-- ‼️ The response time of the endpoint is significantly slower now.
-   - Possible Solution : Add a query parameter as flag to enable or not the claimed rewards. It can default to `true` so that it does not break the current functionality of the endpoint. Implementation in a separate PR.
-- I use current era (and not active era) to calculate the depth.
-- The total of eras returned are equal to the current depth. Depending on the calls available it is either : 
-   - `current era - depth` if only the new calls are available or
-   - `array.length` from result of old calls up until depth. So if `array.length` = 20 and `depth` = 84, we will check 64 more eras after the last era found in the array (from the old calls). 
+### 🗺️ Future possible Improvements
+To improve the endpoint's performance:
+- Remove the old calls check outside the eras loop.
+- Add a query parameter that is a boolean flag and if set to true it enables the claimed rewards. If set to false then it does not return the claimed information. It can default to `true` so that it does not change from the initial endpoint's response fields.
+
+### Related Questions
+Can an account be a validator and a nominator at the same time?
+- By design this is not possible. An account can either be a validator or a nominator but not have both roles at the same time. We can confirm that is the case by looking at the Staking pallet's code. When an account expresses the desire to be a validator, the [validate](https://github.com/paritytech/polkadot-sdk/blob/ddffa027d7b78af330a2d3d18b7dfdbd00e431f0/substrate/frame/staking/src/pallet/mod.rs#L1366) function is called. In this function, we have the `do_remove_nominator` call (related code [line](https://github.com/paritytech/polkadot-sdk/blob/ddffa027d7b78af330a2d3d18b7dfdbd00e431f0/substrate/frame/staking/src/pallet/mod.rs#L1390)) which removes the nominator role from the account and then adds it as a validator with the `do_add_validator` call. Similar thing happens in the `nominate` function but with the calls in reverse: first the `do_remove_validator` is called and then `do_add_nominator` (related code [lines](https://github.com/paritytech/polkadot-sdk/blob/ddffa027d7b78af330a2d3d18b7dfdbd00e431f0/substrate/frame/staking/src/pallet/mod.rs#L1464L1465)). Having said that, a physical person can be a validator and a nominator at the same time but using different accounts.
+
+### Code Flow
+![claimed field](./media/code_flow.svg "claimed field in Staking Info")
