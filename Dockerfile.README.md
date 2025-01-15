@@ -1,37 +1,106 @@
-## substrate-api-sidecar Docker Image
+# Avail Sidecar API Docker Image
 
-With each release, the maintainers publish a docker image to dockerhub at [parity/substrate-api-sidecar](https://hub.docker.com/r/parity/substrate-api-sidecar/tags?page=1&ordering=last_updated)
+The Avail Sidecar API is available as Docker images for both mainnet and testnet environments. Images are published to Docker Hub at [availj/sidecar-api](https://hub.docker.com/r/availj/sidecar-api).
 
-### Pull the latest release
+## Using Pre-built Images
 
-```bash
-docker pull docker.io/parity/substrate-api-sidecar:latest
-```
-
-The specific image tag matches the release version.
-
-### Or build from source
+### Mainnet
 
 ```bash
-yarn build:docker
+# Latest mainnet version
+docker pull availj/sidecar-api:mainnet
+
+# Specific version
+docker pull availj/sidecar-api:v1.0.0-mainnet
 ```
 
-### Run
+### Testnet (Turing)
 
 ```bash
-# For default use run:
-docker run --rm -it --read-only -p 8080:8080 substrate-api-sidecar
+# Latest testnet version
+docker pull availj/sidecar-api:testnet
 
-# Or if you want to use environment variables set in `.env.docker`, run:
-docker run --rm -it --read-only --env-file .env.docker -p 8080:8080 substrate-api-sidecar
+# Specific version
+docker pull availj/sidecar-api:v1.0.0-testnet
 ```
 
-**NOTE**: While you could omit the `--read-only` flag, it is **strongly recommended for containers used in production**.
+## Running the Container
 
-then you can test with:
+### Mainnet
 
 ```bash
-curl -s http://0.0.0.0:8080/blocks/head | jq
+docker run --rm -it --read-only -p 8080:8080 availj/sidecar-api:mainnet
 ```
 
-**N.B.** The docker flow presented here is just a sample to help get started. Modifications may be necessary for secure usage.
+### Testnet
+
+```bash
+docker run --rm -it --read-only -p 8080:8080 availj/sidecar-api:testnet
+```
+
+### Using Environment Variables
+
+You can override default settings using environment variables:
+
+```bash
+docker run --rm -it --read-only \
+  -e SAS_EXPRESS_PORT=8081 \
+  -e SAS_EXPRESS_BIND_HOST=0.0.0.0 \
+  -p 8081:8081 \
+  availj/sidecar-api:mainnet
+```
+
+Available environment variables:
+- `SAS_EXPRESS_PORT`: Port number (default: 8080)
+- `SAS_EXPRESS_BIND_HOST`: Bind address (default: 0.0.0.0)
+- `SAS_SUBSTRATE_URL`: RPC endpoint URL (preset based on mainnet/testnet tag)
+
+## Building from Source
+
+1. Clone the repository
+2. Build the Docker image:
+
+```bash
+# For mainnet
+docker build -t availj/sidecar-api:local-mainnet \
+  --build-arg SAS_SUBSTRATE_URL=wss://mainnet-rpc.avail.so/ws \
+  .
+
+# For testnet
+docker build -t availj/sidecar-api:local-testnet \
+  --build-arg SAS_SUBSTRATE_URL=wss://turing-rpc.avail.so/ws \
+  .
+```
+
+## Testing the API
+
+After running the container, you can test the API:
+
+```bash
+# Get the latest block
+curl -s http://localhost:8080/blocks/head | jq
+
+# Get a specific block
+curl -s http://localhost:8080/blocks/1 | jq
+```
+
+## Production Usage Notes
+
+- Always use the `--read-only` flag in production for enhanced security
+- Consider using specific version tags instead of `latest` for reproducible deployments
+- For production deployments, it's recommended to:
+  - Set up proper logging
+  - Configure health checks
+  - Use Docker secrets for sensitive configurations
+  - Implement appropriate monitoring
+
+## Development Tips
+
+- Use the `testnet` tag for development and testing
+- For local development, you can mount local files using volumes:
+```bash
+docker run --rm -it --read-only \
+  -v $(pwd)/config:/usr/src/app/config \
+  -p 8080:8080 \
+  availj/sidecar-api:testnet
+```

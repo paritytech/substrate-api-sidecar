@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  NODE_VERSION: '20'
+  DOCKER_IMAGE: "availj/sidecar-api"
+  SAS_EXPRESS_BIND_HOST: "0.0.0.0"
+  SAS_EXPRESS_PORT: "8080"
+  MAINNET_URL: "wss://mainnet-rpc.avail.so/ws"
+  TESTNET_URL: "wss://turing-rpc.avail.so/ws"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+
+      - name: Create release archive
+        run: |
+          tar -czf release.tar.gz build/ package.json yarn.lock README.md
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build and push mainnet image
+      - name: Build and push Mainnet Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            SAS_EXPRESS_BIND_HOST=${{ env.SAS_EXPRESS_BIND_HOST }}
+            SAS_EXPRESS_PORT=${{ env.SAS_EXPRESS_PORT }}
+            SAS_SUBSTRATE_URL=${{ env.MAINNET_URL }}
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.VERSION }}-mainnet
+            ${{ env.DOCKER_IMAGE }}:mainnet
+
+      # Build and push testnet image
+      - name: Build and push Testnet Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            SAS_EXPRESS_BIND_HOST=${{ env.SAS_EXPRESS_BIND_HOST }}
+            SAS_EXPRESS_PORT=${{ env.SAS_EXPRESS_PORT }}
+            SAS_SUBSTRATE_URL=${{ env.TESTNET_URL }}
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.VERSION }}-testnet
+            ${{ env.DOCKER_IMAGE }}:testnet
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.tar.gz
+          body: |
+            Release ${{ steps.get_version.outputs.VERSION }}
+            
+            ## Docker Images
+            
+            ### Mainnet
+            ```bash
+            # Latest mainnet version
+            docker pull ${{ env.DOCKER_IMAGE }}:mainnet
+            # Specific mainnet version
+            docker pull ${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.VERSION }}-mainnet
+            ```
+            
+            ### Testnet (Turing)
+            ```bash
+            # Latest testnet version
+            docker pull ${{ env.DOCKER_IMAGE }}:testnet
+            # Specific testnet version
+            docker pull ${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.VERSION }}-testnet
+            ```
+            
+            ## Running the containers
+            
+            ### Mainnet
+            ```bash
+            docker run -p 8080:8080 ${{ env.DOCKER_IMAGE }}:mainnet
+            ```
+            
+            ### Testnet
+            ```bash
+            docker run -p 8080:8080 ${{ env.DOCKER_IMAGE }}:testnet
+            ```
+
+  notify:
+    needs: [release]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on success
+        if: ${{ needs.release.result == 'success' }}
+        run: |
+          echo "Release completed successfully!"
+          # Add notification logic here if needed (e.g., Slack, Discord, etc.)
+
+      - name: Notify on failure
+        if: ${{ needs.release.result == 'failure' }}
+        run: |
+          echo "Release failed!"
+          # Add notification logic here if needed

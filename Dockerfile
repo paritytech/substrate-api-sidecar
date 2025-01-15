@@ -1,4 +1,4 @@
-FROM docker.io/library/node:18.12.1-alpine as builder
+FROM node:20-alpine as builder
 
 WORKDIR /opt/builder
 
@@ -9,33 +9,25 @@ RUN yarn install && \
 
 # ---------------------------------
 
-FROM docker.io/library/node:18.12.1-alpine
+FROM node:20-alpine
 
-# metadata
-ARG VERSION=""
-ARG VCS_REF=master
-ARG BUILD_DATE=""
+# Environment variables with defaults
+ARG SAS_EXPRESS_BIND_HOST=0.0.0.0
+ARG SAS_EXPRESS_PORT=8080
+ARG SAS_SUBSTRATE_URL
+ARG SAS_SUBSTRATE_TYPES_BUNDLE="/usr/src/app/dataavail.types.json"
 
-LABEL summary="Substrate-api-sidecar." \
-	name="parity/substrate-api-sidecar" \
-	maintainer="devops-team@parity.io, chevdor@gmail.com" \
-	version="${VERSION}" \
-	description="Substrate-api-sidecar image." \
-	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.source="https://github.com/paritytech/substrate-api-sidecar/blob/\
-${VCS_REF}/Dockerfile" \
-	io.parity.image.documentation="https://github.com/paritytech/substrate-api-sidecar/\
-blob/${VCS_REF}/README.md" \
-	io.parity.image.revision="${VCS_REF}" \
-	io.parity.image.created="${BUILD_DATE}"
+ENV SAS_EXPRESS_BIND_HOST=${SAS_EXPRESS_BIND_HOST} \
+    SAS_EXPRESS_PORT=${SAS_EXPRESS_PORT} \
+    SAS_SUBSTRATE_URL=${SAS_SUBSTRATE_URL} \
+    SAS_SUBSTRATE_TYPES_BUNDLE=${SAS_SUBSTRATE_TYPES_BUNDLE}
 
 WORKDIR /usr/src/app
 
+# Copy built files from builder stage
 COPY --from=builder /opt/builder /usr/src/app
-
-ENV SAS_EXPRESS_PORT=8080
-ENV SAS_EXPRESS_BIND_HOST=0.0.0.0
 
 USER node
 EXPOSE ${SAS_EXPRESS_PORT}
-CMD [ "node", "build/src/main.js" ]
+
+CMD ["node", "build/src/main.js"]
