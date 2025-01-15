@@ -120,46 +120,35 @@ export class AccountsStakingInfoService extends AbstractService {
 			 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
 			 * `query.staking.claimedRewards` is available then we go into this check.
 			 */
-			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
+			if (!!historicApi.query.staking?.claimedRewards && oldCallChecked) {
 				if (currentEraOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
 
-				// Populating `claimedRewardsPerEra` for validator
-				const claimedRewardsPerEra: Vec<u32> = await historicApi.query.staking.claimedRewards(e, stash);
-
 				if (isValidator) {
-					claimedRewards = await this.fetchErasStatusForValidator(
-						historicApi,
-						e,
-						stash,
-						claimedRewardsPerEra,
-						claimedRewards,
-					);
+					claimedRewards = await this.fetchErasStatusForValidator(historicApi, e, stash, claimedRewards);
 				} else {
 					// To verify the reward status `claimed` of an era for a Nominator's account,
 					// we need to check the status of that era in one of their associated Validators' accounts.
-					const validatorsUnwrapped = nominations?.targets.toHuman() as string[];
-
-					const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
-						historicApi,
-						e,
-						depth,
-						eraStart,
-						claimedRewardsNom,
-						validatorsUnwrapped,
-						stash,
-						currentEraOption,
-					);
-					e = era;
-					claimedRewardsNom = claimedRewardsNom1;
+					const validatorsTargets = nominations?.targets.toHuman() as string[];
+					if (validatorsTargets) {
+						const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
+							historicApi,
+							e,
+							depth,
+							eraStart,
+							claimedRewardsNom,
+							validatorsTargets,
+							stash,
+							currentEraOption,
+						);
+						e = era;
+						claimedRewardsNom = claimedRewardsNom1;
+					}
 				}
 			} else {
 				break;
 			}
-		}
-		if (!isValidator) {
-			claimedRewards = claimedRewardsNom;
 		}
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
 
@@ -204,16 +193,19 @@ export class AccountsStakingInfoService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		e: number,
 		stash: string,
-		claimedRewardsPerEra: Vec<u32>,
 		claimedRewards: IEraStatus<ValidatorStatus>[],
 	): Promise<IEraStatus<ValidatorStatus>[]> {
-		const [erasStakersOverview, erasStakers]: [Option<SpStakingPagedExposureMetadata>, SpStakingExposure | null] =
-			await Promise.all([
-				historicApi.query.staking.erasStakersOverview(e, stash),
-				historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, stash) : null,
-			]);
+		const [erasStakersOverview, erasStakers, claimedRewardsPerEra]: [
+			Option<SpStakingPagedExposureMetadata> | null,
+			SpStakingExposure | null,
+			Vec<u32>,
+		] = await Promise.all([
+			historicApi.query.staking?.erasStakersOverview ? historicApi.query.staking?.erasStakersOverview(e, stash) : null,
+			historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, stash) : null,
+			historicApi.query.staking.claimedRewards(e, stash),
+		]);
 
-		if (erasStakersOverview.isSome) {
+		if (erasStakersOverview?.isSome) {
 			const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
 			const eraStatus =
 				claimedRewardsPerEra.length === 0
@@ -239,13 +231,13 @@ export class AccountsStakingInfoService extends AbstractService {
 		depth: number,
 		eraStart: number,
 		claimedRewardsNom: IEraStatus<NominatorStatus>[],
-		validatorsUnwrapped: string[],
+		validatorsTargets: string[],
 		nominatorStash: string,
 		currentEraOption: Option<u32>,
 	): Promise<[number, IEraStatus<NominatorStatus>[]]> {
 		// Iterate through all validators that the nominator is nominating and
 		// check if the rewards are claimed or not.
-		for (const [idx, validatorStash] of validatorsUnwrapped.entries()) {
+		for (const [idx, validatorStash] of validatorsTargets.entries()) {
 			let oldCallChecked = false;
 			if (claimedRewardsNom.length == 0) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
@@ -266,20 +258,22 @@ export class AccountsStakingInfoService extends AbstractService {
 
 			// Checking if the new call is available then I can check if rewards of nominator are claimed or not.
 			// If not available, I will set the status to 'undefined'.
-			if (historicApi.query.staking?.claimedRewards && oldCallChecked) {
+			if (!!historicApi.query.staking?.claimedRewards && oldCallChecked) {
 				if (currentEraOption.isNone) {
 					throw new InternalServerError('CurrentEra is None when Some was expected');
 				}
-				// Populating `claimedRewardsPerEra` for validator
-				const claimedRewardsPerEra: Vec<u32> = await historicApi.query.staking.claimedRewards(e, validatorStash);
 
 				// Doing similar checks as in fetchErasStatusForValidator function
 				// but with slight changes to adjust to nominator's case
-				const [erasStakersOverview, erasStakers]: [Option<SpStakingPagedExposureMetadata>, SpStakingExposure | null] =
-					await Promise.all([
-						historicApi.query.staking.erasStakersOverview(e, validatorStash),
-						historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, validatorStash) : null,
-					]);
+				const [erasStakersOverview, erasStakers, claimedRewardsPerEra]: [
+					Option<SpStakingPagedExposureMetadata>,
+					SpStakingExposure | null,
+					Vec<u32>,
+				] = await Promise.all([
+					historicApi.query.staking.erasStakersOverview(e, validatorStash),
+					historicApi.query.staking?.erasStakers ? historicApi.query.staking.erasStakers(e, validatorStash) : null,
+					historicApi.query.staking.claimedRewards(e, validatorStash),
+				]);
 
 				if (erasStakersOverview.isSome) {
 					const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
@@ -307,7 +301,7 @@ export class AccountsStakingInfoService extends AbstractService {
 					claimedRewardsNom.push({ era: e, status: eraStatus });
 					break;
 				} else {
-					if (idx === validatorsUnwrapped.length - 1) {
+					if (idx === validatorsTargets.length - 1) {
 						claimedRewardsNom.push({ era: e, status: 'undefined' });
 					} else {
 						continue;
