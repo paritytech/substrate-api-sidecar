@@ -93,12 +93,13 @@ export class AccountsStakingInfoService extends AbstractService {
 		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
 		let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
 
+		// `eraDepth`: the number of eras to check.
 		const eraDepth = Number(api.consts.staking.historyDepth.toNumber());
-		const [eraStart, depth] = this.fetchErasInfo(currentEraOption, eraDepth);
+		const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
 
 		let oldCallChecked = false;
 		// Checking each era one by one
-		for (let e = eraStart; e < eraStart + depth; e++) {
+		for (let e = eraStart; e < eraStart + eraDepth; e++) {
 			let claimedRewardsEras: u32[] = [];
 
 			[claimedRewardsEras, claimedRewards] = this.fetchClaimedInfoFromOldCalls(
@@ -112,7 +113,7 @@ export class AccountsStakingInfoService extends AbstractService {
 				claimedRewardsEras,
 				claimedRewards,
 				eraStart,
-				depth,
+				eraDepth,
 				e,
 			);
 			claimedRewardsNom = claimedRewards as IEraStatus<NominatorStatus>[];
@@ -135,7 +136,7 @@ export class AccountsStakingInfoService extends AbstractService {
 						const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
 							historicApi,
 							e,
-							depth,
+							eraDepth,
 							eraStart,
 							claimedRewardsNom,
 							validatorsTargets,
@@ -389,16 +390,16 @@ export class AccountsStakingInfoService extends AbstractService {
 	}
 
 	/**
-	 * This function determines which eras to check for claimed rewards
-	 * by returning the starting era (`eraStart`) and the number of eras to check (`eraDepth`)
+	 * This function calculates the era from which we should start checking
+	 * for claimed rewards.
 	 */
-	private fetchErasInfo(currentEraOption: Option<u32>, eraDepth: number): [number, number] {
+	private fetchErasStart(currentEraOption: Option<u32>, eraDepth: number): number {
 		if (currentEraOption.isNone) {
 			throw new InternalServerError('CurrentEra is None when Some was expected');
 		}
 		const currentEraNumber = currentEraOption.unwrap().toNumber();
 		const eraStart = Math.max(0, currentEraNumber - eraDepth);
-		return [eraStart, eraDepth];
+		return eraStart;
 	}
 
 	/**
