@@ -1,5 +1,13 @@
 ### Releases
 
+#### Prerequisites
+
+Before starting the release process, it is recommended to prepare a few things in advance. In order to set the compatibility version (for the node releases) in the Changelog during the last steps of the release process, you will need the following prepared in advance:
+- The latest Polkadot-SDK binary already built. Instructions to build from source can be found [here](https://github.com/paritytech/polkadot-sdk/tree/master/polkadot#build-from-source).
+- A chain (Polkadot or Kusama) synced in either archive or pruned mode.
+
+_Estimated Time Needed: Depending on your machine and the syncing mode you choose, it can take from a few hours to a few days._
+
 #### Preparation
 
 1. Make sure the polkadot-js dependencies are up to date. Refer to the "Updating polkadot-js dependencies" section in the [README](./README.md).
@@ -10,19 +18,31 @@
     - If the failed job is related to benchmarks, e.g. `continuous-integration/gitlab-bench-polkadot` or `continuous-integration/gitlab-push-benchmark`, it is not critical, and you can proceed with the next steps of the release.
     - If the failed job is related to staging deployment, e.g. `continuous-integration/gitlab-deploy-staging`, this is critical. In this case, you should check with the CI/CD team to get the relevant logs and fix the issue before continuing with the release.
 
-1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that that binary is available on your `$PATH`.
+1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that binary is available on your `$PATH`.
 
 1. Checkout a branch with the format `name-v5-0-1` (with `name` being the name of the person doing the release, e.g. `tarik-v5-0-1`). When deciding what version will be released it is important to look over 1) PRs since the last release and 2) release notes for any updated polkadot-js dependencies as they may affect type definitions.
 
-1. The next step is to run the e2e tests. There are two types of e2e tests: `yarn test:historical-e2e-tests`, and `yarn test:latest-e2e-tests`. If you would like to run either tests against a single chain you may use the flag `--chain` to specify the chain. If you would also like to test against a local node you may use the `--local` flag in conjunction with `--chain`. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+1. The next step is to run the e2e tests. There are two types of e2e tests: `yarn test:historical-e2e-tests`, and `yarn test:latest-e2e-tests`. If you would like to run either tests against a single chain you may use the flag `--chain` to specify the chain.
 
     Note: that the e2e tests will connect to running nodes in order to test sidecar against real data, and they may fail owing to those connections taking too long to establish. If you run into any failures, try running the tests again.
 
+1. It is recommended to also test against a local node so that you can later complete the compatibility section of the changelog and release notes. To do this you can use the `--local` flag in conjunction with `--chain` as shown below (example shown for the Polkadot chain):
+
+    ```
+    yarn test:latest-e2e-tests --local ws://127.0.0.1:9944 --chain polkadot
+    ```
+
+    This should be done while a local node is running and synced with the corresponding chain (example shown for the Polkadot chain): 
+
+    ```
+    ./target/release/polkadot --chain polkadot --base-path <THE_DIRECTORY_OF_YOUR_DB>
+    ```
+
+1. Before moving forward ensure all tests pass, and if it warns of any missing types feel free to make an issue [here](https://github.com/paritytech/substrate-api-sidecar/issues).
+
 1. Update the version in the package.json (this is very important for releasing on NPM).
 
-1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. Then run `yarn build:docs`.
-
-     Note: you can double check that the version is updated by opening the page `index.html` (from folder `docs/dist`) on your browser. The version badge is located on the top of the page next to the title.
+1. Update the substrate-api-sidecar version in the docs by going into `docs/src/openapi-v1.yaml`, and changing the `version` field under `info` to the releases respected version. No need to run `yarn build:docs` (refer to the [README](./docs/README.md) for more info).
 
 1. Update `CHANGELOG.md` by looking at merged PRs since the last release. Follow the format of previous releases. Only record dep updates if they reflect type definition updates as those affect the users API. It will also help to sort previous PR's by "recently updated" in order to see all PR's merged since the last release.
 

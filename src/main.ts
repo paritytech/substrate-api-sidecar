@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ async function main() {
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
-	const preMiddlewares = [json(), middleware.httpLoggerCreate(logger)];
+	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
 
 	if (config.METRICS.ENABLED) {
 		// Create Metrics App

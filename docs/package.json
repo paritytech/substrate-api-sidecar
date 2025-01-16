@@ -11,16 +11,16 @@
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
-    "html-webpack-plugin": "^5.6.0",
-    "webpack": "5.95.0",
+    "html-webpack-plugin": "^5.6.3",
+    "webpack": "5.97.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "5.1.0"
+    "webpack-dev-server": "5.2.0"
   },
   "dependencies": {
     "css-loader": "7.1.2",
     "json-loader": "0.5.7",
     "style-loader": "^4.0.0",
-    "swagger-ui": "5.17.14",
+    "swagger-ui": "5.18.2",
     "yaml-loader": "^0.8.1"
   },
   "resolutions": {

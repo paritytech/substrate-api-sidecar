@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -54,6 +54,7 @@ export class SidecarConfig {
 				HOST: config.Get(MODULES.EXPRESS, CONFIG.BIND_HOST) as string,
 				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
 				KEEP_ALIVE_TIMEOUT: config.Get(MODULES.EXPRESS, CONFIG.KEEP_ALIVE_TIMEOUT) as number,
+				MAX_BODY: config.Get(MODULES.EXPRESS, CONFIG.MAX_BODY) as string,
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,

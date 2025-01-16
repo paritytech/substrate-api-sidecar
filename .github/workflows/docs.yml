@@ -1,0 +1,116 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "docs/src/openapi-v1.yaml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "docs/src/openapi-v1.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-docs:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Install Node v18
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.14"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install JS dependencies
+        run: yarn install
+
+      - name: Build Docs
+        run: yarn build:docs
+
+      - name: Create artifacts
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p artifacts
+          mv docs/dist artifacts/
+          ls -la artifacts
+
+      - name: Upload docs
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-${{ github.sha }}
+          path: ./artifacts/
+
+  publish-docs:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: master_n_tags
+    needs: [build-docs]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.GH_APP_SAS_APP_ID }}
+          private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
+
+      - name: Download docs
+        uses: actions/download-artifact@v4
+        with:
+          name: doc-${{ github.sha }}
+          path: tmp/
+      - name: Check files
+        run: |
+          ls -la
+          rm -rf dist/
+          mv tmp/dist/ dist/
+          rm -rf tmp/
+          git status
+      - name: Push changes to gh-pages
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_NAME: "paritytech-upd-ghpages-sas"
+          REF_NAME: ${{ github.head_ref || github.ref_name }}
+          Green: "\e[32m"
+          NC: "\e[0m"
+        run: |
+          echo "${Green}Git add${NC}"
+          git add dist/
+
+          echo "${Green}git status | wc -l${NC}"
+          git status | wc -l
+
+          echo "${Green}Add new remote with gh app token${NC}"
+          git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${APP_NAME}:${TOKEN}@github.com/g")
+
+          echo "${Green}Remove http section that causes issues with gh app auth token${NC}"
+          sed -i.bak '/\[http/d' ./.git/config
+          sed -i.bak '/extraheader/d' ./.git/config
+
+          echo "${Green}Git push${NC}"
+          git config user.email "ci@parity.io"
+          git config user.name "${APP_NAME}"
+          git commit -m "___Updated docs" || echo "___Nothing to commit___"
+          git push origin gh-pages --force

@@ -1,4 +1,4 @@
-FROM docker.io/library/node:18.12.1-alpine as builder
+FROM docker.io/library/node:18.12.1-alpine AS builder
 
 WORKDIR /opt/builder
 

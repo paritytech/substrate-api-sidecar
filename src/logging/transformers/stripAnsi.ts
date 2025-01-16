@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransformableInfo } from 'logform';
 import { format } from 'winston';
-
-import { ITransformableInfo } from '../../types/logging';
 
 /**
  * Regex pattern to match ANSI characters.
@@ -65,7 +64,7 @@ function stripAnsiShellCodes(data: unknown): unknown {
 /**
  * Strip ANSI characters from `TransformableInfo.message`.
  */
-export const stripAnsi = format((info: ITransformableInfo, _opts: unknown) => {
+export const stripAnsi = format((info: TransformableInfo) => {
 	info.message = stripAnsiShellCodes(info.message) as string;
 	return info;
 });

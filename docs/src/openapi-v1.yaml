@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 19.3.0
+  version: 19.4.0
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -24,6 +24,7 @@ tags:
 - name: accounts
 - name: blocks
 - name: contracts
+- name: coretime
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -986,6 +987,142 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /coretime/leases:
+    get:
+      tags:
+      - coretime
+      summary: Get all the leases currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeLeases
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeLeasesResponse'
+  /coretime/regions:
+    get:
+      tags:
+      - coretime
+      summary: Get all the regions currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRegions
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeRegionsResponse'
+  /coretime/renewals:
+    get:
+      tags:
+      - coretime
+      summary: Get all the potential renewals currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRenewals
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeRenewalsResponse'
+  /coretime/reservations:
+    get:
+      tags:
+      - coretime
+      summary: Get all the reservations currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeReservations
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeReservationsResponse'
+  /coretime/info:
+    get:
+      tags:
+      - coretime
+      summary: Get the generic information about coretime, either on coretime chain or relay chain.
+      description: ''
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      operationId: getCoretimeInfo
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainInfoResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayInfoResponse'
+  /coretime/overview:
+    get:
+      tags:
+      - coretime
+      summary: Get all the cores information either on coretime chain or relay chain.
+      description: ''
+      operationId: getCoretimeCores
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainCoresResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayCoresResponse'
   /node/network:
     get:
       tags:
@@ -3041,6 +3178,359 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    CoretimeRegionsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeLeasesResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        leases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeLease'
+    CoretimeReservationsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        reservations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeReservation'
+    CoretimeRenewalsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        renewals:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRenewal'
+    CoretimeChainInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        configuration:
+          $ref: '#/components/schemas/CoretimeConfig'
+        currentRegion:
+          type: object
+          properties: 
+            start: 
+              type: string
+              description: The start time.
+            end: 
+              type: string
+              description: The end time.
+        cores:
+          type: object
+          properties: 
+            total: 
+              type: string
+              description: The total number of cores.
+            available: 
+              type: string
+              description: The number of free cores.
+            sold: 
+              type: string
+              description: The number of reserved cores.
+            currentCorePrice: 
+              type: string
+              description: The current core price.
+            selloutPrice: 
+              type: string
+              description: The sellout price.
+            firstCore:
+              type: string
+              description: The first core id.
+    CoretimeRelayInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        brokerId:
+          type: string
+          description: The broker parachain id.
+        palletVersion:
+          type: string
+          description: The pallet version.
+        maxHistoricalRevenue:
+          type: string
+          description: The maximum historical revenue.
+    CoretimeChainCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeCore'
+    CoretimeRelayCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRelayCoreDescriptor'
+    CoretimeRelayCoreDescriptor:
+      type: object
+      properties:
+        paraId:
+          type: string
+          description: The parachain id.
+        type: 
+          type: string
+          description: The parachain type.
+        info:
+          type: object
+          properties: 
+            currentWork: 
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      isPool:
+                        type: boolean
+                        description: Whether the workload is a pool.
+                      isTask:
+                        type: boolean
+                        description: Whether the workload is a task.
+                      ratio: 
+                        type: string
+                        description: The ratio of the workload.
+                      remaining:
+                        type: string
+                        description: The remaining workload.
+                      task:
+                        type: string
+                        description: The parachain id.
+                endHint:
+                  type: string
+                  description: The end hint.
+                pos: 
+                  type: string
+                  description: The position.
+                step: 
+                  type: string
+                  description: The step.
+            queue: 
+              type: object
+              properties:
+                first: 
+                  type: string
+                  description: The first assignment in queue.
+                last:
+                  type: string
+                  description: The last assignment in queue.
+    CoretimeCore:
+      type: object
+      properties:
+        coreId:
+          type: string
+          description: The core id.
+        paraId:
+          type: string
+          description: The parachain core.
+        workload:
+          type: object
+          $ref: '#/components/schemas/CoretimeWorkload'
+        workplan:
+          type: array
+          items: 
+            $ref: '#/components/schemas/CoretimeWorkplan'
+        type:
+          description: The paid price.
+          type: object
+          properties:
+            condition: 
+              type: string
+              description: Type of assignment.
+            details:
+              type: object
+              oneOf: 
+                - $ref: '#/components/schemas/CoretimeUntil'
+                - $ref: '#/components/schemas/CoretimeMask'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeConfig:
+      type: object
+      properties:
+        interludeLength:
+          type: string
+          description: The interlude length.
+        leadinLength:
+          type: string
+          description: The leadin length.
+        regionLength:
+          type: string
+          description: The region length.
+        relayBlocksPerTimeslice:
+          type: string
+          description: The number of relay chain blocks per timeslice.
+    CoretimeSaleInfo:
+        type: object
+        properties:
+          phase:
+            type: string
+            description: The phase of the sale.
+          saleStart:
+            type: string
+            description: The sale start.
+          leadinLength:
+            type: string
+            description: The leading length.
+          endPrice:
+            type: string
+            description: The end price.
+          regionBegin:
+            type: string
+            description: The region start time.
+          regionEnd:
+            type: string
+            description: The region end time.
+          idealCoresSold:
+            type: string
+            description: The ideal number of cores sold.
+          coresOffered:
+            type: string
+            description: The number of cores on sale.
+          firstCore:
+            type: string
+            description: The first core id.
+          selloutPrice:
+            type: string
+            description: The sellout price.
+          coresSold:
+            type: string
+            description: The number of cores sold.
+    CoretimeMask:
+      type: string
+      description: The mask.
+    CoretimeUntil:
+      type: string
+      description: The lease expiry time.
+    CoretimeWorkplan: 
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        timeslice: 
+          type: string
+          description: The timeslice.
+        info:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeWorkplanInfo'
+    CoretimeWorkplanInfo:
+      type: object
+      properties: 
+        isPool:
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
+    CoretimeWorkload:
+      type: object
+      properties:
+        isPool: 
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
+    CoretimeRegion:
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        begin:
+          type: string
+          description: The begin time.
+        end:
+          type: string
+          description: The end time.
+        owner: 
+          type: string
+          description: The owner of the region.
+        paid:
+          type: string
+          description: The paid price.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeLease:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        until: 
+          type: string
+          description: The lease expiry time.
+        core:
+          type: string
+          description: The core id.
+    CoretimeReservation:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeRenewal:
+      type: object
+      properties:
+        completion:
+          type: string
+          description: The completion status.
+        core: 
+          type: string
+          description: The core id.
+        mask:
+          type: string
+          description: The mask.
+        price: 
+          type: string
+          description: The renewal price.
+        task: 
+          type: string
+          description: The parachain id.
+        when: 
+          type: string
+          description: The renewal time.
     BlockWithDecodedXcmMsgs:
       allOf:
         - $ref: "#/components/schemas/Block"

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@ import type { DispatchError, PostDispatchInfo, XcmDryRunApiError } from '@polkad
 import { IAt } from './At';
 
 export enum TransactionResultType {
-	TransactionValidityError = 'TransactionValidityError',
 	DispatchOutcome = 'DispatchOutcome',
+	DispatchError = 'DispatchError',
 }
 
 export enum ValidityErrorType {
@@ -32,7 +32,7 @@ export enum ValidityErrorType {
 export interface ITransactionDryRun {
 	at: IAt;
 	result: {
-		resultType: TransactionResultType;
+		resultType: TransactionResultType | ValidityErrorType;
 		result: PostDispatchInfo | XcmDryRunApiError | DispatchError;
 	};
 }

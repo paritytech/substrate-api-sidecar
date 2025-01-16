@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import express from 'express';
-import { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
+import express, { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
 import { Server } from 'http';
 
 import packageJson from '../package.json';

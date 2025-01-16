@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,4 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './Transformers';
+import { kusamaRegistryV1003003 } from '../../../test-helpers/registries';
+import block26187139 from './data/block26187139.json';
+
+/**
+ * Mock for Polkadot block #22887036.
+ */
+export const mockBlock26187139 = kusamaRegistryV1003003.createType('Block', block26187139);
+
+/**
+ * BlockHash for Polkadot block #22887036.
+ */
+export const blockHash26187139 = kusamaRegistryV1003003.createType(
+	'BlockHash',
+	'0x3be638a88bca46eed23b32ce49554f99d3308be753a172fcb114e22155105674',
+);

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -41,4 +41,5 @@ export enum CONFIG {
 	PROM_HOST = 'PROM_HOST',
 	LOKI_PORT = 'LOKI_PORT',
 	INCLUDE_QUERYPARAMS = 'INCLUDE_QUERYPARAMS',
+	MAX_BODY = 'MAX_BODY',
 }

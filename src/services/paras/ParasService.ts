@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -65,7 +65,6 @@ export class ParasService extends AbstractService {
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
-
 		const [fund, { number }] = await Promise.all([
 			historicApi.query.crowdloan.funds<Option<FundInfo>>(paraId),
 			api.rpc.chain.getHeader(hash),
