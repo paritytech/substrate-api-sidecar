@@ -17,7 +17,7 @@
 import { ApiDecoration } from '@polkadot/api/types';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { kusamRegistryV2025 } from '../../test-helpers/registries';
+import { kusamaRegistryV2025 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { keyNames } from '../test-helpers/mock/data/getKeyNames';
 import operationsResponse from '../test-helpers/responses/blocks/operations.json';
@@ -35,7 +35,7 @@ const tempGetKeyNames = Trace['getKeyNames'].bind(Trace);
  * HistoricApi used in order to create the correct types per the blocks runtime.
  */
 const mockHistoricApi = {
-	registry: kusamRegistryV2025,
+	registry: kusamaRegistryV2025,
 } as unknown as ApiDecoration<'promise'>;
 
 /**

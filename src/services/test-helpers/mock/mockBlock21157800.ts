@@ -14,5 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './stakingInfo';
-export * from './stakingPayouts';
+import { polkadotRegistryV1002000 } from '../../../test-helpers/registries';
+import block21157800 from './data/block21157800.json';
+
+/**
+ * Mock for Polkadot block #21157800.
+ */
+export const mockBlock21157800 = polkadotRegistryV1002000.createType('Block', block21157800);
+
+/**
+ * BlockHash for Polkadot block #21157800.
+ */
+export const blockHash21157800 = polkadotRegistryV1002000.createType(
+	'BlockHash',
+	'0x59de258cf9999635c866df7bc5f397d152892827f887d3629344cb3cebba134f',
+);

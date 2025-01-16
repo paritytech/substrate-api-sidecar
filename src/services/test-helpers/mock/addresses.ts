@@ -23,3 +23,38 @@ export const testAddress = '1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE';
  * Controller address to use with tests.
  */
 export const testAddressController = '1zugcapKRuHy2C1PceJxTvXWiq6FHEDm2xa5XSU7KYP3rJE';
+
+/**
+ * Stash address in Kusama to use with test in staking-info endpoint.
+ */
+export const testAddressKusama = 'F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T';
+
+/**
+ * Controller address in Kusama to use with test in staking-info endpoint.
+ */
+export const testAddressControllerKusama = 'F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T';
+
+/**
+ * Payee address in Kusama to use with test in staking-info endpoint.
+ */
+export const testAddressPayeeKusama = 'GLEJRAEdGxLhNEH2AWAtjhUYVrcRWxbYSemvVv2JwxBG2fg';
+
+/**
+ * Stash address in Polkadot to use with test in staking-info endpoint.
+ */
+export const testAddressPolkadot = '11VR4pF6c7kfBhfmuwwjWY3FodeYBKWx7ix2rsRCU2q6hqJ';
+
+/**
+ * Stash address in Polkadot to use with test in staking-info endpoint.
+ */
+export const testNominatorAddressPolkadot = '15AXn2iupExTQ6H3pyVbCfCuzENsxapmtP754NZwzqX4GLSH';
+
+/**
+ * Controller address in Polkadot to use with test in staking-info endpoint.
+ */
+export const testAddressControllerPolkadot = '13vxvvF6uQpxq6eEp94TrDZfR6afFfbBeipnJwCgctyc7bNX';
+
+/**
+ * Payee address in Polkadot to use with test in staking-info endpoint.
+ */
+export const testAddressPayeePolkadot = '144A3ErZsuQsHauKCRxbrcySvTPEnQNVshpxa2kQ1DrYPPG';

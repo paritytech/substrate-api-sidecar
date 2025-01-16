@@ -14,5 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './stakingInfo';
-export * from './stakingPayouts';
+import { kusamaRegistryV1002000 } from '../../../test-helpers/registries';
+import block22939322 from './data/block22939322.json';
+
+/**
+ * Mock for Kusama block #22939322.
+ */
+export const mockBlock22939322 = kusamaRegistryV1002000.createType('Block', block22939322);
+
+/**
+ * BlockHash for Kusama block #22939322.
+ */
+export const blockHash22939322 = kusamaRegistryV1002000.createType(
+	'BlockHash',
+	'0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098',
+);

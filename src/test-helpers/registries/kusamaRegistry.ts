@@ -20,6 +20,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 
 import { kusamaMetadataV1003003 } from '../metadata/kusamaMetadataV1003003';
 import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
+import { kusamaMetadataV1002000 } from '../metadata/kusamaV1002000Metadata';
 
 /**
  * Create a type registry for Kusama.
@@ -44,9 +45,10 @@ function createKusamaRegistryDeprecated(): TypeRegistry {
  *
  * @param specVersion Kusama runtime spec version to get type defs for.
  */
-function createKusamaRegistry(specVersion: number): TypeRegistry {
+function createKusamaRegistry(specVersion: number, metadata: `0x${string}`): TypeRegistry {
 	const registry = new TypeRegistry();
 
+	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
 	registry.setChainProperties(
 		registry.createType('ChainProperties', {
 			ss58Format: 2,
@@ -55,32 +57,7 @@ function createKusamaRegistry(specVersion: number): TypeRegistry {
 		}),
 	);
 
-	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
-
-	registry.setMetadata(new Metadata(registry, kusamaMetadataV2008));
-
-	return registry;
-}
-
-/**
- * Create a type registry for Kusama.
- * Useful for creating types in order to facilitate testing.
- *
- * @param specVersion Kusama runtime spec version to get type defs for.
- */
-function createKusamaRegistryV1003003(specVersion: number): TypeRegistry {
-	const registry = new TypeRegistry();
-
-	registry.setChainProperties(
-		registry.createType('ChainProperties', {
-			ss58Format: 2,
-			tokenDecimals: 12,
-			tokenSymbol: 'KSM',
-		}),
-	);
-
-	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
-	registry.setMetadata(new Metadata(registry, kusamaMetadataV1003003));
+	registry.setMetadata(new Metadata(registry, metadata));
 
 	return registry;
 }
@@ -93,6 +70,11 @@ export const kusamaRegistry = createKusamaRegistryDeprecated();
 /**
  *  Kusama v2025 TypeRegistry.
  */
-export const kusamRegistryV2025 = createKusamaRegistry(2025);
+export const kusamaRegistryV2025 = createKusamaRegistry(2025, kusamaMetadataV2008);
 
-export const kusamaRegistryV1003003 = createKusamaRegistryV1003003(1003003);
+/**
+ *  Kusama v1002000 TypeRegistry.
+ */
+export const kusamaRegistryV1002000 = createKusamaRegistry(1002000, kusamaMetadataV1002000);
+
+export const kusamaRegistryV1003003 = createKusamaRegistry(1003003, kusamaMetadataV1003003);

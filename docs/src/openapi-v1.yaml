@@ -415,7 +415,8 @@ paths:
       - staking
       summary: Get staking information for a _Stash_ account.
       description: Returns information about a _Stash_ account's staking activity.
-        Replaces `/staking/{address}` from versions < v1.0.0.
+        Replaces `/staking/{address}` from versions < v1.0.0. The _Stash_ account
+        can be either a validator or nominator account.
       operationId: getStakingSummaryByAccountId
       parameters:
       - name: accountId
@@ -2819,11 +2820,15 @@ components:
           format: unsignedInteger
         nominations:
           $ref: '#/components/schemas/Nominations'
-        stakingLedger:
+        staking:
           $ref: '#/components/schemas/StakingLedger'
       description: >-
-        Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
-        `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
+        Note: For Sidecar versions prior to v.20.0.0, in field `claimedRewards` under `staking`, we return whatever we would find under `StakingLedger` with no further calculations.
+        From v.20.0.0 onwards, `claimedRewards` is calculated based on different calls: `lastReward`, `claimedRewards` or `legacyClaimedRewards`.
+        Note on lastReward: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
+        `claimedRewards`, or no field at all. This is related to changes in reward distribution.
+        See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474),
+        [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
     AccountStakingPayouts:
       type: object
       properties:
@@ -4822,11 +4827,28 @@ components:
           format: unsignedInteger
         claimedRewards:
           type: array
-          description: Array of eras for which the stakers behind a validator have
-            claimed rewards. Only updated for _validators._
+          description: Array of objects, each containing an `era` and its corresponding `status`,
+            which represents the rewards status of the queried Stash account. The queried account can either be
+            a validator or nominator account. This array is populated with values from `stakingLedger.lastReward`,
+            `stakingLedger.legacyClaimedRewards` or `stakingLedger.claimedRewards`, as well as the
+            `query.staking.claimedRewards` call, depending on whether the queried block is before or after the migration.
+            For more details on the implementation and the migration, refer to the related PR
+            (https://github.com/paritytech/substrate-api-sidecar/pull/1445) and linked issue
+            (https://github.com/paritytech/substrate-api-sidecar/issues/1433#issuecomment-2075914389).
           items:
-            type: string
-            format: unsignedInteger
+            type: object
+            properties:
+              era:
+                type: string
+                description: The era for which we check the rewards status.
+                format: unsignedInteger
+              status:
+                type: string
+                description: The rewards status of the stakers backing a validator.
+                enum:
+                - claimed
+                - unclaimed
+                - partially claimed
       description: The staking ledger.
     StakingProgress:
       type: object
