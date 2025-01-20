@@ -1591,7 +1591,7 @@ __metadata:
     "@substrate/dev": "npm:^0.9.0"
     "@types/argparse": "npm:2.0.17"
     "@types/express": "npm:^5.0.0"
-    "@types/express-serve-static-core": "npm:^5.0.4"
+    "@types/express-serve-static-core": "npm:^5.0.5"
     "@types/http-errors": "npm:2.0.4"
     "@types/lru-cache": "npm:^7.10.10"
     "@types/morgan": "npm:1.9.9"
@@ -1820,15 +1820,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^5.0.4":
-  version: 5.0.4
-  resolution: "@types/express-serve-static-core@npm:5.0.4"
+"@types/express-serve-static-core@npm:^5.0.5":
+  version: 5.0.5
+  resolution: "@types/express-serve-static-core@npm:5.0.5"
   dependencies:
     "@types/node": "npm:*"
     "@types/qs": "npm:*"
     "@types/range-parser": "npm:*"
     "@types/send": "npm:*"
-  checksum: 10/d19ee97380bd07a2634ac8e6d326b23468ca1645c05d26cba823bade541f64cb779e7b85c2d58ad7e446d1fbcae37c403d24669070eefd269284557fe4ec9afd
+  checksum: 10/186b275cd9110c7153ffd6f2c52e0e4242b0f2769873ea034c75885a96346b42535875012732e0866ccdfc7d5132bb32a725a297182e929427cb95aba62f9801
   languageName: node
   linkType: hard
 
