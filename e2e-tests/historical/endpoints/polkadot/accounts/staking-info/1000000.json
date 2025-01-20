@@ -8,74 +8,261 @@
         "staked": null
     },
     "numSlashingSpans": "0",
+    "nominations": null,
     "staking": {
         "stash": "16SpacegeUTft9v3ts27CEC3tJaxgvE4uZeCctThFH3Vb24p",
         "total": "146275200613711",
         "active": "146275200613711",
         "unlocking": [],
         "claimedRewards": [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "35",
-            "36",
-            "37",
-            "38",
-            "39",
-            "40",
-            "41",
-            "42",
-            "43",
-            "44",
-            "45",
-            "46",
-            "47",
-            "48",
-            "49",
-            "50",
-            "51",
-            "52",
-            "53",
-            "54",
-            "55",
-            "56",
-            "57",
-            "58",
-            "59",
-            "60",
-            "61",
-            "62"
+            {
+                "era": "1",
+                "status": "claimed"
+            },
+            {
+                "era": "2",
+                "status": "claimed"
+            },
+            {
+                "era": "3",
+                "status": "claimed"
+            },
+            {
+                "era": "4",
+                "status": "claimed"
+            },
+            {
+                "era": "5",
+                "status": "claimed"
+            },
+            {
+                "era": "6",
+                "status": "claimed"
+            },
+            {
+                "era": "7",
+                "status": "claimed"
+            },
+            {
+                "era": "8",
+                "status": "claimed"
+            },
+            {
+                "era": "9",
+                "status": "claimed"
+            },
+            {
+                "era": "10",
+                "status": "claimed"
+            },
+            {
+                "era": "11",
+                "status": "claimed"
+            },
+            {
+                "era": "12",
+                "status": "claimed"
+            },
+            {
+                "era": "13",
+                "status": "claimed"
+            },
+            {
+                "era": "14",
+                "status": "claimed"
+            },
+            {
+                "era": "15",
+                "status": "claimed"
+            },
+            {
+                "era": "16",
+                "status": "claimed"
+            },
+            {
+                "era": "17",
+                "status": "claimed"
+            },
+            {
+                "era": "18",
+                "status": "claimed"
+            },
+            {
+                "era": "19",
+                "status": "claimed"
+            },
+            {
+                "era": "20",
+                "status": "claimed"
+            },
+            {
+                "era": "21",
+                "status": "claimed"
+            },
+            {
+                "era": "22",
+                "status": "claimed"
+            },
+            {
+                "era": "23",
+                "status": "claimed"
+            },
+            {
+                "era": "24",
+                "status": "claimed"
+            },
+            {
+                "era": "25",
+                "status": "claimed"
+            },
+            {
+                "era": "26",
+                "status": "claimed"
+            },
+            {
+                "era": "27",
+                "status": "claimed"
+            },
+            {
+                "era": "28",
+                "status": "claimed"
+            },
+            {
+                "era": "29",
+                "status": "claimed"
+            },
+            {
+                "era": "30",
+                "status": "claimed"
+            },
+            {
+                "era": "31",
+                "status": "claimed"
+            },
+            {
+                "era": "32",
+                "status": "claimed"
+            },
+            {
+                "era": "33",
+                "status": "claimed"
+            },
+            {
+                "era": "34",
+                "status": "claimed"
+            },
+            {
+                "era": "35",
+                "status": "claimed"
+            },
+            {
+                "era": "36",
+                "status": "claimed"
+            },
+            {
+                "era": "37",
+                "status": "claimed"
+            },
+            {
+                "era": "38",
+                "status": "claimed"
+            },
+            {
+                "era": "39",
+                "status": "claimed"
+            },
+            {
+                "era": "40",
+                "status": "claimed"
+            },
+            {
+                "era": "41",
+                "status": "claimed"
+            },
+            {
+                "era": "42",
+                "status": "claimed"
+            },
+            {
+                "era": "43",
+                "status": "claimed"
+            },
+            {
+                "era": "44",
+                "status": "claimed"
+            },
+            {
+                "era": "45",
+                "status": "claimed"
+            },
+            {
+                "era": "46",
+                "status": "claimed"
+            },
+            {
+                "era": "47",
+                "status": "claimed"
+            },
+            {
+                "era": "48",
+                "status": "claimed"
+            },
+            {
+                "era": "49",
+                "status": "claimed"
+            },
+            {
+                "era": "50",
+                "status": "claimed"
+            },
+            {
+                "era": "51",
+                "status": "claimed"
+            },
+            {
+                "era": "52",
+                "status": "claimed"
+            },
+            {
+                "era": "53",
+                "status": "claimed"
+            },
+            {
+                "era": "54",
+                "status": "claimed"
+            },
+            {
+                "era": "55",
+                "status": "claimed"
+            },
+            {
+                "era": "56",
+                "status": "claimed"
+            },
+            {
+                "era": "57",
+                "status": "claimed"
+            },
+            {
+                "era": "58",
+                "status": "claimed"
+            },
+            {
+                "era": "59",
+                "status": "claimed"
+            },
+            {
+                "era": "60",
+                "status": "claimed"
+            },
+            {
+                "era": "61",
+                "status": "claimed"
+            },
+            {
+                "era": "62",
+                "status": "claimed"
+            }
         ]
     }
 }

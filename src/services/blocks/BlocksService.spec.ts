@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ import type { GenericExtrinsic } from '@polkadot/types';
 import type { GenericCall } from '@polkadot/types/generic';
 import type { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
-import { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -33,10 +32,7 @@ import {
 	polkadotRegistry,
 	polkadotRegistryV1000001,
 } from '../../test-helpers/registries';
-import { IBlock } from '../../types/responses/';
 import {
-	blockHash20000,
-	blockHash100000,
 	blockHash789629,
 	blockHash3356195,
 	blockHash6202603,
@@ -127,21 +123,14 @@ const mockApi = {
 /**
  * For type casting mock getBlock functions so tsc does not complain
  */
-type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array | undefined) => Promise<SignedBlock>>;
-
-// LRU cache used to cache blocks
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const cache = new LRUCache({ max: 2 }) as LRUCache<string, IBlock>;
+type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array) => Promise<SignedBlock>>;
 
 // Block Service
-const blocksService = new BlocksService(mockApi, 0, cache, new QueryFeeDetailsCache(null, null));
+const blocksService = new BlocksService(mockApi, 0, new QueryFeeDetailsCache(null, null));
 
 describe('BlocksService', () => {
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -160,9 +149,7 @@ describe('BlocksService', () => {
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
-			// Reset LRU cache
-			cache.clear();
-			// Create a block with undefined as the first extrinisic and the last extrinsic removed
+			// Create a block with undefined as the first extrinsic and the last extrinsic removed
 			const mockBlock789629BadExt = polkadotRegistry.createType('Block', block789629);
 
 			mockBlock789629BadExt.extrinsics.pop();
@@ -194,8 +181,6 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns the finalized tag as undefined when omitFinalizedTag equals true', async () => {
-			// Reset LRU cache
-			cache.clear();
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -215,9 +200,6 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlocksService.parseGenericCall', () => {
-		// Reset LRU cache
-		cache.clear();
-
 		const transfer = createCall('balances', 'transfer', {
 			value: 12,
 			dest: kusamaRegistry.createType('AccountId', '14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'), // Bob
@@ -351,9 +333,6 @@ describe('BlocksService', () => {
 		const blockNumber = polkadotRegistry.createType('Compact<BlockNumber>', 789629);
 
 		it('Returns false when queried blockId is not canonical', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			const getHeader = (_hash: Hash) => Promise.resolve().then(() => mockForkedBlock789629.header);
 
 			const getBlockHash = (_zero: number) => Promise.resolve().then(() => finalizedHead);
@@ -378,12 +357,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(
-				mockApi,
-				0,
-				new LRUCache({ max: 2 }),
-				new QueryFeeDetailsCache(null, null),
-			);
+			const blocksService = new BlocksService(mockApi, 0, new QueryFeeDetailsCache(null, null));
 			expect(await blocksService['isFinalizedBlock'](mockApi, blockNumber, finalizedHead, finalizedHead, true)).toEqual(
 				true,
 			);
@@ -403,10 +377,7 @@ describe('BlocksService', () => {
 			paraId: undefined,
 		};
 
-		it('Returns the correct extrinisics object for block 789629', async () => {
-			// Reset LRU cache
-			cache.clear();
-
+		it('Returns the correct extrinsics object for block 789629', async () => {
 			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
 
 			/**
@@ -419,9 +390,6 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
 
 			expect(() => {
@@ -460,57 +428,15 @@ describe('BlocksService', () => {
 			},
 		};
 		it('Returns the correct summary for the latest block', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			const blockSummary = await blocksService.fetchBlockHeader(blockHash789629);
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
 		});
 
 		it('Returns the correct summary for the given block number', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			const blockSummary = await blocksService.fetchBlockHeader();
 
 			expect(sanitizeNumbers(blockSummary)).toStrictEqual(expectedResponse);
-		});
-	});
-
-	describe('Block LRUcache', () => {
-		// fetchBlock options
-		const options = {
-			eventDocs: true,
-			extrinsicDocs: true,
-			checkFinalized: false,
-			queryFinalizedHead: false,
-			omitFinalizedTag: false,
-			noFees: false,
-			checkDecodedXcm: false,
-			paraId: undefined,
-		};
-
-		it('Should correctly store the most recent queried blocks', async () => {
-			// Reset LRU cache
-			cache.clear();
-
-			await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
-			await blocksService.fetchBlock(blockHash20000, mockHistoricApi, options);
-
-			expect(cache.size).toBe(2);
-		});
-
-		it('Should have a max of 2 blocks within the LRUcache, and should save the most recent and remove the oldest block', async () => {
-			// Reset LRU cache
-			cache.clear();
-
-			await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
-			await blocksService.fetchBlock(blockHash20000, mockHistoricApi, options);
-			await blocksService.fetchBlock(blockHash100000, mockHistoricApi, options);
-
-			expect(cache.get(blockHash789629.toString())).toBe(undefined);
-			expect(cache.size).toBe(2);
 		});
 	});
 
@@ -521,9 +447,6 @@ describe('BlocksService', () => {
 	});
 
 	describe('BlockService.decodedXcmMsgsArg', () => {
-		// Reset LRU cache
-		cache.clear();
-
 		const validatorsAt = (_hash: Hash) =>
 			Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<ValidatorId>', validators18468942Hex));
 
@@ -578,7 +501,7 @@ describe('BlocksService', () => {
 		} as unknown as ApiPromise;
 
 		// Block Service
-		const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+		const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
 
 		it('Should give back two decoded upward XCM messages for Polkadot block 18468942, one for paraId=2000 and one for paraId=2012', async () => {
 			// fetchBlock options
@@ -599,9 +522,6 @@ describe('BlocksService', () => {
 		});
 
 		it('Should give back one decoded upward XCM message for Polkadot block 18468942 only for paraId=2000', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -620,9 +540,6 @@ describe('BlocksService', () => {
 		});
 
 		it('Should give back two decoded XCM messages, one horizontal and one downward, for Kusama Asset Hub block 3356195', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -691,15 +608,13 @@ describe('BlocksService', () => {
 			} as unknown as ApiPromise;
 
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block3356195Response);
 		});
 
 		it('Should give back one of the two available horizontal messages, the one for paraId 2087 for Kusama Asset Hub block 6202603', async () => {
-			// Reset LRU cache
-			cache.clear();
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -767,16 +682,13 @@ describe('BlocksService', () => {
 			} as unknown as ApiPromise;
 
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
 		});
 
 		it('Should give back two decoded horizontal XCM messages (with different origin & destination paraId) that are `in transit` in Polkadot Relay block 19772575', async () => {
-			// Reset LRU cache
-			cache.clear();
-
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -843,7 +755,7 @@ describe('BlocksService', () => {
 			} as unknown as ApiPromise;
 
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, cache, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash19772575, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block19772575Response);

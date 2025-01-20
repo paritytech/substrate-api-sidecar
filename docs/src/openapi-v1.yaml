@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 19.0.0
+  version: 19.4.0
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -18,10 +18,13 @@ servers:
   description: Polkadot Asset Hub Parity public sidecar
 - url: https://kusama-asset-hub-public-sidecar.parity-chains.parity.io/
   description: Kusama Asset Hub Parity public sidecar
+- url: http://localhost:8080
+  description: Localhost
 tags:
 - name: accounts
 - name: blocks
 - name: contracts
+- name: coretime
 - name: node
   description: node connected to sidecar
 - name: pallets
@@ -412,7 +415,8 @@ paths:
       - staking
       summary: Get staking information for a _Stash_ account.
       description: Returns information about a _Stash_ account's staking activity.
-        Replaces `/staking/{address}` from versions < v1.0.0.
+        Replaces `/staking/{address}` from versions < v1.0.0. The _Stash_ account
+        can be either a validator or nominator account.
       operationId: getStakingSummaryByAccountId
       parameters:
       - name: accountId
@@ -983,6 +987,142 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /coretime/leases:
+    get:
+      tags:
+      - coretime
+      summary: Get all the leases currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeLeases
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeLeasesResponse'
+  /coretime/regions:
+    get:
+      tags:
+      - coretime
+      summary: Get all the regions currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRegions
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeRegionsResponse'
+  /coretime/renewals:
+    get:
+      tags:
+      - coretime
+      summary: Get all the potential renewals currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeRenewals
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeRenewalsResponse'
+  /coretime/reservations:
+    get:
+      tags:
+      - coretime
+      summary: Get all the reservations currently registered on coretime chain.
+      description: ''
+      operationId: getCoretimeReservations
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoretimeReservationsResponse'
+  /coretime/info:
+    get:
+      tags:
+      - coretime
+      summary: Get the generic information about coretime, either on coretime chain or relay chain.
+      description: ''
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      operationId: getCoretimeInfo
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainInfoResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayInfoResponse'
+  /coretime/overview:
+    get:
+      tags:
+      - coretime
+      summary: Get all the cores information either on coretime chain or relay chain.
+      description: ''
+      operationId: getCoretimeCores
+      parameters:
+      - name: blockId
+        in: query
+        description: Block identifier, as the block height or block hash.
+        required: false
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CoretimeChainCoresResponse'
+                  - $ref: '#/components/schemas/CoretimeRelayCoresResponse'
   /node/network:
     get:
       tags:
@@ -1062,10 +1202,12 @@ paths:
       tags:
       - transaction
       summary: Dry run an extrinsic.
-      description: Use the dryrun call to practice submission of a transaction.
+      description: Use the `dryRun` call to simulate the submission of a transaction
+        without executing it so that you can check for potential errors and
+        validate the expected outcome.
       operationId: dryrunTransaction
       requestBody:
-        $ref: '#/components/requestBodies/Transaction'
+        $ref: '#/components/requestBodies/TransactionDryRun'
       responses:
         "200":
           description: successful operation
@@ -1370,6 +1512,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PalletsNominationPool'
+  /pallets/on-going-referenda:
+      get:
+        tags:
+          - pallets
+        summary: Get a list of all on-going referenda that have track `root (0)` and `whitelisted (1)`,
+          along with their associated information.
+        description: Returns information associated with on-going referenda which includes
+          the referendum's `enactment`, `submitted` and `deciding` fields.
+        operationId: getPalletOnGoingReferenda
+        parameters:
+        - name: at
+          in: query
+          description: Block at which to retrieve the on-going referenda.
+          required: false
+          schema:
+            type: string
+            description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+        responses:
+          "200":
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/PalletsOnGoingReferenda'
   /pallets/{palletId}/consts:
     get:
       tags:
@@ -2653,11 +2820,15 @@ components:
           format: unsignedInteger
         nominations:
           $ref: '#/components/schemas/Nominations'
-        stakingLedger:
+        staking:
           $ref: '#/components/schemas/StakingLedger'
       description: >-
-        Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
-        `claimedRewards`, or no field at all. This is related to changes in reward distribution. See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474), [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
+        Note: For Sidecar versions prior to v.20.0.0, in field `claimedRewards` under `staking`, we return whatever we would find under `StakingLedger` with no further calculations.
+        From v.20.0.0 onwards, `claimedRewards` is calculated based on different calls: `lastReward`, `claimedRewards` or `legacyClaimedRewards`.
+        Note on lastReward: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
+        `claimedRewards`, or no field at all. This is related to changes in reward distribution.
+        See: [Lazy Payouts](https://github.com/paritytech/substrate/pull/4474),
+        [Simple Payouts](https://github.com/paritytech/substrate/pull/5406)
     AccountStakingPayouts:
       type: object
       properties:
@@ -3007,6 +3178,359 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+    CoretimeRegionsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeLeasesResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        leases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeLease'
+    CoretimeReservationsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        reservations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeReservation'
+    CoretimeRenewalsResponse: 
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        renewals:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRenewal'
+    CoretimeChainInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        configuration:
+          $ref: '#/components/schemas/CoretimeConfig'
+        currentRegion:
+          type: object
+          properties: 
+            start: 
+              type: string
+              description: The start time.
+            end: 
+              type: string
+              description: The end time.
+        cores:
+          type: object
+          properties: 
+            total: 
+              type: string
+              description: The total number of cores.
+            available: 
+              type: string
+              description: The number of free cores.
+            sold: 
+              type: string
+              description: The number of reserved cores.
+            currentCorePrice: 
+              type: string
+              description: The current core price.
+            selloutPrice: 
+              type: string
+              description: The sellout price.
+            firstCore:
+              type: string
+              description: The first core id.
+    CoretimeRelayInfoResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        brokerId:
+          type: string
+          description: The broker parachain id.
+        palletVersion:
+          type: string
+          description: The pallet version.
+        maxHistoricalRevenue:
+          type: string
+          description: The maximum historical revenue.
+    CoretimeChainCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeCore'
+    CoretimeRelayCoresResponse:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRelayCoreDescriptor'
+    CoretimeRelayCoreDescriptor:
+      type: object
+      properties:
+        paraId:
+          type: string
+          description: The parachain id.
+        type: 
+          type: string
+          description: The parachain type.
+        info:
+          type: object
+          properties: 
+            currentWork: 
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      isPool:
+                        type: boolean
+                        description: Whether the workload is a pool.
+                      isTask:
+                        type: boolean
+                        description: Whether the workload is a task.
+                      ratio: 
+                        type: string
+                        description: The ratio of the workload.
+                      remaining:
+                        type: string
+                        description: The remaining workload.
+                      task:
+                        type: string
+                        description: The parachain id.
+                endHint:
+                  type: string
+                  description: The end hint.
+                pos: 
+                  type: string
+                  description: The position.
+                step: 
+                  type: string
+                  description: The step.
+            queue: 
+              type: object
+              properties:
+                first: 
+                  type: string
+                  description: The first assignment in queue.
+                last:
+                  type: string
+                  description: The last assignment in queue.
+    CoretimeCore:
+      type: object
+      properties:
+        coreId:
+          type: string
+          description: The core id.
+        paraId:
+          type: string
+          description: The parachain core.
+        workload:
+          type: object
+          $ref: '#/components/schemas/CoretimeWorkload'
+        workplan:
+          type: array
+          items: 
+            $ref: '#/components/schemas/CoretimeWorkplan'
+        type:
+          description: The paid price.
+          type: object
+          properties:
+            condition: 
+              type: string
+              description: Type of assignment.
+            details:
+              type: object
+              oneOf: 
+                - $ref: '#/components/schemas/CoretimeUntil'
+                - $ref: '#/components/schemas/CoretimeMask'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeRegion'
+    CoretimeConfig:
+      type: object
+      properties:
+        interludeLength:
+          type: string
+          description: The interlude length.
+        leadinLength:
+          type: string
+          description: The leadin length.
+        regionLength:
+          type: string
+          description: The region length.
+        relayBlocksPerTimeslice:
+          type: string
+          description: The number of relay chain blocks per timeslice.
+    CoretimeSaleInfo:
+        type: object
+        properties:
+          phase:
+            type: string
+            description: The phase of the sale.
+          saleStart:
+            type: string
+            description: The sale start.
+          leadinLength:
+            type: string
+            description: The leading length.
+          endPrice:
+            type: string
+            description: The end price.
+          regionBegin:
+            type: string
+            description: The region start time.
+          regionEnd:
+            type: string
+            description: The region end time.
+          idealCoresSold:
+            type: string
+            description: The ideal number of cores sold.
+          coresOffered:
+            type: string
+            description: The number of cores on sale.
+          firstCore:
+            type: string
+            description: The first core id.
+          selloutPrice:
+            type: string
+            description: The sellout price.
+          coresSold:
+            type: string
+            description: The number of cores sold.
+    CoretimeMask:
+      type: string
+      description: The mask.
+    CoretimeUntil:
+      type: string
+      description: The lease expiry time.
+    CoretimeWorkplan: 
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        timeslice: 
+          type: string
+          description: The timeslice.
+        info:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoretimeWorkplanInfo'
+    CoretimeWorkplanInfo:
+      type: object
+      properties: 
+        isPool:
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
+    CoretimeWorkload:
+      type: object
+      properties:
+        isPool: 
+          type: boolean
+          description: Whether the workload is a pool.
+        isTask:
+          type: boolean
+          description: Whether the workload is a task.
+        mask:
+          type: string
+          description: The mask.
+        task:
+          type: string
+          description: The parachain id.
+    CoretimeRegion:
+      type: object
+      properties:
+        core: 
+          type: string
+          description: The core id.
+        begin:
+          type: string
+          description: The begin time.
+        end:
+          type: string
+          description: The end time.
+        owner: 
+          type: string
+          description: The owner of the region.
+        paid:
+          type: string
+          description: The paid price.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeLease:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        until: 
+          type: string
+          description: The lease expiry time.
+        core:
+          type: string
+          description: The core id.
+    CoretimeReservation:
+      type: object
+      properties:
+        task:
+          type: string
+          description: The parachain id.
+        mask: 
+          type: string
+          description: The mask.
+    CoretimeRenewal:
+      type: object
+      properties:
+        completion:
+          type: string
+          description: The completion status.
+        core: 
+          type: string
+          description: The core id.
+        mask:
+          type: string
+          description: The mask.
+        price: 
+          type: string
+          description: The renewal price.
+        task: 
+          type: string
+          description: The parachain id.
+        when: 
+          type: string
+          description: The renewal time.
     BlockWithDecodedXcmMsgs:
       allOf:
         - $ref: "#/components/schemas/Block"
@@ -3080,16 +3604,11 @@ components:
         decodedXcmMsgs:
           type: object
           properties:
-            horizontalMessages: {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInRelay"
-                },
-                {
-                  "$ref": "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInParachain"
-                }
-              ]
-            }
+            horizontalMessages:
+              type: object
+              oneOf:
+                - $ref: "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInRelay"
+                - $ref: "#/components/schemas/DecodedXcmMsgsHorizontalMessagesInParachain"
             downwardMessages:
               type: array
               items:
@@ -3794,6 +4313,55 @@ components:
             type: number
         minJoinBond:
             type: number
+    PalletsOnGoingReferenda:
+          type: object
+          properties:
+            at:
+              $ref: '#/components/schemas/BlockIdentifiers'
+            referenda:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Referendum's id.
+                  decisionDeposit:
+                    type: object
+                    properties:
+                      who:
+                        type: string
+                        description: The account who placed the referendum's decision deposit.
+                      amount:
+                        type: string
+                        format: unsignedInteger
+                        description: The amount of the decision deposit.
+                    description: A deposit which is required for a referendum to progress to the decision phase.
+                  enactment:
+                    type: string
+                    enum:
+                    - at
+                    - after
+                    description: The enactment period of the referendum. It can be defined using either the `at` option,
+                      which specifies the exact block height when the referendum will be enacted, or the `after` option,
+                      which indicates the number of blocks after which the enactment will occur.
+                  submitted:
+                    type: string
+                    format: unsignedInteger
+                    description: The block number at which the referendum was submitted.
+                  deciding:
+                    type: object
+                    properties:
+                      since:
+                        type: string
+                        format: unsignedInteger
+                        description: The block number at which the referendum started being `decided`.
+                      confirming:
+                        type: string
+                        format: unsignedInteger
+                        description: The block number at which the referendum's confirmation stage will end at as long as
+                          it doesn't lose its approval in the meantime.
+              description: A list of ongoing referenda and their details.
     PalletsPoolAssetsInfo:
       type: object
       properties:
@@ -4259,11 +4827,28 @@ components:
           format: unsignedInteger
         claimedRewards:
           type: array
-          description: Array of eras for which the stakers behind a validator have
-            claimed rewards. Only updated for _validators._
+          description: Array of objects, each containing an `era` and its corresponding `status`,
+            which represents the rewards status of the queried Stash account. The queried account can either be
+            a validator or nominator account. This array is populated with values from `stakingLedger.lastReward`,
+            `stakingLedger.legacyClaimedRewards` or `stakingLedger.claimedRewards`, as well as the
+            `query.staking.claimedRewards` call, depending on whether the queried block is before or after the migration.
+            For more details on the implementation and the migration, refer to the related PR
+            (https://github.com/paritytech/substrate-api-sidecar/pull/1445) and linked issue
+            (https://github.com/paritytech/substrate-api-sidecar/issues/1433#issuecomment-2075914389).
           items:
-            type: string
-            format: unsignedInteger
+            type: object
+            properties:
+              era:
+                type: string
+                description: The era for which we check the rewards status.
+                format: unsignedInteger
+              status:
+                type: string
+                description: The rewards status of the stakers backing a validator.
+                enum:
+                - claimed
+                - unclaimed
+                - partially claimed
       description: The staking ledger.
     StakingProgress:
       type: object
@@ -4418,6 +5003,62 @@ components:
         tx:
           type: string
           format: hex
+    TransactionDispatchOutcome:
+      type: object
+      description: The result of a valid transaction submitted via the `dry-run` endpoint.
+      properties:
+        actualWeight:
+          type: string
+          format: unsignedInteger
+          description: The actual weight of the transaction.
+        paysFee:
+          type: string
+          format: boolean
+          description: Whether the transaction pays a fee.
+    TransactionDispatchError:
+      type: object
+      description: The reason why the dispatch call failed.
+      properties:
+        errorType:
+          type: string
+          enum:
+            - Other
+            - CannotLookup
+            - BadOrigin
+            - ModuleError
+            - ConsumerRemaining
+            - NoProviders
+            - TooManyConsumers
+            - TokenError
+            - ArithmeticError
+            - TransactionalError
+            - Exhausted
+            - Corruption
+            - Unavailable
+            - RootNotAllowed
+          description: The type of transaction error.
+    TransactionValidityError:
+      type: object
+      description: The error result from an invalid transaction submitted via the `dry-run` endpoint.
+      properties:
+        errorType:
+          type: string
+          enum:
+            - Unimplemented
+            - VersionedConversionFailed
+          description: The type of transaction error, either `Unimplemented` or `VersionedConversionFailed`.
+    DryRunBody:
+      type: object
+      properties: 
+        at: 
+          type: string
+          format: unsignedInteger
+        tx: 
+          type: string
+          format: hex
+        senderAddress:
+          type: string
+          format: ss58
     TransactionDryRun:
       type: object
       properties:
@@ -4425,35 +5066,20 @@ components:
           type: string
           enum:
           - DispatchOutcome
+          - DispatchError
           - TransactionValidityError
-          description: Either `DispatchOutcome` if the transaction is valid or `TransactionValidityError` if the result is invalid.
+          description: The result will be either a `DispatchOutcome` if the transaction is valid, a `DispatchError`
+            if the transaction failed, or a `TransactionValidityError` if the transaction is invalid.
         result:
-          type: string
-          enum:
-          - Ok
-          - CannotLookup
-          - NoUnsignedValidator
-          - Custom(u8)
-          - Call
-          - Payment
-          - Future
-          - Stale
-          - BadProof
-          - AncientBirthBlock
-          - ExhaustsResources
-          - BadMandatory
-          - MandatoryDispatch
-          description: 'If there was an error it will be the cause of the error. If the
-            transaction executed correctly it will be `Ok: []`'
-        validityErrorType:
-          type: string
-          enum:
-          - InvalidTransaction
-          - UnknownTransaction
+          oneOf:
+            - $ref: '#/components/schemas/TransactionDispatchOutcome'
+            - $ref: '#/components/schemas/TransactionDispatchError'
+            - $ref: '#/components/schemas/TransactionValidityError'
       description: >-
         References:
-        - `UnknownTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.UnknownTransaction.html
-        - `InvalidTransaction`: https://crates.parity.io/sp_runtime/transaction_validity/enum.InvalidTransaction.html
+          - `PostDispatchInfo`: https://docs.rs/frame-support/38.0.0/frame_support/dispatch/struct.PostDispatchInfo.html
+          - `DispatchError`: https://docs.rs/sp-runtime/39.0.1/sp_runtime/enum.DispatchError.html
+          - `Error Type`: https://paritytech.github.io/polkadot-sdk/master/xcm_runtime_apis/dry_run/enum.Error.html
     TransactionFailedToParse:
       type: object
       properties:
@@ -4690,6 +5316,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Transaction'
+      required: true
+    TransactionDryRun:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DryRunBody'
       required: true
     ContractMetadata:
       content:

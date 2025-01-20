@@ -75,9 +75,11 @@ sudo cp wrk /usr/local/bin
 
 ### Running Locally
 
-In order to run each benchmark you should `cd` into the appropriate directory you want to run, set the `WRK_TIME_LENGTH` env var (ex: `export WRK_TIME_LENGTH=30s`) and then `sh init.sh`. You are required to have sidecar running, as well as a fully synced archive node.
+In order to run each benchmark independently you should `cd` into the appropriate directory you want to run, set the `WRK_TIME_LENGTH` env var (ex: `export WRK_TIME_LENGTH=30s`) and then `sh init.sh`. You are required to have sidecar running, as well as a fully synced archive node.
 
 NOTE: Some benchmarks might have multiple `sh` scripts with different names in order to run specific benchmarks.
+
+There is also the option to run all the benchmarks' init.sh files by running `sh init.sh` from `./benchmarks`.
 
 ### Running via Scripts (Root)
 
@@ -110,3 +112,7 @@ ex3:
 $ yarn
 $ yarn bench --log-level=info --time=30s  --endpoint=/accounts/{accountId}/balance-info
 ```
+
+### Benchmarks Published
+
+Benchmarks are automatically published in Github pages under the url https://paritytech.github.io/substrate-api-sidecar/dev/bench/. The data in the graphs are updated with every new commit/push in the `master` branch (refer to the [benchmark.yml](https://github.com/paritytech/substrate-api-sidecar/blob/master/.github/workflows/benchmark.yml) for more details).

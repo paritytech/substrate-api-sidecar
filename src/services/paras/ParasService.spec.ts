@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -23,10 +23,10 @@ import { AbstractInt } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { rococoMetadataV228 } from '../../test-helpers/metadata/rococoMetadata';
-import { polkadotRegistry, polkadotRegistryV9300, rococoRegistry } from '../../test-helpers/registries';
+import { polkadotMetadataRpcV1000001 } from '../../test-helpers/metadata/polkadotV1000001Metadata';
+import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
-import { blockHash789629, defaultMockApi, mockBlock789629 } from '../test-helpers/mock';
+import { blockHash18468942, mockApiBlock18468942, mockBlock18468942 } from '../test-helpers/mock';
 import { eventsHex } from '../test-helpers/mock/paras/eventsHex';
 import parasHeadBackedCandidatesResponse from '../test-helpers/responses/paras/parasHeadBackedCandidates.json';
 import parasHeadIncludedCandidatesResponse from '../test-helpers/responses/paras/parasHeadIncludedCandidates.json';
@@ -34,28 +34,28 @@ import { ParasService } from './ParasService';
 
 /**
  * ParasService specific constants
- * The below types and constants use the rococo registry in order to properly
+ * The below types and constants use the Polkadot registry in order to properly
  * test the ParasService with accurate metadata
  */
-const rococoApi = createApiWithAugmentations(rococoMetadataV228);
-const rococoTypeFactory = new TypeFactory(rococoApi);
+const polkadotApi = createApiWithAugmentations(polkadotMetadataRpcV1000001);
+const polkadotTypeFactory = new TypeFactory(polkadotApi);
 
 /**
  * Used for parachain crowdloans
  */
 const funds = {
-	depositor: rococoRegistry.createType('AccountId', '14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3'),
+	depositor: polkadotRegistryV1000001.createType('AccountId', '12rgGkphjoZ25FubPoxywaNm3oVhSHnzExnT6hsLnicuLaaj'),
 	verifier: null,
-	deposit: rococoRegistry.createType('Balance', 100000000000000),
-	raised: rococoRegistry.createType('Balance', 627500000000000),
-	end: rococoRegistry.createType('BlockNumber', 200000),
-	cap: rococoRegistry.createType('Balance', '0x0000000000000000016345785d8a0000'),
-	lastContribution: rococoRegistry.createType('LastContribution', {
-		preEnding: 6,
+	deposit: polkadotRegistryV1000001.createType('Balance', 5000000000000),
+	raised: polkadotRegistryV1000001.createType('Balance', 2999970000000000),
+	end: polkadotRegistryV1000001.createType('BlockNumber', 14164600),
+	cap: polkadotRegistryV1000001.createType('Balance', 3000000000000000),
+	lastContribution: polkadotRegistryV1000001.createType('LastContribution', {
+		preEnding: 34,
 	}),
-	firstPeriod: rococoRegistry.createType('LeasePeriod', 13),
-	lastPeriod: rococoRegistry.createType('LeasePeriod', 16),
-	trieIndex: rococoRegistry.createType('TrieIndex', 60),
+	firstPeriod: polkadotRegistryV1000001.createType('LeasePeriod', 11),
+	lastPeriod: polkadotRegistryV1000001.createType('LeasePeriod', 15),
+	trieIndex: polkadotRegistryV1000001.createType('TrieIndex', 55),
 };
 
 const paraLifecycleObjectOne = {
@@ -66,18 +66,24 @@ const paraLifecycleObjectTwo = {
 	parathread: true,
 	parachain: false,
 };
-const crowdloanParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.crowdloan.funds);
-const crowdloanParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.crowdloan.funds);
-const paraLifecycleOne = rococoRegistry.createType('ParaLifecycle', paraLifecycleObjectOne);
-const paraLifecycleTwo = rococoRegistry.createType('ParaLifecycle', paraLifecycleObjectTwo);
-const accountIdOne = rococoRegistry.createType('AccountId', '1TYrFCWxwHA5bhiXf6uLvPfG6eEvrzzL7uiPK3Yc6yHLUqc');
-const accountIdTwo = rococoRegistry.createType('AccountId', '13NXiLYYzVEjXxU3eaZNcrjEX9vPyVDNNpURCzK8Bj9BiCWH');
-const balanceOfOne = rococoRegistry.createType('BalanceOf', 1000000);
-const balanceOfTwo = rococoRegistry.createType('BalanceOf', 2000000);
+const crowdloanParaId1 = polkadotTypeFactory.storageKey(1000, 'ParaId', polkadotApi.query.crowdloan.funds);
+const crowdloanParaId2 = polkadotTypeFactory.storageKey(200, 'ParaId', polkadotApi.query.crowdloan.funds);
+const paraLifecycleOne = polkadotRegistryV1000001.createType('ParaLifecycle', paraLifecycleObjectOne);
+const paraLifecycleTwo = polkadotRegistryV1000001.createType('ParaLifecycle', paraLifecycleObjectTwo);
+const accountIdOne = polkadotRegistryV1000001.createType(
+	'AccountId',
+	'13UVJyLnbVp77Z2t6qjFmcyzTXYQJjyb6Hww7ZHPumd81iht',
+);
+const accountIdTwo = polkadotRegistryV1000001.createType(
+	'AccountId',
+	'13UVJyLnbVp77Z2t6qpQs8LAavPA1FuD53ocaULGhTEy8s6n',
+);
+const balanceOfOne = polkadotRegistryV1000001.createType('BalanceOf', 1000000);
+const balanceOfTwo = polkadotRegistryV1000001.createType('BalanceOf', 2999970000000000);
 
 const fundsEntries = () =>
 	Promise.resolve().then(() => {
-		const optionFundInfo = rococoRegistry.createType('Option<FundInfo>', funds);
+		const optionFundInfo = polkadotRegistryV1000001.createType('Option<FundInfo>', funds);
 
 		const entries = [
 			[crowdloanParaId1, optionFundInfo],
@@ -89,7 +95,7 @@ const fundsEntries = () =>
 
 const fundsAt = () =>
 	Promise.resolve().then(() => {
-		return rococoRegistry.createType('Option<FundInfo>', funds);
+		return polkadotRegistryV1000001.createType('Option<FundInfo>', funds);
 	});
 
 const fundsKeys = () =>
@@ -100,8 +106,8 @@ const fundsKeys = () =>
 /**
  * Used for parachain paras
  */
-const paraLifeCycleParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.paras.paraLifecycles);
-const paraLifeCycleParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.paras.paraLifecycles);
+const paraLifeCycleParaId1 = polkadotTypeFactory.storageKey(199, 'ParaId', polkadotApi.query.paras.paraLifecycles);
+const paraLifeCycleParaId2 = polkadotTypeFactory.storageKey(200, 'ParaId', polkadotApi.query.paras.paraLifecycles);
 
 const parasLifecyclesEntriesAt = () =>
 	Promise.resolve().then(() => {
@@ -113,32 +119,30 @@ const parasLifecyclesEntriesAt = () =>
 
 const parasGenesisArgsAt = () =>
 	Promise.resolve().then(() => {
-		return rococoRegistry.createType('ParaGenesisArgs', { parachain: true });
+		return polkadotRegistryV1000001.createType('ParaGenesisArgs', { parachain: true });
 	});
 
 const upcomingParasGenesisAt = () =>
 	Promise.resolve().then(() => {
-		return rococoRegistry.createType('Option<ParaGenesisArgs>', {
+		return polkadotRegistryV1000001.createType('Option<ParaGenesisArgs>', {
 			parachain: true,
 		});
 	});
 
 const parasLifecyclesAt = () =>
 	Promise.resolve().then(() => {
-		return rococoTypeFactory.optionOf(paraLifecycleOne);
+		return polkadotTypeFactory.optionOf(paraLifecycleOne);
 	});
 
 /**
  * Used for parachain leases
  */
-const leasesParaId1 = rococoTypeFactory.storageKey(199, 'ParaId', rococoApi.query.slots.leases);
-const leasesParaId2 = rococoTypeFactory.storageKey(200, 'ParaId', rococoApi.query.slots.leases);
-const leasesTupleOne = rococoTypeFactory.tupleOf([accountIdOne, balanceOfOne], ['AccountId', 'BalanceOf']);
-const leasesTupleTwo = rococoTypeFactory.tupleOf([accountIdTwo, balanceOfTwo], ['AccountId', 'BalanceOf']);
-const parasOptionsOne = rococoTypeFactory.optionOf(leasesTupleOne);
-const parasOptionsTwo = rococoTypeFactory.optionOf(leasesTupleTwo);
-const vectorLeases = rococoTypeFactory.vecOf([parasOptionsOne, parasOptionsTwo]);
-export const emptyVectorLeases = rococoRegistry.createType('Vec<Raw>', []);
+const leasesParaId1 = polkadotTypeFactory.storageKey(2094, 'ParaId', polkadotApi.query.slots.leases);
+const leasesParaId2 = polkadotTypeFactory.storageKey(2097, 'ParaId', polkadotApi.query.slots.leases);
+const leasesTupleTwo = polkadotTypeFactory.tupleOf([accountIdTwo, balanceOfTwo], ['AccountId', 'BalanceOf']);
+const parasOptionsTwo = polkadotTypeFactory.optionOf(leasesTupleTwo);
+const vectorLeases = polkadotTypeFactory.vecOf([parasOptionsTwo]);
+export const emptyVectorLeases = polkadotRegistryV1000001.createType('Vec<Raw>', []);
 
 export const slotsLeasesAt = (): Promise<Vec<Option<Tuple>>> =>
 	Promise.resolve().then(() => {
@@ -158,16 +162,16 @@ const slotsLeasesEntriesAt = () =>
  */
 export const auctionsInfoAt = (): Promise<Option<Vec<BlockNumber>>> =>
 	Promise.resolve().then(() => {
-		const beginEnd = rococoRegistry.createType('BlockNumber', 780000);
-		const leasePeriodIndex = rococoRegistry.createType('BlockNumber', 39);
-		const vectorAuctions = rococoTypeFactory.vecOf([leasePeriodIndex, beginEnd]);
-		const optionAuctions = rococoTypeFactory.optionOf(vectorAuctions);
+		const beginEnd = polkadotRegistryV1000001.createType('BlockNumber', 18001400);
+		const leasePeriodIndex = polkadotRegistryV1000001.createType('BlockNumber', 15);
+		const vectorAuctions = polkadotTypeFactory.vecOf([leasePeriodIndex, beginEnd]);
+		const optionAuctions = polkadotTypeFactory.optionOf(vectorAuctions);
 
 		return optionAuctions;
 	});
 
 export const noneAuctionsInfoAt = (): Promise<Option<Codec>> =>
-	Promise.resolve().then(() => rococoRegistry.createType('Option<Raw>', null));
+	Promise.resolve().then(() => polkadotRegistryV1000001.createType('Option<Raw>', null));
 
 const auctionCounterAt = () =>
 	Promise.resolve().then(() => {
@@ -178,27 +182,27 @@ const auctionCounterAt = () =>
 
 const auctionsWinningsAt = () =>
 	Promise.resolve().then(() => {
-		const paraId1 = rococoRegistry.createType('ParaId', 199);
-		const paraId2 = rococoRegistry.createType('ParaId', 200);
-		const tupleOne = rococoTypeFactory.tupleOf(
+		const paraId1 = polkadotRegistryV1000001.createType('ParaId', 1000);
+		const paraId2 = polkadotRegistryV1000001.createType('ParaId', 200);
+		const tupleOne = polkadotTypeFactory.tupleOf(
 			[accountIdOne, paraId1, balanceOfOne],
 			['AccountId', 'ParaId', 'BalanceOf'],
 		);
-		const tupleTwo = rococoTypeFactory.tupleOf(
+		const tupleTwo = polkadotTypeFactory.tupleOf(
 			[accountIdTwo, paraId2, balanceOfTwo],
 			['AccountId', 'ParaId', 'BalanceOf'],
 		);
-		const parasOptionsOne = rococoTypeFactory.optionOf(tupleOne);
-		const parasOptionsTwo = rococoTypeFactory.optionOf(tupleTwo);
+		const parasOptionsOne = polkadotTypeFactory.optionOf(tupleOne);
+		const parasOptionsTwo = polkadotTypeFactory.optionOf(tupleTwo);
 
 		// No bids for the remaining slot ranges
 		const mockWinningOptions = new Array(8).fill(
-			rococoRegistry.createType('Option<Raw>', null), // This is just `Option::None`
+			polkadotRegistryV1000001.createType('Option<Raw>', null), // This is just `Option::None`
 		) as Option<Tuple>[];
 
 		// Total of 10 winning object, 2 `Some(..)`, 8 `None`
-		const vectorWinnings = rococoTypeFactory.vecOf([parasOptionsOne, parasOptionsTwo, ...mockWinningOptions]);
-		const optionWinnings = rococoTypeFactory.optionOf(vectorWinnings);
+		const vectorWinnings = polkadotTypeFactory.vecOf([parasOptionsOne, parasOptionsTwo, ...mockWinningOptions]);
+		const optionWinnings = polkadotTypeFactory.optionOf(vectorWinnings);
 
 		return optionWinnings;
 	});
@@ -207,14 +211,14 @@ const auctionsWinningsAt = () =>
  * Used for parachain ParasHeads
  */
 const eventsAt = () =>
-	Promise.resolve().then(() => polkadotRegistryV9300.createType('Vec<FrameSystemEventRecord>', eventsHex));
+	Promise.resolve().then(() => polkadotRegistryV1000001.createType('Vec<FrameSystemEventRecord>', eventsHex));
 
 const historicApi = {
 	consts: {
 		auctions: {
-			endingPeriod: new BN(20000),
+			endingPeriod: new BN(53400),
 			sampleLength: new BN(2),
-			leasePeriodsPerSlot: undefined,
+			leasePeriodsPerSlot: new BN(8),
 		},
 		slots: {
 			leasePeriod: new BN(20000),
@@ -266,31 +270,31 @@ Object.assign(historicApi.query.slots.leases, {
 });
 
 const mockApi = {
-	...defaultMockApi,
+	...mockApiBlock18468942,
 	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
 const parasService = new ParasService(mockApi);
 
 describe('ParasService', () => {
-	const paraId = 199;
+	const paraId = 2094;
 
 	const expectedAt = {
-		hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-		height: '789629',
+		hash: '0x1ffece02b91e52c4923827843774f705911905c0a66980f7037bed643b746d1d',
+		height: '18468942',
 	};
 
 	const expectedFund = {
-		depositor: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+		depositor: '12rgGkphjoZ25FubPoxywaNm3oVhSHnzExnT6hsLnicuLaaj',
 		verifier: null,
-		deposit: '100000000000000',
-		raised: '627500000000000',
-		end: '200000',
-		cap: '100000000000000000',
-		lastContribution: { preEnding: '6' },
-		firstPeriod: '13',
-		lastPeriod: '16',
-		trieIndex: '60',
+		deposit: '5000000000000',
+		raised: '2999970000000000',
+		end: '14164600',
+		cap: '3000000000000000',
+		lastContribution: { preEnding: '34' },
+		firstPeriod: '11',
+		lastPeriod: '15',
+		trieIndex: '55',
 	};
 
 	describe('ParasService.crowdloansInfo', () => {
@@ -298,10 +302,10 @@ describe('ParasService', () => {
 			const expectedResponse = {
 				at: expectedAt,
 				fundInfo: expectedFund,
-				leasePeriods: ['13', '14', '15', '16'],
+				leasePeriods: ['11', '12', '13', '14', '15'],
 			};
 
-			const response = await parasService.crowdloansInfo(blockHash789629, paraId);
+			const response = await parasService.crowdloansInfo(blockHash18468942, paraId);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -314,7 +318,7 @@ describe('ParasService', () => {
 				funds: [
 					{
 						fundInfo: expectedFund,
-						paraId: '199',
+						paraId: '1000',
 					},
 					{
 						fundInfo: expectedFund,
@@ -323,7 +327,7 @@ describe('ParasService', () => {
 				],
 			};
 
-			const response = await parasService.crowdloans(blockHash789629);
+			const response = await parasService.crowdloans(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -335,19 +339,15 @@ describe('ParasService', () => {
 				at: expectedAt,
 				leases: [
 					{
-						account: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
-						deposit: '1000000',
-					},
-					{
-						account: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
-						deposit: '2000000',
+						account: '13UVJyLnbVp77Z2t6qpQs8LAavPA1FuD53ocaULGhTEy8s6n',
+						deposit: '2999970000000000',
 					},
 				],
 				paraLifecycle: 'Onboarding',
 				onboardingAs: 'parachain',
 			};
 
-			const response = await parasService.leaseInfo(blockHash789629, paraId);
+			const response = await parasService.leaseInfo(blockHash18468942, paraId);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -364,7 +364,7 @@ describe('ParasService', () => {
 				onboardingAs: 'parachain',
 			};
 
-			const response = await parasService.leaseInfo(blockHash789629, paraId);
+			const response = await parasService.leaseInfo(blockHash18468942, paraId);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
@@ -376,12 +376,12 @@ describe('ParasService', () => {
 		it('Should return the correct entries for `leasesCurrent`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
-				leasePeriodIndex: '39',
-				endOfLeasePeriod: '800000',
-				currentLeaseHolders: ['199', '200'],
+				leasePeriodIndex: '923',
+				endOfLeasePeriod: '18480000',
+				currentLeaseHolders: ['2094', '2097'],
 			};
 
-			const response = await parasService.leasesCurrent(blockHash789629, true);
+			const response = await parasService.leasesCurrent(blockHash18468942, true);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -389,12 +389,12 @@ describe('ParasService', () => {
 		it('Should return the correct response excluding `currentLeaseHolders`', async () => {
 			const expectedResponse = {
 				at: expectedAt,
-				leasePeriodIndex: '39',
-				endOfLeasePeriod: '800000',
+				leasePeriodIndex: '923',
+				endOfLeasePeriod: '18480000',
 				currentLeaseHolders: undefined,
 			};
 
-			const response = await parasService.leasesCurrent(blockHash789629, false);
+			const response = await parasService.leasesCurrent(blockHash18468942, false);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -417,7 +417,7 @@ describe('ParasService', () => {
 				],
 			};
 
-			const response = await parasService.paras(blockHash789629);
+			const response = await parasService.paras(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
@@ -434,110 +434,81 @@ describe('ParasService', () => {
 		 */
 		const generateOverrideHeader = (blockNumber: number): Record<string, unknown> => {
 			return {
-				parentHash: '0x205da5dba43bbecae52b44912249480aa9f751630872b6b6ba1a9d2aeabf0177',
+				parentHash: '0xa59330a7420132ea9429939ab5e5b695c5100985af507c6feb29a6fcacfb572e',
 				number: blockNumber,
-				stateRoot: '0x023b5bb1bc10a1a91a9ef683f46a8bb09666c50476d5592bd6575a73777eb173',
-				extrinsicsRoot: '0x4c1d65bf6b57086f00d5df40aa0686ffbc581ef60878645613b1fc3303de5030',
+				stateRoot: '0x6ad2141fb995ec4076449fc512169e033747a90adfbd1d2120aed1addf534d58',
+				extrinsicsRoot: '0xc58ba0e38feed447870398e0f45cd234e00dc4cd40200b1248e341ab9ea058e2',
 				digest: {},
 			};
 		};
 
 		it('Should return the correct data during an ongoing endPeriod phase', async () => {
-			const leasePeriodIndex = new BN(39);
-			const leaseIndexArray = parasService['enumerateLeaseSets'](historicApi, leasePeriodIndex);
-			// Remove the first two entries with splice because we have them in the expectedResponse.
-			// `LEASE_PERIODS_PER_SLOT_FALLBACK` is 4 we need 10 slots for winning.
-			const additionalWinningOptions = leaseIndexArray.splice(2, leaseIndexArray.length - 2).map((k) => {
-				return { bid: null, leaseSet: sanitizeNumbers(k) };
-			});
-
 			const expectedResponse = {
 				at: expectedAt,
-				beginEnd: '780000',
-				finishEnd: '800000',
-				phase: 'endPeriod',
-				auctionIndex: '4',
-				leasePeriods: ['39', '40', '41', '42'],
-				winning: [
-					{
-						bid: {
-							accountId: '5CXFhuwT7A1ge4hCa23uCmZWQUebEZSrFdBEE24C41wmAF4N',
-							amount: '1000000',
-							paraId: '199',
-						},
-						leaseSet: ['39'],
-					},
-					{
-						bid: {
-							accountId: '5ESEa1HV8hyG6RTXgwWNUhu5fXvkHBfEJKjw3hKmde7fXdHQ',
-							amount: '2000000',
-							paraId: '200',
-						},
-						leaseSet: ['39', '40'],
-					},
-					...additionalWinningOptions,
-				],
+				beginEnd: '18001400',
+				finishEnd: '18054800',
+				winning: null,
 			};
 
-			const response = await parasService.auctionsCurrent(blockHash789629);
+			const response = await parasService.auctionsCurrent(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 		});
 
 		it('Should return the correct data during a startPeriod phase', async () => {
 			const overrideHeader = generateOverrideHeader(770000);
-			const header = polkadotRegistry.createType('Header', overrideHeader);
+			const header = polkadotRegistryV1000001.createType('Header', overrideHeader);
 
 			// Override the mockApi
 			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => header);
 
 			const expectedResponse = {
 				at: {
-					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
+					hash: '0x1ffece02b91e52c4923827843774f705911905c0a66980f7037bed643b746d1d',
 					height: '770000',
 				},
-				beginEnd: '780000',
-				finishEnd: '800000',
+				beginEnd: '18001400',
+				finishEnd: '18054800',
 				phase: 'startPeriod',
 				auctionIndex: '4',
-				leasePeriods: ['39', '40', '41', '42'],
+				leasePeriods: ['15', '16', '17', '18', '19', '20', '21', '22'],
 				winning: null,
 			};
 
-			const response = await parasService.auctionsCurrent(blockHash789629);
+			const response = await parasService.auctionsCurrent(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 
 			// Set the MockApi back to its original self
-			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock789629.header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock18468942.header);
 		});
 
 		it('Should return the correct data during a vrfDelay phase', async () => {
-			const overrideHeader = generateOverrideHeader(800000);
-			const header = polkadotRegistry.createType('Header', overrideHeader);
+			const overrideHeader = generateOverrideHeader(18468942);
+			const header = polkadotRegistryV1000001.createType('Header', overrideHeader);
 
 			// Override the mockApi
 			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => header);
 
 			const expectedResponse = {
 				at: {
-					hash: '0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-					height: '800000',
+					hash: '0x1ffece02b91e52c4923827843774f705911905c0a66980f7037bed643b746d1d',
+					height: '18468942',
 				},
-				beginEnd: '780000',
-				finishEnd: '800000',
+				beginEnd: '18001400',
+				finishEnd: '18054800',
 				phase: 'vrfDelay',
 				auctionIndex: '4',
-				leasePeriods: ['39', '40', '41', '42'],
+				leasePeriods: ['15', '16', '17', '18', '19', '20', '21', '22'],
 				winning: null,
 			};
 
-			const response = await parasService.auctionsCurrent(blockHash789629);
+			const response = await parasService.auctionsCurrent(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
 
 			// Set the MockApi back to its original self
-			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock789629.header);
+			(mockApi.rpc.chain.getHeader as unknown) = () => Promise.resolve().then(() => mockBlock18468942.header);
 		});
 
 		it('Should return the correct null values when `auctionInfo` is `None`', async () => {
@@ -553,7 +524,7 @@ describe('ParasService', () => {
 				winning: null,
 			};
 
-			const response = await parasService.auctionsCurrent(blockHash789629);
+			const response = await parasService.auctionsCurrent(blockHash18468942);
 
 			expect(sanitizeNumbers(response)).toMatchObject(expectedResponse);
 
@@ -562,13 +533,13 @@ describe('ParasService', () => {
 	});
 	describe('ParasService.parasHead', () => {
 		it('Should return the correct response for CandidateIncluded methods', async () => {
-			const response = await parasService.parasHead(blockHash789629, 'CandidateIncluded');
+			const response = await parasService.parasHead(blockHash18468942, 'CandidateIncluded');
 
 			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadIncludedCandidatesResponse);
 		});
 
 		it('Should return the correct response for CandidateBacked methods', async () => {
-			const response = await parasService.parasHead(blockHash789629, 'CandidateBacked');
+			const response = await parasService.parasHead(blockHash18468942, 'CandidateBacked');
 
 			expect(sanitizeNumbers(response)).toStrictEqual(parasHeadBackedCandidatesResponse);
 		});

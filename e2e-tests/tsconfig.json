@@ -4,7 +4,6 @@
       "baseUrl": ".",
       "outDir": "build",
       "rootDirs": ["./historical", "./helpers", "./latest"],
-      "suppressImplicitAnyIndexErrors": true,
       "ignoreDeprecations": "5.0",
       "resolveJsonModule": true,
     },

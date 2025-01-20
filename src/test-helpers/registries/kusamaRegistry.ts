@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,7 +18,9 @@ import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
+import { kusamaMetadataV1003003 } from '../metadata/kusamaMetadataV1003003';
 import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
+import { kusamaMetadataV1002000 } from '../metadata/kusamaV1002000Metadata';
 
 /**
  * Create a type registry for Kusama.
@@ -43,9 +45,10 @@ function createKusamaRegistryDeprecated(): TypeRegistry {
  *
  * @param specVersion Kusama runtime spec version to get type defs for.
  */
-function createKusamaRegistry(specVersion: number): TypeRegistry {
+function createKusamaRegistry(specVersion: number, metadata: `0x${string}`): TypeRegistry {
 	const registry = new TypeRegistry();
 
+	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
 	registry.setChainProperties(
 		registry.createType('ChainProperties', {
 			ss58Format: 2,
@@ -54,9 +57,7 @@ function createKusamaRegistry(specVersion: number): TypeRegistry {
 		}),
 	);
 
-	registry.register(getSpecTypes(registry, 'Kusama', 'kusama', specVersion));
-
-	registry.setMetadata(new Metadata(registry, kusamaMetadataV2008));
+	registry.setMetadata(new Metadata(registry, metadata));
 
 	return registry;
 }
@@ -69,4 +70,11 @@ export const kusamaRegistry = createKusamaRegistryDeprecated();
 /**
  *  Kusama v2025 TypeRegistry.
  */
-export const kusamRegistryV2025 = createKusamaRegistry(2025);
+export const kusamaRegistryV2025 = createKusamaRegistry(2025, kusamaMetadataV2008);
+
+/**
+ *  Kusama v1002000 TypeRegistry.
+ */
+export const kusamaRegistryV1002000 = createKusamaRegistry(1002000, kusamaMetadataV1002000);
+
+export const kusamaRegistryV1003003 = createKusamaRegistry(1003003, kusamaMetadataV1003003);

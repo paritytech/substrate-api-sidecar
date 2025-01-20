@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -29,9 +29,17 @@ export enum CONFIG {
 	TYPES_BUNDLE = 'TYPES_BUNDLE',
 	TYPES_CHAIN = 'TYPES_CHAIN',
 	TYPES_SPEC = 'TYPES_SPEC',
+	CACHE_CAPACITY = 'CACHE_CAPACITY',
 	TYPES = 'TYPES',
 	WRITE = 'WRITE',
 	WRITE_PATH = 'WRITE_PATH',
 	WRITE_MAX_FILE_SIZE = 'WRITE_MAX_FILE_SIZE',
 	WRITE_MAX_FILES = 'WRITE_MAX_FILES',
+	ENABLED = 'ENABLED',
+	LOKI_HOST = 'LOKI_HOST',
+	PROM_PORT = 'PROM_PORT',
+	PROM_HOST = 'PROM_HOST',
+	LOKI_PORT = 'LOKI_PORT',
+	INCLUDE_QUERYPARAMS = 'INCLUDE_QUERYPARAMS',
+	MAX_BODY = 'MAX_BODY',
 }

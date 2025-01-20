@@ -13,12 +13,15 @@ updates:
       # EST timezone
       timezone: "America/New_York"
     rebase-strategy: "auto"
-    # Disable versioned updates, and only allow security updates
-    open-pull-requests-limit: 0
+    groups:
+      pjs:
+        patterns:
+          - "@polkadot/*"
     commit-message:
       # Prefix all commit messages with "chore"
       # include a list of updated dependencies
-      prefix: "chore:"
+      prefix: "chore"
       include: "scope"
     labels:
-      - "dependencies"
+      - "D0 - Dependencies"
+    versioning-strategy: increase

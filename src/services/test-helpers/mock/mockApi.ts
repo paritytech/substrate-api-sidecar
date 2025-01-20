@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { GenericExtrinsic, Vec } from '@polkadot/types';
+import { GenericExtrinsic, u32, Vec } from '@polkadot/types';
 import { Option } from '@polkadot/types/codec';
 import {
 	AccountId,
@@ -93,6 +93,9 @@ export const activeEraAt = (_hash: Hash): Promise<Option<ActiveEraInfo>> =>
 			start: 1595259378000,
 		}),
 	);
+
+export const currentEraAt = (_hash: Hash): Promise<u32 | Option<u32>> =>
+	Promise.resolve().then(() => polkadotRegistry.createType('Option<u32>', 49));
 
 export const erasStartSessionIndexAt = (_hash: Hash, _activeEra: EraIndex): Promise<Option<SessionIndex>> =>
 	Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', 330));
@@ -232,6 +235,9 @@ export const defaultMockApi = {
 		},
 		transactionPayment: {
 			operationalFeeMultiplier: new BN(5),
+		},
+		staking: {
+			historyDepth: kusamaRegistry.createType('u32', 84),
 		},
 	},
 	createType: polkadotRegistry.createType.bind(polkadotRegistry),

@@ -8,93 +8,337 @@
         "stash": null
     },
     "numSlashingSpans": "2",
+    "nominations": null,
     "staking": {
         "stash": "HP8qJ8P4u4W2QgsJ8jzVuSsjfFTT6orQomFD6eTRSGEbiTK",
         "total": "497576923500",
         "active": "497576923500",
         "unlocking": [],
         "claimedRewards": [
-            "2734",
-            "2735",
-            "2736",
-            "2737",
-            "2738",
-            "2739",
-            "2740",
-            "2741",
-            "2742",
-            "2743",
-            "2745",
-            "2746",
-            "2747",
-            "2748",
-            "2749",
-            "2751",
-            "2752",
-            "2753",
-            "2754",
-            "2755",
-            "2756",
-            "2757",
-            "2758",
-            "2759",
-            "2760",
-            "2761",
-            "2762",
-            "2763",
-            "2764",
-            "2765",
-            "2766",
-            "2767",
-            "2768",
-            "2769",
-            "2770",
-            "2771",
-            "2772",
-            "2773",
-            "2774",
-            "2775",
-            "2776",
-            "2777",
-            "2778",
-            "2779",
-            "2780",
-            "2781",
-            "2782",
-            "2783",
-            "2784",
-            "2785",
-            "2786",
-            "2787",
-            "2788",
-            "2789",
-            "2790",
-            "2791",
-            "2792",
-            "2793",
-            "2794",
-            "2795",
-            "2796",
-            "2797",
-            "2798",
-            "2799",
-            "2800",
-            "2801",
-            "2802",
-            "2803",
-            "2804",
-            "2806",
-            "2807",
-            "2808",
-            "2809",
-            "2810",
-            "2811",
-            "2812",
-            "2813",
-            "2814",
-            "2815",
-            "2816",
-            "2817"
+            {
+                "era": "2734",
+                "status": "claimed"
+            },
+            {
+                "era": "2735",
+                "status": "claimed"
+            },
+            {
+                "era": "2736",
+                "status": "claimed"
+            },
+            {
+                "era": "2737",
+                "status": "claimed"
+            },
+            {
+                "era": "2738",
+                "status": "claimed"
+            },
+            {
+                "era": "2739",
+                "status": "claimed"
+            },
+            {
+                "era": "2740",
+                "status": "claimed"
+            },
+            {
+                "era": "2741",
+                "status": "claimed"
+            },
+            {
+                "era": "2742",
+                "status": "claimed"
+            },
+            {
+                "era": "2743",
+                "status": "claimed"
+            },
+            {
+                "era": "2745",
+                "status": "claimed"
+            },
+            {
+                "era": "2746",
+                "status": "claimed"
+            },
+            {
+                "era": "2747",
+                "status": "claimed"
+            },
+            {
+                "era": "2748",
+                "status": "claimed"
+            },
+            {
+                "era": "2749",
+                "status": "claimed"
+            },
+            {
+                "era": "2751",
+                "status": "claimed"
+            },
+            {
+                "era": "2752",
+                "status": "claimed"
+            },
+            {
+                "era": "2753",
+                "status": "claimed"
+            },
+            {
+                "era": "2754",
+                "status": "claimed"
+            },
+            {
+                "era": "2755",
+                "status": "claimed"
+            },
+            {
+                "era": "2756",
+                "status": "claimed"
+            },
+            {
+                "era": "2757",
+                "status": "claimed"
+            },
+            {
+                "era": "2758",
+                "status": "claimed"
+            },
+            {
+                "era": "2759",
+                "status": "claimed"
+            },
+            {
+                "era": "2760",
+                "status": "claimed"
+            },
+            {
+                "era": "2761",
+                "status": "claimed"
+            },
+            {
+                "era": "2762",
+                "status": "claimed"
+            },
+            {
+                "era": "2763",
+                "status": "claimed"
+            },
+            {
+                "era": "2764",
+                "status": "claimed"
+            },
+            {
+                "era": "2765",
+                "status": "claimed"
+            },
+            {
+                "era": "2766",
+                "status": "claimed"
+            },
+            {
+                "era": "2767",
+                "status": "claimed"
+            },
+            {
+                "era": "2768",
+                "status": "claimed"
+            },
+            {
+                "era": "2769",
+                "status": "claimed"
+            },
+            {
+                "era": "2770",
+                "status": "claimed"
+            },
+            {
+                "era": "2771",
+                "status": "claimed"
+            },
+            {
+                "era": "2772",
+                "status": "claimed"
+            },
+            {
+                "era": "2773",
+                "status": "claimed"
+            },
+            {
+                "era": "2774",
+                "status": "claimed"
+            },
+            {
+                "era": "2775",
+                "status": "claimed"
+            },
+            {
+                "era": "2776",
+                "status": "claimed"
+            },
+            {
+                "era": "2777",
+                "status": "claimed"
+            },
+            {
+                "era": "2778",
+                "status": "claimed"
+            },
+            {
+                "era": "2779",
+                "status": "claimed"
+            },
+            {
+                "era": "2780",
+                "status": "claimed"
+            },
+            {
+                "era": "2781",
+                "status": "claimed"
+            },
+            {
+                "era": "2782",
+                "status": "claimed"
+            },
+            {
+                "era": "2783",
+                "status": "claimed"
+            },
+            {
+                "era": "2784",
+                "status": "claimed"
+            },
+            {
+                "era": "2785",
+                "status": "claimed"
+            },
+            {
+                "era": "2786",
+                "status": "claimed"
+            },
+            {
+                "era": "2787",
+                "status": "claimed"
+            },
+            {
+                "era": "2788",
+                "status": "claimed"
+            },
+            {
+                "era": "2789",
+                "status": "claimed"
+            },
+            {
+                "era": "2790",
+                "status": "claimed"
+            },
+            {
+                "era": "2791",
+                "status": "claimed"
+            },
+            {
+                "era": "2792",
+                "status": "claimed"
+            },
+            {
+                "era": "2793",
+                "status": "claimed"
+            },
+            {
+                "era": "2794",
+                "status": "claimed"
+            },
+            {
+                "era": "2795",
+                "status": "claimed"
+            },
+            {
+                "era": "2796",
+                "status": "claimed"
+            },
+            {
+                "era": "2797",
+                "status": "claimed"
+            },
+            {
+                "era": "2798",
+                "status": "claimed"
+            },
+            {
+                "era": "2799",
+                "status": "claimed"
+            },
+            {
+                "era": "2800",
+                "status": "claimed"
+            },
+            {
+                "era": "2801",
+                "status": "claimed"
+            },
+            {
+                "era": "2802",
+                "status": "claimed"
+            },
+            {
+                "era": "2803",
+                "status": "claimed"
+            },
+            {
+                "era": "2804",
+                "status": "claimed"
+            },
+            {
+                "era": "2806",
+                "status": "claimed"
+            },
+            {
+                "era": "2807",
+                "status": "claimed"
+            },
+            {
+                "era": "2808",
+                "status": "claimed"
+            },
+            {
+                "era": "2809",
+                "status": "claimed"
+            },
+            {
+                "era": "2810",
+                "status": "claimed"
+            },
+            {
+                "era": "2811",
+                "status": "claimed"
+            },
+            {
+                "era": "2812",
+                "status": "claimed"
+            },
+            {
+                "era": "2813",
+                "status": "claimed"
+            },
+            {
+                "era": "2814",
+                "status": "claimed"
+            },
+            {
+                "era": "2815",
+                "status": "claimed"
+            },
+            {
+                "era": "2816",
+                "status": "claimed"
+            },
+            {
+                "era": "2817",
+                "status": "claimed"
+            }
         ]
     }
 }

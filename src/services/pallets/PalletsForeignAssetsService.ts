@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
 import { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
-import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
+import { PalletAssetsAssetDetails, StagingXcmV3MultiLocation } from '@polkadot/types/lookup';
 
 import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -51,7 +51,9 @@ export class PalletsForeignAssetsService extends AbstractService {
 		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
 		 */
 		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
-			const foreignAssetData = assetStorageKeyData.toHuman();
+			const foreignAssetData: [StagingXcmV3MultiLocation] = assetStorageKeyData.toHuman() as unknown as [
+				StagingXcmV3MultiLocation,
+			];
 
 			if (foreignAssetData) {
 				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125

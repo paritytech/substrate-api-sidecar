@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Compact, Option, StorageKey, u32, u128 } from '@polkadot/types';
+import { Compact, Linkage, Option, StorageKey, u32, u128 } from '@polkadot/types';
 import { Vec } from '@polkadot/types';
 import type {
 	AccountId,
@@ -32,6 +32,7 @@ import type {
 	Perbill,
 	StakingLedger,
 	StakingLedgerTo240,
+	ValidatorPrefs,
 	ValidatorPrefsWithCommission,
 } from '@polkadot/types/interfaces';
 import type {
@@ -52,7 +53,7 @@ import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
 /**
- * Copyright 2024 via polkadot-js/api
+ * Copyright 2025 via polkadot-js/api
  * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
  */
 type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, SpStakingExposure][];
@@ -99,6 +100,7 @@ interface IEraData {
 	erasValidatorRewardOption: Option<BalanceOf>;
 	exposuresWithCommission?: (ICommissionLedgerAndClaimed & {
 		validatorId: string;
+		nominatorIndex: number;
 	})[];
 	eraIndex: EraIndex;
 }
@@ -206,13 +208,32 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const nominatedExposures = this.deriveNominatedExposures(address, deriveEraExposure);
 
 				// Zip the `validatorId` with its associated `commission`, making the data easier to reason
-				// about downstream
-				const exposuresWithCommission = nominatedExposures?.map(({ validatorId }, idx) => {
-					return {
-						validatorId,
-						...eraCommissions[idx],
-					};
-				});
+				// about downstream. In this object we added the `nominatorIndex` to account for the rare cases
+				// where a nominator has multiple nominations (with different stakes) on the same validator and
+				// at the same era.
+				const exposuresWithCommission = [];
+				if (nominatedExposures) {
+					for (let idx = 0; idx < nominatedExposures.length; idx++) {
+						let index = 0;
+						const { validatorId } = nominatedExposures[idx];
+						const nominatorInstances = nominatedExposures.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						const exposuresValidatorLen = exposuresWithCommission.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						if (nominatorInstances > 1) {
+							index = exposuresValidatorLen;
+						}
+						if (eraCommissions[idx]) {
+							exposuresWithCommission.push({
+								validatorId,
+								...eraCommissions[idx],
+								nominatorIndex: index,
+							});
+						}
+					}
+				}
 
 				return {
 					deriveEraExposure,
@@ -278,10 +299,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						: await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era - 1].end);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
-
-				const blockInfo = await this.api.rpc.chain.getBlock(nextEraStartBlockHash);
-
-				const allRecords = await historicApi.query.system.events();
+				const [blockInfo, allRecords] = await Promise.all([
+					this.api.rpc.chain.getBlock(nextEraStartBlockHash),
+					historicApi.query.system.events(),
+				]);
 
 				blockInfo.block.extrinsics.forEach((index) => {
 					allRecords
@@ -389,6 +410,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			commission: validatorCommission,
 			validatorLedger,
 			claimedRewards,
+			nominatorIndex,
 		} of exposuresWithCommission) {
 			const totalValidatorRewardPoints = deriveEraExposure.validatorIndex
 				? this.extractTotalValidatorRewardPoints(eraRewardPoints, validatorId, deriveEraExposure.validatorIndex)
@@ -398,7 +420,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				continue;
 			}
 
-			const { totalExposure, nominatorExposure } = this.extractExposure(address, validatorId, deriveEraExposure);
+			const { totalExposure, nominatorExposure } = this.extractExposure(
+				address,
+				validatorId,
+				deriveEraExposure,
+				nominatorIndex,
+			);
 
 			if (nominatorExposure === undefined) {
 				// This should not happen once at this point, but here for safety
@@ -476,7 +503,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				commission = prefs.commission.unwrap();
 			} else {
 				prefs = (await historicApi.query.staking.validators(validatorId)) as ValidatorPrefsWithCommission;
-				commission = (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap();
+				commission = (prefs as unknown as [ValidatorPrefs, Linkage<AccountId>])[0].commission.unwrap();
 			}
 		} else {
 			commissionPromise =
@@ -491,7 +518,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 			commission =
 				ancient && isKusama
-					? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
+					? (prefs as unknown as [ValidatorPrefs, Linkage<AccountId>])[0].commission.unwrap()
 					: prefs.commission.unwrap();
 
 			if (validatorControllerOption.isNone) {
@@ -565,7 +592,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Copyright 2024 via polkadot-js/api
+	 * Copyright 2025 via polkadot-js/api
 	 * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
 	 *
 	 * The original version uses the base ApiDerive implementation which does not include the ApiDecoration implementation.
@@ -609,8 +636,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const individualExposure = exposure.others
 					? exposure.others
 					: (exposure as unknown as Option<SpStakingExposurePage>).isSome
-					  ? (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others
-					  : [];
+						? (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others
+						: [];
 				individualExposure.forEach(({ who }, validatorIndex): void => {
 					const nominatorId = who.toString();
 
@@ -698,7 +725,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param validatorId accountId of a validator's _Stash_  account
 	 * @param deriveEraExposure result of deriveEraExposure
 	 */
-	private extractExposure(address: string, validatorId: string, deriveEraExposure: IAdjustedDeriveEraExposure) {
+	private extractExposure(
+		address: string,
+		validatorId: string,
+		deriveEraExposure: IAdjustedDeriveEraExposure,
+		nominatorIndex: number,
+	) {
 		// Get total stake behind validator
 		let totalExposure = {} as Compact<u128>;
 		if (deriveEraExposure.validators[validatorId].total) {
@@ -730,7 +762,17 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				? deriveEraExposure.validatorsOverview[address].unwrap().own
 				: ({} as unknown as Compact<u128>);
 		} else {
-			nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+			// We need to account for the rare cases where a nominator has multiple nominations (with different stakes)
+			// on the same validator and at the same era.
+			const nominatorInstancesLen = exposureAllNominators.filter(
+				(exposure) => exposure.who.toString() === address,
+			).length;
+			const nominatorInstances = exposureAllNominators.filter((exposure) => exposure.who.toString() === address);
+			if (nominatorInstancesLen > 1) {
+				nominatorExposure = nominatorInstances[nominatorIndex].value;
+			} else {
+				nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+			}
 		}
 		return {
 			totalExposure,

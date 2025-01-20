@@ -1,0 +1,68 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: benchmark
+    runs-on: ubuntu-latest
+    environment: master_n_tags
+    container:
+      image: paritytech/node-wrk:latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: benchmarks
+        run: |
+          yarn --immutable
+          echo "Benchmarks for polkadot"
+          mkdir -p artifacts
+          yarn bench --log-level info --ws-url wss://rpc.polkadot.io
+          mv benchmarks.txt artifacts/
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks
+          path: ./artifacts/
+
+  benchmark-publish:
+    name: benchmark publish
+    runs-on: ubuntu-latest
+    needs: [benchmark]
+    environment: master_n_tags
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.GH_APP_SAS_APP_ID }}
+          private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmarks
+          path: artifacts
+
+      - name: Modify benches result for benhcmark action
+        run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@d48d326b4ca9ba73ca0cd0d59f108f9e02a381c7 #1.20.4
+        with:
+          tool: "customSmallerIsBetter"
+          output-file-path: artifacts/benchmarks.json
+          # Push and deploy GitHub pages branch automatically
+          auto-push: true
+          github-token: ${{ steps.app-token.outputs.token }}

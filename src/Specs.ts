@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ export class Specs {
 		this.appendLogSpecs();
 		this.appendSubstrateSpecs();
 		this.appendExpressSpecs();
+		this.appendMetricsSpecs();
 
 		return this._specs;
 	}
@@ -84,6 +85,14 @@ export class Specs {
 			this._specs.getSpec(CONFIG.KEEP_ALIVE_TIMEOUT, 'Network keepAliveTimeout duration. It will default to 5000ms.', {
 				default: 5000,
 				type: 'number',
+			}),
+		);
+
+		this._specs.appendSpec(
+			MODULES.EXPRESS,
+			this._specs.getSpec(CONFIG.MAX_BODY, 'Max size of request payload body. It will default to 100kb.', {
+				default: '100kb',
+				type: 'string',
 			}),
 		);
 	}
@@ -144,10 +153,20 @@ export class Specs {
 				},
 			),
 		);
+		// Types
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
 			this._specs.getSpec(CONFIG.TYPES, 'absolute path to file with `typesSpec` type definitions for @polkadot/api', {
 				default: '',
+				mandatory: false,
+			}),
+		);
+
+		// CACHE_CAPACITY
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.CACHE_CAPACITY, 'max cache size for @polkadot/api caching system, 0 bypasses cache', {
+				default: 0,
 				mandatory: false,
 			}),
 		);
@@ -239,6 +258,62 @@ export class Specs {
 				default: 5,
 				type: 'number',
 				mandatory: false,
+			}),
+		);
+	}
+
+	private static appendMetricsSpecs() {
+		if (!this._specs) {
+			throw APPEND_SPEC_ERROR;
+		}
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.ENABLED, 'Whether or not to enable metrics', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
+			}),
+		);
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.PROM_HOST, 'Prometheus host', {
+				default: '127.0.0.1',
+				type: 'string',
+			}),
+		);
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.PROM_PORT, 'Prometheus port', {
+				default: 9100,
+				type: 'number',
+				regexp: /^\d{2,6}$/,
+			}),
+		);
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.LOKI_HOST, 'Loki host', {
+				default: '127.0.0.1',
+				type: 'string',
+			}),
+		);
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.LOKI_PORT, 'Loki port', {
+				default: 3100,
+				type: 'number',
+			}),
+		);
+
+		this._specs.appendSpec(
+			MODULES.METRICS,
+			this._specs.getSpec(CONFIG.INCLUDE_QUERYPARAMS, 'Include query params in the labels of the metrics', {
+				default: 'false',
+				type: 'boolean',
+				regexp: /^true|false$/,
 			}),
 		);
 	}

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -26,3 +26,9 @@ export const balancesTransferValid =
  */
 export const balancesTransferInvalid =
 	'0x250284d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01022f4deae1532ddd0';
+
+/**
+ * balances.transferKeepAlive example
+ */
+export const balancesTransferKeepAliveValid =
+	'0x49028400fbd63444e492dd33873a848101f6e2269a35a74508ddcd3d1a52c8e36b83a1c100899fead4175903917ad802ccb5ecde1b3ef652fc861f3fc1d6ec021fea9cd79415329f52399ed60def2405eaf150ae139fc7399d5047f63aceffed6793cec604a50139050001050300a6f3fbf3897d10562ac0ca6687fa00bcaa7e8216d732360a787cb60d54160c9f07002c5aba2d';

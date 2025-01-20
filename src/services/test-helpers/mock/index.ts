@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,6 +18,9 @@ export * from './addresses';
 export * from './mockApi';
 export * from './mockApiBlock18468942';
 export * from './mockApiBlock19772575';
+export * from './mockApiBlock22887036';
+export * from './mockApiKusamaBlock22939322';
+export * from './mockApiPolkadotBlock21157800';
 export * from './mockAssetHubKusamaApi';
 export * from './mockAssetHubKusamaApiBlock3356195';
 export * from './mockAssetHubKusamaApiBlock6202603';
@@ -30,5 +33,9 @@ export * from './mockBlock6202603';
 export * from './mockBlock13641102';
 export * from './mockBlock18468942';
 export * from './mockBlock19772575';
+export * from './mockBlock21157800';
+export * from './mockBlock21275366';
+export * from './mockBlock22887036';
+export * from './mockBlock22939322';
 export * from './mockBlockHashes';
 export * from './transactions';

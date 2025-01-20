@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,17 +21,22 @@ import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistryV9300 } from '../../test-helpers/registries';
+import { polkadotRegistryV9300, polkadotRegistryV1003000 } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
+	balancesTransferKeepAliveValid,
 	balancesTransferValid,
 	blockHash789629,
+	blockHash22887036,
 	defaultMockApi,
+	mockApiBlock22887036,
 	queryInfoAt,
+	tx22887036,
 } from '../test-helpers/mock';
 import invalidResponse from '../test-helpers/responses/transaction/feeEstimateInvalid.json';
 import validRpcResponse from '../test-helpers/responses/transaction/feeEstimateValidRpcCall.json';
 import validRuntimeResponse from '../test-helpers/responses/transaction/feeEstimateValidRuntimeCall.json';
+import validRuntimeResponse22887036 from '../test-helpers/responses/transaction/feeEstimateValidRuntimeCall22887036.json';
 import { TransactionFeeEstimateService } from './TransactionFeeEstimateService';
 
 const queryInfoCallAt = () =>
@@ -61,6 +66,35 @@ const mockApi = {
 
 const transactionFeeEstimateService = new TransactionFeeEstimateService(mockApi);
 
+// Mocking the API at block 22887036
+const queryInfoCallAt22887036 = () =>
+	Promise.resolve().then(() =>
+		polkadotRegistryV1003000.createType('RuntimeDispatchInfoV2', {
+			weight: {
+				refTime: '145570000',
+				proofSize: '3593',
+			},
+			class: 'Normal',
+			partialFee: '159154905',
+		}),
+	);
+
+const mockApiAt22887036 = {
+	call: {
+		transactionPaymentApi: {
+			queryInfo: queryInfoCallAt22887036,
+		},
+	},
+};
+
+const mockApi22887036 = {
+	...mockApiBlock22887036,
+	tx: tx22887036,
+	at: (_hash: Hash) => mockApiAt22887036,
+} as unknown as ApiPromise;
+
+const transactionFeeEstimateService22887036 = new TransactionFeeEstimateService(mockApi22887036);
+
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
 		it('Works with a valid transaction', async () => {
@@ -69,6 +103,17 @@ describe('TransactionFeeEstimateService', () => {
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
 				),
 			).toStrictEqual(validRuntimeResponse);
+		});
+
+		it('Works with a valid transaction at block 22887036', async () => {
+			expect(
+				sanitizeNumbers(
+					await transactionFeeEstimateService22887036.fetchTransactionFeeEstimate(
+						blockHash22887036,
+						balancesTransferKeepAliveValid,
+					),
+				),
+			).toStrictEqual(validRuntimeResponse22887036);
 		});
 
 		it("Should default to the rpc call when the runtime call doesn't exist", async () => {

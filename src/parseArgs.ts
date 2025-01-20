@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -22,15 +22,6 @@ export const parseArgs = (): Namespace => {
 	parser.add_argument('-v', '--version', {
 		action: 'store_true',
 		help: 'print substrate-api-sidecar version',
-	});
-	parser.add_argument('-p', '--prometheus', {
-		action: 'store_true',
-		help: 'enable the prometheus metrics endpoint',
-	});
-	parser.add_argument('-pp', '--prometheus-port', {
-		type: 'int',
-		default: 9100,
-		help: 'specify the port number on which the prometheus metrics are exposed [default: 9100]',
 	});
 
 	return parser.parse_args() as Namespace;

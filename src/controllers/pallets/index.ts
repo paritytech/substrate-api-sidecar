@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ export { default as PalletsErrors } from './PalletsErrorsController';
 export { default as PalletsEvents } from './PalletsEventsController';
 export { default as PalletsForeignAssets } from './PalletsForeignAssetsController';
 export { default as PalletsNominationPools } from './PalletsNominationPoolsController';
+export { default as PalletsOnGoingReferenda } from './PalletsOnGoingReferendaController';
 export { default as PalletsPoolAssets } from './PalletsPoolAssetsController';
 export { default as PalletsStakingProgress } from './PalletsStakingProgressController';
 export { default as PalletsStakingValidators } from './PalletsStakingValidatorsController';

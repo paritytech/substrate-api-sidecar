@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 				const ext = api.registry.createType('Extrinsic', transaction);
 				const u8a = ext.toU8a();
 
-				return await apiAt.call.transactionPaymentApi.queryInfo(ext, u8a.length);
+				return await apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
 			} else {
 				return await api.rpc.payment.queryInfo(transaction, hash);
 			}

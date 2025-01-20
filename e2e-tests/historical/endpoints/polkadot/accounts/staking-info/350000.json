@@ -8,20 +8,45 @@
         "staked": null
     },
     "numSlashingSpans": "0",
+    "nominations": null,
     "staking": {
         "stash": "16SpacegeUTft9v3ts27CEC3tJaxgvE4uZeCctThFH3Vb24p",
         "total": "138910737119627",
         "active": "138910737119627",
         "unlocking": [],
         "claimedRewards": [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8"
+            {
+                "era": "1",
+                "status": "claimed"
+            },
+            {
+                "era": "2",
+                "status": "claimed"
+            },
+            {
+                "era": "3",
+                "status": "claimed"
+            },
+            {
+                "era": "4",
+                "status": "claimed"
+            },
+            {
+                "era": "5",
+                "status": "claimed"
+            },
+            {
+                "era": "6",
+                "status": "claimed"
+            },
+            {
+                "era": "7",
+                "status": "claimed"
+            },
+            {
+                "era": "8",
+                "status": "claimed"
+            }
         ]
     }
 }

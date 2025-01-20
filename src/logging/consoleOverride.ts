@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -33,10 +33,13 @@ export function consoleOverride(logger: Logger): void {
 		['error', 'error'],
 		['debug', 'debug'],
 	].forEach(([consoleLevel, winstonLevel]) => {
-		console[consoleLevel] = function (...args: unknown[]) {
+		(console[consoleLevel as keyof Console] as (...args: unknown[]) => void) = function (...args: unknown[]) {
 			// We typecast here because the typescript compiler is not sure what we are keying into.
 			// The type within the logger of any of the following log levels is `LeveledLogMethod`.
-			(logger[winstonLevel] as LeveledLogMethod).call<Logger, string[], Logger>(logger, format.apply(format, args));
+			(logger[winstonLevel as keyof Logger] as LeveledLogMethod).call<Logger, string[], Logger>(
+				logger,
+				format.apply(format, args),
+			);
 		};
 	});
 }
