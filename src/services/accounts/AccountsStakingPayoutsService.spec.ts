@@ -93,7 +93,7 @@ describe('AccountsStakingPayoutsService', () => {
 						era: '1039',
 						payouts: [
 							{
-								claimed: true,
+								claimed: 'claimed',
 								nominatorExposure: '0',
 								nominatorStakingPayout: '1043968334900993560134832959396203124',
 								totalValidatorExposure: '17302617747768368',
@@ -129,7 +129,7 @@ describe('AccountsStakingPayoutsService', () => {
 						era: '1039',
 						payouts: [
 							{
-								claimed: true,
+								claimed: 'claimed',
 								nominatorExposure: '21133134966048676',
 								nominatorStakingPayout: '0',
 								totalValidatorExposure: '21133134966048676',
