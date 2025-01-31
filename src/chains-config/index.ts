@@ -15,11 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { objectSpread } from '@polkadot/util';
 
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
 import { AbstractService } from '../services/AbstractService';
-import { ControllerConfig } from '../types/chains-config';
+import { ControllerConfig, MigrationOptions } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { assetHubKusamaControllers } from './assetHubKusamaControllers';
 import { assetHubPolkadotControllers } from './assetHubPolkadotControllers';
@@ -89,14 +90,18 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
  * @param api ApiPromise to inject into controllers
  * @param implName
  */
-export function getControllersForSpec(api: ApiPromise, specName: string): AbstractController<AbstractService>[] {
+export function getControllersForSpec(
+	api: ApiPromise,
+	specName: string,
+	options: MigrationOptions = {},
+): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(api, specToControllerMap[specName]);
+		return getControllersFromConfig(api, specToControllerMap[specName], options);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(api, defaultControllers);
+	return getControllersFromConfig(api, defaultControllers, options);
 }
 
 /**
@@ -106,11 +111,11 @@ export function getControllersForSpec(api: ApiPromise, specName: string): Abstra
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
+function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, options: MigrationOptions) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](api, config.options));
+		acc.push(new controllers[controller](api, objectSpread(config.options, options)));
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);

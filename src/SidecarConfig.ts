@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -58,6 +58,7 @@ export class SidecarConfig {
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,
+				MIGRATION_URL: config.Get(MODULES.SUBSTRATE, CONFIG.MIGRATION_URL) as string,
 				TYPES_BUNDLE: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_BUNDLE) as string,
 				TYPES_CHAIN: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_CHAIN) as string,
 				TYPES_SPEC: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_SPEC) as string,

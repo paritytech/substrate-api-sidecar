@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import type { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
@@ -42,7 +43,7 @@ export interface ControllerConfig {
 	options: ControllerOptions;
 }
 
-export interface ControllerOptions {
+export interface ControllerOptions extends MigrationOptions {
 	/**
 	 * Whether or not the chain finalizes blocks
 	 */
@@ -59,4 +60,9 @@ export interface ControllerOptions {
 	 * Cache for storing runtime versions that either have queryFeeDetails, or dont.
 	 */
 	hasQueryFeeApi: QueryFeeDetailsCache;
+}
+
+export interface MigrationOptions {
+	migrationApi?: ApiPromise;
+	migrationBlockId?: number | null;
 }

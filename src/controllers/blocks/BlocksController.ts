@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -108,7 +108,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		api: ApiPromise,
 		private readonly options: ControllerOptions,
 	) {
-		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
+		super(
+			api,
+			'/blocks',
+			new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi),
+			options.migrationApi,
+		);
 		this.initRoutes();
 		this.blockStore = options.blockStore;
 	}
@@ -172,23 +177,24 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
-		let hash, queryFinalizedHead, omitFinalizedTag;
+		const header = await this.api.rpc.chain.getHeader();
+		let hash = header.hash;
+		let queryFinalizedHead, omitFinalizedTag;
+		const api = this.getApi(parseInt(header.number.toString()), this.options.migrationBlockId);
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 			omitFinalizedTag = true;
 			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
 		} else if (finalized === 'false') {
 			// We query the finalized head to know where the latest finalized block
 			// is. It is a way to confirm whether the queried block is less than or
 			// equal to the finalized head.
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
 		} else {
 			omitFinalizedTag = false;
 			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
+			hash = await api.rpc.chain.getFinalizedHead();
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
@@ -221,9 +227,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			return;
 		}
 
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		const block = await this.service.fetchBlock(hash, historicApi, api, options);
 		this.blockStore.set(cacheKey, block);
 
 		BlocksController.sanitizedSend(res, block);
@@ -252,6 +258,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		res,
 	): Promise<void> => {
 		const checkFinalized = isHex(number);
+		const api = this.getApi(parseInt(number), this.options.migrationBlockId);
 		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
@@ -298,8 +305,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			return;
 		}
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
-		const historicApi = await this.api.at(hash);
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		const historicApi = await api.at(hash);
+		const block = await this.service.fetchBlock(hash, historicApi, api, options);
 
 		this.blockStore.set(cacheKey, block);
 		// We set the last param to true because we haven't queried the finalizedHead
@@ -375,10 +382,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			const result = pQueue.run(async () => {
 				// Get block hash:
 				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				const api = this.getApi(parseInt(rangeOfNums[i].toString()), this.options.migrationBlockId);
 				// Get API at that hash:
 				const historicApi = await this.api.at(hash);
 				// Get block details using this API/hash:
-				return await this.service.fetchBlock(hash, historicApi, options);
+				return await this.service.fetchBlock(hash, historicApi, api, options);
 			});
 			blocksPromise.push(result);
 		}

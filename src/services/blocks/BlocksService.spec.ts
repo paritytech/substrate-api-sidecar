@@ -143,9 +143,9 @@ describe('BlocksService', () => {
 				paraId: undefined,
 			};
 
-			expect(sanitizeNumbers(await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options))).toMatchObject(
-				blocks789629Response,
-			);
+			expect(
+				sanitizeNumbers(await blocksService.fetchBlock(blockHash789629, mockHistoricApi, mockApi, options)),
+			).toMatchObject(blocks789629Response);
 		});
 
 		it('throws when an extrinsic is undefined', async () => {
@@ -175,7 +175,9 @@ describe('BlocksService', () => {
 					};
 				}) as unknown) as GetBlock;
 
-			await expect(blocksService.fetchBlock(blockHash789629, mockHistoricApi, options)).rejects.toThrowError(TypeError);
+			await expect(blocksService.fetchBlock(blockHash789629, mockHistoricApi, mockApi, options)).rejects.toThrowError(
+				TypeError,
+			);
 
 			mockApi.rpc.chain.getBlock = tempGetBlock as unknown as GetBlock;
 		});
@@ -193,7 +195,7 @@ describe('BlocksService', () => {
 				paraId: undefined,
 			};
 
-			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
+			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, mockApi, options);
 
 			expect(block.finalized).toEqual(undefined);
 		});
@@ -378,7 +380,7 @@ describe('BlocksService', () => {
 		};
 
 		it('Returns the correct extrinsics object for block 789629', async () => {
-			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
+			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, mockApi, options);
 
 			/**
 			 * The `extrinsicIndex` (second param) is being tested for a non-zero
@@ -390,7 +392,7 @@ describe('BlocksService', () => {
 		});
 
 		it("Throw an error when `extrinsicIndex` doesn't exist", async () => {
-			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, options);
+			const block = await blocksService.fetchBlock(blockHash789629, mockHistoricApi, mockApi, options);
 
 			expect(() => {
 				blocksService['fetchExtrinsicByIndex'](block, 5);
@@ -516,7 +518,7 @@ describe('BlocksService', () => {
 				paraId: undefined,
 			};
 
-			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, options);
+			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, mockApi, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block18468942Response);
 		});
@@ -534,7 +536,7 @@ describe('BlocksService', () => {
 				paraId: 2000,
 			};
 
-			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, options);
+			const block = await blocksServiceXCM.fetchBlock(blockHash18468942, mockHistoricApiXCM, mockApi, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block18468942pId2000Response);
 		});
@@ -609,7 +611,7 @@ describe('BlocksService', () => {
 
 			// Block Service
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
-			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options);
+			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, mockApi, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block3356195Response);
 		});
@@ -683,7 +685,7 @@ describe('BlocksService', () => {
 
 			// Block Service
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
-			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options);
+			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, mockApi, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
 		});
@@ -756,7 +758,7 @@ describe('BlocksService', () => {
 
 			// Block Service
 			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
-			const block = await blocksServiceXCM.fetchBlock(blockHash19772575, mockHistoricApiXCM, options);
+			const block = await blocksServiceXCM.fetchBlock(blockHash19772575, mockHistoricApiXCM, mockApi, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block19772575Response);
 		});

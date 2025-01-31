@@ -26,6 +26,7 @@ import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
+	private options: ControllerOptions;
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
 			api,
@@ -34,6 +35,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		);
 		this.initRoutes();
 		this.blockStore = options.blockStore;
+		this.options = options;
 	}
 
 	protected initRoutes(): void {
@@ -49,7 +51,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashForBlock(blockId);
+		const api = this.getApi(parseInt(blockId), this.options.migrationBlockId);
+		const hash = await this.getHashForBlock(blockId, api);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -76,9 +79,9 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
-		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
+		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, api, options);
 
 		if (!isBlockCached) {
 			this.blockStore.set(cacheKey, block);

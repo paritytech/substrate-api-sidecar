@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -35,6 +35,17 @@ import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
+function checkRelayChainBlockId(specName: string): number | null {
+	const relayChains: Record<string, number> = {
+		kusama: 30000000,
+		polkadot: 30000000,
+		paseo: 30000000,
+		westend: 30000000,
+	};
+
+	return relayChains[specName.toLowerCase()] ? relayChains[specName.toLowerCase()] : null;
+}
+
 async function main() {
 	const { config } = SidecarConfig;
 	const { logger } = Log;
@@ -67,6 +78,17 @@ async function main() {
 
 	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
 
+	let migrationBlockId;
+	let migrationApi;
+	if (config.SUBSTRATE.MIGRATION_URL) {
+		migrationBlockId = checkRelayChainBlockId(specName.toString());
+		migrationApi = await ApiPromise.create({
+			provider: config.SUBSTRATE.URL.startsWith('http')
+				? new HttpProvider(config.SUBSTRATE.MIGRATION_URL, undefined, CACHE_CAPACITY || 0)
+				: new WsProvider(config.SUBSTRATE.MIGRATION_URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+		});
+	}
+
 	if (config.METRICS.ENABLED) {
 		// Create Metrics App
 		const metricsApp = new MetricsApp({
@@ -83,7 +105,10 @@ async function main() {
 	// Create our App
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllersForSpec(api, specName.toString()),
+		controllers: getControllersForSpec(api, specName.toString(), {
+			migrationApi,
+			migrationBlockId,
+		}),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,

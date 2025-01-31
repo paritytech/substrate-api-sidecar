@@ -109,6 +109,7 @@ export class BlocksService extends AbstractService {
 	async fetchBlock(
 		hash: BlockHash,
 		historicApi: ApiDecoration<'promise'>,
+		migrationApi: ApiPromise,
 		{
 			eventDocs,
 			extrinsicDocs,
@@ -120,7 +121,7 @@ export class BlocksService extends AbstractService {
 			paraId,
 		}: FetchBlockOptions,
 	): Promise<IBlock> {
-		const { api } = this;
+		const api = migrationApi;
 		const [{ block }, { specName, specVersion }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			api.rpc.state.getRuntimeVersion(hash),

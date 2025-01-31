@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -55,6 +55,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		protected api: ApiPromise,
 		private _path: string,
 		protected service: T,
+		protected migrationApi?: ApiPromise,
 	) {}
 
 	get path(): string {
@@ -126,7 +127,8 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 *
 	 * @param blockId string representing a hash or number block identifier.
 	 */
-	protected async getHashForBlock(blockId: string): Promise<BlockHash> {
+	protected async getHashForBlock(blockId: string, maybeApi?: ApiPromise): Promise<BlockHash> {
+		const api = maybeApi || this.api;
 		let blockNumber;
 
 		// isHex, as imported, returns "value is string", which undersells what it
@@ -141,7 +143,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			const isHexStr = isHexBool(blockId);
 			if (isHexStr && blockId.length === 66) {
 				// This is a block hash
-				return this.api.createType('BlockHash', blockId);
+				return api.createType('BlockHash', blockId);
 			} else if (isHexStr) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` + `Hex string block IDs must be 32-bytes (66-characters) in length.`,
@@ -164,14 +166,14 @@ export default abstract class AbstractController<T extends AbstractService> {
 				);
 			}
 
-			return await this.api.rpc.chain.getBlockHash(blockNumber);
+			return await api.rpc.chain.getBlockHash(blockNumber);
 		} catch (err) {
 			if (err instanceof HttpError) {
 				// Throw errors we created in the above try block
 				throw err;
 			}
 
-			const { number } = await this.api.rpc.chain.getHeader().catch(() => {
+			const { number } = await api.rpc.chain.getHeader().catch(() => {
 				throw new InternalServerError('Failed while trying to get the latest header.');
 			});
 			if (blockNumber && number.toNumber() < blockNumber) {
@@ -188,6 +190,12 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 			throw new InternalServerError(`Cannot get block hash for ${blockId}.`);
 		}
+	}
+
+	protected getApi(queriedBlock: number, migrationBlock?: number | null): ApiPromise {
+		if (!this.migrationApi) return this.api;
+
+		return queriedBlock >= migrationBlock! ? this.migrationApi : this.api;
 	}
 
 	protected parseNumberOrThrow(n: string, errorMessage: string): number {
