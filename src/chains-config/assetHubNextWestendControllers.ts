@@ -18,12 +18,13 @@ import { ControllerConfig } from '../types/chains-config';
 import { initLRUCache, QueryFeeDetailsCache } from './cache';
 
 /**
- * Kusama configuration for Sidecar.
+ * Asset Hub Next Westend configuration for Sidecar.
  */
-export const kusamaControllers: ControllerConfig = {
+export const assetHubNextWestendControllers: ControllerConfig = {
 	controllers: [
+		'AccountsAssets',
 		'AccountsBalanceInfo',
-		'AccountsConvert',
+		'AccountsPoolAssets',
 		'AccountsProxyInfo',
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
@@ -32,11 +33,11 @@ export const kusamaControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
-		'BlocksTrace',
-		'CoretimeGeneric',
 		'NodeNetwork',
 		'NodeTransactionPool',
 		'NodeVersion',
+		'PalletsAssets',
+		'PalletsAssetConversion',
 		'PalletsConsts',
 		'PalletsDispatchables',
 		'PalletsErrors',
@@ -46,7 +47,7 @@ export const kusamaControllers: ControllerConfig = {
 		'PalletsStakingProgress',
 		'PalletsStakingValidators',
 		'PalletsStorage',
-		'Paras',
+		'PalletsPoolAssets',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
@@ -57,8 +58,8 @@ export const kusamaControllers: ControllerConfig = {
 	],
 	options: {
 		finalizes: true,
-		minCalcFeeRuntime: 1058,
+		minCalcFeeRuntime: 601,
 		blockStore: initLRUCache(),
-		hasQueryFeeApi: new QueryFeeDetailsCache(2027, 2028),
+		hasQueryFeeApi: new QueryFeeDetailsCache(null, null),
 	},
 };
