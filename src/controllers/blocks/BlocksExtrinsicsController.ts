@@ -28,6 +28,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	private blockStore: LRUCache<string, IBlock>;
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
+			'BlocksExtrinsics',
 			api,
 			'/blocks/:blockId/extrinsics',
 			new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi),

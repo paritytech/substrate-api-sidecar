@@ -25,7 +25,7 @@ import AbstractController from '../AbstractController';
 
 export default class AccountsConvertController extends AbstractController<AccountsConvertService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/convert', new AccountsConvertService(api));
+		super('AccountsConvert', api, '/accounts/:address/convert', new AccountsConvertService(api));
 		this.initRoutes();
 	}
 

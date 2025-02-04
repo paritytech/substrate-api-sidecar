@@ -26,7 +26,7 @@ import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
 	constructor(api: ApiPromise) {
-		super(api, '/contracts/ink/:address', new ContractsInkService(api));
+		super('ContractsInk', api, '/contracts/ink/:address', new ContractsInkService(api));
 		this.initRoutes();
 	}
 

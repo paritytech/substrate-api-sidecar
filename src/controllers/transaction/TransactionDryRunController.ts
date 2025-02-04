@@ -49,7 +49,7 @@ import AbstractController from '../AbstractController';
  */
 export default class TransactionDryRunController extends AbstractController<TransactionDryRunService> {
 	constructor(api: ApiPromise) {
-		super(api, '/transaction/dry-run', new TransactionDryRunService(api));
+		super('TransactionDryRun', api, '/transaction/dry-run', new TransactionDryRunService(api));
 		this.initRoutes();
 	}
 

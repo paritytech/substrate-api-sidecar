@@ -22,7 +22,7 @@ import AbstractController from '../AbstractController';
 
 export default class PalletsOnGoingReferendaController extends AbstractController<PalletsOnGoingReferendaService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/on-going-referenda', new PalletsOnGoingReferendaService(api));
+		super('PalletsOnGoingReferenda', api, '/pallets/on-going-referenda', new PalletsOnGoingReferendaService(api));
 		this.initRoutes();
 	}
 

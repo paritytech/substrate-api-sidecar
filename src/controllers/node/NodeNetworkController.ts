@@ -47,7 +47,7 @@ import AbstractController from '../AbstractController';
  */
 export default class NodeNetworkController extends AbstractController<NodeNetworkService> {
 	constructor(api: ApiPromise) {
-		super(api, '/node/network', new NodeNetworkService(api));
+		super('NodeNetwork', api, '/node/network', new NodeNetworkService(api));
 		this.initRoutes();
 	}
 

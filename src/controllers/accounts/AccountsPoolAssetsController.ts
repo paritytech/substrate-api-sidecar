@@ -67,7 +67,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsPoolAssetsController extends AbstractController<AccountsPoolAssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address', new AccountsPoolAssetsService(api));
+		super('AccountsPoolAssets', api, '/accounts/:address', new AccountsPoolAssetsService(api));
 		this.initRoutes();
 	}
 

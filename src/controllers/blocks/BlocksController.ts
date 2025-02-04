@@ -108,7 +108,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		api: ApiPromise,
 		private readonly options: ControllerOptions,
 	) {
-		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
+		super('Blocks', api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
 		this.initRoutes();
 		this.blockStore = options.blockStore;
 	}

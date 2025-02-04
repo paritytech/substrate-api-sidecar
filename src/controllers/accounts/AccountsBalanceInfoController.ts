@@ -57,7 +57,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
+		super('AccountsBalanceInfo', api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}
 

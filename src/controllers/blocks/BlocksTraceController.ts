@@ -24,7 +24,7 @@ import BlocksController from './BlocksController';
 
 export default class BlocksTraceController extends AbstractController<BlocksTraceService> {
 	constructor(api: ApiPromise) {
-		super(api, '/experimental/blocks', new BlocksTraceService(api));
+		super('BlocksTrace', api, '/experimental/blocks', new BlocksTraceService(api));
 		this.initRoutes();
 	}
 

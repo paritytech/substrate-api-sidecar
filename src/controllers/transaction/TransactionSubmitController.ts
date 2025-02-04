@@ -39,7 +39,7 @@ import AbstractController from '../AbstractController';
  */
 export default class TransactionSubmitController extends AbstractController<TransactionSubmitService> {
 	constructor(api: ApiPromise) {
-		super(api, '/transaction', new TransactionSubmitService(api));
+		super('TransactionSubmit', api, '/transaction', new TransactionSubmitService(api));
 		this.initRoutes();
 	}
 

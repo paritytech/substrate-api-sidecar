@@ -24,7 +24,7 @@ import AbstractController from '../AbstractController';
 
 export default class ParasController extends AbstractController<ParasService> {
 	constructor(api: ApiPromise) {
-		super(api, '', new ParasService(api));
+		super('Paras', api, '', new ParasService(api));
 		this.initRoutes();
 	}
 

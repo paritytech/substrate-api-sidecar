@@ -30,7 +30,7 @@ import AbstractController from '../AbstractController';
  */
 export default class NodeVersionController extends AbstractController<NodeVersionService> {
 	constructor(api: ApiPromise) {
-		super(api, '/node/version', new NodeVersionService(api));
+		super('NodeVersion', api, '/node/version', new NodeVersionService(api));
 		this.initRoutes();
 	}
 

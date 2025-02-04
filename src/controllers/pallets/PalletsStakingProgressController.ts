@@ -82,7 +82,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsStakingProgressController extends AbstractController<PalletsStakingProgressService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
+		super('PalletsStakingProgress', api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
 		this.initRoutes();
 	}
 
