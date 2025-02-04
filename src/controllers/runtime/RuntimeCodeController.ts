@@ -33,7 +33,7 @@ import AbstractController from '../AbstractController';
  */
 export default class RuntimeCodeController extends AbstractController<RuntimeCodeService> {
 	constructor(api: ApiPromise) {
-		super(api, '/runtime/code', new RuntimeCodeService(api));
+		super('RuntimeCode', api, '/runtime/code', new RuntimeCodeService(api));
 		this.initRoutes();
 	}
 

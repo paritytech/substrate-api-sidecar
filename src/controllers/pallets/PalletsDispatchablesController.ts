@@ -35,7 +35,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsDispatchablesController extends AbstractController<PalletsDispatchablesService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/dispatchables', new PalletsDispatchablesService(api));
+		super('PalletsDispatchables', api, '/pallets/:palletId/dispatchables', new PalletsDispatchablesService(api));
 
 		this.initRoutes();
 	}

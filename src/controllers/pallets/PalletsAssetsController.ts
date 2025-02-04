@@ -63,7 +63,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsAssetsController extends AbstractController<PalletsAssetsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
+		super('PalletsAssets', api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
 		this.initRoutes();
 	}
 

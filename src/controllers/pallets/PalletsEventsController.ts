@@ -24,7 +24,7 @@ import AbstractController from '../AbstractController';
 
 export default class PalletsEventsController extends AbstractController<PalletsEventsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/events', new PalletsEventsService(api));
+		super('PalletsEvents', api, '/pallets/:palletId/events', new PalletsEventsService(api));
 
 		this.initRoutes();
 	}

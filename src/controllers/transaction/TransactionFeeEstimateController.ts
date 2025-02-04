@@ -48,7 +48,7 @@ import AbstractController from '../AbstractController';
  */
 export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
 	constructor(api: ApiPromise) {
-		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
+		super('TransactionFeeEstimate', api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
 		this.initRoutes();
 	}
 

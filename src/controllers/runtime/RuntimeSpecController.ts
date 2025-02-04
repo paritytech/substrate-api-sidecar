@@ -47,7 +47,7 @@ import AbstractController from '../AbstractController';
  */
 export default class RuntimeSpecController extends AbstractController<RuntimeSpecService> {
 	constructor(api: ApiPromise) {
-		super(api, '/runtime/spec', new RuntimeSpecService(api));
+		super('RuntimeSpec', api, '/runtime/spec', new RuntimeSpecService(api));
 		this.initRoutes();
 	}
 

@@ -41,7 +41,7 @@ import AbstractController from '../AbstractController';
  */
 export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
 	constructor(api: ApiPromise) {
-		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
+		super('RuntimeMetadata', api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
 

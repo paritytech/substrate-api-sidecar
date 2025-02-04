@@ -22,7 +22,7 @@ import AbstractController from '../AbstractController';
 
 export default class CoretimeChainController extends AbstractController<CoretimeService> {
 	constructor(api: ApiPromise) {
-		super(api, '/coretime', new CoretimeService(api));
+		super('CoretimeChain', api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
 	}
 

@@ -35,7 +35,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsConstantsController extends AbstractController<PalletsConstantsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/consts', new PalletsConstantsService(api));
+		super('PalletsConsts', api, '/pallets/:palletId/consts', new PalletsConstantsService(api));
 
 		this.initRoutes();
 	}

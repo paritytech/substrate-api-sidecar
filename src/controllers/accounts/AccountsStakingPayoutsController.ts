@@ -81,7 +81,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsStakingPayoutsController extends AbstractController<AccountsStakingPayoutsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
+		super('AccountsStakingPayouts', api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
 		this.initRoutes();
 	}
 

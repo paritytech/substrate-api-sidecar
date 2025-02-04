@@ -35,7 +35,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsErrorsController extends AbstractController<PalletsErrorsService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/errors', new PalletsErrorsService(api));
+		super('PalletsErrors', api, '/pallets/:palletId/errors', new PalletsErrorsService(api));
 
 		this.initRoutes();
 	}

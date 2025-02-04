@@ -59,7 +59,7 @@ export type MetadataOpts = 'json' | 'scale';
  */
 export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
 	constructor(api: ApiPromise) {
-		super(api, '/transaction/material', new TransactionMaterialService(api));
+		super('TransactionMaterial', api, '/transaction/material', new TransactionMaterialService(api));
 		this.initRoutes();
 	}
 

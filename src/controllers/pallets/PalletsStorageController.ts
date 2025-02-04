@@ -37,7 +37,7 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
 	constructor(api: ApiPromise) {
-		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
+		super('PalletsStorage', api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();
 	}
