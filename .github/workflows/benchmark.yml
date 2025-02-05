@@ -43,6 +43,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
+      - name : ignore file mod (chmod) changes
+        run: git config core.fileMode false
+
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
