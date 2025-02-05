@@ -55,9 +55,6 @@ jobs:
           name: benchmarks
           path: artifacts
 
-      - name: Make script executable
-        run: chmod +x ./scripts/ci/benchmarks/generate_benchmark_result.sh
-
       - name: Modify benches result for benchmark action
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
