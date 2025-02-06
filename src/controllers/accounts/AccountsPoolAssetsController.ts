@@ -66,8 +66,10 @@ import AbstractController from '../AbstractController';
  *
  */
 export default class AccountsPoolAssetsController extends AbstractController<AccountsPoolAssetsService> {
+	static controllerName = 'AccountsPoolAssets';
+	static requiredPallets = ['PoolAssets'];
 	constructor(api: ApiPromise) {
-		super('AccountsPoolAssets', api, '/accounts/:address', new AccountsPoolAssetsService(api));
+		super(api, '/accounts/:address', new AccountsPoolAssetsService(api));
 		this.initRoutes();
 	}
 

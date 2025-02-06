@@ -44,8 +44,10 @@ import AbstractController from '../AbstractController';
  * - `VestingInfo`: https://crates.parity.io/pallet_vesting/struct.VestingInfo.html
  */
 export default class AccountsVestingInfoController extends AbstractController<AccountsVestingInfoService> {
+	static controllerName = 'AccountsVestingInfo';
+	static requiredPallets = ['Vesting'];
 	constructor(api: ApiPromise) {
-		super('AccountsVestingInfo', api, '/accounts/:address/vesting-info', new AccountsVestingInfoService(api));
+		super(api, '/accounts/:address/vesting-info', new AccountsVestingInfoService(api));
 		this.initRoutes();
 	}
 

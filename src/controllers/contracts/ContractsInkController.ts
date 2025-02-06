@@ -25,8 +25,10 @@ import { IBodyContractMetadata, IContractQueryParam, IPostRequestHandler } from 
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
+	static controllerName = 'ContractsInk';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('ContractsInk', api, '/contracts/ink/:address', new ContractsInkService(api));
+		super(api, '/contracts/ink/:address', new ContractsInkService(api));
 		this.initRoutes();
 	}
 

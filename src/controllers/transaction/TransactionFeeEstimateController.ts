@@ -47,8 +47,10 @@ import AbstractController from '../AbstractController';
  * - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
  */
 export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
+	static controllerName = 'TransactionFeeEstimate';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('TransactionFeeEstimate', api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
+		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
 		this.initRoutes();
 	}
 

@@ -21,8 +21,10 @@ import { PalletsNominationPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsNominationPoolController extends AbstractController<PalletsNominationPoolService> {
+	static controllerName = 'PalletsNominationPools';
+	static requiredPallets = ['NominationPools'];
 	constructor(api: ApiPromise) {
-		super('PalletsNominationPools', api, '/pallets/nomination-pools', new PalletsNominationPoolService(api));
+		super(api, '/pallets/nomination-pools', new PalletsNominationPoolService(api));
 		this.initRoutes();
 	}
 

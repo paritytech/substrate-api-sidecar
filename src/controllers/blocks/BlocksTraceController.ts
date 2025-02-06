@@ -23,8 +23,10 @@ import AbstractController from '../AbstractController';
 import BlocksController from './BlocksController';
 
 export default class BlocksTraceController extends AbstractController<BlocksTraceService> {
+	static controllerName = 'BlocksTrace';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('BlocksTrace', api, '/experimental/blocks', new BlocksTraceService(api));
+		super(api, '/experimental/blocks', new BlocksTraceService(api));
 		this.initRoutes();
 	}
 

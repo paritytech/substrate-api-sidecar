@@ -56,8 +56,10 @@ import AbstractController from '../AbstractController';
  * - `BalanceLock`: https://crates.parity.io/pallet_balances/struct.BalanceLock.html
  */
 export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
+	static controllerName = 'AccountsBalanceInfo';
+	static requiredPallets = ['Balances', 'System'];
 	constructor(api: ApiPromise) {
-		super('AccountsBalanceInfo', api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
+		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}
 

@@ -21,8 +21,10 @@ import { PalletsStakingValidatorsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsStakingValidatorsController extends AbstractController<PalletsStakingValidatorsService> {
+	static controllerName = 'PalletsStakingValidators';
+	static requiredPallets = ['Session', 'Staking'];
 	constructor(api: ApiPromise) {
-		super('PalletsStakingValidators', api, '/pallets/staking/validators', new PalletsStakingValidatorsService(api));
+		super(api, '/pallets/staking/validators', new PalletsStakingValidatorsService(api));
 		this.initRoutes();
 	}
 

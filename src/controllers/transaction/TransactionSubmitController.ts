@@ -38,8 +38,10 @@ import AbstractController from '../AbstractController';
  *   - `cause`: The error message from parsing or from the client.
  */
 export default class TransactionSubmitController extends AbstractController<TransactionSubmitService> {
+	static controllerName = 'TransactionSubmit';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('TransactionSubmit', api, '/transaction', new TransactionSubmitService(api));
+		super(api, '/transaction', new TransactionSubmitService(api));
 		this.initRoutes();
 	}
 

@@ -48,8 +48,10 @@ import AbstractController from '../AbstractController';
  * issue is to pass the `--rpc-external` flag to that node.
  */
 export default class TransactionDryRunController extends AbstractController<TransactionDryRunService> {
+	static controllerName = 'TransactionDryRun';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('TransactionDryRun', api, '/transaction/dry-run', new TransactionDryRunService(api));
+		super(api, '/transaction/dry-run', new TransactionDryRunService(api));
 		this.initRoutes();
 	}
 
