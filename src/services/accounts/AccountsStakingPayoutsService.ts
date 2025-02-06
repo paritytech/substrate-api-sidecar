@@ -727,13 +727,17 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			// We need to account for the rare cases where a nominator has multiple nominations (with different stakes)
 			// on the same validator and at the same era.
 			const nominatorInstancesLen = exposureAllNominators.filter(
-				(exposure) => exposure.who.toString() === address,
+				(exposure: { who: { toString: () => string } }) => exposure.who.toString() === address,
 			).length;
-			const nominatorInstances = exposureAllNominators.filter((exposure) => exposure.who.toString() === address);
+			const nominatorInstances = exposureAllNominators.filter(
+				(exposure: { who: { toString: () => string } }) => exposure.who.toString() === address,
+			);
 			if (nominatorInstancesLen > 1) {
 				nominatorExposure = nominatorInstances[nominatorIndex].value;
 			} else {
-				nominatorExposure = exposureAllNominators.find((exposure) => exposure.who.toString() === address)?.value;
+				nominatorExposure = exposureAllNominators.find(
+					(exposure: { who: { toString: () => string } }) => exposure.who.toString() === address,
+				)?.value;
 			}
 		}
 		return {

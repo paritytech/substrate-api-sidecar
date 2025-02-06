@@ -81,8 +81,10 @@ import AbstractController from '../AbstractController';
  * - `ElectionStatus`: https://crates.parity.io/pallet_staking/enum.ElectionStatus.html
  */
 export default class PalletsStakingProgressController extends AbstractController<PalletsStakingProgressService> {
+	static controllerName = 'PalletsStakingProgress';
+	static requiredPallets = ['Babe', 'Staking', 'Session'];
 	constructor(api: ApiPromise) {
-		super('PalletsStakingProgress', api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
+		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
 		this.initRoutes();
 	}
 

@@ -21,8 +21,10 @@ import { AccountsValidateService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
 export default class ValidateAddressController extends AbstractController<AccountsValidateService> {
+	static controllerName = 'AccountsValidate';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('AccountsValidate', api, '/accounts/:address/validate', new AccountsValidateService(api));
+		super(api, '/accounts/:address/validate', new AccountsValidateService(api));
 		this.initRoutes();
 	}
 

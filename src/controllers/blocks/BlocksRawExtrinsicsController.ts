@@ -23,9 +23,10 @@ import { INumberParam, IRequestHandlerWithMetrics } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
+	static controllerName = 'BlocksRawExtrinsics';
+	static requiredPallets = [];
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
-			'BlocksRawExtrinsics',
 			api,
 			'/blocks/:blockId/extrinsics-raw',
 			new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi),

@@ -62,8 +62,10 @@ import AbstractController from '../AbstractController';
  * - `AssetDetails`: https://crates.parity.io/pallet_assets/struct.AssetDetails.html
  */
 export default class PalletsAssetsController extends AbstractController<PalletsAssetsService> {
+	static controllerName = 'PalletsAssets';
+	static requiredPallets = ['Assets'];
 	constructor(api: ApiPromise) {
-		super('PalletsAssets', api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
+		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
 		this.initRoutes();
 	}
 

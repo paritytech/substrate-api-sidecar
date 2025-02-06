@@ -32,8 +32,10 @@ import AbstractController from '../AbstractController';
  * - `code`: Runtime code Wasm blob.
  */
 export default class RuntimeCodeController extends AbstractController<RuntimeCodeService> {
+	static controllerName = 'RuntimeCode';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('RuntimeCode', api, '/runtime/code', new RuntimeCodeService(api));
+		super(api, '/runtime/code', new RuntimeCodeService(api));
 		this.initRoutes();
 	}
 

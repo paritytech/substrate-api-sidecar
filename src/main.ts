@@ -80,7 +80,27 @@ async function main() {
 		metricsApp.listen();
 	}
 
+	// (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((el) => {
+	// 	console.log('el', el.name);
+	// 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+	// 	const storage = (el.storage as Record<string, Record<string, unknown>[]>)?.items.map((item) => item.name);
+	// 	console.log(storage);
+	// 	return storage;
+	// });
+	// all controllers to be always included: 'Blocks',
+	//   'BlocksExtrinsics',
+	//   'BlocksRawExtrinsics',
+	//   'NodeNetwork',
+	//   'NodeVersion',
+	//   'RuntimeCode',
+	//   'RuntimeMetadata',
+	//   'RuntimeSpec'
+	// console.log(storage);
 	// Create our App
+
+	// Basic controllers always present
+	// custom controllers forced by user
+	// pallets controllers
 	const app = new App({
 		preMiddleware: preMiddlewares,
 		controllers: getControllersForSpec(api, specName.toString()),

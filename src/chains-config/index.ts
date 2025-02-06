@@ -115,3 +115,38 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
 }
+
+export const checkPalletsConfig = Object.keys(specToControllerMap).forEach((spec) => {
+	// const controllerConfig = specToControllerMap[spec];
+	console.log(`Checking pallets for ${spec}`);
+});
+
+export const commonControllers = () => {
+	const configMap = new Map<string, string[]>();
+	const controllerSet = new Set<string>();
+
+	Object.keys(specToControllerMap).forEach((spec) => {
+		const controllerConfig = specToControllerMap[spec];
+		configMap.set(spec, controllerConfig.controllers);
+		controllerConfig.controllers.forEach((controller) => {
+			controllerSet.add(controller);
+		});
+	});
+
+	const everySet = new Set();
+
+	controllerSet.forEach((controller) => {
+		// check if every controller is in every config
+		const everyConfig = Array.from(configMap.values()).every((config) => config.includes(controller));
+
+		// if every controller is in every config, add it to the everySet
+		if (everyConfig) {
+			everySet.add(controller);
+		}
+	});
+
+	console.log('Every set:', everySet);
+	return everySet;
+};
+
+commonControllers();

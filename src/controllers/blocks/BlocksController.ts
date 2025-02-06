@@ -104,11 +104,13 @@ import AbstractController from '../AbstractController';
  */
 export default class BlocksController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
+	static controllerName = 'Blocks';
+	static requiredPallets = ['System', 'Session'];
 	constructor(
 		api: ApiPromise,
 		private readonly options: ControllerOptions,
 	) {
-		super('Blocks', api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
+		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
 		this.initRoutes();
 		this.blockStore = options.blockStore;
 	}

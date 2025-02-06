@@ -40,8 +40,10 @@ import AbstractController from '../AbstractController';
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
 export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
+	static controllerName = 'RuntimeMetadata';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
-		super('RuntimeMetadata', api, '/runtime/metadata', new RuntimeMetadataService(api));
+		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
 
