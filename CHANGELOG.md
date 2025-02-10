@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.4.0..v20.0.0) (2025-02-10)
+
+### Breaking Changes
+
+- fix: claimed in staking info endpoint ([#1445](https://github.com/paritytech/substrate-api-sidecar/pull/1445)) ([e11955a](https://github.com/paritytech/substrate-api-sidecar/commit/e11955aa8a204fe95585556952c679673aa44a57))
+
+    NOTE: This PR introduces breaking changes in the `staking-info` endpoint. More specifically:
+
+    - The field `claimed` in the endpoint's response has changed structure and now we have a separate status for each era returned.
+    - The status values are different for validator and nominator account.
+    - The logic that calculates the era status was completely refactored.
+
+    Please refer to the documents mentioned in the related PR for more details:
+    - [Staking PR - claimed field - Guide](https://hackmd.io/@LwMsxe3-SFmNXxugAXOKgg/ryPwFoezyl)
+    - [STAKING_IMPLEMENTATION_DETAILS.md](https://github.com/paritytech/substrate-api-sidecar/pull/1445/files)
+
+### Fix
+
+- fix: make scripts executable again in benchmark workflow ([#1589](https://github.com/paritytech/substrate-api-sidecar/pull/1589)) ([22db863](https://github.com/paritytech/substrate-api-sidecar/commit/22db86313c62399649b351a1715b783ef29c2d55))
+- fix: benchmark-publish job (github action) ([#1585](https://github.com/paritytech/substrate-api-sidecar/pull/1585)) ([d87bc07](https://github.com/paritytech/substrate-api-sidecar/commit/d87bc079049a37d81c0fd77ab540618e60a0b8b1))
+
+### Chores
+
+- chore(deps-dev): bump @types/express-serve-static-core from 5.0.5 to 5.0.6 ([#1588](https://github.com/paritytech/substrate-api-sidecar/pull/1588)) ([2ad52e0](https://github.com/paritytech/substrate-api-sidecar/commit/2ad52e0d5b53c78551dc51a1d895521b09a3d9c8))
+- chore(deps): bump the pjs group with 5 updates ([#1587](https://github.com/paritytech/substrate-api-sidecar/pull/1587)) ([274e844](https://github.com/paritytech/substrate-api-sidecar/commit/274e8442425a69d4397b44db19ed8750e6d03bea))
+- chore(deps): update polkadot-js deps to v15.5.1 ([#1583](https://github.com/paritytech/substrate-api-sidecar/pull/1583)) ([fd7d7b7](https://github.com/paritytech/substrate-api-sidecar/commit/fd7d7b7ad12130af095f07559f8e09d4422d8153))
+- chore(deps): bump docker/build-push-action from 6.11.0 to 6.13.0 ([#1580](https://github.com/paritytech/substrate-api-sidecar/pull/1580)) ([18f33f4](https://github.com/paritytech/substrate-api-sidecar/commit/18f33f4f570f3ec30f1e47e0d2f93180dfb62dfe))
+- chore(deps-dev): bump @types/express-serve-static-core from 5.0.4 to 5.0.5 ([#1578](https://github.com/paritytech/substrate-api-sidecar/pull/1578)) ([398a98c](https://github.com/paritytech/substrate-api-sidecar/commit/398a98cc2b4c3c143824c162d28d7136e4a0e61d))
+- chore(deps-dev): bump @types/express-serve-static-core from 5.0.3 to 5.0.4 ([#1574](https://github.com/paritytech/substrate-api-sidecar/pull/1574)) ([194f3e7](https://github.com/paritytech/substrate-api-sidecar/commit/194f3e795e6a698d49acab73e8965f6dcbda3b35))
+- chore(deps): bump the pjs group with 5 updates ([#1573](https://github.com/paritytech/substrate-api-sidecar/pull/1573)) ([fc95cd0](https://github.com/paritytech/substrate-api-sidecar/commit/fc95cd0460abb6816cd0e3a5ecd5f45199104d22))
+- chore(deps): bump docker/build-push-action from 6.10.0 to 6.11.0 ([#1572](https://github.com/paritytech/substrate-api-sidecar/pull/1572)) ([51ab44b](https://github.com/paritytech/substrate-api-sidecar/commit/51ab44b7536376f3583e18333b3e9e8332f498cc))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.17.1 (Polkadot stable2412-1)
+- Kusama v1.17.1 (Polkadot stable2412-1)
+- Westend v1.17.1 (Polkadot stable2412-1)
+
+Tested against the following runtime releases:
+- Polkadot v1003004
+- Kusama v1003003
+- Westend v1017001
+
 ## [19.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.3.1..v19.4.0) (2025-01-07)
 
 ### Features

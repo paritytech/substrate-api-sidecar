@@ -15,7 +15,7 @@ _Estimated Time Needed: Depending on your machine and the syncing mode you choos
 1. Make sure to be in the `master` branch, and `git pull origin master`.
 
 1. Ensure that all CI/CD jobs from the last merged commit are passing. You can verify this by checking the [commits](https://github.com/paritytech/substrate-api-sidecar/commits/master/) on the master branch, where a green check (✅) should be present. If you see a red cross (❌) then you can click on it and do the following checks:
-    - If the failed job is related to benchmarks, e.g. `continuous-integration/gitlab-bench-polkadot` or `continuous-integration/gitlab-push-benchmark`, it is not critical, and you can proceed with the next steps of the release.
+    - If the failed job is related to benchmarks, e.g. `Benchmark / benchmark (push)` or `Benchmark / benchmark publish (push)`, it is not critical, and you can proceed with the next steps of the release. At a later time though, it is worth checking why they are not pushed / published [here](https://paritytech.github.io/substrate-api-sidecar/dev/bench/).
     - If the failed job is related to staging deployment, e.g. `continuous-integration/gitlab-deploy-staging`, this is critical. In this case, you should check with the CI/CD team to get the relevant logs and fix the issue before continuing with the release.
 
 1. Make sure that you've run `yarn` in this folder, and run `cargo install wasm-pack` so that binary is available on your `$PATH`.
