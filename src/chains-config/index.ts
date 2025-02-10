@@ -22,6 +22,7 @@ import { AbstractService } from '../services/AbstractService';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { assetHubKusamaControllers } from './assetHubKusamaControllers';
+import { assetHubNextWestendControllers } from './assetHubNextWestendControllers';
 import { assetHubPolkadotControllers } from './assetHubPolkadotControllers';
 import { assetHubWestendControllers } from './assetHubWestendControllers';
 import { astarControllers } from './astarControllers';
@@ -65,6 +66,7 @@ const specToControllerMap: { [x: string]: ControllerConfig } = {
 	statemint: assetHubPolkadotControllers,
 	westmine: assetHubKusamaControllers,
 	'asset-hub-westend': assetHubWestendControllers,
+	'asset-hub-next-westend': assetHubNextWestendControllers,
 	westmint: assetHubWestendControllers,
 	shiden: shidenControllers,
 	astar: astarControllers,

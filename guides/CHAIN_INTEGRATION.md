@@ -21,7 +21,7 @@ A chain builder can follow the steps below and submit a chain's controller confi
 
  Create a controller config for your chain. The shape of the controller config is specified [here](/src/types/chains-config/ControllerConfig.ts). The `controllers` property has keys from the [controller export](/src/controllers/index.ts), which is an exhaustive collection of the available controller classes. In order to see the path(s) associated with a controller one must look in the controller source code.
 
- The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/ControllerConfig.ts) and name the file and export `{specName}Controllers`. Then remove or add any of the controllers you want inside of the `controllers` array. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts).
+ The easiest way to start creating a controller config would be to copy [defaultControllers.ts](/src/chains-config/defaultControllers.ts) and name the file and export `{specName}Controllers`. Then remove or add any of the controllers you want inside of the `controllers` array. Ensure to export the controller config from `chains-config` by adding `export * from './{specName}Controllers.ts'` in [/src/chains-config/index.ts](/src/chains-config/index.ts).
 
  To determine what controllers to include, one must consider the runtime logic, specifically what pallets the chain uses. It is important to keep in mind the assumptions the service's logic makes and what exact pallets the service queries.
 

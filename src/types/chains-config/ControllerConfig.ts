@@ -26,7 +26,7 @@ import { IOption } from '../util';
  * controller class names and the values are booleans indicating whether or not
  * to include the controller.
  *
- * There is an additional `finalizes` field that is used to indicate wether or
+ * There is an additional `finalizes` field that is used to indicate whether or
  * not a chain has finalized blocks. Practically, this only affects if
  * `BlocksController` defaults to getFinalizedHead (in the case it finalizes) or
  *  getHeader (in the case it does not finalize)
