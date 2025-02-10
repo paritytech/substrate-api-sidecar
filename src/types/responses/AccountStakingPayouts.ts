@@ -16,6 +16,17 @@
 
 import { IAt, IEraPayouts } from '.';
 
+export enum IStatus {
+	claimed = 'claimed',
+	partiallyClaimed = 'partially claimed',
+	unclaimed = 'unclaimed',
+	undefined = 'undefined',
+}
+
+export interface IStatusPerEra {
+	[era: number]: IStatus;
+}
+
 export interface IAccountStakingPayouts {
 	at: IAt;
 	erasPayouts: (IEraPayouts | { message: string })[];
