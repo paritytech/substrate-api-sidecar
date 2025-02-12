@@ -95,7 +95,3 @@ export const controllers = {
 	CoretimeGeneric,
 	CoretimeChain,
 };
-
-export const ControllerRegistry = Object.values(controllers).map((controller) =>
-	console.log('-----------', controller.controllerName, controller.requiredPallets),
-);

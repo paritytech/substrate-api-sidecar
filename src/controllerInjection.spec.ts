@@ -2,7 +2,8 @@
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
-import { commonControllers } from './chains-config';
+import { specToControllerMap } from './chains-config';
+import { defaultControllers } from './chains-config/defaultControllers';
 import { controllers } from './controllers';
 
 /**
@@ -13,72 +14,54 @@ import { controllers } from './controllers';
  */
 
 const chainsToNode: Record<string, string> = {
-	acala: 'wss://acala-rpc.dwellir.com',
-	kusama_asset_hub: 'wss://asset-hub-kusama-rpc.dwellir.com',
+	'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
 	kusama: 'wss://kusama-rpc.dwellir.com',
-	westend_asset_hub: 'wss://asset-hub-westend-rpc.dwellir.com',
+	'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
-	bifrost_kusama: 'wss://bifrost-rpc.dwellir.com',
 	bifrost_polkadot: 'wss://bifrost-polkadot-rpc.dwellir.com',
 	calamari: 'wss://calamari.systems',
-	coretime_polkadot: 'wss://sys.ibp.network/coretime-polkadot',
-	coretime_kusama: 'wss://rpc-coretime-kusama.luckyfriday.io',
-	coretime_westend: 'wss://coretime-westend-rpc.dwellir.com',
+	polkadot: 'wss://polkadot-rpc.dwellir.com',
+	'coretime-westend': 'wss://coretime-westend-rpc.dwellir.com',
+	'coretime-polkadot': 'wss://sys.ibp.network/coretime-polkadot',
 	crust: 'wss://crust-parachain.crustapps.net',
 	karura: 'wss://karura-rpc.dwellir.com',
 	manta: 'wss://ws.manta.systems',
 	kilt: 'wss://kilt-rpc.dwellir.com',
-	parallel: 'wss://parallel.gatotech.network',
-	shiden: 'wss://shiden-rpc.dwellir.com',
-	sora: 'wss://ws.parachain-collator-3.pc3.sora2.soramitsu.co.jp',
-	westend: 'wss://westend-rpc.polkadot.io',
-	polkadot: 'wss://polkadot-rpc.dwellir.com',
-	polkadot_asset_hub: 'wss://asset-hub-polkadot-rpc.dwellir.com',
+	'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
 };
 
 describe('controllerInjection', () => {
-	jest.setTimeout(60000); // Increase timeout for async operations
-	it('should return the correct response with the assets param', async () => {
-		const results: { chain: string; pallets: string[] }[] = [];
+	jest.setTimeout(10000); // Increase timeout for async operations
 
-		await Promise.all(
-			Object.entries(chainsToNode).map(async ([chain, nodeUrl]) => {
-				const wsProvider = new WsProvider(nodeUrl);
-				try {
-					const api = await ApiPromise.create({ provider: wsProvider });
-					await api.isReady;
+	for (const [chain, nodeUrl] of Object.entries(chainsToNode)) {
+		it(`should return the correct response for ${chain}`, async () => {
+			const wsProvider = new WsProvider(nodeUrl);
+			const api = await ApiPromise.create({ provider: wsProvider });
+			try {
+				await api.isReady;
+			} finally {
+				await api?.disconnect(); // Close WebSocket connection
+			}
 
-					const metadata = api.registry.metadata.toJSON();
-					const pallets = (metadata.pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string);
+			const metadata = api.registry.metadata.toJSON();
+			const pallets = (metadata.pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string).sort();
 
-					results.push({ chain, pallets });
+			// const common = commonControllers();
 
-					await api.disconnect(); // Close WebSocket connection
-				} catch (error) {
-					console.error(`Failed to fetch metadata for ${chain}:`, error);
-				} finally {
-					await wsProvider.disconnect(); // Ensure disconnection
-				}
-			}),
-		);
+			// expect(common).toBeDefined();
 
-		const common = commonControllers();
-
-		expect(common).toBeDefined();
-
-		for (const result of results) {
-			console.log(`Pallets for ${result.chain}:`, result.pallets);
-			const injectedControllers: string[] = [];
+			const injectedControllers = new Set<string>();
 			// get controllers by pallets
 			Object.values(controllers).forEach((controller) => {
-				if (!controller.requiredPallets.length) {
-					injectedControllers.push(controller.name);
-				} else if (controller.requiredPallets.every((p) => result.pallets.includes(p))) {
-					injectedControllers.push(controller.name);
+				if (controller.canInjectByPallets(pallets)) {
+					injectedControllers.add(controller.controllerName);
 				}
 			});
+			const controllersToInclude =
+				specToControllerMap[chain]?.controllers.sort() || defaultControllers.controllers.sort();
 
-			console.log(injectedControllers);
-		}
-	});
+			const filtered = controllersToInclude.filter((c) => !injectedControllers.has(c));
+			expect(filtered).toHaveLength(0);
+		});
+	}
 });

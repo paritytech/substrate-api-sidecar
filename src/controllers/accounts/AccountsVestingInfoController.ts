@@ -45,7 +45,9 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsVestingInfoController extends AbstractController<AccountsVestingInfoService> {
 	static controllerName = 'AccountsVestingInfo';
-	static requiredPallets = ['Vesting'];
+	static requiredPallets = {
+		OR: [['Vesting'], ['CalamariVesting']],
+	};
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/vesting-info', new AccountsVestingInfoService(api));
 		this.initRoutes();

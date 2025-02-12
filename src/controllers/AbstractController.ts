@@ -45,13 +45,27 @@ type SidecarRequestHandler =
 	| RequestHandler<IParaIdParam>
 	| RequestHandler;
 
+/*
+ * The required pallets for a controller can be a list of pallets in string, or a definition using AND | OR and the list of pallets
+ * Example:
+ * 		- ['pallet1', 'pallet2']
+ * 		- { 'OR': ['pallet1', 'pallet2'] }
+ * 		- { 'AND': ['pallet1', 'pallet2'] }
+ */
+export type RequiredPallets =
+	| string[]
+	| {
+			OR?: string[][];
+			AND?: string[][];
+	  };
+
 /**
  * Abstract base class for creating controller classes.
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
 	static controllerName: string;
-	static requiredPallets: string[];
+	static requiredPallets: RequiredPallets;
 
 	constructor(
 		protected api: ApiPromise,
@@ -267,5 +281,21 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 */
 	static sanitizedSend<T>(res: Response<AnyJson>, body: T, options: ISanitizeOptions = {}): void {
 		res.send(sanitizeNumbers(body, options));
+	}
+
+	static canInjectByPallets(availablePallets: string[]): boolean {
+		if (Array.isArray(this.requiredPallets)) {
+			if (this.requiredPallets.length === 0) {
+				return true;
+			}
+			return this.requiredPallets.every((pallet) => availablePallets.includes(pallet));
+		} else {
+			if (this.requiredPallets.OR) {
+				return this.requiredPallets.OR.some((pallets) => pallets.every((p) => availablePallets.includes(p)));
+			} else if (this.requiredPallets.AND) {
+				return this.requiredPallets.AND.every((pallets) => pallets.every((p) => availablePallets.includes(p)));
+			}
+			return false;
+		}
 	}
 }
