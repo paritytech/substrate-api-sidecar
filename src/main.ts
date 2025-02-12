@@ -26,7 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import { getControllersForSpec } from './chains-config';
+import { getControllersByPallets } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
@@ -80,30 +80,15 @@ async function main() {
 		metricsApp.listen();
 	}
 
-	// (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((el) => {
-	// 	console.log('el', el.name);
-	// 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-	// 	const storage = (el.storage as Record<string, Record<string, unknown>[]>)?.items.map((item) => item.name);
-	// 	console.log(storage);
-	// 	return storage;
-	// });
-	// all controllers to be always included: 'Blocks',
-	//   'BlocksExtrinsics',
-	//   'BlocksRawExtrinsics',
-	//   'NodeNetwork',
-	//   'NodeVersion',
-	//   'RuntimeCode',
-	//   'RuntimeMetadata',
-	//   'RuntimeSpec'
-	// console.log(storage);
-	// Create our App
+	const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+		(p) => p.name as string,
+	);
 
-	// Basic controllers always present
-	// custom controllers forced by user
-	// pallets controllers
+	const controllers = getControllersByPallets(pallets, api, specName.toString());
+
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllersForSpec(api, specName.toString()),
+		controllers: controllers,
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,

@@ -73,7 +73,6 @@ export default class AccountsAssetsController extends AbstractController<Account
 		super(api, '/accounts/:address', new AccountsAssetsService(api));
 		this.initRoutes();
 	}
-
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 

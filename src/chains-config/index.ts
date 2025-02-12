@@ -48,7 +48,7 @@ import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
 
-const specToControllerMap: { [x: string]: ControllerConfig } = {
+export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
 	polymesh: polymeshControllers,
@@ -133,8 +133,7 @@ export const commonControllers = () => {
 		});
 	});
 
-	const everySet = new Set();
-
+	const everySet = new Set<string>();
 	controllerSet.forEach((controller) => {
 		// check if every controller is in every config
 		const everyConfig = Array.from(configMap.values()).every((config) => config.includes(controller));
@@ -144,9 +143,17 @@ export const commonControllers = () => {
 			everySet.add(controller);
 		}
 	});
-
-	console.log('Every set:', everySet);
 	return everySet;
 };
 
-commonControllers();
+export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
+	const controllersSet: AbstractController<AbstractService>[] = [];
+	const config = specToControllerMap[specName].options;
+	Object.values(controllers).forEach((controller) => {
+		if (controller.canInjectByPallets(pallets)) {
+			controllersSet.push(new controller(api, config));
+		}
+	});
+
+	return controllersSet;
+};

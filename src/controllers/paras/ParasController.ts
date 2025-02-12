@@ -24,7 +24,7 @@ import AbstractController from '../AbstractController';
 
 export default class ParasController extends AbstractController<ParasService> {
 	static controllerName = 'Paras';
-	static requiredPallets = ['System', 'Paras', 'Slots', 'Crowdloan', 'Auctions', 'Leases'];
+	static requiredPallets = ['Paras'];
 	constructor(api: ApiPromise) {
 		super(api, '', new ParasService(api));
 		this.initRoutes();
