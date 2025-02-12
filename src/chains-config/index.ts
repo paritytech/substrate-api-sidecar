@@ -121,31 +121,6 @@ export const checkPalletsConfig = Object.keys(specToControllerMap).forEach((spec
 	console.log(`Checking pallets for ${spec}`);
 });
 
-export const commonControllers = () => {
-	const configMap = new Map<string, string[]>();
-	const controllerSet = new Set<string>();
-
-	Object.keys(specToControllerMap).forEach((spec) => {
-		const controllerConfig = specToControllerMap[spec];
-		configMap.set(spec, controllerConfig.controllers);
-		controllerConfig.controllers.forEach((controller) => {
-			controllerSet.add(controller);
-		});
-	});
-
-	const everySet = new Set<string>();
-	controllerSet.forEach((controller) => {
-		// check if every controller is in every config
-		const everyConfig = Array.from(configMap.values()).every((config) => config.includes(controller));
-
-		// if every controller is in every config, add it to the everySet
-		if (everyConfig) {
-			everySet.add(controller);
-		}
-	});
-	return everySet;
-};
-
 export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
 	const config = specToControllerMap[specName].options;
