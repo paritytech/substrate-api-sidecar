@@ -26,7 +26,6 @@ export const mantaControllers: ControllerConfig = {
 		'AccountsStakingInfo',
 		'AccountsStakingPayouts',
 		'AccountsValidate',
-		'AccountsVestingInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
