@@ -116,14 +116,16 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 	}, [] as AbstractController<AbstractService>[]);
 }
 
-export const checkPalletsConfig = Object.keys(specToControllerMap).forEach((spec) => {
-	// const controllerConfig = specToControllerMap[spec];
-	console.log(`Checking pallets for ${spec}`);
-});
+/**
+ * Return an array of instantiated controller instances based off of a `specName`.
+ * @param pallets pallets available to define controllers
+ * @param api ApiPromise to inject into controllers
+ * @param specName specName of chain to get options
+ */
 
 export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
-	const config = specToControllerMap[specName].options;
+	const config = specToControllerMap[specName]?.options || specToControllerMap.defaultControllers.options;
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
 			controllersSet.push(new controller(api, config));
