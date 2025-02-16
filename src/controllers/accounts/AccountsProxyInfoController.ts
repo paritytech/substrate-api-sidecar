@@ -24,7 +24,7 @@ import AbstractController from '../AbstractController';
 
 export default class AccountsProxyInfoController extends AbstractController<AccountsProxyInfoService> {
 	static controllerName = 'AccountsProxyInfo';
-	static requiredPallets = ['Proxy'];
+	static requiredPallets = [['Proxy']];
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/proxy-info', new AccountsProxyInfoService(api));
 		this.initRoutes();

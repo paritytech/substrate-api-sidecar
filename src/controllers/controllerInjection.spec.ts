@@ -44,10 +44,6 @@ describe('controllerInjection', () => {
 			}
 			const metadata = api.registry.metadata.toJSON();
 			const pallets = (metadata.pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string).sort();
-
-			if (chain === 'manta') {
-				console.log(pallets);
-			}
 			const injectedControllers = new Set<string>();
 			// get controllers by pallets
 			Object.values(controllers).forEach((controller) => {

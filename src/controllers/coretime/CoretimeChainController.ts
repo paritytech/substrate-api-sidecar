@@ -22,14 +22,11 @@ import AbstractController from '../AbstractController';
 
 export default class CoretimeChainController extends AbstractController<CoretimeService> {
 	static controllerName = 'CoretimeChain';
-	// TODO - Add optional pallets
-	static requiredPallets = {
-		OR: [
-			['Broker'],
-			['CoretimeAssignmentProvider', 'OnDemand'],
-			['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras'],
-		],
-	};
+	static requiredPallets = [
+		['Broker'],
+		['CoretimeAssignmentProvider', 'OnDemand', 'Paras'],
+		['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras'],
+	];
 	constructor(api: ApiPromise) {
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
