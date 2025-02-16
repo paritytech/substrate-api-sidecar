@@ -46,18 +46,12 @@ type SidecarRequestHandler =
 	| RequestHandler;
 
 /*
- * The required pallets for a controller can be a list of pallets in string, or a definition using AND | OR and the list of pallets
+ * The required pallets for a controller can be a list of pallets in string, or a list of list of pallets, which represents an OR statement.
  * Example:
- * 		- ['pallet1', 'pallet2']
- * 		- { 'OR': ['pallet1', 'pallet2'] }
- * 		- { 'AND': ['pallet1', 'pallet2'] }
+ * 		- [['pallet1', 'pallet2']] => Requires pallet1 AND pallet2
+ *      - [['pallet1', 'pallet2'], ['pallet1', 'pallet3']] => Requires (pallet1 AND pallet2) OR (pallet1 AND pallet3)
  */
-export type RequiredPallets =
-	| string[]
-	| {
-			OR?: string[][];
-			AND?: string[][];
-	  };
+export type RequiredPallets = string[][];
 
 /**
  * Abstract base class for creating controller classes.
@@ -284,18 +278,15 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	static canInjectByPallets(availablePallets: string[]): boolean {
-		if (Array.isArray(this.requiredPallets)) {
-			if (this.requiredPallets.length === 0) {
+		if (this.requiredPallets.length === 1) {
+			if (this.requiredPallets[0].length === 0) {
 				return true;
 			}
-			return this.requiredPallets.every((pallet) => availablePallets.includes(pallet));
-		} else {
-			if (this.requiredPallets.OR) {
-				return this.requiredPallets.OR.some((pallets) => pallets.every((p) => availablePallets.includes(p)));
-			} else if (this.requiredPallets.AND) {
-				return this.requiredPallets.AND.every((pallets) => pallets.every((p) => availablePallets.includes(p)));
-			}
-			return false;
+			return this.requiredPallets[0].every((pallet) => availablePallets.includes(pallet));
+		} else if (this.requiredPallets.length > 1) {
+			return this.requiredPallets.some((pallets) => pallets.every((p) => availablePallets.includes(p)));
 		}
+		// If requiredPallets is empty, then we can inject
+		return true;
 	}
 }

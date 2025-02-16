@@ -105,7 +105,7 @@ import AbstractController from '../AbstractController';
 export default class BlocksController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
 	static controllerName = 'Blocks';
-	static requiredPallets = ['System', 'Session'];
+	static requiredPallets = [['System', 'Session']];
 	constructor(
 		api: ApiPromise,
 		private readonly options: ControllerOptions,

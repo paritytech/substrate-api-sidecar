@@ -82,12 +82,10 @@ import AbstractController from '../AbstractController';
  */
 export default class PalletsStakingProgressController extends AbstractController<PalletsStakingProgressService> {
 	static controllerName = 'PalletsStakingProgress';
-	static requiredPallets = {
-		OR: [
-			['Babe', 'Staking', 'Session'],
-			['ParachainStaking', 'Session'],
-		],
-	};
+	static requiredPallets = [
+		['Babe', 'Staking', 'Session'],
+		['ParachainStaking', 'Session'],
+	];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
 		this.initRoutes();

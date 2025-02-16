@@ -67,7 +67,7 @@ import AbstractController from '../AbstractController';
  */
 export default class AccountsAssetsController extends AbstractController<AccountsAssetsService> {
 	static controllerName = 'AccountsAssets';
-	static requiredPallets = ['Assets'];
+	static requiredPallets = [['Assets']];
 
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address', new AccountsAssetsService(api));
