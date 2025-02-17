@@ -67,6 +67,7 @@ import response789629 from '../test-helpers/responses/accounts/stakingInfo789629
 import response21157800 from '../test-helpers/responses/accounts/stakingInfo21157800.json';
 import response21157800nominator from '../test-helpers/responses/accounts/stakingInfo21157800nominator.json';
 import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
+import stakingInfo22939322ClaimedFalse from '../test-helpers/responses/accounts/stakingInfo22939322ClaimedFalse.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 export const bondedAt = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
@@ -227,7 +228,7 @@ describe('AccountsStakingInfoService', () => {
 	describe('fetchAccountStakingInfo', () => {
 		it('works with a valid stash address (block 789629)', async () => {
 			expect(
-				sanitizeNumbers(await accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, testAddress)),
+				sanitizeNumbers(await accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress)),
 			).toStrictEqual(response789629);
 		});
 
@@ -236,7 +237,7 @@ describe('AccountsStakingInfoService', () => {
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<AccountId>', null));
 
 			await expect(
-				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, 'NotStash'),
+				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, 'NotStash'),
 			).rejects.toStrictEqual(new BadRequest('The address NotStash is not a stash address.'));
 
 			(historicApi.query.staking.bonded as any) = bondedAt;
@@ -247,7 +248,7 @@ describe('AccountsStakingInfoService', () => {
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<StakingLedger>', null));
 
 			await expect(
-				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, testAddress),
+				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress),
 			).rejects.toStrictEqual(
 				new InternalServerError(
 					`Staking ledger could not be found for controller address "${testAddressController.toString()}"`,
@@ -257,10 +258,18 @@ describe('AccountsStakingInfoService', () => {
 			(historicApi.query.staking.ledger as any) = ledgerAt;
 		});
 
+		it('works when `includeClaimedRewards` is set to `false` hence claimedRewards field is not returned in the response', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, false, testAddressKusama),
+				),
+			).toStrictEqual(stakingInfo22939322ClaimedFalse);
+		});
+
 		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
 			expect(
 				sanitizeNumbers(
-					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, testAddressKusama),
+					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, true, testAddressKusama),
 				),
 			).toStrictEqual(response22939322);
 		});
@@ -268,7 +277,11 @@ describe('AccountsStakingInfoService', () => {
 		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
 			expect(
 				sanitizeNumbers(
-					await accountStakingInfoService21157800val.fetchAccountStakingInfo(blockHash21157800, testAddressPolkadot),
+					await accountStakingInfoService21157800val.fetchAccountStakingInfo(
+						blockHash21157800,
+						true,
+						testAddressPolkadot,
+					),
 				),
 			).toStrictEqual(response21157800);
 		});
@@ -277,6 +290,7 @@ describe('AccountsStakingInfoService', () => {
 				sanitizeNumbers(
 					await accountStakingInfoService21157800nom.fetchAccountStakingInfo(
 						blockHash21157800,
+						true,
 						testNominatorAddressPolkadot,
 					),
 				),

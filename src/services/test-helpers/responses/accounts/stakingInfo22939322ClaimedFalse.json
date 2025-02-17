@@ -1,0 +1,18 @@
+{
+  "at": {
+    "hash": "0x1ef674fffb042c9016987e0e3995a36401a7e2b66e0b6c0bb111a0b049857098",
+    "height": "22939322"
+  },
+  "controller": "F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T",
+  "rewardDestination": {
+    "account": "GLEJRAEdGxLhNEH2AWAtjhUYVrcRWxbYSemvVv2JwxBG2fg"
+  },
+  "numSlashingSpans": "3",
+  "nominations": null,
+  "staking": {
+    "stash": "F2VckTExmProzJnwNaN3YVqDoBPS1LyNVmyG8HUAygtDV3T",
+    "total": "5340420989561",
+    "active": "5340420989561",
+    "unlocking": []
+  }
+}

@@ -36,7 +36,11 @@ export class AccountsStakingInfoService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param stash address of the _Stash_  account to get the staking info of
 	 */
-	async fetchAccountStakingInfo(hash: BlockHash, stash: string): Promise<IAccountStakingInfo> {
+	async fetchAccountStakingInfo(
+		hash: BlockHash,
+		includeClaimedRewards: boolean,
+		stash: string,
+	): Promise<IAccountStakingInfo> {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
@@ -89,69 +93,87 @@ export class AccountsStakingInfoService extends AbstractService {
 			);
 		}
 
-		// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
-		let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
-		let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
-
-		// `eraDepth`: the number of eras to check.
-		const eraDepth = Number(api.consts.staking.historyDepth.toNumber());
-		const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
-
-		let oldCallChecked = false;
-		// Checking each era one by one
-		for (let e = eraStart; e < eraStart + eraDepth; e++) {
-			let claimedRewardsEras: u32[] = [];
-
-			[claimedRewardsEras, claimedRewards] = this.fetchClaimedInfoFromOldCalls(
-				stakingLedger,
-				claimedRewardsEras,
-				claimedRewards,
-			);
-
-			[oldCallChecked, claimedRewards, e] = this.isOldCallsChecked(
-				oldCallChecked,
-				claimedRewardsEras,
-				claimedRewards,
-				eraStart,
-				eraDepth,
-				e,
-			);
-			claimedRewardsNom = claimedRewards as IEraStatus<NominatorStatus>[];
-			/**
-			 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
-			 * `query.staking.claimedRewards` is available then we go into this check.
-			 */
-			if (!!historicApi.query.staking?.claimedRewards && oldCallChecked) {
-				if (currentEraOption.isNone) {
-					throw new InternalServerError('CurrentEra is None when Some was expected');
-				}
-
-				if (isValidator) {
-					claimedRewards = await this.fetchErasStatusForValidator(historicApi, e, stash, claimedRewards);
-				} else {
-					// To verify the reward status `claimed` of an era for a Nominator's account,
-					// we need to check the status of that era in one of their associated Validators' accounts.
-					const validatorsTargets = nominations?.targets.toHuman() as string[];
-					if (validatorsTargets) {
-						const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
-							historicApi,
-							e,
-							eraDepth,
-							eraStart,
-							claimedRewardsNom,
-							validatorsTargets,
-							stash,
-							currentEraOption,
-						);
-						e = era;
-						claimedRewardsNom = claimedRewardsNom1;
-					}
-				}
-			} else {
-				break;
-			}
-		}
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+
+		if (includeClaimedRewards == true) {
+			// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
+			let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
+			let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
+
+			// `eraDepth`: the number of eras to check.
+			const eraDepth = Number(api.consts.staking.historyDepth.toNumber());
+			const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
+
+			let oldCallChecked = false;
+			// Checking each era one by one
+			for (let e = eraStart; e < eraStart + eraDepth; e++) {
+				let claimedRewardsEras: u32[] = [];
+
+				[claimedRewardsEras, claimedRewards] = this.fetchClaimedInfoFromOldCalls(
+					stakingLedger,
+					claimedRewardsEras,
+					claimedRewards,
+				);
+
+				[oldCallChecked, claimedRewards, e] = this.isOldCallsChecked(
+					oldCallChecked,
+					claimedRewardsEras,
+					claimedRewards,
+					eraStart,
+					eraDepth,
+					e,
+				);
+				claimedRewardsNom = claimedRewards as IEraStatus<NominatorStatus>[];
+				/**
+				 *  If the old calls are checked (which means `oldCallChecked` flag is true) and the new call
+				 * `query.staking.claimedRewards` is available then we go into this check.
+				 */
+				if (!!historicApi.query.staking?.claimedRewards && oldCallChecked) {
+					if (currentEraOption.isNone) {
+						throw new InternalServerError('CurrentEra is None when Some was expected');
+					}
+
+					if (isValidator) {
+						claimedRewards = await this.fetchErasStatusForValidator(historicApi, e, stash, claimedRewards);
+					} else {
+						// To verify the reward status `claimed` of an era for a Nominator's account,
+						// we need to check the status of that era in one of their associated Validators' accounts.
+						const validatorsTargets = nominations?.targets.toHuman() as string[];
+						if (validatorsTargets) {
+							const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
+								historicApi,
+								e,
+								eraDepth,
+								eraStart,
+								claimedRewardsNom,
+								validatorsTargets,
+								stash,
+								currentEraOption,
+							);
+							e = era;
+							claimedRewardsNom = claimedRewardsNom1;
+						}
+					}
+				} else {
+					break;
+				}
+			}
+
+			return {
+				at,
+				controller,
+				rewardDestination,
+				numSlashingSpans,
+				nominations,
+				staking: {
+					stash: stakingLedger.stash,
+					total: stakingLedger.total,
+					active: stakingLedger.active,
+					unlocking: stakingLedger.unlocking,
+					claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
+				},
+			};
+		}
 
 		return {
 			at,
@@ -164,7 +186,6 @@ export class AccountsStakingInfoService extends AbstractService {
 				total: stakingLedger.total,
 				active: stakingLedger.active,
 				unlocking: stakingLedger.unlocking,
-				claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
 			},
 		};
 	}
