@@ -435,6 +435,15 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: includeClaimedRewards
+        in: query
+        description:  When set to `false`, the `claimedRewards` field is not included
+          in the response.
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
       responses:
         "200":
           description: successful operation
