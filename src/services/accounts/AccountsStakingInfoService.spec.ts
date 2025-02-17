@@ -67,6 +67,7 @@ import response789629 from '../test-helpers/responses/accounts/stakingInfo789629
 import response21157800 from '../test-helpers/responses/accounts/stakingInfo21157800.json';
 import response21157800nominator from '../test-helpers/responses/accounts/stakingInfo21157800nominator.json';
 import response22939322 from '../test-helpers/responses/accounts/stakingInfo22939322.json';
+import stakingInfo22939322ClaimedFalse from '../test-helpers/responses/accounts/stakingInfo22939322ClaimedFalse.json';
 import { AccountsStakingInfoService } from './AccountsStakingInfoService';
 
 export const bondedAt = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
@@ -255,6 +256,14 @@ describe('AccountsStakingInfoService', () => {
 			);
 
 			(historicApi.query.staking.ledger as any) = ledgerAt;
+		});
+
+		it('works when `includeClaimedRewards` is set to `false` hence claimedRewards field is not returned in the response', async () => {
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, false, testAddressKusama),
+				),
+			).toStrictEqual(stakingInfo22939322ClaimedFalse);
 		});
 
 		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
