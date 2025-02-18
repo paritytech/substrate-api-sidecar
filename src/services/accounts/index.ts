@@ -16,6 +16,7 @@
 
 export * from './AccountsAssetsService';
 export * from './AccountsBalanceInfoService';
+export * from './AccountsCompareService';
 export * from './AccountsConvertService';
 export * from './AccountsPoolAssetsService';
 export * from './AccountsProxyInfoService';
