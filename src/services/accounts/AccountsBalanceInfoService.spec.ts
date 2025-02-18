@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ const accountAt = (_address: string) =>
 		),
 	);
 
-const accountDataAt = (_address: String) =>
+const accountDataAt = (_address: string) =>
 	Promise.resolve().then(() => {
 		return {
 			data: polkadotRegistryV9370.createType('AccountData', {
@@ -243,9 +243,9 @@ describe('AccountsBalanceInfoService', () => {
 					).tokenSymbol,
 				).toEqual('fOoToKeN');
 
-				expect(mockTokensLocksAt).toBeCalled();
-				expect(mockTokenAccountAt).toBeCalled();
-				expect(mockBalancesLocksAt).not.toBeCalled();
+				expect(mockTokensLocksAt).toHaveBeenCalled();
+				expect(mockTokenAccountAt).toHaveBeenCalled();
+				expect(mockBalancesLocksAt).not.toHaveBeenCalled();
 			});
 
 			it('does not query tokens pallet storage with the native token', async () => {
@@ -263,9 +263,9 @@ describe('AccountsBalanceInfoService', () => {
 					).tokenSymbol,
 				).toEqual('doT');
 
-				expect(mockTokensLocksAt).not.toBeCalled();
-				expect(mockTokenAccountAt).not.toBeCalled();
-				expect(mockBalancesLocksAt).toBeCalled();
+				expect(mockTokensLocksAt).not.toHaveBeenCalled();
+				expect(mockTokenAccountAt).not.toHaveBeenCalled();
+				expect(mockBalancesLocksAt).toHaveBeenCalled();
 			});
 		});
 	});

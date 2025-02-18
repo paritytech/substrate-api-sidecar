@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ export interface ISidecarConfig {
 	EXPRESS: ISidecarConfigExpress;
 	SUBSTRATE: ISidecarConfigSubstrate;
 	LOG: ISidecarConfigLog;
+	METRICS: ISidecarConfigMetrics;
 }
 
 interface ISidecarConfigSubstrate {
@@ -29,12 +30,14 @@ interface ISidecarConfigSubstrate {
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;
 	TYPES: string;
+	CACHE_CAPACITY: number;
 }
 
 interface ISidecarConfigExpress {
 	HOST: string;
 	PORT: number;
 	KEEP_ALIVE_TIMEOUT: number;
+	MAX_BODY: string;
 }
 
 interface ISidecarConfigLog {
@@ -46,4 +49,13 @@ interface ISidecarConfigLog {
 	WRITE_PATH: string;
 	WRITE_MAX_FILE_SIZE: number;
 	WRITE_MAX_FILES: number;
+}
+
+interface ISidecarConfigMetrics {
+	ENABLED: boolean;
+	PROM_HOST: string;
+	PROM_PORT: number;
+	LOKI_HOST: string;
+	LOKI_PORT: number;
+	INCLUDE_QUERYPARAMS: boolean;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,19 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransformableInfo } from 'logform';
 import { format } from 'winston';
-
-import { ITransformableInfo } from '../../types/logging';
 
 /**
  * Ignore log messages that have `API-WS:`. (e.g. polkadot-js RPC logging)
  */
-export const filterApiRpc = format((info: ITransformableInfo, _opts: unknown) => {
+export const filterApiRpc = format((info: TransformableInfo) => {
 	if (
 		!info ||
-		(info?.message?.includes &&
-			!info?.message?.includes('connected') &&
-			info.message?.includes('API-WS:') &&
+		((info?.message as string)?.includes &&
+			!(info?.message as string)?.includes('connected') &&
+			(info?.message as string)?.includes('API-WS:') &&
 			info.level === 'info')
 	) {
 		return false;

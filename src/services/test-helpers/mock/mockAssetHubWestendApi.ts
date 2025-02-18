@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -38,6 +38,8 @@ import { localListenAddressesHex } from './data/localListenAddresses';
 import { getMetadata as mockMetaData } from './data/mockNonimationPoolResponseData';
 import traceBlockRPC from './data/traceBlock.json';
 import { defaultMockApi } from './mockApi';
+import { mockDryRunCallResult } from './mockDryRunCall';
+import { mockDryRunCallError } from './mockDryRunError';
 
 const chain = () =>
 	Promise.resolve().then(() => {
@@ -141,10 +143,24 @@ const runtimeDispatchInfo = assetHubWestendRegistryV9435.createType('RuntimeDisp
 	partialFee: 149000000,
 });
 
+const runtimeDryRun = assetHubWestendRegistryV9435.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallResult,
+);
+
+const runtimeDryRunError = assetHubWestendRegistryV9435.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallError,
+);
+
 export const assetHubWestendQueryInfoCall = (
 	_extrinsic: GenericExtrinsic,
 	_length: Uint8Array,
 ): Promise<RuntimeDispatchInfo> => Promise.resolve().then(() => runtimeDispatchInfo);
+
+export const mockDryRunCall = () => Promise.resolve().then(() => runtimeDryRun);
+
+export const mockDryRunError = () => Promise.resolve().then(() => runtimeDryRunError);
 
 export const assetHubWestendQueryInfoAt = (_extrinsic: string, _hash: Hash): Promise<RuntimeDispatchInfo> =>
 	Promise.resolve().then(() => runtimeDispatchInfo);

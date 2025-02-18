@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -29,11 +29,11 @@ import App from './App';
 import { getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
+import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
 import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
-import Metrics_App from './util/metrics';
 
 async function main() {
 	const { config } = SidecarConfig;
@@ -43,12 +43,12 @@ async function main() {
 
 	logger.info(`Version: ${packageJSON.version}`);
 
-	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES } = config.SUBSTRATE;
+	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
 	// Instantiate a web socket connection to the node and load types
 	const api = await ApiPromise.create({
 		provider: config.SUBSTRATE.URL.startsWith('http')
-			? new HttpProvider(config.SUBSTRATE.URL)
-			: new WsProvider(config.SUBSTRATE.URL),
+			? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
+			: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
 		/* eslint-disable @typescript-eslint/no-var-requires */
 		typesBundle: TYPES_BUNDLE ? (require(TYPES_BUNDLE) as OverrideBundleType) : (tempTypesBundle as OverrideBundleType),
 		typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,
@@ -65,9 +65,24 @@ async function main() {
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
+	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
+
+	if (config.METRICS.ENABLED) {
+		// Create Metrics App
+		const metricsApp = new MetricsApp({
+			port: config.METRICS.PROM_PORT,
+			host: config.METRICS.PROM_HOST,
+		});
+
+		// Generate metrics middleware
+		preMiddlewares.push(metricsApp.preMiddleware());
+		// Start the Metrics server
+		metricsApp.listen();
+	}
+
 	// Create our App
 	const app = new App({
-		preMiddleware: [json(), middleware.httpLoggerCreate(logger)],
+		preMiddleware: preMiddlewares,
 		controllers: getControllersForSpec(api, specName.toString()),
 		postMiddleware: [
 			middleware.txError,
@@ -85,16 +100,6 @@ async function main() {
 
 	server.keepAliveTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT;
 	server.headersTimeout = config.EXPRESS.KEEP_ALIVE_TIMEOUT + 5000;
-
-	if (args.prometheus) {
-		// Create Metrics App
-		const metricsApp = new Metrics_App({
-			port: 9100,
-			host: config.EXPRESS.HOST,
-		});
-		// Start the Metrics server
-		metricsApp.listen();
-	}
 }
 
 /**

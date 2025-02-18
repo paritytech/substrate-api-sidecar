@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ export const validateBooleanMiddleware = (queryParams: string[]): RequestHandler
 
 		for (const key of queryParams) {
 			if (req.query[key]) {
-				const queryParamVal = typeof req.query[key] === 'string' ? (req.query[key] as string).toLowerCase() : '';
+				const queryParamVal = typeof req.query[key] === 'string' ? req.query[key].toLowerCase() : '';
 				if (!(queryParamVal === 'true' || queryParamVal === 'false')) {
 					errQueryParams.push(`Query parameter: ${key} has an invalid boolean value of ${req.query[key] as string}`);
 				}

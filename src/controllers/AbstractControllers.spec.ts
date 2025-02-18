@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -81,8 +81,8 @@ describe('AbstractController', () => {
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				AbstractController['catchWrap'](throws)(req, res, next),
 			).resolves.toBe(undefined);
-			expect(next).toBeCalledTimes(1);
-			expect(next).toBeCalledWith('Throwing');
+			expect(next).toHaveBeenCalledTimes(1);
+			expect(next).toHaveBeenCalledWith('Throwing');
 		});
 
 		it('catches throw from a synchronous functions and calls next with error', async () => {
@@ -98,27 +98,27 @@ describe('AbstractController', () => {
 				// eslint-disable-next-line @typescript-eslint/await-thenable
 				AbstractController['catchWrap'](throws)(req, res, next),
 			).resolves.toBe(undefined);
-			expect(next).toBeCalledTimes(1);
-			expect(next).toBeCalledWith('Throwing');
+			expect(next).toHaveBeenCalledTimes(1);
+			expect(next).toHaveBeenCalledWith('Throwing');
 		});
 
 		it('handles a successful async callback appropriately', async () => {
 			const next = jest.fn();
-			const success = () => Promise.resolve().then(() => 'Great success!');
+			const success = () => Promise.resolve().then(() => console.log('Great success!'));
 
 			await expect(
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				AbstractController['catchWrap'](success)(req, res, next),
 			).resolves.toBe(undefined);
-			expect(next).not.toBeCalled();
+			expect(next).not.toHaveBeenCalled();
 		});
 
 		it('handles a successful synchronous callback appropriately', async () => {
 			const next = jest.fn();
-			const success = () => 'Great success!';
+			const success = () => console.log('Great success!');
 
 			await expect(AbstractController['catchWrap'](success)(req, res, next)).resolves.toBe(undefined);
-			expect(next).not.toBeCalled();
+			expect(next).not.toHaveBeenCalled();
 		});
 	});
 

@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import type {
 	DeriveEraNominatorExposure,
 	DeriveEraValidatorExposure,
 } from '@polkadot/api-derive/staking/types';
-import { Compact, Option, StorageKey, u32, u128 } from '@polkadot/types';
+import { Compact, Linkage, Option, StorageKey, u32, u128 } from '@polkadot/types';
 import { Vec } from '@polkadot/types';
 import type {
 	AccountId,
@@ -32,6 +32,7 @@ import type {
 	Perbill,
 	StakingLedger,
 	StakingLedgerTo240,
+	ValidatorPrefs,
 	ValidatorPrefsWithCommission,
 } from '@polkadot/types/interfaces';
 import type {
@@ -51,7 +52,7 @@ import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
 /**
- * Copyright 2024 via polkadot-js/api
+ * Copyright 2025 via polkadot-js/api
  * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
  */
 type KeysAndExposures = [StorageKey<[EraIndex, AccountId]>, SpStakingExposure][];
@@ -296,10 +297,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 						: await this.api.rpc.chain.getBlockHash(earlyErasBlockInfo[era - 1].end);
 
 				let reward: Option<u128> = historicApi.registry.createType('Option<u128>');
-
-				const blockInfo = await this.api.rpc.chain.getBlock(nextEraStartBlockHash);
-
-				const allRecords = await historicApi.query.system.events();
+				const [blockInfo, allRecords] = await Promise.all([
+					this.api.rpc.chain.getBlock(nextEraStartBlockHash),
+					historicApi.query.system.events(),
+				]);
 
 				blockInfo.block.extrinsics.forEach((index) => {
 					allRecords
@@ -514,7 +515,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				commission = prefs.commission.unwrap();
 			} else {
 				prefs = (await historicApi.query.staking.validators(validatorId)) as ValidatorPrefsWithCommission;
-				commission = (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap();
+				commission = (prefs as unknown as [ValidatorPrefs, Linkage<AccountId>])[0].commission.unwrap();
 			}
 		} else {
 			commissionPromise =
@@ -529,7 +530,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 			commission =
 				ancient && isKusama
-					? (prefs[0] as PalletStakingValidatorPrefs | ValidatorPrefsWithCommission).commission.unwrap()
+					? (prefs as unknown as [ValidatorPrefs, Linkage<AccountId>])[0].commission.unwrap()
 					: prefs.commission.unwrap();
 
 			if (validatorControllerOption.isNone) {
@@ -553,7 +554,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
-	 * Copyright 2024 via polkadot-js/api
+	 * Copyright 2025 via polkadot-js/api
 	 * The following code was adopted by https://github.com/polkadot-js/api/blob/3bdf49b0428a62f16b3222b9a31bfefa43c1ca55/packages/api-derive/src/staking/erasExposure.ts.
 	 *
 	 * The original version uses the base ApiDerive implementation which does not include the ApiDecoration implementation.
@@ -597,8 +598,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 				const individualExposure = exposure.others
 					? exposure.others
 					: (exposure as unknown as Option<SpStakingExposurePage>).isSome
-					  ? (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others
-					  : [];
+						? (exposure as unknown as Option<SpStakingExposurePage>).unwrap().others
+						: [];
 				individualExposure.forEach(({ who }, validatorIndex): void => {
 					const nominatorId = who.toString();
 

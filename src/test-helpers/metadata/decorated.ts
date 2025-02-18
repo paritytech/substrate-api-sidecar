@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
 
 import { expandMetadata } from '@polkadot/types/metadata/decorate';
 
-import { kusamaRegistry } from '../registries/kusamaRegistry';
+import { kusamaRegistry, kusamaRegistryV1003003 } from '../registries/kusamaRegistry';
 import { polkadotRegistry } from '../registries/polkadotRegistry';
-import { kusamaMetadata, polkadotMetadata } from './metadata';
+import { kusamaMetadata, kusamaMetadataV1003003M, polkadotMetadata } from './metadata';
 
 /**
  * Decorated metadata of the kusamaRegistry (v2008).
@@ -29,3 +29,8 @@ export const decoratedKusamaMetadata = expandMetadata(kusamaRegistry, kusamaMeta
  * Decorated metadata of the polkadotRegistry (v16).
  */
 export const decoratedPolkadotMetadata = expandMetadata(polkadotRegistry, polkadotMetadata);
+
+/**
+ * Decorated metadata of the kusamaRegistry (v1003003).
+ */
+export const decoratedKusamaMetadataV1003003 = expandMetadata(kusamaRegistryV1003003, kusamaMetadataV1003003M);

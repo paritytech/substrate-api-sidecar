@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,43 +14,58 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
+import type { BlockHash, CallDryRunEffects, XcmDryRunApiError } from '@polkadot/types/interfaces';
+import type { Result } from '@polkadot/types-codec';
 
 import { ITransactionDryRun, TransactionResultType, ValidityErrorType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
+export type SignedOriginCaller = {
+	System: {
+		Signed: string;
+	};
+};
+
 export class TransactionDryRunService extends AbstractService {
-	async dryRuntExtrinsic(hash: BlockHash, transaction: string): Promise<ITransactionDryRun> {
+	async dryRuntExtrinsic(
+		senderAddress: string,
+		transaction: `0x${string}`,
+		hash?: BlockHash,
+	): Promise<ITransactionDryRun> {
 		const { api } = this;
 
 		try {
-			const [applyExtrinsicResult, { number }] = await Promise.all([
-				api.rpc.system.dryRun(transaction, hash),
-				api.rpc.chain.getHeader(hash),
+			const originCaller: SignedOriginCaller = {
+				System: {
+					Signed: senderAddress,
+				},
+			};
+
+			const [dryRunResponse, { number }] = await Promise.all([
+				api.call.dryRunApi.dryRunCall(originCaller, transaction),
+				hash ? api.rpc.chain.getHeader(hash) : { number: null },
 			]);
 
-			let dryRunResult;
-			if (applyExtrinsicResult.isOk) {
-				dryRunResult = {
-					resultType: TransactionResultType.DispatchOutcome,
-					result: applyExtrinsicResult.asOk,
-				};
-			} else {
-				const { asErr } = applyExtrinsicResult;
-				dryRunResult = {
-					resultType: TransactionResultType.TransactionValidityError,
-					result: asErr.isInvalid ? asErr.asInvalid : asErr.asUnknown,
-					validityErrorType: asErr.isInvalid ? ValidityErrorType.Invalid : ValidityErrorType.Unknown,
-				};
-			}
+			const response = dryRunResponse as Result<CallDryRunEffects, XcmDryRunApiError>;
 
 			return {
 				at: {
-					hash,
-					height: number.unwrap().toString(10),
+					hash: hash ? hash : '',
+					height: number ? number.unwrap().toString(10) : '0',
 				},
-				dryRunResult,
+				result: {
+					resultType: response.isOk
+						? response.asOk.executionResult.isOk
+							? TransactionResultType.DispatchOutcome
+							: TransactionResultType.DispatchError
+						: ValidityErrorType.Invalid,
+					result: response.isOk
+						? response.asOk.executionResult.isOk
+							? response.asOk.executionResult.asOk
+							: response.asOk.executionResult.asErr
+						: response.asErr,
+				},
 			};
 		} catch (err) {
 			const { cause, stack } = extractCauseAndStack(err);

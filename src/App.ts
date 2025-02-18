@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import express from 'express';
-import { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
+import express, { Application, ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
 import { Server } from 'http';
 
 import packageJson from '../package.json';
@@ -41,6 +40,10 @@ export default class App {
 	 */
 	constructor({ controllers, preMiddleware, postMiddleware, host, port }: IAppConfiguration) {
 		this.app = express();
+		// Change needed because of upgrading Express v4 to v5
+		// Set query parser to 'extended' to correctly handle [] in query params
+		// Ref: https://github.com/expressjs/express/issues/5060
+		this.app.set('query parser', 'extended');
 		this.port = port;
 		this.host = host;
 
@@ -97,15 +100,15 @@ export default class App {
 	 */
 	private initRoot() {
 		// Set up a root route
-		this.app.get('/', (_req: Request, res: Response) =>
+		this.app.get('/', (_req: Request, res: Response) => {
 			res.send({
 				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
 				github: 'https://github.com/paritytech/substrate-api-sidecar',
 				version: packageJson.version,
 				listen: `${this.host}:${this.port}`,
 				routes: this.getRoutes(),
-			}),
-		);
+			});
+		});
 	}
 
 	/**
@@ -114,7 +117,7 @@ export default class App {
 	 * checked that this works as expected whenever updating Express dependencies.
 	 */
 	private getRoutes() {
-		return (this.app._router as IRegisteredRoutes).stack.reduce(
+		return (this.app.router as unknown as IRegisteredRoutes).stack.reduce(
 			(acc, middleware) => {
 				if (middleware.route) {
 					// This middleware is a route mounted directly on the app (i.e. app.get('/test', fn)

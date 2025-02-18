@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -67,12 +67,10 @@ export class AccountsPoolAssetsService extends AbstractService {
 		assets: number[],
 	): Promise<IAccountPoolAssetsBalances> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
+		const [historicApi, { number }] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
 
 		// Check if this runtime has the PoolAssets pallet
 		this.checkPoolAssetsError(historicApi);
-
-		const { number } = await api.rpc.chain.getHeader(hash);
 
 		let response;
 		if (assets.length === 0) {
@@ -203,7 +201,7 @@ export class AccountsPoolAssetsService extends AbstractService {
 
 				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
 				// of `sufficient`.
-				if (assetBalance['isSufficient'] as bool) {
+				if ((assetBalance as unknown as LegacyPalletPoolAssetsAssetBalance).isSufficient) {
 					const balanceProps = assetBalance as unknown as LegacyPalletPoolAssetsAssetBalance;
 
 					return {

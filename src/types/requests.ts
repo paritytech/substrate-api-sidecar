@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -16,12 +16,15 @@
 
 import { RequestHandler } from 'express';
 import { ParamsDictionary, Query } from 'express-serve-static-core';
+import type client from 'prom-client';
 
 /**
  * Body for RequestHandlerTx. In other words, the body of a POST route that sends an encoded transaction.
  */
 export interface ITx {
-	tx: string;
+	tx: `0x${string}`;
+	senderAddress: string;
+	at: string;
 }
 
 /**
@@ -96,3 +99,22 @@ export interface IConvertQueryParams extends Query {
 	prefix: string;
 	publicKey: string;
 }
+
+export interface IMetrics {
+	metrics?: {
+		registry: Record<string, client.Metric>;
+		timer: () => number;
+	};
+}
+
+export interface IBlockQueryParams extends Query {
+	finalized?: string;
+	eventDocs?: string;
+	extrinsicDocs?: string;
+	noFees?: string;
+	decodedXcmMsgs?: string;
+	paraId?: string;
+}
+
+export interface IRequestHandlerWithMetrics<T = unknown, P = unknown>
+	extends RequestHandler<T, unknown, unknown, P, IMetrics> {}

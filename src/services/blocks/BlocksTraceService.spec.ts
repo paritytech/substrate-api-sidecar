@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 import { ApiDecoration } from '@polkadot/api/types';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { kusamRegistryV2025 } from '../../test-helpers/registries';
+import { kusamaRegistryV2025 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { keyNames } from '../test-helpers/mock/data/getKeyNames';
 import operationsResponse from '../test-helpers/responses/blocks/operations.json';
@@ -35,7 +35,7 @@ const tempGetKeyNames = Trace['getKeyNames'].bind(Trace);
  * HistoricApi used in order to create the correct types per the blocks runtime.
  */
 const mockHistoricApi = {
-	registry: kusamRegistryV2025,
+	registry: kusamaRegistryV2025,
 } as unknown as ApiDecoration<'promise'>;
 
 /**

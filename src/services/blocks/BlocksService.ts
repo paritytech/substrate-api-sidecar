@@ -1,4 +1,4 @@
-// Copyright 2017-2024 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -41,7 +41,6 @@ import { blake2AsU8a } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
-import type { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import {
@@ -96,7 +95,6 @@ export class BlocksService extends AbstractService {
 	constructor(
 		api: ApiPromise,
 		private minCalcFeeRuntime: IOption<number>,
-		private blockStore: LRUCache<string, IBlock>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
 		super(api);
@@ -123,24 +121,6 @@ export class BlocksService extends AbstractService {
 		}: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
-
-		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-		const cacheKey =
-			hash.toString() +
-			Number(eventDocs) +
-			Number(extrinsicDocs) +
-			Number(checkFinalized) +
-			Number(noFees) +
-			Number(checkDecodedXcm) +
-			Number(paraId);
-
-		// Before making any api calls check the cache if the queried block exists
-		const isBlockCached = this.blockStore.get(cacheKey);
-
-		if (isBlockCached && isBlockCached.finalized !== false) {
-			return isBlockCached;
-		}
-
 		const [{ block }, { specName, specVersion }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			api.rpc.state.getRuntimeVersion(hash),
@@ -195,6 +175,7 @@ export class BlocksService extends AbstractService {
 		}
 
 		const previousBlockHash = await this.fetchPreviousBlockHash(number);
+		const prevBlockHistoricApi = await api.at(previousBlockHash);
 		/**
 		 * Fee calculation logic. This runs the extrinsics concurrently.
 		 */
@@ -203,7 +184,17 @@ export class BlocksService extends AbstractService {
 		for (let idx = 0; idx < block.extrinsics.length; ++idx) {
 			feeTasks.push(
 				pQueue.run(async () => {
-					await this.resolveExtFees(extrinsics, block, idx, noFees, previousBlockHash, specVersion, specName);
+					await this.resolveExtFees(
+						extrinsics,
+						block,
+						idx,
+						noFees,
+						previousBlockHash,
+						specVersion,
+						specName,
+						// Inject historic api here or undefined if not available, should save at least two calls per extrinsic
+						prevBlockHistoricApi,
+					);
 				}),
 			);
 		}
@@ -212,6 +203,7 @@ export class BlocksService extends AbstractService {
 
 		await Promise.all(feeTasks);
 
+		feeTasks.length = 0;
 		const response = {
 			number,
 			hash,
@@ -226,10 +218,6 @@ export class BlocksService extends AbstractService {
 			finalized,
 			decodedXcmMsgs,
 		};
-
-		// Store the block in the cache
-		this.blockStore.set(cacheKey, response);
-
 		return response;
 	}
 
@@ -241,9 +229,9 @@ export class BlocksService extends AbstractService {
 		previousBlockHash: BlockHash,
 		specVersion: u32,
 		specName: Text,
+		historicApi?: ApiDecoration<'promise'>,
 	) {
 		const { api } = this;
-
 		if (noFees) {
 			extrinsics[idx].info = {};
 			return;
@@ -340,7 +328,7 @@ export class BlocksService extends AbstractService {
 			class: dispatchClass,
 			partialFee,
 			weight,
-		} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash);
+		} = await this.fetchQueryInfo(block.extrinsics[idx], previousBlockHash, historicApi);
 		const versionedWeight = (weight as Weight).refTime ? (weight as Weight).refTime.unwrap() : (weight as WeightV1);
 
 		let finalPartialFee = partialFee.toString(),
@@ -361,6 +349,7 @@ export class BlocksService extends AbstractService {
 					previousBlockHash,
 					weightInfo.weight,
 					versionedWeight.toString(),
+					historicApi,
 				);
 
 				dispatchFeeType = 'postDispatch';
@@ -371,6 +360,7 @@ export class BlocksService extends AbstractService {
 						previousBlockHash,
 						weightInfo.weight,
 						versionedWeight.toString(),
+						historicApi,
 					);
 					dispatchFeeType = 'postDispatch';
 					this.hasQueryFeeApi.setRegisterWithCall(specVersion.toNumber());
@@ -402,9 +392,11 @@ export class BlocksService extends AbstractService {
 		previousBlockHash: BlockHash,
 		extrinsicSuccessWeight: Weight,
 		estWeight: string,
+		historicApi?: ApiDecoration<'promise'>,
 	): Promise<string> {
 		const { api } = this;
-		const apiAt = await api.at(previousBlockHash);
+		// Get injected historicApi for previousBlockHash or create a new one
+		const apiAt = historicApi || (await api.at(previousBlockHash));
 
 		let inclusionFee;
 		if (apiAt.call.transactionPaymentApi.queryFeeDetails) {
@@ -430,9 +422,11 @@ export class BlocksService extends AbstractService {
 	private async fetchQueryInfo(
 		ext: GenericExtrinsic,
 		previousBlockHash: BlockHash,
+		historicApi?: ApiDecoration<'promise'>,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
 		const { api } = this;
-		const apiAt = await api.at(previousBlockHash);
+		// Get injected historicApi for previousBlockHash or create a new one
+		const apiAt = historicApi || (await api.at(previousBlockHash));
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
 			const u8a = ext.toU8a();
 			return apiAt.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
@@ -444,7 +438,7 @@ export class BlocksService extends AbstractService {
 
 	/**
 	 * Retrieve the blockHash for the previous block to the one getting queried.
-	 * If the block is the geneisis hash it will return the same blockHash.
+	 * If the block is the genesis hash it will return the same blockHash.
 	 *
 	 * @param blockNumber The blockId being queried
 	 */
@@ -596,7 +590,7 @@ export class BlocksService extends AbstractService {
 					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
 					const extrinsic = extrinsics[extrinsicIdx];
 
-					if (!extrinsic) {
+					if (!extrinsic && event.section != 'multiBlockMigrations') {
 						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`);
 					}
 
@@ -616,7 +610,9 @@ export class BlocksService extends AbstractService {
 						}
 					}
 
-					extrinsic.events.push(sanitizedEvent);
+					if (extrinsic) {
+						extrinsic.events.push(sanitizedEvent);
+					}
 				} else if (phase.isFinalization) {
 					onFinalize.events.push(sanitizedEvent);
 				} else if (phase.isInitialization) {
@@ -682,7 +678,7 @@ export class BlocksService extends AbstractService {
 	 * @param registry type registry of the block the call belongs to
 	 */
 	private parseGenericCall(genericCall: GenericCall, registry: Registry): ISanitizedCall {
-		const newArgs = {};
+		const newArgs: Record<string, unknown> = {};
 
 		// Pull out the struct of arguments to this call
 		const callArgs = genericCall.get('args') as Struct;
@@ -795,7 +791,7 @@ export class BlocksService extends AbstractService {
 	}
 
 	/**
-	 * Fetch a block with raw extrinics values.
+	 * Fetch a block with raw extrinsics values.
 	 *
 	 * @param hash `BlockHash` of the block to fetch.
 	 */

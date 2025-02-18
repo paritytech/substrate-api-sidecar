@@ -21,11 +21,6 @@
 
 <br /><br />
 
-## Note
-
-v1.0.0 was released on 2020-10-23. This major release introduced several renamed endpoints as breaking changes. It is important that users complete the transition to the new endpoints ASAP so they are ready for any subsequent emergency updates. Please visit the [MIGRATION_GUIDE](./guides/MIGRATION_GUIDE.md) to
-learn more.
-
 ## Prerequisites
 
 ### <= v15.0.0
@@ -169,11 +164,20 @@ For more information on our configuration manager visit its readme [here](https:
 - `SAS_EXPRESS_BIND_HOST`: address on which the server will be listening, defaults to `127.0.0.1`.
 - `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
 - `SAS_EXPRESS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
+- `SAS_EXPRESS_MAX_BODY`: Set the size of request body payload, defaults to `100kb`
 
 ### Substrate node
 
 - `SAS_SUBSTRATE_URL`: URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`. Accepts both a websocket, and http URL.
+
+### Metrics Server
+
+- `SAS_METRICS_ENABLED`: Boolean to enable the metrics server instance with Prometheus (server metrics) and Loki (logging) connections. Defaults to false.
+- `SAS_METRICS_PROM_HOST`: The host of the prometheus server used to listen to metrics emitted, defaults to `127.0.0.1`.
+- `SAS_METRICS_PROM_PORT`: The port of the prometheus server, defaults to `9100`.
+- `SAS_METRICS_LOKI_HOST`: The host of the loki server used to pull the logs, defaults to `127.0.0.1`.
+- `SAS_METRICS_LOKI_PORT`: The port of the loki server, defaults to `3100`
 
 #### Custom substrate types
 
@@ -244,24 +248,44 @@ file you can `symlink` it with `.env.test`. For example you could run
 commands `ln` and `unlink` for more info.)
 
 ### Prometheus server
-Prometheus metrics can be enabled by running sidecar with the following flag :
 
-```bash
-yarn start --prometheus
-```
+Prometheus metrics can be enabled by running sidecar with the following env configuration: `SAS_METRICS_ENABLED`=true
 
-You can also define a custom port by running :
-
-```bash
-yarn start --prometheus --prometheus-port=<YOUR_CUSTOM_PORT>
-```
+You can also expand the metrics tracking capabilities to include query params by adding to the env configuration: `SAS_METRICS_INCLUDE_QUERYPARAMS`=true
 
 The metrics endpoint can then be accessed :
 - on the default port : `http://127.0.0.1:9100/metrics` or
 - on your custom port if you defined one : `http://127.0.0.1:<YOUR_CUSTOM_PORT>/metrics`
 
-That way you will have access to the default prometheus metrics and one extra custom metric called `sas_http_errors` (of type counter). This counter is increased by 1 every time an http error has occured in sidecar.
+A JSON format response is available at `http://127.0.0.1:9100/metrics.json`.
 
+That way you will have access to the default prometheus node instance metrics and the following metrics will be emitted for each route:
+
+- `sas_http_request_error`: type counter and tracks http errors occuring in sidecar
+- `sas_http_request_success`: type counter and tracks successfull http requests
+- `sas_http_requests`: type counter and tracks all http requests
+- `sas_request_duration_seconds`: type histogram and tracks the latency of the requests
+- `sas_response_size_bytes_seconds`: type histogram and tracks the response size of the requests
+- `sas_response_size_latency_ratio_seconds`: type histogram and tracks the response bytes per second of the requests
+
+The blocks controller also includes the following route-specific metrics:
+
+- `sas_extrinsics_in_request`: type histogram and tracks the number of extrinsics returned in the request when a range of blocks is queried
+- `sas_extrinsics_per_second`: type histogram and tracks the returned extrinics per second
+- `sas_extrinsics_per_block`: type histogram and tracks the returned extrinsics per block
+- `sas_seconds_per_block`: type histogram and tracks the request time per block
+
+The metrics registry is injected in the Response object when the `SAS_METRICS_ENABLED` flag is set to `true` in the `.env` file, allowing to extend the controller based metrics to any given controller from within the controller functions.
+
+To successfully run and access the metrics and logs in Grafana (for example) the following are required:
+
+- prometheus server (info [here](https://prometheus.io/docs/prometheus/latest/getting_started/))
+- loki server and promtail (info [here](https://grafana.com/docs/loki/latest/setup/install/))
+
+For mac users using homebrew:
+```bash
+brew install prometheus loki promtail
+```
 
 ## Debugging fee and staking payout calculations
 
@@ -352,6 +376,9 @@ All the commits in this repo follow the [Conventional Commits spec](https://www.
 
 1. Follow [RELEASE.md](./RELEASE.md) next if you're working through a full sidecar release. This will involve creating a separate PR where the changelog and versions are bumped.
 
+### Maintenance Guide
+A more complete list of the maintainer's tasks can be found in the [MAINTENANCE.md](./guides/MAINTENANCE.md) guide.
+
 ## Hardware requirements
 
 ### Disk Space
@@ -385,3 +412,5 @@ Intel Cascade Lake
 Hard-Disk:
 500GB
 ```
+
+Benchmarks are automatically published in Github pages under the url https://paritytech.github.io/substrate-api-sidecar/dev/bench/. The data in the graphs are updated with every new commit/push in the `master` branch (refer to the [benchmark.yml](https://github.com/paritytech/substrate-api-sidecar/blob/master/.github/workflows/benchmark.yml) for more details).

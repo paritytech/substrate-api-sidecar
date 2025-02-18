@@ -1,4 +1,4 @@
-// Copyright 2017-2022 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress } from '../../middleware';
+import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -31,6 +31,12 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional) `includeClaimedRewards`: Controls whether or not the `claimedRewards`
+ * 		field is included in the response. Defaults to `true`.
+ * 		If set to `false`:
+ * 		- the field `claimedRewards` will be omitted from the response and
+ * 		- all internal calculations for claimed rewards in `AccountsStakingInfoService`
+ * 		  will be skipped, potentially speeding up the response time.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -70,7 +76,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress);
+		this.router.use(this.path, validateAddress, validateBoolean(['includeClaimedRewards']));
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountStakingInfo]]);
 	}
@@ -82,11 +88,14 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at } },
+		{ params: { address }, query: { at, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-
-		AccountsStakingInfoController.sanitizedSend(res, await this.service.fetchAccountStakingInfo(hash, address));
+		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
+		AccountsStakingInfoController.sanitizedSend(
+			res,
+			await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
+		);
 	};
 }

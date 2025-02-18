@@ -1,4 +1,4 @@
-// Copyright 2017-2023 Parity Technologies (UK) Ltd.
+// Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -49,11 +49,12 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 			palletMeta,
 			dispatchableItemId,
 			metadataFieldType,
-		) as FunctionMetadataLatest;
+		) as unknown as [string, FunctionMetadataLatest];
 
 		let palletDispatchableMetadata: FunctionMetadataLatest | undefined;
 		if (metadata) {
-			palletDispatchableMetadata = (dispatchableItemMetadata[1] as SubmittableExtrinsicFunction<ApiTypes>).meta;
+			palletDispatchableMetadata = (dispatchableItemMetadata[1] as unknown as SubmittableExtrinsicFunction<ApiTypes>)
+				.meta;
 		}
 
 		const { number } = await this.api.rpc.chain.getHeader(hash);
