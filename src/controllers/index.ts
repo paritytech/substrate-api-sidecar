@@ -17,6 +17,7 @@
 import {
 	AccountsAssets,
 	AccountsBalanceInfo,
+	AccountsCompare,
 	AccountsConvert,
 	AccountsPoolAssets,
 	AccountsProxyInfo,
@@ -58,6 +59,7 @@ export const controllers = {
 	BlocksRawExtrinsics,
 	AccountsAssets,
 	AccountsBalanceInfo,
+	AccountsCompare,
 	AccountsConvert,
 	AccountsPoolAssets,
 	AccountsProxyInfo,

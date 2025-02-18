@@ -38,6 +38,26 @@ export const validateAddressMiddleware: RequestHandler = (req, _res, next) => {
 };
 
 /**
+ * Express Middleware to validate that an `:address` given as a query parameter is properly formatted.
+ */
+export const validateAddressQueryParamMiddleware: RequestHandler = (req, _res, next) => {
+	// Check that the addresses are valid. Same check as in the `validateAddressMiddleware` but for query parameters.
+	const addressQueryParams = Object.keys(req.query);
+	const validAddressParams = addressQueryParams.filter((key) => /^address\d+$/.test(key));
+	for (const param of validAddressParams) {
+		const address = req.query[param];
+		if (typeof address === 'string') {
+			const [isValid, error] = checkAddress(address);
+			if (!isValid && error) {
+				return next(new BadRequest(`Invalid ${param}: ${error}`));
+			}
+		}
+	}
+
+	return next();
+};
+
+/**
  * Verify that an address is a valid substrate address.
  *
  * Note: this is very similar '@polkadot/util-crypto/address/checkAddress,

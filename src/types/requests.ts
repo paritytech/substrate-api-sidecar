@@ -94,6 +94,12 @@ export interface IPalletsStorageQueryParam extends Query {
 	metadata: string;
 }
 
+// Only query parameters that start with the keyword "address"
+// followed by a number are allowed.
+export interface ICompareQueryParams extends Query {
+	[key: `address${number}`]: string;
+}
+
 export interface IConvertQueryParams extends Query {
 	scheme: string;
 	prefix: string;
