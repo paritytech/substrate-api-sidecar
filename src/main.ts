@@ -26,7 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import { getControllersForSpec } from './chains-config';
+import { getControllersByPallets, getControllersForSpec } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
@@ -80,10 +80,17 @@ async function main() {
 		metricsApp.listen();
 	}
 
-	// Create our App
+	const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+		(p) => p.name as string,
+	);
+	console.log('config.EXPRESS.CONTROLLERS_CONFIG', config.EXPRESS.CONTROLLERS_CONFIG);
+	const controllers = config.EXPRESS.CONTROLLERS_CONFIG
+		? getControllersForSpec(api, specName.toString())
+		: getControllersByPallets(pallets, api, specName.toString());
+
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllersForSpec(api, specName.toString()),
+		controllers: controllers,
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,

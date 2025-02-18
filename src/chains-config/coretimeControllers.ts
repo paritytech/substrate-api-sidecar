@@ -22,23 +22,11 @@ import { initLRUCache, QueryFeeDetailsCache } from './cache';
  */
 export const coretimeControllers: ControllerConfig = {
 	controllers: [
-		'AccountsBalanceInfo',
-		'AccountsConvert',
-		'AccountsProxyInfo',
 		'Blocks',
 		'BlocksExtrinsics',
-		'BlocksTrace',
 		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeVersion',
-		'PalletsConsts',
-		'PalletsErrors',
-		'PalletsEvents',
-		'PalletsNominationPools',
-		'PalletsOnGoingReferenda',
-		'PalletsStakingProgress',
-		'PalletsStakingValidators',
-		'PalletsStorage',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

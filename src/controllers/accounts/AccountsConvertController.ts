@@ -24,6 +24,8 @@ import { IAddressParam, IConvertQueryParams } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class AccountsConvertController extends AbstractController<AccountsConvertService> {
+	static controllerName = 'AccountsConvert';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/convert', new AccountsConvertService(api));
 		this.initRoutes();

@@ -29,6 +29,8 @@ import AbstractController from '../AbstractController';
  * - `chain`: Node's chain name.
  */
 export default class NodeVersionController extends AbstractController<NodeVersionService> {
+	static controllerName = 'NodeVersion';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/node/version', new NodeVersionService(api));
 		this.initRoutes();

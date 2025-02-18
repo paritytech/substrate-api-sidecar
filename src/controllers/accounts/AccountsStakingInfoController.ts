@@ -70,6 +70,13 @@ import AbstractController from '../AbstractController';
  * - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
  */
 export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
+	static controllerName = 'AccountsStakingInfo';
+	static requiredPallets = [
+		['Staking', 'System'],
+		['ParachainStaking', 'ParachainSystem'],
+		['ParachainStaking', 'System'],
+		['Staking', 'ParachainSystem'],
+	];
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
 		this.initRoutes();

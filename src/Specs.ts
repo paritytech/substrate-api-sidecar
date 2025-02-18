@@ -95,6 +95,19 @@ export class Specs {
 				type: 'string',
 			}),
 		);
+
+		this._specs.appendSpec(
+			MODULES.EXPRESS,
+			this._specs.getSpec(
+				CONFIG.CONTROLLERS_CONFIG,
+				'Use the controllers from the chain configuration or use controllers injected from pallets definitions',
+				{
+					default: 'false',
+					type: 'boolean',
+					regexp: /^true|false$/,
+				},
+			),
+		);
 	}
 
 	/**

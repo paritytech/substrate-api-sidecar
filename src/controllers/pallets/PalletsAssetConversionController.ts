@@ -21,6 +21,8 @@ import { PalletsAssetConversionService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsAssetConversionController extends AbstractController<PalletsAssetConversionService> {
+	static controllerName = 'PalletsAssetConversion';
+	static requiredPallets = [['AssetConversion']];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/asset-conversion', new PalletsAssetConversionService(api));
 		this.initRoutes();

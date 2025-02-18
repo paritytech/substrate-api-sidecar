@@ -48,7 +48,7 @@ import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
 
-const specToControllerMap: { [x: string]: ControllerConfig } = {
+export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
 	polymesh: polymeshControllers,
@@ -115,3 +115,22 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
 }
+
+/**
+ * Return an array of instantiated controller instances based off of a `specName`.
+ * @param pallets pallets available to define controllers
+ * @param api ApiPromise to inject into controllers
+ * @param specName specName of chain to get options
+ */
+
+export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
+	const controllersSet: AbstractController<AbstractService>[] = [];
+	const config = specToControllerMap[specName]?.options || specToControllerMap.defaultControllers.options;
+	Object.values(controllers).forEach((controller) => {
+		if (controller.canInjectByPallets(pallets)) {
+			controllersSet.push(new controller(api, config));
+		}
+	});
+
+	return controllersSet;
+};
