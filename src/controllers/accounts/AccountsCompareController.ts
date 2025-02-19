@@ -34,41 +34,24 @@ export default class AccountsCompareController extends AbstractController<Accoun
 		this.safeMountAsyncGetHandlers([['', this.accountCompare]]);
 	}
 
-	private accountCompare: RequestHandler<unknown, unknown, ICompareQueryParams> = ({ query }, res) => {
-		const addressQueryParams = Object.keys(query);
-
-		// Check that the query parameters are named correctly.
-		const invalidParams = addressQueryParams.filter((key) => !/^address\d+$/.test(key));
-		if (invalidParams.length > 0) {
+	private accountCompare: RequestHandler<unknown, unknown, ICompareQueryParams> = ({ query: { addresses } }, res) => {
+		if (!Array.isArray(addresses)) {
 			throw new BadRequest(
-				`Invalid query parameter found: ${invalidParams.join(', ')}. Address parameters should be provided as query parameters with names such as address1, address2, address3, and so on.`,
+				`Please provide the addresses as an array query parameter. You can use one of these formats: '?addresses=...&addresses=...' or '?addresses[]=...&addresses[]=...'`,
 			);
 		}
 
+		const addressesArray = Array.isArray(addresses) ? (addresses as string[]) : [];
+
 		// Check that at least two addresses are provided.
-		if (addressQueryParams.length === 0 || addressQueryParams.length === 1) {
-			throw new BadRequest(
-				`At least two addresses are required for comparison. Address parameters should be provided as query parameters with names such as address1, address2, address3, and so on.`,
-			);
+		if (addressesArray.length <= 1) {
+			throw new BadRequest(`At least two addresses are required for comparison.`);
 		}
 
 		// Check that the number of addresses is less than 30.
-		if (addressQueryParams.length > 30) {
-			throw new BadRequest(
-				`Please limit the amount of address parameters to 30. Address parameters should be provided as query parameters with names such as address1, address2, address3, and so on.`,
-			);
+		if (addressesArray.length > 30) {
+			throw new BadRequest(`Please limit the amount of address parameters to 30.`);
 		}
-
-		// Check for duplicate names of query params. If there is an array in the query params, it means that the user has provided multiple values for the same key (duplicate name of a query parameter).
-		const hasArrays = Object.values(query).some((value) => Array.isArray(value));
-		if (hasArrays) {
-			const duplicateQueryParam = Object.keys(query).filter((key) => Array.isArray(query[key]));
-			throw new BadRequest(
-				`Duplicate query parameters found: ${duplicateQueryParam.join(', ')}. Address parameters should be provided as query parameters with names such as address1, address2, address3, and so on.`,
-			);
-		}
-
-		const addresses = Object.keys(query).map((key) => query[key]);
 
 		AccountsCompareController.sanitizedSend(res, this.service.accountCompare(addresses as string[]));
 	};

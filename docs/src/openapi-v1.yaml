@@ -615,12 +615,16 @@ paths:
         Equality is determined by comparing the accountId/publicKey of each address.
       operationId: accountCompare
       parameters:
-      - name: address{n}
+      - name: addresses
         in: query
-        description: Compares SS58 addresses. Provide up to 30 addresses using the format `?address1=...&address2=...&address3=...`.
+        description: An array of SS58 addresses. Provide up to 30 addresses using one of these formats
+          '?addresses=...&addresses=...' or '?addresses[]=...&addresses[]=...'.
         required: true
         schema:
-          type: string
+          type: array
+          items:
+            type: string
+          description: An array of SS58 addresses.
       responses:
         "200":
           description: successfully compared at least two SS58 addresses.
