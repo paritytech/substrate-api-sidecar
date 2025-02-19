@@ -165,7 +165,7 @@ For more information on our configuration manager visit its readme [here](https:
 - `SAS_EXPRESS_PORT`: port on which the server will be listening, defaults to `8080`.
 - `SAS_EXPRESS_KEEP_ALIVE_TIMEOUT`: Set the `keepAliveTimeout` in express.
 - `SAS_EXPRESS_MAX_BODY`: Set the size of request body payload, defaults to `100kb`
-- `SAS_EXPRESS_CONTROLLERS_CONFIG`: Either use the controllers defined in the chains configuration files or use controllers injected from the pallets defined in the metadata.
+- `SAS_EXPRESS_INJECTED_CONTROLLERS`: Either use the controllers defined in the chains configuration files or use controllers injected from the pallets defined in the metadata, defaults to `false`.
 
 ### Substrate node
 

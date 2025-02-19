@@ -99,7 +99,7 @@ export class Specs {
 		this._specs.appendSpec(
 			MODULES.EXPRESS,
 			this._specs.getSpec(
-				CONFIG.CONTROLLERS_CONFIG,
+				CONFIG.INJECTED_CONTROLLERS,
 				'Use the controllers from the chain configuration or use controllers injected from pallets definitions',
 				{
 					default: 'false',

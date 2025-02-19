@@ -80,13 +80,13 @@ async function main() {
 		metricsApp.listen();
 	}
 
-	const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
-		(p) => p.name as string,
-	);
-	console.log('config.EXPRESS.CONTROLLERS_CONFIG', config.EXPRESS.CONTROLLERS_CONFIG);
-	const controllers = config.EXPRESS.CONTROLLERS_CONFIG
+	const controllers = !config.EXPRESS.INJECTED_CONTROLLERS
 		? getControllersForSpec(api, specName.toString())
-		: getControllersByPallets(pallets, api, specName.toString());
+		: getControllersByPallets(
+				(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
+				api,
+				specName.toString(),
+			);
 
 	const app = new App({
 		preMiddleware: preMiddlewares,
