@@ -143,7 +143,6 @@ export const getControllers = (
 	specName: string,
 ): AbstractController<AbstractService>[] => {
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
-		console.log('here');
 		return getControllersByPallets(
 			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
 			api,
