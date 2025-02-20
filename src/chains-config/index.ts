@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
@@ -125,7 +126,8 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 
 export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
-	const config = specToControllerMap?.[specName]?.options || specToControllerMap?.defaultControllers?.options;
+	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
+
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
 			controllersSet.push(new controller(api, config));
@@ -133,4 +135,21 @@ export const getControllersByPallets = (pallets: string[], api: ApiPromise, spec
 	});
 
 	return controllersSet;
+};
+
+export const getControllers = (
+	api: ApiPromise,
+	config: ISidecarConfig,
+	specName: string,
+): AbstractController<AbstractService>[] => {
+	if (config.EXPRESS.INJECTED_CONTROLLERS) {
+		console.log('here');
+		return getControllersByPallets(
+			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
+			api,
+			specName,
+		);
+	} else {
+		return getControllersForSpec(api, specName);
+	}
 };

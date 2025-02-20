@@ -1,8 +1,9 @@
 // write tests that get the metadata from an rpc and then inject the metadata into the controller
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ISidecarConfig } from 'src/types/sidecar-config';
 
-import { specToControllerMap } from '../chains-config';
+import { getControllers, specToControllerMap } from '../chains-config';
 import { defaultControllers } from '../chains-config/defaultControllers';
 import { controllers } from '.';
 
@@ -12,6 +13,42 @@ import { controllers } from '.';
  * @param api ApiPromise to inject into controllers
  * @param implName
  */
+
+const mockSidecarConfig: ISidecarConfig = {
+	EXPRESS: {
+		HOST: '',
+		PORT: 3000,
+		KEEP_ALIVE_TIMEOUT: 5000,
+		MAX_BODY: '100kb',
+		INJECTED_CONTROLLERS: false,
+	},
+	SUBSTRATE: {
+		URL: '',
+		TYPES_BUNDLE: '',
+		TYPES_CHAIN: '',
+		TYPES_SPEC: '',
+		TYPES: '',
+		CACHE_CAPACITY: 1000,
+	},
+	LOG: {
+		LEVEL: 'info',
+		JSON: false,
+		FILTER_RPC: false,
+		STRIP_ANSI: false,
+		WRITE: false,
+		WRITE_PATH: '',
+		WRITE_MAX_FILE_SIZE: 0,
+		WRITE_MAX_FILES: 0,
+	},
+	METRICS: {
+		ENABLED: false,
+		PROM_HOST: '',
+		PROM_PORT: 0,
+		LOKI_HOST: '',
+		LOKI_PORT: 0,
+		INCLUDE_QUERYPARAMS: false,
+	},
+};
 
 const chainsToNode: Record<string, string> = {
 	'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
@@ -58,4 +95,44 @@ describe('controllerInjection', () => {
 			expect(filtered).toHaveLength(0);
 		});
 	}
+
+	it('should inject default controllers when pallets are not checked (injected-controllers: false) and a custom config is not available', async () => {
+		const wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
+		const api = await ApiPromise.create({ provider: wsProvider });
+		try {
+			await api.isReady;
+		} finally {
+			await api?.disconnect(); // Close WebSocket connection
+		}
+
+		const controllers = getControllers(
+			api,
+			{
+				...mockSidecarConfig,
+				EXPRESS: {
+					...mockSidecarConfig.EXPRESS,
+					INJECTED_CONTROLLERS: true,
+				},
+			},
+			'kusama_go_default',
+		);
+
+		expect(controllers).toBeDefined();
+		expect(controllers).not.toHaveLength(0);
+
+		const controllersDefault = getControllers(
+			api,
+			{
+				...mockSidecarConfig,
+				EXPRESS: {
+					...mockSidecarConfig.EXPRESS,
+					INJECTED_CONTROLLERS: false,
+				},
+			},
+			'kusama_go_default',
+		);
+
+		expect(controllersDefault).toBeDefined();
+		expect(controllersDefault).toHaveLength(defaultControllers.controllers.length);
+	});
 });
