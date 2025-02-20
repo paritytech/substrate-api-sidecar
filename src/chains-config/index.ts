@@ -125,7 +125,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 
 export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
-	const config = specToControllerMap[specName]?.options || specToControllerMap.defaultControllers.options;
+	const config = specToControllerMap?.[specName]?.options || specToControllerMap?.defaultControllers?.options;
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
 			controllersSet.push(new controller(api, config));
