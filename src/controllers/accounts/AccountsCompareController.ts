@@ -35,24 +35,15 @@ export default class AccountsCompareController extends AbstractController<Accoun
 	}
 
 	private accountCompare: RequestHandler<unknown, unknown, ICompareQueryParams> = ({ query: { addresses } }, res) => {
-		if (!Array.isArray(addresses)) {
-			throw new BadRequest(
-				`Please provide the addresses as an array query parameter. You can use one of these formats: '?addresses=...&addresses=...' or '?addresses[]=...&addresses[]=...'`,
-			);
-		}
-
-		const addressesArray = Array.isArray(addresses) ? (addresses as string[]) : [];
-
-		// Check that at least two addresses are provided.
-		if (addressesArray.length <= 1) {
-			throw new BadRequest(`At least two addresses are required for comparison.`);
-		}
+		const addressesArray = Array.isArray(addresses)
+			? (addresses as string[] | string)
+			: (addresses as string).split(',');
 
 		// Check that the number of addresses is less than 30.
 		if (addressesArray.length > 30) {
 			throw new BadRequest(`Please limit the amount of address parameters to 30.`);
 		}
 
-		AccountsCompareController.sanitizedSend(res, this.service.accountCompare(addresses as string[]));
+		AccountsCompareController.sanitizedSend(res, this.service.accountCompare(addressesArray as string[]));
 	};
 }

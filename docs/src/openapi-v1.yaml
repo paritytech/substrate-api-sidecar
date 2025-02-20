@@ -617,8 +617,9 @@ paths:
       parameters:
       - name: addresses
         in: query
-        description: An array of SS58 addresses. Provide up to 30 addresses using one of these formats
-          '?addresses=...&addresses=...' or '?addresses[]=...&addresses[]=...'.
+        description: An array or a comma separated string of SS58 addresses. Provide up to 30 addresses
+          using one of these formats `?addresses=...&addresses=...` or `?addresses[]=...&addresses[]=...`
+          or `?addresses=...,...`.
         required: true
         schema:
           type: array
@@ -632,7 +633,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountCompare'
-              responses:
         "400":
           description: Invalid Address
           content:
