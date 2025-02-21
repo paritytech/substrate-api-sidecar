@@ -23,6 +23,7 @@ import { initLRUCache, QueryFeeDetailsCache } from './cache';
 export const westendControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsCompare',
 		'AccountsConvert',
 		'AccountsProxyInfo',
 		'AccountsStakingInfo',

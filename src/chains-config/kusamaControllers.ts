@@ -23,6 +23,7 @@ import { initLRUCache, QueryFeeDetailsCache } from './cache';
 export const kusamaControllers: ControllerConfig = {
 	controllers: [
 		'AccountsBalanceInfo',
+		'AccountsCompare',
 		'AccountsConvert',
 		'AccountsProxyInfo',
 		'AccountsStakingInfo',

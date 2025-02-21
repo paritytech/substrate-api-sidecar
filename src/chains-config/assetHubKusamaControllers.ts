@@ -24,6 +24,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 	controllers: [
 		'AccountsAssets',
 		'AccountsBalanceInfo',
+		'AccountsCompare',
 		'AccountsValidate',
 		'Blocks',
 		'BlocksExtrinsics',

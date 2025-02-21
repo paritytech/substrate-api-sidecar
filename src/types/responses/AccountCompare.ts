@@ -14,8 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export {
-	validateAddressMiddleware as validateAddress,
-	validateAddressQueryParamMiddleware as validateAddressQueryParam,
-} from './validateAddressMiddleware';
-export { validateBooleanMiddleware as validateBoolean } from './validateBooleanMiddleware';
+export interface IAddressDetails {
+	ss58Format: string;
+	ss58Prefix: number | null;
+	network: string | null;
+	publicKey: string | null;
+}
+
+export interface IAccountCompare {
+	areEqual: boolean;
+	addresses: IAddressDetails[];
+}
