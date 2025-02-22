@@ -24,8 +24,6 @@ export default class CoretimeChainController extends AbstractController<Coretime
 	static controllerName = 'CoretimeChain';
 	static requiredPallets = [
 		['Broker'],
-		['CoretimeAssignmentProvider', 'OnDemand', 'Paras'],
-		['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras'],
 	];
 	constructor(api: ApiPromise) {
 		super(api, '/coretime', new CoretimeService(api));
