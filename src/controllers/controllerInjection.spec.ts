@@ -85,7 +85,7 @@ describe('controllerInjection', () => {
 			// get controllers by pallets
 			Object.values(controllers).forEach((controller) => {
 				if (controller.canInjectByPallets(pallets)) {
-					injectedControllers.add(controller.controllerName);
+					injectedControllers.add(controller.controllerName || controller.name);
 				}
 			});
 			const controllersToInclude =

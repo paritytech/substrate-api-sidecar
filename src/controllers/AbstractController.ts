@@ -278,6 +278,9 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	static canInjectByPallets(availablePallets: string[]): boolean {
+		if (!this.requiredPallets) {
+			return true;
+		}
 		if (this.requiredPallets.length === 1) {
 			if (this.requiredPallets[0].length === 0) {
 				return true;
