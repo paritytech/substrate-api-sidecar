@@ -24,7 +24,6 @@ export default class CoretimeGenericController extends AbstractController<Coreti
 	static controllerName = 'CoretimeGeneric';
 	static requiredPallets = [
 		['Broker'],
-		['CoretimeAssignmentProvider', 'OnDemand', 'Paras'],
 		['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras'],
 	];
 	constructor(api: ApiPromise) {
