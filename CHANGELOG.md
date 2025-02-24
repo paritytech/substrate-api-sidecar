@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.0.0..v20.1.0) (2025-02-24)
+
+### Features
+
+- feat: add accounts/compare endpoint ([#1597](https://github.com/paritytech/substrate-api-sidecar/pull/1597)) ([191e68a](https://github.com/paritytech/substrate-api-sidecar/commit/191e68a9a857d92bcf6eca233e805e2bee85efac))
+- feat: add includeClaimedRewards query param in staking-info ([#1593](https://github.com/paritytech/substrate-api-sidecar/pull/1593)) ([ed8b04a](https://github.com/paritytech/substrate-api-sidecar/commit/ed8b04ae7c0455b868d5715bf8bc78f22120c3de))
+
+### Chores
+
+- chore(deps): update polkadot-js deps ([#1595](https://github.com/paritytech/substrate-api-sidecar/pull/1595)) ([6c97553](https://github.com/paritytech/substrate-api-sidecar/commit/6c97553423fddb7ce78711dfa659791d48943794))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.17.1 (Polkadot stable2412-1)
+- Kusama v1.17.1 (Polkadot stable2412-1)
+- Westend v1.17.1 (Polkadot stable2412-1)
+
+Tested against the following runtime releases:
+- Polkadot v1003004
+- Kusama v1004000
+- Westend v1017001
+
 ## [20.0.0](https://github.com/paritytech/substrate-api-sidecar/compare/v19.4.0..v20.0.0) (2025-02-10)
 
 ### Breaking Changes
