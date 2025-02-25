@@ -55,7 +55,7 @@ jobs:
           name: benchmarks
           path: artifacts
 
-      - name: Modify benches result for benhcmark action
+      - name: Modify benches result for benchmark action
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
       - name: Store benchmark result

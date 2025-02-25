@@ -38,6 +38,56 @@ export const validateAddressMiddleware: RequestHandler = (req, _res, next) => {
 };
 
 /**
+ * Express Middleware to validate that an `:address` given as a query parameter is properly formatted.
+ * It also does the following checks:
+ * 	- that the query parameter name is `addresses`.
+ * 	- that the query parameter is given as an array of addresses or a string of comma separated addresses.
+ * 	- validates all addresses found in the query parameter.
+ */
+export const validateAddressQueryParamMiddleware: RequestHandler = (req, _res, next) => {
+	// Check that the query parameter name is `addresses`.
+	const queryParamKey = Object.keys(req.query);
+	const validParamKey = queryParamKey.filter((key) => /^addresses$/.test(key));
+
+	if (validParamKey.length != queryParamKey.length || validParamKey.length === 0) {
+		return next(new BadRequest(`Please use the query parameter key 'addresses' to provide the addresses values.`));
+	}
+
+	// Check that the addresses are valid. Same check as in the `validateAddressMiddleware` but for query parameters.
+	for (const param of validParamKey) {
+		const addresses = req.query[param];
+		// Check if the address is a string of comma separated addresses or an array of addresses.
+		if (typeof addresses === 'string') {
+			const addressesArray = addresses.split(',');
+
+			if (addressesArray.length <= 1) {
+				return next(new BadRequest(`At least two addresses are required for comparison.`));
+			}
+
+			for (const address of addressesArray) {
+				const [isValid, error] = checkAddress(address);
+				if (!isValid && error) {
+					return next(new BadRequest(`Invalid ${param}: ${error}`));
+				}
+			}
+		} else if (Array.isArray(addresses)) {
+			if (addresses.length <= 1) {
+				return next(new BadRequest(`At least two addresses are required for comparison.`));
+			}
+
+			for (const address of addresses) {
+				const [isValid, error] = checkAddress(address as string);
+				if (!isValid && error) {
+					return next(new BadRequest(`Invalid ${param}: ${error}`));
+				}
+			}
+		}
+	}
+
+	return next();
+};
+
+/**
  * Verify that an address is a valid substrate address.
  *
  * Note: this is very similar '@polkadot/util-crypto/address/checkAddress,

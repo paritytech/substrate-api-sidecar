@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 19.4.0
+  version: 20.1.0
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -435,6 +435,15 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: includeClaimedRewards
+        in: query
+        description:  When set to `false`, the `claimedRewards` field is not included
+          in the response.
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
       responses:
         "200":
           description: successful operation
@@ -597,6 +606,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountValidation'
+  /accounts/compare:
+    get:
+      tags:
+      - accounts
+      summary: Compares up to 30 SS58 addresses.
+      description: Returns if the given addresses are equal or not, along with details of each address.
+        Equality is determined by comparing the accountId/publicKey of each address.
+      operationId: accountCompare
+      parameters:
+      - name: addresses
+        in: query
+        description: An array or a comma separated string of SS58 addresses. Provide up to 30 addresses
+          using one of these formats `?addresses=...&addresses=...` or `?addresses[]=...&addresses[]=...`
+          or `?addresses=...,...`.
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: An array of SS58 addresses.
+      responses:
+        "200":
+          description: successfully compared at least two SS58 addresses.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCompare'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks:
     get:
       tags:
@@ -2735,6 +2777,18 @@ components:
             locks
           items:
             $ref: '#/components/schemas/BalanceLock'
+    AccountCompare:
+      type: object
+      properties:
+        areEqual:
+          type: boolean
+          description: Whether the given SS58 addresses are equal or not. Equality is determined by comparing
+            the accountId/publicKey of each address.
+        addresses:
+          type: array
+          description: An array that contains detailed information for each of the queried SS58 addresses.
+          items:
+            $ref: '#/components/schemas/AddressDetails'
     AccountConvert:
       type: object
       properties:
@@ -2885,6 +2939,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VestingSchedule'
+    AddressDetails:
+      type: object
+      properties:
+        ss58Format:
+            type: string
+            description: The queried SS58 address.
+        ss58Prefix:
+          type: string
+          description: SS58 prefix of the given address.
+          format: unsignedInteger
+        network:
+          type: string
+          description: The network based on which the given address is encoded.
+        publicKey:
+          type: string
+          description: The account ID/Public Key (hex) of the queried SS58 address.
     AssetsBalance:
       type: object
       properties:
