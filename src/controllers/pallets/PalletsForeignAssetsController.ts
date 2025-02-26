@@ -36,6 +36,8 @@ import AbstractController from '../AbstractController';
  * - Foreign Assets Pallet Instance in Kusama Asset Hub: https://github.com/paritytech/cumulus/blob/master/parachains/runtimes/assets/asset-hub-kusama/src/lib.rs#L295
  */
 export default class PalletsForeignAssetsController extends AbstractController<PalletsForeignAssetsService> {
+	static controllerName = 'PalletsForeignAssets';
+	static requiredPallets = [['ForeignAssets']];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/foreign-assets', new PalletsForeignAssetsService(api));
 		this.initRoutes();

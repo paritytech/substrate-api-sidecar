@@ -31,7 +31,6 @@ export const bifrostPolkadotControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsStorage',
-		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

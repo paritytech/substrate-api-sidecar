@@ -55,6 +55,7 @@ export class SidecarConfig {
 				PORT: config.Get(MODULES.EXPRESS, CONFIG.PORT) as number,
 				KEEP_ALIVE_TIMEOUT: config.Get(MODULES.EXPRESS, CONFIG.KEEP_ALIVE_TIMEOUT) as number,
 				MAX_BODY: config.Get(MODULES.EXPRESS, CONFIG.MAX_BODY) as string,
+				INJECTED_CONTROLLERS: config.Get(MODULES.EXPRESS, CONFIG.INJECTED_CONTROLLERS) as boolean,
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,

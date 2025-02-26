@@ -45,11 +45,21 @@ type SidecarRequestHandler =
 	| RequestHandler<IParaIdParam>
 	| RequestHandler;
 
+/*
+ * The required pallets for a controller can be a list of pallets in string, or a list of list of pallets, which represents an OR statement.
+ * Example:
+ * 		- [['pallet1', 'pallet2']] => Requires pallet1 AND pallet2
+ *      - [['pallet1', 'pallet2'], ['pallet1', 'pallet3']] => Requires (pallet1 AND pallet2) OR (pallet1 AND pallet3)
+ */
+export type RequiredPallets = string[][];
+
 /**
  * Abstract base class for creating controller classes.
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
+	static controllerName: string;
+	static requiredPallets: RequiredPallets;
 
 	constructor(
 		protected api: ApiPromise,
@@ -265,5 +275,21 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 */
 	static sanitizedSend<T>(res: Response<AnyJson>, body: T, options: ISanitizeOptions = {}): void {
 		res.send(sanitizeNumbers(body, options));
+	}
+
+	static canInjectByPallets(availablePallets: string[]): boolean {
+		if (!this.requiredPallets) {
+			return true;
+		}
+		if (this.requiredPallets.length === 1) {
+			if (this.requiredPallets[0].length === 0) {
+				return true;
+			}
+			return this.requiredPallets[0].every((pallet) => availablePallets.includes(pallet));
+		} else if (this.requiredPallets.length > 1) {
+			return this.requiredPallets.some((pallets) => pallets.every((p) => availablePallets.includes(p)));
+		}
+		// If requiredPallets is empty, then we can inject
+		return true;
 	}
 }

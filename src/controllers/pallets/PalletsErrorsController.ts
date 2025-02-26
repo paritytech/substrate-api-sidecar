@@ -34,6 +34,8 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsErrorsController extends AbstractController<PalletsErrorsService> {
+	static controllerName = 'PalletsErrors';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/errors', new PalletsErrorsService(api));
 

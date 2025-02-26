@@ -21,6 +21,8 @@ import { CoretimeService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class CoretimeChainController extends AbstractController<CoretimeService> {
+	static controllerName = 'CoretimeChain';
+	static requiredPallets = [['Broker']];
 	constructor(api: ApiPromise) {
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();

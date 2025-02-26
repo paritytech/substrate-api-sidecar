@@ -38,6 +38,7 @@ interface ISidecarConfigExpress {
 	PORT: number;
 	KEEP_ALIVE_TIMEOUT: number;
 	MAX_BODY: string;
+	INJECTED_CONTROLLERS: boolean;
 }
 
 interface ISidecarConfigLog {

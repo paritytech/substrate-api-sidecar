@@ -24,6 +24,8 @@ import { ICompareQueryParams } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class AccountsCompareController extends AbstractController<AccountsCompareService> {
+	static controllerName = 'AccountsCompare';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/compare', new AccountsCompareService(api));
 		this.initRoutes();

@@ -58,6 +58,8 @@ export type MetadataOpts = 'json' | 'scale';
  * -  FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  */
 export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
+	static controllerName = 'TransactionMaterial';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/transaction/material', new TransactionMaterialService(api));
 		this.initRoutes();

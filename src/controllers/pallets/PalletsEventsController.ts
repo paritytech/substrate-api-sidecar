@@ -23,6 +23,8 @@ import { PalletsEventsService } from '../../services';
 import AbstractController from '../AbstractController';
 
 export default class PalletsEventsController extends AbstractController<PalletsEventsService> {
+	static controllerName = 'PalletsEvents';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/events', new PalletsEventsService(api));
 

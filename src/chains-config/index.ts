@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
@@ -49,7 +50,7 @@ import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
 
-const specToControllerMap: { [x: string]: ControllerConfig } = {
+export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
 	polymesh: polymeshControllers,
@@ -117,3 +118,39 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
 }
+
+/**
+ * Return an array of instantiated controller instances based off of a `specName`.
+ * @param pallets pallets available to define controllers
+ * @param api ApiPromise to inject into controllers
+ * @param specName specName of chain to get options
+ */
+
+export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
+	const controllersSet: AbstractController<AbstractService>[] = [];
+	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
+
+	Object.values(controllers).forEach((controller) => {
+		if (controller.canInjectByPallets(pallets)) {
+			controllersSet.push(new controller(api, config));
+		}
+	});
+
+	return controllersSet;
+};
+
+export const getControllers = (
+	api: ApiPromise,
+	config: ISidecarConfig,
+	specName: string,
+): AbstractController<AbstractService>[] => {
+	if (config.EXPRESS.INJECTED_CONTROLLERS) {
+		return getControllersByPallets(
+			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
+			api,
+			specName,
+		);
+	} else {
+		return getControllersForSpec(api, specName);
+	}
+};
