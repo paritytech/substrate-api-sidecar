@@ -18,9 +18,13 @@ import { ApiPromise } from '@polkadot/api';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { foreignAssetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
-import { foreignAssetsEntries } from '../test-helpers/mock/data/foreignAssetsEntries';
+import { foreignAssetsMetadataWestendAH } from '../test-helpers/mock/assets/mockAssetHubWestendData';
+import { foreignAssetsEntries, foreignAssetsEntriesWestendAH } from '../test-helpers/mock/data/foreignAssetsEntries';
 import { mockAssetHubKusamaApi } from '../test-helpers/mock/mockAssetHubKusamaApi';
+import { mockAssetHubWestendApi } from '../test-helpers/mock/mockAssetHubWestendApi';
 import { blockHash523510 } from '../test-helpers/mock/mockBlock523510';
+import { blockHash5236177 } from '../test-helpers/mock/mockBlock5236177';
+import foreignAssetsResponse from '../test-helpers/responses/pallets/foreignAssetsResponse.json';
 import { PalletsForeignAssetsService } from './PalletsForeignAssetsService';
 
 const foreignAssetsEntriesAt = () => Promise.resolve().then(() => foreignAssetsEntries());
@@ -49,6 +53,14 @@ describe('PalletsForeignAssetsService', () => {
 				},
 				items: [
 					{
+						multiLocation: {
+							parents: '2',
+							interior: {
+								X1: {
+									GlobalConsensus: 'Polkadot',
+								},
+							},
+						},
 						foreignAssetInfo: {
 							owner: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
 							issuer: 'FxqimVubBRPqJ8kTwb3wL7G4q645hEkBEnXPyttLsTrFc5Q',
@@ -72,6 +84,19 @@ describe('PalletsForeignAssetsService', () => {
 						},
 					},
 					{
+						multiLocation: {
+							parents: '1',
+							interior: {
+								X2: [
+									{
+										Parachain: '2,125',
+									},
+									{
+										GeneralIndex: '0',
+									},
+								],
+							},
+						},
 						foreignAssetInfo: {
 							owner: 'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9',
 							issuer: 'FBeL7DiQ6JkoypYATheXhH3GQr5de2L3hL444TP6qQr3yA9',
@@ -100,6 +125,32 @@ describe('PalletsForeignAssetsService', () => {
 			const response = await palletsForeignAssetsService.fetchForeignAssets(blockHash523510);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
+		});
+	});
+});
+
+const foreignAssetsEntriesAtWAH = () => Promise.resolve().then(() => foreignAssetsEntriesWestendAH());
+
+const mockApiWAH = {
+	...mockAssetHubWestendApi,
+	query: {
+		foreignAssets: {
+			asset: {
+				entries: foreignAssetsEntriesAtWAH,
+			},
+			metadata: foreignAssetsMetadataWestendAH,
+		},
+	},
+} as unknown as ApiPromise;
+
+const palletsForeignAssetsServiceWAH = new PalletsForeignAssetsService(mockApiWAH);
+
+describe('PalletsForeignAssetsService', () => {
+	describe('PalletsForeignAssetsService.fetchForeignAssets', () => {
+		it('Should return the correct response for Foreign Assets', async () => {
+			const response = await palletsForeignAssetsServiceWAH.fetchForeignAssets(blockHash5236177);
+
+			expect(sanitizeNumbers(response)).toStrictEqual(foreignAssetsResponse);
 		});
 	});
 });

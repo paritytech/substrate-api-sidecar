@@ -29,3 +29,29 @@ const foreignAssetsLocation2 = {
 };
 
 export const foreignAssetsLocations = [foreignAssetsLocation1, foreignAssetsLocation2];
+
+const foreignAssetsLocation3 = {
+	parents: '2',
+	interior: {
+		X1: {
+			GlobalConsensus: {
+				Ethereum: {
+					chainId: '11,155,111',
+				},
+			},
+		},
+	},
+};
+
+const foreignAssetsLocation4 =
+	'0x30e64a56026f4b5e3c2d196283a9a17dd34371a193a751eea5883e9553457b2e6bfbb13fd9927e49c4a09ac55ab47d05020209049edaa8020300fff9976782d46cc05630d1f6ebab18b2324d6b14';
+
+export const foreignAssetsLocationsWestend = [
+	foreignAssetsLocation3,
+	foreignAssetsLocation4,
+	foreignAssetsLocation1,
+	foreignAssetsLocation1,
+	foreignAssetsLocation3,
+	foreignAssetsLocation3,
+	foreignAssetsLocation3,
+];

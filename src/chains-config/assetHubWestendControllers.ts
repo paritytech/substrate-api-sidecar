@@ -40,6 +40,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'PalletsDispatchables',
 		'PalletsErrors',
 		'PalletsEvents',
+		'PalletsForeignAssets',
 		'PalletsPoolAssets',
 		'RuntimeCode',
 		'RuntimeMetadata',

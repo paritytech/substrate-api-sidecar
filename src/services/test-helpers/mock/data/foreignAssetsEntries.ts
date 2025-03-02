@@ -15,9 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { assetHubKusamaV14 } from '../../../../test-helpers/metadata/assetHubKusamaMetadata';
+import { assetHubWestendMetadataRpcV9435 } from '../../../../test-helpers/metadata/assetHubWestendMetadata';
 import { createApiWithAugmentations, TypeFactory } from '../../../../test-helpers/typeFactory';
 import { foreignAssetsInfo } from '../assets/mockAssetHubKusamaData';
-import { foreignAssetsLocations } from './foreignAssets';
+import { foreignAssetsInfoWestendAH } from '../assets/mockAssetHubWestendData';
+import { foreignAssetsLocations, foreignAssetsLocationsWestend } from './foreignAssets';
 
 const typeFactoryApiV9430 = createApiWithAugmentations(assetHubKusamaV14);
 const factory = new TypeFactory(typeFactoryApiV9430);
@@ -32,5 +34,25 @@ export const foreignAssetsEntries = () => {
 
 		const assetInfo = foreignAssetsInfo[idx]();
 		return [storage, assetInfo];
+	});
+};
+
+const typeFactoryApiV9435 = createApiWithAugmentations(assetHubWestendMetadataRpcV9435);
+const factoryWAH = new TypeFactory(typeFactoryApiV9435);
+
+export const foreignAssetsEntriesWestendAH = () => {
+	return foreignAssetsLocationsWestend.map((location, idx) => {
+		if (typeof location === 'string') {
+			return [location, foreignAssetsInfoWestendAH[idx]()];
+		} else {
+			const storage = factoryWAH.storageKeyMultilocation(
+				location,
+				'XcmV3MultiLocation',
+				typeFactoryApiV9435.query.foreignAssets.asset,
+			);
+
+			const assetInfo = foreignAssetsInfoWestendAH[idx]();
+			return [storage, assetInfo];
+		}
 	});
 };

@@ -42,6 +42,7 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'PalletsDispatchables',
 		'PalletsErrors',
 		'PalletsEvents',
+		'PalletsForeignAssets',
 		'PalletsNominationPools',
 		'PalletsOnGoingReferenda',
 		'PalletsStakingProgress',

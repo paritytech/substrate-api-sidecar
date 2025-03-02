@@ -16,12 +16,14 @@
 
 import { AssetMetadata } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails } from '@polkadot/types/lookup';
+import type { AnyJson } from '@polkadot/types/types';
 
 import { IAt } from '.';
 
 export interface IForeignAssetInfo {
+	multiLocation: AnyJson | string;
 	foreignAssetInfo: PalletAssetsAssetDetails | {};
-	foreignAssetMetadata: AssetMetadata;
+	foreignAssetMetadata: AssetMetadata | {};
 }
 
 export interface IForeignAssets {
