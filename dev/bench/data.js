@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1740991692204,
+  "lastUpdate": 1741009346382,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -5033,6 +5033,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 198.96,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "filippo@parity.io",
+            "name": "Filippo",
+            "username": "filvecchiato"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2aa6e6a8c705f8babb4147981b0b6e00ea670eda",
+          "message": "feat: inject controllers using metadata's definition of pallets (#1592)\n\n* adds naming to AbstractController and to controllers\n\n* wip:injected controllers\n\n* inject controllers using metadata\n\n* inject controllers using metadata\n\n* removed unused method\n\n* injects controllers using pallets in metadata\n\n* lint\n\n* update requiredPallets abstract definition\n\n* update injected flag to make injected controllers not default (no breaking changes)\n\n* Update README.md\n\nCo-authored-by: Dominique <dominique@imodworks.io>\n\n* Update src/chains-config/index.ts\n\nCo-authored-by: Dominique <dominique@imodworks.io>\n\n* fix default options\n\n* remove log\n\n* update readme\n\n* Update src/controllers/coretime/CoretimeChainController.ts\n\nCo-authored-by: Dominique <dominique@imodworks.io>\n\n* Update src/controllers/coretime/CoretimeGenericController.ts\n\nCo-authored-by: Dominique <dominique@imodworks.io>\n\n* linting\n\n* rebase and fix tests\n\n---------\n\nCo-authored-by: Dominique <dominique@imodworks.io>",
+          "timestamp": "2025-03-03T14:08:37+01:00",
+          "tree_id": "d564cf34a853d674ac23cbe32ae285903a4e59d6",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/2aa6e6a8c705f8babb4147981b0b6e00ea670eda"
+        },
+        "date": 1741009344726,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 129.41,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 128.16,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 191.72,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 39328.84,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.38,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.37,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1209.32,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 135.13,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 735.04,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 161.43,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 100.57,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 244.62,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 112.88,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 120.07,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 107.73,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 120.64,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 103.47,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 119.94,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 313.16,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 150.05,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 142.86,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 134.48,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 151.07,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 129.18,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 130.79,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 192.39,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 99.89,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 102.59,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 211.54,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 224.16,
             "unit": "ms"
           }
         ]
