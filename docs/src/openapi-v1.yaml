@@ -3051,6 +3051,24 @@ components:
           type: boolean
           description: Whether the asset metadata may be changed by a non Force origin. Note, that some runtimes may not have
             support for isFrozen and if so the following will be returned `isFrozen does not exist for this runtime`
+    AssetMultiLocation:
+      oneOf:
+        - $ref: '#/components/schemas/AssetMultiLocationObject'
+        - $ref: '#/components/schemas/AssetMultiLocationHex'
+    AssetMultiLocationObject:
+      type: object
+      properties:
+        parents:
+          type: string
+          format: unsignedInteger
+        interior:
+          type: object
+      description: The multiLocation of the foreign asset as an object.
+      example: "{\"parents\":\"2\",\"interior\":{\"X1\":{\"GlobalConsensus\":\"Polkadot\"}}}"
+    AssetMultiLocationHex:
+      type: string
+      pattern: '^0x[0-9a-fA-F]+$'
+      description: The multiLocation of the foreign asset given as a hexadecimal value.
     BalanceLock:
       type: object
       properties:
@@ -4342,6 +4360,8 @@ components:
     PalletsForeignAssetsInfo:
       type: object
       properties:
+        multiLocation:
+          $ref: '#/components/schemas/AssetMultiLocation'
         foreignAssetInfo:
           $ref: '#/components/schemas/AssetInfo'
         foreignAssetMetadata:

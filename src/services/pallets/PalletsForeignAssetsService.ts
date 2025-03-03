@@ -18,6 +18,8 @@ import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
 import { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails, StagingXcmV3MultiLocation } from '@polkadot/types/lookup';
+import { AnyJson } from '@polkadot/types-codec/types';
+import { isHex } from '@polkadot/util';
 
 import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -48,28 +50,41 @@ export class PalletsForeignAssetsService extends AbstractService {
 		 * This variable will then be used as the key to get the corresponding metadata of the foreign asset.
 		 *
 		 * This is based on the logic implemented by marshacb in asset-transfer-api-registry
-		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/createRegistry.ts#L193-L238
+		 * https://github.com/paritytech/asset-transfer-api-registry/blob/main/src/fetchSystemParachainForeignAssetInfo.ts#L25L36
 		 */
 		for (const [assetStorageKeyData, assetInfo] of foreignAssetInfo) {
-			const foreignAssetData: [StagingXcmV3MultiLocation] = assetStorageKeyData.toHuman() as unknown as [
-				StagingXcmV3MultiLocation,
-			];
+			let foreignAssetData: [StagingXcmV3MultiLocation] | string = '';
+			if (isHex(assetStorageKeyData)) {
+				foreignAssetData = assetStorageKeyData;
+			} else {
+				foreignAssetData = assetStorageKeyData.toHuman() as unknown as [StagingXcmV3MultiLocation];
+			}
 
+			let multiLocation: string | AnyJson = '';
 			if (foreignAssetData) {
-				// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
-				const foreignAssetMultiLocationStr = JSON.stringify(foreignAssetData[0]).replace(/(\d),/g, '$1');
+				let assetMetadata: AssetMetadata | {};
+				// Checking if the foreign asset data is an array or not because there is a case that the
+				// Multilocation is given as a hexadecimal value (see foreign assets in Westend Asset Hub).
+				if (Array.isArray(foreignAssetData)) {
+					multiLocation = foreignAssetData[0] as unknown as AnyJson;
+					// remove any commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
+					const MultiLocationStr = JSON.stringify(foreignAssetData[0]).replace(/(\d),/g, '$1');
 
-				const assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(
-					JSON.parse(foreignAssetMultiLocationStr),
-				);
+					assetMetadata = await api.query.foreignAssets.metadata<AssetMetadata>(JSON.parse(MultiLocationStr));
+				} else {
+					multiLocation = foreignAssetData;
+					assetMetadata = {};
+				}
 
 				if (assetInfo.isSome) {
 					items.push({
+						multiLocation,
 						foreignAssetInfo: assetInfo.unwrap(),
 						foreignAssetMetadata: assetMetadata,
 					});
 				} else {
 					items.push({
+						multiLocation,
 						foreignAssetInfo: {},
 						foreignAssetMetadata: assetMetadata,
 					});

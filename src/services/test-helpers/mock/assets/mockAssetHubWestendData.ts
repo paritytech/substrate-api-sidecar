@@ -155,3 +155,227 @@ export const poolAssetApprovals = (): Promise<Option<AssetApproval>> =>
 		};
 		return assetHubWestendRegistryV9435.createType('Option<AssetApproval>', assetObj);
 	});
+
+/**
+ * This mock data uses Asset Hub Westend specVersion V9435
+ */
+
+const accountIdWAH1 = assetHubWestendRegistryV9435.createType(
+	'AccountId',
+	'5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy',
+);
+const balanceOfTknr = assetHubWestendRegistryV9435.createType('BalanceOf', 6693666633);
+
+const accountIdWAH2 = assetHubWestendRegistryV9435.createType(
+	'AccountId',
+	'5ENpP27BrVdJTdUfY6djmcw3d3xEJ6NzSUU52CCPmGpMrdEY',
+);
+
+const accountIdWAH3 = assetHubWestendRegistryV9435.createType(
+	'AccountId',
+	'5GxRGwT8bU1JeBPTUXc7LEjZMxNrK8MyL2NJnkWFQJTQ4sii',
+);
+
+const accountIdWAH4 = assetHubWestendRegistryV9435.createType(
+	'AccountId',
+	'5Eg2fnsiMxRhMVoAcrXoSYgi9LfB786LKf8yWLA8FPWNYyYD',
+);
+
+const foreignAssetInfoWAH0 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH1,
+		issuer: accountIdWAH1,
+		admin: accountIdWAH1,
+		freezer: accountIdWAH1,
+		supply: assetHubWestendRegistryV9435.createType('u64', 0),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 15000),
+		isSufficient: trueBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 0),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 0),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH1 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH1,
+		issuer: accountIdWAH1,
+		admin: accountIdWAH1,
+		freezer: accountIdWAH1,
+		supply: assetHubWestendRegistryV9435.createType('u64', 106000000000000),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 100000000000),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 1),
+		isSufficient: falseBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 2),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 0),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH2 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH2,
+		issuer: accountIdWAH2,
+		admin: accountIdWAH2,
+		freezer: accountIdWAH2,
+		supply: assetHubWestendRegistryV9435.createType('u64', 0),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 100000000),
+		isSufficient: trueBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 1),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 0),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH3 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH3,
+		issuer: accountIdWAH3,
+		admin: accountIdWAH3,
+		freezer: accountIdWAH3,
+		supply: assetHubWestendRegistryV9435.createType('u64', 202835530084563),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 10000000000),
+		isSufficient: trueBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 14),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 11),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH4 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH1,
+		issuer: accountIdWAH1,
+		admin: accountIdWAH1,
+		freezer: accountIdWAH1,
+		supply: assetHubWestendRegistryV9435.createType('u64', 998000000000),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 15000),
+		isSufficient: trueBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 1),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 1),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH5 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH1,
+		issuer: accountIdWAH1,
+		admin: accountIdWAH1,
+		freezer: accountIdWAH1,
+		supply: assetHubWestendRegistryV9435.createType('u64', 0),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 100000000000),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 15000000000000),
+		isSufficient: trueBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 3),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 1),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+const foreignAssetInfoWAH6 = (): Option<PalletAssetsAssetDetails> => {
+	const responseObj = {
+		owner: accountIdWAH4,
+		issuer: accountIdWAH4,
+		admin: accountIdWAH4,
+		freezer: accountIdWAH4,
+		supply: assetHubWestendRegistryV9435.createType('u64', 0),
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 100000000000),
+		minBalance: assetHubWestendRegistryV9435.createType('u64', 100000000000000),
+		isSufficient: falseBool,
+		accounts: assetHubWestendRegistryV9435.createType('u8', 0),
+		sufficients: assetHubWestendRegistryV9435.createType('u8', 0),
+		approvals: assetHubWestendRegistryV9435.createType('u8', 0),
+		status: 'Live',
+	};
+
+	return assetHubWestendRegistryV9435.createType('Option<PalletAssetsAssetDetails>', responseObj);
+};
+
+export const foreignAssetsInfoWestendAH = [
+	foreignAssetInfoWAH0,
+	foreignAssetInfoWAH1,
+	foreignAssetInfoWAH2,
+	foreignAssetInfoWAH3,
+	foreignAssetInfoWAH4,
+	foreignAssetInfoWAH5,
+	foreignAssetInfoWAH6,
+];
+
+// TODO: The values in foreignAssetMetadataDot need to be updated
+// as soon as the Metadata of Polkadot are correctly updated in Kusama Asset Hub.
+// Right now Polkadot does not have metadata due to an error.
+const foreignAssetMetadataDot = (): AssetMetadata => {
+	const responseObj = {
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		name: assetHubWestendRegistryV9435.createType('Bytes', '0x'),
+		symbol: assetHubWestendRegistryV9435.createType('Bytes', '0x'),
+		decimals: assetHubWestendRegistryV9435.createType('u8', 0),
+		isFrozen: falseBool,
+	};
+
+	return assetHubWestendRegistryV9435.createType('AssetMetadata', responseObj);
+};
+
+const foreignAssetMetadataEth = (): AssetMetadata => {
+	const responseObj = {
+		deposit: assetHubWestendRegistryV9435.createType('BalanceOf', 0),
+		name: assetHubWestendRegistryV9435.createType('Bytes', '0x'),
+		symbol: assetHubWestendRegistryV9435.createType('Bytes', '0x'),
+		decimals: assetHubWestendRegistryV9435.createType('u8', 0),
+		isFrozen: falseBool,
+	};
+
+	return assetHubWestendRegistryV9435.createType('AssetMetadata', responseObj);
+};
+
+const foreignAssetMetadataRococo = (): AssetMetadata => {
+	const responseObj = {
+		deposit: balanceOfTknr,
+		name: assetHubWestendRegistryV9435.createType('Bytes', 'Rococo'),
+		symbol: assetHubWestendRegistryV9435.createType('Bytes', 'ROC'),
+		decimals: assetHubWestendRegistryV9435.createType('u8', 12),
+		isFrozen: falseBool,
+	};
+
+	return assetHubWestendRegistryV9435.createType('AssetMetadata', responseObj);
+};
+
+export const foreignAssetsMetadataWestendAH = (location: string): AssetMetadata | string => {
+	const foreignAssetMultiLocationStr = JSON.stringify(location).replace(/(\d),/g, '$1');
+
+	if (foreignAssetMultiLocationStr == '0') {
+		return location;
+	} else if (foreignAssetMultiLocationStr == '{"parents":"2","interior":{"X1":{"GlobalConsensus":"Polkadot"}}}') {
+		return foreignAssetMetadataDot();
+	} else if (
+		foreignAssetMultiLocationStr ==
+		'{"parents":"2","interior":{"X1":{"GlobalConsensus":{"Ethereum":{"chainId":"11155111"}}}}}'
+	) {
+		return foreignAssetMetadataEth();
+	} else if (foreignAssetMultiLocationStr == '{"parents":"2","interior":{"X1":{"GlobalConsensus":"__Unused5"}}}') {
+		return foreignAssetMetadataRococo();
+	} else return foreignAssetMetadataDot();
+};

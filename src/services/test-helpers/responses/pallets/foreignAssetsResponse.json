@@ -1,0 +1,234 @@
+{
+  "at": {
+    "hash": "0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5",
+    "height": "5236177"
+  },
+  "items": [
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1": 
+            {
+              "GlobalConsensus": {
+                "Ethereum": {
+                  "chainId": "11,155,111"
+                }
+              }
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "issuer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "admin": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "freezer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "supply": "0",
+        "deposit": "0",
+        "minBalance": "15000",
+        "isSufficient": true,
+        "accounts": "0",
+        "sufficients": "0",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    },
+    {
+      "multiLocation": "0x30e64a56026f4b5e3c2d196283a9a17dd34371a193a751eea5883e9553457b2e6bfbb13fd9927e49c4a09ac55ab47d05020209049edaa8020300fff9976782d46cc05630d1f6ebab18b2324d6b14",
+      "foreignAssetInfo": {
+        "owner": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "issuer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "admin": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "freezer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "supply": "106000000000000",
+        "deposit": "100000000000",
+        "minBalance": "1",
+        "isSufficient": false,
+        "accounts": "2",
+        "sufficients": "0",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {}
+    },
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1":
+            {
+              "GlobalConsensus": "Polkadot"
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5ENpP27BrVdJTdUfY6djmcw3d3xEJ6NzSUU52CCPmGpMrdEY",
+        "issuer": "5ENpP27BrVdJTdUfY6djmcw3d3xEJ6NzSUU52CCPmGpMrdEY",
+        "admin": "5ENpP27BrVdJTdUfY6djmcw3d3xEJ6NzSUU52CCPmGpMrdEY",
+        "freezer": "5ENpP27BrVdJTdUfY6djmcw3d3xEJ6NzSUU52CCPmGpMrdEY",
+        "supply": "0",
+        "deposit": "0",
+        "minBalance": "100000000",
+        "isSufficient": true,
+        "accounts": "1",
+        "sufficients": "0",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    },
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1":
+            {
+              "GlobalConsensus": "Polkadot"
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5GxRGwT8bU1JeBPTUXc7LEjZMxNrK8MyL2NJnkWFQJTQ4sii",
+        "issuer": "5GxRGwT8bU1JeBPTUXc7LEjZMxNrK8MyL2NJnkWFQJTQ4sii",
+        "admin": "5GxRGwT8bU1JeBPTUXc7LEjZMxNrK8MyL2NJnkWFQJTQ4sii",
+        "freezer": "5GxRGwT8bU1JeBPTUXc7LEjZMxNrK8MyL2NJnkWFQJTQ4sii",
+        "supply": "202835530084563",
+        "deposit": "0",
+        "minBalance": "10000000000",
+        "isSufficient": true,
+        "accounts": "14",
+        "sufficients": "11",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    },
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1":
+            {
+              "GlobalConsensus": {
+                "Ethereum": {
+                  "chainId": "11,155,111"
+                }
+              }
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "issuer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "admin": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "freezer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "supply": "998000000000",
+        "deposit": "0",
+        "minBalance": "15000",
+        "isSufficient": true,
+        "accounts": "1",
+        "sufficients": "1",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    },
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1":
+            {
+              "GlobalConsensus": {
+                "Ethereum": {
+                  "chainId": "11,155,111"
+                }
+              }
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "issuer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "admin": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "freezer": "5GjRnmh5o3usSYzVmsxBWzHEpvJyHK4tKNPhjpUR3ASrruBy",
+        "supply": "0",
+        "deposit": "100000000000",
+        "minBalance": "15000000000000",
+        "isSufficient": true,
+        "accounts": "3",
+        "sufficients": "1",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    },
+    {
+      "multiLocation": {
+        "parents": "2",
+        "interior": {
+          "X1": 
+            {
+              "GlobalConsensus": {
+                "Ethereum": {
+                  "chainId": "11,155,111"
+                }
+              }
+            }
+        }
+      },
+      "foreignAssetInfo": {
+        "owner": "5Eg2fnsiMxRhMVoAcrXoSYgi9LfB786LKf8yWLA8FPWNYyYD",
+        "issuer": "5Eg2fnsiMxRhMVoAcrXoSYgi9LfB786LKf8yWLA8FPWNYyYD",
+        "admin": "5Eg2fnsiMxRhMVoAcrXoSYgi9LfB786LKf8yWLA8FPWNYyYD",
+        "freezer": "5Eg2fnsiMxRhMVoAcrXoSYgi9LfB786LKf8yWLA8FPWNYyYD",
+        "supply": "0",
+        "deposit": "100000000000",
+        "minBalance": "100000000000000",
+        "isSufficient": false,
+        "accounts": "0",
+        "sufficients": "0",
+        "approvals": "0",
+        "status": "Live"
+      },
+      "foreignAssetMetadata": {
+        "deposit": "0",
+        "name": "0x",
+        "symbol": "0x",
+        "decimals": "0",
+        "isFrozen": false
+      }
+    }
+  ]
+}
