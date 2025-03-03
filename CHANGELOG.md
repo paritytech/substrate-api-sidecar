@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.1.0..v20.2.0) (2025-03-03)
+
+### Features
+
+- feat: inject controllers using metadata's definition of pallets ([#1592](https://github.com/paritytech/substrate-api-sidecar/pull/1592)) ([2aa6e6a](https://github.com/paritytech/substrate-api-sidecar/commit/2aa6e6a8c705f8babb4147981b0b6e00ea670eda))
+- feat: [AHM] - Add AH Next Westend chain ([#1586](https://github.com/paritytech/substrate-api-sidecar/pull/1586)) ([7217e6e](https://github.com/paritytech/substrate-api-sidecar/commit/7217e6e13158c3e63aa5aad548fc070b98bbbc5e))
+
+### Fix
+
+- fix: foreign asset multilocation as hex ([#1605](https://github.com/paritytech/substrate-api-sidecar/pull/1605)) ([e65ba2b](https://github.com/paritytech/substrate-api-sidecar/commit/e65ba2b314a1f40a089fc123b3f3793d114d5e9d))
+- fix: asset-hub-next specName ([#1604](https://github.com/paritytech/substrate-api-sidecar/pull/1604)) ([38a3f84](https://github.com/paritytech/substrate-api-sidecar/commit/38a3f84578101f8a093d733b34ae44caca7f1616))
+
+### Chores
+
+- chore(deps): update polkadot-js deps to v15.7.1 ([#1606](https://github.com/paritytech/substrate-api-sidecar/pull/1606)) ([0ad81d1](https://github.com/paritytech/substrate-api-sidecar/commit/0ad81d173c712e4b58f804278176054f112b4b37))
+- chore(deps): bump docker/build-push-action from 6.14.0 to 6.15.0 ([#1603](https://github.com/paritytech/substrate-api-sidecar/pull/1603)) ([e665b7a](https://github.com/paritytech/substrate-api-sidecar/commit/e665b7af0f63f2ee6e00e68dba78d92ac200b7fc))
+- chore(deps): bump docker/build-push-action from 6.13.0 to 6.14.0 ([#1598](https://github.com/paritytech/substrate-api-sidecar/pull/1598)) ([2c926c7](https://github.com/paritytech/substrate-api-sidecar/commit/2c926c786536bfee73b1875909c13d0750284090))
+- chore(deps): bump rxjs from 7.8.1 to 7.8.2 ([#1602](https://github.com/paritytech/substrate-api-sidecar/pull/1602)) ([18b0014](https://github.com/paritytech/substrate-api-sidecar/commit/18b0014f1dbccec0eade7b0d983fc037e861223d))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.17.2 (Polkadot stable2412-2)
+- Kusama v1.17.2 (Polkadot stable2412-2)
+- Westend v1.17.2 (Polkadot stable2412-2)
+
+Tested against the following runtime releases:
+- Polkadot v1004000
+- Kusama v1004001
+- Westend v1017001
+
 ## [20.1.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.0.0..v20.1.0) (2025-02-24)
 
 ### Features
