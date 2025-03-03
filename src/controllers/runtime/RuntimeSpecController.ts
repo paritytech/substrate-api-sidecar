@@ -46,6 +46,8 @@ import AbstractController from '../AbstractController';
  * - `properties`: Arbitrary properties defined in the chain spec.
  */
 export default class RuntimeSpecController extends AbstractController<RuntimeSpecService> {
+	static controllerName = 'RuntimeSpec';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/runtime/spec', new RuntimeSpecService(api));
 		this.initRoutes();

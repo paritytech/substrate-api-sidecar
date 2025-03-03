@@ -31,7 +31,6 @@ export const bifrostControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsStorage',
-		'Paras',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

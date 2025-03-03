@@ -26,7 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import { getControllersForSpec } from './chains-config';
+import { getControllers } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
@@ -80,10 +80,9 @@ async function main() {
 		metricsApp.listen();
 	}
 
-	// Create our App
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllersForSpec(api, specName.toString()),
+		controllers: getControllers(api, config, specName.toString()),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,

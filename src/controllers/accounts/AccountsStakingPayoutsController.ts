@@ -80,6 +80,13 @@ import AbstractController from '../AbstractController';
  *
  */
 export default class AccountsStakingPayoutsController extends AbstractController<AccountsStakingPayoutsService> {
+	static controllerName = 'AccountsStakingPayouts';
+	static requiredPallets = [
+		['Staking', 'System'],
+		['ParachainStaking', 'ParachainSystem'],
+		['ParachainStaking', 'System'],
+		['Staking', 'ParachainSystem'],
+	];
 	constructor(api: ApiPromise) {
 		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
 		this.initRoutes();

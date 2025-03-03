@@ -204,7 +204,7 @@ export interface ICoretimeCores {
 				};
 				regions: TRegionInfo[];
 		  }
-		| (TParaLifecycle & TCoreDescriptor)
+		| TCoreDescriptor
 	)[];
 	coreSchedules?: Record<string, unknown>[];
 }

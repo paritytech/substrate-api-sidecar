@@ -34,6 +34,8 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsConstantsController extends AbstractController<PalletsConstantsService> {
+	static controllerName = 'PalletsConsts';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/consts', new PalletsConstantsService(api));
 

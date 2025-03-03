@@ -26,6 +26,8 @@ import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
+	static controllerName = 'BlocksExtrinsics';
+	static requiredPallets = [['System', 'Session']];
 	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(
 			api,

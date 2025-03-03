@@ -34,6 +34,8 @@ import AbstractController from '../AbstractController';
  * 		- `partialFee`: PartialFee for a transaction. Available when the `includeFee` query param is set to true.
  */
 export default class NodeTransactionPoolController extends AbstractController<NodeTransactionPoolService> {
+	static controllerName = 'NodeTransactionPool';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/node/transaction-pool', new NodeTransactionPoolService(api));
 		this.initRoutes();

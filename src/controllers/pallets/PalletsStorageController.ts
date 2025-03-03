@@ -36,6 +36,8 @@ import AbstractController from '../AbstractController';
  * See `docs/src/openapi-v1.yaml` for usage information.
  */
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
+	static controllerName = 'PalletsStorage';
+	static requiredPallets = [];
 	constructor(api: ApiPromise) {
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
