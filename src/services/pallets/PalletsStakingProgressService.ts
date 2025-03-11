@@ -17,6 +17,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
+import { AnyJson } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
@@ -53,7 +54,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		const [eraElectionStatus, { eraLength, eraProgress, sessionLength, sessionProgress, activeEra }] =
 			await Promise.all([eraElectionPromise, this.deriveSessionAndEraProgress(historicApi)]);
 
-		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes(activeEra);
+		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes.entries();
 
 		const currentBlockNumber = number.toBn();
 
@@ -67,7 +68,9 @@ export class PalletsStakingProgressService extends AbstractService {
 			activeEra: activeEra.toString(10),
 			forceEra: forceEra.toJSON(),
 			nextSessionEstimate: nextSession.toString(10),
-			unappliedSlashes: unappliedSlashesAtActiveEra.map((slash) => slash.toJSON()),
+			unappliedSlashes: unappliedSlashesAtActiveEra.toString()
+				? unappliedSlashesAtActiveEra[0][1].map((slash) => slash.toJSON())
+				: ([] as AnyJson[]),
 		};
 
 		if (forceEra.isForceNone) {
