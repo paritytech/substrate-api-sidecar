@@ -18,7 +18,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
-import { EraIndex, Hash } from '@polkadot/types/interfaces';
+import { Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
@@ -26,6 +26,7 @@ import { polkadotRegistry } from '../../test-helpers/registries';
 import { activeEraAt, blockHash789629, defaultMockApi, erasStartSessionIndexAt } from '../test-helpers/mock';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
+import UnappliedSlashesResponse from '../test-helpers/responses/pallets/stakingProgressUnappliedSlashes.json';
 import { PalletsStakingProgressService } from './PalletsStakingProgressService';
 
 const epochIndexAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u64', 330));
@@ -44,8 +45,9 @@ const validatorsAt = () =>
 
 const forceEraAt = () => Promise.resolve().then(() => polkadotRegistry.createType('Forcing', 'NotForcing'));
 
-const unappliedSlashesAt = (_activeEra: EraIndex) =>
-	Promise.resolve().then(() => polkadotRegistry.createType('Vec<UnappliedSlash>', []));
+const unappliedSlashesEntries = () => {
+	return Promise.resolve([['5640', []]]);
+};
 
 const validatorCountAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
 
@@ -74,7 +76,9 @@ const mockHistoricApi = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
-			unappliedSlashes: unappliedSlashesAt,
+			unappliedSlashes: {
+				entries: unappliedSlashesEntries,
+			},
 			validatorCount: validatorCountAt,
 		},
 	},
@@ -89,6 +93,71 @@ const mockApi = {
  * Mock PalletStakingProgressService instance.
  */
 const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
+
+const unappliedSlashes = [
+	{
+		validator: '5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6',
+		own: '0',
+		others: [['5GxDBrTuFgCAN49xrpRFWJiA969R2Ny5NnTa8cSPBh8hWHY9', '6902377436592']],
+		reporters: [],
+		payout: '345118871829',
+		toJSON: function () {
+			return {
+				validator: this.validator,
+				own: this.own,
+				others: this.others.map(([account, amount]) => ({ account, amount })),
+				reporters: this.reporters,
+				payout: this.payout,
+			};
+		},
+	},
+];
+const unappliedSlashesEntriesUnappliedSlashes = () => {
+	return Promise.resolve([['5640', unappliedSlashes]]);
+};
+
+const mockHistoricApiUnappliedSlashes = {
+	consts: {
+		babe: {
+			epochDuration: polkadotRegistry.createType('u64', 2400),
+		},
+		staking: {
+			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
+			sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
+		},
+	},
+	query: {
+		babe: {
+			currentSlot: currentSlotAt,
+			epochIndex: epochIndexAt,
+			genesisSlot: genesisSlotAt,
+		},
+		session: {
+			currentIndex: currentIndexAt,
+			validators: validatorsAt,
+		},
+		staking: {
+			activeEra: activeEraAt,
+			eraElectionStatus: eraElectionStatusAt,
+			erasStartSessionIndex: erasStartSessionIndexAt,
+			forceEra: forceEraAt,
+			unappliedSlashes: {
+				entries: unappliedSlashesEntriesUnappliedSlashes,
+			},
+			validatorCount: validatorCountAt,
+		},
+	},
+} as unknown as ApiDecoration<'promise'>;
+
+const mockApiUnappliedSlashes = {
+	...defaultMockApi,
+	at: (_hash: Hash) => mockHistoricApiUnappliedSlashes,
+} as unknown as ApiPromise;
+
+/**
+ * Mock PalletStakingProgressService instance.
+ */
+const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService(mockApiUnappliedSlashes);
 
 describe('PalletStakingProgressService', () => {
 	describe('derivePalletStakingProgress', () => {
@@ -121,6 +190,14 @@ describe('PalletStakingProgressService', () => {
 
 			(mockHistoricApi.query.staking.activeEra as any) = activeEraAt;
 			(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
+		});
+
+		it('works with entries in unappliedSlashes', async () => {
+			expect(
+				sanitizeNumbers(
+					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),
+				),
+			).toStrictEqual(UnappliedSlashesResponse);
 		});
 	});
 });
