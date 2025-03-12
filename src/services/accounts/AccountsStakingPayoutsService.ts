@@ -577,20 +577,21 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			const validators: DeriveEraValidatorExposure = {};
 			const validatorsOverview: Record<string, Option<SpStakingPagedExposureMetadata>> = {};
 
+			const validatorLookupMap: { [key: string]: Option<SpStakingPagedExposureMetadata> } = {};
+			if (validatorsOverviewEntries) {
+				for (const validator of validatorsOverviewEntries) {
+					const validatorKey: StorageKey = validator[0];
+					const valKey: [string, string] = validatorKey.toHuman() as unknown as [string, string];
+					if (valKey) {
+						validatorLookupMap[valKey[1].toString()] = validator[1];
+					}
+				}
+			}
+
 			stakers.forEach(([key, exposure]): void => {
 				const validatorId = key.args[1].toString();
-
-				if (validatorsOverviewEntries) {
-					for (const validator of validatorsOverviewEntries) {
-						const validatorKey: StorageKey = validator[0];
-						const valKey: [string, string] = validatorKey.toHuman() as unknown as [string, string];
-						if (valKey) {
-							if (valKey[1].toString() === validatorId) {
-								validatorsOverview[validatorId] = validator[1];
-								break;
-							}
-						}
-					}
+				if (validatorLookupMap[validatorId]) {
+					validatorsOverview[validatorId] = validatorLookupMap[validatorId];
 				}
 
 				validators[validatorId] = exposure;
