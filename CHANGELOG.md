@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.2.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.2.0..v20.2.1) (2025-03-14)
+
+### Perf
+
+- perf: optimization of mapStakers function ([#1613](https://github.com/paritytech/substrate-api-sidecar/pull/1613)) ([743cb79](https://github.com/paritytech/substrate-api-sidecar/commit/743cb79c5bcd1ba81437e1651310a64e5fd2850f))
+
+### Fix
+
+- fix: unappliedSlashes call in staking/progress endpoint ([#1612](https://github.com/paritytech/substrate-api-sidecar/pull/1612)) ([344491f](https://github.com/paritytech/substrate-api-sidecar/commit/344491fc2d8294b7cf156cbf9a4daa9f8d49235d))
+
+### Chores
+
+- chore(deps): update deps in /docs ([#1619](https://github.com/paritytech/substrate-api-sidecar/pull/1619)) ([37a3ebb](https://github.com/paritytech/substrate-api-sidecar/commit/37a3ebb64a7faf77e2cefd4824fef389f3ca5a77))
+- chore(deps): bump axios from 1.7.7 to 1.8.3 in /docs ([#1618](https://github.com/paritytech/substrate-api-sidecar/pull/1618)) ([dec24d7](https://github.com/paritytech/substrate-api-sidecar/commit/dec24d724962af16e87db25f1b3e9729f9e8b4c6))
+- chore(deps): bump @babel/runtime-corejs3 from 7.26.0 to 7.26.10 in /docs ([#1617](https://github.com/paritytech/substrate-api-sidecar/pull/1617)) ([01670c1](https://github.com/paritytech/substrate-api-sidecar/commit/01670c1777f8269c316fb62ec71fdf7551d9e282))
+- chore(deps): bump @babel/runtime from 7.23.9 to 7.26.10 in /docs ([#1616](https://github.com/paritytech/substrate-api-sidecar/pull/1616)) ([b980479](https://github.com/paritytech/substrate-api-sidecar/commit/b980479ffc0198406c2a465e715a2f380edfe8eb))
+- chore(deps): update polkadot-js deps to v15.8.1 ([#1615](https://github.com/paritytech/substrate-api-sidecar/pull/1615)) ([8a79dcc](https://github.com/paritytech/substrate-api-sidecar/commit/8a79dcc33678f8c8909b57b4d2528faab79f97c7))
+
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.17.3 (Polkadot stable2412-3)
+- Kusama v1.17.3 (Polkadot stable2412-3)
+- Westend v1.17.3 (Polkadot stable2412-3)
+
+Tested against the following runtime releases:
+- Polkadot v1004001
+- Kusama v1004001
+- Westend v1018001
+
 ## [20.2.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.1.0..v20.2.0) (2025-03-03)
 
 ### Features
