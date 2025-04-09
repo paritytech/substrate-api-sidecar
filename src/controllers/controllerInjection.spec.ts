@@ -55,7 +55,7 @@ const chainsToNode: Record<string, string> = {
 	kusama: 'wss://kusama-rpc.dwellir.com',
 	'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
-	bifrost_polkadot: 'wss://bifrost-polkadot-rpc.dwellir.com',
+	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
 	calamari: 'wss://calamari.systems',
 	polkadot: 'wss://polkadot-rpc.dwellir.com',
 	'coretime-westend': 'wss://coretime-westend-rpc.dwellir.com',
