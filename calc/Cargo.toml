@@ -1,6 +1,6 @@
 [package]
 name = "calc"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -16,16 +16,16 @@ crate-type = ["cdylib"]
 debug = ["console_error_panic_hook", "console_log"]
 
 [dependencies]
-wasm-bindgen = { version = "0.2.82", default_features = false, features = ["serde-serialize"] }
-serde_derive = { version = "1", default_features = false }
-serde = { version = "1", default_features = false }
-console_error_panic_hook = { version = "0.1", optional = true }
-console_log = { version = "0.2", optional = true }
-log = "0.4"
+wasm-bindgen = { version = "0.2.100", default-features = false, features = ["serde-serialize"] }
+serde_derive = { version = "1.0.219", default-features = false }
+serde = { version = "1.0.219", default-features = false }
+console_error_panic_hook = { version = "0.1.7", optional = true }
+console_log = { version = "0.2.2", optional = true }
+log = "0.4.27"
 
 [dependencies.sp-arithmetic]
 version = "5.0.0"
-default_features = false
+default-features = false
 
 [profile.release]
 opt-level = "z"
