@@ -3,7 +3,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 install_wasm_pack() {
-    WASM_PACK_VERSION=0.12.1
+    WASM_PACK_VERSION=0.13.1
     WASM_PACK="wasm-pack"
 
     uname_out="$(uname -s)"
@@ -19,10 +19,10 @@ install_wasm_pack() {
             ## Check if system is linux or mac for sudo or not.
             if [[ $machine = "Darwin" ]]
             then
-                cargo install "$WASM_PACK" --vers 0.12.1;
+                cargo install "$WASM_PACK" --vers 0.13.1;
             elif [[ $machine = "Linux" ]]
             then
-                sudo cargo install "$WASM_PACK" --vers 0.12.1;
+                sudo cargo install "$WASM_PACK" --vers 0.13.1;
             fi
         else
             echo "Skipping the installation of $WASM_PACK...";
