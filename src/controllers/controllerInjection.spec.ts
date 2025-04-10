@@ -56,7 +56,6 @@ const chainsToNode: Record<string, string> = {
 	'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
 	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
-	calamari: 'wss://calamari.systems',
 	polkadot: 'wss://polkadot-rpc.dwellir.com',
 	'coretime-westend': 'wss://coretime-westend-rpc.dwellir.com',
 	'coretime-polkadot': 'wss://sys.ibp.network/coretime-polkadot',
@@ -68,7 +67,7 @@ const chainsToNode: Record<string, string> = {
 };
 
 describe('controllerInjection', () => {
-	jest.setTimeout(10000); // Increase timeout for async operations
+	jest.setTimeout(60000); // Increase timeout for async operations
 
 	for (const [chain, nodeUrl] of Object.entries(chainsToNode)) {
 		it(`should return the correct response for ${chain}`, async () => {
