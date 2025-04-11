@@ -50,6 +50,11 @@ import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
 
+interface MultiChainApi {
+	multiChainApi?: ApiPromise;
+	assetHubMigration: boolean;
+}
+
 export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
@@ -86,20 +91,23 @@ export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'coretime-kusama': coretimeControllers,
 };
 
+export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint']);
+
 /**
  * Return an array of instantiated controller instances based off of a `specName`.
  *
  * @param api ApiPromise to inject into controllers
- * @param implName
+ * @param specName spacName of the chain to get controllers and options for
+ * @param multiChainApi ApiPromise to inject into controllers that support multi-chain
  */
-export function getControllersForSpec(api: ApiPromise, specName: string): AbstractController<AbstractService>[] {
+export function getControllersForSpec(api: ApiPromise, specName: string, multiChainApiOpts: MultiChainApi): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(api, specToControllerMap[specName]);
+		return getControllersFromConfig(api, specToControllerMap[specName], multiChainApiOpts);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(api, defaultControllers);
+	return getControllersFromConfig(api, defaultControllers, multiChainApiOpts);
 }
 
 /**
@@ -109,7 +117,7 @@ export function getControllersForSpec(api: ApiPromise, specName: string): Abstra
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
+function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, multiChainApiOpts: MultiChainApi) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
@@ -126,7 +134,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
  * @param specName specName of chain to get options
  */
 
-export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
+export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string, multiChainApiOpts: MultiChainApi) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
 	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
 
@@ -143,14 +151,22 @@ export const getControllers = (
 	api: ApiPromise,
 	config: ISidecarConfig,
 	specName: string,
+	multiChainApi?: ApiPromise,
 ): AbstractController<AbstractService>[] => {
+
+	const multiChainApiOpts: MultiChainApi = {
+		multiChainApi,
+		assetHubMigration: assetHubSpecNames.has(specName.toLowerCase())
+	}
+
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
 		return getControllersByPallets(
 			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
 			api,
 			specName,
+			multiChainApiOpts
 		);
 	} else {
-		return getControllersForSpec(api, specName);
+		return getControllersForSpec(api, specName, multiChainApiOpts);
 	}
 };

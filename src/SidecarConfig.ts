@@ -59,6 +59,7 @@ export class SidecarConfig {
 			},
 			SUBSTRATE: {
 				URL: config.Get(MODULES.SUBSTRATE, CONFIG.URL) as string,
+				MULTI_CHAIN_URL: config.Get(MODULES.SUBSTRATE, CONFIG.MULTI_CHAIN_URL) as string,
 				TYPES_BUNDLE: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_BUNDLE) as string,
 				TYPES_CHAIN: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_CHAIN) as string,
 				TYPES_SPEC: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_SPEC) as string,

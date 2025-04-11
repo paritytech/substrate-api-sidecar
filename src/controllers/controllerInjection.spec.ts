@@ -24,6 +24,7 @@ const mockSidecarConfig: ISidecarConfig = {
 	},
 	SUBSTRATE: {
 		URL: '',
+		MULTI_CHAIN_URL: '',
 		TYPES_BUNDLE: '',
 		TYPES_CHAIN: '',
 		TYPES_SPEC: '',

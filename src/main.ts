@@ -26,7 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import { getControllers } from './chains-config';
+import { getControllers, assetHubSpecNames } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
@@ -57,11 +57,24 @@ async function main() {
 		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
 
+
+
 	// Gather some basic details about the node so we can display a nice message
 	const [chainName, { implName, specName }] = await Promise.all([
 		api.rpc.system.chain(),
 		api.rpc.state.getRuntimeVersion(),
 	]);
+
+	// Establish a second connection to the node
+	// For now, multi chain support is only for Asset hub.
+	let multiChainApi: ApiPromise | undefined;
+	if (config.SUBSTRATE.MULTI_CHAIN_URL && assetHubSpecNames.has(specName.toString().toLowerCase())) {
+		multiChainApi = await ApiPromise.create({
+			provider: config.SUBSTRATE.MULTI_CHAIN_URL.startsWith('http')
+				? new HttpProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, CACHE_CAPACITY || 0)
+				: new WsProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+		});
+	}
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
@@ -82,7 +95,7 @@ async function main() {
 
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllers(api, config, specName.toString()),
+		controllers: getControllers(api, config, specName.toString(), multiChainApi),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
