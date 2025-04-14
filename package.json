@@ -57,7 +57,7 @@
     "@polkadot/types-codec": "^15.9.1",
     "@polkadot/util": "^13.4.3",
     "@polkadot/util-crypto": "^13.4.3",
-    "@substrate/calc": "^0.3.1",
+    "@substrate/calc": "^0.3.2",
     "argparse": "^2.0.1",
     "confmgr": "^1.1.0",
     "express": "^5.0.1",
