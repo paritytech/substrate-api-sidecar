@@ -20,6 +20,7 @@ import { ISidecarConfig } from 'src/types/sidecar-config';
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
 import { AbstractService } from '../services/AbstractService';
+import type { MultiChainApi } from '../types/chains-config';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { assetHubKusamaControllers } from './assetHubKusamaControllers';
@@ -49,11 +50,6 @@ import { polymeshControllers } from './polymeshControllers';
 import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
-
-interface MultiChainApi {
-	multiChainApi?: ApiPromise;
-	assetHubMigration: boolean;
-}
 
 export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
@@ -100,7 +96,11 @@ export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint'])
  * @param specName spacName of the chain to get controllers and options for
  * @param multiChainApi ApiPromise to inject into controllers that support multi-chain
  */
-export function getControllersForSpec(api: ApiPromise, specName: string, multiChainApiOpts: MultiChainApi): AbstractController<AbstractService>[] {
+export function getControllersForSpec(
+	api: ApiPromise,
+	specName: string,
+	multiChainApiOpts: MultiChainApi,
+): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
 		return getControllersFromConfig(api, specToControllerMap[specName], multiChainApiOpts);
 	}
@@ -121,7 +121,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, mul
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](api, config.options));
+		acc.push(new controllers[controller](api, Object.assign({}, config.options, { multiChainApi: multiChainApiOpts })));
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
@@ -133,14 +133,18 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, mul
  * @param api ApiPromise to inject into controllers
  * @param specName specName of chain to get options
  */
-
-export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string, multiChainApiOpts: MultiChainApi) => {
+export const getControllersByPallets = (
+	pallets: string[],
+	api: ApiPromise,
+	specName: string,
+	multiChainApiOpts: MultiChainApi,
+) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
 	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
 
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
-			controllersSet.push(new controller(api, config));
+			controllersSet.push(new controller(api, Object.assign({}, config, { multiChainApi: multiChainApiOpts })));
 		}
 	});
 
@@ -153,18 +157,17 @@ export const getControllers = (
 	specName: string,
 	multiChainApi?: ApiPromise,
 ): AbstractController<AbstractService>[] => {
-
 	const multiChainApiOpts: MultiChainApi = {
 		multiChainApi,
-		assetHubMigration: assetHubSpecNames.has(specName.toLowerCase())
-	}
+		assetHubMigration: assetHubSpecNames.has(specName.toLowerCase()),
+	};
 
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
 		return getControllersByPallets(
 			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
 			api,
 			specName,
-			multiChainApiOpts
+			multiChainApiOpts,
 		);
 	} else {
 		return getControllersForSpec(api, specName, multiChainApiOpts);

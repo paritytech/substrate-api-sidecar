@@ -26,7 +26,7 @@ import { json } from 'express';
 
 import packageJSON from '../package.json';
 import App from './App';
-import { getControllers, assetHubSpecNames } from './chains-config';
+import { assetHubSpecNames, getControllers } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
@@ -57,8 +57,6 @@ async function main() {
 		/* eslint-enable @typescript-eslint/no-var-requires */
 	});
 
-
-
 	// Gather some basic details about the node so we can display a nice message
 	const [chainName, { implName, specName }] = await Promise.all([
 		api.rpc.system.chain(),
@@ -68,6 +66,7 @@ async function main() {
 	// Establish a second connection to the node
 	// For now, multi chain support is only for Asset hub.
 	let multiChainApi: ApiPromise | undefined;
+	// TODO: If the chain is assethub and the multichain url is not there, give a warning.
 	if (config.SUBSTRATE.MULTI_CHAIN_URL && assetHubSpecNames.has(specName.toString().toLowerCase())) {
 		multiChainApi = await ApiPromise.create({
 			provider: config.SUBSTRATE.MULTI_CHAIN_URL.startsWith('http')
