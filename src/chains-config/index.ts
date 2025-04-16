@@ -97,17 +97,17 @@ export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint'])
  * @param multiChainApi ApiPromise to inject into controllers that support multi-chain
  */
 export function getControllersForSpec(
-	api: ApiPromise,
+	apiUrl: string,
 	specName: string,
 	multiChainApiOpts: MultiChainApi,
 ): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(api, specToControllerMap[specName], multiChainApiOpts);
+		return getControllersFromConfig(apiUrl, specToControllerMap[specName], multiChainApiOpts);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(api, defaultControllers, multiChainApiOpts);
+	return getControllersFromConfig(apiUrl, defaultControllers, multiChainApiOpts);
 }
 
 /**
@@ -117,11 +117,13 @@ export function getControllersForSpec(
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, multiChainApiOpts: MultiChainApi) {
+function getControllersFromConfig(apiUrl: string, config: ControllerConfig, multiChainApiOpts: MultiChainApi) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](api, Object.assign({}, config.options, { multiChainApi: multiChainApiOpts })));
+		acc.push(
+			new controllers[controller](apiUrl, Object.assign({}, config.options, { multiChainApi: multiChainApiOpts })),
+		);
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
@@ -135,7 +137,7 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig, mul
  */
 export const getControllersByPallets = (
 	pallets: string[],
-	api: ApiPromise,
+	api: string,
 	specName: string,
 	multiChainApiOpts: MultiChainApi,
 ) => {
@@ -161,15 +163,14 @@ export const getControllers = (
 		multiChainApi,
 		assetHubMigration: assetHubSpecNames.has(specName.toLowerCase()),
 	};
-
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
 		return getControllersByPallets(
 			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
-			api,
+			config.SUBSTRATE.URL,
 			specName,
 			multiChainApiOpts,
 		);
 	} else {
-		return getControllersForSpec(api, specName, multiChainApiOpts);
+		return getControllersForSpec(config.SUBSTRATE.URL, specName, multiChainApiOpts);
 	}
 };

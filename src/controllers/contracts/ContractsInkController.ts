@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
@@ -27,7 +26,7 @@ import AbstractController from '../AbstractController';
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
 	static controllerName = 'ContractsInk';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/contracts/ink/:address', new ContractsInkService(api));
 		this.initRoutes();
 	}
@@ -47,7 +46,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 		{ params: { address }, body, query: { method = 'get', gasLimit, storageDepositLimit, args } },
 		res,
 	): Promise<void> => {
-		const { api } = this;
+		const api = await this.api();
 		const argsArray = Array.isArray(args) ? args : [];
 		const contract = new ContractPromise(api, body, address);
 		if (!contract.query[method]) {

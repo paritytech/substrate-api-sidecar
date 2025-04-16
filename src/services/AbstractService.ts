@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { Text, Vec } from '@polkadot/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { BadRequest, HttpError } from 'http-errors';
+import { ApiPromiseRegistry } from 'src/apiRegistry/index.ts';
 
 export class EtheuremAddressNotSupported extends Error implements HttpError {
 	public readonly status: number;
@@ -34,7 +35,7 @@ export class EtheuremAddressNotSupported extends Error implements HttpError {
 }
 
 export abstract class AbstractService {
-	constructor(protected api: ApiPromise) {}
+	constructor(protected apiUrl: string) {}
 
 	/**
 	 * Process metadata documention.
@@ -59,5 +60,9 @@ export abstract class AbstractService {
 		}
 
 		return new BadRequest(err.message);
+	}
+
+	api(): Promise<ApiPromise> {
+		return ApiPromiseRegistry.getInstance(this.apiUrl);
 	}
 }

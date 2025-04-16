@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import { IPalletNominationPool, IPalletNominationPoolInfo } from '../../types/responses/';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsNominationPoolService extends AbstractService {
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api);
 	}
 	/**
@@ -32,7 +31,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param getMetaData boolean determining whether to query pool metadata
 	 */
 	async fetchNominationPoolById(poolId: number, hash: BlockHash, getMetaData: boolean): Promise<IPalletNominationPool> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 		let metadata = '';
 
@@ -75,7 +74,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchNominationPoolInfo(hash: BlockHash): Promise<IPalletNominationPoolInfo> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		const [

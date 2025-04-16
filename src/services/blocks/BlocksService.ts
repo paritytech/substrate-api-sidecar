@@ -93,7 +93,7 @@ enum Event {
 
 export class BlocksService extends AbstractService {
 	constructor(
-		api: ApiPromise,
+		api: string,
 		private minCalcFeeRuntime: IOption<number>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
@@ -120,7 +120,7 @@ export class BlocksService extends AbstractService {
 			paraId,
 		}: FetchBlockOptions,
 	): Promise<IBlock> {
-		const { api } = this;
+		const api = await this.api();
 		const [{ block }, { specName, specVersion }, validators, events, finalizedHead] = await Promise.all([
 			api.rpc.chain.getBlock(hash),
 			api.rpc.state.getRuntimeVersion(hash),
@@ -231,7 +231,7 @@ export class BlocksService extends AbstractService {
 		specName: Text,
 		historicApi?: ApiDecoration<'promise'>,
 	) {
-		const { api } = this;
+		const api = await this.api();
 		if (noFees) {
 			extrinsics[idx].info = {};
 			return;
@@ -394,7 +394,7 @@ export class BlocksService extends AbstractService {
 		estWeight: string,
 		historicApi?: ApiDecoration<'promise'>,
 	): Promise<string> {
-		const { api } = this;
+		const api = await this.api();
 		// Get injected historicApi for previousBlockHash or create a new one
 		const apiAt = historicApi || (await api.at(previousBlockHash));
 
@@ -424,7 +424,7 @@ export class BlocksService extends AbstractService {
 		previousBlockHash: BlockHash,
 		historicApi?: ApiDecoration<'promise'>,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
-		const { api } = this;
+		const api = await this.api();
 		// Get injected historicApi for previousBlockHash or create a new one
 		const apiAt = historicApi || (await api.at(previousBlockHash));
 		if (apiAt.call.transactionPaymentApi.queryInfo) {
@@ -443,7 +443,7 @@ export class BlocksService extends AbstractService {
 	 * @param blockNumber The blockId being queried
 	 */
 	private async fetchPreviousBlockHash(blockNumber: Compact<BlockNumber>): Promise<BlockHash> {
-		const { api } = this;
+		const api = await this.api();
 
 		const num = blockNumber.toBn();
 		return num.isZero() ? await api.rpc.chain.getBlockHash(num) : await api.rpc.chain.getBlockHash(num.sub(new BN(1)));
@@ -484,7 +484,7 @@ export class BlocksService extends AbstractService {
 	 * @param hash When no hash is inputted the header of the chain will be queried.
 	 */
 	async fetchBlockHeader(hash?: BlockHash): Promise<Header> {
-		const { api } = this;
+		const api = await this.api();
 
 		const header = hash ? await api.rpc.chain.getHeader(hash) : await api.rpc.chain.getHeader();
 
@@ -796,7 +796,7 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlockRaw(hash: BlockHash): Promise<IBlockRaw> {
-		const { api } = this;
+		const api = await this.api();
 		const { block } = await api.rpc.chain.getBlock(hash);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot, digest } = block.header;

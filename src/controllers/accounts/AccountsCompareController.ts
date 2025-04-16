@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
@@ -26,7 +25,7 @@ import AbstractController from '../AbstractController';
 export default class AccountsCompareController extends AbstractController<AccountsCompareService> {
 	static controllerName = 'AccountsCompare';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/accounts/compare', new AccountsCompareService(api));
 		this.initRoutes();
 	}

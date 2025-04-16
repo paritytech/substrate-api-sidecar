@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 import { IPalletsEventsParam } from 'src/types/requests';
@@ -25,7 +24,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsEventsController extends AbstractController<PalletsEventsService> {
 	static controllerName = 'PalletsEvents';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/:palletId/events', new PalletsEventsService(api));
 
 		this.initRoutes();
@@ -42,9 +41,10 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 		{ query: { at, metadata }, params: { palletId, eventItemId } },
 		res,
 	): Promise<void> => {
+		const api = await this.api();
 		const metadataArg = metadata === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
 		PalletsEventsController.sanitizedSend(
 			res,
@@ -59,9 +59,10 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 	};
 
 	private getEvents: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
+		const api = await this.api();
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
 		PalletsEventsController.sanitizedSend(
 			res,

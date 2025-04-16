@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
@@ -107,7 +106,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	static controllerName = 'Blocks';
 	static requiredPallets = [['System', 'Session']];
 	constructor(
-		api: ApiPromise,
+		api: string,
 		private readonly options: ControllerOptions,
 	) {
 		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
@@ -179,18 +178,18 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 			omitFinalizedTag = true;
 			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			hash = (await (await this.api()).rpc.chain.getHeader()).hash;
 		} else if (finalized === 'false') {
 			// We query the finalized head to know where the latest finalized block
 			// is. It is a way to confirm whether the queried block is less than or
 			// equal to the finalized head.
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			hash = (await (await this.api()).rpc.chain.getHeader()).hash;
 		} else {
 			omitFinalizedTag = false;
 			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
+			hash = await (await this.api()).rpc.chain.getFinalizedHead();
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
@@ -223,7 +222,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			return;
 		}
 
-		const historicApi = await this.api.at(hash);
+		const historicApi = await (await this.api()).at(hash);
 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
@@ -300,7 +299,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			return;
 		}
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
-		const historicApi = await this.api.at(hash);
+		const historicApi = await (await this.api()).at(hash);
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 
 		this.blockStore.set(cacheKey, block);
@@ -334,7 +333,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized } }, res): Promise<void> => {
 		const paramFinalized = finalized !== 'false';
 
-		const hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
+		const hash = paramFinalized ? await (await this.api()).rpc.chain.getFinalizedHead() : undefined;
 
 		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
 	};
@@ -378,7 +377,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				// Get block hash:
 				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
 				// Get API at that hash:
-				const historicApi = await this.api.at(hash);
+				const historicApi = await (await this.api()).at(hash);
 				// Get block details using this API/hash:
 				return await this.service.fetchBlock(hash, historicApi, options);
 			});

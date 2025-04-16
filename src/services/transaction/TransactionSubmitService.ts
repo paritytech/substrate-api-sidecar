@@ -26,7 +26,7 @@ export class TransactionSubmitService extends AbstractService {
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
 	async submitTransaction(transaction: string): Promise<{ hash: Hash }> {
-		const { api } = this;
+		const api = await this.api();
 
 		let tx;
 

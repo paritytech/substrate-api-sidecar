@@ -29,7 +29,7 @@ export class NodeTransactionPoolService extends AbstractService {
 	 * in the transaction pool.
 	 */
 	public async fetchTransactionPool(includeFee: boolean): Promise<INodeTransactionPool> {
-		const { api } = this;
+		const api = await this.api();
 		const extrinsics = await api.rpc.author.pendingExtrinsics();
 
 		if (includeFee) {
@@ -57,7 +57,7 @@ export class NodeTransactionPoolService extends AbstractService {
 	 * @param ext Extrinsic we want to provide all the information for.
 	 */
 	private async extractExtrinsicInfo(ext: Extrinsic) {
-		const { api } = this;
+		const api = await this.api();
 		const { hash, tip } = ext;
 		const u8a = ext.toU8a();
 		const { class: c, partialFee, weight } = await api.call.transactionPaymentApi.queryInfo(u8a, u8a.length);
@@ -91,7 +91,7 @@ export class NodeTransactionPoolService extends AbstractService {
 		dispatchClass: DispatchClass,
 		weight: Weight | WeightV1,
 	): Promise<string> {
-		const { api } = this;
+		const api = await this.api();
 		const { tip, encodedLength: len } = ext;
 		const BN_ONE = new BN(1);
 		const sanitizedClass = this.defineDispatchClassType(dispatchClass);

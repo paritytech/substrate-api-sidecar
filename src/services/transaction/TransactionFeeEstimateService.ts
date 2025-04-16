@@ -31,7 +31,7 @@ export class TransactionFeeEstimateService extends AbstractService {
 		hash: BlockHash,
 		transaction: string,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
-		const { api } = this;
+		const api = await this.api();
 		const apiAt = await api.at(hash);
 
 		try {

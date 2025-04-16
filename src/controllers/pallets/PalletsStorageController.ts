@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
@@ -38,7 +37,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
 	static controllerName = 'PalletsStorage';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();
@@ -55,11 +54,12 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		{ query: { at, keys, metadata }, params: { palletId, storageItemId } },
 		res,
 	): Promise<void> => {
+		const api = await this.api();
 		const parsedKeys = Array.isArray(keys) ? keys : [];
 		const metadataArg = metadata === 'true';
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,
@@ -75,10 +75,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	};
 
 	private getStorage: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
+		const api = await this.api();
 		const onlyIdsArg = onlyIds === 'true';
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await this.api.at(hash);
+		const historicApi = await api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,

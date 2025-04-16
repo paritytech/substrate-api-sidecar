@@ -28,7 +28,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 		const [{ number }, validatorSession, validatorsEntries] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

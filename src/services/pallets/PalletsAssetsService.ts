@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import { IAssetInfo } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsAssetsService extends AbstractService {
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api);
 	}
 
@@ -32,7 +31,7 @@ export class PalletsAssetsService extends AbstractService {
 	 * @param assetId `AssetId` used to get info and metadata for an asset
 	 */
 	async fetchAssetById(hash: BlockHash, assetId: number): Promise<IAssetInfo> {
-		const { api } = this;
+		const api = await this.api();
 
 		const [{ number }, assetInfo, assetMetaData] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

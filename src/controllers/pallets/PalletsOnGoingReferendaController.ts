@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { PalletsOnGoingReferendaService } from '../../services';
@@ -23,7 +22,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsOnGoingReferendaController extends AbstractController<PalletsOnGoingReferendaService> {
 	static controllerName = 'PalletsOnGoingReferenda';
 	static requiredPallets = [['Referenda']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/on-going-referenda', new PalletsOnGoingReferendaService(api));
 		this.initRoutes();
 	}

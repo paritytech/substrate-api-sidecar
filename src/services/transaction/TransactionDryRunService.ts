@@ -33,7 +33,7 @@ export class TransactionDryRunService extends AbstractService {
 		transaction: `0x${string}`,
 		hash?: BlockHash,
 	): Promise<ITransactionDryRun> {
-		const { api } = this;
+		const api = await this.api();
 
 		try {
 			const originCaller: SignedOriginCaller = {

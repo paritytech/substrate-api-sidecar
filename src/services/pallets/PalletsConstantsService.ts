@@ -37,6 +37,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, constantItemId, metadata }: IFetchConstantItemArgs,
 	): Promise<IPalletConstantsItem> {
+		const api = await this.api();
 		const metadataFieldType = 'constants';
 		const palletMetadata = historicApi.registry.metadata;
 
@@ -56,7 +57,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 			palletConstantMetadata = constantItemMetadata;
 		}
 
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+		const { number } = await api.rpc.chain.getHeader(hash);
 
 		return {
 			at: {
@@ -74,11 +75,13 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletConstants> {
+		const api = await this.api();
+
 		const metadataFieldType = 'constants';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);
 
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+		const { number } = await api.rpc.chain.getHeader(hash);
 
 		let items: [] | PalletConstantMetadataLatest[] | Text[];
 		if (palletMeta.constants.isEmpty) {

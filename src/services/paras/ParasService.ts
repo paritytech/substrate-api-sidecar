@@ -61,7 +61,7 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get crowdloan info for
 	 */
 	async crowdloansInfo(hash: BlockHash, paraId: number): Promise<ICrowdloansInfo> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
@@ -110,7 +110,7 @@ export class ParasService extends AbstractService {
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
 	async crowdloans(hash: BlockHash): Promise<ICrowdloans> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
@@ -147,14 +147,14 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.paras, 'paras');
 
 		const [leases, { number }, paraLifecycleOpt] = await Promise.all([
 			historicApi.query.slots.leases<Vec<Option<ITuple<[AccountId, BalanceOf]>>>>(paraId),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.paras.paraLifecycles<Option<ParaLifecycle>>(paraId),
 		]);
 		const blockNumber = number.unwrap();
@@ -214,14 +214,14 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.auctions, 'auctions');
 
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
 			historicApi.query.auctions.auctionInfo<Option<Vec<BlockNumber>>>(),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.auctions.auctionCounter<BlockNumber>(),
 		]);
 		const blockNumber = number.unwrap();
@@ -328,16 +328,16 @@ export class ParasService extends AbstractService {
 	 * response size.
 	 */
 	async leasesCurrent(hash: BlockHash, includeCurrentLeaseHolders: boolean): Promise<ILeasesCurrent> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		let blockNumber, currentLeaseHolders;
 		if (!includeCurrentLeaseHolders) {
-			const { number } = await this.api.rpc.chain.getHeader(hash);
+			const { number } = await api.rpc.chain.getHeader(hash);
 			blockNumber = number.unwrap();
 		} else {
 			const [{ number }, leaseEntries] = await Promise.all([
-				this.api.rpc.chain.getHeader(hash),
+				api.rpc.chain.getHeader(hash),
 				historicApi.query.slots.leases.entries<Vec<Option<ITuple<[AccountId, BalanceOf]>>>, [ParaId]>(),
 			]);
 
@@ -375,13 +375,13 @@ export class ParasService extends AbstractService {
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
 	async paras(hash: BlockHash): Promise<IParas> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.paras, 'paras');
 
 		const [{ number }, paraLifecycles] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.paras.paraLifecycles.entries<ParaLifecycle, [ParaId]>(),
 		]);
 
@@ -420,7 +420,7 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async parasHead(hash: BlockHash, method: string): Promise<IParasHeaders> {
-		const { api } = this;
+		const api = await this.api();
 		const historicApi = await api.at(hash);
 
 		const [{ number }, events] = await Promise.all([api.rpc.chain.getHeader(hash), historicApi.query.system.events()]);

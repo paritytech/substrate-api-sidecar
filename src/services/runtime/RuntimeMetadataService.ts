@@ -29,7 +29,7 @@ export class RuntimeMetadataService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchMetadata(hash: BlockHash): Promise<Metadata> {
-		const { api } = this;
+		const api = await this.api();
 
 		const metadata = await api.rpc.state.getMetadata(hash);
 
@@ -66,7 +66,7 @@ export class RuntimeMetadataService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchMetadataVersions(hash: BlockHash): Promise<string[]> {
-		const { api } = this;
+		const api = await this.api();
 		const apiAt = await api.at(hash);
 
 		const availableVersions = (await apiAt.call.metadata.metadataVersions()).toHuman() as string[];

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
 
@@ -42,7 +41,7 @@ import AbstractController from '../AbstractController';
 export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
 	static controllerName = 'RuntimeMetadata';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
@@ -63,13 +62,13 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	 */
 	private getMetadata: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-
+		const api = await this.api();
 		let historicApi;
 		if (at) {
-			historicApi = await this.api.at(hash);
+			historicApi = await api.at(hash);
 		}
 
-		const registry = historicApi ? historicApi.registry : this.api.registry;
+		const registry = historicApi ? historicApi.registry : api.registry;
 		const metadata = await this.service.fetchMetadata(hash);
 
 		RuntimeMetadataController.sanitizedSend(res, metadata, {
@@ -87,9 +86,10 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		{ params: { metadataVersion }, query: { at } },
 		res,
 	): Promise<void> => {
+		const apiReg = await this.api();
 		const hash = await this.getHashFromAt(at);
 
-		const api = at ? await this.api.at(hash) : this.api;
+		const api = at ? await apiReg.at(hash) : apiReg;
 
 		// Validation of the `metadataVersion` path parameter.
 		const metadataV = metadataVersion.slice(1);

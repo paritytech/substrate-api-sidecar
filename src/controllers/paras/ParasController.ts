@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { validateBoolean } from '../../middleware';
@@ -25,7 +24,7 @@ import AbstractController from '../AbstractController';
 export default class ParasController extends AbstractController<ParasService> {
 	static controllerName = 'Paras';
 	static requiredPallets = [['Paras']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '', new ParasService(api));
 		this.initRoutes();
 	}
@@ -54,7 +53,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	private getParas: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
@@ -77,7 +76,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		{ params: { paraId }, query: { at } },
 		res,
 	): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
@@ -86,7 +85,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getCrowdloans: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
@@ -97,7 +96,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		{ params: { paraId }, query: { at } },
 		res,
 	): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
@@ -106,7 +105,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getLeasesCurrent: RequestHandler = async ({ query: { at, currentLeaseHolders } }, res): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const includeCurrentLeaseHolders = currentLeaseHolders !== 'false';
@@ -115,15 +114,16 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getAuctionsCurrent: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		this.checkParasModule();
+		await this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
 		ParasController.sanitizedSend(res, await this.service.auctionsCurrent(hash));
 	};
 
-	private checkParasModule = (): void => {
-		if (!this.api.query.paras) {
+	private checkParasModule = async (): Promise<void> => {
+		const api = await this.api();
+		if (!api.query.paras) {
 			throw new Error('Parachains are not yet supported on this network.');
 		}
 	};

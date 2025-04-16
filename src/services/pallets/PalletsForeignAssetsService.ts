@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { Option } from '@polkadot/types';
 import { AssetMetadata, BlockHash } from '@polkadot/types/interfaces';
 import { PalletAssetsAssetDetails, StagingXcmV3MultiLocation } from '@polkadot/types/lookup';
@@ -25,7 +24,7 @@ import { IForeignAssetInfo, IForeignAssets } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsForeignAssetsService extends AbstractService {
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api);
 	}
 
@@ -35,7 +34,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchForeignAssets(hash: BlockHash): Promise<IForeignAssets> {
-		const { api } = this;
+		const api = await this.api();
 
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

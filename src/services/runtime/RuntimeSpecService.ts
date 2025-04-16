@@ -20,16 +20,17 @@ import { IRuntimeSpec } from 'src/types/responses';
 import { AbstractService } from '../AbstractService';
 export class RuntimeSpecService extends AbstractService {
 	async fetchSpec(hash: BlockHash): Promise<IRuntimeSpec> {
+		const api = await this.api();
 		const [
 			{ authoringVersion, specName, specVersion, transactionVersion, implVersion },
 			chainType,
 			properties,
 			{ number },
 		] = await Promise.all([
-			this.api.rpc.state.getRuntimeVersion(hash),
-			this.api.rpc.system.chainType(),
-			this.api.rpc.system.properties(),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.state.getRuntimeVersion(hash),
+			api.rpc.system.chainType(),
+			api.rpc.system.properties(),
+			api.rpc.chain.getHeader(hash),
 		]);
 
 		return {

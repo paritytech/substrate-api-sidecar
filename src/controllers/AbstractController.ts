@@ -20,6 +20,7 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
+import { ApiPromiseRegistry } from 'src/apiRegistry/index.ts';
 import { AbstractService } from 'src/services/AbstractService';
 import { AnyJson } from 'src/types/polkadot-js';
 import {
@@ -62,17 +63,20 @@ export default abstract class AbstractController<T extends AbstractService> {
 	static requiredPallets: RequiredPallets;
 
 	constructor(
-		protected api: ApiPromise,
+		protected apiUrl: string,
 		private _path: string,
 		protected service: T,
 	) {}
-
 	get path(): string {
 		return this._path;
 	}
 
 	get router(): Router {
 		return this._router;
+	}
+
+	async api(): Promise<ApiPromise> {
+		return ApiPromiseRegistry.getInstance(this.apiUrl);
 	}
 
 	/**
@@ -151,7 +155,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			const isHexStr = isHexBool(blockId);
 			if (isHexStr && blockId.length === 66) {
 				// This is a block hash
-				return this.api.createType('BlockHash', blockId);
+				return (await this.api()).createType('BlockHash', blockId);
 			} else if (isHexStr) {
 				throw new BadRequest(
 					`Cannot get block hash for ${blockId}. ` + `Hex string block IDs must be 32-bytes (66-characters) in length.`,
@@ -174,14 +178,14 @@ export default abstract class AbstractController<T extends AbstractService> {
 				);
 			}
 
-			return await this.api.rpc.chain.getBlockHash(blockNumber);
+			return await (await this.api()).rpc.chain.getBlockHash(blockNumber);
 		} catch (err) {
 			if (err instanceof HttpError) {
 				// Throw errors we created in the above try block
 				throw err;
 			}
 
-			const { number } = await this.api.rpc.chain.getHeader().catch(() => {
+			const { number } = await (await this.api()).rpc.chain.getHeader().catch(() => {
 				throw new InternalServerError('Failed while trying to get the latest header.');
 			});
 			if (blockNumber && number.toNumber() < blockNumber) {
@@ -263,7 +267,9 @@ export default abstract class AbstractController<T extends AbstractService> {
 	 * @param at should be a block height, hash, or undefined from the `at` query param
 	 */
 	protected async getHashFromAt(at: unknown): Promise<BlockHash> {
-		return typeof at === 'string' ? await this.getHashForBlock(at) : await this.api.rpc.chain.getFinalizedHead();
+		return typeof at === 'string'
+			? await this.getHashForBlock(at)
+			: await (await this.api()).rpc.chain.getFinalizedHead();
 	}
 
 	/**

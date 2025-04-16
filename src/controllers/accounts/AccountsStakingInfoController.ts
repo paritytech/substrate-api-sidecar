@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
@@ -80,7 +79,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		['ParachainStaking', 'System'],
 		['Staking', 'ParachainSystem'],
 	];
-	constructor(api: ApiPromise, options: ControllerOptions) {
+	constructor(api: string, options: ControllerOptions) {
 		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
 		this.initRoutes();
 		this.options = options;
