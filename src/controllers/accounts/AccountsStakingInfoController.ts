@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
 
 import { validateAddress, validateBoolean } from '../../middleware';
@@ -70,6 +71,8 @@ import AbstractController from '../AbstractController';
  * - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
  */
 export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
+	protected options: ControllerOptions;
+
 	static controllerName = 'AccountsStakingInfo';
 	static requiredPallets = [
 		['Staking', 'System'],
@@ -77,9 +80,10 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		['ParachainStaking', 'System'],
 		['Staking', 'ParachainSystem'],
 	];
-	constructor(api: ApiPromise) {
+	constructor(api: ApiPromise, options: ControllerOptions) {
 		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
 		this.initRoutes();
+		this.options = options;
 	}
 
 	protected initRoutes(): void {
@@ -98,8 +102,13 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		{ params: { address }, query: { at, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
+		if (at && this.options.multiChainApi?.assetHubMigration) {
+			throw Error(`Query Parameter 'at' is not supported for /staking-info`);
+		}
+
 		const hash = await this.getHashFromAt(at);
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
+		// TODO: Based on the options use the correct storage call: ie. assethub or other.
 		AccountsStakingInfoController.sanitizedSend(
 			res,
 			await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
