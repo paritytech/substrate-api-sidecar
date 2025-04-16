@@ -1,0 +1,47 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+import { ApiPromise } from '@polkadot/api';
+import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
+import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
+
+import tempTypesBundle from '../override-types/typesBundle';
+import { SidecarConfig } from '../SidecarConfig';
+
+export class ApiPromiseRegistry {
+	// instances of ApiPromise for each defined URL
+	private static _instancesByUrl: Map<string, ApiPromise> = new Map();
+
+	/**
+	 * Get the ApiPromise instance for the given spec name.
+	 * @param specName The spec name to get the ApiPromise instance for.
+	 * @returns The ApiPromise instance for the given spec name.
+	 */
+
+	public static async getInstance(url: string): Promise<ApiPromise> {
+		if (!this._instancesByUrl.has(url)) {
+			const { config } = SidecarConfig;
+
+			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
+			// Instantiate new API Promise instance
+			const api = await ApiPromise.create({
+				provider: config.SUBSTRATE.URL.startsWith('http')
+					? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
+					: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+				// only use extra types if the url is the same as the one in the config
+				...(config.SUBSTRATE.URL === url
+					? {
+							typesBundle: TYPES_BUNDLE
+								? (require(TYPES_BUNDLE) as OverrideBundleType)
+								: (tempTypesBundle as OverrideBundleType),
+							typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,
+							typesSpec: TYPES_SPEC ? (require(TYPES_SPEC) as Record<string, RegistryTypes>) : undefined,
+							types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
+						}
+					: {}),
+			});
+
+			this._instancesByUrl.set(url, api);
+		}
+
+		return this._instancesByUrl.get(url)!;
+	}
+}

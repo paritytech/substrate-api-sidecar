@@ -19,19 +19,16 @@
 // Introduced via `@polkadot/api v7.0.1`.
 import '@polkadot/api-augment';
 
-import { ApiPromise } from '@polkadot/api';
-import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
-import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import packageJSON from '../package.json';
+import { ApiPromiseRegistry } from './apiRegistry/index.ts';
 import App from './App';
-import { assetHubSpecNames, getControllers } from './chains-config';
+import { getControllers } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
-import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
@@ -43,37 +40,27 @@ async function main() {
 
 	logger.info(`Version: ${packageJSON.version}`);
 
-	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
-	// Instantiate a web socket connection to the node and load types
-	const api = await ApiPromise.create({
-		provider: config.SUBSTRATE.URL.startsWith('http')
-			? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
-			: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
-		/* eslint-disable @typescript-eslint/no-var-requires */
-		typesBundle: TYPES_BUNDLE ? (require(TYPES_BUNDLE) as OverrideBundleType) : (tempTypesBundle as OverrideBundleType),
-		typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,
-		typesSpec: TYPES_SPEC ? (require(TYPES_SPEC) as Record<string, RegistryTypes>) : undefined,
-		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
-		/* eslint-enable @typescript-eslint/no-var-requires */
-	});
+	const api = await ApiPromiseRegistry.getInstance(config.SUBSTRATE.URL);
 
 	// Gather some basic details about the node so we can display a nice message
 	const [chainName, { implName, specName }] = await Promise.all([
 		api.rpc.system.chain(),
 		api.rpc.state.getRuntimeVersion(),
 	]);
-
 	// Establish a second connection to the node
 	// For now, multi chain support is only for Asset hub.
-	let multiChainApi: ApiPromise | undefined;
-	// TODO: If the chain is assethub and the multichain url is not there, give a warning.
-	if (config.SUBSTRATE.MULTI_CHAIN_URL && assetHubSpecNames.has(specName.toString().toLowerCase())) {
-		multiChainApi = await ApiPromise.create({
-			provider: config.SUBSTRATE.MULTI_CHAIN_URL.startsWith('http')
-				? new HttpProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, CACHE_CAPACITY || 0)
-				: new WsProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
-		});
-	}
+
+	// TODO: instantiate the multichain connection in APIPromiseRegistry
+
+	// let multiChainApi: ApiPromise | undefined;
+	// // TODO: If the chain is assethub and the multichain url is not there, give a warning.
+	// if (config.SUBSTRATE.MULTI_CHAIN_URL && assetHubSpecNames.has(specName.toString().toLowerCase())) {
+	// 	multiChainApi = await ApiPromise.create({
+	// 		provider: config.SUBSTRATE.MULTI_CHAIN_URL.startsWith('http')
+	// 			? new HttpProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, CACHE_CAPACITY || 0)
+	// 			: new WsProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+	// 	});
+	// }
 
 	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
@@ -94,7 +81,7 @@ async function main() {
 
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllers(api, config, specName.toString(), multiChainApi),
+		controllers: getControllers(api, config, specName.toString()),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
