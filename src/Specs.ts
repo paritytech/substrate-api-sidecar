@@ -128,6 +128,14 @@ export class Specs {
 			}),
 		);
 
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.MULTI_CHAIN_URL, 'Websocket or HTTP URL', {
+				mandatory: false,
+				regexp: /^(ws|wss|http|https)?:\/\/.*/,
+			}),
+		);
+
 		// TYPES_BUNDLE
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
