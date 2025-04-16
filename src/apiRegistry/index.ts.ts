@@ -23,9 +23,9 @@ export class ApiPromiseRegistry {
 			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
 			// Instantiate new API Promise instance
 			const api = await ApiPromise.create({
-				provider: config.SUBSTRATE.URL.startsWith('http')
-					? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
-					: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+				provider: url.startsWith('http')
+					? new HttpProvider(url, undefined, CACHE_CAPACITY || 0)
+					: new WsProvider(url, undefined, undefined, undefined, CACHE_CAPACITY || 0),
 				// only use extra types if the url is the same as the one in the config
 				...(config.SUBSTRATE.URL === url
 					? {
