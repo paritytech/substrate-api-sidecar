@@ -25,7 +25,7 @@ import { Codec } from '@polkadot/types/types';
 import type { ITuple } from '@polkadot/types-codec/types';
 import { Observable } from 'rxjs';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { assetHubWestendMetadataRpcV9435 } from '../../test-helpers/metadata/assetHubWestendMetadata';
 import { assetHubWestendRegistryV9435 } from '../../test-helpers/registries/assetHubWestendRegistry';

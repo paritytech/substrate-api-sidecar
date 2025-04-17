@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { defaultMockApi, pendingExtrinsics } from '../test-helpers/mock';

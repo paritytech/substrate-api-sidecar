@@ -21,7 +21,7 @@ import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { AbstractService } from '../services/AbstractService';
 import { kusamaRegistry } from '../test-helpers/registries';
 import AbstractController from './AbstractController';

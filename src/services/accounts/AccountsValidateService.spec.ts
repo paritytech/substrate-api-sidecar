@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { defaultMockApi } from '../test-helpers/mock';
 import { AccountsValidateService } from './AccountsValidateService';

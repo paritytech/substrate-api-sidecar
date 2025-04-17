@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 import { BadRequest, HttpError } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { AbstractService, EtheuremAddressNotSupported } from './AbstractService';
 import { defaultMockApi } from './test-helpers/mock';
 

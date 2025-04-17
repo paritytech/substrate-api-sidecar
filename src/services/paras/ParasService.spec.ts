@@ -22,7 +22,7 @@ import { Codec } from '@polkadot/types/types';
 import { AbstractInt } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotMetadataRpcV1000001 } from '../../test-helpers/metadata/polkadotV1000001Metadata';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';

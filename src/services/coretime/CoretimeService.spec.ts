@@ -17,7 +17,7 @@
 import type { ApiPromise } from '@polkadot/api';
 import type { Hash } from '@polkadot/types/interfaces';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusamaMetadata';
 import { kusamaMetadataV1003003 } from '../../test-helpers/metadata/kusamaMetadataV1003003';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';

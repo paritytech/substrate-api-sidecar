@@ -19,7 +19,7 @@
 import type { ApiPromise } from '@polkadot/api';
 import type { DispatchError, PostDispatchInfo } from '@polkadot/types/interfaces';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { TransactionResultType } from '../../types/responses';
 import { blockHash22887036, mockAssetHubWestendApi, mockDryRunCall, mockDryRunError } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';

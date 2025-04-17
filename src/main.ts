@@ -22,7 +22,7 @@ import '@polkadot/api-augment';
 import { json } from 'express';
 
 import packageJSON from '../package.json';
-import { ApiPromiseRegistry } from './apiRegistry/index.ts';
+import { ApiPromiseRegistry } from './apiRegistry';
 import App from './App';
 import { getControllers } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';

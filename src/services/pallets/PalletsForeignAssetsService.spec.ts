@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { foreignAssetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
 import { foreignAssetsMetadataWestendAH } from '../test-helpers/mock/assets/mockAssetHubWestendData';

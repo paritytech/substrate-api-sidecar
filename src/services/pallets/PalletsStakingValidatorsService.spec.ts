@@ -18,7 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import type { Hash } from '@polkadot/types/interfaces';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9370 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';

@@ -16,7 +16,7 @@
 
 import { ContractPromise } from '@polkadot/api-contract';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9190 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';

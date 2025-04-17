@@ -23,7 +23,7 @@ import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
 import type { PalletStakingNominations } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { kusamaRegistryV1002000, polkadotRegistry, polkadotRegistryV1002000 } from '../../test-helpers/registries';
 import {

@@ -18,7 +18,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiPromise } from '@polkadot/api';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,

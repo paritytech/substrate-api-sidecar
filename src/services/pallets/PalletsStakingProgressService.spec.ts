@@ -21,7 +21,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import { activeEraAt, blockHash789629, defaultMockApi, erasStartSessionIndexAt } from '../test-helpers/mock';

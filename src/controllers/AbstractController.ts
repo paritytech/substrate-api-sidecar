@@ -31,7 +31,7 @@ import {
 	IRangeQueryParam,
 } from 'src/types/requests';
 
-import { ApiPromiseRegistry } from '../../src/apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';

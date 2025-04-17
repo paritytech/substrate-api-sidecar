@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { assetApprovals, assetsAccount, assetsInfo, assetsMetadata } from '../test-helpers/mock/assets/mockAssetData';

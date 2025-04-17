@@ -20,7 +20,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300, polkadotRegistryV1003000 } from '../../test-helpers/registries';
 import {

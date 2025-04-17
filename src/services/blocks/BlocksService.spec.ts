@@ -22,7 +22,7 @@ import type { GenericCall } from '@polkadot/types/generic';
 import type { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
