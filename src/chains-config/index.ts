@@ -19,7 +19,6 @@ import { ISidecarConfig } from 'src/types/sidecar-config';
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
 import { AbstractService } from '../services/AbstractService';
-import type { MultiChainApi } from '../types/chains-config';
 import { ControllerConfig } from '../types/chains-config';
 import { acalaControllers } from './acalaControllers';
 import { assetHubKusamaControllers } from './assetHubKusamaControllers';
@@ -129,35 +128,29 @@ function getControllersFromConfig(specName: string, config: ControllerConfig) {
  * @param api ApiPromise to inject into controllers
  * @param specName specName of chain to get options
  */
-export const getControllersByPallets = (
-	pallets: string[],
-	api: string,
-	specName: string,
-	multiChainApiOpts: MultiChainApi,
-) => {
+export const getControllersByPallets = (specName: string, pallets: string[]) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
 	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
 
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
-			controllersSet.push(new controller(api, Object.assign({}, config, { multiChainApi: multiChainApiOpts })));
+			controllersSet.push(new controller(specName, config));
 		}
 	});
 
 	return controllersSet;
 };
 
-export const getControllers = (config: ISidecarConfig, specName: string): AbstractController<AbstractService>[] => {
+export const getControllers = (
+	config: ISidecarConfig,
+	specName: string,
+	pallets: string[],
+): AbstractController<AbstractService>[] => {
 	if (!specName || !specName.length) {
 		throw new Error('specName is required');
 	}
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
-		throw new Error('Injected controllers are not supported yet');
-		// return getControllersByPallets(
-		// 	(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
-		// 	config.SUBSTRATE.URL,
-		// 	specName,
-		// );
+		return getControllersByPallets(specName, pallets);
 	} else {
 		return getControllersForSpec(specName);
 	}

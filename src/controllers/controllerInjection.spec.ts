@@ -104,7 +104,9 @@ describe('controllerInjection', () => {
 		} finally {
 			await api?.disconnect(); // Close WebSocket connection
 		}
-
+		const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+			(p) => p.name as string,
+		);
 		const controllers = getControllers(
 			{
 				...mockSidecarConfig,
@@ -114,6 +116,7 @@ describe('controllerInjection', () => {
 				},
 			},
 			'mock_spec',
+			pallets,
 		);
 
 		expect(controllers).toBeDefined();
@@ -128,6 +131,7 @@ describe('controllerInjection', () => {
 				},
 			},
 			'mock_spec',
+			[],
 		);
 
 		expect(controllersDefault).toBeDefined();

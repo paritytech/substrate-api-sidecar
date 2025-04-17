@@ -91,9 +91,23 @@ async function main() {
 
 	const specNames = await initApis();
 
+	const pallets = [];
+
+	if (config.EXPRESS.INJECTED_CONTROLLERS) {
+		// Get the pallets from the API
+		const api = ApiPromiseRegistry.getApi(specNames);
+		if (api) {
+			const chainPallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+				(p) => p.name as string,
+			);
+
+			pallets.push(...chainPallets);
+		}
+	}
+
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllers(config, specNames),
+		controllers: getControllers(config, specNames, pallets),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
