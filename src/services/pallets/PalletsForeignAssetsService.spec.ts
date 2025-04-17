@@ -150,7 +150,6 @@ const palletsForeignAssetsServiceWAH = new PalletsForeignAssetsService('mock');
 describe('PalletsForeignAssetsService', () => {
 	describe('PalletsForeignAssetsService.fetchForeignAssets', () => {
 		it('Should return the correct response for Foreign Assets', async () => {
-
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWAH);
 			const response = await palletsForeignAssetsServiceWAH.fetchForeignAssets(blockHash5236177);
 
