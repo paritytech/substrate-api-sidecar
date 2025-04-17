@@ -109,8 +109,8 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	): Promise<void> => {
 		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
 		let hash = await this.getHashFromAt(at);
-		let apiAt = await (await this.api()).at(hash);
-		const runtimeInfo = await (await this.api()).rpc.state.getRuntimeVersion(hash);
+		let apiAt = await this.api.at(hash);
+		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 		if (currentEra <= 519 && depth !== undefined && isKusama) {
@@ -127,7 +127,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		if (currentEra < 518 && isKusama) {
 			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(eraStartBlock.toString());
-			apiAt = await (await this.api()).at(hash);
+			apiAt = await this.api.at(hash);
 		}
 
 		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;

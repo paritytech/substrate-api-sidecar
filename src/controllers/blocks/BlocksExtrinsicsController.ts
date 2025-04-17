@@ -76,8 +76,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			Number(options.checkDecodedXcm);
 
 		const isBlockCached = this.blockStore.get(cacheKey);
-		const api = await this.api();
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
 

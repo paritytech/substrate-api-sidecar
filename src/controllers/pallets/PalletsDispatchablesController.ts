@@ -56,11 +56,10 @@ export default class PalletsDispatchablesController extends AbstractController<P
 		{ query: { metadata }, params: { palletId, dispatchableItemId } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const at = undefined;
 		const hash = await this.getHashFromAt(at);
 		const metadataArg = metadata === 'true';
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsDispatchablesController.sanitizedSend(
 			res,
@@ -82,11 +81,10 @@ export default class PalletsDispatchablesController extends AbstractController<P
 		{ params: { palletId }, query: { onlyIds } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const at = undefined;
 		const hash = await this.getHashFromAt(at);
 		const onlyIdsArg = onlyIds === 'true';
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsDispatchablesController.sanitizedSend(
 			res,

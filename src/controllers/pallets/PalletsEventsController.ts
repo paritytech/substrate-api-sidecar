@@ -41,10 +41,9 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 		{ query: { at, metadata }, params: { palletId, eventItemId } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const metadataArg = metadata === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsEventsController.sanitizedSend(
 			res,
@@ -59,10 +58,9 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 	};
 
 	private getEvents: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
-		const api = await this.api();
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsEventsController.sanitizedSend(
 			res,

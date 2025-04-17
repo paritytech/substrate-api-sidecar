@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { controllers } from '../controllers';
@@ -96,18 +95,14 @@ export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint'])
  * @param specName spacName of the chain to get controllers and options for
  * @param multiChainApi ApiPromise to inject into controllers that support multi-chain
  */
-export function getControllersForSpec(
-	apiUrl: string,
-	specName: string,
-	multiChainApiOpts: MultiChainApi,
-): AbstractController<AbstractService>[] {
+export function getControllersForSpec(specName: string): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(apiUrl, specToControllerMap[specName], multiChainApiOpts);
+		return getControllersFromConfig(specName, specToControllerMap[specName]);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(apiUrl, defaultControllers, multiChainApiOpts);
+	return getControllersFromConfig(specName, defaultControllers);
 }
 
 /**
@@ -117,13 +112,12 @@ export function getControllersForSpec(
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(apiUrl: string, config: ControllerConfig, multiChainApiOpts: MultiChainApi) {
+function getControllersFromConfig(specName: string, config: ControllerConfig) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(
-			new controllers[controller](apiUrl, Object.assign({}, config.options, { multiChainApi: multiChainApiOpts })),
-		);
+		// TODO: pass specName to retrieve API, if allows multichain, do something more
+		acc.push(new controllers[controller](specName, config.options));
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
@@ -153,24 +147,18 @@ export const getControllersByPallets = (
 	return controllersSet;
 };
 
-export const getControllers = (
-	api: ApiPromise,
-	config: ISidecarConfig,
-	specName: string,
-	multiChainApi?: ApiPromise,
-): AbstractController<AbstractService>[] => {
-	const multiChainApiOpts: MultiChainApi = {
-		multiChainApi,
-		assetHubMigration: assetHubSpecNames.has(specName.toLowerCase()),
-	};
+export const getControllers = (config: ISidecarConfig, specName: string): AbstractController<AbstractService>[] => {
+	if (!specName || !specName.length) {
+		throw new Error('specName is required');
+	}
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
-		return getControllersByPallets(
-			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
-			config.SUBSTRATE.URL,
-			specName,
-			multiChainApiOpts,
-		);
+		throw new Error('Injected controllers are not supported yet');
+		// return getControllersByPallets(
+		// 	(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
+		// 	config.SUBSTRATE.URL,
+		// 	specName,
+		// );
 	} else {
-		return getControllersForSpec(config.SUBSTRATE.URL, specName, multiChainApiOpts);
+		return getControllersForSpec(specName);
 	}
 };

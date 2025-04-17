@@ -52,10 +52,9 @@ export default class PalletsConstantsController extends AbstractController<Palle
 		{ query: { at, metadata }, params: { palletId, constantItemId } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const metadataArg = metadata === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsConstantsController.sanitizedSend(
 			res,
@@ -70,10 +69,9 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	};
 
 	private getConsts: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
-		const api = await this.api();
 		const onlyIdsArg = onlyIds === 'true';
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsConstantsController.sanitizedSend(
 			res,

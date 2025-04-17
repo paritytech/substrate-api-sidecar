@@ -35,7 +35,7 @@ export class EtheuremAddressNotSupported extends Error implements HttpError {
 }
 
 export abstract class AbstractService {
-	constructor(protected apiUrl: string) {}
+	constructor(protected specName: string) {}
 
 	/**
 	 * Process metadata documention.
@@ -62,7 +62,11 @@ export abstract class AbstractService {
 		return new BadRequest(err.message);
 	}
 
-	api(): Promise<ApiPromise> {
-		return ApiPromiseRegistry.getInstance(this.apiUrl);
+	get api(): ApiPromise {
+		const api = ApiPromiseRegistry.getApi(this.specName);
+		if (!api) {
+			throw new Error(`API not found for spec name: ${this.specName}`);
+		}
+		return api;
 	}
 }

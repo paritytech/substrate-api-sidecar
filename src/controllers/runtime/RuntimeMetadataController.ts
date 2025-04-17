@@ -62,13 +62,12 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	 */
 	private getMetadata: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-		const api = await this.api();
 		let historicApi;
 		if (at) {
-			historicApi = await api.at(hash);
+			historicApi = await this.api.at(hash);
 		}
 
-		const registry = historicApi ? historicApi.registry : api.registry;
+		const registry = historicApi ? historicApi.registry : this.api.registry;
 		const metadata = await this.service.fetchMetadata(hash);
 
 		RuntimeMetadataController.sanitizedSend(res, metadata, {
@@ -86,10 +85,9 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 		{ params: { metadataVersion }, query: { at } },
 		res,
 	): Promise<void> => {
-		const apiReg = await this.api();
 		const hash = await this.getHashFromAt(at);
 
-		const api = at ? await apiReg.at(hash) : apiReg;
+		const api = at ? await this.api.at(hash) : this.api;
 
 		// Validation of the `metadataVersion` path parameter.
 		const metadataV = metadataVersion.slice(1);
@@ -107,7 +105,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 
 		let availableVersions = [];
 		try {
-			availableVersions = (await api.call.metadata.metadataVersions()).toJSON() as unknown as Vec<u32>;
+			availableVersions = (await this.api.call.metadata.metadataVersions()).toJSON() as unknown as Vec<u32>;
 		} catch {
 			throw new Error(`Function 'api.call.metadata.metadataVersions()' is not available at this block height.`);
 		}
@@ -115,7 +113,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 			throw new Error(`Version ${version} of Metadata is not available.`);
 		}
 
-		const registry = api.registry;
+		const registry = this.api.registry;
 		const metadata = await this.service.fetchMetadataVersioned(api, version);
 
 		RuntimeMetadataController.sanitizedSend(res, metadata, {

@@ -82,11 +82,11 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 			typeof token === 'string'
 				? token.toUpperCase()
 				: // We assume the first token is the native token
-					(await this.api()).registry.chainTokens[0].toUpperCase();
+					this.api.registry.chainTokens[0].toUpperCase();
 		const withDenomination = denominated === 'true';
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await (await this.api()).at(hash);
+		const historicApi = await this.api.at(hash);
 
 		AccountsBalanceController.sanitizedSend(
 			res,

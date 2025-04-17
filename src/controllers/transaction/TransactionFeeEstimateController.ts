@@ -69,8 +69,7 @@ export default class TransactionFeeEstimateController extends AbstractController
 				error: 'Missing field `tx` on request body.',
 			};
 		}
-		const api = await this.api();
-		const hash = await api.rpc.chain.getFinalizedHead();
+		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		TransactionFeeEstimateController.sanitizedSend(res, await this.service.fetchTransactionFeeEstimate(hash, tx));
 	};

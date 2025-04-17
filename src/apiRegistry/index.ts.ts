@@ -8,7 +8,7 @@ import { SidecarConfig } from '../SidecarConfig';
 
 export class ApiPromiseRegistry {
 	// instances of ApiPromise for each defined URL
-	private static _instancesByUrl: Map<string, ApiPromise> = new Map();
+	private static _instancesBySpecName: Map<string, ApiPromise> = new Map();
 
 	/**
 	 * Get the ApiPromise instance for the given spec name.
@@ -16,8 +16,8 @@ export class ApiPromiseRegistry {
 	 * @returns The ApiPromise instance for the given spec name.
 	 */
 
-	public static async getInstance(url: string): Promise<ApiPromise> {
-		if (!this._instancesByUrl.has(url)) {
+	public static async initApi(url: string): Promise<ApiPromise> {
+		if (!this._instancesBySpecName.has(url)) {
 			const { config } = SidecarConfig;
 
 			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
@@ -39,9 +39,15 @@ export class ApiPromiseRegistry {
 					: {}),
 			});
 
-			this._instancesByUrl.set(url, api);
+			const { specName } = await api.rpc.state.getRuntimeVersion();
+
+			this._instancesBySpecName.set(specName.toString(), api);
 		}
 
-		return this._instancesByUrl.get(url)!;
+		return this.getApi(url)!;
+	}
+
+	public static getApi(specName: string): ApiPromise | undefined {
+		return this._instancesBySpecName.get(specName);
 	}
 }

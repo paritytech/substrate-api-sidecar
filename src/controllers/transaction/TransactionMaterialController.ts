@@ -119,10 +119,9 @@ export default class TransactionMaterialController extends AbstractController<Tr
 		{ params: { metadataVersion }, query: { at, metadata } },
 		res,
 	): Promise<void> => {
-		const apiReg = await this.api();
 		const hash = await this.getHashFromAt(at);
 
-		const api = at ? await apiReg.at(hash) : apiReg;
+		const api = at ? await this.api.at(hash) : this.api;
 
 		// Validation of the `metadataVersion` path parameter.
 		const metadataV = metadataVersion.slice(1);

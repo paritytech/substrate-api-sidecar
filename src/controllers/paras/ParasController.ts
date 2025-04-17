@@ -53,7 +53,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	}
 
 	private getParas: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
@@ -76,7 +76,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		{ params: { paraId }, query: { at } },
 		res,
 	): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
@@ -85,7 +85,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getCrowdloans: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
@@ -96,7 +96,7 @@ export default class ParasController extends AbstractController<ParasService> {
 		{ params: { paraId }, query: { at } },
 		res,
 	): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const paraIdArg = this.parseNumberOrThrow(paraId, 'paraId must be an integer');
@@ -105,7 +105,7 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getLeasesCurrent: RequestHandler = async ({ query: { at, currentLeaseHolders } }, res): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 		const includeCurrentLeaseHolders = currentLeaseHolders !== 'false';
@@ -114,16 +114,15 @@ export default class ParasController extends AbstractController<ParasService> {
 	};
 
 	private getAuctionsCurrent: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		await this.checkParasModule();
+		this.checkParasModule();
 
 		const hash = await this.getHashFromAt(at);
 
 		ParasController.sanitizedSend(res, await this.service.auctionsCurrent(hash));
 	};
 
-	private checkParasModule = async (): Promise<void> => {
-		const api = await this.api();
-		if (!api.query.paras) {
+	private checkParasModule = (): void => {
+		if (!this.api.query.paras) {
 			throw new Error('Parachains are not yet supported on this network.');
 		}
 	};

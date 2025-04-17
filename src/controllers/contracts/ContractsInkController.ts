@@ -46,9 +46,8 @@ export default class ContractsInkController extends AbstractController<Contracts
 		{ params: { address }, body, query: { method = 'get', gasLimit, storageDepositLimit, args } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const argsArray = Array.isArray(args) ? args : [];
-		const contract = new ContractPromise(api, body, address);
+		const contract = new ContractPromise(this.api, body, address);
 		if (!contract.query[method]) {
 			throw new BadRequest(`Invalid Method: Contract does not have the given ${method} message.`);
 		}

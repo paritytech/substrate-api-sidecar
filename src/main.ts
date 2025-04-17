@@ -32,6 +32,39 @@ import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
 
+/*
+ * initApis function prepares the API registry and initializes the API
+ * it returns the specName of the main API to be used by sidecar
+ */
+async function initApis(): Promise<string> {
+	const { config } = SidecarConfig;
+	const { logger } = Log;
+
+	logger.info('Initializing APIs');
+	const requiredApis = [config.SUBSTRATE.URL, config.SUBSTRATE.MULTI_CHAIN_URL].filter((el) => !!el);
+
+	// Create the API registry
+	const apis = await Promise.all(requiredApis.map((api) => ApiPromiseRegistry.initApi(api)));
+	const specNames = [];
+	for (let i = 0; i < apis.length; i++) {
+		if (!apis[i]) {
+			logger.error('Failed to create API instance');
+		}
+		const api = apis[i];
+		// Gather some basic details about the node so we can display a nice message
+		const [chainName, { implName, specName }] = await Promise.all([
+			api.rpc.system.chain(),
+			api.rpc.state.getRuntimeVersion(),
+		]);
+
+		startUpPrompt(requiredApis[i], chainName.toString(), implName.toString());
+		specNames.push(specName.toString());
+	}
+
+	logger.info('All APIs initialized');
+	return specNames[0];
+}
+
 async function main() {
 	const { config } = SidecarConfig;
 	const { logger } = Log;
@@ -39,30 +72,6 @@ async function main() {
 	consoleOverride(logger);
 
 	logger.info(`Version: ${packageJSON.version}`);
-
-	const api = await ApiPromiseRegistry.getInstance(config.SUBSTRATE.URL);
-
-	// Gather some basic details about the node so we can display a nice message
-	const [chainName, { implName, specName }] = await Promise.all([
-		api.rpc.system.chain(),
-		api.rpc.state.getRuntimeVersion(),
-	]);
-	// Establish a second connection to the node
-	// For now, multi chain support is only for Asset hub.
-
-	// TODO: instantiate the multichain connection in APIPromiseRegistry
-
-	// let multiChainApi: ApiPromise | undefined;
-	// // TODO: If the chain is assethub and the multichain url is not there, give a warning.
-	// if (config.SUBSTRATE.MULTI_CHAIN_URL && assetHubSpecNames.has(specName.toString().toLowerCase())) {
-	// 	multiChainApi = await ApiPromise.create({
-	// 		provider: config.SUBSTRATE.MULTI_CHAIN_URL.startsWith('http')
-	// 			? new HttpProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, CACHE_CAPACITY || 0)
-	// 			: new WsProvider(config.SUBSTRATE.MULTI_CHAIN_URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
-	// 	});
-	// }
-
-	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
 
@@ -79,9 +88,11 @@ async function main() {
 		metricsApp.listen();
 	}
 
+	const specNames = await initApis();
+
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllers(api, config, specName.toString()),
+		controllers: getControllers(config, specNames),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
@@ -129,6 +140,7 @@ function startUpPrompt(url: string, chainName: string, implName: string) {
 
 process.on('SIGINT', function () {
 	console.log('Caught interrupt signal, exiting...');
+	// TODO: disconnnect all APIs
 	process.exit(0);
 });
 

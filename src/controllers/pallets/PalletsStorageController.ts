@@ -54,12 +54,11 @@ export default class PalletsStorageController extends AbstractController<Pallets
 		{ query: { at, keys, metadata }, params: { palletId, storageItemId } },
 		res,
 	): Promise<void> => {
-		const api = await this.api();
 		const parsedKeys = Array.isArray(keys) ? keys : [];
 		const metadataArg = metadata === 'true';
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,
@@ -75,11 +74,10 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	};
 
 	private getStorage: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
-		const api = await this.api();
 		const onlyIdsArg = onlyIds === 'true';
 
 		const hash = await this.getHashFromAt(at);
-		const historicApi = await api.at(hash);
+		const historicApi = await this.api.at(hash);
 
 		PalletsStorageController.sanitizedSend(
 			res,
