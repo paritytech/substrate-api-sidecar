@@ -115,7 +115,6 @@ function getControllersFromConfig(specName: string, config: ControllerConfig) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		// TODO: pass specName to retrieve API, if allows multichain, do something more
 		acc.push(new controllers[controller](specName, config.options));
 
 		return acc;
