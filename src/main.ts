@@ -41,7 +41,7 @@ async function initApis(): Promise<string> {
 	const { logger } = Log;
 
 	logger.info('Initializing APIs');
-	const requiredApis = [config.SUBSTRATE.URL, config.SUBSTRATE.MULTI_CHAIN_URL].filter((el) => !!el);
+	const requiredApis = [config.SUBSTRATE.URL, config.SUBSTRATE.MULTI_CHAIN_URL].filter((apiUrl) => !!apiUrl);
 
 	// Create the API registry
 	const apis = await Promise.all(requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl)));
