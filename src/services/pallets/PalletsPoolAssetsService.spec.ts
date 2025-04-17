@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash5236177, mockAssetHubWestendApi } from '../test-helpers/mock';
 import {
@@ -38,9 +39,12 @@ const mockApi = {
 	},
 } as unknown as ApiPromise;
 
-const palletsPoolAssetsService = new PalletsPoolAssetsService(mockApi);
+const palletsPoolAssetsService = new PalletsPoolAssetsService('mock');
 
 describe('PalletsPoolAssetsService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('PalletsPoolAssetsService.fetchPoolAssetById', () => {
 		it('Should return the correct response for a Pool AssetId', async () => {
 			const expectedResponse = {

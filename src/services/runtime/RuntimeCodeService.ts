@@ -30,7 +30,7 @@ export class RuntimeCodeService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchCode(hash: BlockHash): Promise<IMetadataCode> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [code, { number }] = await Promise.all([
 			api.rpc.state.getStorage(CODE_KEY, hash),

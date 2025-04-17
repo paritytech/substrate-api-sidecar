@@ -56,7 +56,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 		if (metadata) {
 			palletErrorMetadata = (errorItemMetadata[1] as unknown as IsError).meta;
 		}
-		const api = await this.api();
+		const { api } = this;
 		const { number } = await api.rpc.chain.getHeader(hash);
 
 		return {
@@ -75,7 +75,7 @@ export class PalletsErrorsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletErrors> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'errors';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);

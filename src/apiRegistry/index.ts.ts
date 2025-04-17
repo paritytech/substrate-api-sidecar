@@ -3,12 +3,14 @@ import { ApiPromise } from '@polkadot/api';
 import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
 import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 
+import { Log } from '../logging/Log';
 import tempTypesBundle from '../override-types/typesBundle';
 import { SidecarConfig } from '../SidecarConfig';
 
 export class ApiPromiseRegistry {
 	// instances of ApiPromise for each defined URL
 	private static _instancesBySpecName: Map<string, ApiPromise> = new Map();
+	private static _instancesByUrl: Map<string, ApiPromise> = new Map();
 
 	/**
 	 * Get the ApiPromise instance for the given spec name.
@@ -17,7 +19,10 @@ export class ApiPromiseRegistry {
 	 */
 
 	public static async initApi(url: string): Promise<ApiPromise> {
-		if (!this._instancesBySpecName.has(url)) {
+		const { logger } = Log;
+		logger.info(`Initializing API for ${url}`);
+
+		if (!this._instancesByUrl.has(url)) {
 			const { config } = SidecarConfig;
 
 			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
@@ -42,12 +47,19 @@ export class ApiPromiseRegistry {
 			const { specName } = await api.rpc.state.getRuntimeVersion();
 
 			this._instancesBySpecName.set(specName.toString(), api);
+			this._instancesByUrl.set(url, api);
+
+			logger.info(`API initialized for ${url} with specName ${specName.toString()}`);
 		}
 
-		return this.getApi(url)!;
+		return this._instancesByUrl.get(url)!;
 	}
 
 	public static getApi(specName: string): ApiPromise | undefined {
-		return this._instancesBySpecName.get(specName);
+		const api = this._instancesBySpecName.get(specName);
+		if (!api) {
+			throw new Error(`API not found for specName: ${specName}`);
+		}
+		return api;
 	}
 }

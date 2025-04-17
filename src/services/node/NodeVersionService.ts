@@ -20,7 +20,7 @@ import { AbstractService } from '../AbstractService';
 
 export class NodeVersionService extends AbstractService {
 	async fetchVersion(): Promise<INodeVersion> {
-		const api = await this.api();
+		const { api } = this;
 		const [{ implName: clientImplName }, chain, clientVersion] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(),
 			api.rpc.system.chain(),

@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotMetadataRpcV9110 } from '../../test-helpers/metadata/polkadotV9110Metadata';
 import { polkadotRegistry } from '../../test-helpers/registries';
@@ -59,9 +60,14 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-const accountsVestingInfoService = new AccountsVestingInfoService(mockApi);
+const accountsVestingInfoService = new AccountsVestingInfoService('mock');
 
 describe('AccountVestingInfoService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('fetchAccountVestingInfo', () => {
 		it('works when ApiPromise works (block 789629) with V14 metadata', async () => {
 			expect(

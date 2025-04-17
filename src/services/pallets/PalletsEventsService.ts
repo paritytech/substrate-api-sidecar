@@ -39,7 +39,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, eventItemId, metadata }: IFetchEventItemArgs,
 	): Promise<IPalletEventsItem> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'events';
 		const palletMetadata = historicApi.registry.metadata;
 
@@ -77,7 +77,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletEvents> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'events';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);

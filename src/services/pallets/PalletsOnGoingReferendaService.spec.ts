@@ -18,6 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import type { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
@@ -44,7 +45,7 @@ const mockApi13641102 = {
 } as unknown as ApiPromise;
 
 // Mock PalletsOnGoingReferendaService instance for block #13641102
-const palletsOnGoingReferendaService13641102 = new PalletsOnGoingReferendaService(mockApi13641102);
+const palletsOnGoingReferendaService13641102 = new PalletsOnGoingReferendaService('mock');
 
 // Mocking APIs for block #21275366
 const getHeader21275366 = (_hash: Hash) => Promise.resolve().then(() => mockBlock21275366.header);
@@ -71,11 +72,12 @@ const mockApi21275366 = {
 } as unknown as ApiPromise;
 
 // Mock PalletsOnGoingReferendaService instance for block #21275366
-const palletsOnGoingReferendaService21275366 = new PalletsOnGoingReferendaService(mockApi21275366);
+const palletsOnGoingReferendaService21275366 = new PalletsOnGoingReferendaService('mock');
 
 describe('PalletOnGoingReferendaService', () => {
 	describe('derivePalletOnGoingReferenda', () => {
 		it('throws error for block 13641102', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi13641102);
 			await expect(
 				palletsOnGoingReferendaService13641102.derivePalletOnGoingReferenda(blockHash13641102),
 			).rejects.toStrictEqual(
@@ -83,6 +85,7 @@ describe('PalletOnGoingReferendaService', () => {
 			);
 		});
 		it('works for block 21275366 (Polkadot) & returns 7 referendas, 2 of which are runtime upgrades', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi21275366);
 			expect(
 				sanitizeNumbers(await palletsOnGoingReferendaService21275366.derivePalletOnGoingReferenda(blockHash21275366)),
 			).toStrictEqual(fetchOnGoingReferenda21275366Response);

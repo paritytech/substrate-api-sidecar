@@ -34,7 +34,7 @@ export class PalletsForeignAssetsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchForeignAssets(hash: BlockHash): Promise<IForeignAssets> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ number }, foreignAssetInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

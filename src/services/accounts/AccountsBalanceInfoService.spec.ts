@@ -22,6 +22,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry, polkadotRegistryV9370 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi, testAddress } from '../test-helpers/mock';
@@ -77,9 +78,14 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-const accountsBalanceInfoService = new AccountsBalanceInfoService(mockApi);
+const accountsBalanceInfoService = new AccountsBalanceInfoService('mock');
 
 describe('AccountsBalanceInfoService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('fetchAccountBalanceInfo', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			const tempHistoricApi = { ...mockHistoricApi };
@@ -90,7 +96,11 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tempHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tempAccountsBalanceInfoService = new AccountsBalanceInfoService(tempMockApi);
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return tempMockApi;
+			});
+
+			const tempAccountsBalanceInfoService = new AccountsBalanceInfoService('mock');
 
 			expect(
 				sanitizeNumbers(
@@ -126,7 +136,10 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tmpHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tmpAccountsBalanceInfoService = new AccountsBalanceInfoService(tmpMockApi);
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return tmpMockApi;
+			});
+			const tmpAccountsBalanceInfoService = new AccountsBalanceInfoService('mock');
 
 			expect(
 				sanitizeNumbers(
@@ -184,7 +197,7 @@ describe('AccountsBalanceInfoService', () => {
 				at: (_hash: Hash) => tokenHistoricApi,
 			} as unknown as ApiPromise;
 
-			const tokenAccountsBalanceInfoService = new AccountsBalanceInfoService(tokenMockApi);
+			const tokenAccountsBalanceInfoService = new AccountsBalanceInfoService('mock');
 
 			let tempQueryTokens: any,
 				tempQueryBalance: any,
@@ -192,6 +205,9 @@ describe('AccountsBalanceInfoService', () => {
 				mockTokenAccountAt: jest.Mock<any>,
 				mockBalancesLocksAt: jest.Mock<any>;
 			beforeAll(() => {
+				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+					return tokenMockApi;
+				});
 				// Important: these temp values should never be reassinged. They are used so we can assign
 				// the mockApi properties back to their original values after this sub-section of tests run.
 				tempQueryTokens = tokenHistoricApi.query.tokens;

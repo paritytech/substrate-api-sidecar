@@ -261,7 +261,7 @@ export class CoretimeService extends AbstractService {
 	};
 
 	async getCoretimeInfo(hash: BlockHash): Promise<ICoretimeRelayInfo | ICoretimeChainInfo> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
@@ -344,7 +344,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	async getCoretimeLeases(hash: BlockHash): Promise<ICoretimeLeases> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
@@ -385,7 +385,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	async getCoretimeRegions(hash: BlockHash): Promise<ICoretimeRegions> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
@@ -413,7 +413,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	async getCoretimeReservations(hash: BlockHash): Promise<ICoretimeReservations> {
-		const api = await this.api();
+		const { api } = this;
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
 			api.rpc.chain.getHeader(hash),
@@ -441,7 +441,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	async getCoretimeRenewals(hash: BlockHash): Promise<ICoretimeRenewals> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
@@ -469,7 +469,7 @@ export class CoretimeService extends AbstractService {
 	}
 
 	async getCoretimeCores(hash: BlockHash): Promise<ICoretimeCores> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),

@@ -56,7 +56,7 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 			palletDispatchableMetadata = (dispatchableItemMetadata[1] as unknown as SubmittableExtrinsicFunction<ApiTypes>)
 				.meta;
 		}
-		const api = await this.api();
+		const { api } = this;
 		const { number } = await api.rpc.chain.getHeader(hash);
 
 		return {
@@ -75,7 +75,7 @@ export class PalletsDispatchablesService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletDispatchables> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'calls';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);

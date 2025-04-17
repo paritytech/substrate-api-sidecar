@@ -20,7 +20,7 @@ import { AbstractService } from '../AbstractService';
 
 export class NodeNetworkService extends AbstractService {
 	async fetchNetwork(): Promise<INodeNetwork> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ peers: numPeers, isSyncing, shouldHavePeers }, localPeerId, nodeRoles, localListenAddresses] =
 			await Promise.all([

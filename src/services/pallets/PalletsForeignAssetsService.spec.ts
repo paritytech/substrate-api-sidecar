@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { foreignAssetsMetadata } from '../test-helpers/mock/assets/mockAssetHubKusamaData';
 import { foreignAssetsMetadataWestendAH } from '../test-helpers/mock/assets/mockAssetHubWestendData';
@@ -41,7 +42,7 @@ const mockApi = {
 	},
 } as unknown as ApiPromise;
 
-const palletsForeignAssetsService = new PalletsForeignAssetsService(mockApi);
+const palletsForeignAssetsService = new PalletsForeignAssetsService('mock');
 
 describe('PalletsForeignAssetsService', () => {
 	describe('PalletsForeignAssetsService.fetchForeignAssets', () => {
@@ -122,6 +123,7 @@ describe('PalletsForeignAssetsService', () => {
 				],
 			};
 
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			const response = await palletsForeignAssetsService.fetchForeignAssets(blockHash523510);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(expectedResponse);
@@ -143,11 +145,13 @@ const mockApiWAH = {
 	},
 } as unknown as ApiPromise;
 
-const palletsForeignAssetsServiceWAH = new PalletsForeignAssetsService(mockApiWAH);
+const palletsForeignAssetsServiceWAH = new PalletsForeignAssetsService('mock');
 
 describe('PalletsForeignAssetsService', () => {
 	describe('PalletsForeignAssetsService.fetchForeignAssets', () => {
 		it('Should return the correct response for Foreign Assets', async () => {
+
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWAH);
 			const response = await palletsForeignAssetsServiceWAH.fetchForeignAssets(blockHash5236177);
 
 			expect(sanitizeNumbers(response)).toStrictEqual(foreignAssetsResponse);

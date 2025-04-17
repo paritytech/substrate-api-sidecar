@@ -26,7 +26,7 @@ export class PalletsOnGoingReferendaService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletOnGoingReferenda(hash: BlockHash): Promise<IPalletOnGoingReferenda> {
-		const api = await this.api();
+		const { api } = this;
 		const [historicApi, { number }] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
 		const referenda: IReferendaInfo[] = [];
 		if (historicApi.query.referenda) {

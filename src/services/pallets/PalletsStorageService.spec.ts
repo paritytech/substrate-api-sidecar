@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
@@ -48,9 +49,12 @@ const mockApi = {
 /**
  * Mock PalletsStorageService instance.
  */
-const palletsStorageService = new PalletsStorageService(mockApi);
+const palletsStorageService = new PalletsStorageService('mock');
 
 describe('PalletStorageService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('fetchStorageItem', () => {
 		it('works with a query to a single key storage map', async () => {
 			expect(

@@ -31,7 +31,7 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		const [validatorCount, forceEra, validators, { number }] = await Promise.all([

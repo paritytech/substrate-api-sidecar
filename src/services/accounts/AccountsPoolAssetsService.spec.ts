@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash5236177, mockAssetHubWestendApi } from '../test-helpers/mock';
 import {
@@ -44,9 +45,12 @@ const mockApi = {
 	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
-const accountsPoolAssetsService = new AccountsPoolAssetsService(mockApi);
+const accountsPoolAssetsService = new AccountsPoolAssetsService('mock');
 
 describe('AccountsPoolAssetsService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	const at = {
 		hash: '0x270c4262eacfd16f05a63ef36eeabf165abbc3a4c53d0480f5460e6d5b2dc8b5',
 		height: '5236177',

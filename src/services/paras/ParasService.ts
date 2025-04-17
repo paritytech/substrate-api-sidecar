@@ -61,7 +61,7 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get crowdloan info for
 	 */
 	async crowdloansInfo(hash: BlockHash, paraId: number): Promise<ICrowdloansInfo> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
@@ -110,7 +110,7 @@ export class ParasService extends AbstractService {
 	 * @param includeFundInfo wether or not to include `FundInfo` for every crowdloan
 	 */
 	async crowdloans(hash: BlockHash): Promise<ICrowdloans> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.crowdloan, 'crowdloan');
@@ -147,7 +147,7 @@ export class ParasService extends AbstractService {
 	 * @param paraId ID of para to get lease info of
 	 */
 	async leaseInfo(hash: BlockHash, paraId: number): Promise<ILeaseInfo> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.paras, 'paras');
@@ -214,7 +214,7 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async auctionsCurrent(hash: BlockHash): Promise<IAuctionsCurrent> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.auctions, 'auctions');
@@ -328,7 +328,7 @@ export class ParasService extends AbstractService {
 	 * response size.
 	 */
 	async leasesCurrent(hash: BlockHash, includeCurrentLeaseHolders: boolean): Promise<ILeasesCurrent> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		let blockNumber, currentLeaseHolders;
@@ -375,7 +375,7 @@ export class ParasService extends AbstractService {
 	 * @returns all the current registered paraIds and their lifecycle status
 	 */
 	async paras(hash: BlockHash): Promise<IParas> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		this.assertQueryModule(historicApi.query.paras, 'paras');
@@ -420,7 +420,7 @@ export class ParasService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async parasHead(hash: BlockHash, method: string): Promise<IParasHeaders> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		const [{ number }, events] = await Promise.all([api.rpc.chain.getHeader(hash), historicApi.query.system.events()]);

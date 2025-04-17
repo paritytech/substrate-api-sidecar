@@ -18,7 +18,8 @@ import { ApiPromise } from '@polkadot/api';
 import { Text, Vec } from '@polkadot/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { BadRequest, HttpError } from 'http-errors';
-import { ApiPromiseRegistry } from 'src/apiRegistry/index.ts';
+
+import { ApiPromiseRegistry } from '../../src/apiRegistry/index.ts';
 
 export class EtheuremAddressNotSupported extends Error implements HttpError {
 	public readonly status: number;

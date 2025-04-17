@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
@@ -74,9 +75,12 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-const palletsNominationPoolService = new PalletsNominationPoolService(mockApi);
+const palletsNominationPoolService = new PalletsNominationPoolService('mock');
 
 describe('palletsNominationPoolService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('palletsNominationPoolService.fetchNominationPoolById', () => {
 		it('Should return the correct response for a nomination pool without metadata', async () => {
 			const expectedResponse = {

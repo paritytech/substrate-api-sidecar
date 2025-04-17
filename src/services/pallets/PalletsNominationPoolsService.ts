@@ -31,7 +31,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param getMetaData boolean determining whether to query pool metadata
 	 */
 	async fetchNominationPoolById(poolId: number, hash: BlockHash, getMetaData: boolean): Promise<IPalletNominationPool> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 		let metadata = '';
 
@@ -74,7 +74,7 @@ export class PalletsNominationPoolService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchNominationPoolInfo(hash: BlockHash): Promise<IPalletNominationPoolInfo> {
-		const api = await this.api();
+		const { api } = this;
 		const historicApi = await api.at(hash);
 
 		const [

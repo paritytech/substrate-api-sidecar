@@ -26,7 +26,7 @@ export class PalletsAssetConversionService extends AbstractService {
 	}
 
 	async fetchNextAvailableId(hash: BlockHash): Promise<ILiquidityId> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ number }, id] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
@@ -46,7 +46,7 @@ export class PalletsAssetConversionService extends AbstractService {
 	}
 
 	async fetchLiquidityPools(hash: BlockHash): Promise<ILiquidityPools> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ number }, poolsInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

@@ -14,14 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { defaultMockApi } from '../test-helpers/mock';
 import nodeNetworkResponse from '../test-helpers/responses/node/network.json';
 import { NodeNetworkService } from '.';
 
-const nodeNetworkService = new NodeNetworkService(defaultMockApi);
+const nodeNetworkService = new NodeNetworkService('mock');
 
 describe('NodeNetworkService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
+	});
 	describe('fetchNetwork', () => {
 		it('works when ApiPromise works', async () => {
 			expect(sanitizeNumbers(await nodeNetworkService.fetchNetwork())).toStrictEqual(nodeNetworkResponse);

@@ -31,7 +31,7 @@ export class PalletsAssetsService extends AbstractService {
 	 * @param assetId `AssetId` used to get info and metadata for an asset
 	 */
 	async fetchAssetById(hash: BlockHash, assetId: number): Promise<IAssetInfo> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [{ number }, assetInfo, assetMetaData] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

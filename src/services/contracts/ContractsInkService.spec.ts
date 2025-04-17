@@ -16,12 +16,13 @@
 
 import { ContractPromise } from '@polkadot/api-contract';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9190 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
 import { ContractsInkService } from '.';
 
-const contractInkService = new ContractsInkService(defaultMockApi);
+const contractInkService = new ContractsInkService('mock');
 
 const getFlipper = () =>
 	Promise.resolve().then(() => {
@@ -49,6 +50,9 @@ const mockContractPromise = {
 } as unknown as ContractPromise;
 
 describe('ContractsInkService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
+	});
 	it('fetchContractCall', async () => {
 		const address = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
 		const result = await contractInkService.fetchContractCall(mockContractPromise, address, 'get');

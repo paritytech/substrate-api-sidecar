@@ -44,8 +44,9 @@ async function initApis(): Promise<string> {
 	const requiredApis = [config.SUBSTRATE.URL, config.SUBSTRATE.MULTI_CHAIN_URL].filter((el) => !!el);
 
 	// Create the API registry
-	const apis = await Promise.all(requiredApis.map((api) => ApiPromiseRegistry.initApi(api)));
+	const apis = await Promise.all(requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl)));
 	const specNames = [];
+
 	for (let i = 0; i < apis.length; i++) {
 		if (!apis[i]) {
 			logger.error('Failed to create API instance');

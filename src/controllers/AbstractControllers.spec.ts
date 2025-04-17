@@ -21,6 +21,7 @@ import { BlockHash, BlockNumber } from '@polkadot/types/interfaces';
 import { Request, Response } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../apiRegistry/index.ts';
 import { AbstractService } from '../services/AbstractService';
 import { kusamaRegistry } from '../test-helpers/registries';
 import AbstractController from './AbstractController';
@@ -49,6 +50,12 @@ const api = {
 		chain: {
 			getBlockHash: promiseBlockHash,
 			getHeader: promiseHeader,
+			getRuntimeVersion: () =>
+				Promise.resolve().then(() => {
+					return {
+						specVersion: kusamaRegistry.createType('Text', 'mock'),
+					};
+				}),
 		},
 	},
 };
@@ -60,15 +67,20 @@ const MockController = class MockController extends AbstractController<AbstractS
 	}
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MockService = new (class MockService extends AbstractService {})(api as unknown as ApiPromise);
+const MockService = new (class MockService extends AbstractService {})('mock');
 
-const controller = new MockController(api as unknown as ApiPromise, '/mock', MockService);
+const controller = new MockController('mock', '/mock', MockService);
 
 // Mock arguments for Express RequestHandler
 const req = 'req' as unknown as Request;
 const res = 'res' as unknown as Response;
 
 describe('AbstractController', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return api as unknown as ApiPromise;
+		});
+	});
 	describe('catchWrap', () => {
 		it('catches throw from an async function and calls next with error', async () => {
 			const next = jest.fn();
@@ -253,7 +265,7 @@ describe('AbstractController', () => {
 					throw 'dummy getHeader error';
 				});
 
-			const mock = new MockController(api as ApiPromise, '/mock', MockService);
+			const mock = new MockController('mock', '/mock', MockService);
 			// We only try api.rpc.chain.getHeader when the block number is too high
 			await expect(mock['getHashForBlock']('101')).rejects.toEqual(
 				new InternalServerError('Failed while trying to get the latest header.'),
@@ -268,7 +280,7 @@ describe('AbstractController', () => {
 					throw 'dummy getBlockHash error';
 				});
 
-			const mock = new MockController(api as ApiPromise, '/mock', MockService);
+			const mock = new MockController('mock', '/mock', MockService);
 			await expect(mock['getHashForBlock']('99')).rejects.toEqual(
 				new InternalServerError(`Cannot get block hash for ${'99'}.`),
 			);
@@ -284,7 +296,7 @@ describe('AbstractController', () => {
 			expect(valid).toMatch(/^0x[a-fA-F0-9]+$/);
 			expect(valid.length).toBe(66);
 			expect(api.createType).toThrow('dummy createType error');
-			const mock = new MockController(api as ApiPromise, '/mock', MockService);
+			const mock = new MockController('mock', '/mock', MockService);
 
 			await expect(mock['getHashForBlock'](valid)).rejects.toEqual(
 				new InternalServerError(`Cannot get block hash for ${valid}.`),

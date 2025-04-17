@@ -20,7 +20,6 @@ import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
 import { BadRequest, HttpError, InternalServerError } from 'http-errors';
-import { ApiPromiseRegistry } from 'src/apiRegistry/index.ts';
 import { AbstractService } from 'src/services/AbstractService';
 import { AnyJson } from 'src/types/polkadot-js';
 import {
@@ -32,6 +31,7 @@ import {
 	IRangeQueryParam,
 } from 'src/types/requests';
 
+import { ApiPromiseRegistry } from '../../src/apiRegistry/index.ts';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';

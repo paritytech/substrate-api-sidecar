@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 import { BadRequest, HttpError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../apiRegistry/index.ts';
 import { AbstractService, EtheuremAddressNotSupported } from './AbstractService';
 import { defaultMockApi } from './test-helpers/mock';
 
@@ -42,9 +43,14 @@ const mockApi = {
 	at: (_hash: Hash) => ({}),
 } as unknown as ApiPromise;
 
-const testService = new TestAbstractService(mockApi);
+const testService = new TestAbstractService('mock');
 
 describe('AbstractService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('createHttpErrorForAddr', () => {
 		it('should throws an error instanceof EtheuremAddressNotSupported', () => {
 			const err = testService.handleEtheuremAddressError();

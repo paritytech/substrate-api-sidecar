@@ -20,7 +20,7 @@ import { IRuntimeSpec } from 'src/types/responses';
 import { AbstractService } from '../AbstractService';
 export class RuntimeSpecService extends AbstractService {
 	async fetchSpec(hash: BlockHash): Promise<IRuntimeSpec> {
-		const api = await this.api();
+		const { api } = this;
 		const [
 			{ authoringVersion, specName, specVersion, transactionVersion, implVersion },
 			chainType,

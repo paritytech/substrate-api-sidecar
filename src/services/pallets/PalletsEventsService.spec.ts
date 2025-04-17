@@ -19,6 +19,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
@@ -53,9 +54,12 @@ const mockApi = {
 /**
  * Mock PalletsEventsService instance.
  */
-const palletsEventsService = new PalletsEventsService(mockApi);
+const palletsEventsService = new PalletsEventsService('mock');
 
 describe('PalletEventsService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('fetchEventItem', () => {
 		it('works with a query to a single error item id', async () => {
 			expect(

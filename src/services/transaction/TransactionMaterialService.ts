@@ -31,7 +31,7 @@ export class TransactionMaterialService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchTransactionMaterial(hash: BlockHash, metadataArg: MetadataOpts | false): Promise<ITransactionMaterial> {
-		const api = await this.api();
+		const { api } = this;
 
 		if (!metadataArg) {
 			const [header, genesisHash, name, version] = await Promise.all([
@@ -93,7 +93,7 @@ export class TransactionMaterialService extends AbstractService {
 		metadataArg: MetadataOpts | false,
 		metadataVersion: number,
 	): Promise<ITransactionMaterial> {
-		const api = await this.api();
+		const { api } = this;
 
 		const [header, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),

@@ -39,7 +39,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, storageItemId, keys, metadata }: IFetchStorageItemArgs,
 	): Promise<IPalletStorageItem> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);
@@ -82,7 +82,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletStorage> {
-		const api = await this.api();
+		const { api } = this;
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);

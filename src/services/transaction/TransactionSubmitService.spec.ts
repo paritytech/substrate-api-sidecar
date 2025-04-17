@@ -18,6 +18,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry/index.ts';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import {
 	balancesTransferInvalid,
@@ -35,9 +36,14 @@ const mockApi = {
 	tx: tx,
 } as unknown as ApiPromise;
 
-const transactionSubmitService = new TransactionSubmitService(mockApi);
+const transactionSubmitService = new TransactionSubmitService('mock');
 
 describe('TransactionSubmitService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('submitTransaction', () => {
 		it('works with a valid a transaction', async () => {
 			return expect(transactionSubmitService.submitTransaction(balancesTransferValid)).resolves.toStrictEqual({
