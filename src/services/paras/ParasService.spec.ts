@@ -22,6 +22,7 @@ import { Codec } from '@polkadot/types/types';
 import { AbstractInt } from '@polkadot/types-codec';
 import BN from 'bn.js';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotMetadataRpcV1000001 } from '../../test-helpers/metadata/polkadotV1000001Metadata';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
@@ -274,9 +275,14 @@ const mockApi = {
 	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
-const parasService = new ParasService(mockApi);
+const parasService = new ParasService('mcok');
 
 describe('ParasService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	const paraId = 2094;
 
 	const expectedAt = {

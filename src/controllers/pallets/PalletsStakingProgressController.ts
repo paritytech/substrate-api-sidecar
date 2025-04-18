@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { PalletsStakingProgressService } from '../../services';
@@ -86,7 +85,7 @@ export default class PalletsStakingProgressController extends AbstractController
 		['Babe', 'Staking', 'Session'],
 		['ParachainStaking', 'Session'],
 	];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
 		this.initRoutes();
 	}

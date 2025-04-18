@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { LRUCache } from 'lru-cache';
 import { IBlock } from 'src/types/responses';
@@ -28,7 +27,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	private blockStore: LRUCache<string, IBlock>;
 	static controllerName = 'BlocksExtrinsics';
 	static requiredPallets = [['System', 'Session']];
-	constructor(api: ApiPromise, options: ControllerOptions) {
+	constructor(api: string, options: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics',
@@ -77,7 +76,6 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			Number(options.checkDecodedXcm);
 
 		const isBlockCached = this.blockStore.get(cacheKey);
-
 		const historicApi = await this.api.at(hash);
 
 		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);

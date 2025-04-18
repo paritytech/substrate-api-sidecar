@@ -14,14 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import response from '../test-helpers/responses/runtime/spec.json';
 import { RuntimeSpecService } from './RuntimeSpecService';
 
-const runtimeSpecService = new RuntimeSpecService(defaultMockApi);
+const runtimeSpecService = new RuntimeSpecService('mock');
 
 describe('RuntimeSpecService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
+	});
 	describe('fetchSpec', () => {
 		it('works when ApiPromise works', async () => {
 			expect(sanitizeNumbers(await runtimeSpecService.fetchSpec(blockHash789629))).toStrictEqual(response);

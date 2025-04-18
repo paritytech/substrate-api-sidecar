@@ -17,6 +17,7 @@
 import type { ApiPromise } from '@polkadot/api';
 import type { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { kusamaCoretimeMetadata } from '../../test-helpers/metadata/coretimeKusamaMetadata';
 import { kusamaMetadataV1003003 } from '../../test-helpers/metadata/kusamaMetadataV1003003';
 import { createApiWithAugmentations, TypeFactory } from '../../test-helpers/typeFactory';
@@ -260,18 +261,24 @@ const mockCoretimeApi = {
 	},
 } as unknown as ApiPromise;
 
-const CoretimeServiceAtCoretimeChain = new CoretimeService(mockCoretimeApi);
+const CoretimeServiceAtCoretimeChain = new CoretimeService('mock');
 
-const CoretimeServiceAtRelayChain = new CoretimeService(mockKusamaApi);
+const CoretimeServiceAtRelayChain = new CoretimeService('mock');
 
 describe('CoretimeService', () => {
 	describe('getRegions', () => {
 		it('should error with an invalid chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
 		});
 		it('should return regions', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const regions = await CoretimeServiceAtCoretimeChain.getCoretimeRegions(blockHash26187139);
 			expect(regions.regions).toHaveLength(2);
 			expect(regions.at).toHaveProperty('hash');
@@ -289,12 +296,18 @@ describe('CoretimeService', () => {
 
 	describe('getLeases', () => {
 		it('should error with an invalid chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
 		});
 
 		it('should return leases', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const leases = await CoretimeServiceAtCoretimeChain.getCoretimeLeases(blockHash26187139);
 
 			expect(leases.leases).toHaveLength(2);
@@ -306,12 +319,18 @@ describe('CoretimeService', () => {
 
 	describe('getReservations', () => {
 		it('should error with an invalid chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
 		});
 
 		it('should return reservations', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const reservations = await CoretimeServiceAtCoretimeChain.getCoretimeReservations(blockHash26187139);
 			expect(reservations.reservations).toHaveLength(3);
 			expect(reservations.at).toHaveProperty('hash');
@@ -322,12 +341,18 @@ describe('CoretimeService', () => {
 
 	describe('getRenewals', () => {
 		it('should error with an invalid chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			await expect(CoretimeServiceAtRelayChain.getCoretimeRegions(blockHash22887036)).rejects.toThrow(
 				'This endpoint is only available on coretime chains.',
 			);
 		});
 
 		it('should return renewals', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const renewals = await CoretimeServiceAtCoretimeChain.getCoretimeRenewals(blockHash26187139);
 			expect(renewals.renewals).toHaveLength(2);
 			expect(renewals.at).toHaveProperty('hash');
@@ -340,6 +365,9 @@ describe('CoretimeService', () => {
 
 	describe('getInfo', () => {
 		it('should return info data for relay chain coretime', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			const info = await CoretimeServiceAtRelayChain.getCoretimeInfo(blockHash22887036);
 			expect(info).toHaveProperty('at');
 			expect(info).toHaveProperty('brokerId');
@@ -354,6 +382,9 @@ describe('CoretimeService', () => {
 		});
 
 		it('should return info data for coretime chain coretime', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const info = await CoretimeServiceAtCoretimeChain.getCoretimeInfo(blockHash26187139);
 			expect(info).toHaveProperty('at');
 			expect(info).toHaveProperty('configuration');
@@ -372,6 +403,9 @@ describe('CoretimeService', () => {
 
 	describe('getCores', () => {
 		it('should get cores for coretime chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockCoretimeApi;
+			});
 			const cores = await CoretimeServiceAtCoretimeChain.getCoretimeCores(blockHash26187139);
 			expect(cores.cores).toHaveLength(2);
 			expect(cores.at).toHaveProperty('hash');
@@ -381,6 +415,9 @@ describe('CoretimeService', () => {
 		});
 
 		it('should get cores for relay chain', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockKusamaApi;
+			});
 			const cores = await CoretimeServiceAtRelayChain.getCoretimeCores(blockHash26187139);
 			expect(cores.cores).toHaveLength(2);
 			expect(cores.at).toHaveProperty('hash');

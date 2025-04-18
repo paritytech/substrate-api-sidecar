@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { defaultMockApi } from '../test-helpers/mock';
 import { AccountsValidateService } from './AccountsValidateService';
@@ -23,9 +24,14 @@ import { AccountsValidateService } from './AccountsValidateService';
 const mockApi = {
 	...defaultMockApi,
 } as unknown as ApiPromise;
-const validateService = new AccountsValidateService(mockApi);
+const validateService = new AccountsValidateService('mock');
 
 describe('Validate addresses', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	it('Should verify a polkadot address', () => {
 		const expectedResponse = {
 			isValid: true,

@@ -18,6 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import type { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9370 } from '../../test-helpers/registries';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
@@ -51,11 +52,12 @@ const mockApi = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletsStakingValidatorsService = new PalletsStakingValidatorsService(mockApi);
+const palletsStakingValidatorsService = new PalletsStakingValidatorsService('mock');
 
 describe('PalletsStakingValidatorsService', () => {
 	describe('derivePalletStakingValidators', () => {
 		it('Works for block 14815152', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
 					// The inputted blockHash does not change the tests since the mocked data is all based

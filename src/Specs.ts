@@ -191,6 +191,16 @@ export class Specs {
 				mandatory: false,
 			}),
 		);
+
+		// MULTI_CHAIN_URL
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.MULTI_CHAIN_URL, 'Multichain URL Websocket or HTTP URL', {
+				mandatory: false,
+				default: [],
+				type: 'array',
+			}),
+		);
 	}
 
 	/**

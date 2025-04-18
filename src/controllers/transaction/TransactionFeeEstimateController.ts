@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-
 import { TransactionFeeEstimateService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -49,7 +47,7 @@ import AbstractController from '../AbstractController';
 export default class TransactionFeeEstimateController extends AbstractController<TransactionFeeEstimateService> {
 	static controllerName = 'TransactionFeeEstimate';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/transaction/fee-estimate', new TransactionFeeEstimateService(api));
 		this.initRoutes();
 	}
@@ -71,7 +69,6 @@ export default class TransactionFeeEstimateController extends AbstractController
 				error: 'Missing field `tx` on request body.',
 			};
 		}
-
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
 		TransactionFeeEstimateController.sanitizedSend(res, await this.service.fetchTransactionFeeEstimate(hash, tx));

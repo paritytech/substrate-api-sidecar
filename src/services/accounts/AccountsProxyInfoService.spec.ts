@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotMetadataRpcV1000001 } from '../../test-helpers/metadata/polkadotV1000001Metadata';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
@@ -58,9 +59,14 @@ const mockApi = {
 	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
-const accountsProxyInfoService = new AccountsProxyInfoService(mockApi);
+const accountsProxyInfoService = new AccountsProxyInfoService('mock');
 
 describe('AccountsProxyInfoService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	it('Should correctly query proxies', async () => {
 		const res = await accountsProxyInfoService.fetchAccountProxyInfo(
 			blockHash789629,

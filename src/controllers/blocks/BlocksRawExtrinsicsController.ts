@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import client from 'prom-client';
 
 import { BlocksService } from '../../services';
@@ -25,7 +24,7 @@ import AbstractController from '../AbstractController';
 export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
 	static controllerName = 'BlocksRawExtrinsics';
 	static requiredPallets = [];
-	constructor(api: ApiPromise, options: ControllerOptions) {
+	constructor(api: string, options: ControllerOptions) {
 		super(
 			api,
 			'/blocks/:blockId/extrinsics-raw',

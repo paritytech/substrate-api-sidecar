@@ -104,9 +104,10 @@ describe('controllerInjection', () => {
 		} finally {
 			await api?.disconnect(); // Close WebSocket connection
 		}
-
+		const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+			(p) => p.name as string,
+		);
 		const controllers = getControllers(
-			api,
 			{
 				...mockSidecarConfig,
 				EXPRESS: {
@@ -114,14 +115,14 @@ describe('controllerInjection', () => {
 					INJECTED_CONTROLLERS: true,
 				},
 			},
-			'kusama_go_default',
+			'mock_spec',
+			pallets,
 		);
 
 		expect(controllers).toBeDefined();
 		expect(controllers).not.toHaveLength(0);
 
 		const controllersDefault = getControllers(
-			api,
 			{
 				...mockSidecarConfig,
 				EXPRESS: {
@@ -129,7 +130,8 @@ describe('controllerInjection', () => {
 					INJECTED_CONTROLLERS: false,
 				},
 			},
-			'kusama_go_default',
+			'mock_spec',
+			[],
 		);
 
 		expect(controllersDefault).toBeDefined();

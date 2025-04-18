@@ -25,6 +25,7 @@ import { Codec } from '@polkadot/types/types';
 import type { ITuple } from '@polkadot/types-codec/types';
 import { Observable } from 'rxjs';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { assetHubWestendMetadataRpcV9435 } from '../../test-helpers/metadata/assetHubWestendMetadata';
 import { assetHubWestendRegistryV9435 } from '../../test-helpers/registries/assetHubWestendRegistry';
@@ -112,9 +113,14 @@ const mockApi = {
 	},
 } as unknown as ApiPromise;
 
-const palletsAssetConversionService = new PalletsAssetConversionService(mockApi);
+const palletsAssetConversionService = new PalletsAssetConversionService('mock');
 
 describe('PalletsAssetConversionService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('PalletsAssetConversionService.fetchNextAvailableId', () => {
 		it('Should return the correct response for a LiquidityPoolId', async () => {
 			const expectedResponse = {

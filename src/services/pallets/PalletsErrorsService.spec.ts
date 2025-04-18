@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
@@ -52,9 +53,12 @@ const mockApi = {
 /**
  * Mock PalletsErrorsService instance.
  */
-const palletsErrorsService = new PalletsErrorsService(mockApi);
+const palletsErrorsService = new PalletsErrorsService('mock');
 
 describe('PalletErrorService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('fetchErrorItem', () => {
 		it('works with a query to a single error item id', async () => {
 			expect(
