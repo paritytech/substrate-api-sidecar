@@ -6,10 +6,14 @@ import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { Log } from '../logging/Log';
 import tempTypesBundle from '../override-types/typesBundle';
 import { SidecarConfig } from '../SidecarConfig';
+import { MultiKeyBiMap } from '../util/MultiKeyBiMap';
 
 export class ApiPromiseRegistry {
-	// instances of ApiPromise for each defined URL
-	private static _instancesBySpecName: Map<string, ApiPromise> = new Map();
+	// SpecName to ApiPromise instances
+	private static _instancesBySpecName: Map<string, Array<ApiPromise>> = new Map();
+	// SpecName to Type map
+	private static specNameToTypeMap = new MultiKeyBiMap<string, string>();
+	// RPC URL to ApiPromise instance
 	private static _instancesByUrl: Map<string, ApiPromise> = new Map();
 
 	/**
@@ -18,10 +22,11 @@ export class ApiPromiseRegistry {
 	 * @returns The ApiPromise instance for the given spec name.
 	 */
 
-	public static async initApi(url: string): Promise<ApiPromise> {
+	public static async initApi(url: string, type?: 'relay' | 'assethub' | 'parachain'): Promise<ApiPromise> {
 		const { logger } = Log;
 		logger.info(`Initializing API for ${url}`);
 
+		// TODO: for now use instance by URL as a staging check to make sure we don't need to recreate an API instance
 		if (!this._instancesByUrl.has(url)) {
 			const { config } = SidecarConfig;
 
@@ -46,10 +51,33 @@ export class ApiPromiseRegistry {
 
 			const { specName } = await api.rpc.state.getRuntimeVersion();
 
-			this._instancesBySpecName.set(specName.toString(), api);
+			if (!this.specNameToTypeMap.getByKey(specName.toString())) {
+				if (type) {
+					this.specNameToTypeMap.set(specName.toString(), type);
+				}
+			}
+
+			if (this._instancesBySpecName.has(specName.toString())) {
+				const existingInstances = this._instancesBySpecName.get(specName.toString())!;
+				this._instancesBySpecName.set(specName.toString(), [...existingInstances, api]);
+			} else {
+				this._instancesBySpecName.set(specName.toString(), [api]);
+			}
 			this._instancesByUrl.set(url, api);
 
 			logger.info(`API initialized for ${url} with specName ${specName.toString()}`);
+		} else {
+			const api = this._instancesByUrl.get(url);
+			// make sure we have stored the type for the SUBSTRATE_URL option
+			if (api && type) {
+				const { specName } = await api.rpc.state.getRuntimeVersion();
+
+				if (!this.specNameToTypeMap.getByKey(specName.toString())) {
+					if (type) {
+						this.specNameToTypeMap.set(specName.toString(), type);
+					}
+				}
+			}
 		}
 
 		return this._instancesByUrl.get(url)!;
@@ -60,6 +88,47 @@ export class ApiPromiseRegistry {
 		if (!api) {
 			throw new Error(`API not found for specName: ${specName}`);
 		}
-		return api;
+		// TODO: create logic to return the correct API instance based on workload/necessity
+		return api[0];
+	}
+
+	public static getApiByUrl(url: string): ApiPromise | undefined {
+		return this._instancesByUrl.get(url);
+	}
+
+	public static getTypeBySpecName(specName: string): string | undefined {
+		return this.specNameToTypeMap.getByKey(specName);
+	}
+
+	public static getSpecNameByType(type: string): Set<string> | undefined {
+		return this.specNameToTypeMap.getByValue(type);
+	}
+
+	public static getApiByType(type: string): {
+		specName: string;
+		api: ApiPromise;
+	}[] {
+		const specNames = this.specNameToTypeMap.getByValue(type);
+		if (!specNames) {
+			return [];
+		}
+
+		const specNameApis = [];
+		for (const specName of specNames) {
+			const api = this.getApi(specName);
+			if (api) {
+				specNameApis.push({ specName, api });
+			}
+		}
+
+		return specNameApis;
+	}
+
+	public static clear(): void {
+		this._instancesBySpecName.clear();
+		this._instancesByUrl.clear();
+		this.specNameToTypeMap = new MultiKeyBiMap<string, string>();
+		const { logger } = Log;
+		logger.info('Cleared API registry');
 	}
 }

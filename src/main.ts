@@ -41,10 +41,19 @@ async function initApis(): Promise<string> {
 	const { logger } = Log;
 
 	logger.info('Initializing APIs');
-	const requiredApis = [config.SUBSTRATE.URL, config.SUBSTRATE.MULTI_CHAIN_URL].filter((apiUrl) => !!apiUrl);
+
+	const requiredApis: {
+		url: string;
+		type?: 'relay' | 'assethub' | 'parachain';
+	}[] = [
+		{ url: config.SUBSTRATE.URL },
+		...config.SUBSTRATE.MULTI_CHAIN_URL.map((chain) => ({ url: chain.url, type: chain.type })),
+	].filter((apiOption) => !!apiOption.url);
 
 	// Create the API registry
-	const apis = await Promise.all(requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl)));
+	const apis = await Promise.all(
+		requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl.url, apiUrl.type || undefined)),
+	);
 	const specNames = [];
 
 	for (let i = 0; i < apis.length; i++) {
@@ -58,7 +67,7 @@ async function initApis(): Promise<string> {
 			api.rpc.state.getRuntimeVersion(),
 		]);
 
-		startUpPrompt(requiredApis[i], chainName.toString(), implName.toString());
+		startUpPrompt(requiredApis[i].url, chainName.toString(), implName.toString());
 		specNames.push(specName.toString());
 	}
 

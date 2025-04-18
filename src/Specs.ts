@@ -189,7 +189,8 @@ export class Specs {
 			MODULES.SUBSTRATE,
 			this._specs.getSpec(CONFIG.MULTI_CHAIN_URL, 'Multichain URL Websocket or HTTP URL', {
 				mandatory: false,
-				default: undefined,
+				default: [],
+				type: 'array',
 			}),
 		);
 	}
