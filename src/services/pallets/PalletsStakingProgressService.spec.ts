@@ -21,6 +21,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
 import { activeEraAt, blockHash789629, defaultMockApi, erasStartSessionIndexAt } from '../test-helpers/mock';
@@ -92,7 +93,7 @@ const mockApi = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
+const palletStakingProgressService = new PalletsStakingProgressService('mock');
 
 const unappliedSlashes = [
 	{
@@ -157,9 +158,12 @@ const mockApiUnappliedSlashes = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService(mockApiUnappliedSlashes);
+const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('mock');
 
 describe('PalletStakingProgressService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('derivePalletStakingProgress', () => {
 		(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
 
@@ -193,6 +197,7 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('works with entries in unappliedSlashes', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashes);
 			expect(
 				sanitizeNumbers(
 					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),

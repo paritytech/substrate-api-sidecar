@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { defaultMockApi } from '../test-helpers/mock';
 import { AccountsCompareService } from './AccountsCompareService';
@@ -23,9 +24,14 @@ import { AccountsCompareService } from './AccountsCompareService';
 const mockApi = {
 	...defaultMockApi,
 } as unknown as ApiPromise;
-const validateService = new AccountsCompareService(mockApi);
+const validateService = new AccountsCompareService('mock');
 
 describe('Compare two addresses', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	it('Should compare the two addresses and return that they are not equal, along with the details of each address.', () => {
 		const expectedResponse = {
 			areEqual: false,

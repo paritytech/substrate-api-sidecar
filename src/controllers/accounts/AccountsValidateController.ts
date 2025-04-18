@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { AccountsValidateService } from '../../services/accounts';
@@ -23,7 +22,7 @@ import AbstractController from '../AbstractController';
 export default class ValidateAddressController extends AbstractController<AccountsValidateService> {
 	static controllerName = 'AccountsValidate';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/accounts/:address/validate', new AccountsValidateService(api));
 		this.initRoutes();
 	}

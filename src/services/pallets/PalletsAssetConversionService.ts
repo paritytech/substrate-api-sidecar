@@ -15,14 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import '@polkadot/api-augment';
 
-import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import { ILiquidityId, ILiquidityPools, ILiquidityPoolsInfo } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsAssetConversionService extends AbstractService {
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api);
 	}
 

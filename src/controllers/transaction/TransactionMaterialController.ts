@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
 
@@ -60,7 +59,7 @@ export type MetadataOpts = 'json' | 'scale';
 export default class TransactionMaterialController extends AbstractController<TransactionMaterialService> {
 	static controllerName = 'TransactionMaterial';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/transaction/material', new TransactionMaterialService(api));
 		this.initRoutes();
 	}

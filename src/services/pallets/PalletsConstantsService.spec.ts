@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { blockHash13641102, defaultMockApi } from '../test-helpers/mock';
@@ -50,9 +51,12 @@ const mockApi = {
 /**
  * Mock PalletsConstantsService instance.
  */
-const palletsConstantsService = new PalletsConstantsService(mockApi);
+const palletsConstantsService = new PalletsConstantsService('mock');
 
 describe('PalletConstantsService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	describe('fetchConstantItem', () => {
 		it('works with a query to a single constant item id', async () => {
 			expect(

@@ -25,11 +25,21 @@ import type {
 	SpStakingPagedExposureMetadata,
 } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
+import type { ControllerOptions } from 'src/types/chains-config';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
+	async fetchAccountStakingInfoAssetHub(hash: BlockHash, options: ControllerOptions) {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+		if (!historicApi.query.staking) {
+			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);
+		}
+
+		console.log(options);
+	}
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.
 	 *

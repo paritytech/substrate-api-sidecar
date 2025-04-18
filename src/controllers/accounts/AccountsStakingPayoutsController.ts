@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import { Option, u32 } from '@polkadot/types';
 import BN from 'bn.js';
@@ -87,7 +86,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		['ParachainStaking', 'System'],
 		['Staking', 'ParachainSystem'],
 	];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/accounts/:address/staking-payouts', new AccountsStakingPayoutsService(api));
 		this.initRoutes();
 	}
