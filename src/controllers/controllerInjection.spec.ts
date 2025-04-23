@@ -24,7 +24,7 @@ const mockSidecarConfig: ISidecarConfig = {
 	},
 	SUBSTRATE: {
 		URL: '',
-		MULTI_CHAIN_URL: '',
+		MULTI_CHAIN_URL: [],
 		TYPES_BUNDLE: '',
 		TYPES_CHAIN: '',
 		TYPES_SPEC: '',
@@ -63,7 +63,6 @@ const chainsToNode: Record<string, string> = {
 	crust: 'wss://crust-parachain.crustapps.net',
 	karura: 'wss://karura-rpc.dwellir.com',
 	manta: 'wss://ws.manta.systems',
-	kilt: 'wss://kilt-rpc.dwellir.com',
 	'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
 };
 
