@@ -37,7 +37,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, constantItemId, metadata }: IFetchConstantItemArgs,
 	): Promise<IPalletConstantsItem> {
-		const { api } = this
+		const { api } = this;
 		const metadataFieldType = 'constants';
 		const palletMetadata = historicApi.registry.metadata;
 
@@ -75,7 +75,7 @@ export class PalletsConstantsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletConstants> {
-		const { api } = this
+		const { api } = this;
 
 		const metadataFieldType = 'constants';
 		const metadata = historicApi.registry.metadata;
