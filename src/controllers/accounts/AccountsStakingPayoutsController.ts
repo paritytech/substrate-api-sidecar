@@ -20,6 +20,7 @@ import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
+import { assetHubSpecNames } from '../../chains-config';
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
 import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
@@ -108,7 +109,17 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		res,
 	): Promise<void> => {
 		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
-		let hash = await this.getHashFromAt(at);
+		const [hashAt, { specName }] = await Promise.all([this.getHashFromAt(at), this.api.rpc.state.getRuntimeVersion()]);
+
+		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
+			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
+			throw Error(
+				`Query Parameter 'at' is not supported for /accounts/:address/staking-payouts when connected to assetHub.`,
+			);
+		}
+
+		let hash = hashAt;
+
 		let apiAt = await this.api.at(hash);
 		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
