@@ -22,6 +22,7 @@ import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
+import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingProgressService extends AbstractService {
@@ -32,7 +33,17 @@ export class PalletsStakingProgressService extends AbstractService {
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
 		const { api } = this;
-		const historicApi = await api.at(hash);
+		const [historicApi, { specName }] = await Promise.all([api.at(hash), api.rpc.state.getRuntimeVersion(hash)]);
+
+		const chainType = ApiPromiseRegistry.getTypeBySpecName(specName.toString());
+
+		if (chainType === 'relay') {
+			// get assethub connection and use that to query data
+		} else if (chainType === 'assethub') {
+			// continue with assethub connection
+		}
+		// if connected to RC => get AH connection and use it
+		// if on AH => continue with queries
 
 		const [validatorCount, forceEra, validators, { number }] = await Promise.all([
 			historicApi.query.staking.validatorCount(),
