@@ -102,7 +102,8 @@ export default class PalletsStakingProgressController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		const [hash, { specName }] = await Promise.all([this.getHashFromAt(at), this.api.rpc.state.getRuntimeVersion()]);
+		const { specName } = this;
+		const hash = await this.getHashFromAt(at);
 
 		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
 			// if a block is queried and connection is on asset hub, throw error with unsupported messaging

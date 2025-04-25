@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { BlockHash } from '@polkadot/types/interfaces';
+import { assetHubSpecNames } from 'src/chains-config';
 
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
@@ -28,8 +29,24 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
-		const { api } = this;
-		const historicApi = await api.at(hash);
+		const { api, specName } = this;
+		//  can continue as it wont get here if hash is historical and specName is assethub
+		const [historicApi, blockHead] = await Promise.all([api.at(hash), api.rpc.chain.getFinalizedHead()]);
+		const isAssetHub = assetHubSpecNames.has(specName);
+		const isHead = blockHead.hash === hash;
+		if (!isAssetHub) {
+			// check if its RC, if it is, check if hash is before AHM else throw
+			console.log(blockHead);
+		}
+		if (isAssetHub && !isHead) {
+			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
+		}
+
+		// either RC connected or at finalizedHead
+
+		// if RC and not at finalizedHead => continue
+		// if RC and at finalizedHead => get multichain assethub endpoint and query
+
 		const [{ number }, validatorSession, validatorsEntries] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			historicApi.query.session.validators(),

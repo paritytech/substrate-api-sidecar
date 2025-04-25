@@ -83,6 +83,9 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return api;
 	}
 
+	get specName(): string {
+		return this._specName;
+	}
 	/**
 	 * Mount all controller handler methods on the class's private router.
 	 *

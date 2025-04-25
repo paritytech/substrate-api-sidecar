@@ -17,6 +17,7 @@
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
+import { assetHubSpecNames } from '../../chains-config';
 import { validateAddress } from '../../middleware';
 import { AccountsVestingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -67,7 +68,14 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 		{ params: { address }, query: { at } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+		const [hash, { specName }] = await Promise.all([this.getHashFromAt(at), this.api.rpc.state.getRuntimeVersion()]);
+
+		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
+			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
+			throw Error(
+				`Query Parameter 'at' is not supported for /accounts/:address/vesting-info when connected to assetHub.`,
+			);
+		}
 
 		AccountsVestingInfoController.sanitizedSend(res, await this.service.fetchAccountVestingInfo(hash, address));
 	};
