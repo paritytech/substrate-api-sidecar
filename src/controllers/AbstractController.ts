@@ -31,6 +31,7 @@ import {
 	IRangeQueryParam,
 } from 'src/types/requests';
 
+import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
@@ -62,17 +63,24 @@ export default abstract class AbstractController<T extends AbstractService> {
 	static requiredPallets: RequiredPallets;
 
 	constructor(
-		protected api: ApiPromise,
+		private _specName: string,
 		private _path: string,
 		protected service: T,
 	) {}
-
 	get path(): string {
 		return this._path;
 	}
 
 	get router(): Router {
 		return this._router;
+	}
+
+	get api(): ApiPromise {
+		const api = ApiPromiseRegistry.getApi(this._specName);
+		if (!api) {
+			throw new InternalServerError('API not found during controller initilization');
+		}
+		return api;
 	}
 
 	/**

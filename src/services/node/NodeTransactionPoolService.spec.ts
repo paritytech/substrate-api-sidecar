@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300 } from '../../test-helpers/registries';
 import { defaultMockApi, pendingExtrinsics } from '../test-helpers/mock';
@@ -24,9 +25,12 @@ import transactionPoolWithTipResponse from '../test-helpers/responses/node/trans
 import transactionPoolWithTipOperationalResponse from '../test-helpers/responses/node/transactionPoolWithTipOperational.json';
 import { NodeTransactionPoolService } from '.';
 
-const nodeTransactionPoolService = new NodeTransactionPoolService(defaultMockApi);
+const nodeTransactionPoolService = new NodeTransactionPoolService('mock');
 
 describe('NodeTransactionPoolService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
+	});
 	describe('fetchTransactionPool', () => {
 		it('works when ApiPromiseWorks (no txs)', async () => {
 			expect(sanitizeNumbers(await nodeTransactionPoolService.fetchTransactionPool(false))).toStrictEqual({ pool: [] });

@@ -414,7 +414,6 @@ export class CoretimeService extends AbstractService {
 
 	async getCoretimeReservations(hash: BlockHash): Promise<ICoretimeReservations> {
 		const { api } = this;
-
 		const [{ specName }, { number }, historicApi] = await Promise.all([
 			api.rpc.state.getRuntimeVersion(hash),
 			api.rpc.chain.getHeader(hash),

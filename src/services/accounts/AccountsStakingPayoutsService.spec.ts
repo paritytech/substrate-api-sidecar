@@ -18,6 +18,7 @@ import type { ApiPromise } from '@polkadot/api';
 import type { ApiDecoration } from '@polkadot/api/types';
 import type { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { polkadotRegistryV1000001 } from '../../test-helpers/registries';
 import { defaultMockApi } from '../test-helpers/mock';
@@ -68,9 +69,14 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-const stakingPayoutsService = new AccountsStakingPayoutsService(mockApi);
+const stakingPayoutsService = new AccountsStakingPayoutsService('mock');
 
 describe('AccountsStakingPayoutsService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('fetchAccountStakingPayout', () => {
 		it('Should work with a validator address', async () => {
 			const res = await stakingPayoutsService.fetchAccountStakingPayout(

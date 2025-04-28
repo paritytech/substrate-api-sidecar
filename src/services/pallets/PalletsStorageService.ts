@@ -39,6 +39,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, storageItemId, keys, metadata }: IFetchStorageItemArgs,
 	): Promise<IPalletStorageItem> {
+		const { api } = this;
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);
@@ -60,7 +61,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 
 		const [value, { number }] = await Promise.all([
 			historicApi.query[palletName][storageItemId](...keys),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 		]);
 
 		return {
@@ -81,6 +82,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletStorage> {
+		const { api } = this;
 		const metadataFieldType = 'storage';
 		const chosenMetadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(chosenMetadata, palletId, metadataFieldType);
@@ -94,7 +96,7 @@ export class PalletsStorageService extends AbstractPalletsService {
 			items = palletMeta.storage.unwrap().items.map((itemMeta) => this.normalizeStorageItemMeta(itemMeta));
 		}
 
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+		const { number } = await api.rpc.chain.getHeader(hash);
 
 		return {
 			at: {

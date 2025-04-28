@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { CoretimeService } from '../../services';
@@ -23,7 +22,7 @@ import AbstractController from '../AbstractController';
 export default class CoretimeGenericController extends AbstractController<CoretimeService> {
 	static controllerName = 'CoretimeGeneric';
 	static requiredPallets = [['Broker'], ['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();
 	}

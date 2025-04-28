@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-
 import { TransactionSubmitService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -40,7 +38,7 @@ import AbstractController from '../AbstractController';
 export default class TransactionSubmitController extends AbstractController<TransactionSubmitService> {
 	static controllerName = 'TransactionSubmit';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/transaction', new TransactionSubmitService(api));
 		this.initRoutes();
 	}
