@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { BlockHash } from '@polkadot/types/interfaces';
-import { ApiPromiseRegistry } from 'src/apiRegistry';
-import { assetHubSpecNames } from 'src/chains-config';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
+import { assetHubSpecNames } from '../../chains-config';
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
@@ -45,13 +45,9 @@ export class PalletsStakingValidatorsService extends AbstractService {
 
 		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
-		if (isAssetHub && !RCApiPromise) {
+		if (isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
-		// either RC connected or at finalizedHead
-
-		// if RC and not at finalizedHead => continue
-		// if RC and at finalizedHead => get multichain assethub endpoint and query
 
 		// if session is required and connected to AH, get relay and query session.validators
 		const sessionValidators = isAssetHub
