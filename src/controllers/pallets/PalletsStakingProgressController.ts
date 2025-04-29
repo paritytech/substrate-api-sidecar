@@ -103,12 +103,11 @@ export default class PalletsStakingProgressController extends AbstractController
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const { specName } = this;
-		const hash = await this.getHashFromAt(at);
-
 		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
 			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
 			throw Error(`Query Parameter 'at' is not supported for /pallets/staking/progress when connected to assetHub.`);
 		}
+		const hash = await this.getHashFromAt(at);
 		PalletsStakingProgressController.sanitizedSend(res, await this.service.derivePalletStakingProgress(hash));
 	};
 }
