@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { BlockHash } from '@polkadot/types/interfaces';
+import { ApiPromiseRegistry } from 'src/apiRegistry';
 import { assetHubSpecNames } from 'src/chains-config';
 
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
@@ -42,14 +43,24 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
 
+		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+
+		if (isAssetHub && !RCApiPromise) {
+			throw new Error('Relay chain API not found');
+		}
 		// either RC connected or at finalizedHead
 
 		// if RC and not at finalizedHead => continue
 		// if RC and at finalizedHead => get multichain assethub endpoint and query
 
+		// if session is required and connected to AH, get relay and query session.validators
+		const sessionValidators = isAssetHub
+			? RCApiPromise![0].api.query.session.validators
+			: historicApi.query.session.validators;
+
 		const [{ number }, validatorSession, validatorsEntries] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			historicApi.query.session.validators(),
+			sessionValidators(),
 			historicApi.query.staking.validators.entries(),
 		]);
 
