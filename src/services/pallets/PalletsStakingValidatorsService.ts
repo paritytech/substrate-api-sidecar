@@ -31,14 +31,9 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 */
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
 		const { api, specName } = this;
-		//  can continue as it wont get here if hash is historical and specName is assethub
-		const [historicApi, blockHead] = await Promise.all([api.at(hash), api.rpc.chain.getFinalizedHead()]);
+		const blockHead = await api.rpc.chain.getFinalizedHead();
 		const isAssetHub = assetHubSpecNames.has(specName);
 		const isHead = blockHead.hash === hash;
-		if (!isAssetHub) {
-			// check if its RC, if it is, check if hash is before AHM else throw
-			console.log(blockHead);
-		}
 		if (isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
@@ -48,7 +43,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		if (isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
-
+		const historicApi = await api.at(hash);
 		// if session is required and connected to AH, get relay and query session.validators
 		const sessionValidators = isAssetHub
 			? RCApiPromise![0].api.query.session.validators

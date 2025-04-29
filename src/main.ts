@@ -70,7 +70,7 @@ async function initApis(): Promise<string> {
 		startUpPrompt(requiredApis[i].url, chainName.toString(), implName.toString());
 		specNames.push(specName.toString());
 	}
-	console.log(specNames);
+
 	logger.info('All APIs initialized');
 	return specNames[0];
 }
