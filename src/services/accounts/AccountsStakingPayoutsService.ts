@@ -155,8 +155,12 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
+
 		const sanitizedEra = era < 0 ? 0 : era;
-		const { number } = await api.rpc.chain.getHeader(hash);
+		const [{ number }, runtimeInfo] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			this.api.rpc.state.getRuntimeVersion(hash),
+		]);
 
 		const at: IBlockInfo = {
 			height: number.unwrap().toString(10),
@@ -165,7 +169,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
-		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(at.hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 
 		/**
@@ -174,6 +177,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		 * to maintain historical integrity we need to make a check to cover both the
 		 * storage query and the consts.
 		 */
+
 		let historyDepth: u32 = api.registry.createType('u32', 84);
 		if (historicApi.consts.staking.historyDepth) {
 			historyDepth = historicApi.consts.staking.historyDepth;
@@ -195,6 +199,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					'than or equal to current_era - history_depth.',
 			);
 		}
+
+		// ARRIVED HERE
 
 		// Fetch general data about the era
 		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, sanitizedEra, at, isKusama);
