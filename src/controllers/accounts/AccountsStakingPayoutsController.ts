@@ -20,6 +20,7 @@ import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
+import { assetHubSpecNames } from '../../chains-config';
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
 import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
@@ -108,9 +109,20 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		res,
 	): Promise<void> => {
 		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+		const { specName } = this;
+
+		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
+			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
+			throw Error(
+				`Query Parameter 'at' is not supported for /accounts/:address/staking-payouts when connected to assetHub.`,
+			);
+		}
+
 		let hash = await this.getHashFromAt(at);
-		let apiAt = await this.api.at(hash);
-		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(hash);
+		let apiAt;
+		const [_apiAt, runtimeInfo] = await Promise.all([this.api.at(hash), this.api.rpc.state.getRuntimeVersion(hash)]);
+		apiAt = _apiAt;
+
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 		if (currentEra <= 519 && depth !== undefined && isKusama) {

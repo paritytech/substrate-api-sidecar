@@ -70,4 +70,8 @@ export abstract class AbstractService {
 		}
 		return api;
 	}
+
+	getSpecName(): string {
+		return this.specName;
+	}
 }

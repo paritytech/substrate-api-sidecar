@@ -16,6 +16,7 @@
 
 import { RequestHandler } from 'express';
 
+import { assetHubSpecNames } from '../../chains-config';
 import { PalletsStakingValidatorsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -38,8 +39,12 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 	 * @param res Express Response
 	 */
 	private getPalletStakingValidators: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+		const { specName } = this;
+		if (typeof at === 'string' && assetHubSpecNames.has(specName)) {
+			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
+			throw Error(`Query Parameter 'at' is not supported for /pallets/staking/validators when connected to assetHub.`);
+		}
 		const hash = await this.getHashFromAt(at);
-
 		PalletsStakingValidatorsController.sanitizedSend(res, await this.service.derivePalletStakingValidators(hash));
 	};
 }

@@ -93,7 +93,7 @@ const mockApi = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletStakingProgressService = new PalletsStakingProgressService('mock');
+const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
 
 const unappliedSlashes = [
 	{
@@ -158,7 +158,7 @@ const mockApiUnappliedSlashes = {
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('mock');
+const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('polkadot');
 
 describe('PalletStakingProgressService', () => {
 	beforeAll(() => {
