@@ -526,6 +526,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		let validatorLedger;
 		let commissionPromise;
 		const ancient: boolean = era < 518;
+
 		if (validatorId in validatorLedgerCache) {
 			validatorLedger = validatorLedgerCache[validatorId];
 			let prefs: PalletStakingValidatorPrefs | ValidatorPrefsWithCommission;

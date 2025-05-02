@@ -41,7 +41,13 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
+
 		const historicApi = await api.at(hash);
+
+		if (!historicApi.query.staking) {
+			throw new Error('Staking pallet not found for queried runtime');
+		}
+
 		// if session is required and connected to AH, get relay and query session.validators
 		const sessionValidators = this.assetHubInfo.isAssetHub
 			? RCApiPromise![0].api.query.session.validators

@@ -70,7 +70,7 @@ export class ApiPromiseRegistry {
 					this.specNameToTypeMap.set(specName.toString(), type);
 				}
 			}
-
+			// TODO: use a generic store for APis and use a unique Id to reference URLs and specNames
 			if (this._instancesBySpecName.has(specName.toString())) {
 				const existingInstances = this._instancesBySpecName.get(specName.toString())!;
 				this._instancesBySpecName.set(specName.toString(), [...existingInstances, api]);
@@ -136,6 +136,10 @@ export class ApiPromiseRegistry {
 		}
 
 		return specNameApis;
+	}
+
+	public static getAllAvailableSpecNames(): string[] {
+		return Array.from(this._instancesBySpecName.keys());
 	}
 
 	public static clear(): void {
