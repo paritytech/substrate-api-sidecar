@@ -28,17 +28,78 @@ import { BadRequest, InternalServerError } from 'http-errors';
 import type { ControllerOptions } from 'src/types/chains-config';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
+import { ApiPromiseRegistry } from '../../../src/apiRegistry';
+
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
-	async fetchAccountStakingInfoAssetHub(hash: BlockHash, options: ControllerOptions) {
+	// TODO: Add isClaimedRewards
+	async fetchAccountStakingInfoAssetHub(hash: BlockHash, stash: string, options: ControllerOptions) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
+		// TODO: Am i using the registry correctly?
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
+
 		if (!historicApi.query.staking) {
 			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);
 		}
 
-		console.log(options);
+		// Fetching initial data
+		const [header, controllerOption] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.staking.bonded(stash), // Option<AccountId> representing the controller
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
+
+		const at = {
+			hash: header.hash.toHex(),
+			height: header.number.unwrap().toString(10),
+		};
+
+		if (controllerOption.isNone) {
+			throw new BadRequest(`The address ${stash} is not a stash address.`);
+		}
+
+		const controller = controllerOption.unwrap();
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
+			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
+			historicApi.query.staking.payee(stash),
+			historicApi.query.staking.slashingSpans(stash),
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
+		const stakingLedger = stakingLedgerOption.unwrapOr(null);
+
+		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
+			throw new InternalServerError(
+				`Staking ledger could not be found for controller address "${controller.toString()}"`,
+			);
+		}
+
+		const [isValidator, nominations, currentEraOption] = await Promise.all([
+			rcApi.query.session
+				? ((await rcApi.query.session.validators()).toHuman() as string[]).includes(stash)
+				: false,
+			historicApi.query.staking.nominators ? (await historicApi.query.staking.nominators(stash)).unwrapOr(null) : null,
+			historicApi.query.staking.currentEra(),
+		]);
+		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+
+		return {
+			at,
+			controller,
+			rewardDestination,
+			numSlashingSpans,
+			nominations,
+			staking: {
+				stash: stakingLedger.stash,
+				total: stakingLedger.total,
+				active: stakingLedger.active,
+				unlocking: stakingLedger.unlocking,
+			},
+		};
 	}
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.
