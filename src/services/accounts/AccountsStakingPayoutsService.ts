@@ -152,7 +152,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
 
-		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+		if (!historicApi.query.staking) {
+			throw new Error('Staking pallet not found for queried runtime');
+		}
+
+		const isMultiChain = ApiPromiseRegistry.getAllAvailableSpecNames().length > 1;
+
+		const RCApiPromise = isAssetHub && isMultiChain ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
@@ -528,6 +534,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		let validatorLedger;
 		let commissionPromise;
 		const ancient: boolean = era < 518;
+
 		if (validatorId in validatorLedgerCache) {
 			validatorLedger = validatorLedgerCache[validatorId];
 			let prefs: PalletStakingValidatorPrefs | ValidatorPrefsWithCommission;

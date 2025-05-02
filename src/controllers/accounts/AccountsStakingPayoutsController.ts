@@ -112,7 +112,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		const isKusama = specName.toString().toLowerCase() === 'kusama';
 		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
 			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
-			throw Error(
+			throw new BadRequest(
 				`Query Parameter 'at' is not supported for /accounts/:address/staking-payouts when connected to assetHub.`,
 			);
 		}
@@ -129,6 +129,10 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			const block = earlyErasBlockInfo[currentEra].start;
 			hash = await this.getHashFromAt(block.toString());
 			apiAt = await this.api.at(hash);
+		}
+
+		if (!apiAt.query.staking) {
+			throw new BadRequest('Staking pallet not found for queried runtime');
 		}
 
 		AccountsStakingPayoutsController.sanitizedSend(

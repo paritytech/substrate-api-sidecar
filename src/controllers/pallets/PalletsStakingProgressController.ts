@@ -97,14 +97,13 @@ export default class PalletsStakingProgressController extends AbstractController
 
 	/**
 	 * Get the progress of the staking pallet system.
-	 *
+	 * FOr AHM, this endpoint allows to query at historic blocks if connected to RC, while switches automatically to AH if connected to RC.
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const { specName } = this;
 		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
-			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
 			throw Error(`Query Parameter 'at' is not supported for /pallets/staking/progress when connected to assetHub.`);
 		}
 		const hash = await this.getHashFromAt(at);
