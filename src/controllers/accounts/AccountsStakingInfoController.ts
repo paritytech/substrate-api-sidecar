@@ -107,10 +107,16 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 
 		const hash = await this.getHashFromAt(at);
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
-		// TODO: Based on the options use the correct storage call: ie. assethub or other.
-		AccountsStakingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
-		);
+		if (this.options.multiChainApi?.assetHubMigration) {
+			AccountsStakingInfoController.sanitizedSend(
+				res,
+				await this.service.fetchAccountStakingInfoAssetHub(hash, address, this.options),
+			);
+		} else {
+			AccountsStakingInfoController.sanitizedSend(
+				res,
+				await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
+			);
+		}
 	};
 }
