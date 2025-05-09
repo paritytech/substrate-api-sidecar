@@ -90,11 +90,6 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-/**
- * Mock PalletStakingProgressService instance.
- */
-const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
-
 const unappliedSlashes = [
 	{
 		validator: '5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6',
@@ -155,19 +150,19 @@ const mockApiUnappliedSlashes = {
 	at: (_hash: Hash) => mockHistoricApiUnappliedSlashes,
 } as unknown as ApiPromise;
 
-/**
- * Mock PalletStakingProgressService instance.
- */
-const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('polkadot');
-
 describe('PalletStakingProgressService', () => {
 	beforeAll(() => {
 		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 	});
-	describe('derivePalletStakingProgress', () => {
+	describe('derivePalletStakingProgress before AHM', () => {
 		(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
 
 		it('works when ApiPromise works (block 789629)', async () => {
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
+
 			expect(
 				sanitizeNumbers(await palletStakingProgressService.derivePalletStakingProgress(blockHash789629)),
 			).toStrictEqual(palletsStakingProgress789629SResponse);
@@ -176,7 +171,10 @@ describe('PalletStakingProgressService', () => {
 		it('throws when ErasStartSessionIndex.isNone', async () => {
 			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', null));
-
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('EraStartSessionIndex is None when Some was expected.'),
 			);
@@ -187,7 +185,10 @@ describe('PalletStakingProgressService', () => {
 		it('throws when activeEra.isNone', async () => {
 			(mockHistoricApi.query.staking.activeEra as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<ActiveEraInfo>', null));
-
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('ActiveEra is None when Some was expected.'),
 			);
@@ -197,12 +198,86 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('works with entries in unappliedSlashes', async () => {
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('polkadot');
+
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashes);
 			expect(
 				sanitizeNumbers(
 					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),
 				),
 			).toStrictEqual(UnappliedSlashesResponse);
+		});
+	});
+
+	describe('derivePalletStakingProgress after AHM', () => {
+		it('it throws if historicApi does not have staking', async () => {
+			const PalletStakingProgressService = new PalletsStakingProgressService('mock');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiNoStaking);
+
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
+				'Staking pallet not found for queried runtime',
+			);
+		});
+
+		it('it throws if sidecar is connected to AH and querying historical block', async () => {
+			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
+				{ type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
+				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
+			]);
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash100000)).rejects.toThrow(
+				'At is currently unsupported for pallet staking validators connected to assethub',
+			);
+		});
+
+		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
+			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
+				// { type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
+				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
+			]);
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
+				'Relay chain API not found',
+			);
+		});
+		it('works when ApiPromise works (block 789629)', async () => {
+			return false;
+		});
+
+		it('throws when ErasStartSessionIndex.isNone', async () => {
+			return false;
+		});
+
+		it('throws when activeEra.isNone', async () => {
+			return false;
+		});
+
+		it('works with entries in unappliedSlashes', async () => {
+			return false;
+		});
+
+		it('it correctly computes the response when connected to AH post AHM', async () => {
+			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
+			//  first get original response for the block, then set envs to multichain;
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi as unknown as ApiPromise);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+
+			const preAHMResponse = await PalletStakingProgressService.derivePalletStakingProgress(blockHash789629);
+			const postAHMResponse = await PalletStakingProgressService.derivePalletStakingProgress(blockHash789629);
 		});
 	});
 });
