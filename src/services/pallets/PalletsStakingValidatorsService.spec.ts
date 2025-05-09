@@ -20,8 +20,8 @@ import type { Hash } from '@polkadot/types/interfaces';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistryV9370 } from '../../test-helpers/registries';
-import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import { assetHubKusamaRegistryV9430, polkadotRegistryV9370 } from '../../test-helpers/registries';
+import { blockHash100000, blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import { validatorsEntries } from '../test-helpers/mock/data/validator14815152Entries';
 import { validators14815152Hex } from '../test-helpers/mock/data/validators14815152Hex';
 import fetchValidators14815152 from '../test-helpers/responses/pallets/fetchValidators14815152.json';
@@ -33,6 +33,7 @@ const validatorsAt = () =>
 const validatorsEntriesAt = () => Promise.resolve().then(() => validatorsEntries());
 
 const mockHistoricApi = {
+	...defaultMockApi,
 	query: {
 		session: {
 			validators: validatorsAt,
@@ -45,18 +46,66 @@ const mockHistoricApi = {
 	},
 } as unknown as ApiDecoration<'promise'>;
 
+const mockApiNoStaking = {
+	...defaultMockApi,
+	at: (_hash: Hash) => defaultMockApi,
+} as unknown as ApiPromise;
+
 const mockApi = {
 	...defaultMockApi,
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
+
+const mockHistoricAHNextApi = {
+	...defaultMockApi,
+	rpc: {
+		...defaultMockApi.rpc,
+		state: {
+			...defaultMockApi.rpc.state,
+			getRuntimeVersion: () =>
+				Promise.resolve().then(() => {
+					return {
+						specName: assetHubKusamaRegistryV9430.createType('Text', 'statemine'),
+						specVersion: assetHubKusamaRegistryV9430.createType('u32', 16),
+						transactionVersion: assetHubKusamaRegistryV9430.createType('u32', 2),
+						implVersion: assetHubKusamaRegistryV9430.createType('u32', 0),
+						implName: assetHubKusamaRegistryV9430.createType('Text', 'parity-kusama'),
+						authoringVersion: assetHubKusamaRegistryV9430.createType('u32', 0),
+					};
+				}),
+		},
+	},
+	query: {
+		staking: {
+			validators: {
+				entries: validatorsEntriesAt,
+			},
+		},
+	},
+} as unknown as ApiPromise;
+
+const mockAHNextApi = {
+	...mockHistoricAHNextApi,
+	at: (_hash: Hash) => mockHistoricAHNextApi,
+} as unknown as ApiPromise;
+
+const mockRCNextApi = {
+	...defaultMockApi,
+	query: {
+		session: {
+			validators: validatorsAt,
+		},
+	},
+} as unknown as ApiPromise;
+
 /**
  * Mock PalletStakingProgressService instance.
  */
-const palletsStakingValidatorsService = new PalletsStakingValidatorsService('mock');
 
 describe('PalletsStakingValidatorsService', () => {
-	describe('derivePalletStakingValidators', () => {
+	describe('derivePalletStakingValidators before AHM', () => {
 		it('Works for block 14815152', async () => {
+			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('mock');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
@@ -65,6 +114,65 @@ describe('PalletsStakingValidatorsService', () => {
 					await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629),
 				),
 			).toStrictEqual(fetchValidators14815152);
+		});
+	});
+
+	describe('derivePalletStakingValidators after AHM', () => {
+		it('it throws if historicApi does not have staking', async () => {
+			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('mock');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiNoStaking);
+
+			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629)).rejects.toThrow(
+				'Staking pallet not found for queried runtime',
+			);
+		});
+
+		it('it throws if sidecar is connected to AH and querying historical block', async () => {
+			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
+				{ type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
+				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
+			]);
+			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash100000)).rejects.toThrow(
+				'At is currently unsupported for pallet staking validators connected to assethub',
+			);
+		});
+
+		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
+			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
+				// { type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
+				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
+			]);
+			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629)).rejects.toThrow(
+				'Relay chain API not found',
+			);
+		});
+		it('it correctly computes the response when connected to AH post AHM', async () => {
+			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
+			//  first get original response for the block, then set envs to multichain;
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi as unknown as ApiPromise);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+
+			const preAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
+			const postAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
+			for (const [index, validator] of postAHMResponse.validators.entries()) {
+				expect(validator).toEqual(preAHMResponse.validators[index]);
+			}
+
+			expect(postAHMResponse.at).toEqual(preAHMResponse.at);
+			expect(postAHMResponse.validatorsToBeChilled).toEqual(preAHMResponse.validatorsToBeChilled);
 		});
 	});
 });
