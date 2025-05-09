@@ -151,6 +151,9 @@ describe('PalletsStakingValidatorsService', () => {
 			);
 		});
 		it('it correctly computes the response when connected to AH post AHM', async () => {
+			const palletsStakingValidatorsServicePreAHM = new PalletsStakingValidatorsService('mock');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+			const preAHMResponse = await palletsStakingValidatorsServicePreAHM.derivePalletStakingValidators(blockHash789629);
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
 			//  first get original response for the block, then set envs to multichain;
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi as unknown as ApiPromise);
@@ -164,8 +167,8 @@ describe('PalletsStakingValidatorsService', () => {
 					},
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
+			// TODO: fix this as its comparing the same stuff
 
-			const preAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
 			const postAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
 			for (const [index, validator] of postAHMResponse.validators.entries()) {
 				expect(validator).toEqual(preAHMResponse.validators[index]);
