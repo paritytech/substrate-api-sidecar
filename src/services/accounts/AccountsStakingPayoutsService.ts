@@ -145,11 +145,11 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const { api, specName } = this;
 
 		const head = await api.rpc.chain.getFinalizedHead();
-		const isHead = head.hash === hash;
+		const isHead = head === hash;
 		const isAssetHub = assetHubSpecNames.has(specName);
 
 		if (isAssetHub && !isHead) {
-			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
+			throw new Error('At is currently unsupported for Account staking payouts connected to assethub');
 		}
 
 		if (!historicApi.query.staking) {
@@ -313,8 +313,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					// to fetch the `Rewards` event at that block.
 					nextEraStartBlock = era === 0 ? earlyErasBlockInfo[era + 1].start : earlyErasBlockInfo[era].start;
 				} else {
+					const RCApiPromise = ApiPromiseRegistry.getApiByType('relay');
+					if (!RCApiPromise?.length) {
+						throw new Error('Relay chain API not found');
+					}
+					const relayApi = RCApiPromise[0].api;
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
-					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
+					const epochDuration = relayApi
+						? relayApi.consts.babe.epochDuration.toNumber()
+						: historicApi.consts.babe.epochDuration.toNumber();
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
 				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
