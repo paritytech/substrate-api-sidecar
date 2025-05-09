@@ -33,7 +33,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const { api, specName } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
 		const isAssetHub = assetHubSpecNames.has(specName);
-		const isHead = blockHead.hash === hash;
+		const isHead = blockHead === hash;
 		if (isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}

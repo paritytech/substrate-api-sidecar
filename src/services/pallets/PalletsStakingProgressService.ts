@@ -35,7 +35,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		const { api, specName } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
 		const isAssetHub = assetHubSpecNames.has(specName);
-		const isHead = blockHead.hash === hash;
+		const isHead = blockHead === hash;
 		// if at head and connected to RC, connect to AH, else continue
 		// specName will be the one of the main connection, compare to get the right API to use
 		// session is always on relay chain
@@ -48,7 +48,6 @@ export class PalletsStakingProgressService extends AbstractService {
 		// check if multiple APIs are registered
 
 		const isMultiChain = ApiPromiseRegistry.getAllAvailableSpecNames().length > 1;
-
 		const RCApiPromise = isAssetHub && isMultiChain ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (isAssetHub && !RCApiPromise?.length) {
