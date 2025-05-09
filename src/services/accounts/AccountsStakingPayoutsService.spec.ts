@@ -455,7 +455,6 @@ describe('AccountsStakingPayoutsService', () => {
 			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
 			const res = stakingPayoutsService['extractExposure'](val, val, deriveEraExposureParam, 0);
 
-
 			expect(sanitizeNumbers(res)).toStrictEqual({
 				nominatorExposure: '0',
 				totalExposure: '21133134966048676',
