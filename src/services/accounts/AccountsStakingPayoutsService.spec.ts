@@ -76,7 +76,17 @@ const RCNextAHMApiPromise = {
 		...defaultMockApi.query,
 		staking: null,
 	},
-	at: (_hash: Hash) => mockHistoricApi,
+	at: (_hash: Hash) => ({
+		...mockHistoricApi,
+		consts: {
+			...mockHistoricApi.consts,
+			staking: null,
+		},
+		query: {
+			...mockHistoricApi.query,
+			staking: null,
+		},
+	}),
 } as unknown as ApiPromise;
 
 const AHNextAHMApiPromise = {
@@ -91,7 +101,19 @@ const AHNextAHMApiPromise = {
 		session: null,
 		babe: null,
 	},
-	at: (_hash: Hash) => mockHistoricApi,
+	at: (_hash: Hash) => ({
+		...mockHistoricApi,
+		consts: {
+			...mockHistoricApi.consts,
+			session: null,
+			babe: null,
+		},
+		query: {
+			...mockHistoricApi.query,
+			session: null,
+			babe: null,
+		},
+	}),
 } as unknown as ApiPromise;
 
 const stakingPayoutsService = new AccountsStakingPayoutsService('mock');
