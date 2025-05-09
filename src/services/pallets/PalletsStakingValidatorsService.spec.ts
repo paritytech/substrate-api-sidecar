@@ -167,8 +167,6 @@ describe('PalletsStakingValidatorsService', () => {
 					},
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
-			// TODO: fix this as its comparing the same stuff
-
 			const postAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
 			for (const [index, validator] of postAHMResponse.validators.entries()) {
 				expect(validator).toEqual(preAHMResponse.validators[index]);
