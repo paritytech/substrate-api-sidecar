@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1745911406064,
+  "lastUpdate": 1747156348116,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -7991,6 +7991,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 353.64,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8e4051d3d5db0ecffa14d21f46d5cc1651fcf2f7",
+          "message": "chore(deps): bump the pjs group with 5 updates (#1648)\n\nBumps the pjs group with 5 updates:\n\n| Package | From | To |\n| --- | --- | --- |\n| [@polkadot/api](https://github.com/polkadot-js/api/tree/HEAD/packages/api) | `15.9.2` | `15.9.3` |\n| [@polkadot/api-augment](https://github.com/polkadot-js/api/tree/HEAD/packages/api-augment) | `15.9.2` | `15.9.3` |\n| [@polkadot/api-contract](https://github.com/polkadot-js/api/tree/HEAD/packages/api-contract) | `15.9.2` | `15.9.3` |\n| [@polkadot/types](https://github.com/polkadot-js/api/tree/HEAD/packages/types) | `15.9.2` | `15.9.3` |\n| [@polkadot/types-codec](https://github.com/polkadot-js/api/tree/HEAD/packages/types-codec) | `15.9.2` | `15.9.3` |\n\n\nUpdates `@polkadot/api` from 15.9.2 to 15.9.3\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.9.3/packages/api)\n\nUpdates `@polkadot/api-augment` from 15.9.2 to 15.9.3\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.9.3/packages/api-augment)\n\nUpdates `@polkadot/api-contract` from 15.9.2 to 15.9.3\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.9.3/packages/api-contract)\n\nUpdates `@polkadot/types` from 15.9.2 to 15.9.3\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.9.3/packages/types)\n\nUpdates `@polkadot/types-codec` from 15.9.2 to 15.9.3\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.9.3/packages/types-codec)\n\n---\nupdated-dependencies:\n- dependency-name: \"@polkadot/api\"\n  dependency-version: 15.9.3\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: pjs\n- dependency-name: \"@polkadot/api-augment\"\n  dependency-version: 15.9.3\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: pjs\n- dependency-name: \"@polkadot/api-contract\"\n  dependency-version: 15.9.3\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: pjs\n- dependency-name: \"@polkadot/types\"\n  dependency-version: 15.9.3\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: pjs\n- dependency-name: \"@polkadot/types-codec\"\n  dependency-version: 15.9.3\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: pjs\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2025-05-13T18:38:47+02:00",
+          "tree_id": "336fc5afcf0e86f6c75207cc41102acd041e1ada",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/8e4051d3d5db0ecffa14d21f46d5cc1651fcf2f7"
+        },
+        "date": 1747156346847,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 1044.01,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 191.78,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 771.03,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 2483.09,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.38,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.38,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1982.37,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 573.32,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 751.17,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 154.2,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 95.05,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 330.19,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 114.02,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 120.73,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 436.45,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 110.11,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 98.35,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 107.01,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 696.64,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 963.31,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 137.59,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 132,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 253.97,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 126.14,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 810.06,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 185.57,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 93.34,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 99.24,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 206.79,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 247.21,
             "unit": "ms"
           }
         ]
