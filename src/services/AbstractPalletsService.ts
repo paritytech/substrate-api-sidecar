@@ -20,6 +20,7 @@ import {
 	ErrorMetadataLatest,
 	EventMetadataLatest,
 	FunctionMetadataLatest,
+	MetadataLatest,
 	MetadataV14,
 	MetadataV15,
 	PalletCallMetadataV14,
@@ -72,7 +73,7 @@ export abstract class AbstractPalletsService extends AbstractService {
 	 * @param palletId identifier for a FRAME pallet as a pallet name or index.
 	 */
 	protected findPalletMeta(
-		adjustedMetadata: MetadataV14 | MetadataV15,
+		adjustedMetadata: MetadataV14 | MetadataV15 | MetadataLatest,
 		palletId: string,
 		metadataFieldType: IMetadataFieldType,
 	): [PalletMetadataV14 | PalletMetadataV15, number] {

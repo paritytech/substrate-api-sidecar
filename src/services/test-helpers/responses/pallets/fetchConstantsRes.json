@@ -10,6 +10,9 @@
 			"name": "EnactmentPeriod",
 			"type": "4",
 			"value": "0x00270600",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
 			"docs": [
 				" The period between a proposal being approved and enacted.",
 				"",
@@ -23,6 +26,9 @@
             "name": "LaunchPeriod",
             "type": "4",
             "value": "0x00270600",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " How often (in blocks) new public referenda are launched."
               ]
@@ -31,6 +37,9 @@
             "name": "VotingPeriod",
             "type": "4",
             "value": "0x00270600",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " How often (in blocks) to check for new votes."
             ]
@@ -39,6 +48,9 @@
             "name": "VoteLockingPeriod",
             "type": "4",
             "value": "0x00270600",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " The minimum period of vote locking.",
                 "",
@@ -50,6 +62,9 @@
             "name": "MinimumDeposit",
             "type": "6",
             "value": "0x0010a5d4e80000000000000000000000",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " The minimum amount to be used as a deposit for a public referendum proposal."
             ]
@@ -58,6 +73,9 @@
             "name": "InstantAllowed",
             "type": "42",
             "value": "0x01",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " Indicator for whether an emergency origin is even allowed to happen. Some chains may",
                 " want to set this permanently to `false`, others may want to condition it on things such",
@@ -68,6 +86,9 @@
             "name": "FastTrackVotingPeriod",
             "type": "4",
             "value": "0x08070000",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " Minimum voting period allowed for a fast-track referendum."
             ]
@@ -76,6 +97,9 @@
             "name": "CooloffPeriod",
             "type": "4",
             "value": "0xc0890100",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " Period in blocks where an external proposal may not be re-submitted after being vetoed."
             ]
@@ -84,6 +108,9 @@
             "name": "PreimageByteDeposit",
             "type": "6",
             "value": "0x80969800000000000000000000000000",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " The amount of balance that must be deposited per byte of preimage stored."
             ]
@@ -92,6 +119,9 @@
             "name": "MaxVotes",
             "type": "4",
             "value": "0x64000000",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " The maximum number of votes for an account.",
                 "",
@@ -103,6 +133,9 @@
             "name": "MaxProposals",
             "type": "4",
             "value": "0x64000000",
+            "deprecationInfo":  {
+                "notDeprecated": null
+            },
             "docs": [
                 " The maximum number of public proposals that can exist at any time."
             ]
