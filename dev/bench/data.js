@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1748347951258,
+  "lastUpdate": 1748426208061,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -8513,6 +8513,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 318.7,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6ffa1aa0bd2128ee181336fb81e1e7bfa614605b",
+          "message": "chore(deps): bump the pjs group with 7 updates (#1652)\n\n* chore(deps): bump the pjs group with 7 updates\n\nBumps the pjs group with 7 updates:\n\n| Package | From | To |\n| --- | --- | --- |\n| [@polkadot/api](https://github.com/polkadot-js/api/tree/HEAD/packages/api) | `15.9.3` | `15.10.2` |\n| [@polkadot/api-augment](https://github.com/polkadot-js/api/tree/HEAD/packages/api-augment) | `15.9.3` | `15.10.2` |\n| [@polkadot/api-contract](https://github.com/polkadot-js/api/tree/HEAD/packages/api-contract) | `15.9.3` | `15.10.2` |\n| [@polkadot/types](https://github.com/polkadot-js/api/tree/HEAD/packages/types) | `15.9.3` | `15.10.2` |\n| [@polkadot/types-codec](https://github.com/polkadot-js/api/tree/HEAD/packages/types-codec) | `15.9.3` | `15.10.2` |\n| [@polkadot/util](https://github.com/polkadot-js/common/tree/HEAD/packages/util) | `13.4.4` | `13.5.1` |\n| [@polkadot/util-crypto](https://github.com/polkadot-js/common/tree/HEAD/packages/util-crypto) | `13.4.4` | `13.5.1` |\n\n\nUpdates `@polkadot/api` from 15.9.3 to 15.10.2\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.10.2/packages/api)\n\nUpdates `@polkadot/api-augment` from 15.9.3 to 15.10.2\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.10.2/packages/api-augment)\n\nUpdates `@polkadot/api-contract` from 15.9.3 to 15.10.2\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.10.2/packages/api-contract)\n\nUpdates `@polkadot/types` from 15.9.3 to 15.10.2\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.10.2/packages/types)\n\nUpdates `@polkadot/types-codec` from 15.9.3 to 15.10.2\n- [Release notes](https://github.com/polkadot-js/api/releases)\n- [Changelog](https://github.com/polkadot-js/api/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/api/commits/v15.10.2/packages/types-codec)\n\nUpdates `@polkadot/util` from 13.4.4 to 13.5.1\n- [Release notes](https://github.com/polkadot-js/common/releases)\n- [Changelog](https://github.com/polkadot-js/common/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/common/commits/v13.5.1/packages/util)\n\nUpdates `@polkadot/util-crypto` from 13.4.4 to 13.5.1\n- [Release notes](https://github.com/polkadot-js/common/releases)\n- [Changelog](https://github.com/polkadot-js/common/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/polkadot-js/common/commits/v13.5.1/packages/util-crypto)\n\n---\nupdated-dependencies:\n- dependency-name: \"@polkadot/api\"\n  dependency-version: 15.10.2\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/api-augment\"\n  dependency-version: 15.10.2\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/api-contract\"\n  dependency-version: 15.10.2\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/types\"\n  dependency-version: 15.10.2\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/types-codec\"\n  dependency-version: 15.10.2\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/util\"\n  dependency-version: 13.5.1\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n- dependency-name: \"@polkadot/util-crypto\"\n  dependency-version: 13.5.1\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: pjs\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\n\n* fix type\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Imod7 <dominique@imodworks.io>",
+          "timestamp": "2025-05-28T11:21:57+02:00",
+          "tree_id": "8b3ec12d5e3fe1b81a24c982f6079bd1b149f342",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/6ffa1aa0bd2128ee181336fb81e1e7bfa614605b"
+        },
+        "date": 1748426206362,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 218.25,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 226.48,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 339.76,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 3515.01,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.45,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.43,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1866.99,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 241.09,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 1379.87,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 261.41,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 172.1,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 461.33,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 177.34,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 214.78,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 180.57,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 191.92,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 179.57,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 194.23,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 445.87,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 263.57,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 279.1,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 238.11,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 279.21,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 227.11,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 226.57,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 338.35,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 164.9,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 163.21,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 370.44,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 374.04,
             "unit": "ms"
           }
         ]
