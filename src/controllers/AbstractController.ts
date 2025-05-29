@@ -30,6 +30,7 @@ import {
 	IParaIdParam,
 	IRangeQueryParam,
 } from 'src/types/requests';
+import type { AssetHubInfo } from '../apiRegistry';
 
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
@@ -81,6 +82,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 			throw new InternalServerError('API not found during controller initilization');
 		}
 		return api;
+	}
+
+	get assetHubInfo(): AssetHubInfo {
+		return ApiPromiseRegistry.assetHubInfo;
 	}
 
 	get specName(): string {

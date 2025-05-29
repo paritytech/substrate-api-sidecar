@@ -31,6 +31,7 @@ import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
+import { assetHubSpecNames } from './chains-config';
 
 /*
  * initApis function prepares the API registry and initializes the API
@@ -54,9 +55,17 @@ async function initApis(): Promise<string> {
 	const apis = await Promise.all(
 		requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl.url, apiUrl.type || undefined)),
 	);
+
+	for (const api of apis) {
+		await api.isReady;
+	}
+
 	const specNames = [];
 
+	let isAssetHub = false;
+	let isAssetHubMigrated = false;
 	for (let i = 0; i < apis.length; i++) {
+		console.log(i);
 		if (!apis[i]) {
 			logger.error('Failed to create API instance');
 		}
@@ -66,6 +75,22 @@ async function initApis(): Promise<string> {
 			api.rpc.system.chain(),
 			api.rpc.state.getRuntimeVersion(),
 		]);
+
+		// This is assuming that the first requiredApi will be SUBSTRATE.URL
+		if (i === 0 && assetHubSpecNames.has(specName.toString().toLowerCase())) {
+			isAssetHub = true;
+
+			let stage;
+			if (api.query.ahMigrator) {
+				stage = await api.query.ahMigrator.ahMigrationStage();
+			}
+
+			if (stage && (stage as unknown as { isMigrationDone: boolean } ).isMigrationDone) {
+				isAssetHubMigrated = true
+			}
+
+			ApiPromiseRegistry.setAssetHubInfo({ isAssetHub, isAssetHubMigrated })
+		}
 
 		startUpPrompt(requiredApis[i].url, chainName.toString(), implName.toString());
 		specNames.push(specName.toString());

@@ -48,7 +48,6 @@ import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
-import { assetHubSpecNames } from '../../chains-config';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
@@ -142,19 +141,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		currentEra: number,
 		historicApi: ApiDecoration<'promise'>,
 	): Promise<IAccountStakingPayouts> {
-		const { api, specName } = this;
+		const { api } = this;
 
 		const head = await api.rpc.chain.getFinalizedHead();
-		const isAssetHub = assetHubSpecNames.has(specName);
 
 		const isHead = head.hash === hash;
-		if (isAssetHub && !isHead) {
+		if (this.assetHubInfo.isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
 
-		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
-		if (isAssetHub && !RCApiPromise?.length) {
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
 		const sanitizedEra = era < 0 ? 0 : era;

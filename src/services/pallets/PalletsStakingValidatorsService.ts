@@ -16,7 +16,6 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
-import { assetHubSpecNames } from '../../chains-config';
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
@@ -30,22 +29,21 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
-		const { api, specName } = this;
+		const { api } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isAssetHub = assetHubSpecNames.has(specName);
 		const isHead = blockHead.hash === hash;
-		if (isAssetHub && !isHead) {
+		if (this.assetHubInfo.isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
 
-		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
-		if (isAssetHub && !RCApiPromise?.length) {
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
 		const historicApi = await api.at(hash);
 		// if session is required and connected to AH, get relay and query session.validators
-		const sessionValidators = isAssetHub
+		const sessionValidators = this.assetHubInfo.isAssetHub
 			? RCApiPromise![0].api.query.session.validators
 			: historicApi.query.session.validators;
 

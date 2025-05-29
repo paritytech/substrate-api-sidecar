@@ -19,7 +19,7 @@ import { Text, Vec } from '@polkadot/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { BadRequest, HttpError } from 'http-errors';
 
-import { ApiPromiseRegistry } from '../../src/apiRegistry';
+import { ApiPromiseRegistry, AssetHubInfo } from '../../src/apiRegistry';
 
 export class EtheuremAddressNotSupported extends Error implements HttpError {
 	public readonly status: number;
@@ -69,6 +69,10 @@ export abstract class AbstractService {
 			throw new Error(`API not found for spec name: ${this.specName}`);
 		}
 		return api;
+	}
+
+	get assetHubInfo(): AssetHubInfo {
+		return ApiPromiseRegistry.assetHubInfo;
 	}
 
 	getSpecName(): string {

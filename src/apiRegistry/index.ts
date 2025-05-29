@@ -8,6 +8,11 @@ import tempTypesBundle from '../override-types/typesBundle';
 import { SidecarConfig } from '../SidecarConfig';
 import { MultiKeyBiMap } from '../util/MultiKeyBiMap';
 
+export interface AssetHubInfo { 
+	isAssetHub: boolean;
+	isAssetHubMigrated: boolean;
+};
+
 export class ApiPromiseRegistry {
 	// SpecName to ApiPromise instances
 	private static _instancesBySpecName: Map<string, Array<ApiPromise>> = new Map();
@@ -15,13 +20,22 @@ export class ApiPromiseRegistry {
 	private static specNameToTypeMap = new MultiKeyBiMap<string, string>();
 	// RPC URL to ApiPromise instance
 	private static _instancesByUrl: Map<string, ApiPromise> = new Map();
+	// Asset hub info, will default to static unless its connected.
+	public static assetHubInfo: AssetHubInfo = {
+		isAssetHub: false,
+		isAssetHubMigrated: false
+	};
+
+	public static setAssetHubInfo(info: AssetHubInfo) {
+		this.assetHubInfo.isAssetHub = info.isAssetHub;
+		this.assetHubInfo.isAssetHubMigrated = info.isAssetHubMigrated;
+	}
 
 	/**
 	 * Get the ApiPromise instance for the given spec name.
 	 * @param specName The spec name to get the ApiPromise instance for.
 	 * @returns The ApiPromise instance for the given spec name.
 	 */
-
 	public static async initApi(url: string, type?: 'relay' | 'assethub' | 'parachain'): Promise<ApiPromise> {
 		const { logger } = Log;
 		logger.info(`Initializing API for ${url}`);
