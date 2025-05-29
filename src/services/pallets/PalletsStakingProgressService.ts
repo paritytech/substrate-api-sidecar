@@ -22,7 +22,6 @@ import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
 import { ApiPromiseRegistry } from '../../../src/apiRegistry';
-import { assetHubSpecNames } from '../../chains-config';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingProgressService extends AbstractService {
@@ -32,22 +31,21 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
-		const { api, specName } = this;
+		const { api } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isAssetHub = assetHubSpecNames.has(specName);
 		const isHead = blockHead.hash === hash;
 
-		if (isAssetHub && !isHead) {
+		if (this.assetHubInfo.isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
 
-		const RCApiPromise = isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
-		if (isAssetHub && !RCApiPromise?.length) {
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
 		const historicApi = await api.at(hash);
-		const sessionValidators = isAssetHub
+		const sessionValidators = this.assetHubInfo.isAssetHub
 			? RCApiPromise![0].api.query.session.validators
 			: historicApi.query.session.validators;
 
