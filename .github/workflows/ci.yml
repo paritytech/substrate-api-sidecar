@@ -136,7 +136,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        uses: docker/build-push-action@v6.15.0
+        uses: docker/build-push-action@v6.18.0
         env:
           DOCKER_BUILD_SUMMARY: false
           DOCKER_BUILD_RECORD_UPLOAD: false

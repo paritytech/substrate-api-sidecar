@@ -76,7 +76,7 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
 
 1. Now that master has the commit for the release, pull down `master` branch.
 
-2. Run the following commands. (Please ensure you have 2FA enabled)
+1. Run the following commands. (Please ensure you have 2FA enabled)
 
     ```bash
     npm login # Only necessary if not already logged in
@@ -87,9 +87,17 @@ NOTE: You must be a member of the `@substrate` NPM org and must belong to the `D
 
 1. Head into the `calc` directory in sidecar, and increment the version inside of the `Cargo.toml`, as well as the `pkg/package.json`.
 
-2. Confirm that the package compiles correctly, `cargo build --release`.
+1. Backup the `pkg/README.md` by just making a copy of it.
 
-3. Continue with the normal sidecar release process.
+1. Run `sh build.sh`.
+
+1. Replace the updated boilerplate README with the backed-up README.
+
+1. Confirm that the package compiles correctly, `cargo build --release`.
+
+1. Commit with ex: `chore(release-calc): 0.3.2`, then `git push` your release branch up, make a PR, get review approval, then merge.
+
+1. Continue with the normal sidecar release process.
 
 #### Publish Calc Package
 

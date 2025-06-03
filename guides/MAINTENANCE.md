@@ -72,10 +72,37 @@ and following the same process as described previously.
 
 **Frequency**: Monthly or longer.
 
+### Keep dependencies under `calc` up to date
+To check if dependencies under `calc` folder are up to date follow the next steps:
+- `cd calc` (from the root folder)
+- Run `cargo check` to see if we get any warnings or errors.
+- Run `cargo update` which updates the `Cargo.lock` file.
+- Note that the previous `cargo update` command does not automatically update the `Cargo.toml` file (section `[dependencies]`). To update the dependency versions in `Cargo.toml`, manually check the updated versions in `Cargo.lock` and update `Cargo.toml` accordingly.
+- Test the build by running `sh build.sh`.
+- If you get any warnings about an outdated `wasm-pack` version like:
+    ```
+    [WARN]: ⚠️   There's a newer version of wasm-pack available, the new version is: 0.13.1, you are using: 0.12.1. To update, navigate to: https://rustwasm.github.io/wasm-pack/installer/
+    ```
+    Then you can follow the next steps to update it:
+    - Update the `wasm-pack` version (all instances) in the `build.sh` script.
+    - Backup the `pkg/README.md` by just making a copy of it.
+    - Run `sh build.sh` which will update the following files:
+        ```
+        modified:   pkg/README.md
+        modified:   pkg/calc.d.ts
+        modified:   pkg/calc.js
+        modified:   pkg/calc_bg.wasm
+        modified:   pkg/package.json
+        ```
+    - Replace the updated boilerplate README with the backed-up README.
+- After successfully updating dependencies, consider making a new release for the `calc` package following the instructions in the [RELEASE](../RELEASE.md) guide.
+
+**Frequency**: Monthly or longer.
+
 ### Check `confmgr` related dependencies
 Another dependency that Sidecar is using is the [Configuration Manager](https://github.com/chevdor/confmgr/). For example, we may receive Dependabot alerts related to this library. If this happens, we could consider opening a PR to update dependencies in that repository. However, the release process is ultimately dependent on the owner, not us, so we would need to wait for a new release to update the version in Sidecar.
 
-**Frequency**: Once per month or longer.
+**Frequency**: Monthly or longer.
 
 ### Check Public instances of Sidecar
 There are public instances of Sidecar that need to be kept up to date with latest release:
@@ -120,6 +147,7 @@ The frequency is somewhat flexible.
     - Yarn Berry version.
     - Keep `substrate-js-dev` repository up to date.
     - Keep dependencies under `docs` up to date.
+    - Keep dependencies under `calc` up to date
     - Check `confmgr` related dependencies.
     - Check Public instances of Sidecar.
     - Docker images of Sidecar.

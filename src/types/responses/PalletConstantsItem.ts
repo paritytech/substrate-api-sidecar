@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { PalletCallMetadataLatest } from '@polkadot/types/interfaces';
+import { PalletConstantMetadataLatest } from '@polkadot/types/interfaces';
 
 import { IPallet } from '.';
 
 export interface IPalletConstantsItem extends IPallet {
 	constantsItem: string;
-	metadata: PalletCallMetadataLatest | undefined;
+	metadata: PalletConstantMetadataLatest | undefined;
 }

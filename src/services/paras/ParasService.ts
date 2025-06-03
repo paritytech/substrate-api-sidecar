@@ -28,7 +28,7 @@ import {
 	ParaLifecycle,
 	WinningData,
 } from '@polkadot/types/interfaces';
-import { PolkadotPrimitivesV8CandidateReceipt } from '@polkadot/types/lookup';
+import { PolkadotPrimitivesVstagingCommittedCandidateReceiptV2 } from '@polkadot/types/lookup';
 import { ITuple } from '@polkadot/types/types';
 import { BN_ZERO } from '@polkadot/util';
 import BN from 'bn.js';
@@ -432,7 +432,7 @@ export class ParasService extends AbstractService {
 		const paraHeaders: IParasHeaders = {};
 		paraInclusion.forEach(({ event }) => {
 			const { data } = event;
-			const paraData = data[0] as PolkadotPrimitivesV8CandidateReceipt;
+			const paraData = data[0] as PolkadotPrimitivesVstagingCommittedCandidateReceiptV2;
 			const headerData = data[1] as Bytes;
 			const { paraHead, paraId } = paraData.descriptor;
 			const header = api.createType('Header', headerData);
