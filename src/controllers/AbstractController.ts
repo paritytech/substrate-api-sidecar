@@ -33,6 +33,7 @@ import {
 import type { AssetHubInfo } from '../apiRegistry';
 
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
+import type { AssetHubInfo } from '../apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';

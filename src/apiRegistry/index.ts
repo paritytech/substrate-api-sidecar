@@ -8,10 +8,10 @@ import tempTypesBundle from '../override-types/typesBundle';
 import { SidecarConfig } from '../SidecarConfig';
 import { MultiKeyBiMap } from '../util/MultiKeyBiMap';
 
-export interface AssetHubInfo { 
+export interface AssetHubInfo {
 	isAssetHub: boolean;
 	isAssetHubMigrated: boolean;
-};
+}
 
 export class ApiPromiseRegistry {
 	// SpecName to ApiPromise instances
@@ -23,7 +23,7 @@ export class ApiPromiseRegistry {
 	// Asset hub info, will default to static unless its connected.
 	public static assetHubInfo: AssetHubInfo = {
 		isAssetHub: false,
-		isAssetHubMigrated: false
+		isAssetHubMigrated: false,
 	};
 
 	public static setAssetHubInfo(info: AssetHubInfo) {
