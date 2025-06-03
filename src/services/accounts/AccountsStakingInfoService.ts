@@ -100,7 +100,7 @@ export class AccountsStakingInfoService extends AbstractService {
 
 			for (let e = eraStart; e < eraStart + eraDepth; e++) {
 				// Type assertion to avoid type error
-				if (!!(historicApi.query.staking?.claimedRewards as unknown as boolean)) {
+				if (historicApi.query.staking?.claimedRewards as unknown as boolean) {
 					if (currentEraOption.isNone) {
 						throw new InternalServerError('CurrentEra is None when Some was expected');
 					}
