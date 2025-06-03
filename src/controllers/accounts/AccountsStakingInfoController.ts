@@ -110,7 +110,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		if (this.options.multiChainApi?.assetHubMigration) {
 			AccountsStakingInfoController.sanitizedSend(
 				res,
-				await this.service.fetchAccountStakingInfoAssetHub(hash, address, this.options),
+				await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address),
 			);
 		} else {
 			AccountsStakingInfoController.sanitizedSend(

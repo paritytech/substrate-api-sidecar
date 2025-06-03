@@ -25,16 +25,20 @@ import type {
 	SpStakingPagedExposureMetadata,
 } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
-import type { ControllerOptions } from 'src/types/chains-config';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
 import { ApiPromiseRegistry } from '../../../src/apiRegistry';
-
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
-	// TODO: Add isClaimedRewards
-	async fetchAccountStakingInfoAssetHub(hash: BlockHash, stash: string, options: ControllerOptions) {
+	/**
+	 * Fetch staking information for a _Stash_ account at a given block for asset hub.
+	 *
+	 * @param hash `BlockHash` to make call at (Only works for the head of the chain for now)
+	 * @param includeClaimedRewards `boolean` to include claimed rewards (Only works for the head of the chain for now)
+	 * @param stash address of the _Stash_  account to get the staking info of
+	 */
+	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 		// TODO: Am i using the registry correctly?
@@ -65,7 +69,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
 			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
 			historicApi.query.staking.payee(stash),
-			historicApi.query.staking.slashingSpans(stash),
+			rcApi.query.staking.slashingSpans(stash),
 		]).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(stash, err);
 		});
@@ -79,13 +83,68 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		const [isValidator, nominations, currentEraOption] = await Promise.all([
-			rcApi.query.session
-				? ((await rcApi.query.session.validators()).toHuman() as string[]).includes(stash)
-				: false,
+			rcApi.query.session ? ((await rcApi.query.session.validators()).toHuman() as string[]).includes(stash) : false,
 			historicApi.query.staking.nominators ? (await historicApi.query.staking.nominators(stash)).unwrapOr(null) : null,
 			historicApi.query.staking.currentEra(),
 		]);
 		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+
+		if (includeClaimedRewards) {
+			// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
+			let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
+			let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
+
+			// `eraDepth`: the number of eras to check.
+			const eraDepth = Number(historicApi.consts.staking.historyDepth.toNumber());
+			const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
+
+			for (let e = eraStart; e < eraStart + eraDepth; e++) {
+				if (historicApi.query.staking?.claimedRewards) {
+					if (currentEraOption.isNone) {
+						throw new InternalServerError('CurrentEra is None when Some was expected');
+					}
+
+					if (isValidator) {
+						claimedRewards = await this.fetchErasStatusForValidatorAssetHub(historicApi, e, stash, claimedRewards);
+					} else {
+						// To verify the reward status `claimed` of an era for a Nominator's account,
+						// we need to check the status of that era in one of their associated Validators' accounts.
+						const validatorsTargets = nominations?.targets.toHuman() as string[];
+						if (validatorsTargets) {
+							const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
+								historicApi,
+								e,
+								eraDepth,
+								eraStart,
+								claimedRewardsNom,
+								validatorsTargets,
+								stash,
+								currentEraOption,
+							);
+							e = era;
+							claimedRewardsNom = claimedRewardsNom1;
+						}
+					}
+				} else {
+					break;
+				}
+			}
+
+			return {
+				at,
+				controller,
+				rewardDestination,
+				numSlashingSpans,
+				nominations,
+				staking: {
+					stash: stakingLedger.stash,
+					total: stakingLedger.total,
+					active: stakingLedger.active,
+					unlocking: stakingLedger.unlocking,
+					claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
+				},
+			};
+		}
 
 		return {
 			at,
@@ -100,6 +159,36 @@ export class AccountsStakingInfoService extends AbstractService {
 				unlocking: stakingLedger.unlocking,
 			},
 		};
+	}
+
+	private async fetchErasStatusForValidatorAssetHub(
+		historicApi: ApiDecoration<'promise'>,
+		e: number,
+		stash: string,
+		claimedRewards: IEraStatus<ValidatorStatus>[],
+	): Promise<IEraStatus<ValidatorStatus>[]> {
+		const [erasStakersOverview, claimedRewardsPerEra]: [Option<SpStakingPagedExposureMetadata> | null, Vec<u32>] =
+			await Promise.all([
+				historicApi.query.staking?.erasStakersOverview
+					? historicApi.query.staking?.erasStakersOverview(e, stash)
+					: null,
+				historicApi.query.staking.claimedRewards(e, stash),
+			]);
+
+		if (erasStakersOverview?.isSome) {
+			const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+			const eraStatus =
+				claimedRewardsPerEra.length === 0
+					? 'unclaimed'
+					: claimedRewardsPerEra.length === pageCount
+						? 'claimed'
+						: claimedRewardsPerEra.length != pageCount
+							? 'partially claimed'
+							: 'undefined';
+			claimedRewards.push({ era: e, status: eraStatus });
+		}
+
+		return claimedRewards;
 	}
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.

@@ -25,13 +25,13 @@ import packageJSON from '../package.json';
 import { ApiPromiseRegistry } from './apiRegistry';
 import App from './App';
 import { getControllers } from './chains-config';
+import { assetHubSpecNames } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
-import { assetHubSpecNames } from './chains-config';
 
 /*
  * initApis function prepares the API registry and initializes the API
@@ -85,11 +85,11 @@ async function initApis(): Promise<string> {
 				stage = await api.query.ahMigrator.ahMigrationStage();
 			}
 
-			if (stage && (stage as unknown as { isMigrationDone: boolean } ).isMigrationDone) {
-				isAssetHubMigrated = true
+			if (stage && (stage as unknown as { isMigrationDone: boolean }).isMigrationDone) {
+				isAssetHubMigrated = true;
 			}
 
-			ApiPromiseRegistry.setAssetHubInfo({ isAssetHub, isAssetHubMigrated })
+			ApiPromiseRegistry.setAssetHubInfo({ isAssetHub, isAssetHubMigrated });
 		}
 
 		startUpPrompt(requiredApis[i].url, chainName.toString(), implName.toString());
