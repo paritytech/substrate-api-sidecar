@@ -30,6 +30,7 @@ import {
 	IParaIdParam,
 	IRangeQueryParam,
 } from 'src/types/requests';
+import type { AssetHubInfo } from '../apiRegistry';
 
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import type { AssetHubInfo } from '../apiRegistry';

@@ -32,6 +32,7 @@ import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
+import { assetHubSpecNames } from './chains-config';
 
 /*
  * initApis function prepares the API registry and initializes the API

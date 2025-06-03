@@ -189,6 +189,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		return claimedRewards;
+
 	}
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.
