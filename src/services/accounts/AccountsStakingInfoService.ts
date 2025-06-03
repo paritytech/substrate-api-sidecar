@@ -99,7 +99,7 @@ export class AccountsStakingInfoService extends AbstractService {
 			const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
 
 			for (let e = eraStart; e < eraStart + eraDepth; e++) {
-				if (historicApi.query.staking?.claimedRewards) {
+				if (!!historicApi.query.staking?.claimedRewards) {
 					if (currentEraOption.isNone) {
 						throw new InternalServerError('CurrentEra is None when Some was expected');
 					}
