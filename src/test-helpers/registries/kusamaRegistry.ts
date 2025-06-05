@@ -21,6 +21,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 import { kusamaMetadataV1003003 } from '../metadata/kusamaMetadataV1003003';
 import { kusamaMetadataV2008 } from '../metadata/kusamaV2008Metadata';
 import { kusamaMetadataV1002000 } from '../metadata/kusamaV1002000Metadata';
+import { kusamaMetadataV1005000 } from '../metadata/KusamaMetadataV1005000';
 
 /**
  * Create a type registry for Kusama.
@@ -78,3 +79,5 @@ export const kusamaRegistryV2025 = createKusamaRegistry(2025, kusamaMetadataV200
 export const kusamaRegistryV1002000 = createKusamaRegistry(1002000, kusamaMetadataV1002000);
 
 export const kusamaRegistryV1003003 = createKusamaRegistry(1003003, kusamaMetadataV1003003);
+
+export const kusamaRegistryV1005000 = createKusamaRegistry(1003003, kusamaMetadataV1005000);
