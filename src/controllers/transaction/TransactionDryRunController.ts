@@ -72,7 +72,7 @@ export default class TransactionDryRunController extends AbstractController<Tran
 			throw new BadRequest('Missing field `senderAddress` on request body.');
 		}
 
-		const hash = at ? await this.getHashFromAt(at) : undefined;
+		const hash = await this.getHashFromAt(at);
 
 		TransactionDryRunController.sanitizedSend(
 			res,

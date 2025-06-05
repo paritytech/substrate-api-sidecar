@@ -40,10 +40,16 @@ export class TransactionDryRunService extends AbstractService {
 
 		const metadataService = new RuntimeMetadataService(api);
 
-		if (xcmVersion == undefined) {
-			const metadata = await metadataService.fetchMetadataVersioned(api, 15);
+		if (xcmVersion == undefined && hash) {
+			const metadataVersions = await metadataService.fetchMetadataVersions(hash);
 
-			const dryRunApi = metadata.asV15.apis.find((api) => api.name.toString() === 'DryRunApi');
+			const latestStableMetadataVersion = metadataVersions
+				.map((metadata) => Number(metadata))
+				.filter((num) => !isNaN(num))
+				.reduce((max, current) => Math.max(max, current));
+			const metadata = await metadataService.fetchMetadataVersioned(api, latestStableMetadataVersion);
+
+			const dryRunApi = metadata.asLatest.apis.find((api) => api.name.toString() === 'DryRunApi');
 			if (!dryRunApi) {
 				throw new BadRequest('DryRunApi not found in metadata.');
 			}
