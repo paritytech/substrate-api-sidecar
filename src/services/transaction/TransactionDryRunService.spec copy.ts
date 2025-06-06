@@ -20,24 +20,46 @@ import type { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import type { DispatchError, PostDispatchInfo } from '@polkadot/types/interfaces';
 import type { Hash } from '@polkadot/types/interfaces';
+// assetHubWestendMetadata,
 import {  kusamaMetadataV1005000M } from '../../test-helpers/metadata/metadata';
+// assetHubWestendRegistryV9435
 import { kusamaRegistryV1005000 } from '../../test-helpers/registries';
 import { TransactionResultType } from '../../types/responses';
-
+// mockAssetHubWestendApi
 import { blockHash22887036, mockDryRunCall, mockDryRunError } from '../test-helpers/mock';
 import {  mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { mockDryRunCallError } from '../test-helpers/mock/mockDryRunError';
 import { TransactionDryRunService } from './TransactionDryRunService';
 
-const mockMetadataAtVersion = () =>
+// export const mockVers = () => Promise.resolve().then(() => ['14', '16,99,434']);
+
+export const mockVers = () => Promise.resolve().then(() => ['14', '15', '4,294,967,295']);
+
+// export const mockVersi = (version: string) => Promise.resolve().then(assetHubWestendMetadata);
+
+// export const mockVersi = () => Promise.resolve().then(() => Option<assetHubWestendMetadata>);
+
+// export const mockVersi = () => Promise.resolve().then(() => Option<assetHubWestendMetadata>);
+
+// kusamaRegistryV1003003.createType('Option<Raw>', '0x00')
+
+// metadataAtVersion: AugmentedCall<ApiType, (version: u32 | AnyNumber | Uint8Array) => Observable<Option<OpaqueMetadata>>>;
+
+const mockVersi = () =>
 	Promise.resolve().then(() =>
 		kusamaRegistryV1005000.createType('Option<OpaqueMetadata>', kusamaMetadataV1005000M),
 	);
 
-const mockMetadataVersions = jest.fn().mockResolvedValue({
+const mockMetadataVersions1 = jest.fn().mockResolvedValue({
   toHuman: jest.fn().mockReturnValue(['14']) // or whatever versions you want
 });
+
+// const mockMetadataAtVersion = jest.fn().mockImplementation((version: string) => {
+
+// return Promise.resolve(mockMetadataResponse);
+
+// });
 
 const mockHistoricApi = {
 	call: {
@@ -45,26 +67,41 @@ const mockHistoricApi = {
 			dryRunCall: mockDryRunCall,
 		},
 		metadata: {
-			metadataVersions: mockMetadataVersions,
-			metadataAtVersion: mockMetadataAtVersion,
+			metadataVersions: mockMetadataVersions1,
+			metadataAtVersion: mockVersi,
 		},
 	},
+
+	// registry: assetHubWestendRegistryV9435,
 	registry: kusamaRegistryV1005000,
 	toHuman: () => ({
-			metadataVersions: mockMetadataAtVersion,
-		}),
+			metadataVersions: mockVersi,
+		}), 
+
+	// runtimeMetadata: assetHubWestendMetadata,
 } as unknown as ApiDecoration<'promise'>;
 
-const mockApi = {
+// ...mockAssetHubWestendApi,
+
+const mockAHWApi = {
 	...mockHistoricApi,
 
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
+// const mockAHWApi = {
+// 	...mockAssetHubWestendApi,
+// 	call: {
+// 		dryRunApi: {
+// 			dryRunCall: mockDryRunCall,
+// 		},
+// 	},
+// } as unknown as ApiPromise;
+
 describe('TransactionDryRunService', () => {
 	const sendersAddress = '5HBuLJz9LdkUNseUEL6DLeVkx2bqEi6pQr8Ea7fS4bzx7i7E';
 	it('Should correctly execute a dry run for a submittable executable', async () => {
-		const executionResult = await new TransactionDryRunService(mockApi).dryRuntExtrinsic(
+		const executionResult = await new TransactionDryRunService(mockAHWApi).dryRuntExtrinsic(
 			sendersAddress,
 			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
 			blockHash22887036,
@@ -80,7 +117,7 @@ describe('TransactionDryRunService', () => {
 		const payloadTx: `0x${string}` =
 			'0xf81f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de16010400000204320504009101000000000045022800010000e0510f00040000000000000000000000000000000000000000000000000000000000000000000000be2554aa8a0151eb4d706308c47d16996af391e4c5e499c7cbef24259b7d4503';
 
-		const executionResult = await new TransactionDryRunService(mockApi).dryRuntExtrinsic(
+		const executionResult = await new TransactionDryRunService(mockAHWApi).dryRuntExtrinsic(
 			sendersAddress,
 			payloadTx,
 			blockHash22887036,
@@ -95,7 +132,7 @@ describe('TransactionDryRunService', () => {
 		const callTx =
 			'0x1f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000' as `0x${string}`;
 
-		const executionResult = await new TransactionDryRunService(mockApi).dryRuntExtrinsic(sendersAddress, callTx);
+		const executionResult = await new TransactionDryRunService(mockAHWApi).dryRuntExtrinsic(sendersAddress, callTx);
 
 		expect(executionResult?.at.hash).toEqual('');
 		const resData = executionResult?.result.result as PostDispatchInfo;
@@ -103,7 +140,7 @@ describe('TransactionDryRunService', () => {
 	});
 
 	it('should correctly execute a dry run for a call and return an error', async () => {
-		const mockApiErr = {
+		const mockAHWApiErr = {
 			...mockKusamaApiBlock26187139,
 			call: {
 				dryRunApi: {
@@ -114,7 +151,7 @@ describe('TransactionDryRunService', () => {
 		const callTx =
 			'0x0a0000fe06fc3db07fb1a4ce89a76eaed1e54519b5940d2652b8d6794ad4ddfcdcb16c0f00d0eca2b99401' as `0x${string}`;
 
-		const executionResult = await new TransactionDryRunService(mockApiErr).dryRuntExtrinsic(sendersAddress, callTx);
+		const executionResult = await new TransactionDryRunService(mockAHWApiErr).dryRuntExtrinsic(sendersAddress, callTx);
 
 		expect(executionResult?.at.hash).toEqual('');
 		const resData = executionResult?.result.result as DispatchError;

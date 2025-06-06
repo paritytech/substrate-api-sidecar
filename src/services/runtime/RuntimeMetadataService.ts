@@ -18,8 +18,8 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import type { Option } from '@polkadot/types/codec';
 import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
-import { InternalServerError } from 'http-errors';
 
+// import { InternalServerError } from 'http-errors';
 import { AbstractService } from '../AbstractService';
 
 export class RuntimeMetadataService extends AbstractService {
@@ -51,10 +51,8 @@ export class RuntimeMetadataService extends AbstractService {
 			} else {
 				throw new Error(`Metadata for version ${metadataVersion} is not available.`);
 			}
-		} catch {
-			throw new InternalServerError(
-				`An error occured while attempting to fetch ${metadataVersion.toString()} metadata.`,
-			);
+		} catch (e) {
+			throw e;
 		}
 
 		return metadataVersioned;

@@ -24,6 +24,7 @@ import type client from 'prom-client';
 export interface ITx {
 	tx: `0x${string}`;
 	senderAddress: string;
+	xcmVersion?: number;
 	at: string;
 }
 
