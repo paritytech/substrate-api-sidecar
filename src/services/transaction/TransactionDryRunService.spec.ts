@@ -22,9 +22,9 @@ import type { DispatchError, PostDispatchInfo } from '@polkadot/types/interfaces
 import type { Hash } from '@polkadot/types/interfaces';
 
 import { polkadotMetadataRpcV15 } from '../../test-helpers/metadata/polkadotV15Metadata';
-import { polkadotRegistry } from '../../test-helpers/registries';
+import { polkadotRegistryV15 } from '../../test-helpers/registries';
 import { TransactionResultType } from '../../types/responses';
-import { blockHash22887036, mockDryRunCall, mockDryRunError } from '../test-helpers/mock';
+import { blockHash22887036 } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { mockDryRunCallError } from '../test-helpers/mock/mockDryRunError';
 import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
@@ -33,12 +33,26 @@ import { TransactionDryRunService } from './TransactionDryRunService';
 const mockMetadataAtVersion = () =>
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	Promise.resolve().then(() => {
-		return polkadotRegistry.createType('Option<OpaqueMetadata>', polkadotMetadataRpcV15);
+		return polkadotRegistryV15.createType('Option<OpaqueMetadata>', polkadotMetadataRpcV15);
 	});
 
 const mockMetadataVersions = jest.fn().mockResolvedValue({
 	toHuman: jest.fn().mockReturnValue(['14', '15', '4,294,967,295']), // or whatever versions you want
 });
+
+const runtimeDryRun = polkadotRegistryV15.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallResult,
+);
+
+const runtimeDryRunError = polkadotRegistryV15.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallError,
+);
+
+const mockDryRunCall = () => Promise.resolve().then(() => runtimeDryRun);
+
+const mockDryRunError = () => Promise.resolve().then(() => runtimeDryRunError);
 
 const mockHistoricApi = {
 	call: {
@@ -50,7 +64,7 @@ const mockHistoricApi = {
 			metadataAtVersion: mockMetadataAtVersion,
 		},
 	},
-	registry: polkadotRegistry,
+	registry: polkadotRegistryV15,
 } as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
