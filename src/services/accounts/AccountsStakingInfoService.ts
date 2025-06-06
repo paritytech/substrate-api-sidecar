@@ -41,7 +41,6 @@ export class AccountsStakingInfoService extends AbstractService {
 	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		// TODO: Am i using the registry correctly?
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
 
 		if (!historicApi.query.staking) {
@@ -362,10 +361,11 @@ export class AccountsStakingInfoService extends AbstractService {
 			Option<PalletStakingSlashingSlashingSpans>,
 		]
 	> {
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
 			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
 			historicApi.query.staking.payee(stash),
-			historicApi.query.staking.slashingSpans(stash),
+			rcApi.query.staking.slashingSpans(stash),
 		]).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(stash, err);
 		});
@@ -603,7 +603,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		e: number,
 	): [boolean, IEraStatus<ValidatorStatus | NominatorStatus>[], number] {
 		if (!oldCallChecked) {
-			if (claimedRewardsEras.length > 0) {
+			if (claimedRewardsEras && claimedRewardsEras.length > 0) {
 				claimedRewards = claimedRewardsEras.map((element) => ({
 					era: element.toNumber(),
 					status: 'claimed',
