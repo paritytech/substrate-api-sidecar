@@ -60,9 +60,10 @@ export class BlocksTraceService extends AbstractService {
 	 * @param hash `BlockHash` to get traces at.
 	 */
 	async traces(hash: BlockHash): Promise<BlocksTrace> {
+		const { api } = this;
 		const [{ number }, traceResponse] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
+			api.rpc.chain.getHeader(hash),
+			api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
@@ -94,18 +95,19 @@ export class BlocksTraceService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 		includeActions: boolean,
 	): Promise<BlocksTraceOperations> {
+		const { api } = this;
 		const [{ block }, traceResponse] = await Promise.all([
 			// Note: this should be getHeader, but the type registry on chain_getBlock is the only
 			// one that actually has the historical types. https://github.com/polkadot-js/api/issues/3487
-			this.api.rpc.chain.getBlock(hash),
-			this.api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
+			api.rpc.chain.getBlock(hash),
+			api.rpc.state.traceBlock(hash, DEFAULT_TARGETS, DEFAULT_KEYS, null),
 		]);
 
 		if (traceResponse.isTraceError) {
 			throw new InternalServerError(`${traceResponse.asTraceError.toString()}`);
 		} else {
 			const trace = new Trace(
-				this.api,
+				api,
 				BlocksTraceService.formatBlockTrace(traceResponse.asBlockTrace),
 				historicApi.registry,
 			);

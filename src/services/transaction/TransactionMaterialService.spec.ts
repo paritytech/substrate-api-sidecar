@@ -14,14 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import response789629 from '../test-helpers/responses/transaction/material789629.json';
 import { TransactionMaterialService } from './TransactionMaterialService';
 
-const transactionMaterialService = new TransactionMaterialService(defaultMockApi);
+const transactionMaterialService = new TransactionMaterialService('mock');
 
 describe('TransactionMaterialService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return defaultMockApi;
+		});
+	});
 	describe('getTransactionMaterial', () => {
 		it('Should return the scale encoded metadata when the `metadata` query param is `scale`', async () => {
 			expect(

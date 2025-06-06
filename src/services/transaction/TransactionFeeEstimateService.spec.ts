@@ -20,6 +20,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistryV9300, polkadotRegistryV1003000 } from '../../test-helpers/registries';
 import {
@@ -64,7 +65,7 @@ const mockApi = {
 	at: (_hash: Hash) => mockApiAt,
 } as unknown as ApiPromise;
 
-const transactionFeeEstimateService = new TransactionFeeEstimateService(mockApi);
+const transactionFeeEstimateService = new TransactionFeeEstimateService('mock');
 
 // Mocking the API at block 22887036
 const queryInfoCallAt22887036 = () =>
@@ -93,11 +94,12 @@ const mockApi22887036 = {
 	at: (_hash: Hash) => mockApiAt22887036,
 } as unknown as ApiPromise;
 
-const transactionFeeEstimateService22887036 = new TransactionFeeEstimateService(mockApi22887036);
+const transactionFeeEstimateService22887036 = new TransactionFeeEstimateService('mock');
 
 describe('TransactionFeeEstimateService', () => {
 	describe('fetchTransactionFeeEstimate', () => {
 		it('Works with a valid transaction', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
@@ -106,6 +108,7 @@ describe('TransactionFeeEstimateService', () => {
 		});
 
 		it('Works with a valid transaction at block 22887036', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi22887036);
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService22887036.fetchTransactionFeeEstimate(
@@ -118,7 +121,7 @@ describe('TransactionFeeEstimateService', () => {
 
 		it("Should default to the rpc call when the runtime call doesn't exist", async () => {
 			(mockApiAt.call.transactionPaymentApi.queryInfo as unknown) = undefined;
-
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
@@ -138,7 +141,7 @@ describe('TransactionFeeEstimateService', () => {
 				Promise.resolve().then(() => {
 					throw err;
 				});
-
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			await expect(
 				transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferInvalid),
 			).rejects.toStrictEqual(invalidResponse);

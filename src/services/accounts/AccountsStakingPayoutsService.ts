@@ -47,6 +47,7 @@ import type {
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
@@ -141,9 +142,21 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
-		const { number } = await api.rpc.chain.getHeader(hash);
 
+		const head = await api.rpc.chain.getFinalizedHead();
+
+		const isHead = head.hash === hash;
+		if (this.assetHubInfo.isAssetHub && !isHead) {
+			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
+		}
+
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
+			throw new Error('Relay chain API not found');
+		}
 		const sanitizedEra = era < 0 ? 0 : era;
+		const { number } = await api.rpc.chain.getHeader(hash);
 
 		const at: IBlockInfo = {
 			height: number.unwrap().toString(10),

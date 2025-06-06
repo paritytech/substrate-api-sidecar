@@ -6,6 +6,7 @@
 yarn-error.log
 **/*.rs.bk
 
+.env
 .env.*
 !.env.local
 !.env.docker

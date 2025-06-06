@@ -22,6 +22,7 @@ import type { GenericCall } from '@polkadot/types/generic';
 import type { BlockHash, Hash, SignedBlock } from '@polkadot/types/interfaces';
 import { BadRequest } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { createCall } from '../../test-helpers/createCall';
@@ -126,9 +127,14 @@ const mockApi = {
 type GetBlock = PromiseRpcResult<(hash?: string | BlockHash | Uint8Array) => Promise<SignedBlock>>;
 
 // Block Service
-const blocksService = new BlocksService(mockApi, 0, new QueryFeeDetailsCache(null, null));
+const blocksService = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 
 describe('BlocksService', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+			return mockApi;
+		});
+	});
 	describe('fetchBlock', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			// fetchBlock options
@@ -350,14 +356,14 @@ describe('BlocksService', () => {
 				'BlockHash',
 				'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
 			);
-
 			expect(
 				await blocksService['isFinalizedBlock'](forkMockApi, blockNumber, queriedHash, finalizedHead, true),
 			).toEqual(false);
 		});
 
 		it('Returns true when queried blockId is canonical', async () => {
-			const blocksService = new BlocksService(mockApi, 0, new QueryFeeDetailsCache(null, null));
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+			const blocksService = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 			expect(await blocksService['isFinalizedBlock'](mockApi, blockNumber, finalizedHead, finalizedHead, true)).toEqual(
 				true,
 			);
@@ -499,11 +505,12 @@ describe('BlocksService', () => {
 			},
 			at: (_hash: Hash) => mockHistoricApiXCM,
 		} as unknown as ApiPromise;
-
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
 		// Block Service
-		const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
+		const blocksServiceXCM = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 
 		it('Should give back two decoded upward XCM messages for Polkadot block 18468942, one for paraId=2000 and one for paraId=2012', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -522,6 +529,7 @@ describe('BlocksService', () => {
 		});
 
 		it('Should give back one decoded upward XCM message for Polkadot block 18468942 only for paraId=2000', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
 			// fetchBlock options
 			const options = {
 				eventDocs: true,
@@ -607,8 +615,10 @@ describe('BlocksService', () => {
 				at: (_hash: Hash) => mockHistoricApiXCM,
 			} as unknown as ApiPromise;
 
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
+
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash3356195, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block3356195Response);
@@ -681,8 +691,10 @@ describe('BlocksService', () => {
 				at: (_hash: Hash) => mockHistoricApiXCM,
 			} as unknown as ApiPromise;
 
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
+
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash6202603, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block6202603pId2087Response);
@@ -754,8 +766,9 @@ describe('BlocksService', () => {
 				at: (_hash: Hash) => mockHistoricApiXCM,
 			} as unknown as ApiPromise;
 
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiXCM);
 			// Block Service
-			const blocksServiceXCM = new BlocksService(mockApiXCM, 0, new QueryFeeDetailsCache(null, null));
+			const blocksServiceXCM = new BlocksService('mock', 0, new QueryFeeDetailsCache(null, null));
 			const block = await blocksServiceXCM.fetchBlock(blockHash19772575, mockHistoricApiXCM, options);
 
 			expect(sanitizeNumbers(block)).toMatchObject(block19772575Response);

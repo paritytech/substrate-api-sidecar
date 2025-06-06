@@ -31,6 +31,8 @@ import {
 	IRangeQueryParam,
 } from 'src/types/requests';
 
+import { ApiPromiseRegistry } from '../../src/apiRegistry';
+import type { AssetHubInfo } from '../apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
@@ -62,11 +64,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 	static requiredPallets: RequiredPallets;
 
 	constructor(
-		protected api: ApiPromise,
+		private _specName: string,
 		private _path: string,
 		protected service: T,
 	) {}
-
 	get path(): string {
 		return this._path;
 	}
@@ -75,6 +76,21 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return this._router;
 	}
 
+	get api(): ApiPromise {
+		const api = ApiPromiseRegistry.getApi(this._specName);
+		if (!api) {
+			throw new InternalServerError('API not found during controller initilization');
+		}
+		return api;
+	}
+
+	get assetHubInfo(): AssetHubInfo {
+		return ApiPromiseRegistry.assetHubInfo;
+	}
+
+	get specName(): string {
+		return this._specName;
+	}
 	/**
 	 * Mount all controller handler methods on the class's private router.
 	 *

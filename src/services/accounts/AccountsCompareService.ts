@@ -20,7 +20,7 @@ import { AbstractService } from '../AbstractService';
 import { AccountsValidateService } from './AccountsValidateService';
 
 export class AccountsCompareService extends AbstractService {
-	private accountsValidateService = new AccountsValidateService(this.api);
+	private accountsValidateService = new AccountsValidateService(this.specName);
 	/**
 	 * Compares up to 30 SS58 addresses and returns if they are equal or not,
 	 * along with details of each address. Equality is determined by comparing

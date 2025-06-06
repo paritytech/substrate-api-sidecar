@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
@@ -107,7 +106,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	static controllerName = 'Blocks';
 	static requiredPallets = [['System', 'Session']];
 	constructor(
-		api: ApiPromise,
+		api: string,
 		private readonly options: ControllerOptions,
 	) {
 		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));

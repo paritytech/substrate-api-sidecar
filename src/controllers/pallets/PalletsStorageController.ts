@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
@@ -38,7 +37,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsStorageController extends AbstractController<PalletsStorageService> {
 	static controllerName = 'PalletsStorage';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/:palletId/storage', new PalletsStorageService(api));
 
 		this.initRoutes();

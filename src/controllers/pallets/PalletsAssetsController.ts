@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { PalletsAssetsService } from '../../services';
@@ -64,7 +63,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsAssetsController extends AbstractController<PalletsAssetsService> {
 	static controllerName = 'PalletsAssets';
 	static requiredPallets = [['Assets']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/assets/:assetId', new PalletsAssetsService(api));
 		this.initRoutes();
 	}
