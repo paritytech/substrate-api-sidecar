@@ -50,8 +50,7 @@ export class RuntimeMetadataService extends AbstractService {
 			} else {
 				throw new Error(`Metadata for version ${metadataVersion} is not available.`);
 			}
-		} catch (error) {
-			console.log(error);
+		} catch {
 			throw new InternalServerError(
 				`An error occured while attempting to fetch ${metadataVersion.toString()} metadata.`,
 			);
