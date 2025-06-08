@@ -54,7 +54,6 @@ export class TransactionDryRunService extends AbstractService {
 			const metadata = await metadataService.fetchMetadataVersioned(api, latestStableMetadataVersion);
 
 			const dryRunApi = metadata.asLatest.apis.find((api) => api.name.toString() === 'DryRunApi');
-			console.log('dryRunApi', dryRunApi);
 			if (!dryRunApi) {
 				throw new BadRequest('DryRunApi not found in metadata.');
 			}
@@ -63,9 +62,8 @@ export class TransactionDryRunService extends AbstractService {
 			if (!dryRunCall) {
 				throw new BadRequest('dryRunCall not found in metadata.');
 			}
-
 			const xcmsVersion = dryRunCall.inputs.find((param) => param.name.toString() === 'result_xcms_version');
-			if (xcmsVersion) {
+			if (!xcmsVersion) {
 				throw new BadRequest('Missing field `xcmVersion` on request body.');
 			}
 		}

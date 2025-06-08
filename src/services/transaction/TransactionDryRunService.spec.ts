@@ -69,7 +69,11 @@ const mockHistoricApi = {
 
 const mockApi = {
 	...mockHistoricApi,
-
+	rpc: {
+		chain: {
+			getHeader: () => Promise.resolve(blockHash22887036),
+		},
+	},
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
