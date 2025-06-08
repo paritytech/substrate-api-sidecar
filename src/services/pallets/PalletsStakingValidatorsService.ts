@@ -35,7 +35,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		if (this.assetHubInfo.isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
-
+		console.log(this.assetHubInfo);
 		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {

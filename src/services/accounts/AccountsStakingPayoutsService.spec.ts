@@ -269,9 +269,12 @@ describe('AccountsStakingPayoutsService', () => {
 			expect(Object.keys(res.validators).length).toEqual(3);
 		});
 	});
-
 	describe('fetchAccountStakingPayout after AHM', () => {
 		it('Should work with a validator address', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
@@ -322,6 +325,10 @@ describe('AccountsStakingPayoutsService', () => {
 			});
 		});
 		it('Should work with a nominator address', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
@@ -371,7 +378,11 @@ describe('AccountsStakingPayoutsService', () => {
 				],
 			});
 		});
-		it('Should throw an error when the depth is greater than the historyDepth', () => {
+		it('Should throw an error when the depth is greater than the historyDepth', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
@@ -387,21 +398,15 @@ describe('AccountsStakingPayoutsService', () => {
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
 
-			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(
-					blockHash,
-					nominator,
-					85,
-					ERA,
-					true,
-					ERA + 1,
-					mockHistoricApi,
-				);
-			};
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(serviceCall()).rejects.toThrow('Must specify a depth less than history_depth');
+			await expect(
+				stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 85, ERA, true, ERA + 1, mockHistoricApi),
+			).rejects.toThrow('Must specify a depth less than history_depth');
 		});
-		it('Should throw an error inputted era and historydepth is invalid', () => {
+		it('Should throw an error inputted era and historydepth is invalid', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
@@ -417,19 +422,9 @@ describe('AccountsStakingPayoutsService', () => {
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
 
-			const serviceCall = async () => {
-				await stakingPayoutsService.fetchAccountStakingPayout(
-					blockHash,
-					nominator,
-					1,
-					ERA,
-					true,
-					ERA + 134,
-					mockHistoricApi,
-				);
-			};
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(serviceCall()).rejects.toThrow(
+			await expect(
+				stakingPayoutsService.fetchAccountStakingPayout(blockHash, nominator, 1, ERA, true, ERA + 134, mockHistoricApi),
+			).rejects.toThrow(
 				'Must specify era and depth such that era - (depth - 1) is less ' +
 					'than or equal to current_era - history_depth.',
 			);
@@ -437,6 +432,10 @@ describe('AccountsStakingPayoutsService', () => {
 		it('extractExposure Should work when the address is a nominator', () => {
 			const nom = '15j4dg5GzsL1bw2U2AWgeyAk6QTxq43V7ZPbXdAmbVLjvDCK';
 			const val = '16hzCDgyqnm1tskDccVWqxDVXYDLgdrrpC4Guxu3gPgLe5ib';
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
@@ -459,7 +458,15 @@ describe('AccountsStakingPayoutsService', () => {
 			});
 		});
 		it('extractExposure Should work when the address is a validator', () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'assetHubInfo', 'get').mockReturnValue({
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			});
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
 			});
@@ -483,7 +490,12 @@ describe('AccountsStakingPayoutsService', () => {
 			});
 		});
 		it('extractTotalValidatorRewardPoints Should return the correct rewards', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
+
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
 			});
@@ -503,7 +515,12 @@ describe('AccountsStakingPayoutsService', () => {
 			expect(sanitizeNumbers(res)).toBe('78920');
 		});
 		it('deriveNominatedExposures', () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
+
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
 			});
@@ -527,7 +544,12 @@ describe('AccountsStakingPayoutsService', () => {
 			]);
 		});
 		it('deriveEraExposure Should return the correct derived value', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
+
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
 			});
