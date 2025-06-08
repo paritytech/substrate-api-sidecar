@@ -46,10 +46,10 @@ const mockHistoricApi = {
 	},
 } as unknown as ApiDecoration<'promise'>;
 
-const mockApiNoStaking = {
-	...defaultMockApi,
-	at: (_hash: Hash) => defaultMockApi,
-} as unknown as ApiPromise;
+// const mockApiNoStaking = {
+// 	...defaultMockApi,
+// 	at: (_hash: Hash) => defaultMockApi,
+// } as unknown as ApiPromise;
 
 const mockApi = {
 	...defaultMockApi,
@@ -95,7 +95,17 @@ const mockRCNextApi = {
 		session: {
 			validators: validatorsAt,
 		},
+		staking: null,
 	},
+	at: (_hash: Hash) => ({
+		...defaultMockApi,
+		query: {
+			session: {
+				validators: validatorsAt,
+			},
+			staking: null,
+		},
+	}),
 } as unknown as ApiPromise;
 
 /**
@@ -119,8 +129,12 @@ describe('PalletsStakingValidatorsService', () => {
 
 	describe('derivePalletStakingValidators after AHM', () => {
 		it('it throws if historicApi does not have staking', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: false,
+				isAssetHubMigrated: true,
+			};
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('mock');
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiNoStaking);
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockRCNextApi);
 
 			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629)).rejects.toThrow(
 				'Staking pallet not found for queried runtime',
@@ -128,6 +142,10 @@ describe('PalletsStakingValidatorsService', () => {
 		});
 
 		it('it throws if sidecar is connected to AH and querying historical block', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
@@ -140,24 +158,35 @@ describe('PalletsStakingValidatorsService', () => {
 		});
 
 		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
-				// { type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
-				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
-			]);
+
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => []);
 			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629)).rejects.toThrow(
 				'Relay chain API not found',
 			);
 		});
 		it('it correctly computes the response when connected to AH post AHM', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: false,
+				isAssetHubMigrated: false,
+			};
 			const palletsStakingValidatorsServicePreAHM = new PalletsStakingValidatorsService('mock');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			const preAHMResponse = await palletsStakingValidatorsServicePreAHM.derivePalletStakingValidators(blockHash789629);
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
 			//  first get original response for the block, then set envs to multichain;
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi as unknown as ApiPromise);
-			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
 				return [

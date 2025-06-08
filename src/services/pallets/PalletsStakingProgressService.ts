@@ -34,7 +34,7 @@ export class PalletsStakingProgressService extends AbstractService {
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
 		const { api } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isHead = blockHead.hash === hash;
+		const isHead = blockHead.hash.toHex() === hash.hash.toHex();
 		// if at head and connected to RC, connect to AH, else continue
 		// specName will be the one of the main connection, compare to get the right API to use
 		// session is always on relay chain
@@ -50,6 +50,10 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 
 		const historicApi = await api.at(hash);
+
+		if (historicApi.query.staking === undefined) {
+			throw new Error('Staking pallet not found for queried runtime');
+		}
 		const sessionValidators = this.assetHubInfo.isAssetHub
 			? RCApiPromise![0].api.query.session.validators
 			: historicApi.query.session.validators;
@@ -163,7 +167,6 @@ export class PalletsStakingProgressService extends AbstractService {
 			session = RCApi.query.session;
 		}
 
-		console.log(historicApi.query.staking);
 		const [currentSlot, epochIndex, genesisSlot, currentIndex, activeEraOption] = await Promise.all([
 			babe.currentSlot(),
 			babe.epochIndex(),

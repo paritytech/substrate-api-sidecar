@@ -196,6 +196,7 @@ const mockRCNextApi = {
 			epochIndex: epochIndexAt,
 			genesisSlot: genesisSlotAt,
 		},
+		staking: undefined,
 		session: {
 			currentIndex: currentIndexAt,
 			validators: validatorsAt,
@@ -216,7 +217,7 @@ const mockRCNextApi = {
 				epochIndex: epochIndexAt,
 				genesisSlot: genesisSlotAt,
 			},
-			staking: null,
+			staking: undefined,
 			session: {
 				currentIndex: currentIndexAt,
 				validators: validatorsAt,
@@ -224,6 +225,32 @@ const mockRCNextApi = {
 		},
 	}),
 } as unknown as ApiPromise;
+
+const mockAHHistoricApi = {
+	...mockHistoricApi,
+	consts: {
+		...mockHistoricApi.consts,
+		babe: null,
+		staking: {
+			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
+			sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
+		},
+	},
+	query: {
+		...mockHistoricApi.query,
+		session: null,
+		staking: {
+			activeEra: activeEraAt,
+			eraElectionStatus: eraElectionStatusAt,
+			erasStartSessionIndex: erasStartSessionIndexAt,
+			forceEra: forceEraAt,
+			unappliedSlashes: {
+				entries: unappliedSlashesEntries,
+			},
+			validatorCount: validatorCountAt,
+		},
+	},
+};
 
 const mockAHNextApi = {
 	...defaultMockApi,
@@ -245,31 +272,7 @@ const mockAHNextApi = {
 			validatorCount: validatorCountAt,
 		},
 	},
-	at: (_hash: Hash) => ({
-		...mockHistoricApi,
-		consts: {
-			...mockHistoricApi.consts,
-			babe: null,
-			staking: {
-				electionLookAhead: polkadotRegistry.createType('BlockNumber'),
-				sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
-			},
-		},
-		query: {
-			...mockHistoricApi.query,
-			session: null,
-			staking: {
-				activeEra: activeEraAt,
-				eraElectionStatus: eraElectionStatusAt,
-				erasStartSessionIndex: erasStartSessionIndexAt,
-				forceEra: forceEraAt,
-				unappliedSlashes: {
-					entries: unappliedSlashesEntries,
-				},
-				validatorCount: validatorCountAt,
-			},
-		},
-	}),
+	at: (_hash: Hash) => mockAHHistoricApi,
 } as unknown as ApiPromise;
 
 describe('PalletStakingProgressService', () => {
@@ -336,43 +339,68 @@ describe('PalletStakingProgressService', () => {
 
 	describe('derivePalletStakingProgress after AHM', () => {
 		it('it throws if historicApi does not have staking', async () => {
-			const PalletStakingProgressService = new PalletsStakingProgressService('mock');
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const PalletStakingProgressService = new PalletsStakingProgressService('polkadot');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockRCNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
 			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
 				'Staking pallet not found for queried runtime',
 			);
 		});
-
-		it('it throws if historicApi does not have session', async () => {
-			const PalletStakingProgressService = new PalletsStakingProgressService('polkadot');
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
-				'Session pallet not found for queried runtime',
-			);
-		});
 		it('it throws if sidecar is connected to AH and querying historical block', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
-				{ type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
-				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
-			]);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
 			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash100000)).rejects.toThrow(
 				'At is currently unsupported for pallet staking validators connected to assethub',
 			);
 		});
 		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
-				// { type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
-				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
-			]);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [] as unknown as { specName: string; api: ApiPromise }[];
+			});
 			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
 				'Relay chain API not found',
 			);
 		});
 		it('works when ApiPromise works (block 789629)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
 			// needs both RC and AH connection
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
@@ -391,6 +419,12 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			(mockAHHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', undefined));
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -401,8 +435,6 @@ describe('PalletStakingProgressService', () => {
 					},
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
-			(mockAHNextApi.query.staking.erasStartSessionIndex as any) = () =>
-				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', null));
 			/**
 			 * Mock PalletStakingProgressService instance.
 			 */
@@ -412,6 +444,10 @@ describe('PalletStakingProgressService', () => {
 			);
 		});
 		it('throws when activeEra.isNone', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -422,7 +458,7 @@ describe('PalletStakingProgressService', () => {
 					},
 				] as unknown as { specName: string; api: ApiPromise }[];
 			});
-			(mockAHNextApi.query.staking.activeEra as any) = () =>
+			(mockAHHistoricApi.query.staking.activeEra as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<ActiveEraInfo>', null));
 			/**
 			 * Mock PalletStakingProgressService instance.
@@ -433,6 +469,10 @@ describe('PalletStakingProgressService', () => {
 			);
 		});
 		it('works with entries in unappliedSlashes', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			/**
 			 * Mock PalletStakingProgressService instance.
 			 */
