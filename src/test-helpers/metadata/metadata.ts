@@ -25,13 +25,13 @@ import { kusamaCoretimeMetadata } from './coretimeKusamaMetadata';
 import { kusamaMetadataV1003003 } from './kusamaMetadataV1003003';
 import { kusamaMetadataV1005000 } from './KusamaMetadataV1005000';
 import { kusamaMetadataV2008 } from './kusamaV2008Metadata';
-import { polkadotMetadataRpcV16 } from './polkadotV16Metadata';
+import { polkadotMetadataRpcV15 } from './polkadotV15Metadata';
 import { polkadotMetadataRpcV29 } from './polkadotV29Metadata';
 import { polkadotMetadataRpcV9300 } from './polkadotV9300Metadata';
 /**
- * Metadata of the polkadotRegistry (v16).
+ * Metadata of the polkadotRegistry (v15).
  */
-export const polkadotMetadata = new Metadata(polkadotRegistry, polkadotMetadataRpcV16);
+export const polkadotMetadata = new Metadata(polkadotRegistry, polkadotMetadataRpcV15);
 
 /**
  * Metadata of the kusamaRegistry (v2008).

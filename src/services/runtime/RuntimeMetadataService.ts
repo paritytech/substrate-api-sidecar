@@ -15,11 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiDecoration } from '@polkadot/api/types';
-import { Metadata } from '@polkadot/types';
-import type { Option } from '@polkadot/types/codec';
+import { Metadata, Option } from '@polkadot/types';
 import type { BlockHash, OpaqueMetadata } from '@polkadot/types/interfaces';
+import { InternalServerError } from 'http-errors';
 
-// import { InternalServerError } from 'http-errors';
 import { AbstractService } from '../AbstractService';
 
 export class RuntimeMetadataService extends AbstractService {
@@ -51,8 +50,10 @@ export class RuntimeMetadataService extends AbstractService {
 			} else {
 				throw new Error(`Metadata for version ${metadataVersion} is not available.`);
 			}
-		} catch (e) {
-			throw e;
+		} catch {
+			throw new InternalServerError(
+				`An error occured while attempting to fetch ${metadataVersion.toString()} metadata.`,
+			);
 		}
 
 		return metadataVersioned;
@@ -66,7 +67,6 @@ export class RuntimeMetadataService extends AbstractService {
 	async fetchMetadataVersions(hash: BlockHash): Promise<string[]> {
 		const { api } = this;
 		const apiAt = await api.at(hash);
-
 		const availableVersions = (await apiAt.call.metadata.metadataVersions()).toHuman() as string[];
 
 		return availableVersions;

@@ -20,24 +20,39 @@ import type { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import type { DispatchError, PostDispatchInfo } from '@polkadot/types/interfaces';
 import type { Hash } from '@polkadot/types/interfaces';
-import {  kusamaMetadataV1005000M } from '../../test-helpers/metadata/metadata';
-import { kusamaRegistryV1005000 } from '../../test-helpers/registries';
-import { TransactionResultType } from '../../types/responses';
 
-import { blockHash22887036, mockDryRunCall, mockDryRunError } from '../test-helpers/mock';
-import {  mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
+import { polkadotMetadataRpcV15 } from '../../test-helpers/metadata/polkadotV15Metadata';
+import { polkadotRegistryV15 } from '../../test-helpers/registries';
+import { TransactionResultType } from '../../types/responses';
+import { blockHash22887036 } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { mockDryRunCallError } from '../test-helpers/mock/mockDryRunError';
+import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { TransactionDryRunService } from './TransactionDryRunService';
 
 const mockMetadataAtVersion = () =>
-	Promise.resolve().then(() =>
-		kusamaRegistryV1005000.createType('Option<OpaqueMetadata>', kusamaMetadataV1005000M),
-	);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	Promise.resolve().then(() => {
+		return polkadotRegistryV15.createType('Option<OpaqueMetadata>', polkadotMetadataRpcV15);
+	});
 
 const mockMetadataVersions = jest.fn().mockResolvedValue({
-  toHuman: jest.fn().mockReturnValue(['14']) // or whatever versions you want
+	toHuman: jest.fn().mockReturnValue(['14', '15', '4,294,967,295']), // or whatever versions you want
 });
+
+const runtimeDryRun = polkadotRegistryV15.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallResult,
+);
+
+const runtimeDryRunError = polkadotRegistryV15.createType(
+	'Result<CallDryRunEffects, XcmDryRunApiError>',
+	mockDryRunCallError,
+);
+
+const mockDryRunCall = () => Promise.resolve().then(() => runtimeDryRun);
+
+const mockDryRunError = () => Promise.resolve().then(() => runtimeDryRunError);
 
 const mockHistoricApi = {
 	call: {
@@ -49,15 +64,16 @@ const mockHistoricApi = {
 			metadataAtVersion: mockMetadataAtVersion,
 		},
 	},
-	registry: kusamaRegistryV1005000,
-	toHuman: () => ({
-			metadataVersions: mockMetadataAtVersion,
-		}),
+	registry: polkadotRegistryV15,
 } as unknown as ApiDecoration<'promise'>;
 
 const mockApi = {
 	...mockHistoricApi,
-
+	rpc: {
+		chain: {
+			getHeader: () => Promise.resolve(blockHash22887036),
+		},
+	},
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
@@ -68,6 +84,7 @@ describe('TransactionDryRunService', () => {
 			sendersAddress,
 			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
 			blockHash22887036,
+			4,
 		);
 
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
@@ -84,6 +101,7 @@ describe('TransactionDryRunService', () => {
 			sendersAddress,
 			payloadTx,
 			blockHash22887036,
+			4,
 		);
 
 		const resData = executionResult?.result.result as PostDispatchInfo;

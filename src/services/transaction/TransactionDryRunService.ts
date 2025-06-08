@@ -43,10 +43,14 @@ export class TransactionDryRunService extends AbstractService {
 		if (xcmVersion == undefined && hash) {
 			const metadataVersions = await metadataService.fetchMetadataVersions(hash);
 
-			const latestStableMetadataVersion = metadataVersions
-				.map((metadata) => Number(metadata))
-				.filter((num) => !isNaN(num))
-				.reduce((max, current) => Math.max(max, current));
+			const latestStableMetadataVersion = metadataVersions.reduce((max, current) => {
+				const metadata = Number(current);
+				if (isNaN(metadata)) {
+					return max;
+				}
+				return Math.max(max, metadata);
+			}, 0);
+
 			const metadata = await metadataService.fetchMetadataVersioned(api, latestStableMetadataVersion);
 
 			const dryRunApi = metadata.asLatest.apis.find((api) => api.name.toString() === 'DryRunApi');
@@ -58,8 +62,8 @@ export class TransactionDryRunService extends AbstractService {
 			if (!dryRunCall) {
 				throw new BadRequest('dryRunCall not found in metadata.');
 			}
-
 			const xcmsVersion = dryRunCall.inputs.find((param) => param.name.toString() === 'result_xcms_version');
+
 			if (xcmsVersion) {
 				throw new BadRequest('Missing field `xcmVersion` on request body.');
 			}
