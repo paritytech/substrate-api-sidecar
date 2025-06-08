@@ -31,17 +31,21 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
 		const { api } = this;
 		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isHead = blockHead.hash === hash;
+		const isHead = blockHead.hash.toHex() === hash.hash.toHex();
 		if (this.assetHubInfo.isAssetHub && !isHead) {
 			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
 		}
-
 		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
 			throw new Error('Relay chain API not found');
 		}
+
 		const historicApi = await api.at(hash);
+		if (!historicApi.query.staking) {
+			throw new Error('Staking pallet not found for queried runtime');
+		}
+
 		// if session is required and connected to AH, get relay and query session.validators
 		const sessionValidators = this.assetHubInfo.isAssetHub
 			? RCApiPromise![0].api.query.session.validators

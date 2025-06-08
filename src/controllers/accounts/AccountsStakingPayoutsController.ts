@@ -108,41 +108,32 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		{ params: { address }, query: { depth, era, unclaimedOnly, at } },
 		res,
 	): Promise<void> => {
-		const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
 		const { specName } = this;
-
+		const isKusama = specName.toString().toLowerCase() === 'kusama';
 		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
 			// if a block is queried and connection is on asset hub, throw error with unsupported messaging
-			throw Error(
+			throw new BadRequest(
 				`Query Parameter 'at' is not supported for /accounts/:address/staking-payouts when connected to assetHub.`,
 			);
 		}
 
 		let hash = await this.getHashFromAt(at);
-		let apiAt;
-		const [_apiAt, runtimeInfo] = await Promise.all([this.api.at(hash), this.api.rpc.state.getRuntimeVersion(hash)]);
-		apiAt = _apiAt;
+		let apiAt = await this.api.at(hash);
 
-		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
-		if (currentEra <= 519 && depth !== undefined && isKusama) {
-			throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
-		} else if (currentEra <= 519 && era !== undefined && isKusama) {
-			throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
-		}
-		let sanitizedDepth: string | undefined;
-		if (depth && isKusama) {
-			sanitizedDepth = Math.min(Number(depth), currentEra - 518).toString();
-		} else if (depth) {
-			sanitizedDepth = depth as string;
-		}
-		if (currentEra < 518 && isKusama) {
-			const eraStartBlock: number = earlyErasBlockInfo[currentEra].start;
-			hash = await this.getHashFromAt(eraStartBlock.toString());
+
+		const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
+
+		if (isKusama && currentEra < 518) {
+			const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+			const block = earlyErasBlockInfo[currentEra].start;
+			hash = await this.getHashFromAt(block.toString());
 			apiAt = await this.api.at(hash);
 		}
 
-		const unclaimedOnlyArg = unclaimedOnly === 'false' ? false : true;
+		if (!apiAt.query.staking) {
+			throw new BadRequest('Staking pallet not found for queried runtime');
+		}
 
 		AccountsStakingPayoutsController.sanitizedSend(
 			res,
@@ -151,64 +142,84 @@ export default class AccountsStakingPayoutsController extends AbstractController
 				address,
 				this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
 				eraArg,
-				unclaimedOnlyArg,
+				unclaimedOnly === 'false' ? false : true,
 				currentEra,
 				apiAt,
 			),
 		);
 	};
 
+	private sanitizeDepth({
+		isKusama,
+		depth,
+		era,
+		currentEra,
+	}: {
+		isKusama: boolean;
+		depth?: string;
+		era?: string;
+		currentEra: number;
+	}): string | undefined {
+		if (!isKusama) return depth;
+
+		if (currentEra <= 519) {
+			if (depth !== undefined)
+				throw new InternalServerError('The `depth` query parameter is disabled for eras less than 518.');
+			if (era !== undefined)
+				throw new InternalServerError('The `era` query parameter is disabled for eras less than 518.');
+			return undefined;
+		}
+
+		if (depth) {
+			return Math.min(Number(depth), currentEra - 518).toString();
+		}
+
+		return undefined;
+	}
+
 	private async getEraAndHash(apiAt: ApiDecoration<'promise'>, era?: number) {
-		let currentEra: number;
-		const currentEraMaybeOption = (await apiAt.query.staking.currentEra()) as u32 & Option<u32>;
-		if (currentEraMaybeOption instanceof Option) {
-			if (currentEraMaybeOption.isNone) {
-				throw new InternalServerError('CurrentEra is None when Some was expected');
-			}
-
-			currentEra = currentEraMaybeOption.unwrap().toNumber();
-		} else if ((currentEraMaybeOption as unknown) instanceof BN) {
-			// EraIndex extends u32, which extends BN so this should always be true
-			currentEra = (currentEraMaybeOption as BN).toNumber();
-		} else {
-			throw new InternalServerError('Query for current_era returned a non-processable result.');
-		}
-
-		let activeEra;
-		if (apiAt.query.staking.activeEra) {
-			const activeEraOption = await apiAt.query.staking.activeEra();
-			if (activeEraOption.isNone) {
-				const historicActiveEra = await apiAt.query.staking.currentEra();
-				if (historicActiveEra.isNone) {
-					throw new InternalServerError('ActiveEra is None when Some was expected');
-				} else {
-					activeEra = historicActiveEra.unwrap().toNumber();
-				}
-			} else {
-				activeEra = activeEraOption.unwrap().index.toNumber();
-			}
-		} else {
-			const sessionIndex = await apiAt.query.session.currentIndex();
-			const idx = sessionIndex.toNumber() % 6;
-			// https://substrate.stackexchange.com/a/2026/1786
-			if (currentEra < 518) {
-				activeEra = currentEra;
-			} else if (idx > 0) {
-				activeEra = currentEra;
-			} else {
-				activeEra = currentEra - 1;
-			}
-		}
-
+		const currentEra = await this.getCurrentEra(apiAt);
+		const activeEra = await this.getActiveEra(apiAt, currentEra);
 		if (era !== undefined && era > activeEra - 1) {
 			throw new BadRequest(
-				`The specified era (${era}) is too large. ` + `Largest era payout info is available for is ${activeEra - 1}`,
+				`The specified era (${era}) is too large. Largest era payout info is available for is ${activeEra - 1}`,
 			);
 		}
 
 		return {
-			eraArg: era === undefined ? activeEra - 1 : era,
+			eraArg: era ?? activeEra - 1,
 			currentEra,
 		};
+	}
+
+	private async getCurrentEra(apiAt: ApiDecoration<'promise'>): Promise<number> {
+		const currentEraMaybe = (await apiAt.query.staking.currentEra()) as u32 & Option<u32>;
+
+		if (currentEraMaybe instanceof Option) {
+			if (currentEraMaybe.isNone) throw new InternalServerError('CurrentEra is None when Some was expected');
+			return currentEraMaybe.unwrap().toNumber();
+		}
+
+		if ((currentEraMaybe as unknown) instanceof BN) {
+			return (currentEraMaybe as BN).toNumber();
+		}
+
+		throw new InternalServerError('Query for current_era returned a non-processable result.');
+	}
+
+	private async getActiveEra(apiAt: ApiDecoration<'promise'>, currentEra: number): Promise<number> {
+		if (!apiAt.query.staking.activeEra) {
+			const sessionIndex = (await apiAt.query.session.currentIndex()).toNumber();
+			return currentEra < 518 || sessionIndex % 6 > 0 ? currentEra : currentEra - 1;
+		}
+
+		const activeEraOption = await apiAt.query.staking.activeEra();
+		if (activeEraOption.isNone) {
+			const historicActiveEra = await apiAt.query.staking.currentEra();
+			if (historicActiveEra.isNone) throw new InternalServerError('ActiveEra is None when Some was expected');
+			return historicActiveEra.unwrap().toNumber();
+		}
+
+		return activeEraOption.unwrap().index.toNumber();
 	}
 }
