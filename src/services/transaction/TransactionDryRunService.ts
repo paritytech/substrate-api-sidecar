@@ -63,7 +63,8 @@ export class TransactionDryRunService extends AbstractService {
 				throw new BadRequest('dryRunCall not found in metadata.');
 			}
 			const xcmsVersion = dryRunCall.inputs.find((param) => param.name.toString() === 'result_xcms_version');
-			if (!xcmsVersion) {
+
+			if (xcmsVersion) {
 				throw new BadRequest('Missing field `xcmVersion` on request body.');
 			}
 		}

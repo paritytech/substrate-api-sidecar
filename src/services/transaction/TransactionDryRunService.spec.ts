@@ -84,6 +84,7 @@ describe('TransactionDryRunService', () => {
 			sendersAddress,
 			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
 			blockHash22887036,
+			4,
 		);
 
 		expect(executionResult?.at.hash).toEqual(blockHash22887036);
@@ -100,6 +101,7 @@ describe('TransactionDryRunService', () => {
 			sendersAddress,
 			payloadTx,
 			blockHash22887036,
+			4,
 		);
 
 		const resData = executionResult?.result.result as PostDispatchInfo;
