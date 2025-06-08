@@ -41,7 +41,6 @@ export class AccountsStakingInfoService extends AbstractService {
 	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		// TODO: Am i using the registry correctly?
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
 
 		if (!historicApi.query.staking) {

@@ -489,6 +489,10 @@ describe('AccountsStakingInfoService', () => {
 
 	describe('fetchAccountStakingInfo after AHM', () => {
 		it('works with a valid stash address (block 789629)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return mockAHNextAHMApiPromise;
@@ -509,6 +513,10 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('throws a 400 when the given address is not a stash', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return mockAHNextAHMApiPromise;
@@ -536,6 +544,10 @@ describe('AccountsStakingInfoService', () => {
 		it('throws a 404 when the staking ledger cannot be found', async () => {
 			(historicApi.query.staking.ledger as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<StakingLedger>', null));
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return mockAHNextAHMApiPromise;
@@ -562,6 +574,10 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works when `includeClaimedRewards` is set to `false` hence claimedRewards field is not returned in the response', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise22939322;
@@ -585,6 +601,10 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise22939322;
@@ -608,6 +628,10 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService21157800val = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return mockValPolkadotAHNextAHMApiPromise;
@@ -635,6 +659,10 @@ describe('AccountsStakingInfoService', () => {
 			).toStrictEqual(response21157800);
 		});
 		it('works with a nominator account (block 21157800) & returns claimed & unclaimed eras (Polkadot)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
 			const accountStakingInfoService21157800nom = new AccountsStakingInfoService('statemine');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return mockAHNextAHMApiPromise21157800nom;

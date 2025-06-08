@@ -96,6 +96,13 @@ const AHNextAHMApiPromise = {
 		session: null,
 		babe: null,
 	},
+	rpc: {
+		...defaultMockApi.rpc,
+		chain: {
+			...defaultMockApi.rpc.chain,
+			getFinalizedHead: () => Promise.resolve().then(() => blockHash),
+		},
+	},
 	query: {
 		...defaultMockApi.query,
 		session: null,
@@ -107,6 +114,13 @@ const AHNextAHMApiPromise = {
 			...mockHistoricApi.consts,
 			session: null,
 			babe: null,
+		},
+		rpc: {
+			...defaultMockApi.rpc,
+			chain: {
+				...defaultMockApi.rpc.chain,
+				getFinalizedHead: () => Promise.resolve().then(() => blockHash),
+			},
 		},
 		query: {
 			...mockHistoricApi.query,
@@ -296,7 +310,7 @@ describe('AccountsStakingPayoutsService', () => {
 				ERA,
 				false,
 				ERA + 1,
-				mockHistoricApi,
+				await AHNextAHMApiPromise.at(blockHash),
 			);
 
 			expect(sanitizeNumbers(res)).toStrictEqual({
@@ -463,10 +477,6 @@ describe('AccountsStakingPayoutsService', () => {
 				isAssetHubMigrated: true,
 			};
 			const stakingPayoutsService = new AccountsStakingPayoutsService('statemine');
-			jest.spyOn(ApiPromiseRegistry, 'assetHubInfo', 'get').mockReturnValue({
-				isAssetHub: true,
-				isAssetHubMigrated: true,
-			});
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
 				return AHNextAHMApiPromise;
 			});
