@@ -18,8 +18,8 @@ import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
-import { polkadotMetadataRpcV16 } from '../metadata/polkadotV16Metadata';
 import { polkadotMetadataRpcV15 } from '../metadata/polkadotV15Metadata';
+import { polkadotMetadataRpcV16 } from '../metadata/polkadotV16Metadata';
 import { polkadotMetadataRpcV29 } from '../metadata/polkadotV29Metadata';
 import { polkadotMetadataRpcV9110 } from '../metadata/polkadotV9110Metadata';
 import { polkadotMetadataRpcV9122 } from '../metadata/polkadotV9122Metadata';
