@@ -54,7 +54,7 @@ const mockSidecarConfig: ISidecarConfig = {
 const chainsToNode: Record<string, string> = {
 	'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
 	kusama: 'wss://kusama-rpc.dwellir.com',
-	'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
+	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
 	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
 	polkadot: 'wss://polkadot-rpc.dwellir.com',

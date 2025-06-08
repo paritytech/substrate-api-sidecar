@@ -120,6 +120,7 @@ export class AccountsStakingInfoService extends AbstractService {
 								validatorsTargets,
 								stash,
 								currentEraOption,
+								true,
 							);
 							e = era;
 							claimedRewardsNom = claimedRewardsNom1;
@@ -361,11 +362,12 @@ export class AccountsStakingInfoService extends AbstractService {
 			Option<PalletStakingSlashingSlashingSpans>,
 		]
 	> {
-		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
 			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
 			historicApi.query.staking.payee(stash),
-			rcApi.query.staking.slashingSpans(stash),
+			// Fetch staking data is only used for old calls, therefore we don't have to give asset hub migration
+			// support here since slashing spans will be queried from the relay chain after the migration.
+			historicApi.query.staking.slashingSpans(stash),
 		]).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(stash, err);
 		});
@@ -417,12 +419,13 @@ export class AccountsStakingInfoService extends AbstractService {
 		validatorsTargets: string[],
 		nominatorStash: string,
 		currentEraOption: Option<u32>,
+		isAssetHubMigration: boolean = false,
 	): Promise<[number, IEraStatus<NominatorStatus>[]]> {
 		// Iterate through all validators that the nominator is nominating and
 		// check if the rewards are claimed or not.
 		for (const [idx, validatorStash] of validatorsTargets.entries()) {
 			let oldCallChecked = false;
-			if (claimedRewardsNom.length == 0) {
+			if (claimedRewardsNom.length == 0 && !isAssetHubMigration) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
 					e,
