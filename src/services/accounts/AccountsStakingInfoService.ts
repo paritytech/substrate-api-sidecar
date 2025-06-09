@@ -41,7 +41,13 @@ export class AccountsStakingInfoService extends AbstractService {
 	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
+		const relayChain = ApiPromiseRegistry.getApiByType('relay');
+
+		if (!relayChain?.length) {
+			throw new Error('Relay chain API not found');
+		}
+
+		const rcApi = relayChain[0].api;
 
 		if (!historicApi.query.staking) {
 			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);

@@ -479,7 +479,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else if (eraIndex.toNumber() < 518 && isKusama) {
 				indexOfEra = eraIndex.toNumber();
 			} else {
-				continue;
+				indexOfEra = -1;
 			}
 			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
