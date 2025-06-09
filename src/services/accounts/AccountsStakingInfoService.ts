@@ -99,7 +99,8 @@ export class AccountsStakingInfoService extends AbstractService {
 
 			for (let e = eraStart; e < eraStart + eraDepth; e++) {
 				// Type assertion to avoid type error
-
+				// AssetHub uses erasClaimedRewards to query claimed rewards, but pre-migration the relay-chain
+				// uses claimedRewards
 				if (
 					(historicApi.query.staking?.claimedRewards as unknown as boolean) ||
 					historicApi.query.staking?.erasClaimedRewards
