@@ -38,7 +38,7 @@ export class TransactionDryRunService extends AbstractService {
 	): Promise<ITransactionDryRun> {
 		const { api } = this;
 
-		const metadataService = new RuntimeMetadataService(api);
+		const metadataService = new RuntimeMetadataService('mock');
 
 		if (xcmVersion == undefined && hash) {
 			const metadataVersions = await metadataService.fetchMetadataVersions(hash);
