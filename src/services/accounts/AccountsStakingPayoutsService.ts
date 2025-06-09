@@ -647,7 +647,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		if (historicApi.query.staking.erasStakersClipped) {
 			storageKeys = await historicApi.query.staking.erasStakersClipped.entries(eraIndex);
-		} else {
+		} else if (historicApi.query.staking.currentElected) {
 			const validators: Vec<AccountId> = (await historicApi.query.staking.currentElected()) as Vec<AccountId>;
 
 			const validatorId: AccountId[] = [];
