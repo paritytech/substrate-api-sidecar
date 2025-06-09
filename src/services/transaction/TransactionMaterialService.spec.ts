@@ -16,7 +16,7 @@
 
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
-import response789629 from '../test-helpers/responses/transaction/material789629.json';
+import response from '../test-helpers/responses/transaction/material.json';
 import { TransactionMaterialService } from './TransactionMaterialService';
 
 const transactionMaterialService = new TransactionMaterialService(defaultMockApi);
@@ -26,7 +26,7 @@ describe('TransactionMaterialService', () => {
 		it('Should return the scale encoded metadata when the `metadata` query param is `scale`', async () => {
 			expect(
 				sanitizeNumbers(await transactionMaterialService.fetchTransactionMaterial(blockHash789629, 'scale')),
-			).toStrictEqual(response789629);
+			).toStrictEqual(response);
 		});
 
 		it('Should return the decoded metadata when the `metadata` query param is `json`', async () => {

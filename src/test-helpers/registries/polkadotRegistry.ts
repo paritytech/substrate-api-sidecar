@@ -18,6 +18,7 @@ import { Metadata } from '@polkadot/types';
 import { TypeRegistry } from '@polkadot/types';
 import { getSpecTypes } from '@polkadot/types-known';
 
+import { polkadotMetadataRpcV15 } from '../metadata/polkadotV15Metadata';
 import { polkadotMetadataRpcV16 } from '../metadata/polkadotV16Metadata';
 import { polkadotMetadataRpcV29 } from '../metadata/polkadotV29Metadata';
 import { polkadotMetadataRpcV9110 } from '../metadata/polkadotV9110Metadata';
@@ -50,9 +51,14 @@ function createPolkadotRegistry(specVersion: number, metadata: `0x${string}`): T
 }
 
 /**
- * Polkadot v16 TypeRegistry.
+ * Polkadot v15 TypeRegistry.
  */
-export const polkadotRegistry = createPolkadotRegistry(16, polkadotMetadataRpcV16);
+export const polkadotRegistry = createPolkadotRegistry(15, polkadotMetadataRpcV16);
+
+/**
+ * Polkadot v15 TypeRegistry.
+ */
+export const polkadotRegistryV15 = createPolkadotRegistry(15, polkadotMetadataRpcV15);
 
 /**
  * Polkadot v29 TypeRegistry
