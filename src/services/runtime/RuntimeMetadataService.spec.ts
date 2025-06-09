@@ -17,7 +17,7 @@
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
-import response789629 from '../test-helpers/responses/runtime/metadata789629.json';
+import response from '../test-helpers/responses/runtime/responseV15.json';
 import { RuntimeMetadataService } from './RuntimeMetadataService';
 
 const runtimeMetadataService = new RuntimeMetadataService('mock');
@@ -26,9 +26,7 @@ describe('RuntimeMetadataService', () => {
 	describe('fetchMetadata', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
-			expect(sanitizeNumbers(await runtimeMetadataService.fetchMetadata(blockHash789629))).toStrictEqual(
-				response789629,
-			);
+			expect(sanitizeNumbers(await runtimeMetadataService.fetchMetadata(blockHash789629))).toStrictEqual(response);
 		});
 	});
 });

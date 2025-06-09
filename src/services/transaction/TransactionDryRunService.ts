@@ -16,9 +16,11 @@
 
 import type { BlockHash, CallDryRunEffects, XcmDryRunApiError } from '@polkadot/types/interfaces';
 import type { Result } from '@polkadot/types-codec';
+import { BadRequest } from 'http-errors';
 
 import { ITransactionDryRun, TransactionResultType, ValidityErrorType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+import { RuntimeMetadataService } from '../index';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
 export type SignedOriginCaller = {
@@ -32,8 +34,40 @@ export class TransactionDryRunService extends AbstractService {
 		senderAddress: string,
 		transaction: `0x${string}`,
 		hash?: BlockHash,
+		xcmVersion?: number | undefined,
 	): Promise<ITransactionDryRun> {
 		const { api } = this;
+
+		const metadataService = new RuntimeMetadataService(api);
+
+		if (xcmVersion == undefined && hash) {
+			const metadataVersions = await metadataService.fetchMetadataVersions(hash);
+
+			const latestStableMetadataVersion = metadataVersions.reduce((max, current) => {
+				const metadata = Number(current);
+				if (isNaN(metadata)) {
+					return max;
+				}
+				return Math.max(max, metadata);
+			}, 0);
+
+			const metadata = await metadataService.fetchMetadataVersioned(api, latestStableMetadataVersion);
+
+			const dryRunApi = metadata.asLatest.apis.find((api) => api.name.toString() === 'DryRunApi');
+			if (!dryRunApi) {
+				throw new BadRequest('DryRunApi not found in metadata.');
+			}
+
+			const dryRunCall = dryRunApi.methods.find((method) => method.name.toString() === 'dry_run_call');
+			if (!dryRunCall) {
+				throw new BadRequest('dryRunCall not found in metadata.');
+			}
+			const xcmsVersion = dryRunCall.inputs.find((param) => param.name.toString() === 'result_xcms_version');
+
+			if (xcmsVersion) {
+				throw new BadRequest('Missing field `xcmVersion` on request body.');
+			}
+		}
 
 		try {
 			const originCaller: SignedOriginCaller = {
@@ -43,7 +77,9 @@ export class TransactionDryRunService extends AbstractService {
 			};
 
 			const [dryRunResponse, { number }] = await Promise.all([
-				api.call.dryRunApi.dryRunCall(originCaller, transaction),
+				xcmVersion === undefined
+					? api.call.dryRunApi.dryRunCall(originCaller, transaction)
+					: api.call.dryRunApi.dryRunCall(originCaller, transaction, xcmVersion),
 				hash ? api.rpc.chain.getHeader(hash) : { number: null },
 			]);
 
