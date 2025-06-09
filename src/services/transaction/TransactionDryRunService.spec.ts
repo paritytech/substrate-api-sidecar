@@ -86,11 +86,7 @@ describe('TransactionDryRunService', () => {
 	});
 	const sendersAddress = '5HBuLJz9LdkUNseUEL6DLeVkx2bqEi6pQr8Ea7fS4bzx7i7E';
 	it('Should correctly execute a dry run for a submittable executable', async () => {
-<<<<<<< HEAD
 		const executionResult = await new TransactionDryRunService('mock').dryRuntExtrinsic(
-=======
-		const executionResult = await new TransactionDryRunService(mockApi).dryRuntExtrinsic(
->>>>>>> d04a13ccf1de0594fed8eda0ccadbf872be7f50b
 			sendersAddress,
 			'0xfc041f0801010100411f0100010100c224aad9c6f3bbd784120e9fceee5bfd22a62c69144ee673f76d6a34d280de160104000002043205040091010000000000',
 			blockHash22887036,
