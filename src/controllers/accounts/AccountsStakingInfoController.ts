@@ -18,6 +18,7 @@ import { RequestHandler } from 'express';
 import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -101,13 +102,15 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		{ params: { address }, query: { at, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
-		if (at && this.options.multiChainApi?.assetHubMigration) {
+		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
+
+		if (at && isAssetHubMigrated) {
 			throw Error(`Query Parameter 'at' is not supported for /staking-info`);
 		}
 
 		const hash = await this.getHashFromAt(at);
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
-		if (this.options.multiChainApi?.assetHubMigration) {
+		if (isAssetHubMigrated) {
 			AccountsStakingInfoController.sanitizedSend(
 				res,
 				await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address),

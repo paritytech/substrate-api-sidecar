@@ -93,7 +93,6 @@ export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint'])
  *
  * @param api ApiPromise to inject into controllers
  * @param specName spacName of the chain to get controllers and options for
- * @param multiChainApi ApiPromise to inject into controllers that support multi-chain
  */
 export function getControllersForSpec(specName: string): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {

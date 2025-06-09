@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { ApiPromise } from '@polkadot/api';
 import type { LRUCache } from 'lru-cache';
 
 import { QueryFeeDetailsCache } from '../../chains-config/cache';
@@ -60,13 +59,4 @@ export interface ControllerOptions {
 	 * Cache for storing runtime versions that either have queryFeeDetails, or dont.
 	 */
 	hasQueryFeeApi: QueryFeeDetailsCache;
-	/**
-	 *
-	 */
-	multiChainApi?: MultiChainApi;
-}
-
-export interface MultiChainApi {
-	multiChainApi?: ApiPromise;
-	assetHubMigration: boolean;
 }

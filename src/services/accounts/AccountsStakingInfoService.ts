@@ -205,6 +205,8 @@ export class AccountsStakingInfoService extends AbstractService {
 		const { api } = this;
 		const historicApi = await api.at(hash);
 
+		console.log('HIT fetch account staking info');
+
 		// Fetching initial data
 		const [header, controllerOption] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
@@ -425,6 +427,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		// check if the rewards are claimed or not.
 		for (const [idx, validatorStash] of validatorsTargets.entries()) {
 			let oldCallChecked = false;
+			console.log('isAssetHubMigration: ', isAssetHubMigration);
 			if (claimedRewardsNom.length == 0 && !isAssetHubMigration) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
