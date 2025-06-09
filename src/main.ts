@@ -65,7 +65,6 @@ async function initApis(): Promise<string> {
 	let isAssetHub = false;
 	let isAssetHubMigrated = false;
 	for (let i = 0; i < apis.length; i++) {
-		console.log(i);
 		if (!apis[i]) {
 			logger.error('Failed to create API instance');
 		}
