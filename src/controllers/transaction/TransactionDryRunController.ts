@@ -19,6 +19,7 @@ import { BadRequest } from 'http-errors';
 import { TransactionDryRunService } from '../../services';
 import { IPostRequestHandler, ITx } from '../../types/requests';
 import AbstractController from '../AbstractController';
+
 /**
  * Dry run a transaction.
  *
@@ -59,7 +60,7 @@ export default class TransactionDryRunController extends AbstractController<Tran
 	}
 
 	private dryRunTransaction: IPostRequestHandler<ITx> = async (
-		{ body: { tx, at, senderAddress } },
+		{ body: { tx, at, senderAddress, xcmVersion } },
 		res,
 	): Promise<void> => {
 		if (!tx) {
@@ -70,8 +71,11 @@ export default class TransactionDryRunController extends AbstractController<Tran
 			throw new BadRequest('Missing field `senderAddress` on request body.');
 		}
 
-		const hash = at ? await this.getHashFromAt(at) : undefined;
+		const hash = await this.getHashFromAt(at);
 
-		TransactionDryRunController.sanitizedSend(res, await this.service.dryRuntExtrinsic(senderAddress, tx, hash));
+		TransactionDryRunController.sanitizedSend(
+			res,
+			await this.service.dryRuntExtrinsic(senderAddress, tx, hash, xcmVersion),
+		);
 	};
 }
