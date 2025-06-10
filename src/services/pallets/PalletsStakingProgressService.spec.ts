@@ -85,6 +85,21 @@ const mockHistoricApi = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
 			unappliedSlashes: {
 				entries: unappliedSlashesEntries,
 			},
@@ -146,6 +161,21 @@ const mockHistoricApiUnappliedSlashes = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
 			unappliedSlashes: {
 				entries: unappliedSlashesEntriesUnappliedSlashes,
 			},
@@ -244,6 +274,21 @@ const mockAHHistoricApi = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
 			unappliedSlashes: {
 				entries: unappliedSlashesEntries,
 			},
@@ -294,6 +339,8 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
+			(mockHistoricApi.query.staking.bondedEras as any) = () => Promise.resolve([] as any);
+
 			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', null));
 			/**
@@ -423,6 +470,7 @@ describe('PalletStakingProgressService', () => {
 				isAssetHub: true,
 				isAssetHubMigrated: true,
 			};
+			(mockAHHistoricApi.query.staking.bondedEras as any) = () => Promise.resolve().then(() => []);
 			(mockAHHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', undefined));
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
