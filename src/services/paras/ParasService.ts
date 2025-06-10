@@ -154,7 +154,7 @@ export class ParasService extends AbstractService {
 
 		const [leases, { number }, paraLifecycleOpt] = await Promise.all([
 			historicApi.query.slots.leases<Vec<Option<ITuple<[AccountId, BalanceOf]>>>>(paraId),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.paras.paraLifecycles<Option<ParaLifecycle>>(paraId),
 		]);
 		const blockNumber = number.unwrap();
@@ -221,7 +221,7 @@ export class ParasService extends AbstractService {
 
 		const [auctionInfoOpt, { number }, auctionCounter] = await Promise.all([
 			historicApi.query.auctions.auctionInfo<Option<Vec<BlockNumber>>>(),
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.auctions.auctionCounter<BlockNumber>(),
 		]);
 		const blockNumber = number.unwrap();
@@ -333,11 +333,11 @@ export class ParasService extends AbstractService {
 
 		let blockNumber, currentLeaseHolders;
 		if (!includeCurrentLeaseHolders) {
-			const { number } = await this.api.rpc.chain.getHeader(hash);
+			const { number } = await api.rpc.chain.getHeader(hash);
 			blockNumber = number.unwrap();
 		} else {
 			const [{ number }, leaseEntries] = await Promise.all([
-				this.api.rpc.chain.getHeader(hash),
+				api.rpc.chain.getHeader(hash),
 				historicApi.query.slots.leases.entries<Vec<Option<ITuple<[AccountId, BalanceOf]>>>, [ParaId]>(),
 			]);
 
@@ -381,7 +381,7 @@ export class ParasService extends AbstractService {
 		this.assertQueryModule(historicApi.query.paras, 'paras');
 
 		const [{ number }, paraLifecycles] = await Promise.all([
-			this.api.rpc.chain.getHeader(hash),
+			api.rpc.chain.getHeader(hash),
 			historicApi.query.paras.paraLifecycles.entries<ParaLifecycle, [ParaId]>(),
 		]);
 

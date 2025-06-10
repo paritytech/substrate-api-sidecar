@@ -128,6 +128,14 @@ export class Specs {
 			}),
 		);
 
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.MULTI_CHAIN_URL, 'Websocket or HTTP URL', {
+				mandatory: false,
+				regexp: /^(ws|wss|http|https)?:\/\/.*/,
+			}),
+		);
+
 		// TYPES_BUNDLE
 		this._specs.appendSpec(
 			MODULES.SUBSTRATE,
@@ -181,6 +189,16 @@ export class Specs {
 			this._specs.getSpec(CONFIG.CACHE_CAPACITY, 'max cache size for @polkadot/api caching system, 0 bypasses cache', {
 				default: 0,
 				mandatory: false,
+			}),
+		);
+
+		// MULTI_CHAIN_URL
+		this._specs.appendSpec(
+			MODULES.SUBSTRATE,
+			this._specs.getSpec(CONFIG.MULTI_CHAIN_URL, 'Multichain URL Websocket or HTTP URL', {
+				mandatory: false,
+				default: [],
+				type: 'array',
 			}),
 		);
 	}

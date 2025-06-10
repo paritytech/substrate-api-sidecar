@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
@@ -25,7 +24,7 @@ import AbstractController from '../AbstractController';
 export default class AccountsProxyInfoController extends AbstractController<AccountsProxyInfoService> {
 	static controllerName = 'AccountsProxyInfo';
 	static requiredPallets = [['Proxy']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/accounts/:address/proxy-info', new AccountsProxyInfoService(api));
 		this.initRoutes();
 	}

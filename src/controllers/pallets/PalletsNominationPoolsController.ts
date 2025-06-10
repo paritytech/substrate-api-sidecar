@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
 import { PalletsNominationPoolService } from '../../services';
@@ -23,7 +22,7 @@ import AbstractController from '../AbstractController';
 export default class PalletsNominationPoolController extends AbstractController<PalletsNominationPoolService> {
 	static controllerName = 'PalletsNominationPools';
 	static requiredPallets = [['NominationPools']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/nomination-pools', new PalletsNominationPoolService(api));
 		this.initRoutes();
 	}

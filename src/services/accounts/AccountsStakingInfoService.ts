@@ -27,9 +27,183 @@ import type {
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
+import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
+	/**
+	 * Fetch staking information for a _Stash_ account at a given block for asset hub.
+	 *
+	 * @param hash `BlockHash` to make call at (Only works for the head of the chain for now)
+	 * @param includeClaimedRewards `boolean` to include claimed rewards (Only works for the head of the chain for now)
+	 * @param stash address of the _Stash_  account to get the staking info of
+	 */
+	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
+		const { api } = this;
+		const historicApi = await api.at(hash);
+		const relayChain = ApiPromiseRegistry.getApiByType('relay');
+
+		if (!relayChain?.length) {
+			throw new Error('Relay chain API not found');
+		}
+
+		const rcApi = relayChain[0].api;
+
+		if (!historicApi.query.staking) {
+			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);
+		}
+
+		// Fetching initial data
+		const [header, controllerOption] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			historicApi.query.staking.bonded(stash), // Option<AccountId> representing the controller
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
+
+		const at = {
+			hash: header.hash.toHex(),
+			height: header.number.unwrap().toString(10),
+		};
+
+		if (controllerOption.isNone) {
+			throw new BadRequest(`The address ${stash} is not a stash address.`);
+		}
+
+		const controller = controllerOption.unwrap();
+		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
+			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
+			historicApi.query.staking.payee(stash),
+			rcApi.query.staking.slashingSpans(stash),
+		]).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(stash, err);
+		});
+		const stakingLedger = stakingLedgerOption.unwrapOr(null);
+
+		if (stakingLedger === null) {
+			// should never throw because by time we get here we know we have a bonded pair
+			throw new InternalServerError(
+				`Staking ledger could not be found for controller address "${controller.toString()}"`,
+			);
+		}
+
+		const [isValidator, nominations, currentEraOption] = await Promise.all([
+			rcApi.query.session ? ((await rcApi.query.session.validators()).toHuman() as string[]).includes(stash) : false,
+			historicApi.query.staking.nominators ? (await historicApi.query.staking.nominators(stash)).unwrapOr(null) : null,
+			historicApi.query.staking.currentEra(),
+		]);
+		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+
+		if (includeClaimedRewards) {
+			// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
+			let claimedRewards: IEraStatus<ValidatorStatus | NominatorStatus>[] = [];
+			let claimedRewardsNom: IEraStatus<NominatorStatus>[] = [];
+
+			// `eraDepth`: the number of eras to check.
+			const eraDepth = Number(historicApi.consts.staking.historyDepth.toNumber());
+			const eraStart = this.fetchErasStart(currentEraOption, eraDepth);
+
+			for (let e = eraStart; e < eraStart + eraDepth; e++) {
+				// Type assertion to avoid type error
+				// AssetHub uses erasClaimedRewards to query claimed rewards, but pre-migration the relay-chain
+				// uses claimedRewards
+				if (
+					(historicApi.query.staking?.claimedRewards as unknown as boolean) ||
+					historicApi.query.staking?.erasClaimedRewards
+				) {
+					if (currentEraOption.isNone) {
+						throw new InternalServerError('CurrentEra is None when Some was expected');
+					}
+
+					if (isValidator) {
+						claimedRewards = await this.fetchErasStatusForValidatorAssetHub(historicApi, e, stash, claimedRewards);
+					} else {
+						// To verify the reward status `claimed` of an era for a Nominator's account,
+						// we need to check the status of that era in one of their associated Validators' accounts.
+						const validatorsTargets = nominations?.targets.toHuman() as string[];
+						if (validatorsTargets) {
+							const [era, claimedRewardsNom1] = await this.fetchErasStatusForNominator(
+								historicApi,
+								e,
+								eraDepth,
+								eraStart,
+								claimedRewardsNom,
+								validatorsTargets,
+								stash,
+								currentEraOption,
+								true,
+							);
+							e = era;
+							claimedRewardsNom = claimedRewardsNom1;
+						}
+					}
+				} else {
+					break;
+				}
+			}
+
+			return {
+				at,
+				controller,
+				rewardDestination,
+				numSlashingSpans,
+				nominations,
+				staking: {
+					stash: stakingLedger.stash,
+					total: stakingLedger.total,
+					active: stakingLedger.active,
+					unlocking: stakingLedger.unlocking,
+					claimedRewards: isValidator ? claimedRewards : claimedRewardsNom,
+				},
+			};
+		}
+
+		return {
+			at,
+			controller,
+			rewardDestination,
+			numSlashingSpans,
+			nominations,
+			staking: {
+				stash: stakingLedger.stash,
+				total: stakingLedger.total,
+				active: stakingLedger.active,
+				unlocking: stakingLedger.unlocking,
+			},
+		};
+	}
+
+	private async fetchErasStatusForValidatorAssetHub(
+		historicApi: ApiDecoration<'promise'>,
+		e: number,
+		stash: string,
+		claimedRewards: IEraStatus<ValidatorStatus>[],
+	): Promise<IEraStatus<ValidatorStatus>[]> {
+		const [erasStakersOverview, claimedRewardsPerEra]: [Option<SpStakingPagedExposureMetadata> | null, Vec<u32>] =
+			await Promise.all([
+				historicApi.query.staking?.erasStakersOverview
+					? historicApi.query.staking?.erasStakersOverview(e, stash)
+					: null,
+				historicApi.query.staking.claimedRewards
+					? historicApi.query.staking.claimedRewards(e, stash)
+					: historicApi.query.staking.erasClaimedRewards<Vec<u32>>(e, stash),
+			]);
+
+		if (erasStakersOverview?.isSome) {
+			const pageCount = erasStakersOverview.unwrap().pageCount.toNumber();
+			const eraStatus =
+				claimedRewardsPerEra.length === 0
+					? 'unclaimed'
+					: claimedRewardsPerEra.length === pageCount
+						? 'claimed'
+						: claimedRewardsPerEra.length != pageCount
+							? 'partially claimed'
+							: 'undefined';
+			claimedRewards.push({ era: e, status: eraStatus });
+		}
+
+		return claimedRewards;
+	}
 	/**
 	 * Fetch staking information for a _Stash_ account at a given block.
 	 *
@@ -204,6 +378,8 @@ export class AccountsStakingInfoService extends AbstractService {
 		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
 			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
 			historicApi.query.staking.payee(stash),
+			// Fetch staking data is only used for old calls, therefore we don't have to give asset hub migration
+			// support here since slashing spans will be queried from the relay chain after the migration.
 			historicApi.query.staking.slashingSpans(stash),
 		]).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(stash, err);
@@ -256,12 +432,14 @@ export class AccountsStakingInfoService extends AbstractService {
 		validatorsTargets: string[],
 		nominatorStash: string,
 		currentEraOption: Option<u32>,
+		isAssetHubMigration: boolean = false,
 	): Promise<[number, IEraStatus<NominatorStatus>[]]> {
 		// Iterate through all validators that the nominator is nominating and
 		// check if the rewards are claimed or not.
 		for (const [idx, validatorStash] of validatorsTargets.entries()) {
 			let oldCallChecked = false;
-			if (claimedRewardsNom.length == 0) {
+			console.log('isAssetHubMigration: ', isAssetHubMigration);
+			if (claimedRewardsNom.length == 0 && !isAssetHubMigration) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
 					e,
@@ -442,7 +620,7 @@ export class AccountsStakingInfoService extends AbstractService {
 		e: number,
 	): [boolean, IEraStatus<ValidatorStatus | NominatorStatus>[], number] {
 		if (!oldCallChecked) {
-			if (claimedRewardsEras.length > 0) {
+			if (claimedRewardsEras && claimedRewardsEras.length > 0) {
 				claimedRewards = claimedRewardsEras.map((element) => ({
 					era: element.toNumber(),
 					status: 'claimed',

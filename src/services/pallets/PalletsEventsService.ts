@@ -39,6 +39,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, eventItemId, metadata }: IFetchEventItemArgs,
 	): Promise<IPalletEventsItem> {
+		const { api } = this;
 		const metadataFieldType = 'events';
 		const palletMetadata = historicApi.registry.metadata;
 
@@ -58,7 +59,7 @@ export class PalletsEventsService extends AbstractPalletsService {
 			palletEventMetadata = (eventItemMetadata[1] as unknown as IsEvent<AnyTuple>).meta;
 		}
 
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+		const { number } = await api.rpc.chain.getHeader(hash);
 
 		return {
 			at: {
@@ -76,11 +77,12 @@ export class PalletsEventsService extends AbstractPalletsService {
 		historicApi: ApiDecoration<'promise'>,
 		{ hash, palletId, onlyIds }: IFetchPalletArgs & { onlyIds: boolean },
 	): Promise<IPalletEvents> {
+		const { api } = this;
 		const metadataFieldType = 'events';
 		const metadata = historicApi.registry.metadata;
 		const [palletMeta, palletMetaIdx] = this.findPalletMeta(metadata, palletId, metadataFieldType);
 
-		const { number } = await this.api.rpc.chain.getHeader(hash);
+		const { number } = await api.rpc.chain.getHeader(hash);
 		const parsedPalletName = stringCamelCase(palletMeta.name.toString());
 		const events = historicApi.events[parsedPalletName];
 

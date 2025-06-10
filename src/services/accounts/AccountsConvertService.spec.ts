@@ -16,6 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize';
 import { defaultMockApi } from '../test-helpers/mock';
 import { AccountsConvertService } from './AccountsConvertService';
@@ -23,9 +24,12 @@ import { AccountsConvertService } from './AccountsConvertService';
 const mockApi = {
 	...defaultMockApi,
 } as unknown as ApiPromise;
-const validateService = new AccountsConvertService(mockApi);
+const validateService = new AccountsConvertService('mock');
 
 describe('Convert accounts', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
 	it('Should convert a Substrate AccountId to an SS58 Address when `scheme` equals `ecdsa`', () => {
 		const expectedResponse = {
 			ss58Prefix: '42',

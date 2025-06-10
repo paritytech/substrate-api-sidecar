@@ -14,16 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { defaultMockApi } from '../test-helpers/mock';
 import nodeVersionResponse from '../test-helpers/responses/node/version.json';
 import { NodeVersionService } from '.';
 
-const nodeVersionService = new NodeVersionService(defaultMockApi);
+const nodeVersionService = new NodeVersionService('mock');
 
 describe('NodeVersionService', () => {
 	describe('fetchVersion', () => {
 		it('works when ApiPromise works', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
+
 			expect(sanitizeNumbers(await nodeVersionService.fetchVersion())).toStrictEqual(nodeVersionResponse);
 		});
 	});

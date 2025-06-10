@@ -23,6 +23,7 @@ import { AccountId, Hash, StakingLedger } from '@polkadot/types/interfaces';
 import type { PalletStakingNominations } from '@polkadot/types/lookup';
 import { BadRequest, InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { kusamaRegistryV1002000, polkadotRegistry, polkadotRegistryV1002000 } from '../../test-helpers/registries';
 import {
@@ -110,7 +111,53 @@ const mockApi = {
 	at: (_hash: Hash) => historicApi,
 } as unknown as ApiPromise;
 
-const accountStakingInfoService = new AccountsStakingInfoService(mockApi);
+const mockRCNextAHMApiPromise = {
+	...defaultMockApi,
+	consts: {
+		...defaultMockApi.consts,
+		staking: null,
+	},
+	query: {
+		...defaultMockApi.query,
+		staking: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi,
+		consts: {
+			...historicApi.query,
+			staking: null,
+		},
+		query: {
+			...historicApi.query,
+			staking: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const mockAHNextAHMApiPromise = {
+	...defaultMockApi,
+	consts: {
+		...defaultMockApi.consts,
+		session: null,
+	},
+	query: {
+		...defaultMockApi.query,
+		session: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi,
+		consts: {
+			...historicApi.query,
+			session: null,
+		},
+		query: {
+			...historicApi.query,
+			session: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const accountStakingInfoService = new AccountsStakingInfoService('mock');
 
 export const bondedAt21157800 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => polkadotRegistryV1002000.createType('Option<AccountId>', testAddressControllerPolkadot));
@@ -162,7 +209,52 @@ const mockApiPolkadot21157800val = {
 	at: (_hash: Hash) => historicApi21157800,
 } as unknown as ApiPromise;
 
-const accountStakingInfoService21157800val = new AccountsStakingInfoService(mockApiPolkadot21157800val);
+const mockValPolkadotRCNextAHMApiPromise = {
+	...defaultMockApi21157800,
+	consts: {
+		...defaultMockApi21157800.consts,
+		staking: null,
+	},
+	query: {
+		...defaultMockApi21157800.query,
+		staking: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi21157800,
+		consts: {
+			...historicApi21157800.query,
+			staking: null,
+		},
+		query: {
+			...historicApi21157800.query,
+			staking: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const mockValPolkadotAHNextAHMApiPromise = {
+	...defaultMockApi21157800,
+	consts: {
+		...defaultMockApi21157800.consts,
+		session: null,
+	},
+	query: {
+		...defaultMockApi21157800.query,
+		session: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi21157800,
+		consts: {
+			...historicApi21157800.query,
+			session: null,
+		},
+		query: {
+			...historicApi21157800.query,
+			session: null,
+		},
+	}),
+} as unknown as ApiPromise;
+const accountStakingInfoService21157800val = new AccountsStakingInfoService('mock');
 
 const mockApiPolkadot21157800nom = {
 	...defaultMockApi21157800,
@@ -179,7 +271,53 @@ const mockApiPolkadot21157800nom = {
 	}),
 } as unknown as ApiPromise;
 
-const accountStakingInfoService21157800nom = new AccountsStakingInfoService(mockApiPolkadot21157800nom);
+const mockRCNextAHMApiPromise21157800nom = {
+	...defaultMockApi21157800,
+	consts: {
+		...defaultMockApi21157800.consts,
+		staking: null,
+	},
+	query: {
+		...defaultMockApi21157800.query,
+		staking: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi21157800,
+		consts: {
+			...historicApi21157800.query,
+			staking: null,
+		},
+		query: {
+			...historicApi21157800.query,
+			staking: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const mockAHNextAHMApiPromise21157800nom = {
+	...defaultMockApi21157800,
+	consts: {
+		...defaultMockApi21157800.consts,
+		session: null,
+	},
+	query: {
+		...defaultMockApi21157800.query,
+		session: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi21157800,
+		consts: {
+			...historicApi21157800.query,
+			session: null,
+		},
+		query: {
+			...historicApi21157800.query,
+			session: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const accountStakingInfoService21157800nom = new AccountsStakingInfoService('mock');
 
 export const bondedAt22939322 = (_hash: Hash, _address: string): Promise<Option<AccountId>> =>
 	Promise.resolve().then(() => kusamaRegistryV1002000.createType('Option<AccountId>', testAddressControllerKusama));
@@ -222,11 +360,58 @@ const mockApiKusama22939322 = {
 	at: (_hash: Hash) => historicApi22939322,
 } as unknown as ApiPromise;
 
-const accountStakingInfoService22939322 = new AccountsStakingInfoService(mockApiKusama22939322);
+const RCNextAHMApiPromise22939322 = {
+	...defaultMockApi22939322,
+	consts: {
+		...defaultMockApi22939322.consts,
+		staking: null,
+	},
+	query: {
+		...defaultMockApi22939322.query,
+		staking: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi22939322,
+		consts: {
+			...historicApi22939322.query,
+			staking: null,
+		},
+		query: {
+			...historicApi22939322.query,
+			staking: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const AHNextAHMApiPromise22939322 = {
+	...defaultMockApi22939322,
+	consts: {
+		...defaultMockApi22939322.consts,
+		session: null,
+	},
+	query: {
+		...defaultMockApi22939322.query,
+		session: null,
+	},
+	at: (_hash: Hash) => ({
+		...historicApi22939322,
+		consts: {
+			...historicApi22939322.query,
+			session: null,
+		},
+		query: {
+			...historicApi22939322.query,
+			session: null,
+		},
+	}),
+} as unknown as ApiPromise;
+
+const accountStakingInfoService22939322 = new AccountsStakingInfoService('mock');
 
 describe('AccountsStakingInfoService', () => {
-	describe('fetchAccountStakingInfo', () => {
+	describe('fetchAccountStakingInfo before AHM', () => {
 		it('works with a valid stash address (block 789629)', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(await accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress)),
 			).toStrictEqual(response789629);
@@ -235,7 +420,7 @@ describe('AccountsStakingInfoService', () => {
 		it('throws a 400 when the given address is not a stash', async () => {
 			(historicApi.query.staking.bonded as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<AccountId>', null));
-
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			await expect(
 				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, 'NotStash'),
 			).rejects.toStrictEqual(new BadRequest('The address NotStash is not a stash address.'));
@@ -246,7 +431,7 @@ describe('AccountsStakingInfoService', () => {
 		it('throws a 404 when the staking ledger cannot be found', async () => {
 			(historicApi.query.staking.ledger as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<StakingLedger>', null));
-
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			await expect(
 				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress),
 			).rejects.toStrictEqual(
@@ -259,6 +444,7 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works when `includeClaimedRewards` is set to `false` hence claimedRewards field is not returned in the response', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiKusama22939322);
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, false, testAddressKusama),
@@ -267,6 +453,7 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiKusama22939322);
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService22939322.fetchAccountStakingInfo(blockHash22939322, true, testAddressKusama),
@@ -275,6 +462,7 @@ describe('AccountsStakingInfoService', () => {
 		});
 
 		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiPolkadot21157800val);
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService21157800val.fetchAccountStakingInfo(
@@ -286,6 +474,210 @@ describe('AccountsStakingInfoService', () => {
 			).toStrictEqual(response21157800);
 		});
 		it('works with a nominator account (block 21157800) & returns claimed & unclaimed eras (Polkadot)', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiPolkadot21157800nom);
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService21157800nom.fetchAccountStakingInfo(
+						blockHash21157800,
+						true,
+						testNominatorAddressPolkadot,
+					),
+				),
+			).toStrictEqual(response21157800nominator);
+		});
+	});
+
+	describe('fetchAccountStakingInfo after AHM', () => {
+		it('works with a valid stash address (block 789629)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockAHNextAHMApiPromise;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: mockRCNextAHMApiPromise,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			expect(
+				sanitizeNumbers(await accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress)),
+			).toStrictEqual(response789629);
+		});
+
+		it('throws a 400 when the given address is not a stash', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockAHNextAHMApiPromise;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: mockRCNextAHMApiPromise,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+
+			(historicApi.query.staking.bonded as any) = () =>
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<AccountId>', null));
+			await expect(
+				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, 'NotStash'),
+			).rejects.toStrictEqual(new BadRequest('The address NotStash is not a stash address.'));
+
+			(historicApi.query.staking.bonded as any) = bondedAt;
+		});
+
+		it('throws a 404 when the staking ledger cannot be found', async () => {
+			(historicApi.query.staking.ledger as any) = () =>
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<StakingLedger>', null));
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockAHNextAHMApiPromise;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: mockRCNextAHMApiPromise,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			await expect(
+				accountStakingInfoService.fetchAccountStakingInfo(blockHash789629, true, testAddress),
+			).rejects.toStrictEqual(
+				new InternalServerError(
+					`Staking ledger could not be found for controller address "${testAddressController.toString()}"`,
+				),
+			);
+
+			(historicApi.query.staking.ledger as any) = ledgerAt;
+		});
+
+		it('works when `includeClaimedRewards` is set to `false` hence claimedRewards field is not returned in the response', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return AHNextAHMApiPromise22939322;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: RCNextAHMApiPromise22939322,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiKusama22939322);
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService.fetchAccountStakingInfo(blockHash22939322, false, testAddressKusama),
+				),
+			).toStrictEqual(stakingInfo22939322ClaimedFalse);
+		});
+
+		it('works with a valid stash account (block 22939322) and returns eras claimed that include era 6514 (when the migration occurred in Kusama)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return AHNextAHMApiPromise22939322;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: RCNextAHMApiPromise22939322,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiKusama22939322);
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService.fetchAccountStakingInfo(blockHash22939322, true, testAddressKusama),
+				),
+			).toStrictEqual(response22939322);
+		});
+
+		it('works with a validator account (block 21157800) & returns an array of claimed (including case erasStakersOverview=null & erasStakers>0, era 1419), partially claimed & unclaimed eras (Polkadot)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService21157800val = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockValPolkadotAHNextAHMApiPromise;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: mockValPolkadotRCNextAHMApiPromise,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiPolkadot21157800val);
+			expect(
+				sanitizeNumbers(
+					await accountStakingInfoService21157800val.fetchAccountStakingInfo(
+						blockHash21157800,
+						true,
+						testAddressPolkadot,
+					),
+				),
+			).toStrictEqual(response21157800);
+		});
+		it('works with a nominator account (block 21157800) & returns claimed & unclaimed eras (Polkadot)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const accountStakingInfoService21157800nom = new AccountsStakingInfoService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => {
+				return mockAHNextAHMApiPromise21157800nom;
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['kusama', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'kusama',
+						api: mockRCNextAHMApiPromise21157800nom,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiPolkadot21157800nom);
 			expect(
 				sanitizeNumbers(
 					await accountStakingInfoService21157800nom.fetchAccountStakingInfo(

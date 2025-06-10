@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 
+import { assetHubSpecNames } from '../../chains-config';
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -86,7 +86,7 @@ export default class PalletsStakingProgressController extends AbstractController
 		['Babe', 'Staking', 'Session'],
 		['ParachainStaking', 'Session'],
 	];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/pallets/staking/progress', new PalletsStakingProgressService(api));
 		this.initRoutes();
 	}
@@ -97,13 +97,16 @@ export default class PalletsStakingProgressController extends AbstractController
 
 	/**
 	 * Get the progress of the staking pallet system.
-	 *
+	 * FOr AHM, this endpoint allows to query at historic blocks if connected to RC, while switches automatically to AH if connected to RC.
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
+		const { specName } = this;
+		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
+			throw Error(`Query Parameter 'at' is not supported for /pallets/staking/progress when connected to assetHub.`);
+		}
 		const hash = await this.getHashFromAt(at);
-
 		PalletsStakingProgressController.sanitizedSend(res, await this.service.derivePalletStakingProgress(hash));
 	};
 }

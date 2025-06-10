@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
+import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { validateAddress, validateBoolean } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
@@ -70,6 +71,8 @@ import AbstractController from '../AbstractController';
  * - `StakingLedger`: https://crates.parity.io/pallet_staking/struct.StakingLedger.html
  */
 export default class AccountsStakingInfoController extends AbstractController<AccountsStakingInfoService> {
+	protected options: ControllerOptions;
+
 	static controllerName = 'AccountsStakingInfo';
 	static requiredPallets = [
 		['Staking', 'System'],
@@ -77,9 +80,10 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		['ParachainStaking', 'System'],
 		['Staking', 'ParachainSystem'],
 	];
-	constructor(api: ApiPromise) {
+	constructor(api: string, options: ControllerOptions) {
 		super(api, '/accounts/:address/staking-info', new AccountsStakingInfoService(api));
 		this.initRoutes();
+		this.options = options;
 	}
 
 	protected initRoutes(): void {
@@ -98,11 +102,24 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		{ params: { address }, query: { at, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
+		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
+
+		if (at && isAssetHubMigrated) {
+			throw Error(`Query Parameter 'at' is not supported for /staking-info`);
+		}
+
 		const hash = await this.getHashFromAt(at);
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
-		AccountsStakingInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
-		);
+		if (isAssetHubMigrated) {
+			AccountsStakingInfoController.sanitizedSend(
+				res,
+				await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address),
+			);
+		} else {
+			AccountsStakingInfoController.sanitizedSend(
+				res,
+				await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
+			);
+		}
 	};
 }

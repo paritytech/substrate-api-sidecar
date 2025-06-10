@@ -26,6 +26,10 @@ export interface ISidecarConfig {
 
 interface ISidecarConfigSubstrate {
 	URL: string;
+	MULTI_CHAIN_URL: Array<{
+		url: string;
+		type: 'relay' | 'assethub' | 'parachain' | undefined;
+	}>;
 	TYPES_BUNDLE: string;
 	TYPES_CHAIN: string;
 	TYPES_SPEC: string;

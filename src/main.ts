@@ -19,21 +19,85 @@
 // Introduced via `@polkadot/api v7.0.1`.
 import '@polkadot/api-augment';
 
-import { ApiPromise } from '@polkadot/api';
-import { HttpProvider, WsProvider } from '@polkadot/rpc-provider';
-import { OverrideBundleType, RegistryTypes } from '@polkadot/types/types';
 import { json } from 'express';
 
 import packageJSON from '../package.json';
+import { ApiPromiseRegistry } from './apiRegistry';
 import App from './App';
 import { getControllers } from './chains-config';
+import { assetHubSpecNames } from './chains-config';
 import { consoleOverride } from './logging/consoleOverride';
 import { Log } from './logging/Log';
 import { MetricsApp } from './metrics/index';
 import * as middleware from './middleware';
-import tempTypesBundle from './override-types/typesBundle';
 import { parseArgs } from './parseArgs';
 import { SidecarConfig } from './SidecarConfig';
+
+/*
+ * initApis function prepares the API registry and initializes the API
+ * it returns the specName of the main API to be used by sidecar
+ */
+async function initApis(): Promise<string> {
+	const { config } = SidecarConfig;
+	const { logger } = Log;
+
+	logger.info('Initializing APIs');
+
+	const requiredApis: {
+		url: string;
+		type?: 'relay' | 'assethub' | 'parachain';
+	}[] = [
+		{ url: config.SUBSTRATE.URL },
+		...config.SUBSTRATE.MULTI_CHAIN_URL.map((chain) => ({ url: chain.url, type: chain.type })),
+	].filter((apiOption) => !!apiOption.url);
+
+	// Create the API registry
+	const apis = await Promise.all(
+		requiredApis.map((apiUrl) => ApiPromiseRegistry.initApi(apiUrl.url, apiUrl.type || undefined)),
+	);
+
+	for (const api of apis) {
+		await api.isReady;
+	}
+
+	const specNames = [];
+
+	let isAssetHub = false;
+	let isAssetHubMigrated = false;
+	for (let i = 0; i < apis.length; i++) {
+		if (!apis[i]) {
+			logger.error('Failed to create API instance');
+		}
+		const api = apis[i];
+		// Gather some basic details about the node so we can display a nice message
+		const [chainName, { implName, specName }] = await Promise.all([
+			api.rpc.system.chain(),
+			api.rpc.state.getRuntimeVersion(),
+		]);
+
+		// This is assuming that the first requiredApi will be SUBSTRATE.URL
+		if (i === 0 && assetHubSpecNames.has(specName.toString().toLowerCase())) {
+			isAssetHub = true;
+
+			let stage;
+			if (api.query.ahMigrator) {
+				stage = await api.query.ahMigrator.ahMigrationStage();
+			}
+
+			if (stage && (stage as unknown as { isMigrationDone: boolean }).isMigrationDone) {
+				isAssetHubMigrated = true;
+			}
+
+			ApiPromiseRegistry.setAssetHubInfo({ isAssetHub, isAssetHubMigrated });
+		}
+
+		startUpPrompt(requiredApis[i].url, chainName.toString(), implName.toString());
+		specNames.push(specName.toString());
+	}
+
+	logger.info('All APIs initialized');
+	return specNames[0];
+}
 
 async function main() {
 	const { config } = SidecarConfig;
@@ -42,28 +106,6 @@ async function main() {
 	consoleOverride(logger);
 
 	logger.info(`Version: ${packageJSON.version}`);
-
-	const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
-	// Instantiate a web socket connection to the node and load types
-	const api = await ApiPromise.create({
-		provider: config.SUBSTRATE.URL.startsWith('http')
-			? new HttpProvider(config.SUBSTRATE.URL, undefined, CACHE_CAPACITY || 0)
-			: new WsProvider(config.SUBSTRATE.URL, undefined, undefined, undefined, CACHE_CAPACITY || 0),
-		/* eslint-disable @typescript-eslint/no-var-requires */
-		typesBundle: TYPES_BUNDLE ? (require(TYPES_BUNDLE) as OverrideBundleType) : (tempTypesBundle as OverrideBundleType),
-		typesChain: TYPES_CHAIN ? (require(TYPES_CHAIN) as Record<string, RegistryTypes>) : undefined,
-		typesSpec: TYPES_SPEC ? (require(TYPES_SPEC) as Record<string, RegistryTypes>) : undefined,
-		types: TYPES ? (require(TYPES) as RegistryTypes) : undefined,
-		/* eslint-enable @typescript-eslint/no-var-requires */
-	});
-
-	// Gather some basic details about the node so we can display a nice message
-	const [chainName, { implName, specName }] = await Promise.all([
-		api.rpc.system.chain(),
-		api.rpc.state.getRuntimeVersion(),
-	]);
-
-	startUpPrompt(config.SUBSTRATE.URL, chainName.toString(), implName.toString());
 
 	const preMiddlewares = [json({ limit: config.EXPRESS.MAX_BODY }), middleware.httpLoggerCreate(logger)];
 
@@ -80,9 +122,25 @@ async function main() {
 		metricsApp.listen();
 	}
 
+	const specNames = await initApis();
+
+	const pallets = [];
+
+	if (config.EXPRESS.INJECTED_CONTROLLERS) {
+		// Get the pallets from the API
+		const api = ApiPromiseRegistry.getApi(specNames);
+		if (api) {
+			const chainPallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+				(p) => p.name as string,
+			);
+
+			pallets.push(...chainPallets);
+		}
+	}
+
 	const app = new App({
 		preMiddleware: preMiddlewares,
-		controllers: getControllers(api, config, specName.toString()),
+		controllers: getControllers(config, specNames, pallets),
 		postMiddleware: [
 			middleware.txError,
 			middleware.httpError,
@@ -130,6 +188,7 @@ function startUpPrompt(url: string, chainName: string, implName: string) {
 
 process.on('SIGINT', function () {
 	console.log('Caught interrupt signal, exiting...');
+	// TODO: disconnnect all APIs
 	process.exit(0);
 });
 

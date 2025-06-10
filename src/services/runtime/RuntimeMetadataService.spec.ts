@@ -14,16 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
 import response from '../test-helpers/responses/runtime/responseV15.json';
 import { RuntimeMetadataService } from './RuntimeMetadataService';
 
-const runtimeMetadataService = new RuntimeMetadataService(defaultMockApi);
+const runtimeMetadataService = new RuntimeMetadataService('mock');
 
 describe('RuntimeMetadataService', () => {
 	describe('fetchMetadata', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => defaultMockApi);
 			expect(sanitizeNumbers(await runtimeMetadataService.fetchMetadata(blockHash789629))).toStrictEqual(response);
 		});
 	});

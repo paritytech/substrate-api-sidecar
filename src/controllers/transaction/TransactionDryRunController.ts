@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { BadRequest } from 'http-errors';
 
 import { TransactionDryRunService } from '../../services';
@@ -51,7 +50,7 @@ import AbstractController from '../AbstractController';
 export default class TransactionDryRunController extends AbstractController<TransactionDryRunService> {
 	static controllerName = 'TransactionDryRun';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/transaction/dry-run', new TransactionDryRunService(api));
 		this.initRoutes();
 	}

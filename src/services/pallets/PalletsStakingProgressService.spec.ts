@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 // Copyright 2017-2025 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
@@ -21,9 +22,16 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { polkadotRegistry } from '../../test-helpers/registries';
-import { activeEraAt, blockHash789629, defaultMockApi, erasStartSessionIndexAt } from '../test-helpers/mock';
+import {
+	activeEraAt,
+	blockHash100000,
+	blockHash789629,
+	defaultMockApi,
+	erasStartSessionIndexAt,
+} from '../test-helpers/mock';
 import { validators789629Hex } from '../test-helpers/mock/data/validators789629Hex';
 import palletsStakingProgress789629SResponse from '../test-helpers/responses/pallets/stakingProgress789629.json';
 import UnappliedSlashesResponse from '../test-helpers/responses/pallets/stakingProgressUnappliedSlashes.json';
@@ -52,6 +60,7 @@ const unappliedSlashesEntries = () => {
 const validatorCountAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
 
 const mockHistoricApi = {
+	...defaultMockApi,
 	consts: {
 		babe: {
 			epochDuration: polkadotRegistry.createType('u64', 2400),
@@ -76,6 +85,21 @@ const mockHistoricApi = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
 			unappliedSlashes: {
 				entries: unappliedSlashesEntries,
 			},
@@ -88,11 +112,6 @@ const mockApi = {
 	...defaultMockApi,
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
-
-/**
- * Mock PalletStakingProgressService instance.
- */
-const palletStakingProgressService = new PalletsStakingProgressService(mockApi);
 
 const unappliedSlashes = [
 	{
@@ -117,6 +136,7 @@ const unappliedSlashesEntriesUnappliedSlashes = () => {
 };
 
 const mockHistoricApiUnappliedSlashes = {
+	...defaultMockApi,
 	consts: {
 		babe: {
 			epochDuration: polkadotRegistry.createType('u64', 2400),
@@ -141,6 +161,21 @@ const mockHistoricApiUnappliedSlashes = {
 			eraElectionStatus: eraElectionStatusAt,
 			erasStartSessionIndex: erasStartSessionIndexAt,
 			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
 			unappliedSlashes: {
 				entries: unappliedSlashesEntriesUnappliedSlashes,
 			},
@@ -150,29 +185,168 @@ const mockHistoricApiUnappliedSlashes = {
 } as unknown as ApiDecoration<'promise'>;
 
 const mockApiUnappliedSlashes = {
-	...defaultMockApi,
-	at: (_hash: Hash) => mockHistoricApiUnappliedSlashes,
+	...{
+		...mockHistoricApiUnappliedSlashes,
+		query: {
+			...mockHistoricApiUnappliedSlashes.query,
+			staking: {
+				...mockHistoricApiUnappliedSlashes.query.staking,
+				unappliedSlashes: {
+					entries: unappliedSlashesEntriesUnappliedSlashes,
+				},
+			},
+		},
+	},
+	at: (_hash: Hash) => ({
+		...mockHistoricApiUnappliedSlashes,
+		query: {
+			...mockHistoricApiUnappliedSlashes.query,
+			staking: {
+				...mockHistoricApiUnappliedSlashes.query.staking,
+				unappliedSlashes: {
+					entries: unappliedSlashesEntriesUnappliedSlashes,
+				},
+			},
+		},
+	}),
 } as unknown as ApiPromise;
 
-/**
- * Mock PalletStakingProgressService instance.
- */
-const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService(mockApiUnappliedSlashes);
+const mockRCNextApi = {
+	...defaultMockApi,
+	consts: {
+		...defaultMockApi.consts,
+		babe: {
+			epochDuration: polkadotRegistry.createType('u64', 2400),
+		},
+	},
+	query: {
+		...defaultMockApi.query,
+		babe: {
+			currentSlot: currentSlotAt,
+			epochIndex: epochIndexAt,
+			genesisSlot: genesisSlotAt,
+		},
+		staking: undefined,
+		session: {
+			currentIndex: currentIndexAt,
+			validators: validatorsAt,
+		},
+	},
+	at: (_hash: Hash) => ({
+		...mockHistoricApi,
+		consts: {
+			...mockHistoricApi.consts,
+			babe: {
+				epochDuration: polkadotRegistry.createType('u64', 2400),
+			},
+		},
+		query: {
+			...mockHistoricApi.query,
+			babe: {
+				currentSlot: currentSlotAt,
+				epochIndex: epochIndexAt,
+				genesisSlot: genesisSlotAt,
+			},
+			staking: undefined,
+			session: {
+				currentIndex: currentIndexAt,
+				validators: validatorsAt,
+			},
+		},
+	}),
+} as unknown as ApiPromise;
+
+const mockAHHistoricApi = {
+	...mockHistoricApi,
+	consts: {
+		...mockHistoricApi.consts,
+		babe: null,
+		staking: {
+			electionLookAhead: polkadotRegistry.createType('BlockNumber'),
+			sessionsPerEra: polkadotRegistry.createType('SessionIndex', 6),
+		},
+	},
+	query: {
+		...mockHistoricApi.query,
+		session: null,
+		staking: {
+			activeEra: activeEraAt,
+			eraElectionStatus: eraElectionStatusAt,
+			erasStartSessionIndex: erasStartSessionIndexAt,
+			forceEra: forceEraAt,
+			bondedEras: () =>
+				Promise.resolve(
+					[
+						[40, 276],
+						[41, 282],
+						[42, 288],
+						[43, 294],
+						[44, 300],
+						[45, 306],
+						[46, 312],
+						[47, 318],
+						[48, 324],
+						[49, 330],
+					].map((el) => [polkadotRegistry.createType('u32', el[0]), polkadotRegistry.createType('u32', el[1])]),
+				),
+			unappliedSlashes: {
+				entries: unappliedSlashesEntries,
+			},
+			validatorCount: validatorCountAt,
+		},
+	},
+};
+
+const mockAHNextApi = {
+	...defaultMockApi,
+	consts: {
+		...mockHistoricApi.consts,
+		babe: null,
+	},
+	query: {
+		...defaultMockApi.query,
+		session: null,
+		staking: {
+			activeEra: activeEraAt,
+			eraElectionStatus: eraElectionStatusAt,
+			erasStartSessionIndex: erasStartSessionIndexAt,
+			forceEra: forceEraAt,
+			unappliedSlashes: {
+				entries: unappliedSlashesEntries,
+			},
+			validatorCount: validatorCountAt,
+		},
+	},
+	at: (_hash: Hash) => mockAHHistoricApi,
+} as unknown as ApiPromise;
 
 describe('PalletStakingProgressService', () => {
-	describe('derivePalletStakingProgress', () => {
+	beforeAll(() => {
+		jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+	});
+	describe('derivePalletStakingProgress before AHM', () => {
 		(mockHistoricApi.query.session.validators as unknown) = validatorsAt;
 
 		it('works when ApiPromise works (block 789629)', async () => {
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
+
 			expect(
 				sanitizeNumbers(await palletStakingProgressService.derivePalletStakingProgress(blockHash789629)),
 			).toStrictEqual(palletsStakingProgress789629SResponse);
 		});
 
 		it('throws when ErasStartSessionIndex.isNone', async () => {
+			(mockHistoricApi.query.staking.bondedEras as any) = () => Promise.resolve([] as any);
+
 			(mockHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', null));
-
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('EraStartSessionIndex is None when Some was expected.'),
 			);
@@ -183,7 +357,10 @@ describe('PalletStakingProgressService', () => {
 		it('throws when activeEra.isNone', async () => {
 			(mockHistoricApi.query.staking.activeEra as any) = () =>
 				Promise.resolve().then(() => polkadotRegistry.createType('Option<ActiveEraInfo>', null));
-
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('polkadot');
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('ActiveEra is None when Some was expected.'),
 			);
@@ -193,6 +370,176 @@ describe('PalletStakingProgressService', () => {
 		});
 
 		it('works with entries in unappliedSlashes', async () => {
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('polkadot');
+
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashes);
+			expect(
+				sanitizeNumbers(
+					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),
+				),
+			).toStrictEqual(UnappliedSlashesResponse);
+		});
+	});
+
+	describe('derivePalletStakingProgress after AHM', () => {
+		it('it throws if historicApi does not have staking', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const PalletStakingProgressService = new PalletsStakingProgressService('polkadot');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockRCNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
+				'Staking pallet not found for queried runtime',
+			);
+		});
+		it('it throws if sidecar is connected to AH and querying historical block', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash100000)).rejects.toThrow(
+				'At is currently unsupported for pallet staking validators connected to assethub',
+			);
+		});
+		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const PalletStakingProgressService = new PalletsStakingProgressService('statemine');
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			await expect(PalletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toThrow(
+				'Relay chain API not found',
+			);
+		});
+		it('works when ApiPromise works (block 789629)', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
+			// needs both RC and AH connection
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			expect(
+				sanitizeNumbers(await palletStakingProgressService.derivePalletStakingProgress(blockHash789629)),
+			).toStrictEqual(palletsStakingProgress789629SResponse);
+		});
+
+		it('throws when ErasStartSessionIndex.isNone', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			(mockAHHistoricApi.query.staking.bondedEras as any) = () => Promise.resolve().then(() => []);
+			(mockAHHistoricApi.query.staking.erasStartSessionIndex as any) = () =>
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<SessionIndex>', undefined));
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
+			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
+				new InternalServerError('EraStartSessionIndex is None when Some was expected.'),
+			);
+		});
+		it('throws when activeEra.isNone', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			(mockAHHistoricApi.query.staking.activeEra as any) = () =>
+				Promise.resolve().then(() => polkadotRegistry.createType('Option<ActiveEraInfo>', null));
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
+			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
+				new InternalServerError('ActiveEra is None when Some was expected.'),
+			);
+		});
+		it('works with entries in unappliedSlashes', async () => {
+			ApiPromiseRegistry.assetHubInfo = {
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			};
+			/**
+			 * Mock PalletStakingProgressService instance.
+			 */
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashes);
+			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
+			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
+				return [
+					{
+						specName: 'polkadot',
+						api: mockRCNextApi,
+					},
+				] as unknown as { specName: string; api: ApiPromise }[];
+			});
+			(mockApiUnappliedSlashes.query.staking.unappliedSlashes.entries as any) = () =>
+				Promise.resolve([['5640', unappliedSlashes]]);
+			(mockApiUnappliedSlashes.query.session as any) = null;
+			(mockApiUnappliedSlashes.consts.session as any) = null;
+
+			const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('statemine');
 			expect(
 				sanitizeNumbers(
 					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),

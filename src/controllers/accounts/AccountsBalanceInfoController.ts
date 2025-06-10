@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
@@ -58,7 +57,7 @@ import AbstractController from '../AbstractController';
 export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
 	static controllerName = 'AccountsBalanceInfo';
 	static requiredPallets = [['Balances', 'System']];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/accounts/:address/balance-info', new AccountsBalanceInfoService(api));
 		this.initRoutes();
 	}

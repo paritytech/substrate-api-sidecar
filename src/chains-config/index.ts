@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { controllers } from '../controllers';
@@ -87,20 +86,22 @@ export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'coretime-kusama': coretimeControllers,
 };
 
+export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint']);
+
 /**
  * Return an array of instantiated controller instances based off of a `specName`.
  *
  * @param api ApiPromise to inject into controllers
- * @param implName
+ * @param specName spacName of the chain to get controllers and options for
  */
-export function getControllersForSpec(api: ApiPromise, specName: string): AbstractController<AbstractService>[] {
+export function getControllersForSpec(specName: string): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(api, specToControllerMap[specName]);
+		return getControllersFromConfig(specName, specToControllerMap[specName]);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(api, defaultControllers);
+	return getControllersFromConfig(specName, defaultControllers);
 }
 
 /**
@@ -110,11 +111,11 @@ export function getControllersForSpec(api: ApiPromise, specName: string): Abstra
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
+function getControllersFromConfig(specName: string, config: ControllerConfig) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](api, config.options));
+		acc.push(new controllers[controller](specName, config.options));
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
@@ -126,14 +127,13 @@ function getControllersFromConfig(api: ApiPromise, config: ControllerConfig) {
  * @param api ApiPromise to inject into controllers
  * @param specName specName of chain to get options
  */
-
-export const getControllersByPallets = (pallets: string[], api: ApiPromise, specName: string) => {
+export const getControllersByPallets = (specName: string, pallets: string[]) => {
 	const controllersSet: AbstractController<AbstractService>[] = [];
 	const config = specToControllerMap?.[specName]?.options || defaultControllers?.options;
 
 	Object.values(controllers).forEach((controller) => {
 		if (controller.canInjectByPallets(pallets)) {
-			controllersSet.push(new controller(api, config));
+			controllersSet.push(new controller(specName, config));
 		}
 	});
 
@@ -141,17 +141,16 @@ export const getControllersByPallets = (pallets: string[], api: ApiPromise, spec
 };
 
 export const getControllers = (
-	api: ApiPromise,
 	config: ISidecarConfig,
 	specName: string,
+	pallets: string[],
 ): AbstractController<AbstractService>[] => {
+	if (!specName || !specName.length) {
+		throw new Error('specName is required');
+	}
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
-		return getControllersByPallets(
-			(api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map((p) => p.name as string),
-			api,
-			specName,
-		);
+		return getControllersByPallets(specName, pallets);
 	} else {
-		return getControllersForSpec(api, specName);
+		return getControllersForSpec(specName);
 	}
 };

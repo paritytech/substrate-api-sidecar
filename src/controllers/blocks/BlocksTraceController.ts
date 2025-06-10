@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { RequestHandler } from 'express-serve-static-core';
 
 import { validateBoolean } from '../../middleware';
@@ -25,7 +24,7 @@ import BlocksController from './BlocksController';
 export default class BlocksTraceController extends AbstractController<BlocksTraceService> {
 	static controllerName = 'BlocksTrace';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/experimental/blocks', new BlocksTraceService(api));
 		this.initRoutes();
 	}

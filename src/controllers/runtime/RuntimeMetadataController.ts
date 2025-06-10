@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
 
@@ -42,7 +41,7 @@ import AbstractController from '../AbstractController';
 export default class RuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
 	static controllerName = 'RuntimeMetadata';
 	static requiredPallets = [];
-	constructor(api: ApiPromise) {
+	constructor(api: string) {
 		super(api, '/runtime/metadata', new RuntimeMetadataService(api));
 		this.initRoutes();
 	}
@@ -63,7 +62,6 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 	 */
 	private getMetadata: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
 		const hash = await this.getHashFromAt(at);
-
 		let historicApi;
 		if (at) {
 			historicApi = await this.api.at(hash);
@@ -107,7 +105,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 
 		let availableVersions = [];
 		try {
-			availableVersions = (await api.call.metadata.metadataVersions()).toJSON() as unknown as Vec<u32>;
+			availableVersions = (await this.api.call.metadata.metadataVersions()).toJSON() as unknown as Vec<u32>;
 		} catch {
 			throw new Error(`Function 'api.call.metadata.metadataVersions()' is not available at this block height.`);
 		}
@@ -115,7 +113,7 @@ export default class RuntimeMetadataController extends AbstractController<Runtim
 			throw new Error(`Version ${version} of Metadata is not available.`);
 		}
 
-		const registry = api.registry;
+		const registry = this.api.registry;
 		const metadata = await this.service.fetchMetadataVersioned(api, version);
 
 		RuntimeMetadataController.sanitizedSend(res, metadata, {

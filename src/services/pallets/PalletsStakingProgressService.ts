@@ -17,11 +17,13 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
-import { AnyJson } from '@polkadot/types/types';
+import { AnyJson, ITuple } from '@polkadot/types/types';
+import { u32, Vec } from '@polkadot/types-codec';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
+import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingProgressService extends AbstractService {
@@ -32,12 +34,38 @@ export class PalletsStakingProgressService extends AbstractService {
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
 		const { api } = this;
+		const blockHead = await api.rpc.chain.getFinalizedHead();
+		const isHead = blockHead.hash.toHex() === hash.hash.toHex();
+		// if at head and connected to RC, connect to AH, else continue
+		// specName will be the one of the main connection, compare to get the right API to use
+		// session is always on relay chain
+		// staking is on AH
+
+		if (this.assetHubInfo.isAssetHub && !isHead) {
+			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
+		}
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
+			throw new Error('Relay chain API not found');
+		}
+
 		const historicApi = await api.at(hash);
 
+		if (historicApi.query.staking === undefined) {
+			throw new Error('Staking pallet not found for queried runtime');
+		}
+		const sessionValidators = this.assetHubInfo.isAssetHub
+			? RCApiPromise![0].api.query.session.validators
+			: historicApi.query.session.validators;
+
+		if (!sessionValidators) {
+			throw new Error('Session pallet not found for queried runtime');
+		}
 		const [validatorCount, forceEra, validators, { number }] = await Promise.all([
 			historicApi.query.staking.validatorCount(),
 			historicApi.query.staking.forceEra(),
-			historicApi.query.session.validators(),
+			sessionValidators(),
 			api.rpc.chain.getHeader(hash),
 		]);
 
@@ -51,8 +79,9 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (historicApi.query.staking.eraElectionStatus) {
 			eraElectionPromise = await historicApi.query.staking.eraElectionStatus();
 		}
+
 		const [eraElectionStatus, { eraLength, eraProgress, sessionLength, sessionProgress, activeEra }] =
-			await Promise.all([eraElectionPromise, this.deriveSessionAndEraProgress(historicApi)]);
+			await Promise.all([eraElectionPromise, this.deriveSessionAndEraProgress(historicApi, RCApiPromise?.[0].api)]);
 
 		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes.entries();
 
@@ -85,7 +114,7 @@ export class PalletsStakingProgressService extends AbstractService {
 			? nextSession // there is a new era every session
 			: eraLength.sub(eraProgress).add(currentBlockNumber); // the nextActiveEra is at the end of this era
 
-		const electionLookAhead = await this.deriveElectionLookAhead(api, historicApi, hash);
+		const electionLookAhead = await this.deriveElectionLookAhead(historicApi, RCApiPromise?.[0].api);
 
 		const nextCurrentEra = nextActiveEra.sub(currentBlockNumber).sub(sessionLength).gt(new BN(0))
 			? nextActiveEra.sub(sessionLength) // current era simply one session before active era
@@ -123,18 +152,27 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param api ApiPromise with ensured metadata
 	 * @param hash `BlockHash` to make call at
 	 */
-	private async deriveSessionAndEraProgress(historicApi: ApiDecoration<'promise'>): Promise<{
+	private async deriveSessionAndEraProgress(
+		historicApi: ApiDecoration<'promise'>,
+		RCApi?: ApiDecoration<'promise'>,
+	): Promise<{
 		eraLength: BN;
 		eraProgress: BN;
 		sessionLength: BN;
 		sessionProgress: BN;
 		activeEra: EraIndex;
 	}> {
+		const babe = RCApi ? RCApi.query.babe : historicApi.query.babe;
+		let session = historicApi.query.session;
+		if (RCApi) {
+			session = RCApi.query.session;
+		}
+
 		const [currentSlot, epochIndex, genesisSlot, currentIndex, activeEraOption] = await Promise.all([
-			historicApi.query.babe.currentSlot(),
-			historicApi.query.babe.epochIndex(),
-			historicApi.query.babe.genesisSlot(),
-			historicApi.query.session.currentIndex(),
+			babe.currentSlot(),
+			babe.epochIndex(),
+			babe.genesisSlot(),
+			session.currentIndex(),
 			historicApi.query.staking.activeEra(),
 		]);
 
@@ -144,13 +182,20 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 		const { index: activeEra } = activeEraOption.unwrap();
 
-		const activeEraStartSessionIndexOption = await historicApi.query.staking.erasStartSessionIndex(activeEra);
-		if (activeEraStartSessionIndexOption.isNone) {
+		const activeEraStartSessionIndexVec = await historicApi.query.staking.bondedEras<Vec<ITuple<[u32, u32]>>>();
+
+		let activeEraStartSessionIndex;
+		for (const [era, idx] of activeEraStartSessionIndexVec) {
+			if (era && era.eq(activeEra) && idx) {
+				activeEraStartSessionIndex = idx;
+			}
+		}
+
+		if (!activeEraStartSessionIndex) {
 			throw new InternalServerError('EraStartSessionIndex is None when Some was expected.');
 		}
-		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
 
-		const { epochDuration: sessionLength } = historicApi.consts.babe;
+		const { epochDuration: sessionLength } = RCApi ? RCApi.consts.babe : historicApi.consts.babe;
 		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(sessionLength);
 		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
 		const sessionProgress = currentSlot.sub(epochStartSlot);
@@ -175,17 +220,17 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param api ApiPromise with ensured metadata
 	 * @param hash `BlockHash` to make call at
 	 */
-	private async deriveElectionLookAhead(
-		api: ApiPromise,
-		historicApi: ApiDecoration<'promise'>,
-		hash: BlockHash,
-	): Promise<BN> {
+	private async deriveElectionLookAhead(historicApi: ApiDecoration<'promise'>, RCApi?: ApiPromise): Promise<BN> {
 		if (historicApi.consts.staking.electionLookahead) {
 			return historicApi.consts.staking.electionLookahead as unknown as BN;
 		}
+		let specName = this.specName;
 
-		const { specName } = await api.rpc.state.getRuntimeVersion(hash);
-		const { epochDuration } = historicApi.consts.babe;
+		if (RCApi) {
+			specName = await RCApi.rpc.state.getRuntimeVersion().then(({ specName }) => specName.toString());
+		}
+
+		const { epochDuration } = RCApi ? RCApi.consts.babe : historicApi.consts.babe;
 
 		// TODO - create a configurable epochDivisor env for a more generic solution
 		const epochDurationDivisor =

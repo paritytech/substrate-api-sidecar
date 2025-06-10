@@ -93,7 +93,7 @@ enum Event {
 
 export class BlocksService extends AbstractService {
 	constructor(
-		api: ApiPromise,
+		api: string,
 		private minCalcFeeRuntime: IOption<number>,
 		private hasQueryFeeApi: QueryFeeDetailsCache,
 	) {
@@ -796,8 +796,7 @@ export class BlocksService extends AbstractService {
 	 * @param hash `BlockHash` of the block to fetch.
 	 */
 	async fetchBlockRaw(hash: BlockHash): Promise<IBlockRaw> {
-		const { api } = this;
-		const { block } = await api.rpc.chain.getBlock(hash);
+		const { block } = await this.api.rpc.chain.getBlock(hash);
 
 		const { parentHash, number, stateRoot, extrinsicsRoot, digest } = block.header;
 		const { extrinsics } = block;

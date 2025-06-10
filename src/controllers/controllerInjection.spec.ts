@@ -24,6 +24,7 @@ const mockSidecarConfig: ISidecarConfig = {
 	},
 	SUBSTRATE: {
 		URL: '',
+		MULTI_CHAIN_URL: [],
 		TYPES_BUNDLE: '',
 		TYPES_CHAIN: '',
 		TYPES_SPEC: '',
@@ -53,7 +54,7 @@ const mockSidecarConfig: ISidecarConfig = {
 const chainsToNode: Record<string, string> = {
 	'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
 	kusama: 'wss://kusama-rpc.dwellir.com',
-	'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
+	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
 	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
 	polkadot: 'wss://polkadot-rpc.dwellir.com',
@@ -103,9 +104,10 @@ describe('controllerInjection', () => {
 		} finally {
 			await api?.disconnect(); // Close WebSocket connection
 		}
-
+		const pallets = (api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[]).map(
+			(p) => p.name as string,
+		);
 		const controllers = getControllers(
-			api,
 			{
 				...mockSidecarConfig,
 				EXPRESS: {
@@ -113,14 +115,14 @@ describe('controllerInjection', () => {
 					INJECTED_CONTROLLERS: true,
 				},
 			},
-			'kusama_go_default',
+			'mock_spec',
+			pallets,
 		);
 
 		expect(controllers).toBeDefined();
 		expect(controllers).not.toHaveLength(0);
 
 		const controllersDefault = getControllers(
-			api,
 			{
 				...mockSidecarConfig,
 				EXPRESS: {
@@ -128,7 +130,8 @@ describe('controllerInjection', () => {
 					INJECTED_CONTROLLERS: false,
 				},
 			},
-			'kusama_go_default',
+			'mock_spec',
+			[],
 		);
 
 		expect(controllersDefault).toBeDefined();

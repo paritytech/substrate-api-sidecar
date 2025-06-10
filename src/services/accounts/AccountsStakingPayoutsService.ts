@@ -47,6 +47,7 @@ import type {
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
@@ -141,9 +142,24 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		historicApi: ApiDecoration<'promise'>,
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
-		const { number } = await api.rpc.chain.getHeader(hash);
+
+		const head = await api.rpc.chain.getFinalizedHead();
+		const isHead = head.hash.toString() === hash.hash.toString();
+
+		if (this.assetHubInfo.isAssetHub && !isHead) {
+			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
+		}
+		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
+
+		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
+			throw new Error('Relay chain API not found');
+		}
 
 		const sanitizedEra = era < 0 ? 0 : era;
+		const [{ number }, runtimeInfo] = await Promise.all([
+			api.rpc.chain.getHeader(hash),
+			this.api.rpc.state.getRuntimeVersion(hash),
+		]);
 
 		const at: IBlockInfo = {
 			height: number.unwrap().toString(10),
@@ -152,7 +168,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
-		const runtimeInfo = await this.api.rpc.state.getRuntimeVersion(at.hash);
 		const isKusama = runtimeInfo.specName.toString().toLowerCase() === 'kusama';
 
 		/**
@@ -161,6 +176,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		 * to maintain historical integrity we need to make a check to cover both the
 		 * storage query and the consts.
 		 */
+
 		let historyDepth: u32 = api.registry.createType('u32', 84);
 		if (historicApi.consts.staking.historyDepth) {
 			historyDepth = historicApi.consts.staking.historyDepth;
@@ -182,6 +198,8 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					'than or equal to current_era - history_depth.',
 			);
 		}
+
+		// ARRIVED HERE
 
 		// Fetch general data about the era
 		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, sanitizedEra, at, isKusama);
@@ -286,8 +304,15 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					// to fetch the `Rewards` event at that block.
 					nextEraStartBlock = era === 0 ? earlyErasBlockInfo[era + 1].start : earlyErasBlockInfo[era].start;
 				} else {
+					const RCApiPromise = ApiPromiseRegistry.getApiByType('relay');
+					if (!RCApiPromise?.length) {
+						throw new Error('Relay chain API not found');
+					}
+					const relayApi = RCApiPromise[0].api;
 					const sessionDuration = historicApi.consts.staking.sessionsPerEra.toNumber();
-					const epochDuration = historicApi.consts.babe.epochDuration.toNumber();
+					const epochDuration = relayApi
+						? relayApi.consts.babe.epochDuration.toNumber()
+						: historicApi.consts.babe.epochDuration.toNumber();
 					eraDurationInBlocks = sessionDuration * epochDuration;
 				}
 				const nextEraStartBlockHash: BlockHash = await this.api.rpc.chain.getBlockHash(nextEraStartBlock);
@@ -454,7 +479,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			} else if (eraIndex.toNumber() < 518 && isKusama) {
 				indexOfEra = eraIndex.toNumber();
 			} else {
-				continue;
+				indexOfEra = -1;
 			}
 			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
@@ -507,6 +532,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		let validatorLedger;
 		let commissionPromise;
 		const ancient: boolean = era < 518;
+
 		if (validatorId in validatorLedgerCache) {
 			validatorLedger = validatorLedgerCache[validatorId];
 			let prefs: PalletStakingValidatorPrefs | ValidatorPrefsWithCommission;
@@ -621,7 +647,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		if (historicApi.query.staking.erasStakersClipped) {
 			storageKeys = await historicApi.query.staking.erasStakersClipped.entries(eraIndex);
-		} else {
+		} else if (historicApi.query.staking.currentElected) {
 			const validators: Vec<AccountId> = (await historicApi.query.staking.currentElected()) as Vec<AccountId>;
 
 			const validatorId: AccountId[] = [];

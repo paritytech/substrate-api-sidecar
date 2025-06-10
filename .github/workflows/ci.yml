@@ -155,8 +155,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - chain-name: westend
-            chain-url: wss://westend-rpc.polkadot.io
+          # Disabled westend in https://github.com/paritytech/substrate-api-sidecar/pull/1636
+          # - chain-name: westend
+          #   chain-url: wss://westend-rpc.polkadot.io
           - chain-name: kusama
             chain-url: wss://apps-kusama-rpc.polkadot.io
           - chain-name: polkadot
