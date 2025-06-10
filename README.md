@@ -171,9 +171,10 @@ For more information on our configuration manager visit its readme [here](https:
 
 - `SAS_SUBSTRATE_URL`: URL to which the RPC proxy will attempt to connect to, defaults to
     `ws://127.0.0.1:9944`. Accepts both a websocket, and http URL.
-- `SAS_SUBSTRATE_MULTI_CHAIN_URL`: JSON array of chain configurations, each containing a `url` and `type` property. The `type` can be 'relay', 'assethub', 'parachain', or undefined. Currently used for Asset Hub migration to query staking information and additional session/babe information from the relay chain. In future releases, this will also be used to improve performance by allowing Sidecar to retrieve information from multiple nodes. Example:
+- `SAS_SUBSTRATE_MULTI_CHAIN_URL`: JSON array of chain configurations, each containing a `url` and `type` property. The `type` can be 'relay', 'assethub', 'parachain', or undefined. Currently used for Asset Hub migration to query staking information and additional session/babe information from the relay chain. In future releases, this will also be used to improve performance by allowing Sidecar to retrieve information from multiple nodes. This environment variable should be used in combination with the `SAS_SUBSTRATE_URL` variable. Example:
     ```bash
-    export SAS_SUBSTRATE_MULTI_CHAIN_URL='[{"url":"wss://westend-rpc.polkadot.io","type":"relay"}]'
+    SAS_SUBSTRATE_URL=wss://westend-asset-hub-rpc.polkadot.io
+    SAS_SUBSTRATE_MULTI_CHAIN_URL='[{"url":"wss://westend-rpc.polkadot.io","type":"relay"}]'
     ```
 
 ### Metrics Server
