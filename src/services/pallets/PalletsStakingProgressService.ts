@@ -17,7 +17,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
-import { AnyJson } from '@polkadot/types/types';
+import { AnyJson, ITuple } from '@polkadot/types/types';
+import { u32, Vec } from '@polkadot/types-codec';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
@@ -181,11 +182,18 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 		const { index: activeEra } = activeEraOption.unwrap();
 
-		const activeEraStartSessionIndexOption = await historicApi.query.staking.erasStartSessionIndex(activeEra);
-		if (activeEraStartSessionIndexOption.isNone) {
+		const activeEraStartSessionIndexVec = await historicApi.query.staking.bondedEras<Vec<ITuple<[u32, u32]>>>();
+
+		let activeEraStartSessionIndex;
+		for (const [era, idx] of activeEraStartSessionIndexVec) {
+			if (era && era.eq(activeEra) && idx) {
+				activeEraStartSessionIndex = idx;
+			}
+		}
+
+		if (!activeEraStartSessionIndex) {
 			throw new InternalServerError('EraStartSessionIndex is None when Some was expected.');
 		}
-		const activeEraStartSessionIndex = activeEraStartSessionIndexOption.unwrap();
 
 		const { epochDuration: sessionLength } = RCApi ? RCApi.consts.babe : historicApi.consts.babe;
 		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(sessionLength);
