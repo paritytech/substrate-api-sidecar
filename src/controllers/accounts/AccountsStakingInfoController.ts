@@ -103,13 +103,9 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		res,
 	): Promise<void> => {
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
-
-		if (at && isAssetHubMigrated) {
-			throw Error(`Query Parameter 'at' is not supported for /staking-info`);
-		}
-
 		const hash = await this.getHashFromAt(at);
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
+
 		if (isAssetHubMigrated) {
 			AccountsStakingInfoController.sanitizedSend(
 				res,
