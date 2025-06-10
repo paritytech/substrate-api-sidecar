@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1749438701746,
+  "lastUpdate": 1749576635104,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -9557,6 +9557,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 387.92,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "47201679+TarikGul@users.noreply.github.com",
+            "name": "Tarik Gul",
+            "username": "TarikGul"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "819c3df110683a14b8198cd84570ca446c692a53",
+          "message": "feat: AHM support for staking routes (part 1) (#1636)\n\n* Add initial multi chain api\n\n* Correctly pass multiChainApi to controllers as part of the config options\n\n* Add correct structure to service\n\n* Add Multi chain url to specs\n\n* Fv ahm registry (#1637)\n\n* init ApiPromiseRegistry\n\n* update gitignore\n\n* initial option for ApiPromiseRegistry use in controllers and Service\n\n* update registry for any given url\n\n* updated controllers to have api from abstract controller\n\n* updated tests to use apiPromiseRegistry\n\n* updated tests to use apiPromiseRegistry\n\n* injected controllers tests\n\n* cleanup\n\n* cleanup\n\n* fix import\n\n* cleanup\n\n* search for chains by type if available\n\n* Fv ahm fix (#1639)\n\n* linting and building\n\n* removed slow kilt endpoint in injectioed controllers tests\n\n* Fv ahm impl (#1641)\n\n* adding at exclusion for assethub\n\n* added exclusions to pallet staking endpoints\n\n* added initial exclusion to queries\n\n* palletsStakingValidators multichain impl in AH connection\n\n* palletsStakingValidators multichain impl in AH connection\n\n* palletsStakingProgress multichain impl in AH connection\n\n* move historicApi instantiation and remove logs\n\n* move historicApi instantiation and remove logs\n\n* init conversion ahm for stakingPayouts\n\n* Add staking-info support (#1645)\n\n* Add staking-info support\n\n* add AssetInfo to ApiPromiseRegistry\n\n* Add Staking-info support to tg-ahm (#1658)\n\n* Add staking-info support\n\n* add AssetInfo to ApiPromiseRegistry\n\n* Add isClaimedRewards to assetHubn\n\n* Fix truthy value\n\n* Fix linter\n\n* Fix candidate receipt\n\n* Type assertion to ensure no type error\n\n* Fix type assertion in linter\n\n* Add SAS_SUBSTRATE_MULTI_CHAIN_URL to readme\n\n* Fix chain config and checking length of claimed rewards\n\n* Fix use of slashing spans, and fix tests\n\n* Fv ahm staking (#1646)\n\n* Fix yarn.lock\n\n* fix yarn issue with chopsticks\n\n* Fix last merge conflict markers\n\n* remove rouge console\n\n* Fix remaining dep issues and cleanup options\n\n* Fix payouts\n\n* Fix staking-info for claimed rewards\n\n* Add notes\n\n* Fix rcApi to ensure it errors when to rcApi is found, and fix indexEraOf\n\n* Fix pallets staking progres\n\n* Update README\n\n* fix staking progress tests (#1669)\n\n* Disabling westend e2e tests\n\n---------\n\nCo-authored-by: Filippo <filippo@parity.io>",
+          "timestamp": "2025-06-10T12:56:35-04:00",
+          "tree_id": "a2dc33d73bf15e4f043e3020682f65586c301797",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/819c3df110683a14b8198cd84570ca446c692a53"
+        },
+        "date": 1749576633410,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 129.7,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 156.76,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 180.76,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 3051.19,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.42,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.4,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1500.51,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 127.14,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 700.26,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 163.05,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 95.59,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 768.71,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 157.28,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 119.13,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 102.99,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 111.61,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 100.51,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 111.95,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 424.94,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 141.22,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 194.99,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 137.75,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 154.95,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 129.7,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 135.1,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 205.48,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 104.2,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 105.2,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 220.73,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 220.1,
             "unit": "ms"
           }
         ]
