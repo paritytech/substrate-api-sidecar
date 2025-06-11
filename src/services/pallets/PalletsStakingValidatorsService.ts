@@ -83,6 +83,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	}
 
 	/**
+	 * Get the active validators given an era.
 	 *
 	 * @param historicApi
 	 */
