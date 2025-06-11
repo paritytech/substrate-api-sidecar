@@ -142,13 +142,6 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	): Promise<IAccountStakingPayouts> {
 		const { api } = this;
 
-		const head = await api.rpc.chain.getFinalizedHead();
-		const isHead = head.hash.toString() === hash.hash.toString();
-
-		if (this.assetHubInfo.isAssetHub && !isHead) {
-			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
-		}
-
 		const sanitizedEra = era < 0 ? 0 : era;
 		const [{ number }, runtimeInfo] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
