@@ -21,6 +21,10 @@
 
 <br /><br />
 
+## NOTICE
+
+For the Asset hub migration please refer to the guide in [guides/ASSET_HUB_MIGRATION.md](guides/ASSET_HUB_MIGRATION.md)
+
 ## Prerequisites
 
 ### <= v15.0.0
