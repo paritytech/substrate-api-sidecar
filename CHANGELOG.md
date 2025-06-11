@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.2.2..v20.3.0) (2025-06-11)
+
+### Features
+
+- feat: AHM support for staking routes (part 1) ([#1636](https://github.com/paritytech/substrate-api-sidecar/pull/1636)) ([819c3df](https://github.com/paritytech/substrate-api-sidecar/commit/819c3df110683a14b8198cd84570ca446c692a53))
+    - This also introduces the addition of `SAS_SUBSTRATE_MULTI_CHAIN_URL`
+- feat: Add historic compatibility to staking AHM (part 2) ([#1671](https://github.com/paritytech/substrate-api-sidecar/pull/1671)) ([7c29820](https://github.com/paritytech/substrate-api-sidecar/commit/7c29820f934f671cff6b0d716876193ac4e3312c))
+
+### Fix
+
+- fix: add xcmVersion in DryRunCall ([#1649](https://github.com/paritytech/substrate-api-sidecar/pull/1649)) ([b2fee7d](https://github.com/paritytech/substrate-api-sidecar/commit/b2fee7d720ca00d27546e71c43bbdb1f436b1293))
+- fix: Polymesh chain spec names + add controllers ([31655](https://github.com/paritytech/substrate-api-sidecar/pull/1655)) ([]())
+
+### Chores
+
+- chore(deps): bump @substrate/calc from 0.3.1 to 0.3.2 ([#1634](https://github.com/paritytech/substrate-api-sidecar/pull/1634)) ([3310e20](https://github.com/paritytech/substrate-api-sidecar/commit/3310e20c8932162b82102b4d329da5f8e509f909))
+- chore(deps): bump express from 5.0.1 to 5.1.0 ([#1633](https://github.com/paritytech/substrate-api-sidecar/pull/1633)) ([6b43d6f](https://github.com/paritytech/substrate-api-sidecar/commit/6b43d6fa4c8f6a828a9b895ff110707e89b20355))
+- chore(deps): bump docker/build-push-action from 6.15.0 to 6.16.0 ([#1640](https://github.com/paritytech/substrate-api-sidecar/pull/1640)) ([9cc1e37](https://github.com/paritytech/substrate-api-sidecar/commit/9cc1e3787834cc1418fe9e4f4ee7ac368e5f4612))
+- chore(deps): bump the pjs group across 1 directory with 7 updates ([#1638](https://github.com/paritytech/substrate-api-sidecar/pull/1638)) ([e6e91f0](https://github.com/paritytech/substrate-api-sidecar/commit/e6e91f048cc8bda813b8b31191cb8078081889c0))
+- chore(deps): bump http-proxy-middleware from 2.0.7 to 2.0.9 in /docs ([#1643](https://github.com/paritytech/substrate-api-sidecar/pull/1643)) ([9b4aa7e](https://github.com/paritytech/substrate-api-sidecar/commit/9b4aa7e466b52876c6cf4f6c048a15f7327de8dd))
+- chore(deps): bump the pjs group with 5 updates ([#1648](https://github.com/paritytech/substrate-api-sidecar/pull/1648)) ([8e4051d](https://github.com/paritytech/substrate-api-sidecar/commit/8e4051d3d5db0ecffa14d21f46d5cc1651fcf2f7))
+- chore(deps): bump docker/build-push-action from 6.16.0 to 6.17.0 ([#1650](https://github.com/paritytech/substrate-api-sidecar/pull/1650)) ([faa9cf1](https://github.com/paritytech/substrate-api-sidecar/commit/faa9cf1032d6dd231092fc01f0df5048c8b119cb))
+- chore(deps-dev): bump @types/express from 5.0.1 to 5.0.2 ([#1651](https://github.com/paritytech/substrate-api-sidecar/pull/1651)) ([46c2d32](https://github.com/paritytech/substrate-api-sidecar/commit/46c2d322d59005aff4cea3dd4441678d525090aa))
+- chore(deps): bump docker/build-push-action from 6.17.0 to 6.18.0 ([#1654](https://github.com/paritytech/substrate-api-sidecar/pull/1654)) ([23f536f](https://github.com/paritytech/substrate-api-sidecar/commit/23f536fa7aa09852e2aaa37f14fac7e503ff683b))
+- chore(deps): bump the pjs group with 7 updates ([#1652](https://github.com/paritytech/substrate-api-sidecar/pull/1652)) ([6ffa1aa](https://github.com/paritytech/substrate-api-sidecar/commit/6ffa1aa0bd2128ee181336fb81e1e7bfa614605b))
+- chore(deps): update polkadot-js deps to v16.0.1 ([#1656](https://github.com/paritytech/substrate-api-sidecar/pull/1656)) ([e4c4d42](https://github.com/paritytech/substrate-api-sidecar/commit/e4c4d42ca8f95a259eb548a9497a39ca4bf7f576))
+- chore(deps): bump the pjs group with 5 updates ([#1657](https://github.com/paritytech/substrate-api-sidecar/pull/1657)) ([549bc51](https://github.com/paritytech/substrate-api-sidecar/commit/549bc519a4f09d31b009bac692ac75bc6bba5f3d))
+- chore(deps-dev): bump webpack-dev-server from 5.2.0 to 5.2.1 in /docs ([#1659](https://github.com/paritytech/substrate-api-sidecar/pull/1659)) ([fa64739](https://github.com/paritytech/substrate-api-sidecar/commit/fa64739efa67675e79dc45393c91c9968a0231ea))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1005001
+- Kusama v1005001
+- Westend v1018011
+
+
 ## [20.2.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.2.1..v20.2.2) (2025-04-11)
 
 ### Fix
