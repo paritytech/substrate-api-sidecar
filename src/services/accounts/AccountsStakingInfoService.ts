@@ -27,7 +27,6 @@ import type {
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
-import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
@@ -41,13 +40,6 @@ export class AccountsStakingInfoService extends AbstractService {
 	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		const relayChain = ApiPromiseRegistry.getApiByType('relay');
-
-		if (!relayChain?.length) {
-			throw new Error('Relay chain API not found');
-		}
-
-		const rcApi = relayChain[0].api;
 
 		if (!historicApi.query.staking) {
 			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);
@@ -71,10 +63,9 @@ export class AccountsStakingInfoService extends AbstractService {
 		}
 
 		const controller = controllerOption.unwrap();
-		const [stakingLedgerOption, rewardDestination, slashingSpansOption] = await Promise.all([
+		const [stakingLedgerOption, rewardDestination] = await Promise.all([
 			historicApi.query.staking.ledger(controller) as unknown as Option<PalletStakingStakingLedger>,
 			historicApi.query.staking.payee(stash),
-			rcApi.query.staking.slashingSpans(stash),
 		]).catch((err: Error) => {
 			throw this.createHttpErrorForAddr(stash, err);
 		});
@@ -87,12 +78,12 @@ export class AccountsStakingInfoService extends AbstractService {
 			);
 		}
 
-		const [isValidator, nominations, currentEraOption] = await Promise.all([
-			rcApi.query.session ? ((await rcApi.query.session.validators()).toHuman() as string[]).includes(stash) : false,
+		const [validators, nominations, currentEraOption] = await Promise.all([
+			historicApi.query.staking.validators.entries(),
 			historicApi.query.staking.nominators ? (await historicApi.query.staking.nominators(stash)).unwrapOr(null) : null,
 			historicApi.query.staking.currentEra(),
 		]);
-		const numSlashingSpans = slashingSpansOption.isSome ? slashingSpansOption.unwrap().prior.length + 1 : 0;
+		const isValidator = validators.map(([key, _]) => key.args[0].toString()).includes(stash);
 
 		if (includeClaimedRewards) {
 			// Initializing two arrays to store the status of claimed rewards per era for validators and for nominators.
@@ -146,7 +137,7 @@ export class AccountsStakingInfoService extends AbstractService {
 				at,
 				controller,
 				rewardDestination,
-				numSlashingSpans,
+				numSlashingSpans: 0,
 				nominations,
 				staking: {
 					stash: stakingLedger.stash,
@@ -162,7 +153,7 @@ export class AccountsStakingInfoService extends AbstractService {
 			at,
 			controller,
 			rewardDestination,
-			numSlashingSpans,
+			numSlashingSpans: 0,
 			nominations,
 			staking: {
 				stash: stakingLedger.stash,

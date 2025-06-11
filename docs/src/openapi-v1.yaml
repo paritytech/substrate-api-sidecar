@@ -2273,8 +2273,11 @@ paths:
       - pallets
       summary: Get progress on the general Staking pallet system.
       description: Returns information on the progress of key components of the
-        staking system and estimates of future points of interest. Replaces
-        `/staking-info` from versions < v1.0.0.
+        staking system and estimates of future points of interest. If you are querying
+        from Asset Hub for staking progress, this endpoint requires multi chain connections
+        between the relay chain, and asset hub itself. Set the asset hub rpc to SAS_SUBSTRATE_URL,
+        and add the relay chain to the SAS_SUBSTRATE_MULTI_CHAIN_URL env var. Refer to the README for the structure
+        of the env vars.
       operationId: getStakingProgress
       parameters:
       - name: at
