@@ -13,9 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash } from '@polkadot/types/interfaces';
+import { u32 } from '@polkadot/types-codec';
 
-import { ApiPromiseRegistry } from '../../apiRegistry';
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 
@@ -30,30 +31,14 @@ export class PalletsStakingValidatorsService extends AbstractService {
 	 */
 	async derivePalletStakingValidators(hash: BlockHash): Promise<IPalletStakingValidator> {
 		const { api } = this;
-		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isHead = blockHead.hash.toHex() === hash.hash.toHex();
-		if (this.assetHubInfo.isAssetHub && !isHead) {
-			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
-		}
-		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
-
-		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
-			throw new Error('Relay chain API not found');
-		}
-
 		const historicApi = await api.at(hash);
+
 		if (!historicApi.query.staking) {
 			throw new Error('Staking pallet not found for queried runtime');
 		}
 
-		// if session is required and connected to AH, get relay and query session.validators
-		const sessionValidators = this.assetHubInfo.isAssetHub
-			? RCApiPromise![0].api.query.session.validators
-			: historicApi.query.session.validators;
-
-		const [{ number }, validatorSession, validatorsEntries] = await Promise.all([
+		const [{ number }, validatorsEntries] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
-			sessionValidators(),
 			historicApi.query.staking.validators.entries(),
 		]);
 
@@ -62,11 +47,6 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			height: number.unwrap().toString(10),
 		};
 
-		const validatorsActiveSet = new Set<string>();
-		for (const address of validatorSession) {
-			validatorsActiveSet.add(address.toString());
-		}
-
 		// Populating the returned array with the Validator address and its
 		// status. If the address is found in the `validatorsActiveSet` then
 		// status is `active` otherwise is set to `waiting`
@@ -74,6 +54,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		// Active validators that wont be part of the next active validator set
 		// for the incoming era.
 		const validatorsToBeChilled: IValidator[] = [];
+		const validatorsActiveSet = await this.getActiveValidators(historicApi);
 
 		validatorsEntries.map(([key]) => {
 			const address = key.args.map((k) => k.toString())[0];
@@ -99,5 +80,36 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			validators,
 			validatorsToBeChilled,
 		};
+	}
+
+	/**
+	 *
+	 * @param historicApi
+	 */
+	async getActiveValidators(historicApi: ApiDecoration<'promise'>) {
+		const validatorsActiveSet = new Set<string>();
+
+		if (historicApi.query.staking.erasStakersOverview) {
+			let activeEra: u32;
+			const activeEraOption = await historicApi.query.staking.activeEra();
+			if (activeEraOption.isNone) {
+				const currentEraOption = await historicApi.query.staking.currentEra();
+				if (currentEraOption.isNone) throw new Error('No active or current era was found');
+				activeEra = currentEraOption.unwrap();
+			} else {
+				activeEra = activeEraOption.unwrap().index;
+			}
+
+			const vals = await historicApi.query.staking.erasStakersOverview.keys(activeEra);
+			vals.forEach(({ args }) => validatorsActiveSet.add(args[1].toString()));
+		} else {
+			const validatorSession = await historicApi.query.session.validators();
+
+			for (const address of validatorSession) {
+				validatorsActiveSet.add(address.toString());
+			}
+		}
+
+		return validatorsActiveSet;
 	}
 }
