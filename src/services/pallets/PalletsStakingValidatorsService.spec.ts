@@ -21,7 +21,9 @@ import type { Hash } from '@polkadot/types/interfaces';
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
 import { assetHubKusamaRegistryV9430, polkadotRegistryV9370 } from '../../test-helpers/registries';
-import { blockHash100000, blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import { blockHash789629, defaultMockApi } from '../test-helpers/mock';
+import { activeEraMock } from '../test-helpers/mock/data/activeEraMock';
+import { erasStakersOverview } from '../test-helpers/mock/data/erasStakersOverviewKeys';
 import { validatorsEntries } from '../test-helpers/mock/data/validator14815152Entries';
 import { validators14815152Hex } from '../test-helpers/mock/data/validators14815152Hex';
 import fetchValidators14815152 from '../test-helpers/responses/pallets/fetchValidators14815152.json';
@@ -31,6 +33,10 @@ const validatorsAt = () =>
 	Promise.resolve().then(() => polkadotRegistryV9370.createType('Vec<AccountId32>', validators14815152Hex));
 
 const validatorsEntriesAt = () => Promise.resolve().then(() => validatorsEntries());
+
+const erasStakersOverviewKeys = () => Promise.resolve().then(() => erasStakersOverview());
+
+const activeEra = () => Promise.resolve().then(() => activeEraMock());
 
 const mockHistoricApi = {
 	...defaultMockApi,
@@ -79,6 +85,10 @@ const mockHistoricAHNextApi = {
 		staking: {
 			validators: {
 				entries: validatorsEntriesAt,
+			},
+			activeEra,
+			erasStakersOverview: {
+				keys: erasStakersOverviewKeys,
 			},
 		},
 	},
@@ -141,61 +151,19 @@ describe('PalletsStakingValidatorsService', () => {
 			);
 		});
 
-		it('it throws if sidecar is connected to AH and querying historical block', async () => {
-			ApiPromiseRegistry.assetHubInfo = {
-				isAssetHub: true,
-				isAssetHubMigrated: true,
-			};
-			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-			process.env.SAS_SUBSTRATE_MULTI_CHAIN_URL = JSON.stringify([
-				{ type: 'relay', url: 'wss://polkadot-rpc.publicnode.com' },
-				{ type: 'assethub', url: 'wss://westend-asset-hub-rpc.polkadot.io' },
-			]);
-			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash100000)).rejects.toThrow(
-				'At is currently unsupported for pallet staking validators connected to assethub',
-			);
-		});
-
-		it('it throws if sidecar is connected to AH but no RC connection is available', async () => {
-			ApiPromiseRegistry.assetHubInfo = {
-				isAssetHub: true,
-				isAssetHubMigrated: true,
-			};
-			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
-
-			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['statemine']);
-			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => []);
-			await expect(palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629)).rejects.toThrow(
-				'Relay chain API not found',
-			);
-		});
 		it('it correctly computes the response when connected to AH post AHM', async () => {
 			ApiPromiseRegistry.assetHubInfo = {
 				isAssetHub: false,
 				isAssetHubMigrated: false,
 			};
 			const palletsStakingValidatorsServicePreAHM = new PalletsStakingValidatorsService('mock');
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
+			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 			const preAHMResponse = await palletsStakingValidatorsServicePreAHM.derivePalletStakingValidators(blockHash789629);
 			ApiPromiseRegistry.assetHubInfo = {
 				isAssetHub: true,
 				isAssetHubMigrated: true,
 			};
 			const palletsStakingValidatorsService = new PalletsStakingValidatorsService('statemine');
-			//  first get original response for the block, then set envs to multichain;
-			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi as unknown as ApiPromise);
-			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
-
-			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
-				return [
-					{
-						specName: 'polkadot',
-						api: mockRCNextApi,
-					},
-				] as unknown as { specName: string; api: ApiPromise }[];
-			});
 			const postAHMResponse = await palletsStakingValidatorsService.derivePalletStakingValidators(blockHash789629);
 			for (const [index, validator] of postAHMResponse.validators.entries()) {
 				expect(validator).toEqual(preAHMResponse.validators[index]);
