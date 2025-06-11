@@ -27,7 +27,6 @@ import type {
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
-import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
@@ -41,11 +40,6 @@ export class AccountsStakingInfoService extends AbstractService {
 	async fetchAccountStakingInfoAssetHub(hash: BlockHash, includeClaimedRewards: boolean, stash: string) {
 		const { api } = this;
 		const historicApi = await api.at(hash);
-		const relayChain = ApiPromiseRegistry.getApiByType('relay');
-
-		if (!relayChain?.length) {
-			throw new Error('Relay chain API not found');
-		}
 
 		if (!historicApi.query.staking) {
 			throw new Error(`Staking not available in this runtime. Hash: ${hash.toHex()}`);
