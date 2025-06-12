@@ -41,6 +41,11 @@ const mockMetadataVersions = jest.fn().mockResolvedValue({
 	toHuman: jest.fn().mockReturnValue(['14', '15', '4,294,967,295']), // or whatever versions you want
 });
 
+const mockSafeXcmVersion = () =>
+	Promise.resolve().then(() => {
+		return polkadotRegistryV15.createType('Option<u32>', 5);
+	});
+
 const runtimeDryRun = polkadotRegistryV15.createType(
 	'Result<CallDryRunEffects, XcmDryRunApiError>',
 	mockDryRunCallResult,
@@ -63,6 +68,11 @@ const mockHistoricApi = {
 		metadata: {
 			metadataVersions: mockMetadataVersions,
 			metadataAtVersion: mockMetadataAtVersion,
+		},
+	},
+	query: {
+		xcmPallet: {
+			safeXcmVersion: mockSafeXcmVersion,
 		},
 	},
 	registry: polkadotRegistryV15,
@@ -132,6 +142,11 @@ describe('TransactionDryRunService', () => {
 			call: {
 				dryRunApi: {
 					dryRunCall: mockDryRunError,
+				},
+			},
+			query: {
+				xcmPallet: {
+					safeXcmVersion: mockSafeXcmVersion,
 				},
 			},
 		} as unknown as ApiPromise;
