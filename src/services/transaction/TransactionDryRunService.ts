@@ -42,16 +42,15 @@ export class TransactionDryRunService extends AbstractService {
 		} else if (!api.call.dryRunApi.dryRunCall) {
 			throw new BadRequest('dryRunCall not found in metadata.');
 		}
+		// We can assume we have the DryRunApi and dry_run_call since we check the api above.
+		const hasXcmParam = api.registry.metadata.apis
+			.find((a) => a.name.toString() === 'DryRunApi')!
+			.methods.find((method) => method.name.toString() === 'dry_run_call')!
+			.inputs.find((p) => p.name.toString() === 'result_xcms_version');
 
 		let foundXcmVersion = xcmVersion;
-		if (!foundXcmVersion) {
-			if (!api.query.xcmPallet?.safeXcmVersion) {
-				throw BadRequest(
-					'If no xcmVersion is passed into the body the xcmPallet is required to query a safe xcm version. XcmPallet not found.',
-				);
-			}
-
-			const version = await api.query.xcmPallet?.safeXcmVersion<Option<u32>>();
+		if (hasXcmParam && !foundXcmVersion && api.query.xcmPallet?.safeXcmVersion) {
+			const version = await api.query.xcmPallet.safeXcmVersion<Option<u32>>();
 			if (version.isNone) {
 				throw BadRequest('No safe xcm version found on chain.');
 			}
@@ -67,7 +66,7 @@ export class TransactionDryRunService extends AbstractService {
 			};
 
 			const [dryRunResponse, { number }] = await Promise.all([
-				foundXcmVersion === undefined
+				!hasXcmParam
 					? api.call.dryRunApi.dryRunCall(originCaller, transaction)
 					: api.call.dryRunApi.dryRunCall(originCaller, transaction, foundXcmVersion),
 				hash ? api.rpc.chain.getHeader(hash) : { number: null },
