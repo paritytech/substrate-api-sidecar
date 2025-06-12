@@ -15,12 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { BlockHash, CallDryRunEffects, XcmDryRunApiError } from '@polkadot/types/interfaces';
-import type { Result } from '@polkadot/types-codec';
+import type { Option, Result, u32 } from '@polkadot/types-codec';
 import { BadRequest } from 'http-errors';
 
 import { ITransactionDryRun, TransactionResultType, ValidityErrorType } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
-import { RuntimeMetadataService } from '../index';
 import { extractCauseAndStack } from './extractCauseAndStack';
 
 export type SignedOriginCaller = {
@@ -38,35 +37,25 @@ export class TransactionDryRunService extends AbstractService {
 	): Promise<ITransactionDryRun> {
 		const { api } = this;
 
-		const metadataService = new RuntimeMetadataService(this.specName);
+		if (!api.call.dryRunApi) {
+			throw new BadRequest('DryRunApi not found in metadata.');
+		} else if (!api.call.dryRunApi.dryRunCall) {
+			throw new BadRequest('dryRunCall not found in metadata.');
+		}
+		// We can assume we have the DryRunApi and dry_run_call since we check the api above.
+		const hasXcmParam = api.registry.metadata.apis
+			.find((a) => a.name.toString() === 'DryRunApi')!
+			.methods.find((method) => method.name.toString() === 'dry_run_call')!
+			.inputs.find((p) => p.name.toString() === 'result_xcms_version');
 
-		if (xcmVersion == undefined && hash) {
-			const metadataVersions = await metadataService.fetchMetadataVersions(hash);
-
-			const latestStableMetadataVersion = metadataVersions.reduce((max, current) => {
-				const metadata = Number(current);
-				if (isNaN(metadata)) {
-					return max;
-				}
-				return Math.max(max, metadata);
-			}, 0);
-
-			const metadata = await metadataService.fetchMetadataVersioned(api, latestStableMetadataVersion);
-
-			const dryRunApi = metadata.asLatest.apis.find((api) => api.name.toString() === 'DryRunApi');
-			if (!dryRunApi) {
-				throw new BadRequest('DryRunApi not found in metadata.');
+		let foundXcmVersion = xcmVersion;
+		if (hasXcmParam && !foundXcmVersion && api.query.xcmPallet?.safeXcmVersion) {
+			const version = await api.query.xcmPallet.safeXcmVersion<Option<u32>>();
+			if (version.isNone) {
+				throw BadRequest('No safe xcm version found on chain.');
 			}
 
-			const dryRunCall = dryRunApi.methods.find((method) => method.name.toString() === 'dry_run_call');
-			if (!dryRunCall) {
-				throw new BadRequest('dryRunCall not found in metadata.');
-			}
-			const xcmsVersion = dryRunCall.inputs.find((param) => param.name.toString() === 'result_xcms_version');
-
-			if (xcmsVersion) {
-				throw new BadRequest('Missing field `xcmVersion` on request body.');
-			}
+			foundXcmVersion = version.unwrap().toNumber();
 		}
 
 		try {
@@ -77,9 +66,9 @@ export class TransactionDryRunService extends AbstractService {
 			};
 
 			const [dryRunResponse, { number }] = await Promise.all([
-				xcmVersion === undefined
+				!hasXcmParam
 					? api.call.dryRunApi.dryRunCall(originCaller, transaction)
-					: api.call.dryRunApi.dryRunCall(originCaller, transaction, xcmVersion),
+					: api.call.dryRunApi.dryRunCall(originCaller, transaction, foundXcmVersion),
 				hash ? api.rpc.chain.getHeader(hash) : { number: null },
 			]);
 

@@ -28,7 +28,6 @@ import { TransactionResultType } from '../../types/responses';
 import { blockHash22887036 } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { mockDryRunCallError } from '../test-helpers/mock/mockDryRunError';
-import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { TransactionDryRunService } from './TransactionDryRunService';
 
 const mockMetadataAtVersion = () =>
@@ -40,6 +39,11 @@ const mockMetadataAtVersion = () =>
 const mockMetadataVersions = jest.fn().mockResolvedValue({
 	toHuman: jest.fn().mockReturnValue(['14', '15', '4,294,967,295']), // or whatever versions you want
 });
+
+const mockSafeXcmVersion = () =>
+	Promise.resolve().then(() => {
+		return polkadotRegistryV15.createType('Option<u32>', 5);
+	});
 
 const runtimeDryRun = polkadotRegistryV15.createType(
 	'Result<CallDryRunEffects, XcmDryRunApiError>',
@@ -63,6 +67,11 @@ const mockHistoricApi = {
 		metadata: {
 			metadataVersions: mockMetadataVersions,
 			metadataAtVersion: mockMetadataAtVersion,
+		},
+	},
+	query: {
+		xcmPallet: {
+			safeXcmVersion: mockSafeXcmVersion,
 		},
 	},
 	registry: polkadotRegistryV15,
@@ -128,10 +137,15 @@ describe('TransactionDryRunService', () => {
 
 	it('should correctly execute a dry run for a call and return an error', async () => {
 		const mockApiErr = {
-			...mockKusamaApiBlock26187139,
+			...mockHistoricApi,
 			call: {
 				dryRunApi: {
 					dryRunCall: mockDryRunError,
+				},
+			},
+			query: {
+				xcmPallet: {
+					safeXcmVersion: mockSafeXcmVersion,
 				},
 			},
 		} as unknown as ApiPromise;
