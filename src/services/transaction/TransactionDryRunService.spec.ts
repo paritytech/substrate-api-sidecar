@@ -28,7 +28,6 @@ import { TransactionResultType } from '../../types/responses';
 import { blockHash22887036 } from '../test-helpers/mock';
 import { mockDryRunCallResult } from '../test-helpers/mock/mockDryRunCall';
 import { mockDryRunCallError } from '../test-helpers/mock/mockDryRunError';
-import { mockKusamaApiBlock26187139 } from '../test-helpers/mock/mockKusamaApiBlock26187139';
 import { TransactionDryRunService } from './TransactionDryRunService';
 
 const mockMetadataAtVersion = () =>
@@ -138,7 +137,7 @@ describe('TransactionDryRunService', () => {
 
 	it('should correctly execute a dry run for a call and return an error', async () => {
 		const mockApiErr = {
-			...mockKusamaApiBlock26187139,
+			...mockHistoricApi,
 			call: {
 				dryRunApi: {
 					dryRunCall: mockDryRunError,
