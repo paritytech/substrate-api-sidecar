@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.0..v20.3.1) (2025-06-12)
+
+### Fix
+
+- fix: retreive safeXcmVersion when xcmVersion is not in the body ([#1676](https://github.com/paritytech/substrate-api-sidecar/pull/1676)) ([bdf188e](https://github.com/paritytech/substrate-api-sidecar/commit/bdf188e1ccb01d1d34c4ab8ab346ba4caca9f234))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1005001
+- Kusama v1005001
+- Westend v1018011
+
 ## [20.3.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.2.2..v20.3.0) (2025-06-11)
 
 ### Features
