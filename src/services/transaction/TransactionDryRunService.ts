@@ -67,7 +67,7 @@ export class TransactionDryRunService extends AbstractService {
 			};
 
 			const [dryRunResponse, { number }] = await Promise.all([
-				xcmVersion === undefined
+				foundXcmVersion === undefined
 					? api.call.dryRunApi.dryRunCall(originCaller, transaction)
 					: api.call.dryRunApi.dryRunCall(originCaller, transaction, foundXcmVersion),
 				hash ? api.rpc.chain.getHeader(hash) : { number: null },
