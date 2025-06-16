@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.3.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.1..v20.3.2) (2025-06-16)
+
+### Fix
+
+- chore: set calc to 0.3.1 ([#1680](https://github.com/paritytech/substrate-api-sidecar/pull/1680)) ([acad244](https://github.com/paritytech/substrate-api-sidecar/commit/acad244eec9723c26202c2dc12d764140bd033dd))
+    - NOTE: This fixes an issue where staking-payouts was incorrectly returning the payouts for nominators.
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1005001
+- Kusama v1005001
+- Westend v1018011
+
 ## [20.3.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.0..v20.3.1) (2025-06-12)
 
 ### Fix
