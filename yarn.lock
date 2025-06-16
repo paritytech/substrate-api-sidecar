@@ -2522,7 +2522,7 @@ __metadata:
     "@polkadot/types-codec": "npm:^16.1.2"
     "@polkadot/util": "npm:^13.5.1"
     "@polkadot/util-crypto": "npm:^13.5.1"
-    "@substrate/calc": "npm:^0.3.2"
+    "@substrate/calc": "npm:0.3.1"
     "@substrate/dev": "npm:^0.9.0"
     "@types/argparse": "npm:2.0.17"
     "@types/express": "npm:^5.0.2"
@@ -2548,10 +2548,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@substrate/calc@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@substrate/calc@npm:0.3.2"
-  checksum: 10/8c7990d5bec8cbb27d54499c995f120392374ca5caa31039df8205c2373808c67f8db2c726d3c4fdc0b49056da2422b81f5718e519c0ab1803a9efdfe4e02e53
+"@substrate/calc@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@substrate/calc@npm:0.3.1"
+  checksum: 10/d1f417a560564a1d961d0c6023623f126f6bde70571ba2aec0a54f3807f6fd42d369ac8a893147299f8622e6bcce2bdcc506dbfa779c062f245c9ba1a76d8b1f
   languageName: node
   linkType: hard
 
