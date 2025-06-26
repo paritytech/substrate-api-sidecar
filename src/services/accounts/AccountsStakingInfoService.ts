@@ -429,7 +429,6 @@ export class AccountsStakingInfoService extends AbstractService {
 		// check if the rewards are claimed or not.
 		for (const [idx, validatorStash] of validatorsTargets.entries()) {
 			let oldCallChecked = false;
-			console.log('isAssetHubMigration: ', isAssetHubMigration);
 			if (claimedRewardsNom.length == 0 && !isAssetHubMigration) {
 				const [era, claimedRewardsOld, oldCallCheck] = await this.fetchErasFromOldCalls(
 					historicApi,
