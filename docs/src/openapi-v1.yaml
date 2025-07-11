@@ -33,6 +33,8 @@ tags:
 - name: transaction
 - name: paras
 - name: trace
+- name: rc
+  description: relay chain specific endpoints for asset hub
 paths:
   /accounts/{accountId}/asset-balances:
     get:
@@ -635,6 +637,67 @@ paths:
                 $ref: '#/components/schemas/AccountCompare'
         "400":
           description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/balance-info:
+    get:
+      tags:
+      - rc
+      summary: Get balance information for an account on the relay chain.
+      description: Returns information about an account's balance on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for balance information.
+      operationId: getRcAccountBalanceInfo
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query balance info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: token
+        in: query
+        description: 'Token to query the balance of. If not specified it will query
+          the chains native token (e.g. DOT for Polkadot). Note: this is only relevant
+          for chains that support multiple tokens through the ORML tokens pallet.'
+        required: false
+        schema:
+          type: string
+          description: Token symbol
+      - name: denominated
+        in: query
+        description: When set to `true` it will denominate any balance's given atomic value
+          using the chains given decimal value.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalanceInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
           content:
             application/json:
               schema:
