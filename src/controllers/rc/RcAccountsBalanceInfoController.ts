@@ -46,7 +46,11 @@ export default class AccountsBalanceController extends AbstractController<RcAcco
 		{ params: { address }, query: { at, token, denominated } },
 		res,
 	): Promise<void> => {
-		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+
+		if (!rcApi) {
+			throw new Error('Relay chain API not found, please use SAS_SUBSTRATE_MULTI_CHAIN_URL env variable');
+		}
 
 		const tokenArg =
 			typeof token === 'string'
