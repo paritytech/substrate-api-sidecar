@@ -18,12 +18,13 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
 import { AnyJson, ITuple } from '@polkadot/types/types';
-import { u32, Vec } from '@polkadot/types-codec';
+import { u32, u64, Vec } from '@polkadot/types-codec';
 import BN from 'bn.js';
 import { InternalServerError } from 'http-errors';
 import { IPalletStakingProgress } from 'src/types/responses';
 
 import { ApiPromiseRegistry } from '../../../src/apiRegistry';
+import { assetHubToBabe } from '../../chains-config';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingProgressService extends AbstractService {
@@ -34,16 +35,7 @@ export class PalletsStakingProgressService extends AbstractService {
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
 		const { api } = this;
-		const blockHead = await api.rpc.chain.getFinalizedHead();
-		const isHead = blockHead.hash.toHex() === hash.hash.toHex();
-		// if at head and connected to RC, connect to AH, else continue
-		// specName will be the one of the main connection, compare to get the right API to use
-		// session is always on relay chain
-		// staking is on AH
 
-		if (this.assetHubInfo.isAssetHub && !isHead) {
-			throw new Error('At is currently unsupported for pallet staking validators connected to assethub');
-		}
 		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {
@@ -80,8 +72,17 @@ export class PalletsStakingProgressService extends AbstractService {
 			eraElectionPromise = await historicApi.query.staking.eraElectionStatus();
 		}
 
+		let deriveSessionAndEra;
+		console.log('this.assetHubInfo.isAssetHub', this.assetHubInfo.isAssetHub);
+		console.log('this.assetHubInfo.isAssetHubMigrated', this.assetHubInfo.isAssetHubMigrated);
+		if (this.assetHubInfo.isAssetHub && this.assetHubInfo.isAssetHubMigrated) {
+			deriveSessionAndEra = this.deriveSessionAndEraProgressAssetHub(historicApi, RCApiPromise?.[0].api);
+		} else {
+			deriveSessionAndEra = this.deriveSessionAndEraProgress(historicApi);
+		}
+
 		const [eraElectionStatus, { eraLength, eraProgress, sessionLength, sessionProgress, activeEra }] =
-			await Promise.all([eraElectionPromise, this.deriveSessionAndEraProgress(historicApi, RCApiPromise?.[0].api)]);
+			await Promise.all([eraElectionPromise, deriveSessionAndEra]);
 
 		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes.entries();
 
@@ -147,12 +148,34 @@ export class PalletsStakingProgressService extends AbstractService {
 	}
 
 	/**
-	 * Derive information on the progress of the current session and era.
+	 * Derive session and era progress for Asset Hub using time-based BABE calculations
 	 *
-	 * @param api ApiPromise with ensured metadata
-	 * @param hash `BlockHash` to make call at
+	 * This method calculates session and era progress for Asset Hub by deriving all values
+	 * from scratch using time-based BABE formulas. This approach is necessary because:
+	 *
+	 * 1. **Historical Support**: Asset Hub cannot access historical BABE pallet constants
+	 *    from the relay chain, so we need to calculate everything from time
+	 * 2. **Time-Based Nature**: BABE slots and epochs are purely time-based and can be
+	 *    calculated deterministically without chain state
+	 * 3. **Relay Chain Dependency**: Asset Hub needs to query the relay chain for
+	 *    skipped epochs, but can calculate slots/epochs locally
+	 *
+	 * **Calculations:**
+	 * - **Current Slot**: `timestamp / slot_duration` (6 seconds for all networks)
+	 * - **Epoch Index**: `(current_slot - genesis_slot) / epoch_duration`
+	 * - **Session Index**: Derived from epoch index using SkippedEpochs mapping
+	 * - **Session Progress**: `current_slot - epoch_start_slot`
+	 * - **Era Progress**: `(current_session - era_start_session) * session_length + session_progress`
+	 *
+	 * **Data Sources:**
+	 * - **Time-based**: Current timestamp, hardcoded BABE parameters
+	 * - **Chain state**: Active era, bonded eras, session index, skipped epochs
+	 *
+	 * @param historicApi - Asset Hub API for staking queries
+	 * @param RCApi - Relay chain API for BABE queries (session index, skipped epochs)
+	 * @returns Session and era progress information
 	 */
-	private async deriveSessionAndEraProgress(
+	private async deriveSessionAndEraProgressAssetHub(
 		historicApi: ApiDecoration<'promise'>,
 		RCApi?: ApiDecoration<'promise'>,
 	): Promise<{
@@ -162,17 +185,76 @@ export class PalletsStakingProgressService extends AbstractService {
 		sessionProgress: BN;
 		activeEra: EraIndex;
 	}> {
-		const babe = RCApi ? RCApi.query.babe : historicApi.query.babe;
-		let session = historicApi.query.session;
-		if (RCApi) {
-			session = RCApi.query.session;
+		console.log('deriveSessionAndEraProgressAssetHub');
+		const [activeEraOption, activeEraStartSessionIndexVec, currentTimestamp, skippedEpochs] = await Promise.all([
+			historicApi.query.staking.activeEra(),
+			historicApi.query.staking.bondedEras<Vec<ITuple<[u32, u32]>>>(),
+			historicApi.query.timestamp.now(),
+			RCApi?.query.babe.skippedEpochs(),
+		]);
+
+		if (activeEraOption.isNone) {
+			throw new InternalServerError('ActiveEra is None when Some was expected.');
 		}
 
+		const { index: activeEra } = activeEraOption.unwrap();
+
+		let activeEraStartSessionIndex;
+		for (const [era, idx] of activeEraStartSessionIndexVec) {
+			if (era && era.eq(activeEra) && idx) {
+				activeEraStartSessionIndex = idx;
+			}
+		}
+
+		if (!activeEraStartSessionIndex) {
+			throw new InternalServerError('EraStartSessionIndex is None when Some was expected.');
+		}
+
+		const specNameBabeValues = assetHubToBabe[this.specName];
+		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(specNameBabeValues.epochDuration);
+
+		const currentSlot = currentTimestamp.div(specNameBabeValues.slotDurationMs);
+		// Calculate epoch index: (current_slot - genesis_slot) / epoch_duration
+		const epochIndex = currentSlot.sub(specNameBabeValues.genesisSlot).div(specNameBabeValues.epochDuration);
+		const currentIndex = this.calculateSessionIndexFromSkippedEpochs(epochIndex, skippedEpochs);
+		// Calculate epoch start slot
+		const epochStartSlot = epochIndex.mul(specNameBabeValues.epochDuration).add(specNameBabeValues.genesisSlot);
+		// Calculate session progress within current epoch
+		const sessionProgress = currentSlot.sub(epochStartSlot);
+
+		// Calculate era progress
+		const eraProgress = currentIndex
+			.sub(activeEraStartSessionIndex)
+			.mul(specNameBabeValues.epochDuration)
+			.add(sessionProgress);
+
+		return {
+			eraLength,
+			eraProgress,
+			sessionLength: specNameBabeValues.epochDuration,
+			sessionProgress,
+			activeEra,
+		};
+	}
+
+	/**
+	 * Derive information on the progress of the current session and era.
+	 *
+	 * @param api ApiPromise with ensured metadata
+	 * @param hash `BlockHash` to make call at
+	 */
+	private async deriveSessionAndEraProgress(historicApi: ApiDecoration<'promise'>): Promise<{
+		eraLength: BN;
+		eraProgress: BN;
+		sessionLength: BN;
+		sessionProgress: BN;
+		activeEra: EraIndex;
+	}> {
 		const [currentSlot, epochIndex, genesisSlot, currentIndex, activeEraOption] = await Promise.all([
-			babe.currentSlot(),
-			babe.epochIndex(),
-			babe.genesisSlot(),
-			session.currentIndex(),
+			historicApi.query.babe.currentSlot(),
+			historicApi.query.babe.epochIndex(),
+			historicApi.query.babe.genesisSlot(),
+			historicApi.query.session.currentIndex(),
 			historicApi.query.staking.activeEra(),
 		]);
 
@@ -195,7 +277,7 @@ export class PalletsStakingProgressService extends AbstractService {
 			throw new InternalServerError('EraStartSessionIndex is None when Some was expected.');
 		}
 
-		const { epochDuration: sessionLength } = RCApi ? RCApi.consts.babe : historicApi.consts.babe;
+		const { epochDuration: sessionLength } = historicApi.consts.babe;
 		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(sessionLength);
 		const epochStartSlot = epochIndex.mul(sessionLength).add(genesisSlot);
 		const sessionProgress = currentSlot.sub(epochStartSlot);
@@ -239,5 +321,64 @@ export class PalletsStakingProgressService extends AbstractService {
 				: new BN(4); // kusama, westend, `substrate/bin/node` electionLookAhead = epochDuration / 4
 
 		return epochDuration.div(epochDurationDivisor);
+	}
+
+	/**
+	 * Calculate session index from epoch index using SkippedEpochs mapping
+	 *
+	 * In BABE consensus, epochs advance based on time and can be "skipped" if the chain
+	 * is offline, but sessions (which represent authority set changes) must happen
+	 * sequentially and cannot be skipped.
+	 *
+	 * When epochs are skipped, BABE stores the mapping in `SkippedEpochs` to track
+	 * the permanent offset between epoch and session indices.
+	 *
+	 * **Example:**
+	 * - Normal: Epoch 10 → Session 10, Epoch 11 → Session 11
+	 * - Chain offline during epochs 12-15
+	 * - After downtime: Epoch 16 → Session 12 (sessions 13-16 were "lost")
+	 * - `SkippedEpochs` stores: [(16, 12)] indicating epoch 16 maps to session 12
+	 * - Future epochs: Epoch 17 → Session 13, Epoch 18 → Session 14, etc.
+	 *
+	 * **Algorithm:**
+	 * 1. Find the closest skipped epoch ≤ current epoch
+	 * 2. Calculate permanent offset: `skipped_epoch - skipped_session`
+	 * 3. Apply offset: `session_index = current_epoch - permanent_offset`
+	 *
+	 * @param epochIndex - Current epoch index (time-based)
+	 * @param skippedEpochs - BABE SkippedEpochs storage: Vec<(u64, u32)> mapping epoch to session
+	 * @returns Current session index that accounts for skipped epochs
+	 */
+	private calculateSessionIndexFromSkippedEpochs(epochIndex: BN, skippedEpochs?: Vec<ITuple<[u64, u32]>>): BN {
+		if (!skippedEpochs || skippedEpochs.isEmpty) {
+			// No skipped epochs - session index equals epoch index
+			return epochIndex;
+		}
+
+		const skippedArray = skippedEpochs.toArray();
+		skippedArray.sort((a, b) => a[0].toNumber() - b[0].toNumber());
+
+		// Find the closest skipped epoch that's <= current epoch
+		let closestSkippedEpoch: ITuple<[u64, u32]> | null = null;
+		for (const skipped of skippedArray) {
+			if (skipped[0].lte(epochIndex)) {
+				closestSkippedEpoch = skipped;
+			} else {
+				break;
+			}
+		}
+
+		if (!closestSkippedEpoch) {
+			// No skipped epochs before current epoch - session = epoch
+			return epochIndex;
+		}
+
+		// Calculate the permanent offset from the closest skipped epoch
+		const [skippedEpochIndex, skippedSessionIndex] = closestSkippedEpoch;
+		const permanentOffset = skippedEpochIndex.sub(skippedSessionIndex);
+		// Apply the permanent offset to current epoch to get session index
+		const sessionIndex = epochIndex.sub(permanentOffset);
+
+		return sessionIndex;
 	}
 }

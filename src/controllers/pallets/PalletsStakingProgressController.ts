@@ -16,7 +16,6 @@
 
 import { RequestHandler } from 'express';
 
-import { assetHubSpecNames } from '../../chains-config';
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -102,10 +101,6 @@ export default class PalletsStakingProgressController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		const { specName } = this;
-		if (typeof at === 'string' && assetHubSpecNames.has(specName.toString())) {
-			throw Error(`Query Parameter 'at' is not supported for /pallets/staking/progress when connected to assetHub.`);
-		}
 		const hash = await this.getHashFromAt(at);
 		PalletsStakingProgressController.sanitizedSend(res, await this.service.derivePalletStakingProgress(hash));
 	};
