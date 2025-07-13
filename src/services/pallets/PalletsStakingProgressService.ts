@@ -73,8 +73,6 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 
 		let deriveSessionAndEra;
-		console.log('this.assetHubInfo.isAssetHub', this.assetHubInfo.isAssetHub);
-		console.log('this.assetHubInfo.isAssetHubMigrated', this.assetHubInfo.isAssetHubMigrated);
 		if (this.assetHubInfo.isAssetHub && this.assetHubInfo.isAssetHubMigrated) {
 			deriveSessionAndEra = this.deriveSessionAndEraProgressAssetHub(historicApi, RCApiPromise?.[0].api);
 		} else {
@@ -185,7 +183,6 @@ export class PalletsStakingProgressService extends AbstractService {
 		sessionProgress: BN;
 		activeEra: EraIndex;
 	}> {
-		console.log('deriveSessionAndEraProgressAssetHub');
 		const [activeEraOption, activeEraStartSessionIndexVec, currentTimestamp, skippedEpochs] = await Promise.all([
 			historicApi.query.staking.activeEra(),
 			historicApi.query.staking.bondedEras<Vec<ITuple<[u32, u32]>>>(),
