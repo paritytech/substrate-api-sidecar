@@ -86,6 +86,9 @@ async function initApis(): Promise<string> {
 
 			if (stage && (stage as unknown as { isMigrationDone: boolean }).isMigrationDone) {
 				isAssetHubMigrated = true;
+			} else if (api.query.staking && !api.query.ahMigrator) {
+				// Asset Hub is migrated, and removed the ahMigrator pallet.
+				isAssetHubMigrated = true;
 			}
 
 			ApiPromiseRegistry.setAssetHubInfo({ isAssetHub, isAssetHubMigrated });
