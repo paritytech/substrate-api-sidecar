@@ -82,6 +82,14 @@ export const historicalE2eConfig: Record<string, IChainConfigE2E> = {
 		},
 		SasStartOpts: defaultSasStartOpts,
 	},
+	moonbeam: {
+		wsUrl: 'wss://wss.api.moonbeam.network',
+		e2eStartOpts: {
+			...defaultJestOpts,
+			args: ['start:historical-e2e-tests', '--chain', 'moonbeam'],
+		},
+		SasStartOpts: defaultSasStartOpts,
+	},
 };
 
 export const latestE2eConfig: Record<string, IChainConfigE2E> = {

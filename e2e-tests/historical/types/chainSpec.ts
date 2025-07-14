@@ -17,7 +17,14 @@
 /**
  * String literal for specific chains that are being tested for
  */
-export type ChainSpec = 'polkadot' | 'kusama' | 'westend' | 'asset-hub-kusama' | 'asset-hub-westend' | 'westmint';
+export type ChainSpec =
+	| 'polkadot'
+	| 'kusama'
+	| 'westend'
+	| 'asset-hub-kusama'
+	| 'asset-hub-westend'
+	| 'westmint'
+	| 'moonbeam';
 
 /**
  * Sidecar endpoints that are supported
@@ -47,4 +54,5 @@ export interface IChains {
 	'asset-hub-polkadot': ChainEndpoints;
 	'asset-hub-westend': ChainEndpoints;
 	westmint: ChainEndpoints;
+	moonbeam: ChainEndpoints;
 }

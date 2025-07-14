@@ -14,22 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IChains } from '../types';
-import { assetHubKusamaEndpoints } from './asset-hub-kusama';
-import { assetHubPolkadotEndpoints } from './asset-hub-polkadot';
-import { assetHubWestendEndpoints } from './asset-hub-westend';
-import { kusamaEndpoints } from './kusama';
-import { moonbeamEndpoints } from './moonbeam';
-import { polkadotEndpoints } from './polkadot';
-import { westendEndpoints } from './westend';
+import { ChainEndpoints } from 'historical/types';
 
-export const endpoints: IChains = {
-	kusama: kusamaEndpoints,
-	polkadot: polkadotEndpoints,
-	westend: westendEndpoints,
-	'asset-hub-kusama': assetHubKusamaEndpoints,
-	'asset-hub-polkadot': assetHubPolkadotEndpoints,
-	'asset-hub-westend': assetHubWestendEndpoints,
-	westmint: assetHubWestendEndpoints,
-	moonbeam: moonbeamEndpoints,
+import { mooonbeamBlockEndpoints } from './blocks';
+
+export const moonbeamEndpoints: ChainEndpoints = {
+	blocks: mooonbeamBlockEndpoints,
+	accounts: [],
+	runtime: [],
+	paras: [],
 };
