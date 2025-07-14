@@ -70,7 +70,7 @@
     "winston-loki": "^6.1.3"
   },
   "devDependencies": {
-    "@acala-network/chopsticks-testing": "^1.1.0",
+    "@acala-network/chopsticks-testing": "^1.2.0",
     "@substrate/dev": "^0.9.0",
     "@types/argparse": "2.0.17",
     "@types/express": "^5.0.2",
