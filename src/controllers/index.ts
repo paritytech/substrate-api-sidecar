@@ -46,6 +46,7 @@ import {
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
+import { RcAccountsBalanceInfo } from './rc';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
 
@@ -84,6 +85,7 @@ export const controllers = {
 	NodeNetwork,
 	NodeTransactionPool,
 	NodeVersion,
+	RcAccountsBalanceInfo,
 	RuntimeCode,
 	RuntimeMetadata,
 	RuntimeSpec,
