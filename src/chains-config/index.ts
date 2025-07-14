@@ -112,6 +112,11 @@ export const assetHubToBabe: Record<
 		genesisSlot: new BN(264379767),
 		slotDurationMs: new BN(6000),
 	},
+	'asset-hub-paseo': {
+		epochDuration: new BN(600),
+		genesisSlot: new BN(284730328),
+		slotDurationMs: new BN(6000),
+	},
 };
 
 /**
