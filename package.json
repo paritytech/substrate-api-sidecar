@@ -74,7 +74,7 @@
     "@substrate/dev": "^0.9.0",
     "@types/argparse": "2.0.17",
     "@types/express": "^5.0.2",
-    "@types/express-serve-static-core": "^5.0.6",
+    "@types/express-serve-static-core": "^5.0.7",
     "@types/http-errors": "2.0.4",
     "@types/lru-cache": "^7.10.10",
     "@types/morgan": "1.9.10",
