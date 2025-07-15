@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BN } from '@polkadot/util';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { controllers } from '../controllers';
@@ -87,6 +88,36 @@ export const specToControllerMap: { [x: string]: ControllerConfig } = {
 };
 
 export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint']);
+
+export const assetHubToBabe: Record<
+	string,
+	{
+		epochDuration: BN;
+		genesisSlot: BN;
+		slotDurationMs: BN;
+	}
+> = {
+	statemint: {
+		epochDuration: new BN(2400),
+		genesisSlot: new BN(265084563),
+		slotDurationMs: new BN(6000),
+	},
+	statemine: {
+		epochDuration: new BN(600),
+		genesisSlot: new BN(262493679),
+		slotDurationMs: new BN(6000),
+	},
+	westmint: {
+		epochDuration: new BN(600),
+		genesisSlot: new BN(264379767),
+		slotDurationMs: new BN(6000),
+	},
+	'asset-hub-paseo': {
+		epochDuration: new BN(600),
+		genesisSlot: new BN(284730328),
+		slotDurationMs: new BN(6000),
+	},
+};
 
 /**
  * Return an array of instantiated controller instances based off of a `specName`.
