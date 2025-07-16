@@ -17,6 +17,7 @@
 import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
+import { validateRcAt } from '../../middleware';
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -92,6 +93,7 @@ export default class PalletsStakingProgressController extends AbstractController
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateRcAt);
 		this.safeMountAsyncGetHandlers([['', this.getPalletStakingProgress]]);
 	}
 
@@ -102,10 +104,6 @@ export default class PalletsStakingProgressController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getPalletStakingProgress: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt && at) {
-			throw new Error('Cannot specify both "at" and "rcAt" parameters');
-		}
-
 		let hash: BlockHash;
 		let rcBlockNumber: string | undefined;
 

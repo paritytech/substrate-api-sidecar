@@ -334,10 +334,6 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }> {
-		if (!this.assetHubInfo.isAssetHub) {
-			throw new BadRequest('rcAt parameter is only supported for Asset Hub endpoints');
-		}
-
 		const ahHash = await this.getAhAtFromRcAt(rcAt);
 		const rcBlockNumber = typeof rcAt === 'string' ? rcAt : 'latest';
 
