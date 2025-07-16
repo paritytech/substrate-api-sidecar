@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
 import { PalletsStakingProgressService } from '../../services';
@@ -96,12 +97,41 @@ export default class PalletsStakingProgressController extends AbstractController
 
 	/**
 	 * Get the progress of the staking pallet system.
-	 * FOr AHM, this endpoint allows to query at historic blocks if connected to RC, while switches automatically to AH if connected to RC.
+	 *
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletStakingProgress: RequestHandler = async ({ query: { at } }, res): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
-		PalletsStakingProgressController.sanitizedSend(res, await this.service.derivePalletStakingProgress(hash));
+	private getPalletStakingProgress: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
+		if (rcAt && at) {
+			throw new Error('Cannot specify both "at" and "rcAt" parameters');
+		}
+
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
+		const result = await this.service.derivePalletStakingProgress(hash);
+
+		if (rcBlockNumber) {
+			const ahApi = this.api;
+			const ahTimestamp = await ahApi.at(hash).then((api) => api.query.timestamp.now());
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			PalletsStakingProgressController.sanitizedSend(res, enhancedResult);
+		} else {
+			PalletsStakingProgressController.sanitizedSend(res, result);
+		}
 	};
 }

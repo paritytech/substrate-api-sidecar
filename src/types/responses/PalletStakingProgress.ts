@@ -33,4 +33,6 @@ export interface IPalletStakingProgress {
 		  }
 		| string;
 	validatorSet?: string[] | null;
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
 }

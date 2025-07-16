@@ -290,8 +290,8 @@ export default abstract class AbstractController<T extends AbstractService> {
 	}
 
 	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = 2): Promise<BlockHash> {
-		const rcHash = await this.getHashFromAt(at);
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+		const rcHash = await this.getHashFromAt(at, { api: rcApi });
 
 		if (!rcApi) {
 			throw new Error('Relay chain api must be available');
@@ -331,6 +331,17 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const previousRcHash = rcApi.createType('BlockHash', rcHeader);
 
 		return this.findAhBlockInRcBlock(previousRcHash, rcApi, remainingDepth - 1);
+	}
+
+	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }> {
+		if (!this.assetHubInfo.isAssetHub) {
+			throw new BadRequest('rcAt parameter is only supported for Asset Hub endpoints');
+		}
+
+		const ahHash = await this.getAhAtFromRcAt(rcAt);
+		const rcBlockNumber = typeof rcAt === 'string' ? rcAt : 'latest';
+
+		return { ahHash, rcBlockNumber };
 	}
 
 	/**
