@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress } from '../../middleware';
+import { validateAddress, validateRcAt } from '../../middleware';
 import { AccountsProxyInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -30,23 +31,46 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress);
+		this.router.use(this.path, validateAddress, validateRcAt);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountProxyInfo]]);
 	}
 
 	/**
-	 * Get the latest account balance summary of `address`.
+	 * Get the latest account proxy info of `address`.
 	 *
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
 	private getAccountProxyInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at } },
+		{ params: { address }, query: { at, rcAt } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
 
-		AccountsProxyInfoController.sanitizedSend(res, await this.service.fetchAccountProxyInfo(hash, address));
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
+		const result = await this.service.fetchAccountProxyInfo(hash, address);
+
+		if (rcBlockNumber) {
+			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			AccountsProxyInfoController.sanitizedSend(res, enhancedResult);
+		} else {
+			AccountsProxyInfoController.sanitizedSend(res, result);
+		}
 	};
 }
