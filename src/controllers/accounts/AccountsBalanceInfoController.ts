@@ -106,7 +106,8 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 		const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
 
 		if (rcBlockNumber) {
-			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,

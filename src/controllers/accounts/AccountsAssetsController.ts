@@ -108,7 +108,8 @@ export default class AccountsAssetsController extends AbstractController<Account
 		const result = await this.service.fetchAssetBalances(hash, address, assetsArray);
 
 		if (rcBlockNumber) {
-			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,
@@ -146,7 +147,8 @@ export default class AccountsAssetsController extends AbstractController<Account
 		const result = await this.service.fetchAssetApproval(hash, address, id, delegate);
 
 		if (rcBlockNumber) {
-			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,

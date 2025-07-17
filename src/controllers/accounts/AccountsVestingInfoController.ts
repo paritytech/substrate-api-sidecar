@@ -86,7 +86,8 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 		const result = await this.service.fetchAccountVestingInfo(hash, address);
 
 		if (rcBlockNumber) {
-			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,

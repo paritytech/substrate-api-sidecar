@@ -60,7 +60,8 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 		const result = await this.service.fetchAccountProxyInfo(hash, address);
 
 		if (rcBlockNumber) {
-			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,
