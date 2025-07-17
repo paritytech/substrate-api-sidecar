@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
-import { validateAddress } from '../../middleware';
+import { validateAddress, validateRcAt } from '../../middleware';
 import { AccountsPoolAssetsService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
@@ -30,6 +31,8 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
+ *  	for Asset Hub endpoints. Cannot be used with 'at' parameter.
  * - (Optional for `/accounts/:address/pool-asset-balances`)`assets`
  * - (Required for `/accounts/:address/pool-asset-approvals)`assetId` The assetId associated
  * 		with the `AssetApproval`.
@@ -49,6 +52,8 @@ import AbstractController from '../AbstractController';
  *			`true`, then non-zero balances may be stored without a `consumer` reference (and thus
  * 			an ED in the Balances pallet or whatever else is used to control user-account state
  *			growth).
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
  *
  * `/accounts/:address/pool-asset-approvals`
  * Returns:
@@ -56,6 +61,8 @@ import AbstractController from '../AbstractController';
  * - `amount`: The amount of funds approved for the balance transfer from the owner
  * 		to some delegated target.
  * - `deposit`: The amount reserved on the owner's account to hold this item in storage.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
  *
  * Substrate Reference:
  * - PoolAssets Pallet: instance of Assets Pallet https://crates.parity.io/pallet_assets/index.html
@@ -73,7 +80,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress);
+		this.router.use(this.path, validateAddress, validateRcAt);
 
 		this.safeMountAsyncGetHandlers([
 			['/pool-asset-balances', this.getPoolAssetBalances],
@@ -82,24 +89,45 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	}
 
 	private getPoolAssetBalances: RequestHandler = async (
-		{ params: { address }, query: { at, assets } },
+		{ params: { address }, query: { at, rcAt, assets } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
 
 		const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
 
-		AccountsPoolAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchPoolAssetBalances(hash, address, assetsArray),
-		);
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
+		const result = await this.service.fetchPoolAssetBalances(hash, address, assetsArray);
+
+		if (rcBlockNumber) {
+			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			AccountsPoolAssetsController.sanitizedSend(res, enhancedResult);
+		} else {
+			AccountsPoolAssetsController.sanitizedSend(res, result);
+		}
 	};
 
 	private getPoolAssetApprovals: RequestHandler = async (
-		{ params: { address }, query: { at, delegate, assetId } },
+		{ params: { address }, query: { at, rcAt, delegate, assetId } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
 
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
 			throw new BadRequest('Must include a `delegate` and `assetId` query param');
@@ -107,9 +135,28 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
-		AccountsPoolAssetsController.sanitizedSend(
-			res,
-			await this.service.fetchPoolAssetApprovals(hash, address, id, delegate),
-		);
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
+		const result = await this.service.fetchPoolAssetApprovals(hash, address, id, delegate);
+
+		if (rcBlockNumber) {
+			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			AccountsPoolAssetsController.sanitizedSend(res, enhancedResult);
+		} else {
+			AccountsPoolAssetsController.sanitizedSend(res, result);
+		}
 	};
 }

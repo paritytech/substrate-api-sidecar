@@ -49,15 +49,19 @@ export interface IPoolAssetBalance {
 export interface IAccountPoolAssetsBalances {
 	at: IAt;
 	poolAssets: IPoolAssetBalance[];
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
 }
 
 /**
- * Response from `/accounts/{accountId}/asset-approvals?asset=assetId&delegate=accountId`
+ * Response from `/accounts/{accountId}/pool-asset-approvals?asset=assetId&delegate=accountId`
  *
- * If an asset-approval does not exist, the `amount` and `deposit` will be null.
+ * If a pool asset approval does not exist, the `amount` and `deposit` will be null.
  */
 export interface IAccountPoolAssetApproval {
 	at: IAt;
 	amount: u128 | null;
 	deposit: TAssetDepositBalance | null;
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
 }
