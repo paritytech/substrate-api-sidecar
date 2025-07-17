@@ -2340,7 +2340,9 @@ paths:
         from Asset Hub for staking progress, this endpoint requires multi chain connections
         between the relay chain, and asset hub itself. Set the asset hub rpc to SAS_SUBSTRATE_URL,
         and add the relay chain to the SAS_SUBSTRATE_MULTI_CHAIN_URL env var. Refer to the README for the structure
-        of the env vars.
+        of the env vars. The `rcAt` parameter allows querying Asset Hub state using relay chain
+        block numbers, enabling post-migration infrastructure to continue using relay chain
+        block identifiers while accessing Asset Hub data.
       operationId: getStakingProgress
       parameters:
       - name: at
@@ -2351,6 +2353,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub staking progress report. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2359,7 +2369,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/StakingProgress'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -5053,6 +5063,14 @@ components:
           items:
             type: string
             format: ss58
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     StakingValidators:
       type: object
       properties:
