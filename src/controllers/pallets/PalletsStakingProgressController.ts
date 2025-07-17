@@ -118,8 +118,8 @@ export default class PalletsStakingProgressController extends AbstractController
 		const result = await this.service.derivePalletStakingProgress(hash);
 
 		if (rcBlockNumber) {
-			const ahApi = this.api;
-			const ahTimestamp = await ahApi.at(hash).then((api) => api.query.timestamp.now());
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
 
 			const enhancedResult = {
 				...result,

@@ -29,6 +29,8 @@ export interface IAccountBalanceInfo {
 	feeFrozen: Balance | string;
 	frozen: Balance | string;
 	locks: Vec<BalanceLock> | IBalanceLock[];
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
 }
 
 export interface IBalanceLock {

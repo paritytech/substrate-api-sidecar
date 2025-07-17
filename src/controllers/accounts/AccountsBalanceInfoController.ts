@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress, validateBoolean } from '../../middleware';
+import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
 import { AccountsBalanceInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -30,6 +31,8 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub balance info. Only supported
+ * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -46,6 +49,8 @@ import AbstractController from '../AbstractController';
  *   - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
  *   - `amount`: The amount below which the free balance may not drop with this lock in effect.
  *   - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
  *
  * Substrate Reference:
  * - FRAME System: https://crates.parity.io/frame_system/index.html
@@ -63,7 +68,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean(['denominated']));
+		this.router.use(this.path, validateAddress, validateBoolean(['denominated']), validateRcAt);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}
@@ -75,9 +80,20 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 * @param res Express Response
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, token, denominated } },
+		{ params: { address }, query: { at, rcAt, token, denominated } },
 		res,
 	): Promise<void> => {
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		const tokenArg =
 			typeof token === 'string'
 				? token.toUpperCase()
@@ -85,12 +101,23 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 					this.api.registry.chainTokens[0].toUpperCase();
 		const withDenomination = denominated === 'true';
 
-		const hash = await this.getHashFromAt(at);
 		const historicApi = await this.api.at(hash);
 
-		AccountsBalanceController.sanitizedSend(
-			res,
-			await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination),
-		);
+		const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			AccountsBalanceController.sanitizedSend(res, enhancedResult);
+		} else {
+			AccountsBalanceController.sanitizedSend(res, result);
+		}
 	};
 }
