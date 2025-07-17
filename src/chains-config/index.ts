@@ -50,6 +50,8 @@ import { shidenControllers } from './shidenControllers';
 import { soraControllers } from './soraControllers';
 import { westendControllers } from './westendControllers';
 
+export const ASSET_HUB_ID = 1000;
+
 export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	westend: westendControllers,
 	polkadot: polkadotControllers,
