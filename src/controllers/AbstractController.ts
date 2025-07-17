@@ -15,7 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { Bytes } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
+import { PolkadotPrimitivesVstagingCommittedCandidateReceiptV2 } from '@polkadot/types/lookup';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response, Router } from 'express';
 import * as express from 'express';
@@ -60,6 +62,7 @@ export type RequiredPallets = string[][];
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
+	public ASSET_HUB_ID = 1000;
 	static controllerName: string;
 	static requiredPallets: RequiredPallets;
 
@@ -285,6 +288,58 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return typeof at === 'string'
 			? await this.getHashForBlock(at, { api: chosenApi })
 			: await chosenApi.rpc.chain.getFinalizedHead();
+	}
+
+	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = 2): Promise<BlockHash> {
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+
+		if (!rcApi) {
+			throw new Error('Relay chain api must be available');
+		}
+
+		const rcHash = await this.getHashFromAt(at, { api: rcApi });
+
+		return this.findAhBlockInRcBlock(rcHash, rcApi, maxDepth);
+	}
+
+	private async findAhBlockInRcBlock(rcHash: BlockHash, rcApi: ApiPromise, remainingDepth: number): Promise<BlockHash> {
+		if (remainingDepth <= 0) {
+			throw new Error('Maximum search depth reached while looking for Asset Hub inclusion');
+		}
+
+		const rcApiAt = await rcApi.at(rcHash);
+		const events = await rcApiAt.query.system.events();
+
+		const paraInclusion = events.filter((record) => {
+			return record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded';
+		});
+
+		const ahInfo = paraInclusion.find(({ event }) => {
+			const { data } = event;
+			const paraData = data[0] as PolkadotPrimitivesVstagingCommittedCandidateReceiptV2;
+			const { paraId } = paraData.descriptor;
+
+			return paraId.toNumber() === this.ASSET_HUB_ID;
+		});
+
+		if (ahInfo) {
+			const headerData = ahInfo.event.data[1] as Bytes;
+			const header = rcApiAt.registry.createType('Header', headerData);
+			const ahBlockHash = header.hash;
+			return rcApi.createType('BlockHash', ahBlockHash);
+		}
+
+		const rcHeader = await rcApiAt.query.system.parentHash();
+		const previousRcHash = rcApi.createType('BlockHash', rcHeader);
+
+		return this.findAhBlockInRcBlock(previousRcHash, rcApi, remainingDepth - 1);
+	}
+
+	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }> {
+		const ahHash = await this.getAhAtFromRcAt(rcAt);
+		const rcBlockNumber = typeof rcAt === 'string' ? rcAt : 'latest';
+
+		return { ahHash, rcBlockNumber };
 	}
 
 	/**

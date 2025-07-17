@@ -19,3 +19,4 @@ export {
 	validateAddressQueryParamMiddleware as validateAddressQueryParam,
 } from './validateAddressMiddleware';
 export { validateBooleanMiddleware as validateBoolean } from './validateBooleanMiddleware';
+export { validateRcAtMiddleware as validateRcAt } from './validateRcAtMiddleware';
