@@ -552,6 +552,14 @@ paths:
           description: Block height (as a non-negative integer) or hash
             (as a hex string).
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub staking payouts. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       - name: depth
         in: query
         description: The number of eras to query for payouts of. Must be less
@@ -586,7 +594,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountStakingPayouts'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -3097,6 +3105,14 @@ components:
                   based on the portion of `totalEraRewardPoints` they have.
               payouts:
                 $ref: '#/components/schemas/Payouts'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     AccountValidation:
       type: object
       properties:
