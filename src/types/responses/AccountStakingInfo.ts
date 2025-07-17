@@ -48,4 +48,6 @@ export interface IAccountStakingInfo {
 	numSlashingSpans: number;
 	nominations: PalletStakingNominations | null;
 	staking: IStakingLedger | null;
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
 }

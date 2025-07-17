@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
-import { validateAddress, validateBoolean } from '../../middleware';
+import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -32,6 +33,8 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
+ * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
  * - (Optional) `includeClaimedRewards`: Controls whether or not the `claimedRewards`
  * 		field is included in the response. Defaults to `true`.
  * 		If set to `false`:
@@ -58,6 +61,8 @@ import AbstractController from '../AbstractController';
  *     with an `era` at which `value` will be unlocked.
  *   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
  *     rewards. Only updated for _validators._
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
  *
  * Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
  * `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -87,7 +92,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean(['includeClaimedRewards']));
+		this.router.use(this.path, validateAddress, validateBoolean(['includeClaimedRewards']), validateRcAt);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountStakingInfo]]);
 	}
@@ -99,23 +104,42 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, includeClaimedRewards } },
+		{ params: { address }, query: { at, rcAt, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
-		const hash = await this.getHashFromAt(at);
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
 
+		let result;
 		if (isAssetHubMigrated) {
-			AccountsStakingInfoController.sanitizedSend(
-				res,
-				await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address),
-			);
+			result = await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address);
 		} else {
-			AccountsStakingInfoController.sanitizedSend(
-				res,
-				await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address),
-			);
+			result = await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address);
+		}
+
+		if (rcBlockNumber) {
+			const ahTimestamp = await this.api.at(hash).then((api) => api.query.timestamp.now());
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			AccountsStakingInfoController.sanitizedSend(res, enhancedResult);
+		} else {
+			AccountsStakingInfoController.sanitizedSend(res, result);
 		}
 	};
 }

@@ -485,6 +485,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub staking info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       - name: includeClaimedRewards
         in: query
         description:  When set to `false`, the `claimedRewards` field is not included
@@ -502,7 +510,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountStakingInfo'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -3048,6 +3056,14 @@ components:
           $ref: '#/components/schemas/Nominations'
         staking:
           $ref: '#/components/schemas/StakingLedger'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
       description: >-
         Note: For Sidecar versions prior to v.20.0.0, in field `claimedRewards` under `staking`, we return whatever we would find under `StakingLedger` with no further calculations.
         From v.20.0.0 onwards, `claimedRewards` is calculated based on different calls: `lastReward`, `claimedRewards` or `legacyClaimedRewards`.
