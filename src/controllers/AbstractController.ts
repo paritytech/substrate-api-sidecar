@@ -291,11 +291,12 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = 2): Promise<BlockHash> {
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
-		const rcHash = await this.getHashFromAt(at, { api: rcApi });
 
 		if (!rcApi) {
 			throw new Error('Relay chain api must be available');
 		}
+
+		const rcHash = await this.getHashFromAt(at, { api: rcApi });
 
 		return this.findAhBlockInRcBlock(rcHash, rcApi, maxDepth);
 	}
