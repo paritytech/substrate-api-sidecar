@@ -35,7 +35,6 @@ import {
 
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import type { AssetHubInfo } from '../apiRegistry';
-import { ASSET_HUB_ID } from '../chains-config';
 import { sanitizeNumbers } from '../sanitize';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
@@ -63,6 +62,7 @@ export type RequiredPallets = string[][];
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
+	public ASSET_HUB_ID = 1000;
 	static controllerName: string;
 	static requiredPallets: RequiredPallets;
 
@@ -319,7 +319,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			const paraData = data[0] as PolkadotPrimitivesVstagingCommittedCandidateReceiptV2;
 			const { paraId } = paraData.descriptor;
 
-			return paraId.toNumber() === ASSET_HUB_ID;
+			return paraId.toNumber() === this.ASSET_HUB_ID;
 		});
 
 		if (ahInfo) {
