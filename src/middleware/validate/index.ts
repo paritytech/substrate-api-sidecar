@@ -20,3 +20,4 @@ export {
 } from './validateAddressMiddleware';
 export { validateBooleanMiddleware as validateBoolean } from './validateBooleanMiddleware';
 export { validateRcAtMiddleware as validateRcAt } from './validateRcAtMiddleware';
+export { validateUseRcBlockMiddleware as validateUseRcBlock } from './validateUseRcBlockMiddleware';

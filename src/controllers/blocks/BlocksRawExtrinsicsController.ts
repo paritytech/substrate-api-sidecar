@@ -16,9 +16,10 @@
 
 import client from 'prom-client';
 
+import { validateUseRcBlock } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
-import { INumberParam, IRequestHandlerWithMetrics } from '../../types/requests';
+import { IBlockQueryParams, INumberParam, IRequestHandlerWithMetrics } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksRawExtrinsicsController extends AbstractController<BlocksService> {
@@ -34,6 +35,7 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['', this.getBlockRawExtrinsics]]);
 	}
 
@@ -42,13 +44,38 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockRawExtrinsics: IRequestHandlerWithMetrics<INumberParam> = async (
-		{ params: { blockId }, method, route },
+	private getBlockRawExtrinsics: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
+		{ params: { blockId }, query: { useRcBlock }, method, route },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashForBlock(blockId);
+		const useRcBlockArg = useRcBlock === 'true';
+
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the blockId parameter as a relay chain block identifier
+			rcBlockNumber = blockId;
+			hash = await this.getAhAtFromRcAt(blockId);
+		} else {
+			hash = await this.getHashForBlock(blockId);
+		}
+
 		const rawBlock = await this.service.fetchBlockRaw(hash);
-		BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				...rawBlock,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksRawExtrinsicsController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;

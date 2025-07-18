@@ -14,13 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
 import type { LRUCache } from 'lru-cache';
 import type client from 'prom-client';
 
-import { validateBoolean } from '../../middleware/validate';
+import { ApiPromiseRegistry } from '../../apiRegistry';
+import { validateBoolean, validateUseRcBlock } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
 import {
@@ -56,6 +58,9 @@ import AbstractController from '../AbstractController';
  * - (Optional for `/blocks/{blockId}) `paraId`: When it is set, it will return only the decoded
  *  XCM messages for the specified paraId/parachain Id. To activate this functionality, ensure
  *  that the `decodedXcmMsgs` parameter is set to true.
+ * - (Optional for `/blocks/head`) `useRcBlock`: When set to `true`, it will use the latest
+ *  relay chain block to determine the corresponding Asset Hub block. Only supported for
+ *  Asset Hub endpoints with relay chain API available.
  *
  *
  * Returns:
@@ -89,6 +94,8 @@ import AbstractController from '../AbstractController';
  *   finalization with the `method` and `data` for each.
  * - `decodedXcmMsgs`: An array of the decoded XCM messages found within the extrinsics
  *   of the requested block.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
  * canonical chain. It denotes the finalization of block _construction._
@@ -115,7 +122,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
+		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']), validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -168,28 +175,55 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId }, method, route },
+		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId, useRcBlock }, method, route },
 		res,
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const useRcBlockArg = useRcBlock === 'true';
+
 		let hash, queryFinalizedHead, omitFinalizedTag;
+		let rcBlockNumber: string | undefined;
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 			omitFinalizedTag = true;
 			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = (await this.api.rpc.chain.getHeader()).hash;
+			}
 		} else if (finalized === 'false') {
 			// We query the finalized head to know where the latest finalized block
 			// is. It is a way to confirm whether the queried block is less than or
 			// equal to the finalized head.
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = (await this.api.rpc.chain.getHeader()).hash;
+			}
 		} else {
 			omitFinalizedTag = false;
 			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHash = await rcApi.rpc.chain.getFinalizedHead();
+				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = await this.api.rpc.chain.getFinalizedHead();
+			}
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
@@ -218,7 +252,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached) {
-			BlocksController.sanitizedSend(res, isBlockCached);
+			if (rcBlockNumber) {
+				const apiAt = await this.api.at(hash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedCachedResult = {
+					...isBlockCached,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				BlocksController.sanitizedSend(res, enhancedCachedResult);
+			} else {
+				BlocksController.sanitizedSend(res, isBlockCached);
+			}
 			return;
 		}
 
@@ -227,7 +274,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
-		BlocksController.sanitizedSend(res, block);
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...block,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, block);
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
@@ -246,14 +306,25 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
 		{
 			params: { number },
-			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId },
+			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId, useRcBlock },
 			method,
 			route,
 		},
 		res,
 	): Promise<void> => {
+		const useRcBlockArg = useRcBlock === 'true';
 		const checkFinalized = isHex(number);
-		const hash = await this.getHashForBlock(number);
+
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the 'number' parameter as a relay chain block identifier
+			rcBlockNumber = number;
+			hash = await this.getAhAtFromRcAt(number);
+		} else {
+			hash = await this.getHashForBlock(number);
+		}
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -295,7 +366,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached) {
-			BlocksController.sanitizedSend(res, isBlockCached);
+			if (rcBlockNumber) {
+				const apiAt = await this.api.at(hash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedCachedResult = {
+					...isBlockCached,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				BlocksController.sanitizedSend(res, enhancedCachedResult);
+			} else {
+				BlocksController.sanitizedSend(res, isBlockCached);
+			}
 			return;
 		}
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -303,8 +387,22 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 
 		this.blockStore.set(cacheKey, block);
-		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(res, block);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...block,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			// We set the last param to true because we haven't queried the finalizedHead
+			BlocksController.sanitizedSend(res, block);
+		}
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 		if (res.locals.metrics) {
@@ -318,10 +416,42 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockHeaderById: RequestHandler<INumberParam> = async ({ params: { number } }, res): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
+	private getBlockHeaderById: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
+		{ params: { number }, query: { useRcBlock } },
+		res,
+	): Promise<void> => {
+		const useRcBlockArg = useRcBlock === 'true';
 
-		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the 'number' parameter as a relay chain block identifier
+			rcBlockNumber = number;
+			hash = await this.getAhAtFromRcAt(number);
+		} else {
+			hash = await this.getHashForBlock(number);
+		}
+
+		const headerResult = await this.service.fetchBlockHeader(hash);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				parentHash: headerResult.parentHash,
+				number: headerResult.number,
+				stateRoot: headerResult.stateRoot,
+				extrinsicsRoot: headerResult.extrinsicsRoot,
+				digest: headerResult.digest,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, headerResult);
+		}
 	};
 
 	/**
@@ -330,12 +460,49 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized } }, res): Promise<void> => {
+	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized, useRcBlock } }, res): Promise<void> => {
 		const paramFinalized = finalized !== 'false';
+		const useRcBlockArg = useRcBlock === 'true';
 
-		const hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
+		let hash;
+		let rcBlockNumber: string | undefined;
 
-		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
+		if (useRcBlockArg) {
+			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+			if (paramFinalized) {
+				const rcHash = await rcApi.rpc.chain.getFinalizedHead();
+				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			}
+		} else {
+			hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
+		}
+
+		const headerResult = await this.service.fetchBlockHeader(hash);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash as BlockHash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				parentHash: headerResult.parentHash,
+				number: headerResult.number,
+				stateRoot: headerResult.stateRoot,
+				extrinsicsRoot: headerResult.extrinsicsRoot,
+				digest: headerResult.digest,
+				rcBlockNumber,
+				ahTimestamp,
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, headerResult);
+		}
 	};
 
 	/**
@@ -344,14 +511,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam> = async (
-		{ query: { range, eventDocs, extrinsicDocs, noFees }, method, route },
+	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam & IBlockQueryParams> = async (
+		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock }, method, route },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 
 		// We set a max range to 500 blocks.
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
+		const useRcBlockArg = useRcBlock === 'true';
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -374,18 +542,50 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		for (let i = 0; i < rangeOfNums.length; i++) {
 			const result = pQueue.run(async () => {
-				// Get block hash:
-				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				let hash;
+				let rcBlockNumber: string | undefined;
+
+				if (useRcBlockArg) {
+					// Treat range numbers as relay chain block identifiers
+					rcBlockNumber = rangeOfNums[i].toString();
+					try {
+						hash = await this.getAhAtFromRcAt(rcBlockNumber, 1);
+					} catch (error) {
+						// Skip this RC block if it doesn't have a corresponding AH block
+						return null;
+					}
+				} else {
+					// Get block hash:
+					hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				}
+
 				// Get API at that hash:
 				const historicApi = await this.api.at(hash);
 				// Get block details using this API/hash:
-				return await this.service.fetchBlock(hash, historicApi, options);
+				const block = await this.service.fetchBlock(hash, historicApi, options);
+
+				if (rcBlockNumber) {
+					// Add RC context to the block
+					const apiAt = await this.api.at(hash);
+					const ahTimestamp = await apiAt.query.timestamp.now();
+					return {
+						...block,
+						rcBlockNumber,
+						ahTimestamp: ahTimestamp.toString(),
+					};
+				}
+
+				return block;
 			});
 			blocksPromise.push(result);
 		}
 
-		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
+		const allBlocks = await Promise.all(blocksPromise);
 		blocksPromise.length = 0;
+
+		// Filter out null values (skipped RC blocks that don't have corresponding AH blocks)
+		const blocks = allBlocks.filter((block) => block !== null) as IBlock[];
+
 		/**
 		 * Sort blocks from least to greatest.
 		 */

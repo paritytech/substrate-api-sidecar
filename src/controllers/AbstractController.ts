@@ -57,6 +57,8 @@ type SidecarRequestHandler =
  */
 export type RequiredPallets = string[][];
 
+const RC_TO_AH_MAX_DEPTH = 12;
+
 /**
  * Abstract base class for creating controller classes.
  */
@@ -290,7 +292,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			: await chosenApi.rpc.chain.getFinalizedHead();
 	}
 
-	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = 2): Promise<BlockHash> {
+	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = RC_TO_AH_MAX_DEPTH): Promise<BlockHash> {
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
 
 		if (!rcApi) {
