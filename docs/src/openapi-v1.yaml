@@ -831,7 +831,8 @@ paths:
       - blocks
       summary: Get a block by its height or hash.
       description: Returns a single block. BlockId can either be a block hash or a
-        block height. Replaces `/block/{number}` from versions < v1.0.0.
+        block height. Replaces `/block/{number}` from versions < v1.0.0. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getBlockById
       parameters:
       - name: blockId
@@ -888,6 +889,14 @@ paths:
         required: false
         schema:
           type: string
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the relay chain block identifier to determine 
+          the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -907,7 +916,8 @@ paths:
       - blocks
       summary: Get a block's header by its height or hash.
       description: Returns a single block's header. BlockId can either be a block hash or a
-        block height.
+        block height. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getBlockHeaderById
       parameters:
       - name: blockId
@@ -917,6 +927,14 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the relay chain block identifier to determine 
+          the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -3368,6 +3386,14 @@ components:
           description: >-
             A boolean identifying whether the block is finalized or not.
             Note: on chains that do not have deterministic finality this field is omitted.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
       description: >-
         Note: Block finalization does not correspond to consensus, i.e. whether
         the block is in the canonical chain. It denotes the finalization of block
@@ -3445,6 +3471,14 @@ components:
               items:
                 $ref: '#/components/schemas/DigestItem'
               description: Array of `DigestItem`s associated with the block.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
     BlockIdentifiers:
       type: object
       properties:

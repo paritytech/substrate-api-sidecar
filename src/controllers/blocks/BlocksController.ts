@@ -125,6 +125,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
 		this.router.use('/head', validateUseRcBlock);
 		this.router.use('/head/header', validateUseRcBlock);
+		this.router.use('/:number', validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -308,14 +309,25 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
 		{
 			params: { number },
-			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId },
+			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId, useRcBlock },
 			method,
 			route,
 		},
 		res,
 	): Promise<void> => {
+		const useRcBlockArg = useRcBlock === 'true';
 		const checkFinalized = isHex(number);
-		const hash = await this.getHashForBlock(number);
+
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the 'number' parameter as a relay chain block identifier
+			rcBlockNumber = number;
+			hash = await this.getAhAtFromRcAt(number);
+		} else {
+			hash = await this.getHashForBlock(number);
+		}
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -357,7 +369,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached) {
-			BlocksController.sanitizedSend(res, isBlockCached);
+			if (rcBlockNumber) {
+				const apiAt = await this.api.at(hash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedCachedResult = {
+					...isBlockCached,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				BlocksController.sanitizedSend(res, enhancedCachedResult);
+			} else {
+				BlocksController.sanitizedSend(res, isBlockCached);
+			}
 			return;
 		}
 		// HistoricApi to fetch any historic information that doesnt include the current runtime
@@ -365,8 +390,22 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 
 		this.blockStore.set(cacheKey, block);
-		// We set the last param to true because we haven't queried the finalizedHead
-		BlocksController.sanitizedSend(res, block);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...block,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			// We set the last param to true because we haven't queried the finalizedHead
+			BlocksController.sanitizedSend(res, block);
+		}
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 		if (res.locals.metrics) {
