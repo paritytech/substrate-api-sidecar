@@ -1650,6 +1650,14 @@ paths:
             type: string
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub liquidity pools info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1679,6 +1687,14 @@ paths:
           schema:
             type: string
             description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub next available id. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
       responses:
         "200":
@@ -4267,6 +4283,14 @@ components:
             null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
             \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
             },{\"lpToken\":{\"lpToken\":\"0\"}}]"
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     LiquidityPool:
       type: object
       properties:
@@ -4293,6 +4317,14 @@ components:
           type: string
           description: Next availabe liquidity pool's id.
           example: "4"
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     NodeNetwork:
       type: object
       properties:
