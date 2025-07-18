@@ -20,7 +20,8 @@ import { BadRequest } from 'http-errors';
 import type { LRUCache } from 'lru-cache';
 import type client from 'prom-client';
 
-import { validateBoolean } from '../../middleware/validate';
+import { ApiPromiseRegistry } from '../../apiRegistry';
+import { validateBoolean, validateUseRcBlock } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import { ControllerOptions } from '../../types/chains-config';
 import {
@@ -56,6 +57,9 @@ import AbstractController from '../AbstractController';
  * - (Optional for `/blocks/{blockId}) `paraId`: When it is set, it will return only the decoded
  *  XCM messages for the specified paraId/parachain Id. To activate this functionality, ensure
  *  that the `decodedXcmMsgs` parameter is set to true.
+ * - (Optional for `/blocks/head`) `useRcBlock`: When set to `true`, it will use the latest
+ *  relay chain block to determine the corresponding Asset Hub block. Only supported for
+ *  Asset Hub endpoints with relay chain API available.
  *
  *
  * Returns:
@@ -89,6 +93,8 @@ import AbstractController from '../AbstractController';
  *   finalization with the `method` and `data` for each.
  * - `decodedXcmMsgs`: An array of the decoded XCM messages found within the extrinsics
  *   of the requested block.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Note: Block finalization does not correspond to consensus, i.e. whether the block is in the
  * canonical chain. It denotes the finalization of block _construction._
@@ -116,6 +122,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
+		this.router.use('/head', validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -168,28 +175,55 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId }, method, route },
+		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId, useRcBlock }, method, route },
 		res,
 	) => {
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
+		const useRcBlockArg = useRcBlock === 'true';
+
 		let hash, queryFinalizedHead, omitFinalizedTag;
+		let rcBlockNumber: string | undefined;
 		if (!this.options.finalizes) {
 			// If the network chain doesn't finalize blocks, we dont want a finalized tag.
 			omitFinalizedTag = true;
 			queryFinalizedHead = false;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = (await this.api.rpc.chain.getHeader()).hash;
+			}
 		} else if (finalized === 'false') {
 			// We query the finalized head to know where the latest finalized block
 			// is. It is a way to confirm whether the queried block is less than or
 			// equal to the finalized head.
 			omitFinalizedTag = false;
 			queryFinalizedHead = true;
-			hash = (await this.api.rpc.chain.getHeader()).hash;
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = (await this.api.rpc.chain.getHeader()).hash;
+			}
 		} else {
 			omitFinalizedTag = false;
 			queryFinalizedHead = false;
-			hash = await this.api.rpc.chain.getFinalizedHead();
+			if (useRcBlockArg) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+				const rcHash = await rcApi.rpc.chain.getFinalizedHead();
+				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				hash = await this.api.rpc.chain.getFinalizedHead();
+			}
 		}
 		const noFeesArg = noFees === 'true';
 		const decodedXcmMsgsArg = decodedXcmMsgs === 'true';
@@ -218,7 +252,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached) {
-			BlocksController.sanitizedSend(res, isBlockCached);
+			if (rcBlockNumber) {
+				const apiAt = await this.api.at(hash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedCachedResult = {
+					...isBlockCached,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				BlocksController.sanitizedSend(res, enhancedCachedResult);
+			} else {
+				BlocksController.sanitizedSend(res, isBlockCached);
+			}
 			return;
 		}
 
@@ -227,7 +274,20 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const block = await this.service.fetchBlock(hash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
-		BlocksController.sanitizedSend(res, block);
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...block,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, block);
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;

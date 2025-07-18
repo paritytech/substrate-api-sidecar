@@ -121,6 +121,7 @@ export interface IBlockQueryParams extends Query {
 	noFees?: string;
 	decodedXcmMsgs?: string;
 	paraId?: string;
+	useRcBlock?: string;
 }
 
 export interface IRequestHandlerWithMetrics<T = unknown, P = unknown>

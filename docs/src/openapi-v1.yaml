@@ -987,7 +987,8 @@ paths:
       - blocks
       summary: Get the most recently finalized block.
       description: Returns the most recently finalized block. Replaces `/block`
-        from versions < v1.0.0.
+        from versions < v1.0.0. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getHeadBlock
       parameters:
       - name: finalized
@@ -1038,6 +1039,15 @@ paths:
         required: false
         schema:
           type: string
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the latest relay chain block to determine the 
+          corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
+          Respects the `finalized` parameter when determining which relay chain block to use.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
