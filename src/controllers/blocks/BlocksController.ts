@@ -419,10 +419,42 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlockHeaderById: RequestHandler<INumberParam> = async ({ params: { number } }, res): Promise<void> => {
-		const hash = await this.getHashForBlock(number);
+	private getBlockHeaderById: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
+		{ params: { number }, query: { useRcBlock } },
+		res,
+	): Promise<void> => {
+		const useRcBlockArg = useRcBlock === 'true';
 
-		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the 'number' parameter as a relay chain block identifier
+			rcBlockNumber = number;
+			hash = await this.getAhAtFromRcAt(number);
+		} else {
+			hash = await this.getHashForBlock(number);
+		}
+
+		const headerResult = await this.service.fetchBlockHeader(hash);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				parentHash: headerResult.parentHash,
+				number: headerResult.number,
+				stateRoot: headerResult.stateRoot,
+				extrinsicsRoot: headerResult.extrinsicsRoot,
+				digest: headerResult.digest,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, headerResult);
+		}
 	};
 
 	/**
