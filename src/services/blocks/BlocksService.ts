@@ -22,6 +22,7 @@ import { extractAuthor } from '@polkadot/api-derive/type/util';
 import { Compact, GenericCall, Option, Struct, Text, u32, Vec } from '@polkadot/types';
 import type { GenericExtrinsic } from '@polkadot/types/extrinsic';
 import type {
+	AccountId,
 	AccountId32,
 	Block,
 	BlockHash,
@@ -135,7 +136,26 @@ export class BlocksService extends AbstractService {
 
 		const { parentHash, number, stateRoot, extrinsicsRoot, digest } = block.header;
 
-		const authorId = extractAuthor(digest, validators);
+		let authorId: AccountId | undefined;
+
+		// Extract the first isPreRuntime log (if exists)
+		const [consensusEngineId] = digest.logs.filter((e) => e.isPreRuntime);
+		if (consensusEngineId) {
+			const [engine, data] = consensusEngineId.asPreRuntime;
+			// Check if Nimbus consensus is being used and if the 'authorMapping' query exists
+			if (engine.isNimbus && historicApi.query['authorMapping']) {
+				type OptionResult = Option<{ account: AccountId } & Codec>;
+				const authorMapping = await historicApi.query['authorMapping']['mappingWithDeposit']<OptionResult>(
+					data.toHex(),
+				);
+				authorId = authorMapping.unwrapOr({ account: undefined }).account;
+			}
+		}
+
+		// If authorId is still undefined, fall back to the generic author extractor
+		if (!authorId) {
+			authorId = extractAuthor(digest, validators);
+		}
 
 		const logs = digest.logs.map(({ type, index, value }) => {
 			return { type, index, value };

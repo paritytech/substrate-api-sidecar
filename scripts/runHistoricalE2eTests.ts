@@ -56,8 +56,9 @@ const main = async (args: IE2EParseArgs): Promise<void> => {
 		const westendTest = await launchChainTest('westend', historicalE2eConfig, procs);
 		const assetHubKusamaTest = await launchChainTest('kusama-asset-hub', historicalE2eConfig, procs);
 		const assetHubPolkadotTest = await launchChainTest('polkadot-asset-hub', historicalE2eConfig, procs);
+		const moonbeamTest = await launchChainTest('moonbeam', historicalE2eConfig, procs);
 
-		checkTests(polkadotTest, kusamaTest, westendTest, assetHubKusamaTest, assetHubPolkadotTest);
+		checkTests(polkadotTest, kusamaTest, westendTest, assetHubKusamaTest, assetHubPolkadotTest, moonbeamTest);
 	}
 };
 
@@ -71,7 +72,7 @@ parser.add_argument('--local', {
 	nargs: '?',
 });
 parser.add_argument('--chain', {
-	choices: ['polkadot', 'kusama', 'westend', 'kusama-asset-hub', 'polkadot-asset-hub'],
+	choices: ['polkadot', 'kusama', 'westend', 'kusama-asset-hub', 'polkadot-asset-hub', 'moonbeam'],
 });
 parser.add_argument('--log-level', {
 	choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
