@@ -966,7 +966,8 @@ paths:
       - blocks
       summary: Get an extrinsic by its extrinsicIndex and block height or hash.
         The pair blockId, extrinsicIndex is sometimes referred to as a Timepoint.
-      description: Returns a single extrinsic.
+      description: Returns a single extrinsic. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getExtrinsicByTimepoint
       parameters:
       - name: blockId
@@ -994,6 +995,21 @@ paths:
         in: query
         description: When set to `true`, every extrinsic will have an extra `docs`
           property with a string of the extrinsics documentation.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, the fee won't be calculated for the extrinsic.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the relay chain block identifier to determine 
+          the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
         required: false
         schema:
           type: boolean
@@ -4168,6 +4184,14 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         extrinsic:
           $ref: '#/components/schemas/Extrinsic'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
       description: A single extrinsic at a given block.
     FundInfo:
       type: object

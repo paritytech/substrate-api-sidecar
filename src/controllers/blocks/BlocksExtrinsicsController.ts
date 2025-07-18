@@ -18,9 +18,10 @@ import { RequestHandler } from 'express';
 import { LRUCache } from 'lru-cache';
 import { IBlock } from 'src/types/responses';
 
+import { validateUseRcBlock } from '../../middleware/validate';
 import { BlocksService } from '../../services';
 import type { ControllerOptions } from '../../types/chains-config';
-import type { INumberParam } from '../../types/requests';
+import type { IBlockQueryParams, INumberParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class BlocksExtrinsicsController extends AbstractController<BlocksService> {
@@ -38,6 +39,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['/:extrinsicIndex', this.getExtrinsicByTimepoint]]);
 	}
 
@@ -46,11 +48,22 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getExtrinsicByTimepoint: RequestHandler<INumberParam> = async (
-		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees } },
+	private getExtrinsicByTimepoint: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
+		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees, useRcBlock } },
 		res,
 	): Promise<void> => {
-		const hash = await this.getHashForBlock(blockId);
+		const useRcBlockArg = useRcBlock === 'true';
+
+		let hash;
+		let rcBlockNumber: string | undefined;
+
+		if (useRcBlockArg) {
+			// Treat the blockId parameter as a relay chain block identifier
+			rcBlockNumber = blockId;
+			hash = await this.getAhAtFromRcAt(blockId);
+		} else {
+			hash = await this.getHashForBlock(blockId);
+		}
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -94,6 +107,20 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 		 */
 		const index = parseInt(extrinsicIndex, 10);
 
-		BlocksExtrinsicsController.sanitizedSend(res, this.service.fetchExtrinsicByIndex(block, index));
+		const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				...extrinsic,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			BlocksExtrinsicsController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksExtrinsicsController.sanitizedSend(res, extrinsic);
+		}
 	};
 }
