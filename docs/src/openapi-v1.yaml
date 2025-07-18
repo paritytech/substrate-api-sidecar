@@ -1060,7 +1060,8 @@ paths:
       tags:
       - blocks
       summary: Get information about the header of the most recent finalized block.
-      description: Returns the most recently finalized block's header.
+      description: Returns the most recently finalized block's header. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getLatestBlockHeader
       parameters:
       - name: finalized
@@ -1072,6 +1073,15 @@ paths:
         schema:
           type: boolean
           default: true
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the latest relay chain block to determine the 
+          corresponding Asset Hub block header. Only supported for Asset Hub endpoints with relay chain API available.
+          Respects the `finalized` parameter when determining which relay chain block to use.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation

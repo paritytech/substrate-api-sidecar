@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
@@ -123,6 +124,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
 		this.router.use('/head', validateUseRcBlock);
+		this.router.use('/head/header', validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/', this.getBlocks],
 			['/head', this.getLatestBlock],
@@ -390,12 +392,49 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized } }, res): Promise<void> => {
+	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized, useRcBlock } }, res): Promise<void> => {
 		const paramFinalized = finalized !== 'false';
+		const useRcBlockArg = useRcBlock === 'true';
 
-		const hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
+		let hash;
+		let rcBlockNumber: string | undefined;
 
-		BlocksController.sanitizedSend(res, await this.service.fetchBlockHeader(hash));
+		if (useRcBlockArg) {
+			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+			if (paramFinalized) {
+				const rcHash = await rcApi.rpc.chain.getFinalizedHead();
+				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			} else {
+				const rcHeader = await rcApi.rpc.chain.getHeader();
+				const rcHash = rcHeader.hash;
+				rcBlockNumber = rcHeader.number.toString();
+				hash = await this.getAhAtFromRcAt(rcHash);
+			}
+		} else {
+			hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
+		}
+
+		const headerResult = await this.service.fetchBlockHeader(hash);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash as BlockHash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+			const enhancedResult = {
+				parentHash: headerResult.parentHash,
+				number: headerResult.number,
+				stateRoot: headerResult.stateRoot,
+				extrinsicsRoot: headerResult.extrinsicsRoot,
+				digest: headerResult.digest,
+				rcBlockNumber,
+				ahTimestamp,
+			};
+
+			BlocksController.sanitizedSend(res, enhancedResult);
+		} else {
+			BlocksController.sanitizedSend(res, headerResult);
+		}
 	};
 
 	/**
