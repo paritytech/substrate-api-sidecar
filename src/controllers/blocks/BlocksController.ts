@@ -123,6 +123,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 	protected initRoutes(): void {
 		this.router.use(this.path, validateBoolean(['eventDocs', 'extrinsicDocs', 'finalized']));
+		this.router.use('/', validateUseRcBlock);
 		this.router.use('/head', validateUseRcBlock);
 		this.router.use('/head/header', validateUseRcBlock);
 		this.router.use('/:number', validateUseRcBlock);
@@ -514,14 +515,15 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam> = async (
-		{ query: { range, eventDocs, extrinsicDocs, noFees }, method, route },
+	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam & IBlockQueryParams> = async (
+		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock }, method, route },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
 
 		// We set a max range to 500 blocks.
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
+		const useRcBlockArg = useRcBlock === 'true';
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -544,18 +546,50 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		for (let i = 0; i < rangeOfNums.length; i++) {
 			const result = pQueue.run(async () => {
-				// Get block hash:
-				const hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				let hash;
+				let rcBlockNumber: string | undefined;
+
+				if (useRcBlockArg) {
+					// Treat range numbers as relay chain block identifiers
+					rcBlockNumber = rangeOfNums[i].toString();
+					try {
+						hash = await this.getAhAtFromRcAt(rcBlockNumber, 1);
+					} catch (error) {
+						// Skip this RC block if it doesn't have a corresponding AH block
+						return null;
+					}
+				} else {
+					// Get block hash:
+					hash = await this.getHashForBlock(rangeOfNums[i].toString());
+				}
+
 				// Get API at that hash:
 				const historicApi = await this.api.at(hash);
 				// Get block details using this API/hash:
-				return await this.service.fetchBlock(hash, historicApi, options);
+				const block = await this.service.fetchBlock(hash, historicApi, options);
+
+				if (rcBlockNumber) {
+					// Add RC context to the block
+					const apiAt = await this.api.at(hash);
+					const ahTimestamp = await apiAt.query.timestamp.now();
+					return {
+						...block,
+						rcBlockNumber,
+						ahTimestamp: ahTimestamp.toString(),
+					};
+				}
+
+				return block;
 			});
 			blocksPromise.push(result);
 		}
 
-		const blocks = (await Promise.all(blocksPromise)) as IBlock[];
+		const allBlocks = await Promise.all(blocksPromise);
 		blocksPromise.length = 0;
+
+		// Filter out null values (skipped RC blocks that don't have corresponding AH blocks)
+		const blocks = allBlocks.filter((block) => block !== null) as IBlock[];
+
 		/**
 		 * Sort blocks from least to greatest.
 		 */

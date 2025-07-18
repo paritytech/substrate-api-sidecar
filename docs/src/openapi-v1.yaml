@@ -779,7 +779,10 @@ paths:
       tags:
       - blocks
       summary: Get a range of blocks by their height.
-      description: Given a range query parameter return an array of all the blocks within that range.
+      description: Given a range query parameter return an array of all the blocks within that range. 
+        When `useRcBlock` parameter is used, the range represents relay chain block numbers and the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp` for each block. Relay chain blocks
+        without corresponding Asset Hub blocks are skipped.
       operationId: getBlock
       parameters:
       - name: range
@@ -808,6 +811,15 @@ paths:
       - name: noFees
         in: query
         description: When set to `true`, the fee won't be calculated for the extrinsics.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, the range parameter represents relay chain block numbers and 
+          the response includes additional fields for each block. Only supported for Asset Hub endpoints
+          with relay chain API available.
         required: false
         schema:
           type: boolean
