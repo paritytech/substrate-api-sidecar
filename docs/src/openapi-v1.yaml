@@ -1131,7 +1131,8 @@ paths:
       - blocks
       summary: Get a blocks header & its extrinsics as hex values.
       description: Returns a block & its extrinsics as hex values. BlockId can either be a block hash or a
-        block height.
+        block height. When `useRcBlock` parameter is used, the response
+        includes additional fields `rcBlockNumber` and `ahTimestamp`.
       operationId: getBlockRawExtrinsics
       parameters:
       - name: blockId
@@ -1141,6 +1142,14 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
+      - name: useRcBlock
+        in: query
+        description: When set to `true`, it will use the relay chain block identifier to determine 
+          the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -3443,6 +3452,14 @@ components:
             block.
           items:
             type: string
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
     Blocks:
       type: array
       items: 
