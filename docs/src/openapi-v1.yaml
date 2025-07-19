@@ -1758,6 +1758,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub nomination pools info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1788,6 +1796,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub nomination pool info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -4756,6 +4772,12 @@ components:
           $ref: '#/components/schemas/BondedPool'
         rewardPool:
           $ref: '#/components/schemas/RewardPool'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsNominationPoolsInfo:
       type: object
       properties:
@@ -4786,6 +4808,12 @@ components:
             type: number
         minJoinBond:
             type: number
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsOnGoingReferenda:
           type: object
           properties:
