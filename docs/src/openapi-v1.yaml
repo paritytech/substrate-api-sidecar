@@ -1987,6 +1987,22 @@ paths:
         required: false
         schema:
           type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve dispatchable metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub dispatchable metadata. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1996,7 +2012,7 @@ paths:
                 description: Pallet info and Array of dispatchableItemIds.
                 $ref: '#/components/schemas/PalletDispatchables'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -2035,6 +2051,22 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve dispatchable metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub dispatchable metadata. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2043,7 +2075,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PalletDispatchablesItem'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -4683,6 +4715,14 @@ components:
           items:
             $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
           description: Array containing metadata for each dispatchable entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletDispatchablesItem:
       type: object
       properties:
@@ -4700,6 +4740,14 @@ components:
           example: "vote"
         metadata:
           $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletDispatchablesItemMetadata:
       type: object
       properties:
