@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
+import { validateRcAt } from '../../middleware';
 import { PalletsPoolAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -69,16 +71,46 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateRcAt);
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getPoolAssetById]]);
 	}
 
-	private getPoolAssetById: RequestHandler = async ({ params: { assetId }, query: { at } }, res): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+	private getPoolAssetById: RequestHandler = async (
+		{ params: { assetId }, query: { at, rcAt } },
+		res,
+	): Promise<void> => {
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
-		PalletsPoolAssetsController.sanitizedSend(res, await this.service.fetchPoolAssetById(hash, index));
+
+		const result = await this.service.fetchPoolAssetById(hash, index);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			PalletsPoolAssetsController.sanitizedSend(res, enhancedResult);
+		} else {
+			PalletsPoolAssetsController.sanitizedSend(res, result);
+		}
 	};
 }
