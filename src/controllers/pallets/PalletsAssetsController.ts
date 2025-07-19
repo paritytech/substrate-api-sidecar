@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
+import { validateRcAt } from '../../middleware';
 import { PalletsAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -28,6 +30,8 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub asset info. Only supported
+ * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * `/pallets/assets/:assetId/asset-info`
  * Returns:
@@ -54,6 +58,8 @@ import AbstractController from '../AbstractController';
  * 		- `symbol`: The ticker symbol for this asset.
  * 		- `decimals`: The number of decimals this asset uses to represent one unit.
  * 		- `isFrozen`: Whether the asset metadata may be changed by a non Force origin.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
  *
  * Substrate References:
  * - Assets Pallet: https://crates.parity.io/pallet_assets/index.html
@@ -69,16 +75,42 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateRcAt);
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getAssetById]]);
 	}
 
-	private getAssetById: RequestHandler = async ({ params: { assetId }, query: { at } }, res): Promise<void> => {
-		const hash = await this.getHashFromAt(at);
+	private getAssetById: RequestHandler = async ({ params: { assetId }, query: { at, rcAt } }, res): Promise<void> => {
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
-		PalletsAssetsController.sanitizedSend(res, await this.service.fetchAssetById(hash, index));
+		const result = await this.service.fetchAssetById(hash, index);
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			PalletsAssetsController.sanitizedSend(res, enhancedResult);
+		} else {
+			PalletsAssetsController.sanitizedSend(res, result);
+		}
 	};
 }

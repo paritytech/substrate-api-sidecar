@@ -1618,6 +1618,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub asset info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1641,6 +1649,14 @@ paths:
           schema:
             type: string
             description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub liquidity pools info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
       responses:
         "200":
@@ -1672,6 +1688,14 @@ paths:
             type: string
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub next available id. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1702,6 +1726,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub foreign assets info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1725,6 +1757,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub nomination pools info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -1757,6 +1797,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub nomination pool info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1781,6 +1829,14 @@ paths:
           schema:
             type: string
             description: Block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub on-going referenda info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
         responses:
           "200":
@@ -1818,6 +1874,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet constants. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -1875,6 +1939,14 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet constant item. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1915,6 +1987,22 @@ paths:
         required: false
         schema:
           type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve dispatchable metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub dispatchable metadata. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1924,7 +2012,7 @@ paths:
                 description: Pallet info and Array of dispatchableItemIds.
                 $ref: '#/components/schemas/PalletDispatchables'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -1963,6 +2051,22 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: at
+        in: query
+        description: Block at which to retrieve dispatchable metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub dispatchable metadata. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -1971,7 +2075,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PalletDispatchablesItem'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -2011,6 +2115,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet errors. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -2068,6 +2180,14 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet error item. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2116,6 +2236,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet events. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -2173,6 +2301,14 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet event item. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2357,6 +2493,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet storage. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2426,6 +2570,14 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet storage item. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2468,6 +2620,14 @@ paths:
         schema:
           type: string
           description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pool asset info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
       responses:
         "200":
@@ -2542,6 +2702,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub staking validators. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2550,7 +2718,7 @@ paths:
               schema:  
                 $ref: '#/components/schemas/StakingValidators'
         "400":
-          description: invalid blockId supplied for at query param
+          description: invalid blockId supplied for at/rcAt query param, or invalid parameter combination
           content:
             application/json:
               schema:
@@ -4259,6 +4427,14 @@ components:
             null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
             \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
             },{\"lpToken\":{\"lpToken\":\"0\"}}]"
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     LiquidityPool:
       type: object
       properties:
@@ -4285,6 +4461,14 @@ components:
           type: string
           description: Next availabe liquidity pool's id.
           example: "4"
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     NodeNetwork:
       type: object
       properties:
@@ -4440,6 +4624,14 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletConstants:
       type: object
       properties:
@@ -4458,6 +4650,12 @@ components:
           items:
             $ref: '#/components/schemas/PalletConstantsItemMetadata'
           description: Array containing metadata for each constant entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletConstantsItem:
       type: object
       properties:
@@ -4475,6 +4673,12 @@ components:
           example: "EnactmentPeriod"
         metadata:
           $ref: '#/components/schemas/PalletConstantsItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletConstantsItemMetadata:
       type: object
       properties:
@@ -4511,6 +4715,14 @@ components:
           items:
             $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
           description: Array containing metadata for each dispatchable entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletDispatchablesItem:
       type: object
       properties:
@@ -4528,6 +4740,14 @@ components:
           example: "vote"
         metadata:
           $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletDispatchablesItemMetadata:
       type: object
       properties:
@@ -4569,6 +4789,12 @@ components:
           items:
             $ref: '#/components/schemas/PalletErrorsItemMetadata'
           description: Array containing metadata for each error entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletErrorsItem:
       type: object
       properties:
@@ -4586,6 +4812,12 @@ components:
           example: "ValueLow"
         metadata:
           $ref: '#/components/schemas/PalletErrorsItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletErrorsItemMetadata:
       type: object
       properties:
@@ -4626,6 +4858,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PalletEventsItemMetadata'
+          description: Array containing metadata for each event entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletEventsItem:
       type: object
       properties:
@@ -4643,6 +4882,12 @@ components:
           example: "Proposed"
         metadata:
           $ref: '#/components/schemas/PalletEventsItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletEventsItemMetadata:
       type: object
       properties:
@@ -4676,6 +4921,14 @@ components:
           items:
             $ref: '#/components/schemas/PalletsForeignAssetsInfo'
           description: Array containing the `AssetDetails` and `AssetMetadata` of every foreign asset.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     PalletsForeignAssetsInfo:
       type: object
       properties:
@@ -4692,6 +4945,12 @@ components:
           $ref: '#/components/schemas/BondedPool'
         rewardPool:
           $ref: '#/components/schemas/RewardPool'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsNominationPoolsInfo:
       type: object
       properties:
@@ -4722,6 +4981,12 @@ components:
             type: number
         minJoinBond:
             type: number
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsOnGoingReferenda:
           type: object
           properties:
@@ -4771,6 +5036,12 @@ components:
                         description: The block number at which the referendum's confirmation stage will end at as long as
                           it doesn't lose its approval in the meantime.
               description: A list of ongoing referenda and their details.
+            rcBlockNumber:
+              type: string
+              description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+            ahTimestamp:
+              type: string
+              description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsPoolAssetsInfo:
       type: object
       properties:
@@ -4780,6 +5051,12 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         poolAssetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletStorage:
       type: object
       properties:
@@ -4796,6 +5073,12 @@ components:
           items:
             $ref: '#/components/schemas/PalletStorageItemMetadata'
           description: Array containing metadata for each storage entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletStorageItem:
       type: object
       properties:
@@ -4834,6 +5117,12 @@ components:
                 turnout: "34485320658000000"
         metadata:
           $ref: '#/components/schemas/PalletStorageItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletStorageItemMetadata:
       type: object
       properties:
@@ -5342,6 +5631,14 @@ components:
               status:
                 type: string
                 description: Status of individual validator (active/waiting).
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+          format: unsignedInteger
     StorageEntryTypeV13:
       type: object
       properties:
