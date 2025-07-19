@@ -2461,6 +2461,14 @@ paths:
           type: string
           description: Block identifier, as the block height or block hash.
           format: unsignedInteger or $hex
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet storage. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -2530,6 +2538,14 @@ paths:
         schema:
           default: false
           type: boolean
+      - name: rcAt
+        in: query
+        description: Relay chain block at which to retrieve Asset Hub pallet storage item. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+        required: false
+        schema:
+          type: string
+          description: Relay chain block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
       responses:
         "200":
           description: successful operation
@@ -4987,6 +5003,12 @@ components:
           items:
             $ref: '#/components/schemas/PalletStorageItemMetadata'
           description: Array containing metadata for each storage entry of the pallet.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletStorageItem:
       type: object
       properties:
@@ -5025,6 +5047,12 @@ components:
                 turnout: "34485320658000000"
         metadata:
           $ref: '#/components/schemas/PalletStorageItemMetadata'
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletStorageItemMetadata:
       type: object
       properties:
