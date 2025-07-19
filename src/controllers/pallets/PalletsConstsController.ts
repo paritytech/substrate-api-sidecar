@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BlockHash } from '@polkadot/types/interfaces';
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
+import { validateRcAt } from '../../middleware';
 import { PalletsConstantsService } from '../../services';
 import { IPalletsConstantsParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -42,6 +44,7 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	}
 
 	protected initRoutes(): void {
+		this.router.use(this.path, validateRcAt);
 		this.safeMountAsyncGetHandlers([
 			['/:constantItemId', this.getConstById as RequestHandler],
 			['/', this.getConsts],
@@ -49,37 +52,84 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	}
 
 	private getConstById: RequestHandler<IPalletsConstantsParam, unknown, unknown> = async (
-		{ query: { at, metadata }, params: { palletId, constantItemId } },
+		{ query: { at, metadata, rcAt }, params: { palletId, constantItemId } },
 		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
-		const hash = await this.getHashFromAt(at);
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		const historicApi = await this.api.at(hash);
 
-		PalletsConstantsController.sanitizedSend(
-			res,
-			await this.service.fetchConstantItem(historicApi, {
-				hash,
-				// stringCamelCase ensures we don't have snake case or kebab case
-				palletId: stringCamelCase(palletId),
-				constantItemId: stringCamelCase(constantItemId),
-				metadata: metadataArg,
-			}),
-		);
+		const result = await this.service.fetchConstantItem(historicApi, {
+			hash,
+			// stringCamelCase ensures we don't have snake case or kebab case
+			palletId: stringCamelCase(palletId),
+			constantItemId: stringCamelCase(constantItemId),
+			metadata: metadataArg,
+		});
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			PalletsConstantsController.sanitizedSend(res, enhancedResult);
+		} else {
+			PalletsConstantsController.sanitizedSend(res, result);
+		}
 	};
 
-	private getConsts: RequestHandler = async ({ params: { palletId }, query: { at, onlyIds } }, res): Promise<void> => {
+	private getConsts: RequestHandler = async (
+		{ params: { palletId }, query: { at, onlyIds, rcAt } },
+		res,
+	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
-		const hash = await this.getHashFromAt(at);
+		let hash: BlockHash;
+		let rcBlockNumber: string | undefined;
+
+		if (rcAt) {
+			const rcAtResult = await this.getHashFromRcAt(rcAt);
+			hash = rcAtResult.ahHash;
+			rcBlockNumber = rcAtResult.rcBlockNumber;
+		} else {
+			hash = await this.getHashFromAt(at);
+		}
+
 		const historicApi = await this.api.at(hash);
 
-		PalletsConstantsController.sanitizedSend(
-			res,
-			await this.service.fetchConstants(historicApi, {
-				hash,
-				palletId: stringCamelCase(palletId),
-				onlyIds: onlyIdsArg,
-			}),
-		);
+		const result = await this.service.fetchConstants(historicApi, {
+			hash,
+			palletId: stringCamelCase(palletId),
+			onlyIds: onlyIdsArg,
+		});
+
+		if (rcBlockNumber) {
+			const apiAt = await this.api.at(hash);
+			const ahTimestamp = await apiAt.query.timestamp.now();
+
+			const enhancedResult = {
+				...result,
+				rcBlockNumber,
+				ahTimestamp: ahTimestamp.toString(),
+			};
+
+			PalletsConstantsController.sanitizedSend(res, enhancedResult);
+		} else {
+			PalletsConstantsController.sanitizedSend(res, result);
+		}
 	};
 }
