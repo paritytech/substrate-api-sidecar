@@ -1830,6 +1830,14 @@ paths:
             type: string
             description: Block identifier, as the block height or block hash.
             format: unsignedInteger or $hex
+        - name: rcAt
+          in: query
+          description: Relay chain block at which to retrieve Asset Hub on-going referenda info. Only supported for Asset Hub endpoints. Cannot be used with 'at' parameter.
+          required: false
+          schema:
+            type: string
+            description: Relay chain block identifier, as the block height or block hash.
+            format: unsignedInteger or $hex
         responses:
           "200":
             description: successful operation
@@ -4863,6 +4871,12 @@ components:
                         description: The block number at which the referendum's confirmation stage will end at as long as
                           it doesn't lose its approval in the meantime.
               description: A list of ongoing referenda and their details.
+            rcBlockNumber:
+              type: string
+              description: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
+            ahTimestamp:
+              type: string
+              description: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
     PalletsPoolAssetsInfo:
       type: object
       properties:
