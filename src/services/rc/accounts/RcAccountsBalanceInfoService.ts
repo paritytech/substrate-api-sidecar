@@ -21,8 +21,8 @@ import type { AccountData, Balance, BalanceLock, BlockHash, Index } from '@polka
 import type { PalletBalancesAccountData } from '@polkadot/types/lookup';
 import { BadRequest } from 'http-errors';
 
-import { IAccountBalanceInfo, IBalanceLock } from '../../types/responses';
-import { AbstractService } from '../AbstractService';
+import { IAccountBalanceInfo, IBalanceLock } from '../../../types/responses';
+import { AbstractService } from '../../AbstractService';
 
 export class RcAccountsBalanceInfoService extends AbstractService {
 	/**

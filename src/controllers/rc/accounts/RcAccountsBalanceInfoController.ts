@@ -17,10 +17,10 @@
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { ApiPromiseRegistry } from '../../apiRegistry';
-import { validateAddress, validateBoolean } from '../../middleware';
-import { RcAccountsBalanceInfoService } from '../../services';
-import AbstractController from '../AbstractController';
+import { ApiPromiseRegistry } from '../../../apiRegistry';
+import { validateAddress, validateBoolean } from '../../../middleware';
+import { RcAccountsBalanceInfoService } from '../../../services';
+import AbstractController from '../../AbstractController';
 
 export default class AccountsBalanceController extends AbstractController<RcAccountsBalanceInfoService> {
 	static controllerName = 'RcAccountsBalanceInfo';

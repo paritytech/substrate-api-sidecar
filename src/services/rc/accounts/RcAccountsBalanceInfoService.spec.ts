@@ -22,12 +22,12 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { AccountInfo, Address, Hash } from '@polkadot/types/interfaces';
 
-import { ApiPromiseRegistry } from '../../apiRegistry';
-import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry, polkadotRegistryV9370 } from '../../test-helpers/registries';
-import { blockHash789629, defaultMockApi, testAddress } from '../test-helpers/mock';
-import accountsBalanceInfo789629 from '../test-helpers/responses/accounts/balanceInfo789629.json';
-import accountsBalanceInfoFeeFrozen from '../test-helpers/responses/accounts/balanceInfoFeeFrozen.json';
+import { ApiPromiseRegistry } from '../../../apiRegistry';
+import { sanitizeNumbers } from '../../../sanitize/sanitizeNumbers';
+import { polkadotRegistry, polkadotRegistryV9370 } from '../../../test-helpers/registries';
+import { blockHash789629, defaultMockApi, testAddress } from '../../test-helpers/mock';
+import accountsBalanceInfo789629 from '../../test-helpers/responses/accounts/balanceInfo789629.json';
+import accountsBalanceInfoFeeFrozen from '../../test-helpers/responses/accounts/balanceInfoFeeFrozen.json';
 import { RcAccountsBalanceInfoService } from './RcAccountsBalanceInfoService';
 
 const locksAt = (_address: string) =>

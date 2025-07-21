@@ -39,6 +39,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'PalletsEvents',
 		'PalletsForeignAssets',
 		'RcAccountsBalanceInfo',
+		'RcAccountsProxyInfo',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
