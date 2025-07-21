@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1752863900189,
+  "lastUpdate": 1753100146667,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -12341,6 +12341,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 236,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "47201679+TarikGul@users.noreply.github.com",
+            "name": "Tarik Gul",
+            "username": "TarikGul"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "00f8311dbe2f9ac146da6b1a5e7dd2d2cf970b0a",
+          "message": "feat: Support `rcAt` for `/pallets/*` endpoints (#1703)\n\n* Support rcAt for /pallets/assets/{assetId}/asset-info\n\n* support rcAt for /pallets/asset-conversion/*\n\n* Support rcAt for /pallets/foreign-assets\n\n* Support rcAt for /pallets/nomination-pools/*\n\n* Support rcAt for /pallets/-on-going-referenda\n\n* support rcAt for /pallets/{palletId}/consts/*\n\n* Support rcAt for events and error endpoints for pallets\n\n* support rcAt for pallet storage\n\n* Support rcAt for pallets pool assets\n\n* Support rcAt for pallets validators\n\n* Support rcAt for dispatchables",
+          "timestamp": "2025-07-21T07:41:51-04:00",
+          "tree_id": "0234eff05a828ad25c901e21494f56e46156e93e",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/00f8311dbe2f9ac146da6b1a5e7dd2d2cf970b0a"
+        },
+        "date": 1753100144895,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 118.02,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 125.62,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 174.68,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 2637.43,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.39,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.38,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1088.51,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 116,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 704.7,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 155.12,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 96.19,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 206.59,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 103.41,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 112.24,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 96.14,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 105.44,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 97.82,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 103.89,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 447.01,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 143.1,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 132.19,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 127.86,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 140.99,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 130.08,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 129.43,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 174.75,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 104.89,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 95.8,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 192.58,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 208.27,
             "unit": "ms"
           }
         ]
