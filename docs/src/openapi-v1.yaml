@@ -2506,6 +2506,131 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeSpec'
+  /rc/runtime/spec:
+    get:
+      tags:
+      - rc
+      summary: Get version information of the relay chain Substrate runtime.
+      description: Returns version information related to the relay chain runtime. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for runtime specification.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime version information at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeSpec'
+  /rc/runtime/metadata:
+    get:
+      tags:
+      - rc
+      summary: Get the relay chain's metadata.
+      description: Returns the relay chain's runtime metadata in decoded JSON format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for metadata.
+      parameters:
+      - name: at
+        in: query
+        description: Block hash or height at which to query. If not provided, queries finalized head.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeMetadata'
+  /rc/runtime/metadata/versions:
+    get:
+      tags:
+      - rc
+      summary: Get the available versions of relay chain's metadata.
+      description: Returns the available versions of the relay chain's metadata. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for metadata versions.
+      parameters:
+      - name: at
+        in: query
+        description: Block hash or height at which to query. If not provided, queries finalized head.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /rc/runtime/metadata/{metadataVersion}:
+    get:
+      tags:
+      - rc
+      summary: Get the relay chain's metadata at a specific version.
+      description: Returns the relay chain's runtime metadata at a specific version in decoded JSON format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for versioned metadata.
+      parameters:
+      - name: metadataVersion
+        in: path
+        description: The specific version of the Metadata to query. The input must conform to the 'vX' format, where 'X' represents the version number (examples 'v14', 'v15').
+        required: true
+        schema:
+          type: string
+          pattern: '^v[0-9]+$'
+      - name: at
+        in: query
+        description: Block hash or height at which to query. If not provided, queries finalized head.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeMetadata'
+        "400":
+          description: Invalid version format or version not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/runtime/code:
+    get:
+      tags:
+      - rc
+      summary: Get the Wasm code blob of the relay chain Substrate runtime.
+      description: Returns the relay chain's runtime code in Wasm format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for runtime code.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime code information at.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeCode'
   /pallets/{palletId}/storage:
     get:
       tags:
