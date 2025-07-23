@@ -47,9 +47,9 @@ import {
 } from './pallets';
 import { Paras } from './paras';
 import { RcAccountsBalanceInfo, RcAccountsProxyInfo } from './rc/accounts';
+import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
-
 /**
  * Object containing every controller class definition.
  */
@@ -87,6 +87,9 @@ export const controllers = {
 	NodeVersion,
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
+	RcNodeNetwork,
+	RcNodeTransactionPool,
+	RcNodeVersion,
 	RuntimeCode,
 	RuntimeMetadata,
 	RuntimeSpec,

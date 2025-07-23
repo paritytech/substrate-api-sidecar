@@ -3,6 +3,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { getControllers, specToControllerMap } from '../chains-config';
 import { defaultControllers } from '../chains-config/defaultControllers';
 import { controllers } from '.';
@@ -99,6 +100,10 @@ describe('controllerInjection', () => {
 	it('should inject default controllers when pallets are not checked (injected-controllers: false) and a custom config is not available', async () => {
 		const wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
 		const api = await ApiPromise.create({ provider: wsProvider });
+
+		jest.spyOn(ApiPromiseRegistry, 'getSpecNameByType').mockImplementation(() => {
+			return new Set(['mock_spec']);
+		});
 		try {
 			await api.isReady;
 		} finally {
