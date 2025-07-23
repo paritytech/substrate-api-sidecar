@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
@@ -46,31 +45,36 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 		{ params: { address }, query: { at, rcAt } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsProxyInfoController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAccountProxyInfo(ahHash, address);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsProxyInfoController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.fetchAccountProxyInfo(hash, address);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsProxyInfoController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAccountProxyInfo(hash, address);
 			AccountsProxyInfoController.sanitizedSend(res, result);
 		}
 	};

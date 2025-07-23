@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
@@ -83,40 +82,53 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 		{ params: { address }, query: { at, rcAt, token, denominated } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsBalanceController.sanitizedSend(res, []);
+				return;
+			}
+
+			const tokenArg =
+				typeof token === 'string'
+					? token.toUpperCase()
+					: // We assume the first token is the native token
+						this.api.registry.chainTokens[0].toUpperCase();
+			const withDenomination = denominated === 'true';
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const historicApi = await this.api.at(ahHash);
+				const result = await this.service.fetchAccountBalanceInfo(ahHash, historicApi, address, tokenArg, withDenomination);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsBalanceController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
+			const hash = await this.getHashFromAt(at);
+			const tokenArg =
+				typeof token === 'string'
+					? token.toUpperCase()
+					: // We assume the first token is the native token
+						this.api.registry.chainTokens[0].toUpperCase();
+			const withDenomination = denominated === 'true';
 
-		const tokenArg =
-			typeof token === 'string'
-				? token.toUpperCase()
-				: // We assume the first token is the native token
-					this.api.registry.chainTokens[0].toUpperCase();
-		const withDenomination = denominated === 'true';
+			const historicApi = await this.api.at(hash);
+			const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
 
-		const historicApi = await this.api.at(hash);
-
-		const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsBalanceController.sanitizedSend(res, enhancedResult);
-		} else {
 			AccountsBalanceController.sanitizedSend(res, result);
 		}
 	};

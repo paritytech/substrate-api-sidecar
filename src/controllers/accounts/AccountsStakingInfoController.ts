@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
@@ -107,39 +106,51 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 		{ params: { address }, query: { at, rcAt, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
-
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
-		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
 
-		let result;
-		if (isAssetHubMigrated) {
-			result = await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address);
+		if (rcAt) {
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsStakingInfoController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				let result;
+				if (isAssetHubMigrated) {
+					result = await this.service.fetchAccountStakingInfoAssetHub(ahHash, includeClaimedRewardsArg, address);
+				} else {
+					result = await this.service.fetchAccountStakingInfo(ahHash, includeClaimedRewardsArg, address);
+				}
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsStakingInfoController.sanitizedSend(res, results);
 		} else {
-			result = await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address);
-		}
+			const hash = await this.getHashFromAt(at);
 
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
+			let result;
+			if (isAssetHubMigrated) {
+				result = await this.service.fetchAccountStakingInfoAssetHub(hash, includeClaimedRewardsArg, address);
+			} else {
+				result = await this.service.fetchAccountStakingInfo(hash, includeClaimedRewardsArg, address);
+			}
 
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsStakingInfoController.sanitizedSend(res, enhancedResult);
-		} else {
 			AccountsStakingInfoController.sanitizedSend(res, result);
 		}
 	};

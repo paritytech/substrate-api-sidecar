@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
@@ -92,33 +91,39 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 		{ params: { address }, query: { at, rcAt, assets } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
-		const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
-
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsPoolAssetsController.sanitizedSend(res, []);
+				return;
+			}
+
+			const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchPoolAssetBalances(ahHash, address, assetsArray);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsPoolAssetsController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.fetchPoolAssetBalances(hash, address, assetsArray);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsPoolAssetsController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
+			const result = await this.service.fetchPoolAssetBalances(hash, address, assetsArray);
 			AccountsPoolAssetsController.sanitizedSend(res, result);
 		}
 	};
@@ -127,9 +132,6 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 		{ params: { address }, query: { at, rcAt, delegate, assetId } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
 			throw new BadRequest('Must include a `delegate` and `assetId` query param');
 		}
@@ -137,27 +139,35 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsPoolAssetsController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchPoolAssetApprovals(ahHash, address, id, delegate);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsPoolAssetsController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.fetchPoolAssetApprovals(hash, address, id, delegate);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsPoolAssetsController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchPoolAssetApprovals(hash, address, id, delegate);
 			AccountsPoolAssetsController.sanitizedSend(res, result);
 		}
 	};

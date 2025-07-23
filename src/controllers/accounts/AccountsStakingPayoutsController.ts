@@ -16,7 +16,6 @@
 
 import type { ApiDecoration } from '@polkadot/api/types';
 import { Option, u32 } from '@polkadot/types';
-import { BlockHash } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -112,58 +111,91 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		{ params: { address }, query: { depth, era, unclaimedOnly, at, rcAt } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
 		const { specName } = this;
 		const isKusama = specName.toString().toLowerCase() === 'kusama';
 
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsStakingPayoutsController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				let hash = ahHash;
+				let apiAt = await this.api.at(hash);
+
+				const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+
+				const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
+
+				if (isKusama && currentEra < 518) {
+					const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+					const block = earlyErasBlockInfo[currentEra].start;
+					hash = await this.getHashFromAt(block.toString());
+					apiAt = await this.api.at(hash);
+				}
+
+				if (!apiAt.query.staking) {
+					throw new BadRequest('Staking pallet not found for queried runtime');
+				}
+
+				const result = await this.service.fetchAccountStakingPayout(
+					hash,
+					address,
+					this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
+					eraArg,
+					unclaimedOnly === 'false' ? false : true,
+					currentEra,
+					apiAt,
+				);
+
+				const finalApiAt = await this.api.at(hash);
+				const ahTimestamp = await finalApiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsStakingPayoutsController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
+			let hash = await this.getHashFromAt(at);
+			let apiAt = await this.api.at(hash);
 
-		let apiAt = await this.api.at(hash);
+			const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 
-		const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
+			const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
 
-		const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
+			if (isKusama && currentEra < 518) {
+				const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
+				const block = earlyErasBlockInfo[currentEra].start;
+				hash = await this.getHashFromAt(block.toString());
+				apiAt = await this.api.at(hash);
+			}
 
-		if (isKusama && currentEra < 518) {
-			const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
-			const block = earlyErasBlockInfo[currentEra].start;
-			hash = await this.getHashFromAt(block.toString());
-			apiAt = await this.api.at(hash);
-		}
+			if (!apiAt.query.staking) {
+				throw new BadRequest('Staking pallet not found for queried runtime');
+			}
 
-		if (!apiAt.query.staking) {
-			throw new BadRequest('Staking pallet not found for queried runtime');
-		}
+			const result = await this.service.fetchAccountStakingPayout(
+				hash,
+				address,
+				this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
+				eraArg,
+				unclaimedOnly === 'false' ? false : true,
+				currentEra,
+				apiAt,
+			);
 
-		const result = await this.service.fetchAccountStakingPayout(
-			hash,
-			address,
-			this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
-			eraArg,
-			unclaimedOnly === 'false' ? false : true,
-			currentEra,
-			apiAt,
-		);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsStakingPayoutsController.sanitizedSend(res, enhancedResult);
-		} else {
 			AccountsStakingPayoutsController.sanitizedSend(res, result);
 		}
 	};

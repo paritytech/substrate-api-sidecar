@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
@@ -92,33 +91,39 @@ export default class AccountsAssetsController extends AbstractController<Account
 		{ params: { address }, query: { at, rcAt, assets } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
 		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsAssetsController.sanitizedSend(res, []);
+				return;
+			}
+
+			const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAssetBalances(ahHash, address, assetsArray);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsAssetsController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
-
-		const result = await this.service.fetchAssetBalances(hash, address, assetsArray);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsAssetsController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
+			const result = await this.service.fetchAssetBalances(hash, address, assetsArray);
 			AccountsAssetsController.sanitizedSend(res, result);
 		}
 	};
@@ -127,37 +132,42 @@ export default class AccountsAssetsController extends AbstractController<Account
 		{ params: { address }, query: { at, rcAt, delegate, assetId } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
-		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
 			throw new BadRequest('Must include a `delegate` and `assetId` query param');
 		}
 
 		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
-		const result = await this.service.fetchAssetApproval(hash, address, id, delegate);
+		if (rcAt) {
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsAssetsController.sanitizedSend(res, []);
+				return;
+			}
 
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAssetApproval(ahHash, address, id, delegate);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
 
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
 
-			AccountsAssetsController.sanitizedSend(res, enhancedResult);
+				results.push(enhancedResult);
+			}
+
+			AccountsAssetsController.sanitizedSend(res, results);
 		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAssetApproval(hash, address, id, delegate);
 			AccountsAssetsController.sanitizedSend(res, result);
 		}
 	};
