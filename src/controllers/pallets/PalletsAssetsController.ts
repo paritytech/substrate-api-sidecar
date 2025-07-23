@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
 import { validateRcAt } from '../../middleware';
@@ -80,36 +79,42 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 	}
 
 	private getAssetById: RequestHandler = async ({ params: { assetId }, query: { at, rcAt } }, res): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
-		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
-		const result = await this.service.fetchAssetById(hash, index);
 
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
+		if (rcAt) {
+			const rcAtResults = await this.getHashFromRcAt(rcAt);
+			
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				PalletsAssetsController.sanitizedSend(res, []);
+				return;
+			}
 
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAssetById(ahHash, index);
+				
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
 
-			PalletsAssetsController.sanitizedSend(res, enhancedResult);
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			PalletsAssetsController.sanitizedSend(res, results);
 		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAssetById(hash, index);
 			PalletsAssetsController.sanitizedSend(res, result);
 		}
 	};
