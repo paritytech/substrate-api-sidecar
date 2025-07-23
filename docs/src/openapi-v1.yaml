@@ -818,6 +818,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/node/network:
+    get:
+      tags:
+      - node
+      summary: Get information about the Substrate node's activity in the peer-to-peer network on the relay chain.
+      description: Returns network related information of the node on the relay chain.
+      operationId: getNodeNetworking
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeNetwork'
+  /rc/node/transaction-pool:
+    get:
+      tags:
+      - node
+      summary: Get pending extrinsics from the Substrate node.
+      description: Returns the extrinsics that the node knows of that have not
+        been included in a block.
+      operationId: getNodeTransactionPool
+      parameters:
+      - name: includeFee
+        in: query
+        description: Boolean representing whether or not to include tips, partialFee, and priority in each extrinsic.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionPool'
+  /rc/node/version:
+    get:
+      tags:
+      - node
+      summary: Get information about the Substrates node's implementation and versioning.
+      description: Returns versioning information of the node.
+      operationId: getNodeVersion
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeVersion'
   /blocks:
     get:
       tags:
