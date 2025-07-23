@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
+import { validateAddress, validateBoolean, validateUseRcBlock } from '../../middleware';
 import { AccountsBalanceInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -31,10 +30,15 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub balance info. Only supported
- * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional) `useRcBlock`: When true, treats the `at` parameter as a relay chain block
+ * 		to find corresponding Asset Hub blocks. Only supported for Asset Hub endpoints.
  *
  * Returns:
+ * - When using `useRcBlock=true`: An array of response objects, one for each Asset Hub block found
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `useRcBlock=false` or omitted: A single response object.
+ *
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `nonce`: Account nonce.
  * - `free`: Free balance of the account. Not equivalent to _spendable_ balance. This is the only
@@ -49,8 +53,8 @@ import AbstractController from '../AbstractController';
  *   - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
  *   - `amount`: The amount below which the free balance may not drop with this lock in effect.
  *   - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock=true`.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock=true`.
  *
  * Substrate Reference:
  * - FRAME System: https://crates.parity.io/frame_system/index.html
@@ -68,7 +72,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean(['denominated']), validateRcAt);
+		this.router.use(this.path, validateAddress, validateBoolean(['denominated']), validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountBalanceInfo]]);
 	}
@@ -80,43 +84,62 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 * @param res Express Response
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, rcAt, token, denominated } },
+		{ params: { address }, query: { at, useRcBlock, token, denominated } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsBalanceController.sanitizedSend(res, []);
+				return;
+			}
+
+			const tokenArg =
+				typeof token === 'string'
+					? token.toUpperCase()
+					: // We assume the first token is the native token
+						this.api.registry.chainTokens[0].toUpperCase();
+			const withDenomination = denominated === 'true';
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const historicApi = await this.api.at(ahHash);
+				const result = await this.service.fetchAccountBalanceInfo(
+					ahHash,
+					historicApi,
+					address,
+					tokenArg,
+					withDenomination,
+				);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsBalanceController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
+			const hash = await this.getHashFromAt(at);
+			const tokenArg =
+				typeof token === 'string'
+					? token.toUpperCase()
+					: // We assume the first token is the native token
+						this.api.registry.chainTokens[0].toUpperCase();
+			const withDenomination = denominated === 'true';
 
-		const tokenArg =
-			typeof token === 'string'
-				? token.toUpperCase()
-				: // We assume the first token is the native token
-					this.api.registry.chainTokens[0].toUpperCase();
-		const withDenomination = denominated === 'true';
+			const historicApi = await this.api.at(hash);
+			const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
 
-		const historicApi = await this.api.at(hash);
-
-		const result = await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsBalanceController.sanitizedSend(res, enhancedResult);
-		} else {
 			AccountsBalanceController.sanitizedSend(res, result);
 		}
 	};

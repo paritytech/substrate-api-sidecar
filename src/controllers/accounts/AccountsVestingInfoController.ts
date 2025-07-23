@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress, validateRcAt } from '../../middleware';
+import { validateAddress, validateUseRcBlock } from '../../middleware';
 import { AccountsVestingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -31,17 +30,21 @@ import AbstractController from '../AbstractController';
  * Query params:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
- * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s). Only supported for Asset Hub endpoints.
  *
  * Returns:
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ *
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `vesting`: Vesting schedule for an account.
  *   - `locked`: Number of tokens locked at start.
  *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
  *   - `startingBlock`: Starting block for unlocking(vesting).
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Substrate Reference:
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
@@ -57,7 +60,7 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateRcAt);
+		this.router.use(this.path, validateAddress, validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountVestingInfo]]);
 	}
@@ -69,34 +72,39 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, rcAt } },
+		{ params: { address }, query: { at, useRcBlock } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsVestingInfoController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAccountVestingInfo(ahHash, address);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsVestingInfoController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.fetchAccountVestingInfo(hash, address);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsVestingInfoController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAccountVestingInfo(hash, address);
 			AccountsVestingInfoController.sanitizedSend(res, result);
 		}
 	};
