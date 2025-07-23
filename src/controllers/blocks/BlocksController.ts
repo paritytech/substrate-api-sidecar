@@ -194,6 +194,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHash = rcHeader.hash;
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
+				
+				// Return empty array if no Asset Hub block found
+				if (!hash) {
+					BlocksController.sanitizedSend(res, []);
+					return;
+				}
 			} else {
 				hash = (await this.api.rpc.chain.getHeader()).hash;
 			}
@@ -209,6 +215,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHash = rcHeader.hash;
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
+				
+				// Return empty array if no Asset Hub block found
+				if (!hash) {
+					BlocksController.sanitizedSend(res, []);
+					return;
+				}
 			} else {
 				hash = (await this.api.rpc.chain.getHeader()).hash;
 			}
@@ -221,6 +233,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
+				
+				// Return empty array if no Asset Hub block found
+				if (!hash) {
+					BlocksController.sanitizedSend(res, []);
+					return;
+				}
 			} else {
 				hash = await this.api.rpc.chain.getFinalizedHead();
 			}
@@ -262,7 +280,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 					ahTimestamp: ahTimestamp.toString(),
 				};
 
-				BlocksController.sanitizedSend(res, enhancedCachedResult);
+				BlocksController.sanitizedSend(res, [enhancedCachedResult]);
 			} else {
 				BlocksController.sanitizedSend(res, isBlockCached);
 			}
@@ -284,7 +302,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksController.sanitizedSend(res, enhancedResult);
+			BlocksController.sanitizedSend(res, [enhancedResult]);
 		} else {
 			BlocksController.sanitizedSend(res, block);
 		}
@@ -322,6 +340,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// Treat the 'number' parameter as a relay chain block identifier
 			rcBlockNumber = number;
 			hash = await this.getAhAtFromRcAt(number);
+			
+			// Return empty array if no Asset Hub block found
+			if (!hash) {
+				BlocksController.sanitizedSend(res, []);
+				return;
+			}
 		} else {
 			hash = await this.getHashForBlock(number);
 		}
@@ -376,7 +400,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 					ahTimestamp: ahTimestamp.toString(),
 				};
 
-				BlocksController.sanitizedSend(res, enhancedCachedResult);
+				BlocksController.sanitizedSend(res, [enhancedCachedResult]);
 			} else {
 				BlocksController.sanitizedSend(res, isBlockCached);
 			}
@@ -398,7 +422,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksController.sanitizedSend(res, enhancedResult);
+			BlocksController.sanitizedSend(res, [enhancedResult]);
 		} else {
 			// We set the last param to true because we haven't queried the finalizedHead
 			BlocksController.sanitizedSend(res, block);
@@ -429,6 +453,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// Treat the 'number' parameter as a relay chain block identifier
 			rcBlockNumber = number;
 			hash = await this.getAhAtFromRcAt(number);
+			
+			// Return empty array if no Asset Hub block found
+			if (!hash) {
+				BlocksController.sanitizedSend(res, []);
+				return;
+			}
 		} else {
 			hash = await this.getHashForBlock(number);
 		}
@@ -448,7 +478,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksController.sanitizedSend(res, enhancedResult);
+			BlocksController.sanitizedSend(res, [enhancedResult]);
 		} else {
 			BlocksController.sanitizedSend(res, headerResult);
 		}
@@ -480,6 +510,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
 			}
+			
+			// Return empty array if no Asset Hub block found
+			if (!hash) {
+				BlocksController.sanitizedSend(res, []);
+				return;
+			}
 		} else {
 			hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
 		}
@@ -496,10 +532,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				extrinsicsRoot: headerResult.extrinsicsRoot,
 				digest: headerResult.digest,
 				rcBlockNumber,
-				ahTimestamp,
+				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksController.sanitizedSend(res, enhancedResult);
+			BlocksController.sanitizedSend(res, [enhancedResult]);
 		} else {
 			BlocksController.sanitizedSend(res, headerResult);
 		}
@@ -548,10 +584,10 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				if (useRcBlockArg) {
 					// Treat range numbers as relay chain block identifiers
 					rcBlockNumber = rangeOfNums[i].toString();
-					try {
-						hash = await this.getAhAtFromRcAt(rcBlockNumber, 1);
-					} catch (error) {
-						// Skip this RC block if it doesn't have a corresponding AH block
+					hash = await this.getAhAtFromRcAt(rcBlockNumber);
+					
+					// Skip this RC block if it doesn't have a corresponding AH block
+					if (!hash) {
 						return null;
 					}
 				} else {

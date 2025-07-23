@@ -54,62 +54,62 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
 
-		let hash;
-		let rcBlockNumber: string | undefined;
-
 		if (useRcBlockArg) {
 			// Treat the blockId parameter as a relay chain block identifier
-			rcBlockNumber = blockId;
-			hash = await this.getAhAtFromRcAt(blockId);
-		} else {
-			hash = await this.getHashForBlock(blockId);
-		}
+			const rcBlockNumber = blockId;
+			const hash = await this.getAhAtFromRcAt(blockId);
+			
+			// Return empty array if no Asset Hub block found
+			if (!hash) {
+				BlocksExtrinsicsController.sanitizedSend(res, []);
+				return;
+			}
 
-		const eventDocsArg = eventDocs === 'true';
-		const extrinsicDocsArg = extrinsicDocs === 'true';
-		const noFeesArg = noFees === 'true';
+			const eventDocsArg = eventDocs === 'true';
+			const extrinsicDocsArg = extrinsicDocs === 'true';
+			const noFeesArg = noFees === 'true';
 
-		const options = {
-			eventDocs: eventDocsArg,
-			extrinsicDocs: extrinsicDocsArg,
-			checkFinalized: true,
-			queryFinalizedHead: false,
-			omitFinalizedTag: true,
-			noFees: noFeesArg,
-			checkDecodedXcm: false,
-			paraId: undefined,
-		};
+			const options = {
+				eventDocs: eventDocsArg,
+				extrinsicDocs: extrinsicDocsArg,
+				checkFinalized: true,
+				queryFinalizedHead: false,
+				omitFinalizedTag: true,
+				noFees: noFeesArg,
+				checkDecodedXcm: false,
+				paraId: undefined,
+			};
 
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm);
+			const cacheKey =
+				hash.toString() +
+				Number(options.eventDocs) +
+				Number(options.extrinsicDocs) +
+				Number(options.checkFinalized) +
+				Number(options.noFees) +
+				Number(options.checkDecodedXcm);
 
-		const isBlockCached = this.blockStore.get(cacheKey);
-		const historicApi = await this.api.at(hash);
+			const isBlockCached = this.blockStore.get(cacheKey);
+			const historicApi = await this.api.at(hash);
 
-		const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
+			const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
 
-		if (!isBlockCached) {
-			this.blockStore.set(cacheKey, block);
-		}
-		/**
-		 * Verify our param `extrinsicIndex` is an integer represented as a string
-		 */
-		this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
+			if (!isBlockCached) {
+				this.blockStore.set(cacheKey, block);
+			}
 
-		/**
-		 * Change extrinsicIndex from a type string to a number before passing it
-		 * into any service.
-		 */
-		const index = parseInt(extrinsicIndex, 10);
+			/**
+			 * Verify our param `extrinsicIndex` is an integer represented as a string
+			 */
+			this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
 
-		const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
+			/**
+			 * Change extrinsicIndex from a type string to a number before passing it
+			 * into any service.
+			 */
+			const index = parseInt(extrinsicIndex, 10);
 
-		if (rcBlockNumber) {
+			const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
+
 			const apiAt = await this.api.at(hash);
 			const ahTimestamp = await apiAt.query.timestamp.now();
 			const enhancedResult = {
@@ -118,8 +118,55 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksExtrinsicsController.sanitizedSend(res, enhancedResult);
+			BlocksExtrinsicsController.sanitizedSend(res, [enhancedResult]);
 		} else {
+			const hash = await this.getHashForBlock(blockId);
+			
+			const eventDocsArg = eventDocs === 'true';
+			const extrinsicDocsArg = extrinsicDocs === 'true';
+			const noFeesArg = noFees === 'true';
+
+			const options = {
+				eventDocs: eventDocsArg,
+				extrinsicDocs: extrinsicDocsArg,
+				checkFinalized: true,
+				queryFinalizedHead: false,
+				omitFinalizedTag: true,
+				noFees: noFeesArg,
+				checkDecodedXcm: false,
+				paraId: undefined,
+			};
+
+			const cacheKey =
+				hash.toString() +
+				Number(options.eventDocs) +
+				Number(options.extrinsicDocs) +
+				Number(options.checkFinalized) +
+				Number(options.noFees) +
+				Number(options.checkDecodedXcm);
+
+			const isBlockCached = this.blockStore.get(cacheKey);
+			const historicApi = await this.api.at(hash);
+
+			const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
+
+			if (!isBlockCached) {
+				this.blockStore.set(cacheKey, block);
+			}
+
+			/**
+			 * Verify our param `extrinsicIndex` is an integer represented as a string
+			 */
+			this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
+
+			/**
+			 * Change extrinsicIndex from a type string to a number before passing it
+			 * into any service.
+			 */
+			const index = parseInt(extrinsicIndex, 10);
+
+			const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
+
 			BlocksExtrinsicsController.sanitizedSend(res, extrinsic);
 		}
 	};
