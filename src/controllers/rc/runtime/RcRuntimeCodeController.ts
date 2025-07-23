@@ -17,7 +17,7 @@
 import { RequestHandler } from 'express';
 
 import { ApiPromiseRegistry } from '../../../apiRegistry';
-import { RcRuntimeCodeService } from '../../../services';
+import { RuntimeCodeService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
 /**
@@ -31,11 +31,16 @@ import AbstractController from '../../AbstractController';
  * - `at`: Block number and hash at which the call was made.
  * - `code`: Runtime code Wasm blob.
  */
-export default class RcRuntimeCodeController extends AbstractController<RcRuntimeCodeService> {
+export default class RcRuntimeCodeController extends AbstractController<RuntimeCodeService> {
 	static controllerName = 'RcRuntimeCode';
 	static requiredPallets = [];
-	constructor(api: string) {
-		super(api, '/rc/runtime/code', new RcRuntimeCodeService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/runtime/code', new RuntimeCodeService(rcSpecName));
 		this.initRoutes();
 	}
 
@@ -59,6 +64,6 @@ export default class RcRuntimeCodeController extends AbstractController<RcRuntim
 
 		const hash = await this.getHashFromAt(at, { api: rcApi });
 
-		RcRuntimeCodeController.sanitizedSend(res, await this.service.fetchCode(hash, rcApi));
+		RcRuntimeCodeController.sanitizedSend(res, await this.service.fetchCode(hash));
 	};
 }

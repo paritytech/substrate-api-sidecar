@@ -17,7 +17,7 @@
 import { RequestHandler } from 'express';
 
 import { ApiPromiseRegistry } from '../../../apiRegistry';
-import { RcRuntimeSpecService } from '../../../services';
+import { RuntimeSpecService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
 /**
@@ -45,11 +45,16 @@ import AbstractController from '../../AbstractController';
  * 		its index.
  * - `properties`: Arbitrary properties defined in the chain spec.
  */
-export default class RcRuntimeSpecController extends AbstractController<RcRuntimeSpecService> {
+export default class RcRuntimeSpecController extends AbstractController<RuntimeSpecService> {
 	static controllerName = 'RcRuntimeSpec';
 	static requiredPallets = [];
-	constructor(api: string) {
-		super(api, '/rc/runtime/spec', new RcRuntimeSpecService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/runtime/spec', new RuntimeSpecService(rcSpecName));
 		this.initRoutes();
 	}
 
@@ -66,6 +71,6 @@ export default class RcRuntimeSpecController extends AbstractController<RcRuntim
 
 		const hash = await this.getHashFromAt(at, { api: rcApi });
 
-		RcRuntimeSpecController.sanitizedSend(res, await this.service.fetchSpec(hash, rcApi));
+		RcRuntimeSpecController.sanitizedSend(res, await this.service.fetchSpec(hash));
 	};
 }

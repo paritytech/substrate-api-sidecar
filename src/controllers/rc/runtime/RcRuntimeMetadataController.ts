@@ -18,7 +18,7 @@ import { u32, Vec } from '@polkadot/types';
 import { RequestHandler } from 'express';
 
 import { ApiPromiseRegistry } from '../../../apiRegistry';
-import { RcRuntimeMetadataService } from '../../../services';
+import { RuntimeMetadataService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
 /**
@@ -39,11 +39,16 @@ import AbstractController from '../../AbstractController';
  * - FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
  * - Knowledge Base: https://substrate.dev/docs/en/knowledgebase/runtime/metadata
  */
-export default class RcRuntimeMetadataController extends AbstractController<RcRuntimeMetadataService> {
+export default class RcRuntimeMetadataController extends AbstractController<RuntimeMetadataService> {
 	static controllerName = 'RcRuntimeMetadata';
 	static requiredPallets = [];
-	constructor(api: string) {
-		super(api, '/rc/runtime/metadata', new RcRuntimeMetadataService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/runtime/metadata', new RuntimeMetadataService(rcSpecName));
 		this.initRoutes();
 	}
 
@@ -75,7 +80,7 @@ export default class RcRuntimeMetadataController extends AbstractController<RcRu
 		}
 
 		const registry = historicApi ? historicApi.registry : rcApi.registry;
-		const metadata = await this.service.fetchMetadata(hash, rcApi);
+		const metadata = await this.service.fetchMetadata(hash);
 
 		RcRuntimeMetadataController.sanitizedSend(res, metadata, {
 			metadataOpts: { registry, version: metadata.version },
@@ -149,7 +154,7 @@ export default class RcRuntimeMetadataController extends AbstractController<RcRu
 
 		const hash = await this.getHashFromAt(at, { api: rcApi });
 
-		const metadataVersions = await this.service.fetchMetadataVersions(hash, rcApi);
+		const metadataVersions = await this.service.fetchMetadataVersions(hash);
 
 		RcRuntimeMetadataController.sanitizedSend(res, metadataVersions, {});
 	};
