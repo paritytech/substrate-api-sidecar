@@ -47,8 +47,8 @@ import {
 } from './pallets';
 import { Paras } from './paras';
 import { RcAccountsBalanceInfo, RcAccountsProxyInfo } from './rc/accounts';
-import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
+import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
 /**
