@@ -16,6 +16,7 @@
 
 import { RequestHandler } from 'express';
 
+import { ApiPromiseRegistry } from '../../../apiRegistry';
 import { NodeVersionService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
@@ -30,8 +31,13 @@ import AbstractController from '../../AbstractController';
 export default class RcNodeVersionController extends AbstractController<NodeVersionService> {
 	static controllerName = 'RcNodeVersion';
 	static requiredPallets = [];
-	constructor(api: string) {
-		super(api, '/rc/node/version', new NodeVersionService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/node/version', new NodeVersionService(rcSpecName));
 		this.initRoutes();
 	}
 
