@@ -57,8 +57,6 @@ type SidecarRequestHandler =
  */
 export type RequiredPallets = string[][];
 
-const RC_TO_AH_MAX_DEPTH = 12;
-
 /**
  * Abstract base class for creating controller classes.
  */
@@ -292,7 +290,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			: await chosenApi.rpc.chain.getFinalizedHead();
 	}
 
-	protected async getAhAtFromRcAt(at: unknown, maxDepth: number = RC_TO_AH_MAX_DEPTH): Promise<BlockHash> {
+	protected async getAhAtFromRcAt(at: unknown): Promise<BlockHash | null> {
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
 
 		if (!rcApi) {
@@ -301,14 +299,10 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 		const rcHash = await this.getHashFromAt(at, { api: rcApi });
 
-		return this.findAhBlockInRcBlock(rcHash, rcApi, maxDepth);
+		return this.findAhBlockInRcBlock(rcHash, rcApi);
 	}
 
-	private async findAhBlockInRcBlock(rcHash: BlockHash, rcApi: ApiPromise, remainingDepth: number): Promise<BlockHash> {
-		if (remainingDepth <= 0) {
-			throw new Error('Maximum search depth reached while looking for Asset Hub inclusion');
-		}
-
+	private async findAhBlockInRcBlock(rcHash: BlockHash, rcApi: ApiPromise): Promise<BlockHash | null> {
 		const rcApiAt = await rcApi.at(rcHash);
 		const events = await rcApiAt.query.system.events();
 
@@ -331,17 +325,19 @@ export default abstract class AbstractController<T extends AbstractService> {
 			return rcApi.createType('BlockHash', ahBlockHash);
 		}
 
-		const rcHeader = await rcApiAt.query.system.parentHash();
-		const previousRcHash = rcApi.createType('BlockHash', rcHeader);
-
-		return this.findAhBlockInRcBlock(previousRcHash, rcApi, remainingDepth - 1);
+		return null;
 	}
 
-	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }> {
+	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }[]> {
 		const ahHash = await this.getAhAtFromRcAt(rcAt);
 		const rcBlockNumber = typeof rcAt === 'string' ? rcAt : 'latest';
 
-		return { ahHash, rcBlockNumber };
+		// Return empty array if no Asset Hub block found, otherwise return single element array
+		if (!ahHash) {
+			return [];
+		}
+
+		return [{ ahHash, rcBlockNumber }];
 	}
 
 	/**
