@@ -42,6 +42,11 @@ import AbstractController from '../AbstractController';
  * 		  will be skipped, potentially speeding up the response time.
  *
  * Returns:
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `rewardDestination`: The account to which rewards will be paid. Can be 'Staked' (Stash
  *   account, adding to the amount at stake), 'Stash' (Stash address, not adding to the amount at

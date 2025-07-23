@@ -44,6 +44,11 @@ import AbstractController from '../AbstractController';
  * 	for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * Returns:
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `at`:
  * 	- `hash`: The block's hash.
  * 	- `height`: The block's height.

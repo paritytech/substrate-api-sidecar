@@ -64,6 +64,11 @@ import AbstractController from '../AbstractController';
  *
  *
  * Returns:
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found 
+ *   corresponding to the relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using standard block identifiers or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `number`: Block height.
  * - `hash`: The block's hash.
  * - `parentHash`: The hash of the parent block.

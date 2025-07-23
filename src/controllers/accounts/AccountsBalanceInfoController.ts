@@ -34,6 +34,11 @@ import AbstractController from '../AbstractController';
  * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * Returns:
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `nonce`: Account nonce.
  * - `free`: Free balance of the account. Not equivalent to _spendable_ balance. This is the only

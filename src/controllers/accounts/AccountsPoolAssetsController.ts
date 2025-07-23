@@ -41,6 +41,11 @@ import AbstractController from '../AbstractController';
  *
  * `/accounts/:address/pool-asset-balances`
  * Returns:
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `poolAssets`: An array of `AssetBalance` objects which have a AssetId attached to them
  * 		- `assetId`: The identifier of the asset.
@@ -56,6 +61,11 @@ import AbstractController from '../AbstractController';
  *
  * `/accounts/:address/pool-asset-approvals`
  * Returns:
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ * 
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `amount`: The amount of funds approved for the balance transfer from the owner
  * 		to some delegated target.
