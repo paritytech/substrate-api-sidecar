@@ -136,6 +136,8 @@ interface IMigrationBoundaries {
  * TODO: Replace with actual migration era/block numbers
  */
 const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
+	// Migration Finished on Relay Chain: 26071771
+	// Migration Started on Relay Chain: 26041702
 	westend: {
 		relayChainLastEra: 849,
 		assetHubFirstEra: 850,
