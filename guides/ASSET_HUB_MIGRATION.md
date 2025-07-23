@@ -2,6 +2,12 @@
 
 This comprehensive guide explains how to configure Asset Hub migration in Substrate API Sidecar and understand the related elastic scaling changes that prepare the API for future multi-block scenarios.
 
+## ⚠️ Important: Niche Feature Notice
+
+**The `useRcBlock` parameter and elastic scaling functionality is a specialized feature designed for stakeholders who specifically need to track Asset Hub blocks using relay chain block references.** 
+
+**If you are not planning to use the relay chain as a way to track Asset Hub state, you can safely ignore everything related to `useRcBlock` and elastic scaling in this guide.** Standard Asset Hub queries will continue to work exactly as before without any configuration changes.
+
 ## Environment Variables
 
 ### Required Configuration
@@ -57,7 +63,9 @@ This dual-chain requirement is specific to this endpoint, as it needs to gather 
 
 ## Elastic Scaling & Response Structure Changes
 
-**Important**: All endpoints that support the `useRcBlock` parameter now return array responses instead of single enhanced objects. This prepares the API for Polkadot/Kusama elastic scaling where multiple Asset Hub blocks could exist per relay chain block.
+> **Note**: This section only applies if you are using the `useRcBlock` parameter. If you're not using relay chain block tracking, you can skip this entire section.
+
+**Important**: All endpoints that support the `useRcBlock` parameter return array responses instead of single enhanced objects (when used). This prepares the API for Polkadot/Kusama elastic scaling where multiple Asset Hub blocks could exist per relay chain block.
 
 ### What Changed
 
@@ -95,6 +103,8 @@ If no Asset Hub blocks are found for the specified relay chain block, an empty a
 - **Without `useRcBlock`**: Returns single response object (unchanged)
 
 ### Affected Endpoints
+
+> **Note**: These endpoints only change behavior when using `useRcBlock=true`. Without this parameter, they work exactly as before.
 
 All the following endpoints support the `useRcBlock` parameter and return array responses when it's used:
 
@@ -141,6 +151,8 @@ All the following endpoints support the `useRcBlock` parameter and return array 
 - `/pallets/{palletId}/storage/{storageItemId}`
 
 ## Migration Steps
+
+> **Important Reminder**: These migration steps are only necessary if you plan to use the `useRcBlock` parameter for relay chain block tracking. Standard Asset Hub functionality requires no migration.
 
 ### 1. Complete Environment Setup
 
