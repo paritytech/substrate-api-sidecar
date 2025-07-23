@@ -21,6 +21,7 @@ import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
 import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
@@ -116,6 +117,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 		let rcBlockNumber: string | undefined;
 		const { specName } = this;
 		const isKusama = specName.toString().toLowerCase() === 'kusama';
+		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
 
 		if (rcAt) {
 			const rcAtResult = await this.getHashFromRcAt(rcAt);
@@ -142,15 +144,28 @@ export default class AccountsStakingPayoutsController extends AbstractController
 			throw new BadRequest('Staking pallet not found for queried runtime');
 		}
 
-		const result = await this.service.fetchAccountStakingPayout(
-			hash,
-			address,
-			this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
-			eraArg,
-			unclaimedOnly === 'false' ? false : true,
-			currentEra,
-			apiAt,
-		);
+		let result;
+		if (isAssetHubMigrated) {
+			result = await this.service.fetchAccountStakingPayoutAssetHub(
+				hash,
+				address,
+				this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
+				eraArg,
+				unclaimedOnly === 'false' ? false : true,
+				currentEra,
+				apiAt,
+			);
+		} else {
+			result = await this.service.fetchAccountStakingPayout(
+				hash,
+				address,
+				this.verifyAndCastOr('depth', sanitizedDepth, 1) as number,
+				eraArg,
+				unclaimedOnly === 'false' ? false : true,
+				currentEra,
+				apiAt,
+			);
+		}
 
 		if (rcBlockNumber) {
 			const apiAt = await this.api.at(hash);
