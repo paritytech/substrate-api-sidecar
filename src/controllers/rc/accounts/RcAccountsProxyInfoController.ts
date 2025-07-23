@@ -19,14 +19,19 @@ import { IAddressParam } from 'src/types/requests';
 
 import { ApiPromiseRegistry } from '../../../apiRegistry';
 import { validateAddress } from '../../../middleware';
-import { RcAccountsProxyInfoService } from '../../../services';
+import { AccountsProxyInfoService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
-export default class RcAccountsProxyInfoController extends AbstractController<RcAccountsProxyInfoService> {
+export default class RcAccountsProxyInfoController extends AbstractController<AccountsProxyInfoService> {
 	static controllerName = 'RcAccountsProxyInfo';
 	static requiredPallets = [['Proxy']];
-	constructor(api: string) {
-		super(api, '/rc/accounts/:address/proxy-info', new RcAccountsProxyInfoService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/accounts/:address/proxy-info', new AccountsProxyInfoService(rcSpecName));
 		this.initRoutes();
 	}
 
@@ -53,11 +58,7 @@ export default class RcAccountsProxyInfoController extends AbstractController<Rc
 		}
 
 		const hash = await this.getHashFromAt(at, { api: rcApi });
-		const historicApi = await rcApi.at(hash);
 
-		RcAccountsProxyInfoController.sanitizedSend(
-			res,
-			await this.service.fetchAccountProxyInfo(hash, rcApi, historicApi, address),
-		);
+		RcAccountsProxyInfoController.sanitizedSend(res, await this.service.fetchAccountProxyInfo(hash, address));
 	};
 }

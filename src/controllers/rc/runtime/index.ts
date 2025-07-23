@@ -14,5 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './RcAccountsBalanceInfoService';
-export * from './RcAccountsProxyInfoService';
+export { default as RcRuntimeCode } from './RcRuntimeCodeController';
+export { default as RcRuntimeMetadata } from './RcRuntimeMetadataController';
+export { default as RcRuntimeSpec } from './RcRuntimeSpecController';
