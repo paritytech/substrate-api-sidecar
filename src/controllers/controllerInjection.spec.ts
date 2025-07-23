@@ -1,9 +1,9 @@
 // write tests that get the metadata from an rpc and then inject the metadata into the controller
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { ApiPromiseRegistry } from 'src/apiRegistry';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { getControllers, specToControllerMap } from '../chains-config';
 import { defaultControllers } from '../chains-config/defaultControllers';
 import { controllers } from '.';
