@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -30,11 +29,15 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub asset info. Only supported
- * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s). Only supported for Asset Hub endpoints.
  *
  * `/pallets/assets/:assetId/asset-info`
  * Returns:
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
+ *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
+ * - When using `at` parameter or no query params: A single response object.
+ *
+ * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `assetInfo`: All details concering an asset.
  * 		- `owner`: Owner of the assets privileges.
@@ -58,8 +61,8 @@ import AbstractController from '../AbstractController';
  * 		- `symbol`: The ticker symbol for this asset.
  * 		- `decimals`: The number of decimals this asset uses to represent one unit.
  * 		- `isFrozen`: Whether the asset metadata may be changed by a non Force origin.
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Substrate References:
  * - Assets Pallet: https://crates.parity.io/pallet_assets/index.html
@@ -75,41 +78,50 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getAssetById]]);
 	}
 
-	private getAssetById: RequestHandler = async ({ params: { assetId }, query: { at, rcAt } }, res): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
-
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
-		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
+	private getAssetById: RequestHandler = async (
+		{ params: { assetId }, query: { at, useRcBlock } },
+		res,
+	): Promise<void> => {
 		/**
 		 * Verify our param `assetId` is an integer represented as a string, and return
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
-		const result = await this.service.fetchAssetById(hash, index);
 
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				PalletsAssetsController.sanitizedSend(res, []);
+				return;
+			}
 
-			PalletsAssetsController.sanitizedSend(res, enhancedResult);
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAssetById(ahHash, index);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			PalletsAssetsController.sanitizedSend(res, results);
 		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAssetById(hash, index);
 			PalletsAssetsController.sanitizedSend(res, result);
 		}
 	};

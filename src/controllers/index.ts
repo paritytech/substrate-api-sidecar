@@ -48,9 +48,9 @@ import {
 import { Paras } from './paras';
 import { RcAccountsBalanceInfo, RcAccountsProxyInfo } from './rc/accounts';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
+import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
-
 /**
  * Object containing every controller class definition.
  */
@@ -91,6 +91,9 @@ export const controllers = {
 	RcRuntimeCode,
 	RcRuntimeMetadata,
 	RcRuntimeSpec,
+	RcNodeNetwork,
+	RcNodeTransactionPool,
+	RcNodeVersion,
 	RuntimeCode,
 	RuntimeMetadata,
 	RuntimeSpec,
