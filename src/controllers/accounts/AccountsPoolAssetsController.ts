@@ -17,7 +17,7 @@
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
-import { validateAddress, validateRcAt } from '../../middleware';
+import { validateAddress, validateUseRcBlock } from '../../middleware';
 import { AccountsPoolAssetsService } from '../../services/accounts';
 import AbstractController from '../AbstractController';
 
@@ -89,7 +89,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateRcAt);
+		this.router.use(this.path, validateAddress, validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([
 			['/pool-asset-balances', this.getPoolAssetBalances],
@@ -98,11 +98,11 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	}
 
 	private getPoolAssetBalances: RequestHandler = async (
-		{ params: { address }, query: { at, rcAt, assets } },
+		{ params: { address }, query: { at, useRcBlock, assets } },
 		res,
 	): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -139,7 +139,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 	};
 
 	private getPoolAssetApprovals: RequestHandler = async (
-		{ params: { address }, query: { at, rcAt, delegate, assetId } },
+		{ params: { address }, query: { at, useRcBlock, delegate, assetId } },
 		res,
 	): Promise<void> => {
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
@@ -148,8 +148,8 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

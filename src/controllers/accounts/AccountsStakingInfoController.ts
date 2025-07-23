@@ -19,7 +19,7 @@ import type { ControllerOptions } from 'src/types/chains-config';
 import { IAddressParam } from 'src/types/requests';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
-import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
+import { validateAddress, validateBoolean, validateUseRcBlock } from '../../middleware';
 import { AccountsStakingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -32,8 +32,8 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
- * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional) `useRcBlock`: When true, treats the `at` parameter as a relay chain block
+ * 		to find corresponding Asset Hub blocks. Only supported for Asset Hub endpoints.
  * - (Optional) `includeClaimedRewards`: Controls whether or not the `claimedRewards`
  * 		field is included in the response. Defaults to `true`.
  * 		If set to `false`:
@@ -42,9 +42,9 @@ import AbstractController from '../AbstractController';
  * 		  will be skipped, potentially speeding up the response time.
  *
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
+ * - When using `useRcBlock=true`: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
- * - When using `at` parameter or no query params: A single response object.
+ * - When using `useRcBlock=false` or omitted: A single response object.
  *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
@@ -65,8 +65,8 @@ import AbstractController from '../AbstractController';
  *     with an `era` at which `value` will be unlocked.
  *   - `claimedRewards`: Array of eras for which the stakers behind a validator have claimed
  *     rewards. Only updated for _validators._
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock=true`.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock=true`.
  *
  * Note: Runtime versions of Kusama less than 1062 will either have `lastReward` in place of
  * `claimedRewards`, or no field at all. This is related to changes in reward distribution. See:
@@ -96,7 +96,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean(['includeClaimedRewards']), validateRcAt);
+		this.router.use(this.path, validateAddress, validateBoolean(['includeClaimedRewards']), validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountStakingInfo]]);
 	}
@@ -108,14 +108,14 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, rcAt, includeClaimedRewards } },
+		{ params: { address }, query: { at, useRcBlock, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

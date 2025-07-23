@@ -16,7 +16,7 @@
 
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsNominationPoolService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -29,7 +29,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/info', this.getNominationPoolInfo],
 			['/:poolId', this.getNominationPoolById],
@@ -37,7 +37,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 	}
 
 	private getNominationPoolById: RequestHandler = async (
-		{ params: { poolId }, query: { at, rcAt, metadata } },
+		{ params: { poolId }, query: { at, useRcBlock, metadata } },
 		res,
 	): Promise<void> => {
 		/**
@@ -48,8 +48,8 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 		const metadataArg = metadata === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -82,9 +82,9 @@ export default class PalletsNominationPoolController extends AbstractController<
 		}
 	};
 
-	private getNominationPoolInfo: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+	private getNominationPoolInfo: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

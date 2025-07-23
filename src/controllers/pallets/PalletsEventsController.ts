@@ -18,7 +18,7 @@ import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 import { IPalletsEventsParam } from 'src/types/requests';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsEventsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -32,7 +32,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/:eventItemId', this.getEventById as RequestHandler],
 			['/', this.getEvents],
@@ -40,13 +40,13 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 	}
 
 	private getEventById: RequestHandler<IPalletsEventsParam, unknown, unknown> = async (
-		{ query: { at, metadata, rcAt }, params: { palletId, eventItemId } },
+		{ query: { at, metadata, useRcBlock }, params: { palletId, eventItemId } },
 		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -96,13 +96,13 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 	};
 
 	private getEvents: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds, rcAt } },
+		{ params: { palletId }, query: { at, onlyIds, useRcBlock } },
 		res,
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

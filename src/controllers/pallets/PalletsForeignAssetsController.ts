@@ -16,7 +16,7 @@
 
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsForeignAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -53,13 +53,13 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['', this.getForeignAssets]]);
 	}
 
-	private getForeignAssets: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+	private getForeignAssets: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

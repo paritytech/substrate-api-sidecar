@@ -16,7 +16,7 @@
 
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsStakingProgressService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -92,7 +92,7 @@ export default class PalletsStakingProgressController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['', this.getPalletStakingProgress]]);
 	}
 
@@ -102,9 +102,9 @@ export default class PalletsStakingProgressController extends AbstractController
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletStakingProgress: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+	private getPalletStakingProgress: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

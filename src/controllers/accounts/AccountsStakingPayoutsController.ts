@@ -20,7 +20,7 @@ import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { BadRequest, InternalServerError } from 'http-errors';
 
-import { validateAddress, validateBoolean, validateRcAt } from '../../middleware';
+import { validateAddress, validateBoolean, validateUseRcBlock } from '../../middleware';
 import { AccountsStakingPayoutsService } from '../../services';
 import { IEarlyErasBlockInfo } from '../../services/accounts/AccountsStakingPayoutsService';
 import kusamaEarlyErasBlockInfo from '../../services/accounts/kusamaEarlyErasBlockInfo.json';
@@ -40,13 +40,13 @@ import AbstractController from '../AbstractController';
  * - (Optional) `era`: The era to query at. Max era payout info is available for
  * 	 is the latest finished era: `active_era - 1`. Defaults to `active_era - 1`.
  * - (Optional) `unclaimedOnly`: Only return unclaimed rewards. Defaults to true.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
- * 	for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional) `useRcBlock`: When true, treats the `at` parameter as a relay chain block
+ * 	to find corresponding Asset Hub blocks. Only supported for Asset Hub endpoints.
  *
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
+ * - When using `useRcBlock=true`: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
- * - When using `at` parameter or no query params: A single response object.
+ * - When using `useRcBlock=false` or omitted: A single response object.
  *
  * Response object structure:
  * - `at`:
@@ -67,8 +67,8 @@ import AbstractController from '../AbstractController';
  * 				takes as commission, expressed as a Perbill.
  * 		- `totalValidatorExposure`: The sum of the validator's and its nominators' stake.
  * 		- `nominatorExposure`: The amount of stake the nominator has behind the validator.
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock=true`.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock=true`.
  *
  * Description:
  * Returns payout information for the last specified eras. If specifying both
@@ -101,7 +101,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateBoolean(['unclaimedOnly']), validateRcAt);
+		this.router.use(this.path, validateAddress, validateBoolean(['unclaimedOnly']), validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getStakingPayoutsByAccountId]]);
 	}
@@ -113,14 +113,14 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getStakingPayoutsByAccountId: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { depth, era, unclaimedOnly, at, rcAt } },
+		{ params: { address }, query: { depth, era, unclaimedOnly, at, useRcBlock } },
 		res,
 	): Promise<void> => {
 		const { specName } = this;
 		const isKusama = specName.toString().toLowerCase() === 'kusama';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

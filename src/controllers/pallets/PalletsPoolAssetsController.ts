@@ -16,7 +16,7 @@
 
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsPoolAssetsService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -70,12 +70,12 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['/asset-info', this.getPoolAssetById]]);
 	}
 
 	private getPoolAssetById: RequestHandler = async (
-		{ params: { assetId }, query: { at, rcAt } },
+		{ params: { assetId }, query: { at, useRcBlock } },
 		res,
 	): Promise<void> => {
 		/**
@@ -84,8 +84,8 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

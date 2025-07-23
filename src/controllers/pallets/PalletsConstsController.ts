@@ -17,7 +17,7 @@
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsConstantsService } from '../../services';
 import { IPalletsConstantsParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -43,7 +43,7 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/:constantItemId', this.getConstById as RequestHandler],
 			['/', this.getConsts],
@@ -51,13 +51,13 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	}
 
 	private getConstById: RequestHandler<IPalletsConstantsParam, unknown, unknown> = async (
-		{ query: { at, metadata, rcAt }, params: { palletId, constantItemId } },
+		{ query: { at, metadata, useRcBlock }, params: { palletId, constantItemId } },
 		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -107,13 +107,13 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	};
 
 	private getConsts: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds, rcAt } },
+		{ params: { palletId }, query: { at, onlyIds, useRcBlock } },
 		res,
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

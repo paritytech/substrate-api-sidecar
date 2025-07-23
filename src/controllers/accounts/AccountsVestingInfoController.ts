@@ -17,7 +17,7 @@
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress, validateRcAt } from '../../middleware';
+import { validateAddress, validateUseRcBlock } from '../../middleware';
 import { AccountsVestingInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -61,7 +61,7 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateRcAt);
+		this.router.use(this.path, validateAddress, validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountVestingInfo]]);
 	}
@@ -73,11 +73,11 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, rcAt } },
+		{ params: { address }, query: { at, useRcBlock } },
 		res,
 	): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

@@ -16,7 +16,7 @@
 
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsAssetConversionService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -29,16 +29,16 @@ export default class PalletsAssetConversionController extends AbstractController
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/next-available-id', this.getNextAvailableId],
 			['/liquidity-pools', this.getLiquidityPools],
 		]);
 	}
 
-	private getNextAvailableId: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+	private getNextAvailableId: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -71,9 +71,9 @@ export default class PalletsAssetConversionController extends AbstractController
 		}
 	};
 
-	private getLiquidityPools: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+	private getLiquidityPools: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

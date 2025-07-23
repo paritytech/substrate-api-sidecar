@@ -17,7 +17,7 @@
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsStorageService } from '../../services';
 import { IPalletsStorageParam, IPalletsStorageQueryParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -45,7 +45,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/:storageItemId', this.getStorageItem as RequestHandler],
 			['/', this.getStorage],
@@ -53,14 +53,14 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	}
 
 	private getStorageItem: RequestHandler<IPalletsStorageParam, unknown, unknown, IPalletsStorageQueryParam> = async (
-		{ query: { at, keys, metadata, rcAt }, params: { palletId, storageItemId } },
+		{ query: { at, keys, metadata, useRcBlock }, params: { palletId, storageItemId } },
 		res,
 	): Promise<void> => {
 		const parsedKeys = Array.isArray(keys) ? keys : [];
 		const metadataArg = metadata === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -113,13 +113,13 @@ export default class PalletsStorageController extends AbstractController<Pallets
 	};
 
 	private getStorage: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds, rcAt } },
+		{ params: { palletId }, query: { at, onlyIds, useRcBlock } },
 		res,
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {

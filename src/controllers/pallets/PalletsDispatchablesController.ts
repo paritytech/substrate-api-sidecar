@@ -17,7 +17,7 @@
 import { stringCamelCase } from '@polkadot/util';
 import { RequestHandler } from 'express-serve-static-core';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsDispatchablesService } from '../../services';
 import { IPalletsDispatchablesParam } from '../../types/requests';
 import AbstractController from '../AbstractController';
@@ -43,7 +43,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([
 			['/:dispatchableItemId', this.getDispatchableById as RequestHandler],
 			['/', this.getDispatchables],
@@ -51,13 +51,13 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	}
 
 	private getDispatchableById: RequestHandler<IPalletsDispatchablesParam, unknown, unknown> = async (
-		{ query: { metadata, at, rcAt }, params: { palletId, dispatchableItemId } },
+		{ query: { metadata, at, useRcBlock }, params: { palletId, dispatchableItemId } },
 		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
@@ -107,13 +107,13 @@ export default class PalletsDispatchablesController extends AbstractController<P
 	};
 
 	private getDispatchables: RequestHandler = async (
-		{ params: { palletId }, query: { onlyIds, at, rcAt } },
+		{ params: { palletId }, query: { onlyIds, at, useRcBlock } },
 		res,
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
 
-		if (rcAt) {
-			const rcAtResults = await this.getHashFromRcAt(rcAt);
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
