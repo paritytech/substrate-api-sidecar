@@ -55,6 +55,15 @@ The `/pallets/staking/progress` endpoint requires two chains because it needs to
 
 This dual-chain requirement is specific to this endpoint, as it needs to gather information from both sources to provide complete staking progress data.
 
+### Response Structure Changes
+
+**Important**: All endpoints that support the `rcAt` parameter now return array responses instead of single enhanced objects. This prepares the API for elastic scaling where multiple Asset Hub blocks could exist per relay chain block.
+
+- **With `rcAt`**: Returns `[{...result, rcBlockNumber, ahTimestamp}]` or `[]`
+- **Without `rcAt`**: Returns single response object (unchanged)
+
+For migration details, see [ELASTIC_SCALING_MIGRATION.md](ELASTIC_SCALING_MIGRATION.md).
+
 ### Historic Data Limitations
 
 The `/pallets/staking/progress` endpoint currently does not support historic queries. This means you can only query the current staking progress state, and cannot retrieve historical staking progress data from past blocks.
