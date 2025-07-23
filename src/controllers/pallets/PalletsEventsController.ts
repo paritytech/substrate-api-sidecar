@@ -47,7 +47,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsEventsController.sanitizedSend(res, []);
@@ -66,7 +66,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 					eventItemId: stringCamelCase(eventItemId),
 					metadata: metadataArg,
 				});
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 
@@ -103,7 +103,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsEventsController.sanitizedSend(res, []);
@@ -120,7 +120,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 					palletId: stringCamelCase(palletId),
 					onlyIds: onlyIdsArg,
 				});
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

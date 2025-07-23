@@ -64,10 +64,10 @@ import AbstractController from '../AbstractController';
  *
  *
  * Returns:
- * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
  *   corresponding to the relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using standard block identifiers or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `number`: Block height.
  * - `hash`: The block's hash.
@@ -199,7 +199,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHash = rcHeader.hash;
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
-				
+
 				// Return empty array if no Asset Hub block found
 				if (!hash) {
 					BlocksController.sanitizedSend(res, []);
@@ -220,7 +220,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHash = rcHeader.hash;
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
-				
+
 				// Return empty array if no Asset Hub block found
 				if (!hash) {
 					BlocksController.sanitizedSend(res, []);
@@ -238,7 +238,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
-				
+
 				// Return empty array if no Asset Hub block found
 				if (!hash) {
 					BlocksController.sanitizedSend(res, []);
@@ -345,7 +345,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// Treat the 'number' parameter as a relay chain block identifier
 			rcBlockNumber = number;
 			hash = await this.getAhAtFromRcAt(number);
-			
+
 			// Return empty array if no Asset Hub block found
 			if (!hash) {
 				BlocksController.sanitizedSend(res, []);
@@ -458,7 +458,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			// Treat the 'number' parameter as a relay chain block identifier
 			rcBlockNumber = number;
 			hash = await this.getAhAtFromRcAt(number);
-			
+
 			// Return empty array if no Asset Hub block found
 			if (!hash) {
 				BlocksController.sanitizedSend(res, []);
@@ -515,7 +515,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				rcBlockNumber = rcHeader.number.toString();
 				hash = await this.getAhAtFromRcAt(rcHash);
 			}
-			
+
 			// Return empty array if no Asset Hub block found
 			if (!hash) {
 				BlocksController.sanitizedSend(res, []);
@@ -590,7 +590,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 					// Treat range numbers as relay chain block identifiers
 					rcBlockNumber = rangeOfNums[i].toString();
 					hash = await this.getAhAtFromRcAt(rcBlockNumber);
-					
+
 					// Skip this RC block if it doesn't have a corresponding AH block
 					if (!hash) {
 						return null;

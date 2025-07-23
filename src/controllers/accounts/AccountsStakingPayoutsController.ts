@@ -44,10 +44,10 @@ import AbstractController from '../AbstractController';
  * 	for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`:
  * 	- `hash`: The block's hash.
@@ -121,7 +121,7 @@ export default class AccountsStakingPayoutsController extends AbstractController
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				AccountsStakingPayoutsController.sanitizedSend(res, []);
@@ -136,7 +136,12 @@ export default class AccountsStakingPayoutsController extends AbstractController
 
 				const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 
-				const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
+				const sanitizedDepth = this.sanitizeDepth({
+					isKusama,
+					depth: depth?.toString(),
+					era: era?.toString(),
+					currentEra,
+				});
 
 				if (isKusama && currentEra < 518) {
 					const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;
@@ -178,7 +183,12 @@ export default class AccountsStakingPayoutsController extends AbstractController
 
 			const { eraArg, currentEra } = await this.getEraAndHash(apiAt, this.verifyAndCastOr('era', era, undefined));
 
-			const sanitizedDepth = this.sanitizeDepth({ isKusama, depth: depth?.toString(), era: era?.toString(), currentEra });
+			const sanitizedDepth = this.sanitizeDepth({
+				isKusama,
+				depth: depth?.toString(),
+				era: era?.toString(),
+				currentEra,
+			});
 
 			if (isKusama && currentEra < 518) {
 				const earlyErasBlockInfo: IEarlyErasBlockInfo = kusamaEarlyErasBlockInfo;

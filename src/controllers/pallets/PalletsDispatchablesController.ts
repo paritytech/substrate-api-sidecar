@@ -58,7 +58,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsDispatchablesController.sanitizedSend(res, []);
@@ -77,7 +77,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 					dispatchableItemId: stringCamelCase(dispatchableItemId),
 					metadata: metadataArg,
 				});
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 
@@ -114,7 +114,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsDispatchablesController.sanitizedSend(res, []);
@@ -131,7 +131,7 @@ export default class PalletsDispatchablesController extends AbstractController<P
 					palletId: stringCamelCase(palletId),
 					onlyIds: onlyIdsArg,
 				});
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

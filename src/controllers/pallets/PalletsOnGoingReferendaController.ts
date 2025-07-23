@@ -42,7 +42,7 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 	private getPalletOnGoingReferenda: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsOnGoingReferendaController.sanitizedSend(res, []);
@@ -53,7 +53,7 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.derivePalletOnGoingReferenda(ahHash);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

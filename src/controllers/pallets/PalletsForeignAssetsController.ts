@@ -31,10 +31,10 @@ import AbstractController from '../AbstractController';
  *
  * `/pallets/foreign-assets`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `items`: An array containing the `AssetDetails` and `AssetMetadata` of every foreign asset.
@@ -60,7 +60,7 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 	private getForeignAssets: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsForeignAssetsController.sanitizedSend(res, []);
@@ -71,7 +71,7 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchForeignAssets(ahHash);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

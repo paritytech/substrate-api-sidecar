@@ -41,10 +41,10 @@ import AbstractController from '../AbstractController';
  *
  * `/accounts/:address/asset-balances`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `assets`: An array of `AssetBalance` objects which have a AssetId attached to them
@@ -61,10 +61,10 @@ import AbstractController from '../AbstractController';
  *
  * `/accounts/:address/asset-approvals`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `amount`: The amount of funds approved for the balance transfer from the owner
@@ -103,7 +103,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 	): Promise<void> => {
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				AccountsAssetsController.sanitizedSend(res, []);
@@ -116,7 +116,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchAssetBalances(ahHash, address, assetsArray);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 
@@ -150,7 +150,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				AccountsAssetsController.sanitizedSend(res, []);
@@ -161,7 +161,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchAssetApproval(ahHash, address, id, delegate);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

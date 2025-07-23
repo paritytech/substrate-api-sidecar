@@ -55,7 +55,7 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 			// Treat the blockId parameter as a relay chain block identifier
 			const rcBlockNumber = blockId;
 			const hash = await this.getAhAtFromRcAt(blockId);
-			
+
 			// Return empty array if no Asset Hub block found
 			if (!hash) {
 				BlocksRawExtrinsicsController.sanitizedSend(res, []);

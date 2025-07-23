@@ -86,7 +86,7 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsPoolAssetsController.sanitizedSend(res, []);
@@ -97,7 +97,7 @@ export default class PalletsPoolAssetsController extends AbstractController<Pall
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchPoolAssetById(ahHash, index);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

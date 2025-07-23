@@ -34,10 +34,10 @@ import AbstractController from '../AbstractController';
  * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
  *
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `nonce`: Account nonce.
@@ -89,7 +89,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	): Promise<void> => {
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				AccountsBalanceController.sanitizedSend(res, []);
@@ -107,8 +107,14 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
-				const result = await this.service.fetchAccountBalanceInfo(ahHash, historicApi, address, tokenArg, withDenomination);
-				
+				const result = await this.service.fetchAccountBalanceInfo(
+					ahHash,
+					historicApi,
+					address,
+					tokenArg,
+					withDenomination,
+				);
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

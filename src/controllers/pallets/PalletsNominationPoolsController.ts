@@ -50,7 +50,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsNominationPoolController.sanitizedSend(res, []);
@@ -61,7 +61,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchNominationPoolById(index, ahHash, metadataArg);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 
@@ -85,7 +85,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 	private getNominationPoolInfo: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsNominationPoolController.sanitizedSend(res, []);
@@ -96,7 +96,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchNominationPoolInfo(ahHash);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 

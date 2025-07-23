@@ -34,10 +34,10 @@ import AbstractController from '../AbstractController';
  *
  * `/pallets/assets/:assetId/asset-info`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found 
+ * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
- * 
+ *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
  * - `assetInfo`: All details concering an asset.
@@ -92,7 +92,7 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 
 		if (rcAt) {
 			const rcAtResults = await this.getHashFromRcAt(rcAt);
-			
+
 			// Return empty array if no Asset Hub blocks found
 			if (rcAtResults.length === 0) {
 				PalletsAssetsController.sanitizedSend(res, []);
@@ -103,7 +103,7 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchAssetById(ahHash, index);
-				
+
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 
