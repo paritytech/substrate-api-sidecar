@@ -29,12 +29,11 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub asset info. Only supported
- * 		for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s). Only supported for Asset Hub endpoints.
  *
  * `/pallets/assets/:assetId/asset-info`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
  *
@@ -62,8 +61,8 @@ import AbstractController from '../AbstractController';
  * 		- `symbol`: The ticker symbol for this asset.
  * 		- `decimals`: The number of decimals this asset uses to represent one unit.
  * 		- `isFrozen`: Whether the asset metadata may be changed by a non Force origin.
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Substrate References:
  * - Assets Pallet: https://crates.parity.io/pallet_assets/index.html

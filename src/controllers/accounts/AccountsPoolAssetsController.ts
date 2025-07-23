@@ -30,8 +30,7 @@ import AbstractController from '../AbstractController';
  * Query:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  *  	identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`rcAt`: Relay chain block at which to retrieve Asset Hub data. Only supported
- *  	for Asset Hub endpoints. Cannot be used with 'at' parameter.
+ * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s). Only supported for Asset Hub endpoints.
  * - (Optional for `/accounts/:address/pool-asset-balances`)`assets`
  * - (Required for `/accounts/:address/pool-asset-approvals)`assetId` The assetId associated
  * 		with the `AssetApproval`.
@@ -41,7 +40,7 @@ import AbstractController from '../AbstractController';
  *
  * `/accounts/:address/pool-asset-balances`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
  *
@@ -56,12 +55,12 @@ import AbstractController from '../AbstractController';
  *			`true`, then non-zero balances may be stored without a `consumer` reference (and thus
  * 			an ED in the Balances pallet or whatever else is used to control user-account state
  *			growth).
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * `/accounts/:address/pool-asset-approvals`
  * Returns:
- * - When using `rcAt` parameter: An array of response objects, one for each Asset Hub block found
+ * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
  *   in the specified relay chain block. Returns empty array `[]` if no Asset Hub blocks found.
  * - When using `at` parameter or no query params: A single response object.
  *
@@ -70,8 +69,8 @@ import AbstractController from '../AbstractController';
  * - `amount`: The amount of funds approved for the balance transfer from the owner
  * 		to some delegated target.
  * - `deposit`: The amount reserved on the owner's account to hold this item in storage.
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `rcAt` parameter is used.
- * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `rcAt` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
  * Substrate Reference:
  * - PoolAssets Pallet: instance of Assets Pallet https://crates.parity.io/pallet_assets/index.html

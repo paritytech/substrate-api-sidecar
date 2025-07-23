@@ -27,12 +27,12 @@ For the Asset hub migration please refer to the guide in [guides/ASSET_HUB_MIGRA
 
 ### Asset Hub Migration + Elastic Scaling
 
-**Important**: For all version >= 20.4.0, all endpoints that support the `rcAt` and `useRcBlock` parameters return array responses instead of single enhanced objects when they are used. This prepares the API for Polkadot/Kusama elastic scaling.
+**Important**: For all version >= 20.4.0, all endpoints that support the `useRcBlock` parameter return array responses instead of single enhanced objects when it is used. This prepares the API for Polkadot/Kusama elastic scaling.
 
-- **With `rcAt` or `useRcBlock`**: Returns `[{...result, rcBlockNumber, ahTimestamp}]` or `[]`  
-- **Without these parameters**: Returns single response object (unchanged)
+- **With `useRcBlock=true`**: Returns `[{...result, rcBlockNumber, ahTimestamp}]` or `[]`  
+- **Without this parameter**: Returns single response object (unchanged)
 
-For detailed migration guide, see [guides/ELASTIC_SCALING_MIGRATION.md](guides/ELASTIC_SCALING_MIGRATION.md)
+For detailed migration guide, see [guides/ASSET_HUB_MIGRATION.md](guides/ASSET_HUB_MIGRATION.md)
 
 ## Prerequisites
 
