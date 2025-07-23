@@ -1,6 +1,7 @@
 // write tests that get the metadata from an rpc and then inject the metadata into the controller
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromiseRegistry } from 'src/apiRegistry';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
 import { getControllers, specToControllerMap } from '../chains-config';
@@ -99,6 +100,10 @@ describe('controllerInjection', () => {
 	it('should inject default controllers when pallets are not checked (injected-controllers: false) and a custom config is not available', async () => {
 		const wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
 		const api = await ApiPromise.create({ provider: wsProvider });
+
+		jest.spyOn(ApiPromiseRegistry, 'getSpecNameByType').mockImplementation(() => {
+			return new Set(['mock_spec']);
+		});
 		try {
 			await api.isReady;
 		} finally {
