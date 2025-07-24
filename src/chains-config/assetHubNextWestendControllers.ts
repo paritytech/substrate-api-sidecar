@@ -60,6 +60,7 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'RcPalletsErrorsController',
 		'RcPalletsEventsController',
 		'RcPalletsOnGoingReferendaController',
+		'RcPalletsStorageController',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',
 		'RcRuntimeSpec',

@@ -60,6 +60,7 @@ import {
 	RcPalletsErrorsController,
 	RcPalletsEventsController,
 	RcPalletsOnGoingReferendaController,
+	RcPalletsStorageController,
 } from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
@@ -110,6 +111,7 @@ export const controllers = {
 	RcPalletsErrorsController,
 	RcPalletsEventsController,
 	RcPalletsOnGoingReferendaController,
+	RcPalletsStorageController,
 	RcRuntimeCode,
 	RcRuntimeMetadata,
 	RcRuntimeSpec,

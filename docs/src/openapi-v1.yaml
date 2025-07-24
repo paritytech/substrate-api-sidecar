@@ -3494,6 +3494,102 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/storage:
+    get:
+      tags:
+      - rc
+      summary: Get a list of storage items for a relay chain pallet.
+      description: Returns a list of storage item metadata for the specified relay chain pallet.
+      operationId: getRcPalletsStorage
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read storage items from.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet storage items.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: onlyIds
+        in: query
+        description: Only return storage item IDs, not values and metadata.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsStorage'
+        "400":
+          description: invalid palletId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/storage/{storageItemId}:
+    get:
+      tags:
+      - rc
+      summary: Get a storage item from a relay chain pallet by its ID.
+      description: Returns the value stored under the specified storage item ID from the relay chain pallet. For maps, query parameter keys are required.
+      operationId: getRcPalletsStorageItem
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read the storage item from.
+        required: true
+        schema:
+          type: string
+      - name: storageItemId
+        in: path
+        description: Name of the storage item to retrieve.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet storage item.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: keys
+        in: query
+        description: Storage map keys for map-type storage items. Required for map and double map storage items.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: metadata
+        in: query
+        description: Include metadata for the storage item.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsStorageItem'
+        "400":
+          description: invalid palletId, storageItemId, or keys supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/storage:
     get:
       tags:

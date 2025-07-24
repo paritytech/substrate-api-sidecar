@@ -19,3 +19,4 @@ export { default as RcPalletsDispatchablesController } from './RcPalletsDispatch
 export { default as RcPalletsErrorsController } from './RcPalletsErrorsController';
 export { default as RcPalletsEventsController } from './RcPalletsEventsController';
 export { default as RcPalletsOnGoingReferendaController } from './RcPalletsOnGoingReferendaController';
+export { default as RcPalletsStorageController } from './RcPalletsStorageController';
