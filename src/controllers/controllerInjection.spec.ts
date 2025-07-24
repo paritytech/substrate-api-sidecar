@@ -63,7 +63,7 @@ const chainsToNode: Record<string, string> = {
 	'coretime-polkadot': 'wss://sys.ibp.network/coretime-polkadot',
 	crust: 'wss://crust-parachain.crustapps.net',
 	karura: 'wss://karura-rpc.dwellir.com',
-	manta: 'wss://ws.manta.systems',
+	// manta: 'wss://ws.manta.systems',
 	kilt: 'wss://kilt.ibp.network',
 	'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
 };
