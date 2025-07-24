@@ -905,6 +905,371 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NodeVersion'
+  /rc/blocks:
+    get:
+      tags:
+      - rc
+      summary: Get a range of relay chain blocks by their height.
+      description: Given a range query parameter return an array of all the relay chain blocks within that range.
+      operationId: getRcBlocks
+      parameters:
+      - name: range
+        in: query
+        description: A range of integers. There is a max limit of 500 blocks per request.
+        required: true
+        example: 0-499
+        schema:
+          type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Block'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/{blockId}:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block by its height or hash.
+      description: Returns a relay chain block. Can be identified by either its height or hash.
+      operationId: getRcBlock
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/{blockId}/header:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block's header by its height or hash.
+      description: Returns a relay chain block's header. Can be identified by either its height or hash.
+      operationId: getRcBlockHeader
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockHeader'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/{blockId}/extrinsics/{extrinsicIndex}:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block's extrinsic by its block height or hash and the extrinsic index.
+      description: Returns an extrinsic from a relay chain block. Can be identified by either its height or hash and the extrinsic index.
+      operationId: getRcBlockExtrinsic
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      - name: extrinsicIndex
+        in: path
+        description: Extrinsic index within the block.
+        required: true
+        schema:
+          type: string
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Extrinsic'
+        "400":
+          description: invalid blockId or extrinsicIndex supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/head:
+    get:
+      tags:
+      - rc
+      summary: Get the latest relay chain block.
+      description: Returns the latest relay chain block.
+      operationId: getRcBlockHead
+      parameters:
+      - name: finalized
+        in: query
+        description: When set to `false`, it will fetch the head of the node's canon chain, which might not be finalized.
+        schema:
+          type: boolean
+          default: true
+      - name: eventDocs
+        in: query
+        description: When set to `true`, every event will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: extrinsicDocs
+        in: query
+        description: When set to `true`, every extrinsic will have an extra `docs` property.
+        schema:
+          type: boolean
+          default: false
+      - name: noFees
+        in: query
+        description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        "400":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/head/header:
+    get:
+      tags:
+      - rc
+      summary: Get the latest relay chain block's header.
+      description: Returns the latest relay chain block's header.
+      operationId: getRcBlockHeadHeader
+      parameters:
+      - name: finalized
+        in: query
+        description: When set to `false`, it will fetch the head of the node's canon chain, which might not be finalized.
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockHeader'
+        "400":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/blocks/{blockId}/extrinsics-raw:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block's raw extrinsics by its height or hash.
+      description: Returns a relay chain block's raw extrinsics. Can be identified by either its height or hash.
+      operationId: getRcBlockRawExtrinsics
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockRaw'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /experimental/rc/blocks/head/traces:
+    get:
+      tags:
+      - rc
+      summary: Get the latest relay chain block's traces.
+      description: Returns the latest relay chain block's traces.
+      operationId: getRcBlockHeadTraces
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTrace'
+  /experimental/rc/blocks/{blockId}/traces:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block's traces by its height or hash.
+      description: Returns a relay chain block's traces. Can be identified by either its height or hash.
+      operationId: getRcBlockTraces
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTrace'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /experimental/rc/blocks/head/traces/operations:
+    get:
+      tags:
+      - rc
+      summary: Get the latest relay chain block's trace operations.
+      description: Returns the latest relay chain block's trace operations.
+      operationId: getRcBlockHeadTraceOperations
+      parameters:
+      - name: actions
+        in: query
+        description: Include action traces.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTraceOperations'
+  /experimental/rc/blocks/{blockId}/traces/operations:
+    get:
+      tags:
+      - rc
+      summary: Get a relay chain block's trace operations by its height or hash.
+      description: Returns a relay chain block's trace operations. Can be identified by either its height or hash.
+      operationId: getRcBlockTraceOperations
+      parameters:
+      - name: blockId
+        in: path
+        description: Block identifier, as the block height or block hash.
+        required: true
+        schema:
+          type: string
+      - name: actions
+        in: query
+        description: Include action traces.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocksTraceOperations'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /blocks:
     get:
       tags:

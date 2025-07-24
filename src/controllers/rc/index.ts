@@ -15,4 +15,5 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from './accounts';
+export * from './blocks';
 export * from './runtime';
