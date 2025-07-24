@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file. See [standa
 - fix: tests in controllerInjection ([#1715](https://github.com/paritytech/substrate-api-sidecar/pull/1715)) ([6dca5f8](https://github.com/paritytech/substrate-api-sidecar/commit/6dca5f8))
 - fix: Ensure `rcBlockNumber` is always a number ([#1714](https://github.com/paritytech/substrate-api-sidecar/pull/1714)) ([02f4788](https://github.com/paritytech/substrate-api-sidecar/commit/02f4788))
     - Ensures `rcBlockNumber` returns actual block numbers instead of hashes or "latest"
-- fix: Fixes authorId for chains using the nimbus consensus engine ([#1698](https://github.com/paritytech/substrate-api-sidecar/pull/1698)) ([c71bc54](https://github.com/paritytech/substrate-api-sidecar/commit/c71bc54))
+- fix: Fixes authorId for chains using the nimbus consensus engine ([#1698](https://github.com/paritytech/substrate-api-sidecar/pull/1698)) ([c71bc54](https://github.com/paritytech/substrate-api-sidecar/commit/c71bc54)) (Thanks to https://github.com/RomarQ)
 - fix: remove unneccessary logging ([#1689](https://github.com/paritytech/substrate-api-sidecar/pull/1689)) ([b5f276a](https://github.com/paritytech/substrate-api-sidecar/commit/b5f276a))
 
 ### Chores
