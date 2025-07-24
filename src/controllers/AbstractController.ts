@@ -330,12 +330,20 @@ export default abstract class AbstractController<T extends AbstractService> {
 
 	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }[]> {
 		const ahHash = await this.getAhAtFromRcAt(rcAt);
-		const rcBlockNumber = typeof rcAt === 'string' ? rcAt : 'latest';
 
-		// Return empty array if no Asset Hub block found, otherwise return single element array
 		if (!ahHash) {
 			return [];
 		}
+
+		// Get the actual relay chain block number
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+		if (!rcApi) {
+			throw new Error('Relay chain api must be available');
+		}
+
+		const rcHash = await this.getHashFromAt(rcAt, { api: rcApi });
+		const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+		const rcBlockNumber = rcHeader.number.toString();
 
 		return [{ ahHash, rcBlockNumber }];
 	}
