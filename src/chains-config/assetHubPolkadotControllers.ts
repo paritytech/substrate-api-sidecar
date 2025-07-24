@@ -46,6 +46,8 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'RcBlocksExtrinsicsController',
 		'RcBlocksRawExtrinsicsController',
 		'RcBlocksTraceController',
+		'RcPalletsConstsController',
+		'RcPalletsOnGoingReferendaController',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',
 		'RcRuntimeSpec',

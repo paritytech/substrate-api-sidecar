@@ -54,6 +54,7 @@ import {
 	RcBlocksTraceController,
 } from './rc/blocks';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
+import { RcPalletsConstsController, RcPalletsOnGoingReferendaController } from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
@@ -98,6 +99,8 @@ export const controllers = {
 	RcBlocksExtrinsicsController,
 	RcBlocksRawExtrinsicsController,
 	RcBlocksTraceController,
+	RcPalletsConstsController,
+	RcPalletsOnGoingReferendaController,
 	RcRuntimeCode,
 	RcRuntimeMetadata,
 	RcRuntimeSpec,

@@ -55,6 +55,8 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'RcBlocksExtrinsicsController',
 		'RcBlocksRawExtrinsicsController',
 		'RcBlocksTraceController',
+		'RcPalletsConstsController',
+		'RcPalletsOnGoingReferendaController',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',
 		'RcRuntimeSpec',

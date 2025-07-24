@@ -14,7 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './accounts';
-export * from './blocks';
-export * from './pallets';
-export * from './runtime';
+export { default as RcPalletsConstsController } from './RcPalletsConstsController';
+export { default as RcPalletsOnGoingReferendaController } from './RcPalletsOnGoingReferendaController';

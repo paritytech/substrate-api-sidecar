@@ -3113,6 +3113,123 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeCode'
+  /rc/pallets/on-going-referenda:
+    get:
+      tags:
+      - rc
+      summary: Get relay chain ongoing referenda.
+      description: Returns information about ongoing referenda in the relay chain.
+      operationId: getRcPalletsOnGoingReferenda
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain referenda information.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsOnGoingReferenda'
+        "400":
+          description: invalid blockId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/consts:
+    get:
+      tags:
+      - rc
+      summary: Get a list of constants for a relay chain pallet.
+      description: Returns a list of constant metadata for the specified relay chain pallet.
+      operationId: getRcPalletsConsts
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read constants from.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet constants.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: onlyIds
+        in: query
+        description: Only return constant IDs, not values and metadata.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsConstants'
+        "400":
+          description: invalid palletId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/consts/{constantItemId}:
+    get:
+      tags:
+      - rc
+      summary: Get a constant from a relay chain pallet by its ID.
+      description: Returns information about a specific constant from the specified relay chain pallet.
+      operationId: getRcPalletsConstsItem
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read the constant from.
+        required: true
+        schema:
+          type: string
+      - name: constantItemId
+        in: path
+        description: Name of the constant to retrieve.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet constant.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include metadata for the constant.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsConstantsItem'
+        "400":
+          description: invalid palletId or constantItemId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/storage:
     get:
       tags:

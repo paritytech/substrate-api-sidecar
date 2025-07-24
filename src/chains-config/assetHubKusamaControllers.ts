@@ -44,6 +44,8 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'RcBlocksExtrinsicsController',
 		'RcBlocksRawExtrinsicsController',
 		'RcBlocksTraceController',
+		'RcPalletsConstsController',
+		'RcPalletsOnGoingReferendaController',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',
 		'RcRuntimeSpec',
