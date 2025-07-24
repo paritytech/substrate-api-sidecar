@@ -62,7 +62,7 @@ Tested against the following runtime releases:
 
 This release introduces comprehensive Relay Chain (RC) endpoint support for Asset Hub instances. For detailed documentation on the `useRcBlock` parameter and RC endpoints, see: https://hackmd.io/bsNiDWbMRROB4olHbUtuaA
 
-#### Endpoints Supporting `useRcBlock` Query Parameter (42 endpoints)
+#### Endpoints Supporting `useRcBlock` Query Parameter
 
 **Account Endpoints:**
 - `/accounts/:address/balance-info`
@@ -79,6 +79,8 @@ This release introduces comprehensive Relay Chain (RC) endpoint support for Asse
 - `/blocks`
 - `/blocks/head`
 - `/blocks/:number`
+- `/blocks/head/header`
+- `/blocks/:number/header`
 - `/blocks/:blockId/extrinsics/:extrinsicIndex`
 - `/blocks/:blockId/extrinsics-raw`
 
@@ -98,25 +100,33 @@ This release introduces comprehensive Relay Chain (RC) endpoint support for Asse
 - `/pallets/asset-conversion/*`
 - `/pallets/on-going-referenda`
 
-#### Endpoints with `/rc` Prefix (18 endpoints)
+#### Endpoints with `/rc` Prefix
 
 **RC Account Endpoints:**
 - `/rc/accounts/:address/balance-info`
 - `/rc/accounts/:address/proxy-info`
 
 **RC Block Endpoints:**
-- `/rc/blocks/{blockId}`
-- `/rc/blocks/{blockId}/extrinsics`
-- `/rc/blocks/{blockId}/extrinsics/raw`
-- `/rc/blocks/{blockId}/trace`
+- `/rc/blocks`
+- `/rc/blocks/head`
+- `/rc/blocks/:number`
+- `/rc/blocks/head/header`
+- `/rc/blocks/:number/header`
+- `/rc/blocks/:blockId/extrinsics/:extrinsicIndex`
+- `/rc/blocks/:blockId/extrinsics-raw`
 
 **RC Pallet Endpoints:**
-- `/rc/pallets/{palletId}/consts`
-- `/rc/pallets/{palletId}/dispatchables`
-- `/rc/pallets/{palletId}/errors`
-- `/rc/pallets/{palletId}/events`
-- `/rc/pallets/{palletId}/storage`
-- `/rc/pallets/ongoing-referenda`
+- `/rc/pallets/:palletId/storage`
+- `/rc/pallets/:palletId/storage/:storageItemId`
+- `/rc/pallets/:palletId/consts`
+- `/rc/pallets/:palletId/consts/:constantItemId`
+- `/rc/pallets/:palletId/events`
+- `/rc/pallets/:palletId/events/:eventItemId`
+- `/rc/pallets/:palletId/errors`
+- `/rc/pallets/:palletId/errors/:errorItemId`
+- `/rc/pallets/:palletId/dispatchables`
+- `/rc/pallets/:palletId/dispatchables/:dispatchableItemId`
+- `/rc/pallets/on-going-referenda`
 
 **RC Runtime Endpoints:**
 - `/rc/runtime/code`
