@@ -47,7 +47,21 @@ import {
 } from './pallets';
 import { Paras } from './paras';
 import { RcAccountsBalanceInfo, RcAccountsProxyInfo } from './rc/accounts';
+import {
+	RcBlocksController,
+	RcBlocksExtrinsicsController,
+	RcBlocksRawExtrinsicsController,
+	RcBlocksTraceController,
+} from './rc/blocks';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
+import {
+	RcPalletsConstsController,
+	RcPalletsDispatchablesController,
+	RcPalletsErrorsController,
+	RcPalletsEventsController,
+	RcPalletsOnGoingReferendaController,
+	RcPalletsStorageController,
+} from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
@@ -88,6 +102,16 @@ export const controllers = {
 	NodeVersion,
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
+	RcBlocksController,
+	RcBlocksExtrinsicsController,
+	RcBlocksRawExtrinsicsController,
+	RcBlocksTraceController,
+	RcPalletsConstsController,
+	RcPalletsDispatchablesController,
+	RcPalletsErrorsController,
+	RcPalletsEventsController,
+	RcPalletsOnGoingReferendaController,
+	RcPalletsStorageController,
 	RcRuntimeCode,
 	RcRuntimeMetadata,
 	RcRuntimeSpec,
