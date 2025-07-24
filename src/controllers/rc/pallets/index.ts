@@ -15,4 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export { default as RcPalletsConstsController } from './RcPalletsConstsController';
+export { default as RcPalletsDispatchablesController } from './RcPalletsDispatchablesController';
+export { default as RcPalletsErrorsController } from './RcPalletsErrorsController';
+export { default as RcPalletsEventsController } from './RcPalletsEventsController';
 export { default as RcPalletsOnGoingReferendaController } from './RcPalletsOnGoingReferendaController';

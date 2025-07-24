@@ -3230,6 +3230,270 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/dispatchables:
+    get:
+      tags:
+      - rc
+      summary: Get a list of dispatchables for a relay chain pallet.
+      description: Returns a list of dispatchable metadata for the specified relay chain pallet.
+      operationId: getRcPalletsDispatchables
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read dispatchables from.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet dispatchables.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: onlyIds
+        in: query
+        description: Only return dispatchable IDs, not values and metadata.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsDispatchables'
+        "400":
+          description: invalid palletId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/dispatchables/{dispatchableItemId}:
+    get:
+      tags:
+      - rc
+      summary: Get a dispatchable from a relay chain pallet by its ID.
+      description: Returns information about a specific dispatchable from the specified relay chain pallet.
+      operationId: getRcPalletsDispatchablesItem
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read the dispatchable from.
+        required: true
+        schema:
+          type: string
+      - name: dispatchableItemId
+        in: path
+        description: Name of the dispatchable to retrieve.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet dispatchable.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include metadata for the dispatchable.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsDispatchablesItem'
+        "400":
+          description: invalid palletId or dispatchableItemId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/errors:
+    get:
+      tags:
+      - rc
+      summary: Get a list of errors for a relay chain pallet.
+      description: Returns a list of error metadata for the specified relay chain pallet.
+      operationId: getRcPalletsErrors
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read errors from.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet errors.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: onlyIds
+        in: query
+        description: Only return error IDs, not values and metadata.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsErrors'
+        "400":
+          description: invalid palletId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/errors/{errorItemId}:
+    get:
+      tags:
+      - rc
+      summary: Get an error from a relay chain pallet by its ID.
+      description: Returns information about a specific error from the specified relay chain pallet.
+      operationId: getRcPalletsErrorsItem
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read the error from.
+        required: true
+        schema:
+          type: string
+      - name: errorItemId
+        in: path
+        description: Name of the error to retrieve.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet error.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include metadata for the error.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsErrorsItem'
+        "400":
+          description: invalid palletId or errorItemId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/events:
+    get:
+      tags:
+      - rc
+      summary: Get a list of events for a relay chain pallet.
+      description: Returns a list of event metadata for the specified relay chain pallet.
+      operationId: getRcPalletsEvents
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read events from.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet events.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: onlyIds
+        in: query
+        description: Only return event IDs, not values and metadata.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsEvents'
+        "400":
+          description: invalid palletId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/{palletId}/events/{eventItemId}:
+    get:
+      tags:
+      - rc
+      summary: Get an event from a relay chain pallet by its ID.
+      description: Returns information about a specific event from the specified relay chain pallet.
+      operationId: getRcPalletsEventsItem
+      parameters:
+      - name: palletId
+        in: path
+        description: Name or index of the pallet to read the event from.
+        required: true
+        schema:
+          type: string
+      - name: eventItemId
+        in: path
+        description: Name of the event to retrieve.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve relay chain pallet event.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Include metadata for the event.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalletsEventsItem'
+        "400":
+          description: invalid palletId or eventItemId supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/{palletId}/storage:
     get:
       tags:
