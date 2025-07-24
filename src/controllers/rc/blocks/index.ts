@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as RcBlocksController } from './RcBlocksController';
-export { default as RcBlocksExtrinsicsController } from './RcBlocksExtrinsicsController';
-export { default as RcBlocksRawExtrinsicsController } from './RcBlocksRawExtrinsicsController';
-export { default as RcBlocksTraceController } from './RcBlocksTraceController';
+export { default as RcBlocks } from './RcBlocksController';
+export { default as RcBlocksExtrinsics } from './RcBlocksExtrinsicsController';
+export { default as RcBlocksRawExtrinsics } from './RcBlocksRawExtrinsicsController';
+export { default as RcBlocksTrace } from './RcBlocksTraceController';

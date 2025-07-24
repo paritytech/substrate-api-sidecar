@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as RcPalletsConstsController } from './RcPalletsConstsController';
-export { default as RcPalletsDispatchablesController } from './RcPalletsDispatchablesController';
-export { default as RcPalletsErrorsController } from './RcPalletsErrorsController';
-export { default as RcPalletsEventsController } from './RcPalletsEventsController';
-export { default as RcPalletsOnGoingReferendaController } from './RcPalletsOnGoingReferendaController';
-export { default as RcPalletsStorageController } from './RcPalletsStorageController';
+export { default as RcPalletsConsts } from './RcPalletsConstsController';
+export { default as RcPalletsDispatchables } from './RcPalletsDispatchablesController';
+export { default as RcPalletsErrors } from './RcPalletsErrorsController';
+export { default as RcPalletsEvents } from './RcPalletsEventsController';
+export { default as RcPalletsOnGoingReferenda } from './RcPalletsOnGoingReferendaController';
+export { default as RcPalletsStorage } from './RcPalletsStorageController';

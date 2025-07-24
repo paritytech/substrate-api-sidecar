@@ -89,10 +89,12 @@ describe('controllerInjection', () => {
 					injectedControllers.add(controller.controllerName || controller.name);
 				}
 			});
+
 			const controllersToInclude =
 				specToControllerMap[chain]?.controllers.sort() || defaultControllers.controllers.sort();
 
 			const filtered = controllersToInclude.filter((c) => !injectedControllers.has(c));
+
 			expect(filtered).toHaveLength(0);
 		});
 	}
