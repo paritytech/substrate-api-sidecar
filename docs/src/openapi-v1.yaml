@@ -857,9 +857,9 @@ paths:
   /rc/node/network:
     get:
       tags:
-      - node
-      summary: Get information about the Substrate node's activity in the peer-to-peer network on the relay chain.
-      description: Returns network related information of the node on the relay chain.
+      - rc
+      summary: Get relay chain node network information from Asset Hub.
+      description: Returns network related information of the relay chain node. This endpoint is specifically for Asset Hub instances to query relay chain node networking details.
       operationId: getRcNodeNetworking
       responses:
         "200":
@@ -871,10 +871,9 @@ paths:
   /rc/node/transaction-pool:
     get:
       tags:
-      - node
-      summary: Get pending extrinsics from the Substrate node.
-      description: Returns the extrinsics that the node knows of that have not
-        been included in a block.
+      - rc
+      summary: Get relay chain pending extrinsics from Asset Hub.
+      description: Returns pending extrinsics from the relay chain transaction pool. This endpoint is specifically for Asset Hub instances to query relay chain pending transactions.
       operationId: getRcNodeTransactionPool
       parameters:
       - name: includeFee
@@ -894,9 +893,9 @@ paths:
   /rc/node/version:
     get:
       tags:
-      - node
-      summary: Get information about the Substrates node's implementation and versioning.
-      description: Returns versioning information of the node.
+      - rc
+      summary: Get relay chain node version information from Asset Hub.
+      description: Returns versioning information of the relay chain node. This endpoint is specifically for Asset Hub instances to query relay chain node version details.
       operationId: getRcNodeVersion
       responses:
         "200":
