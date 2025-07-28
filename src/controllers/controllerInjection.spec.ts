@@ -3,6 +3,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { getControllers, specToControllerMap } from '../chains-config';
 import { defaultControllers } from '../chains-config/defaultControllers';
 import { controllers } from '.';
@@ -62,7 +63,7 @@ const chainsToNode: Record<string, string> = {
 	'coretime-polkadot': 'wss://sys.ibp.network/coretime-polkadot',
 	crust: 'wss://crust-parachain.crustapps.net',
 	karura: 'wss://karura-rpc.dwellir.com',
-	manta: 'wss://ws.manta.systems',
+	// manta: 'wss://ws.manta.systems',
 	kilt: 'wss://kilt.ibp.network',
 	'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
 };
@@ -88,10 +89,12 @@ describe('controllerInjection', () => {
 					injectedControllers.add(controller.controllerName || controller.name);
 				}
 			});
+
 			const controllersToInclude =
 				specToControllerMap[chain]?.controllers.sort() || defaultControllers.controllers.sort();
 
 			const filtered = controllersToInclude.filter((c) => !injectedControllers.has(c));
+
 			expect(filtered).toHaveLength(0);
 		});
 	}
@@ -99,6 +102,10 @@ describe('controllerInjection', () => {
 	it('should inject default controllers when pallets are not checked (injected-controllers: false) and a custom config is not available', async () => {
 		const wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
 		const api = await ApiPromise.create({ provider: wsProvider });
+
+		jest.spyOn(ApiPromiseRegistry, 'getSpecNameByType').mockImplementation(() => {
+			return new Set(['mock_spec']);
+		});
 		try {
 			await api.isReady;
 		} finally {

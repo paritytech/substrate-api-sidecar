@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
-import { validateAddress, validateRcAt } from '../../middleware';
+import { validateAddress, validateUseRcBlock } from '../../middleware';
 import { AccountsProxyInfoService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -31,7 +30,7 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateAddress, validateRcAt);
+		this.router.use(this.path, validateAddress, validateUseRcBlock);
 
 		this.safeMountAsyncGetHandlers([['', this.getAccountProxyInfo]]);
 	}
@@ -43,34 +42,39 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 	 * @param res Express Response
 	 */
 	private getAccountProxyInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, rcAt } },
+		{ params: { address }, query: { at, useRcBlock } },
 		res,
 	): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				AccountsProxyInfoController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.fetchAccountProxyInfo(ahHash, address);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			AccountsProxyInfoController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.fetchAccountProxyInfo(hash, address);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			AccountsProxyInfoController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.fetchAccountProxyInfo(hash, address);
 			AccountsProxyInfoController.sanitizedSend(res, result);
 		}
 	};

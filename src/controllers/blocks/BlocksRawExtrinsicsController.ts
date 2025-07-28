@@ -50,20 +50,20 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
 
-		let hash;
-		let rcBlockNumber: string | undefined;
-
+		let rawBlock;
 		if (useRcBlockArg) {
 			// Treat the blockId parameter as a relay chain block identifier
-			rcBlockNumber = blockId;
-			hash = await this.getAhAtFromRcAt(blockId);
-		} else {
-			hash = await this.getHashForBlock(blockId);
-		}
+			const rcBlockNumber = blockId;
+			const hash = await this.getAhAtFromRcAt(blockId);
 
-		const rawBlock = await this.service.fetchBlockRaw(hash);
+			// Return empty array if no Asset Hub block found
+			if (!hash) {
+				BlocksRawExtrinsicsController.sanitizedSend(res, []);
+				return;
+			}
 
-		if (rcBlockNumber) {
+			rawBlock = await this.service.fetchBlockRaw(hash);
+
 			const apiAt = await this.api.at(hash);
 			const ahTimestamp = await apiAt.query.timestamp.now();
 			const enhancedResult = {
@@ -72,8 +72,10 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 				ahTimestamp: ahTimestamp.toString(),
 			};
 
-			BlocksRawExtrinsicsController.sanitizedSend(res, enhancedResult);
+			BlocksRawExtrinsicsController.sanitizedSend(res, [enhancedResult]);
 		} else {
+			const hash = await this.getHashForBlock(blockId);
+			rawBlock = await this.service.fetchBlockRaw(hash);
 			BlocksRawExtrinsicsController.sanitizedSend(res, rawBlock);
 		}
 

@@ -2,6 +2,143 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.2..v20.4.0) (2025-07-24)
+
+### Features
+
+- feat: Support /rc for remaining endpoints ([#1713](https://github.com/paritytech/substrate-api-sidecar/pull/1713)) ([82fd9b2](https://github.com/paritytech/substrate-api-sidecar/commit/82fd9b2))
+    - Adds comprehensive RC (Relay Chain) pallet endpoints including storage, constants, dispatchables, errors, and events
+- feat: Add RC Runtime Endpoints for Relay Chain Access ([#1708](https://github.com/paritytech/substrate-api-sidecar/pull/1708)) ([3e38c0f](https://github.com/paritytech/substrate-api-sidecar/commit/3e38c0f))
+    - Introduces `/rc/runtime/code`, `/rc/runtime/metadata`, and `/rc/runtime/spec` endpoints
+- feat: Add RC Node Endpoints for Relay Chain Access ([#1710](https://github.com/paritytech/substrate-api-sidecar/pull/1710)) ([3b14547](https://github.com/paritytech/substrate-api-sidecar/commit/3b14547))
+    - Adds `/rc/node/network`, `/rc/node/transaction-pool`, and `/rc/node/version` endpoints
+- feat: Asset Hub migration and elastic scaling preparation - Array responses for `useRcBlock`, remove `rcAt` in favor of `useRcBlock` ([#1709](https://github.com/paritytech/substrate-api-sidecar/pull/1709))
+([1c97088](https://github.com/paritytech/substrate-api-sidecar/commit/1c97088))
+    - Standardizes relay chain block queries using `useRcBlock` parameter across all endpoints
+- feat: Add remaining Accounts endpoints with `/rc` prefix ([#1704](https://github.com/paritytech/substrate-api-sidecar/pull/1704)) ([1376c35](https://github.com/paritytech/substrate-api-sidecar/commit/1376c35))
+    - Introduces `/rc/accounts/:address/balance-info` and `/rc/accounts/:address/proxy-info` endpoints
+- feat: Support `rcAt` for `/pallets/*` endpoints ([#1703](https://github.com/paritytech/substrate-api-sidecar/pull/1703)) ([00f8311](https://github.com/paritytech/substrate-api-sidecar/commit/00f8311))
+    - Enables relay chain block queries for pallet endpoints using `rcAt` parameter
+- feat: support `useRcBlock` for `/blocks/*` endpoints ([#1702](https://github.com/paritytech/substrate-api-sidecar/pull/1702)) ([c350c7e](https://github.com/paritytech/substrate-api-sidecar/commit/c350c7e))
+    - Adds relay chain block support for block-related endpoints
+- feat: Support `rcAt` for all applicable `/accounts/*` endpoints ([#1701](https://github.com/paritytech/substrate-api-sidecar/pull/1701)) ([9fcddc9](https://github.com/paritytech/substrate-api-sidecar/commit/9fcddc9))
+    - Extends relay chain block queries to account endpoints
+- feat: Add `rcAt` query parameter support for Asset Hub Migration ([#1700](https://github.com/paritytech/substrate-api-sidecar/pull/1700)) ([9febf6e](https://github.com/paritytech/substrate-api-sidecar/commit/9febf6e))
+    - Initial implementation of relay chain block querying functionality
+- feat: post AHM historical support for `/pallets/staking/progress` using local BABE calculations ([#1695](https://github.com/paritytech/substrate-api-sidecar/pull/1695))
+([e3948b7](https://github.com/paritytech/substrate-api-sidecar/commit/e3948b7))
+    - Adds historical staking progress support after Asset Hub Migration
+- feat: `/rc/accounts/:accountId/balance-info` endpoint ([#1692](https://github.com/paritytech/substrate-api-sidecar/pull/1692)) ([a90ec1e](https://github.com/paritytech/substrate-api-sidecar/commit/a90ec1e))
+    - First RC endpoint implementation for relay chain account balance queries
+
+### Fix
+
+- fix: tests in controllerInjection ([#1715](https://github.com/paritytech/substrate-api-sidecar/pull/1715)) ([6dca5f8](https://github.com/paritytech/substrate-api-sidecar/commit/6dca5f8))
+- fix: Ensure `rcBlockNumber` is always a number ([#1714](https://github.com/paritytech/substrate-api-sidecar/pull/1714)) ([02f4788](https://github.com/paritytech/substrate-api-sidecar/commit/02f4788))
+    - Ensures `rcBlockNumber` returns actual block numbers instead of hashes or "latest"
+- fix: Fixes authorId for chains using the nimbus consensus engine ([#1698](https://github.com/paritytech/substrate-api-sidecar/pull/1698)) ([c71bc54](https://github.com/paritytech/substrate-api-sidecar/commit/c71bc54)) (Thanks to https://github.com/RomarQ)
+- fix: remove unneccessary logging ([#1689](https://github.com/paritytech/substrate-api-sidecar/pull/1689)) ([b5f276a](https://github.com/paritytech/substrate-api-sidecar/commit/b5f276a))
+
+### Chores
+
+- chore(deps): upgrade chopsticks, and polkadot-js, remove resolutions ([#1685](https://github.com/paritytech/substrate-api-sidecar/pull/1685)) ([cfd18b8](https://github.com/paritytech/substrate-api-sidecar/commit/cfd18b8))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006000
+- Westend Asset Hub v1018013
+
+### Extra Notes
+
+This release introduces comprehensive Relay Chain (RC) endpoint support for Asset Hub instances. For detailed documentation on the `useRcBlock` parameter and RC endpoints, see: https://hackmd.io/bsNiDWbMRROB4olHbUtuaA
+
+#### Endpoints Supporting `useRcBlock` Query Parameter
+
+**Account Endpoints:**
+- `/accounts/:address/balance-info`
+- `/accounts/:address/asset-balances`
+- `/accounts/:address/asset-approvals`
+- `/accounts/:address/pool-asset-balances`
+- `/accounts/:address/pool-asset-approvals`
+- `/accounts/:address/proxy-info`
+- `/accounts/:address/staking-info`
+- `/accounts/:address/staking-payouts`
+- `/accounts/:address/vesting-info`
+
+**Block Endpoints:**
+- `/blocks`
+- `/blocks/head`
+- `/blocks/:number`
+- `/blocks/head/header`
+- `/blocks/:number/header`
+- `/blocks/:blockId/extrinsics/:extrinsicIndex`
+- `/blocks/:blockId/extrinsics-raw`
+
+**Pallet Endpoints:**
+- `/pallets/:palletId/storage`
+- `/pallets/:palletId/storage/:storageItemId`
+- `/pallets/:palletId/consts`
+- `/pallets/:palletId/consts/:constantItemId`
+- `/pallets/:palletId/events`
+- `/pallets/:palletId/events/:eventItemId`
+- `/pallets/:palletId/errors`
+- `/pallets/:palletId/errors/:errorItemId`
+- `/pallets/:palletId/dispatchables`
+- `/pallets/:palletId/dispatchables/:dispatchableItemId`
+- `/pallets/assets/:assetId/asset-info`
+- `/pallets/pool-assets/:assetId/asset-info`
+- `/pallets/asset-conversion/*`
+- `/pallets/on-going-referenda`
+
+#### Endpoints with `/rc` Prefix
+
+**RC Account Endpoints:**
+- `/rc/accounts/:address/balance-info`
+- `/rc/accounts/:address/proxy-info`
+
+**RC Block Endpoints:**
+- `/rc/blocks`
+- `/rc/blocks/head`
+- `/rc/blocks/:number`
+- `/rc/blocks/head/header`
+- `/rc/blocks/:number/header`
+- `/rc/blocks/:blockId/extrinsics/:extrinsicIndex`
+- `/rc/blocks/:blockId/extrinsics-raw`
+
+**RC Pallet Endpoints:**
+- `/rc/pallets/:palletId/storage`
+- `/rc/pallets/:palletId/storage/:storageItemId`
+- `/rc/pallets/:palletId/consts`
+- `/rc/pallets/:palletId/consts/:constantItemId`
+- `/rc/pallets/:palletId/events`
+- `/rc/pallets/:palletId/events/:eventItemId`
+- `/rc/pallets/:palletId/errors`
+- `/rc/pallets/:palletId/errors/:errorItemId`
+- `/rc/pallets/:palletId/dispatchables`
+- `/rc/pallets/:palletId/dispatchables/:dispatchableItemId`
+- `/rc/pallets/on-going-referenda`
+
+**RC Runtime Endpoints:**
+- `/rc/runtime/code`
+- `/rc/runtime/metadata`
+- `/rc/runtime/spec`
+
+**RC Node Endpoints:**
+- `/rc/node/network`
+- `/rc/node/transaction-pool`
+- `/rc/node/version`
+
+
 ## [20.3.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.1..v20.3.2) (2025-06-16)
 
 ### Fix

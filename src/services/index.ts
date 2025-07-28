@@ -21,6 +21,5 @@ export * from './coretime';
 export * from './node';
 export * from './pallets';
 export * from './paras';
-export * from './rc';
 export * from './runtime';
 export * from './transaction';

@@ -19,14 +19,19 @@ import { IAddressParam } from 'src/types/requests';
 
 import { ApiPromiseRegistry } from '../../../apiRegistry';
 import { validateAddress, validateBoolean } from '../../../middleware';
-import { RcAccountsBalanceInfoService } from '../../../services';
+import { AccountsBalanceInfoService } from '../../../services';
 import AbstractController from '../../AbstractController';
 
-export default class AccountsBalanceController extends AbstractController<RcAccountsBalanceInfoService> {
+export default class AccountsBalanceController extends AbstractController<AccountsBalanceInfoService> {
 	static controllerName = 'RcAccountsBalanceInfo';
 	static requiredPallets = [['Balances', 'System']];
-	constructor(api: string) {
-		super(api, '/rc/accounts/:address/balance-info', new RcAccountsBalanceInfoService(api));
+	constructor(_api: string) {
+		const rcApiSpecName = ApiPromiseRegistry.getSpecNameByType('relay')?.values();
+		const rcSpecName = rcApiSpecName ? Array.from(rcApiSpecName)[0] : undefined;
+		if (!rcSpecName) {
+			throw new Error('Relay chain API spec name is not defined.');
+		}
+		super(rcSpecName, '/rc/accounts/:address/balance-info', new AccountsBalanceInfoService(rcSpecName));
 		this.initRoutes();
 	}
 
@@ -64,7 +69,7 @@ export default class AccountsBalanceController extends AbstractController<RcAcco
 
 		AccountsBalanceController.sanitizedSend(
 			res,
-			await this.service.fetchAccountBalanceInfo(hash, rcApi, historicApi, address, tokenArg, withDenomination),
+			await this.service.fetchAccountBalanceInfo(hash, historicApi, address, tokenArg, withDenomination),
 		);
 	};
 }

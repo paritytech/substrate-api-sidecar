@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BlockHash } from '@polkadot/types/interfaces';
 import { RequestHandler } from 'express';
 
-import { validateRcAt } from '../../middleware';
+import { validateUseRcBlock } from '../../middleware';
 import { PalletsOnGoingReferendaService } from '../../services';
 import AbstractController from '../AbstractController';
 
@@ -30,7 +29,7 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 	}
 
 	protected initRoutes(): void {
-		this.router.use(this.path, validateRcAt);
+		this.router.use(this.path, validateUseRcBlock);
 		this.safeMountAsyncGetHandlers([['', this.getPalletOnGoingReferenda]]);
 	}
 
@@ -40,32 +39,37 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletOnGoingReferenda: RequestHandler = async ({ query: { at, rcAt } }, res): Promise<void> => {
-		let hash: BlockHash;
-		let rcBlockNumber: string | undefined;
+	private getPalletOnGoingReferenda: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+		if (useRcBlock === 'true') {
+			const rcAtResults = await this.getHashFromRcAt(at);
 
-		if (rcAt) {
-			const rcAtResult = await this.getHashFromRcAt(rcAt);
-			hash = rcAtResult.ahHash;
-			rcBlockNumber = rcAtResult.rcBlockNumber;
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
+				PalletsOnGoingReferendaController.sanitizedSend(res, []);
+				return;
+			}
+
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const result = await this.service.derivePalletOnGoingReferenda(ahHash);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+
+				const enhancedResult = {
+					...result,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
+			}
+
+			PalletsOnGoingReferendaController.sanitizedSend(res, results);
 		} else {
-			hash = await this.getHashFromAt(at);
-		}
-
-		const result = await this.service.derivePalletOnGoingReferenda(hash);
-
-		if (rcBlockNumber) {
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-
-			const enhancedResult = {
-				...result,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			PalletsOnGoingReferendaController.sanitizedSend(res, enhancedResult);
-		} else {
+			const hash = await this.getHashFromAt(at);
+			const result = await this.service.derivePalletOnGoingReferenda(hash);
 			PalletsOnGoingReferendaController.sanitizedSend(res, result);
 		}
 	};
