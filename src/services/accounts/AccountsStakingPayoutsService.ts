@@ -127,28 +127,20 @@ export interface IEarlyErasBlockInfo {
 interface IMigrationBoundaries {
 	relayChainLastEra: number;
 	assetHubFirstEra: number;
-	relayChainMigrationBlock: number;
-	assetHubMigrationBlock: number;
+	assetHubMigrationStartedAt: number;
+	assetHubMigrationEndedAt: number;
+	relayMigrationStartedAt: number;
+	relayMigrationEndedAt: number;
 }
 
-/**
- * Hardcoded migration boundaries for Westend/Westmint
- * TODO: Replace with actual migration era/block numbers
- */
 const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
-	// Migration Finished on Relay Chain: 26071771
-	// Migration Started on Relay Chain: 26041702
-	westend: {
-		relayChainLastEra: 849,
-		assetHubFirstEra: 850,
-		relayChainMigrationBlock: 19500000,
-		assetHubMigrationBlock: 6500000,
-	},
 	westmint: {
-		relayChainLastEra: 849,
-		assetHubFirstEra: 850,
-		relayChainMigrationBlock: 19500000,
-		assetHubMigrationBlock: 6500000,
+		relayChainLastEra: 9297,
+		assetHubFirstEra: 9297,
+		assetHubMigrationStartedAt: 11716733,
+		assetHubMigrationEndedAt: 11736597,
+		relayMigrationStartedAt: 26041702,
+		relayMigrationEndedAt: 26071771,
 	},
 };
 
@@ -324,7 +316,22 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const sanitizedEra = era < 0 ? 0 : era;
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
 
-		const [{ number }] = await Promise.all([api.rpc.chain.getHeader(hash)]);
+		const { number } = await api.rpc.chain.getHeader(hash);
+
+		const historyDepth: u32 = historicApi.consts.staking.historyDepth;
+
+		// Information is kept for eras in `[current_era - history_depth; current_era]`
+		if (historyDepth.toNumber() !== 0 && depth > historyDepth.toNumber()) {
+			throw new BadRequest('Must specify a depth less than history_depth');
+		}
+		if (era - (depth - 1) < currentEra - historyDepth.toNumber() && historyDepth.toNumber() !== 0) {
+			// In scenarios where depth is not > historyDepth, but the user specifies an era
+			// and historyDepth combo that would lead to querying eras older than history depth
+			throw new BadRequest(
+				'Must specify era and depth such that era - (depth - 1) is less ' +
+					'than or equal to current_era - history_depth.',
+			);
+		}
 
 		const at: IBlockInfo = {
 			height: number.unwrap().toString(10),
@@ -402,6 +409,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					historicApi.query.staking.erasRewardPoints(eraIndex),
 					historicApi.query.staking.erasValidatorReward(eraIndex),
 				]);
+
 				allDeriveQuerys.push(eraGeneralTuple);
 			} else {
 				// We check if we are in the Kusama chain since currently we have
@@ -768,7 +776,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 		}
 
-		if (storageKeys.length === 0 && historicApi.query.staking.erasStakersPaged) {
+		if (storageKeys.length === 0 && !!historicApi.query.staking.erasStakersPaged) {
 			storageKeys = await historicApi.query.staking.erasStakersPaged.entries(eraIndex);
 			validatorsOverviewEntries = await historicApi.query.staking.erasStakersOverview.entries(eraIndex);
 		}
@@ -916,12 +924,14 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const isKusama = relayChainApi.runtimeVersion.specName.toString().toLowerCase() === 'kusama';
 
 		// Use a representative block from the migration period to create historic API
-		const migrationBlockHash = await relayChainApi.rpc.chain.getBlockHash(migrationBoundaries.relayChainMigrationBlock);
+		const migrationBlockHash = await relayChainApi.rpc.chain.getBlockHash(
+			migrationBoundaries.relayMigrationStartedAt - 1,
+		);
 		const historicRelayApi = await relayChainApi.at(migrationBlockHash);
 
 		// Create block info for relay chain
 		const at: IBlockInfo = {
-			height: migrationBoundaries.relayChainMigrationBlock.toString(),
+			height: migrationBoundaries.relayMigrationEndedAt.toString(),
 			hash: migrationBlockHash,
 		};
 
