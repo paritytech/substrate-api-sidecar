@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.4.0..v20.4.1) (2025-07-29)
+
+### Fix
+
+- fix: rc specific endpoints initialisation ([#1720](https://github.com/paritytech/substrate-api-sidecar/pull/1720)) ([ca04ee7](https://github.com/paritytech/substrate-api-sidecar/commit/ca04ee7001a6bee5e3d749cc6daf5d8c27d30449))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006000
+- Westend Asset Hub v1018013
+
 ## [20.4.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.3.2..v20.4.0) (2025-07-24)
 
 ### Features
