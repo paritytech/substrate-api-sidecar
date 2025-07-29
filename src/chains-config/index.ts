@@ -17,6 +17,7 @@
 import { BN } from '@polkadot/util';
 import { ISidecarConfig } from 'src/types/sidecar-config';
 
+import { ApiPromiseRegistry } from '../apiRegistry';
 import { controllers } from '../controllers';
 import AbstractController from '../controllers/AbstractController';
 import { AbstractService } from '../services/AbstractService';
@@ -125,14 +126,14 @@ export const assetHubToBabe: Record<
  * @param api ApiPromise to inject into controllers
  * @param specName spacName of the chain to get controllers and options for
  */
-export function getControllersForSpec(specName: string): AbstractController<AbstractService>[] {
+export function getControllersForSpec(specName: string, withRC: boolean): AbstractController<AbstractService>[] {
 	if (specToControllerMap[specName]) {
-		return getControllersFromConfig(specName, specToControllerMap[specName]);
+		return getControllersFromConfig(specName, specToControllerMap[specName], withRC);
 	}
 
 	// If we don't have the specName in the specToControllerMap we use the default
 	// contoller config
-	return getControllersFromConfig(specName, defaultControllers);
+	return getControllersFromConfig(specName, defaultControllers, false);
 }
 
 /**
@@ -142,11 +143,15 @@ export function getControllersForSpec(specName: string): AbstractController<Abst
  * @param api ApiPromise to inject into controllers
  * @param config controller mount configuration object
  */
-function getControllersFromConfig(specName: string, config: ControllerConfig) {
+function getControllersFromConfig(specName: string, config: ControllerConfig, withRc: boolean) {
 	const controllersToInclude = config.controllers;
 
 	return controllersToInclude.reduce((acc, controller) => {
-		acc.push(new controllers[controller](specName, config.options));
+		if (controller.toString().toLowerCase().includes('rc') && !withRc) {
+			return acc;
+		} else {
+			acc.push(new controllers[controller](specName, config.options));
+		}
 
 		return acc;
 	}, [] as AbstractController<AbstractService>[]);
@@ -182,6 +187,8 @@ export const getControllers = (
 	if (config.EXPRESS.INJECTED_CONTROLLERS) {
 		return getControllersByPallets(specName, pallets);
 	} else {
-		return getControllersForSpec(specName);
+		// filter by rc situtation
+		const hasRelayConnection = !!ApiPromiseRegistry.getApiByType('relay')[0];
+		return getControllersForSpec(specName, hasRelayConnection && assetHubSpecNames.has(specName));
 	}
 };
