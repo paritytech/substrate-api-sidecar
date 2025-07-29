@@ -47,6 +47,7 @@ import type {
 import { CalcPayout } from '@substrate/calc';
 import { BadRequest } from 'http-errors';
 
+import { ApiPromiseRegistry } from '../../apiRegistry';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
@@ -118,6 +119,30 @@ export interface IEarlyErasBlockInfo {
 		end: number;
 	};
 }
+
+/**
+ * Migration boundaries for AssetHub staking migration
+ * These define when staking migrated from relay chain to AssetHub
+ */
+interface IMigrationBoundaries {
+	relayChainLastEra: number;
+	assetHubFirstEra: number;
+	assetHubMigrationStartedAt: number;
+	assetHubMigrationEndedAt: number;
+	relayMigrationStartedAt: number;
+	relayMigrationEndedAt: number;
+}
+
+const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
+	westmint: {
+		relayChainLastEra: 9297,
+		assetHubFirstEra: 9297,
+		assetHubMigrationStartedAt: 11716733,
+		assetHubMigrationEndedAt: 11736597,
+		relayMigrationStartedAt: 26041702,
+		relayMigrationEndedAt: 26071771,
+	},
+};
 
 export class AccountsStakingPayoutsService extends AbstractService {
 	/**
@@ -255,6 +280,108 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	}
 
 	/**
+	 * Fetch and derive payouts for `address` on AssetHub, handling migration boundary.
+	 *
+	 * This method splits era queries across the migration boundary:
+	 * - Pre-migration eras: Query relay chain
+	 * - Post-migration eras: Query AssetHub
+	 *
+	 * @param hash `BlockHash` to make call at
+	 * @param address address of the _Stash_ account to get the payouts of
+	 * @param depth number of eras to query at and below the specified era
+	 * @param era the most recent era to query
+	 * @param unclaimedOnly whether or not to only show unclaimed payouts
+	 * @param currentEra The current era
+	 * @param historicApi Historic api for querying past blocks
+	 */
+	async fetchAccountStakingPayoutAssetHub(
+		hash: BlockHash,
+		address: string,
+		depth: number,
+		era: number,
+		unclaimedOnly: boolean,
+		currentEra: number,
+		historicApi: ApiDecoration<'promise'>,
+	): Promise<IAccountStakingPayouts> {
+		const { api } = this;
+		const specName = this.getSpecName().toLowerCase();
+
+		// Get migration boundaries for this chain
+		const migrationBoundaries = MIGRATION_BOUNDARIES[specName];
+		if (!migrationBoundaries) {
+			// Fallback to regular method if no migration boundaries defined
+			return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+		}
+
+		const sanitizedEra = era < 0 ? 0 : era;
+		const startEra = Math.max(0, sanitizedEra - (depth - 1));
+
+		const { number } = await api.rpc.chain.getHeader(hash);
+
+		const historyDepth: u32 = historicApi.consts.staking.historyDepth;
+
+		// Information is kept for eras in `[current_era - history_depth; current_era]`
+		if (historyDepth.toNumber() !== 0 && depth > historyDepth.toNumber()) {
+			throw new BadRequest('Must specify a depth less than history_depth');
+		}
+		if (era - (depth - 1) < currentEra - historyDepth.toNumber() && historyDepth.toNumber() !== 0) {
+			// In scenarios where depth is not > historyDepth, but the user specifies an era
+			// and historyDepth combo that would lead to querying eras older than history depth
+			throw new BadRequest(
+				'Must specify era and depth such that era - (depth - 1) is less ' +
+					'than or equal to current_era - history_depth.',
+			);
+		}
+
+		const at: IBlockInfo = {
+			height: number.unwrap().toString(10),
+			hash,
+		};
+
+		// Split era range at migration boundary
+		const preStartEra = startEra;
+		const preEndEra = Math.min(sanitizedEra, migrationBoundaries.relayChainLastEra);
+		const postStartEra = Math.max(startEra, migrationBoundaries.assetHubFirstEra);
+		const postEndEra = sanitizedEra;
+
+		const allEraPayouts: IEraPayouts[] = [];
+
+		// Query pre-migration eras from relay chain
+		if (preStartEra <= preEndEra) {
+			const relayChainPayouts = await this.fetchErasFromRelayChain(
+				address,
+				preStartEra,
+				preEndEra,
+				unclaimedOnly,
+				migrationBoundaries,
+			);
+			allEraPayouts.push(...relayChainPayouts);
+		}
+
+		// Query post-migration eras from AssetHub
+		if (postStartEra <= postEndEra) {
+			const assetHubPayouts = await this.fetchErasFromAssetHub(
+				historicApi,
+				address,
+				postStartEra,
+				postEndEra,
+				unclaimedOnly,
+				at,
+			);
+			allEraPayouts.push(...assetHubPayouts);
+		}
+
+		return {
+			at,
+			erasPayouts: allEraPayouts.sort((a, b) => {
+				const aEra = typeof a.era === 'object' ? a.era.toNumber() : a.era;
+				const bEra = typeof b.era === 'object' ? b.era.toNumber() : b.era;
+				return aEra - bEra;
+			}),
+		};
+	}
+
+	/**
 	 * Fetch general info about eras in the inclusive range `startEra` .. `era`.
 	 *
 	 * @param historicApi Historic api for querying past blocks
@@ -282,6 +409,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					historicApi.query.staking.erasRewardPoints(eraIndex),
 					historicApi.query.staking.erasValidatorReward(eraIndex),
 				]);
+
 				allDeriveQuerys.push(eraGeneralTuple);
 			} else {
 				// We check if we are in the Kusama chain since currently we have
@@ -648,7 +776,7 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			}
 		}
 
-		if (storageKeys.length === 0 && historicApi.query.staking.erasStakersPaged) {
+		if (storageKeys.length === 0 && !!historicApi.query.staking.erasStakersPaged) {
 			storageKeys = await historicApi.query.staking.erasStakersPaged.entries(eraIndex);
 			validatorsOverviewEntries = await historicApi.query.staking.erasStakersOverview.entries(eraIndex);
 		}
@@ -775,5 +903,167 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		}
 
 		return nominatedExposures;
+	}
+
+	/**
+	 * Fetch era payouts from relay chain for pre-migration eras
+	 */
+	private async fetchErasFromRelayChain(
+		address: string,
+		startEra: number,
+		endEra: number,
+		unclaimedOnly: boolean,
+		migrationBoundaries: IMigrationBoundaries,
+	): Promise<IEraPayouts[]> {
+		const relayChainApis = ApiPromiseRegistry.getApiByType('relay');
+		if (!relayChainApis?.length) {
+			throw new Error('Relay chain API not found for pre-migration era queries');
+		}
+
+		const relayChainApi = relayChainApis[0].api;
+		const isKusama = relayChainApi.runtimeVersion.specName.toString().toLowerCase() === 'kusama';
+
+		// Use a representative block from the migration period to create historic API
+		const migrationBlockHash = await relayChainApi.rpc.chain.getBlockHash(
+			migrationBoundaries.relayMigrationStartedAt - 1,
+		);
+		const historicRelayApi = await relayChainApi.at(migrationBlockHash);
+
+		// Create block info for relay chain
+		const at: IBlockInfo = {
+			height: migrationBoundaries.relayMigrationEndedAt.toString(),
+			hash: migrationBlockHash,
+		};
+
+		// Fetch general era data from relay chain
+		const allErasGeneral = await this.fetchAllErasGeneral(historicRelayApi, startEra, endEra, at, isKusama);
+
+		// Fetch commissions from relay chain
+		const allErasCommissions = await this.fetchAllErasCommissions(
+			historicRelayApi,
+			address,
+			startEra,
+			allErasGeneral.map((eraGeneral) => eraGeneral[0]),
+			isKusama,
+		).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
+
+		// Process era data to create payouts
+		const allEraData = allErasGeneral.map(
+			([deriveEraExposure, eraRewardPoints, erasValidatorRewardOption]: IErasGeneral, idx: number): IEraData => {
+				const eraCommissions = allErasCommissions[idx];
+				const nominatedExposures = this.deriveNominatedExposures(address, deriveEraExposure);
+
+				const exposuresWithCommission = [];
+				if (nominatedExposures) {
+					for (let idx = 0; idx < nominatedExposures.length; idx++) {
+						let index = 0;
+						const { validatorId } = nominatedExposures[idx];
+						const nominatorInstances = nominatedExposures.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						const exposuresValidatorLen = exposuresWithCommission.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						if (nominatorInstances > 1) {
+							index = exposuresValidatorLen;
+						}
+						if (eraCommissions[idx]) {
+							exposuresWithCommission.push({
+								validatorId,
+								...eraCommissions[idx],
+								nominatorIndex: index,
+							});
+						}
+					}
+				}
+
+				return {
+					deriveEraExposure,
+					eraRewardPoints,
+					erasValidatorRewardOption,
+					exposuresWithCommission,
+					eraIndex: historicRelayApi.registry.createType('EraIndex', idx + startEra),
+				};
+			},
+		);
+
+		return allEraData
+			.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama))
+			.filter((payout): payout is IEraPayouts => !('message' in payout));
+	}
+
+	/**
+	 * Fetch era payouts from AssetHub for post-migration eras
+	 */
+	private async fetchErasFromAssetHub(
+		historicApi: ApiDecoration<'promise'>,
+		address: string,
+		startEra: number,
+		endEra: number,
+		unclaimedOnly: boolean,
+		at: IBlockInfo,
+	): Promise<IEraPayouts[]> {
+		const specName = this.getSpecName().toLowerCase();
+		const isKusama = specName === 'kusama';
+
+		// Fetch general era data from AssetHub
+		const allErasGeneral = await this.fetchAllErasGeneral(historicApi, startEra, endEra, at, isKusama);
+
+		// Fetch commissions from AssetHub
+		const allErasCommissions = await this.fetchAllErasCommissions(
+			historicApi,
+			address,
+			startEra,
+			allErasGeneral.map((eraGeneral) => eraGeneral[0]),
+			isKusama,
+		).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
+
+		// Process era data to create payouts
+		const allEraData = allErasGeneral.map(
+			([deriveEraExposure, eraRewardPoints, erasValidatorRewardOption]: IErasGeneral, idx: number): IEraData => {
+				const eraCommissions = allErasCommissions[idx];
+				const nominatedExposures = this.deriveNominatedExposures(address, deriveEraExposure);
+
+				const exposuresWithCommission = [];
+				if (nominatedExposures) {
+					for (let idx = 0; idx < nominatedExposures.length; idx++) {
+						let index = 0;
+						const { validatorId } = nominatedExposures[idx];
+						const nominatorInstances = nominatedExposures.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						const exposuresValidatorLen = exposuresWithCommission.filter(
+							(exposure) => exposure.validatorId.toString() === validatorId,
+						).length;
+						if (nominatorInstances > 1) {
+							index = exposuresValidatorLen;
+						}
+						if (eraCommissions[idx]) {
+							exposuresWithCommission.push({
+								validatorId,
+								...eraCommissions[idx],
+								nominatorIndex: index,
+							});
+						}
+					}
+				}
+
+				return {
+					deriveEraExposure,
+					eraRewardPoints,
+					erasValidatorRewardOption,
+					exposuresWithCommission,
+					eraIndex: historicApi.registry.createType('EraIndex', idx + startEra),
+				};
+			},
+		);
+
+		return allEraData
+			.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama))
+			.filter((payout): payout is IEraPayouts => !('message' in payout));
 	}
 }
