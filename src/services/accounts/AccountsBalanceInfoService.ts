@@ -90,7 +90,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					miscFrozen: 'miscFrozen does not exist for this runtime',
 					feeFrozen: 'feeFrozen does not exist for this runtime',
 					frozen: 'frozen does not exist for this runtime',
-					transferable: 'transferable not supported for this runtime',
+					transferable: 'transferable formula not supported for this runtime',
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -204,7 +204,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				feeFrozen = tmpData.feeFrozen;
 				miscFrozen = tmpData.miscFrozen;
 				frozen = 'frozen does not exist for this runtime';
-				transferable = 'transferable not supported for this runtime';
+				transferable = 'transferable formula not supported for this runtime';
 			} else {
 				const deriveData = await this.api.derive.balances.all(address);
 				const tmpData = accountData as PalletBalancesAccountData;
