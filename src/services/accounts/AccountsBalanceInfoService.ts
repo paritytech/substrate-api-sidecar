@@ -90,6 +90,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 					miscFrozen: 'miscFrozen does not exist for this runtime',
 					feeFrozen: 'feeFrozen does not exist for this runtime',
 					frozen: 'frozen does not exist for this runtime',
+					transferable: 'transferable not supported for this runtime',
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -106,11 +107,15 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 			const { data, nonce } = accountInfo;
 
-			let free, reserved, feeFrozen, miscFrozen, frozen;
+			let free, reserved, feeFrozen, miscFrozen, frozen, transferable;
 			if (accountInfo.data?.frozen) {
+				const deriveData = await this.api.derive.balances.all(address);
 				free = data.free;
 				reserved = data.reserved;
 				frozen = data.frozen;
+				// We put `!` because we know the transferable wont be null in this specific case.
+				// Since the underlying logic in PJS and here verify the same set of cases.
+				transferable = deriveData.transferable!;
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 			} else {
@@ -119,6 +124,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 				reserved = tmpData.reserved;
 				feeFrozen = tmpData.feeFrozen;
 				miscFrozen = tmpData.miscFrozen;
+				transferable = 'transferable formula not supported for this runtime';
 				frozen = 'frozen does not exist for this runtime';
 			}
 
@@ -138,6 +144,8 @@ export class AccountsBalanceInfoService extends AbstractService {
 						typeof miscFrozen === 'string' ? miscFrozen : this.inDenominationBal(denominate, miscFrozen, decimal),
 					feeFrozen: typeof feeFrozen === 'string' ? feeFrozen : this.inDenominationBal(denominate, feeFrozen, decimal),
 					frozen: typeof frozen === 'string' ? frozen : this.inDenominationBal(denominate, frozen, decimal),
+					transferable:
+						typeof transferable === 'string' ? transferable : this.inDenominationBal(denominate, transferable, decimal),
 					locks: this.inDenominationLocks(denominate, locks, decimal),
 				};
 			} else {
@@ -188,7 +196,7 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 		if (accountData && locks && accountInfo) {
 			const { nonce } = accountInfo;
-			let free, reserved, feeFrozen, miscFrozen, frozen;
+			let free, reserved, feeFrozen, miscFrozen, frozen, transferable;
 			if ((accountData as AccountData).miscFrozen) {
 				const tmpData = accountData as AccountData;
 				free = tmpData.free;
@@ -196,11 +204,14 @@ export class AccountsBalanceInfoService extends AbstractService {
 				feeFrozen = tmpData.feeFrozen;
 				miscFrozen = tmpData.miscFrozen;
 				frozen = 'frozen does not exist for this runtime';
+				transferable = 'transferable not supported for this runtime';
 			} else {
+				const deriveData = await this.api.derive.balances.all(address);
 				const tmpData = accountData as PalletBalancesAccountData;
 				free = tmpData.free;
 				reserved = tmpData.reserved;
 				frozen = tmpData.frozen;
+				transferable = deriveData.transferable!;
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 			}
@@ -215,6 +226,8 @@ export class AccountsBalanceInfoService extends AbstractService {
 					typeof miscFrozen === 'string' ? miscFrozen : this.inDenominationBal(denominate, miscFrozen, decimal),
 				feeFrozen: typeof feeFrozen === 'string' ? feeFrozen : this.inDenominationBal(denominate, feeFrozen, decimal),
 				frozen: typeof frozen === 'string' ? frozen : this.inDenominationBal(denominate, frozen, decimal),
+				transferable:
+					typeof transferable === 'string' ? transferable : this.inDenominationBal(denominate, transferable, decimal),
 				locks: this.inDenominationLocks(denominate, locks, decimal),
 			};
 		} else {
