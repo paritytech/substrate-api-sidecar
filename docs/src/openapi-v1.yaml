@@ -4309,6 +4309,14 @@ components:
             Note, that some runtimes may not have support for frozen and if so the following 
             will be returned `frozen does not exist for this runtime`
           format: unsignedInteger
+        transferable:
+          type: string
+          description: The amount that can be transferred from this account. This is calculated using the formula
+            `free - max(maybeEd, frozen - reserve)` where `maybeEd` is the existential deposit if there are frozen
+            funds or reserves, otherwise zero. This represents the actual spendable balance.
+            Note, that some historical runtimes may not have support for the current formula used and if so the following
+            will be returned `transferable not supported for this runtime`.
+          format: unsignedInteger
         locks:
           type: array
           description: Array of locks on a balance. There can be many of these on
