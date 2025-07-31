@@ -113,9 +113,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				free = data.free;
 				reserved = data.reserved;
 				frozen = data.frozen;
-				// We put `!` because we know the transferable wont be null in this specific case.
-				// Since the underlying logic in PJS and here verify the same set of cases.
-				transferable = deriveData.transferable!;
+				transferable = deriveData.transferable
+					? deriveData.transferable
+					: 'transferable formula not supported for this runtime';
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 			} else {
@@ -211,7 +211,9 @@ export class AccountsBalanceInfoService extends AbstractService {
 				free = tmpData.free;
 				reserved = tmpData.reserved;
 				frozen = tmpData.frozen;
-				transferable = deriveData.transferable!;
+				transferable = deriveData.transferable
+					? deriveData.transferable
+					: 'transferable formula not supported for this runtime';
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 			}
