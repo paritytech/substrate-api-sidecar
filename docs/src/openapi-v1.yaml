@@ -554,14 +554,16 @@ paths:
       tags:
       - staking
       summary: Get payout information for a _Stash_ account.
-      description: Returns payout information for the last specified eras. If
-        specifying both the depth and era query params, this endpoint will
-        return information for (era - depth) through era. (i.e. if depth=5 and
-        era=20 information will be returned for eras 16 through 20). N.B. You
-        cannot query eras less then `current_era - HISTORY_DEPTH`. N.B. The
-        `nominator*` fields correspond to the address being queried, even if it
-        is a validator's _Stash_ address. This is because a validator is technically
-        nominating itself.
+      description: |
+        Returns payout information for the last specified eras. If specifying both the depth and era query params, this endpoint will return information for (era - depth) through era. (i.e. if depth=5 and era=20 information will be returned for eras 16 through 20).
+
+        **Asset Hub Migration Support:**
+        For Asset Hub chains that have migrated staking from the relay chain, this endpoint automatically handles era query routing:
+        - **Pre-migration eras**: Queries historical data from the relay chain
+        - **Post-migration eras**: Queries current data from Asset Hub
+        - **Cross-migration queries**: Automatically splits the era range and combines results from both chains
+
+        **Note:** The `nominator*` fields correspond to the address being queried, even if it is a validator's _Stash_ address. This is because a validator is technically nominating itself.
       operationId: getStakingPayoutsByAccountId
       parameters:
       - name: accountId
@@ -624,7 +626,12 @@ paths:
                   - type: array
                     items:
                       $ref: '#/components/schemas/AccountStakingPayouts'
-                description: Returns a single object when using standard parameters. Returns an array when using 'useRcBlock' parameter (array contains one object per Asset Hub block found, or empty array if none found).
+                description: |
+                  **Standard Mode**: Returns a single object when using standard parameters (without useRcBlock). 
+                  
+                  **Relay Chain Block Mode**: Returns an array when using 'useRcBlock' parameter (array contains one object per Asset Hub block found, or empty array if none found).
+                  
+                  **Asset Hub Migration**: For both modes, when querying eras that span the Asset Hub migration boundary, the endpoint automatically fetches and combines data from both relay chain (pre-migration eras) and Asset Hub (post-migration eras). The migration handling is transparent to the user - you get complete payout information regardless of which chain originally held the data.
         "400":
           description: invalid blockId supplied for at query param, or invalid parameter combination
           content:
