@@ -28,6 +28,15 @@ export interface IAccountBalanceInfo {
 	miscFrozen: Balance | string;
 	feeFrozen: Balance | string;
 	frozen: Balance | string;
+	/**
+	 * Calculated transferable balance. This uses the formula: free - max(maybeEd, frozen - reserve)
+	 * Where `maybeEd` means if there is no frozen and reserves it will be zero, else it will be the existential deposit.
+	 * This is only correct when the return type of `api.query.system.account` is `FrameSystemAccountInfo`.
+	 * Which is the most up to date calculation for transferable balances.
+	 *
+	 * ref: https://github.com/paritytech/polkadot-sdk/issues/1833
+	 */
+	transferable: Balance | string;
 	locks: Vec<BalanceLock> | IBalanceLock[];
 	rcBlockNumber?: string;
 	ahTimestamp?: string;

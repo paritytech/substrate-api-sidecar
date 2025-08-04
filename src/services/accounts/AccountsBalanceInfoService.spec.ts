@@ -179,6 +179,7 @@ describe('AccountsBalanceInfoService', () => {
 					},
 				],
 				miscFrozen: '100000000000',
+				transferable: 'transferable formula not supported for this runtime',
 				nonce: '6',
 				reserved: '0',
 				tokenSymbol: 'DOT',

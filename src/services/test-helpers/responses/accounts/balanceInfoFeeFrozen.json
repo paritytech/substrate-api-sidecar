@@ -10,6 +10,7 @@
     "miscFrozen": "111111",
     "feeFrozen": "111111",
     "frozen": "frozen does not exist for this runtime",
+    "transferable": "transferable formula not supported for this runtime",
     "locks": [
         {
             "id": "0x7374616b696e6720",

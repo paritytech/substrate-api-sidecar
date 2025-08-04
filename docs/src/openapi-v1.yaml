@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 20.4.0
+  version: 20.4.1
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -4315,6 +4315,14 @@ components:
             where the account owner cannot reasonably benefit from the balance reduction, such as slashing.
             Note, that some runtimes may not have support for frozen and if so the following 
             will be returned `frozen does not exist for this runtime`
+          format: unsignedInteger
+        transferable:
+          type: string
+          description: The amount that can be transferred from this account. This is calculated using the formula
+            `free - max(maybeEd, frozen - reserve)` where `maybeEd` is the existential deposit if there are frozen
+            funds or reserves, otherwise it is zero. This represents the actual spendable balance.
+            Note, that some historical runtimes may not have support for the current formula used and if so the following
+            will be returned `transferable not supported for this runtime`.
           format: unsignedInteger
         locks:
           type: array
