@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.5.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.4.1..v20.5.0) (2025-08-04)
+
+### Features
+
+- feat: Add transferable field to `/accounts/{accountId}/balance-info` ([#1722](https://github.com/paritytech/substrate-api-sidecar/pull/1722)) ([38e4d3f](https://github.com/paritytech/substrate-api-sidecar/commit/38e4d3f))
+    - Adds a new `transferable` field to the balance-info endpoint showing the amount that can be transferred
+
+### Fix
+
+- fix: Ensure `staking-payouts` depth integrates with the relay chain post AHM ([#1718](https://github.com/paritytech/substrate-api-sidecar/pull/1718)) ([2e4ea42](https://github.com/paritytech/substrate-api-sidecar/commit/2e4ea42))
+    - Fixes integration issues with staking payouts depth functionality for relay chain access after Asset Hub Migration
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006000
+- Westend Asset Hub v1018013
+
 ## [20.4.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.4.0..v20.4.1) (2025-07-29)
 
 ### Fix
