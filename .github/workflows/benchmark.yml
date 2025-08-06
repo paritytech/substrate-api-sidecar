@@ -50,7 +50,7 @@ jobs:
           private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
 
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: benchmarks
           path: artifacts
