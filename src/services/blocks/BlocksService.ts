@@ -38,7 +38,7 @@ import type {
 } from '@polkadot/types/interfaces';
 import type { AnyJson, Codec, Registry } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
-import { blake2AsU8a } from '@polkadot/util-crypto';
+import { blake2AsU8a, decodeAddress, isAddress } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
 import { BadRequest, InternalServerError } from 'http-errors';
@@ -76,6 +76,7 @@ interface FetchBlockOptions {
 	noFees: boolean;
 	checkDecodedXcm: boolean;
 	paraId?: number;
+	useEvmAddressFormat?: boolean;
 }
 
 interface ExtrinsicSuccessOrFailedOverride {
@@ -119,6 +120,7 @@ export class BlocksService extends AbstractService {
 			noFees,
 			checkDecodedXcm,
 			paraId,
+			useEvmAddressFormat = false,
 		}: FetchBlockOptions,
 	): Promise<IBlock> {
 		const { api } = this;
@@ -238,6 +240,38 @@ export class BlocksService extends AbstractService {
 			finalized,
 			decodedXcmMsgs,
 		};
+
+		const convertToEvm =
+			useEvmAddressFormat &&
+			(this.api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[])
+				.map((p) => (p.name as string).toLowerCase())
+				.includes('revive');
+
+		if (convertToEvm) {
+			// Convert SS58 addresses to EVM addresses if the revive pallet is present
+			const updatedExtrinsics = extrinsics.map((ext) => {
+				if (isFrameMethod(ext.method) && ext.method.pallet === 'revive') {
+					return {
+						...ext,
+						events: ext.events.map((event) => {
+							return {
+								...event,
+								data: event.data.map((d) => {
+									if (isAddress(d.toString())) {
+										return u8aToHex(decodeAddress(d.toString()).subarray(0, 20));
+									}
+									return d;
+								}),
+							};
+						}),
+					};
+				}
+				return ext;
+			});
+
+			response.extrinsics = updatedExtrinsics as IBlock['extrinsics'];
+		}
+
 		return response;
 	}
 
