@@ -944,6 +944,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -988,6 +995,13 @@ paths:
       - name: noFees
         in: query
         description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
         schema:
           type: boolean
           default: false
@@ -1069,6 +1083,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -1111,6 +1132,13 @@ paths:
       - name: noFees
         in: query
         description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
         schema:
           type: boolean
           default: false
@@ -1317,6 +1345,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       - name: useRcBlock
         in: query
         description: When set to `true`, the range parameter represents relay chain block numbers and 
@@ -1407,6 +1442,13 @@ paths:
         in: query
         description: When set to `true`, it will use the relay chain block identifier to determine 
           the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available. When used, returns an array of response objects or empty array if no Asset Hub block found.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
         required: false
         schema:
           type: boolean
@@ -1526,6 +1568,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -1607,6 +1656,13 @@ paths:
         description: When set to `true`, it will use the latest relay chain block to determine the 
           corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
           Respects the `finalized` parameter when determining which relay chain block to use. When used, returns an array of response objects or empty array if no Asset Hub block found.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
         required: false
         schema:
           type: boolean
