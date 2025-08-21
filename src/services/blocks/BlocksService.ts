@@ -241,16 +241,14 @@ export class BlocksService extends AbstractService {
 			decodedXcmMsgs,
 		};
 
-		const convertToEvm =
-			useEvmAddressFormat &&
-			(this.api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[])
-				.map((p) => (p.name as string).toLowerCase())
-				.includes('revive');
+		// const convertToEvm =
+		// 	useEvmAddressFormat &&
+		// 	(this.api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[])
+		// 		.map((p) => (p.name as string).toLowerCase())
+		// 		.includes('revive');
 
-		if (convertToEvm) {
-			// Convert SS58 addresses to EVM addresses if the revive pallet is present
-			const updatedExtrinsics = extrinsics.map((ext) => {
-				// if (isFrameMethod(ext.method) && ext.method.pallet === 'revive') {
+		if (useEvmAddressFormat) {
+			response.extrinsics = extrinsics.map((ext) => {
 				return {
 					...ext,
 					events: ext.events.map((event) => {
@@ -258,13 +256,11 @@ export class BlocksService extends AbstractService {
 							...event,
 							data: this.convertDataToEvmAddress(event.data.toJSON()),
 						};
-					}),
+					}) as unknown as ISanitizedEvent[],
 				};
 				// }
 				// return ext;
 			});
-
-			response.extrinsics = updatedExtrinsics as IBlock['extrinsics'];
 		}
 
 		return response;
