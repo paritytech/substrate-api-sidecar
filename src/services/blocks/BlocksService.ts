@@ -37,7 +37,7 @@ import type {
 	WeightV1,
 } from '@polkadot/types/interfaces';
 import type { AnyJson, Codec, Registry } from '@polkadot/types/types';
-import { u8aToHex } from '@polkadot/util';
+import { isObject, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a, decodeAddress, isAddress } from '@polkadot/util-crypto';
 import { calc_partial_fee } from '@substrate/calc';
 import BN from 'bn.js';
@@ -250,29 +250,44 @@ export class BlocksService extends AbstractService {
 		if (convertToEvm) {
 			// Convert SS58 addresses to EVM addresses if the revive pallet is present
 			const updatedExtrinsics = extrinsics.map((ext) => {
-				if (isFrameMethod(ext.method) && ext.method.pallet === 'revive') {
-					return {
-						...ext,
-						events: ext.events.map((event) => {
-							return {
-								...event,
-								data: event.data.map((d) => {
-									if (isAddress(d.toString())) {
-										return u8aToHex(decodeAddress(d.toString()).subarray(0, 20));
-									}
-									return d;
-								}),
-							};
-						}),
-					};
-				}
-				return ext;
+				// if (isFrameMethod(ext.method) && ext.method.pallet === 'revive') {
+				return {
+					...ext,
+					events: ext.events.map((event) => {
+						return {
+							...event,
+							data: this.convertDataToEvmAddress(event.data.toJSON()),
+						};
+					}),
+				};
+				// }
+				// return ext;
 			});
 
 			response.extrinsics = updatedExtrinsics as IBlock['extrinsics'];
 		}
 
 		return response;
+	}
+
+	private convertDataToEvmAddress(data: AnyJson): AnyJson {
+		// recursive function to convert all AccountId32 to EVM addresses
+		if (data && Array.isArray(data)) {
+			return data.map((item) => this.convertDataToEvmAddress(item));
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string
+		} else if (data && isAddress(data?.toString())) {
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string
+			return u8aToHex(decodeAddress(data.toString()).subarray(0, 20));
+		} else if (isObject(data)) {
+			return Object.entries(data).reduce(
+				(acc, [key, value]) => {
+					acc[key] = this.convertDataToEvmAddress(value);
+					return acc;
+				},
+				{} as Record<string, AnyJson>,
+			);
+		}
+		return data;
 	}
 
 	private async resolveExtFees(
