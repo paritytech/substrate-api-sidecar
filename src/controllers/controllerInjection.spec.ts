@@ -53,7 +53,7 @@ const mockSidecarConfig: ISidecarConfig = {
 };
 
 const chainsToNode: Record<string, string> = {
-	'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
+	// 'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
 	kusama: 'wss://kusama-rpc.dwellir.com',
 	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
 	astar: 'wss://astar-rpc.dwellir.com',
@@ -65,7 +65,7 @@ const chainsToNode: Record<string, string> = {
 	karura: 'wss://karura-rpc.dwellir.com',
 	// manta: 'wss://ws.manta.systems',
 	kilt: 'wss://kilt.ibp.network',
-	'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
+	// 'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
 };
 
 describe('controllerInjection', () => {
@@ -94,7 +94,6 @@ describe('controllerInjection', () => {
 				specToControllerMap[chain]?.controllers.sort() || defaultControllers.controllers.sort();
 
 			const filtered = controllersToInclude.filter((c) => !injectedControllers.has(c));
-
 			expect(filtered).toHaveLength(0);
 		});
 	}
