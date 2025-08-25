@@ -37,7 +37,6 @@ export class PalletsStakingProgressService extends AbstractService {
 		const { api, specName } = this;
 		const apiType = ApiPromiseRegistry.getTypeBySpecName(specName);
 		const isApiAssetHub = apiType === 'assethub';
-
 		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
 		if (this.assetHubInfo.isAssetHub && !RCApiPromise?.length) {

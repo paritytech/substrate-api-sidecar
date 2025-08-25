@@ -555,6 +555,11 @@ describe('PalletStakingProgressService', () => {
 		it('works when ApiPromise works (block 789629)', async () => {
 			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
 			// needs both RC and AH connection
+			jest.spyOn(palletStakingProgressService, 'assetHubInfo', 'get').mockReturnValue({
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			});
+			jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -589,7 +594,7 @@ describe('PalletStakingProgressService', () => {
 				...mockAHNextApi,
 				at: (_hash: Hash) => Promise.resolve(mockHistoricApiWithNoneEraStartSessionIndex),
 			} as unknown as ApiPromise;
-
+			jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWithNoneEraStartSessionIndex);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -602,6 +607,11 @@ describe('PalletStakingProgressService', () => {
 			});
 
 			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
+
+			jest.spyOn(palletStakingProgressService, 'assetHubInfo', 'get').mockReturnValue({
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			});
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('EraStartSessionIndex is None when Some was expected.'),
 			);
@@ -624,6 +634,7 @@ describe('PalletStakingProgressService', () => {
 				at: (_hash: Hash) => Promise.resolve(mockHistoricApiWithNoneActiveEra),
 			} as unknown as ApiPromise;
 
+			jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWithNoneActiveEra);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -636,6 +647,10 @@ describe('PalletStakingProgressService', () => {
 			});
 
 			const palletStakingProgressService = new PalletsStakingProgressService('statemine');
+			jest.spyOn(palletStakingProgressService, 'assetHubInfo', 'get').mockReturnValue({
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			});
 			await expect(palletStakingProgressService.derivePalletStakingProgress(blockHash789629)).rejects.toStrictEqual(
 				new InternalServerError('ActiveEra is None when Some was expected.'),
 			);
@@ -654,6 +669,7 @@ describe('PalletStakingProgressService', () => {
 				},
 			} as unknown as ApiPromise;
 
+			jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashesForAH);
 			jest.spyOn(ApiPromiseRegistry, 'getAllAvailableSpecNames').mockReturnValue(['polkadot', 'statemine']);
 			jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(() => {
@@ -666,6 +682,11 @@ describe('PalletStakingProgressService', () => {
 			});
 
 			const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('statemine');
+
+			jest.spyOn(palletStakingProgressServiceUnappliedSlashes, 'assetHubInfo', 'get').mockReturnValue({
+				isAssetHub: true,
+				isAssetHubMigrated: true,
+			});
 			expect(
 				sanitizeNumbers(
 					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),
@@ -685,6 +706,8 @@ describe('PalletStakingProgressService', () => {
 
 			it('uses Asset Hub calculation when isAssetHub && isAssetHubMigrated', async () => {
 				const service = new PalletsStakingProgressService('statemine');
+
+				jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 				jest
 					.spyOn(ApiPromiseRegistry, 'getApiByType')
@@ -712,6 +735,7 @@ describe('PalletStakingProgressService', () => {
 					at: (_hash: Hash) => Promise.resolve(mockHistoricApiWithNoneActiveEra),
 				} as unknown as ApiPromise;
 
+				jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWithNoneActiveEra);
 				jest
 					.spyOn(ApiPromiseRegistry, 'getApiByType')
@@ -734,6 +758,7 @@ describe('PalletStakingProgressService', () => {
 					at: (_hash: Hash) => Promise.resolve(mockHistoricApiWithNoneEraStartSessionIndex),
 				} as unknown as ApiPromise;
 
+				jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiWithNoneEraStartSessionIndex);
 				jest
 					.spyOn(ApiPromiseRegistry, 'getApiByType')
@@ -748,6 +773,7 @@ describe('PalletStakingProgressService', () => {
 
 			it('calculates session index with skipped epochs for Asset Hub', async () => {
 				const service = new PalletsStakingProgressService('statemine');
+				jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 				jest.spyOn(ApiPromiseRegistry, 'getApiByType').mockImplementation(
 					() =>
@@ -769,6 +795,7 @@ describe('PalletStakingProgressService', () => {
 
 			it('uses hardcoded BABE values for time-based calculations in Asset Hub', async () => {
 				const service = new PalletsStakingProgressService('statemine');
+				jest.spyOn(ApiPromiseRegistry, 'getTypeBySpecName').mockReturnValue('assethub');
 				jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockAHNextApi);
 				jest
 					.spyOn(ApiPromiseRegistry, 'getApiByType')
