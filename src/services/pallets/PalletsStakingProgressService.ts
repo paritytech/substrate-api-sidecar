@@ -34,7 +34,9 @@ export class PalletsStakingProgressService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 */
 	async derivePalletStakingProgress(hash: BlockHash): Promise<IPalletStakingProgress> {
-		const { api } = this;
+		const { api, specName } = this;
+		const apiType = ApiPromiseRegistry.getTypeBySpecName(specName);
+		const isApiAssetHub = apiType === 'assethub';
 
 		const RCApiPromise = this.assetHubInfo.isAssetHub ? ApiPromiseRegistry.getApiByType('relay') : null;
 
@@ -47,9 +49,10 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (historicApi.query.staking === undefined) {
 			throw new Error('Staking pallet not found for queried runtime');
 		}
-		const sessionValidators = this.assetHubInfo.isAssetHub
-			? RCApiPromise![0].api.query.session.validators
-			: historicApi.query.session.validators;
+		const sessionValidators =
+			this.assetHubInfo.isAssetHub && isApiAssetHub
+				? RCApiPromise![0].api.query.session.validators
+				: historicApi.query.session.validators;
 
 		if (!sessionValidators) {
 			throw new Error('Session pallet not found for queried runtime');
@@ -73,7 +76,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 
 		let deriveSessionAndEra;
-		if (this.assetHubInfo.isAssetHub && this.assetHubInfo.isAssetHubMigrated) {
+		if (this.assetHubInfo.isAssetHub && this.assetHubInfo.isAssetHubMigrated && isApiAssetHub) {
 			deriveSessionAndEra = this.deriveSessionAndEraProgressAssetHub(historicApi, RCApiPromise?.[0].api);
 		} else {
 			deriveSessionAndEra = this.deriveSessionAndEraProgress(historicApi);
@@ -208,6 +211,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		}
 
 		const specNameBabeValues = assetHubToBabe[this.specName];
+
 		const eraLength = historicApi.consts.staking.sessionsPerEra.mul(specNameBabeValues.epochDuration);
 
 		const currentSlot = currentTimestamp.div(specNameBabeValues.slotDurationMs);

@@ -62,6 +62,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'RcPalletsOnGoingReferenda',
 		'PalletsStakingValidators',
 		'RcPalletsStakingValidators',
+		'RcPalletsStakingProgress',
 		'RcPalletsStorage',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',
