@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1754331831567,
+  "lastUpdate": 1756323722588,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -14603,6 +14603,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 379.05,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8d5c36913628fdc0f6566ebc8062c10273b5f8a3",
+          "message": "chore(deps): bump actions/download-artifact from 4 to 5 (#1724)\n\nBumps [actions/download-artifact](https://github.com/actions/download-artifact) from 4 to 5.\n- [Release notes](https://github.com/actions/download-artifact/releases)\n- [Commits](https://github.com/actions/download-artifact/compare/v4...v5)\n\n---\nupdated-dependencies:\n- dependency-name: actions/download-artifact\n  dependency-version: '5'\n  dependency-type: direct:production\n  update-type: version-update:semver-major\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2025-08-27T12:07:31-07:00",
+          "tree_id": "4e9faef1d3a6dcda3f9fade97908398a01ecbe0e",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/8d5c36913628fdc0f6566ebc8062c10273b5f8a3"
+        },
+        "date": 1756323719821,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 275.69,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 217.37,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 330.71,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 3561.22,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.5,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.45,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1899.47,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 249.84,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 1494.16,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 302.33,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 177.81,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 422.63,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 202.55,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 202.25,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 177.18,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 231.78,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 194.92,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 195.7,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 674.16,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 264.16,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 701.71,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 250.1,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 348.19,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 237.05,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 224.36,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 328.86,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 180.73,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 188.39,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 364.66,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 358.67,
             "unit": "ms"
           }
         ]
