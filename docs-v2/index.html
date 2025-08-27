@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substrate API Sidecar Documentation</title>
+    <meta name="description" content="Modern documentation for Substrate API Sidecar - REST service for blockchain nodes built using Substrate's FRAME framework.">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
+    
+    <!-- Google Fonts - Inter for clean, modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Styles will be injected by webpack -->
+</head>
+<body>
+    <!-- Loading screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading API Documentation...</p>
+        </div>
+    </div>
+
+    <!-- Main application container -->
+    <div id="app" class="app" style="display: none;">
+        <!-- Fixed Header -->
+        <header class="header">
+            <div class="header-content">
+                <!-- Logo and title -->
+                <div class="header-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="6" fill="#58a6ff"/>
+                            <path d="M8 12h16v2H8v-2zm0 4h16v2H8v-2zm0 4h12v2H8v-2z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="brand-title">Substrate API Sidecar</h1>
+                        <span class="brand-subtitle">REST API Documentation</span>
+                    </div>
+                </div>
+
+                <!-- Header controls -->
+                <div class="header-controls">
+                    <!-- Search -->
+                    <div class="search-container">
+                        <div class="search-input-wrapper">
+                            <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M17.5 17.5L12.875 12.875M14.5833 8.33333C14.5833 11.555 11.888 14.1667 8.58333 14.1667C5.27866 14.1667 2.58333 11.555 2.58333 8.33333C2.58333 5.11167 5.27866 2.5 8.58333 2.5C11.888 2.5 14.5833 5.11167 14.5833 8.33333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <input 
+                                type="text" 
+                                id="search-input" 
+                                class="search-input" 
+                                placeholder="Search endpoints, schemas..."
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <button id="search-clear" class="search-clear" style="display: none;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="search-results" class="search-results" style="display: none;"></div>
+                    </div>
+
+                    <!-- Theme toggle -->
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+                        <svg class="theme-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 2.5V4.16667M10 15.8333V17.5M15.8333 10H17.5M2.5 10H4.16667M14.7733 5.22667L13.5958 6.40417M6.40417 13.5958L5.22667 14.7733M14.7733 14.7733L13.5958 13.5958M6.40417 6.40417L5.22667 5.22667M12.5 10C12.5 11.3807 11.3807 12.5 10 12.5C8.61929 12.5 7.5 11.3807 7.5 10C7.5 8.61929 8.61929 7.5 10 7.5C11.3807 7.5 12.5 8.61929 12.5 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <!-- Menu toggle for mobile -->
+                    <button id="menu-toggle" class="menu-toggle" title="Toggle menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main layout -->
+        <div class="main-layout">
+            <!-- Sidebar Navigation -->
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-content">
+                    <!-- API Info -->
+                    <div class="api-info">
+                        <div class="api-version" id="api-version">v20.5.0</div>
+                        <div class="api-description">
+                            REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.
+                        </div>
+                    </div>
+
+                    <!-- Server Selection -->
+                    <div class="server-selector">
+                        <label for="server-select" class="server-label">Server Environment:</label>
+                        <select id="server-select" class="server-select">
+                            <option value="0">Polkadot Public</option>
+                            <option value="1">Kusama Public</option>
+                            <option value="2">Polkadot Asset Hub</option>
+                            <option value="3">Kusama Asset Hub</option>
+                            <option value="4" selected>Localhost</option>
+                        </select>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <nav class="nav-menu">
+                        <div class="nav-section">
+                            <div class="nav-section-header">
+                                <h3>Documentation</h3>
+                            </div>
+                            <ul class="nav-list">
+                                <li class="nav-item">
+                                    <a href="#overview" class="nav-link active" data-page="overview">
+                                        <span>📋</span>
+                                        <span>Overview</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#getting-started" class="nav-link" data-page="getting-started">
+                                        <span>🚀</span>
+                                        <span>Getting Started</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <div class="nav-section-header">
+                                <span>📚</span>
+                                <h3>API Endpoints</h3>
+                                <button class="section-toggle" data-target="endpoints-nav">
+                                    <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <ul id="endpoints-nav" class="nav-list">
+                                <!-- Dynamically populated with grouped endpoints -->
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <div class="nav-section-header">
+                                <span>📊</span>
+                                <h3>Data Schemas</h3>
+                                <button class="section-toggle collapsed" data-target="schemas-nav">
+                                    <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <ul id="schemas-nav" class="nav-list collapsed">
+                                <!-- Dynamically populated -->
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Breadcrumb Navigation -->
+                <nav id="breadcrumb" class="breadcrumb" style="display: none;">
+                    <ol class="breadcrumb-list">
+                        <!-- Dynamically populated -->
+                    </ol>
+                </nav>
+
+                <!-- Content Container -->
+                <div class="content-container">
+                    <!-- Welcome/Overview Section -->
+                    <section id="overview" class="content-section active">
+                        <div class="section-header">
+                            <h1>Substrate API Sidecar</h1>
+                            <div class="section-meta">
+                                <span class="version-badge" id="version-display">v20.5.0</span>
+                                <a href="https://github.com/paritytech/substrate-api-sidecar" target="_blank" rel="noopener" class="github-link">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z" fill="currentColor"/>
+                                    </svg>
+                                    GitHub
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="overview-content">
+                            <p class="lead">
+                                REST service that makes it easy to interact with blockchain nodes built using Substrate's FRAME framework.
+                            </p>
+
+                            <div class="features-grid">
+                                <div class="feature-card">
+                                    <div class="feature-icon">🏗️</div>
+                                    <h3>Account Management</h3>
+                                    <p>Query account balances, staking info, and transaction history</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🔗</div>
+                                    <h3>Block Explorer</h3>
+                                    <p>Access detailed block information, extrinsics, and events</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🏛️</div>
+                                    <h3>Runtime Access</h3>
+                                    <p>Query runtime metadata, pallets, and storage items</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">💼</div>
+                                    <h3>Transaction Tools</h3>
+                                    <p>Estimate fees, construct transactions, and submit to network</p>
+                                </div>
+                            </div>
+
+                            <div class="quick-start">
+                                <h3>Quick Start</h3>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span>Example Request</span>
+                                        <button class="copy-button" data-copy="curl http://localhost:8080/blocks/head">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <pre><code>curl http://localhost:8080/blocks/head</code></pre>
+                                </div>
+                                
+                                <div class="notice-box">
+                                    <div class="notice-icon">ℹ️</div>
+                                    <div class="notice-content">
+                                        <strong>Try it out:</strong> Each endpoint includes an interactive API explorer. 
+                                        Note that browser requests may be blocked by CORS policies when testing against external servers. 
+                                        The localhost server typically allows cross-origin requests.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Getting Started Section -->
+                    <section id="getting-started" class="content-section" style="display: none;">
+                        <div class="section-header">
+                            <h1>Getting Started</h1>
+                            <div class="section-meta">
+                                <span class="version-badge" id="version-display-gs">v20.5.0</span>
+                                <a href="https://github.com/paritytech/substrate-api-sidecar" target="_blank" rel="noopener" class="github-link">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z" fill="currentColor"/>
+                                    </svg>
+                                    GitHub
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="getting-started-content">
+                            <h3>Installation & Setup</h3>
+                            
+                            <div class="setup-steps">
+                                <div class="setup-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Install Dependencies</h4>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>npm</span>
+                                                <button class="copy-button" data-copy="npm install @substrate/api-sidecar">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                        <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <pre><code>npm install @substrate/api-sidecar</code></pre>
+                                        </div>
+                                        <p>or with Yarn:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>yarn</span>
+                                                <button class="copy-button" data-copy="yarn add @substrate/api-sidecar">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                        <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <pre><code>yarn add @substrate/api-sidecar</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setup-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Start the Service</h4>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Start Server</span>
+                                                <button class="copy-button" data-copy="substrate-api-sidecar">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                        <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <pre><code>substrate-api-sidecar</code></pre>
+                                        </div>
+                                        <p>The service will start on <code>http://localhost:8080</code> by default.</p>
+                                    </div>
+                                </div>
+
+                                <div class="setup-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Make Your First Request</h4>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Test Request</span>
+                                                <button class="copy-button" data-copy="curl http://localhost:8080/blocks/head">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                        <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <pre><code>curl http://localhost:8080/blocks/head</code></pre>
+                                        </div>
+                                        <p>This returns information about the latest block.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="configuration-section">
+                                <h3>Configuration</h3>
+                                <p>Environment variables for customizing the service:</p>
+                                <div class="config-table">
+                                    <div class="config-row">
+                                        <div class="config-key">SAS_SUBSTRATE_WS_URL</div>
+                                        <div class="config-desc">WebSocket endpoint for the Substrate node</div>
+                                    </div>
+                                    <div class="config-row">
+                                        <div class="config-key">SAS_SUBSTRATE_URL</div>
+                                        <div class="config-desc">HTTP endpoint for the Substrate node</div>
+                                    </div>
+                                    <div class="config-row">
+                                        <div class="config-key">SAS_EXPRESS_PORT</div>
+                                        <div class="config-desc">Port for the HTTP server (default: 8080)</div>
+                                    </div>
+                                    <div class="config-row">
+                                        <div class="config-key">SAS_EXPRESS_BIND_HOST</div>
+                                        <div class="config-desc">Host address to bind to (default: 127.0.0.1)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="features-content">
+                                <h3>Key Features</h3>
+                                <div class="features-grid">
+                                    <div class="feature-card detailed">
+                                        <div class="feature-header">
+                                            <div class="feature-icon">🏗️</div>
+                                            <h3>Account Management</h3>
+                                        </div>
+                                        <p>Comprehensive account operations and balance queries</p>
+                                        <ul class="feature-list">
+                                            <li>Account balance information</li>
+                                            <li>Staking rewards and payouts</li>
+                                            <li>Vesting schedules</li>
+                                            <li>Transaction history</li>
+                                            <li>Multi-signature operations</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="feature-card detailed">
+                                        <div class="feature-header">
+                                            <div class="feature-icon">🔗</div>
+                                            <h3>Block Explorer</h3>
+                                        </div>
+                                        <p>Deep blockchain data access and exploration tools</p>
+                                        <ul class="feature-list">
+                                            <li>Block information and headers</li>
+                                            <li>Extrinsic details and events</li>
+                                            <li>Transaction traces</li>
+                                            <li>Block range queries</li>
+                                            <li>Real-time finality tracking</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="feature-card detailed">
+                                        <div class="feature-header">
+                                            <div class="feature-icon">🏛️</div>
+                                            <h3>Runtime Access</h3>
+                                        </div>
+                                        <p>Query runtime metadata and pallet information</p>
+                                        <ul class="feature-list">
+                                            <li>Runtime metadata</li>
+                                            <li>Pallet information</li>
+                                            <li>Storage queries</li>
+                                            <li>Constant values</li>
+                                            <li>Call information</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="feature-card detailed">
+                                        <div class="feature-header">
+                                            <div class="feature-icon">💼</div>
+                                            <h3>Transaction Tools</h3>
+                                        </div>
+                                        <p>Transaction construction and fee estimation</p>
+                                        <ul class="feature-list">
+                                            <li>Fee estimation</li>
+                                            <li>Transaction construction</li>
+                                            <li>Dry run operations</li>
+                                            <li>Submission queue status</li>
+                                            <li>Transaction pool monitoring</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="technical-features">
+                                    <h3>Technical Features</h3>
+                                    <div class="tech-grid">
+                                        <div class="tech-item">
+                                            <h4>RESTful API</h4>
+                                            <p>Clean, intuitive HTTP endpoints following REST principles</p>
+                                        </div>
+                                        <div class="tech-item">
+                                            <h4>OpenAPI Specification</h4>
+                                            <p>Complete API documentation with schemas and examples</p>
+                                        </div>
+                                        <div class="tech-item">
+                                            <h4>TypeScript Support</h4>
+                                            <p>Full TypeScript definitions for type-safe development</p>
+                                        </div>
+                                        <div class="tech-item">
+                                            <h4>Error Handling</h4>
+                                            <p>Comprehensive error responses with detailed messages</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dynamic content sections will be inserted here -->
+                    <div id="dynamic-content"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <!-- Main bundle will be injected by webpack -->
+</body>
+</html>
