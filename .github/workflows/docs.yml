@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Node v18
         uses: actions/setup-node@v4
@@ -67,7 +67,7 @@ jobs:
     environment: master_n_tags
     needs: [build-docs]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: gh-pages
       - uses: actions/create-github-app-token@v2
