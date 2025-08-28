@@ -315,10 +315,18 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const specName = this.getSpecName().toLowerCase();
 
 		// Get migration boundaries for this chain
-		const migrationBoundaries = MIGRATION_BOUNDARIES[specName];
+		let migrationBoundaries = MIGRATION_BOUNDARIES[specName];
+
 		if (!migrationBoundaries) {
-			// Fallback to regular method if no migration boundaries defined
-			return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+			// Check storage first then fallback to fetchStakingAccount;
+			if (api.query.ahMigrator?.migrationStartBlock && api.query.ahMigrator?.migrationEndBlock) {
+				// Query the migration start block and end block for both assethub and relay chain
+				// Also query the eras for the given start blocks.
+				// Then set `migrationBoundaries`
+			} else {
+				// Fallback to regular method if no migration boundaries defined
+				return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+			}
 		}
 
 		const sanitizedEra = era < 0 ? 0 : era;
