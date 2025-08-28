@@ -142,6 +142,14 @@ const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
 		relayMigrationStartedAt: 26041702,
 		relayMigrationEndedAt: 26071771,
 	},
+	'asset-hub-paseo': {
+		relayChainLastEra: 2218,
+		assetHubFirstEra: 2218,
+		assetHubMigrationStartedAt: 2593897,
+		assetHubMigrationEndedAt: 2594172,
+		relayMigrationStartedAt: 7926930,
+		relayMigrationEndedAt: 7927225,
+	},
 };
 
 export class AccountsStakingPayoutsService extends AbstractService {
