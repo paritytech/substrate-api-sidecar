@@ -44,7 +44,7 @@ export class AhmInfoService extends AbstractService {
 		}
 	}
 
-	// Handle the AHM indo When the main connection is asset hub
+	// Handle the AHM info When the main connection is asset hub
 	async handleFromAh(): Promise<IAhmInfo> {
 		const { specName } = this;
 		const migrationBoundaries = MIGRATION_BOUNDARIES[specName];
