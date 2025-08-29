@@ -22,6 +22,8 @@ servers:
   description: Localhost
 tags:
 - name: accounts
+- name: ahm
+  description: Asset Hub Migration information
 - name: blocks
 - name: contracts
 - name: coretime
@@ -752,6 +754,32 @@ paths:
                 $ref: '#/components/schemas/AccountCompare'
         "400":
           description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ahm-info:
+    get:
+      tags:
+      - ahm
+      summary: Get Asset Hub Migration information.
+      description: Returns information about Asset Hub Migration (AHM) including migration start and end blocks for both relay chain and Asset Hub. The endpoint automatically detects whether you're connected to a relay chain or Asset Hub and provides relevant migration data. Returns static migration boundaries for known networks or queries on-chain migration pallets for dynamic information.
+      operationId: getAhmInfo
+      responses:
+        "200":
+          description: Successfully retrieved Asset Hub Migration information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AhmInfo'
+        "400":
+          description: Invalid chain specName or missing migration pallets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -4256,6 +4284,45 @@ components:
           type: string
           description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
           format: unsignedInteger
+    AhmInfo:
+      type: object
+      description: Asset Hub Migration information including migration boundaries for both relay chain and Asset Hub.
+      properties:
+        relay:
+          type: object
+          description: Relay chain migration information
+          properties:
+            startBlock:
+              type: integer
+              nullable: true
+              description: Block number when relay chain migration started, or null if not available
+              format: unsignedInteger
+            endBlock:
+              type: integer
+              nullable: true
+              description: Block number when relay chain migration ended, or null if not available
+              format: unsignedInteger
+        assetHub:
+          type: object
+          description: Asset Hub migration information
+          properties:
+            startBlock:
+              type: integer
+              nullable: true
+              description: Block number when Asset Hub migration started, or null if not available
+              format: unsignedInteger
+            endBlock:
+              type: integer
+              nullable: true
+              description: Block number when Asset Hub migration ended, or null if not available
+              format: unsignedInteger
+      example:
+        relay:
+          startBlock: 26041702
+          endBlock: 26071771
+        assetHub:
+          startBlock: 11716733
+          endBlock: 11736597
     AccountAssetsBalances:
       type: object
       properties:
