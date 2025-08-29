@@ -346,8 +346,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 					rcApiAt.query.staking.currentEra(),
 				]);
 
+				// We should never hit this, but its here for safety and clarity
 				if (ahCurrentEra.isNone || rcCurrentEra.isNone) {
-					throw new Error('No era found');
+					throw new Error('No era found in staking payouts');
 				}
 
 				migrationBoundaries = {
