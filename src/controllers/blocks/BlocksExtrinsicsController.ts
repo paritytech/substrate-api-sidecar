@@ -49,7 +49,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param res Express Response
 	 */
 	private getExtrinsicByTimepoint: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
-		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees, useRcBlock } },
+		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees, useRcBlock, useEvmFormat } },
 		res,
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
@@ -78,6 +78,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				noFees: noFeesArg,
 				checkDecodedXcm: false,
 				paraId: undefined,
+				useEvmAddressFormat: useEvmFormat === 'true',
 			};
 
 			const cacheKey =
@@ -86,7 +87,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				Number(options.extrinsicDocs) +
 				Number(options.checkFinalized) +
 				Number(options.noFees) +
-				Number(options.checkDecodedXcm);
+				Number(options.checkDecodedXcm) +
+				Number(options.useEvmAddressFormat);
 
 			const isBlockCached = this.blockStore.get(cacheKey);
 			const historicApi = await this.api.at(hash);
@@ -135,6 +137,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				noFees: noFeesArg,
 				checkDecodedXcm: false,
 				paraId: undefined,
+				useEvmAddressFormat: useEvmFormat === 'true',
 			};
 
 			const cacheKey =
@@ -143,7 +146,8 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				Number(options.extrinsicDocs) +
 				Number(options.checkFinalized) +
 				Number(options.noFees) +
-				Number(options.checkDecodedXcm);
+				Number(options.checkDecodedXcm) +
+				Number(options.useEvmAddressFormat);
 
 			const isBlockCached = this.blockStore.get(cacheKey);
 			const historicApi = await this.api.at(hash);
