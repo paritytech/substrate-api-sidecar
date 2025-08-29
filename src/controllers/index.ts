@@ -55,6 +55,8 @@ import {
 	RcPalletsErrors,
 	RcPalletsEvents,
 	RcPalletsOnGoingReferenda,
+	RcPalletsStakingProgress,
+	RcPalletsStakingValidators,
 	RcPalletsStorage,
 } from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
@@ -106,6 +108,8 @@ export const controllers = {
 	RcPalletsErrors,
 	RcPalletsEvents,
 	RcPalletsOnGoingReferenda,
+	RcPalletsStakingProgress,
+	RcPalletsStakingValidators,
 	RcPalletsStorage,
 	RcRuntimeCode,
 	RcRuntimeMetadata,

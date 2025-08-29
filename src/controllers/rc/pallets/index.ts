@@ -19,4 +19,6 @@ export { default as RcPalletsDispatchables } from './RcPalletsDispatchablesContr
 export { default as RcPalletsErrors } from './RcPalletsErrorsController';
 export { default as RcPalletsEvents } from './RcPalletsEventsController';
 export { default as RcPalletsOnGoingReferenda } from './RcPalletsOnGoingReferendaController';
+export { default as RcPalletsStakingProgress } from './RcPalletsStakingProgressController';
+export { default as RcPalletsStakingValidators } from './RcPalletsStakingValidatorsController';
 export { default as RcPalletsStorage } from './RcPalletsStorageController';

@@ -60,6 +60,8 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'RcPalletsErrors',
 		'RcPalletsEvents',
 		'RcPalletsOnGoingReferenda',
+		'RcPalletsStakingProgress',
+		'RcPalletsStakingValidators',
 		'RcPalletsStorage',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',

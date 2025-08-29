@@ -50,6 +50,8 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'RcPalletsDispatchables',
 		'RcPalletsErrors',
 		'RcPalletsEvents',
+		'RcPalletsStakingProgress',
+		'RcPalletsStakingValidators',
 		'RcPalletsStorage',
 		'RcRuntimeCode',
 		'RcRuntimeMetadata',

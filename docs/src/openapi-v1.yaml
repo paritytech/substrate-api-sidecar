@@ -3596,6 +3596,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/pallets/staking/progress:
+    get:
+      tags:
+      - rc
+      - staking
+      - pallets
+      summary: Get progress on the general Staking pallet system on Relay Chain.
+      description: Returns information on the progress of key components of the
+        staking system and estimates of future points of interest. If you are querying
+        from Asset Hub for staking progress, this endpoint requires multi chain connections
+        between the relay chain, and asset hub itself. Set the asset hub rpc to SAS_SUBSTRATE_URL,
+        and add the relay chain to the SAS_SUBSTRATE_MULTI_CHAIN_URL env var. Refer to the README for the structure
+        of the env vars. The `useRcBlock` parameter allows querying Asset Hub state using relay chain
+        block numbers, enabling post-migration infrastructure to continue using relay chain
+        block identifiers while accessing Asset Hub data.
+      operationId: getRcStakingProgress
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve a staking progress report.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StakingProgress'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/StakingProgress'
+                description: Returns a single object when using standard parameters. Returns an array when using 'useRcBlock' parameter (array contains one object per Asset Hub block found, or empty array if none found).
+        "400":
+          description: invalid blockId supplied for at query param, or invalid parameter combination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/staking/validators:
+    get:
+      tags:
+      - rc
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their
+        corresponding status which can be either active or waiting. It will also return 
+        a list of active validators that will not be part of the next era for staking. They will
+        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
+        the "validators" key, and "validatorsToBeChilled".
+      operationId: getRcStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/StakingValidators'
+        "400":
+          description: invalid blockId supplied for at query param, or invalid parameter combination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   /pallets/{palletId}/storage:
     get:
       tags:
