@@ -241,12 +241,6 @@ export class BlocksService extends AbstractService {
 			decodedXcmMsgs,
 		};
 
-		// const convertToEvm =
-		// 	useEvmAddressFormat &&
-		// 	(this.api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[])
-		// 		.map((p) => (p.name as string).toLowerCase())
-		// 		.includes('revive');
-
 		if (useEvmAddressFormat) {
 			response.extrinsics = extrinsics.map((ext) => {
 				return {
@@ -258,8 +252,6 @@ export class BlocksService extends AbstractService {
 						};
 					}) as unknown as ISanitizedEvent[],
 				};
-				// }
-				// return ext;
 			});
 		}
 
