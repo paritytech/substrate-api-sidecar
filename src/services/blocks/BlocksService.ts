@@ -241,17 +241,26 @@ export class BlocksService extends AbstractService {
 			decodedXcmMsgs,
 		};
 
-		if (useEvmAddressFormat) {
+		const convertToEvm =
+			useEvmAddressFormat &&
+			(this.api.registry.metadata.toJSON().pallets as unknown as Record<string, unknown>[])
+				.map((p) => (p.name as string).toLowerCase())
+				.includes('revive');
+
+		if (convertToEvm) {
 			response.extrinsics = extrinsics.map((ext) => {
-				return {
-					...ext,
-					events: ext.events.map((event) => {
-						return {
-							...event,
-							data: this.convertDataToEvmAddress(event.data.toJSON()),
-						};
-					}) as unknown as ISanitizedEvent[],
-				};
+				if (isFrameMethod(ext.method) && ext.method.pallet.toLowerCase() === 'revive') {
+					return {
+						...ext,
+						events: ext.events.map((event) => {
+							return {
+								...event,
+								data: this.convertDataToEvmAddress(event.data.toJSON()),
+							};
+						}) as unknown as ISanitizedEvent[],
+					};
+				}
+				return ext;
 			});
 		}
 
