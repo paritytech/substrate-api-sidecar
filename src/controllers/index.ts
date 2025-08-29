@@ -26,6 +26,7 @@ import {
 	AccountsValidate,
 	AccountsVestingInfo,
 } from './accounts';
+import { AhmInfo } from './ahm';
 import { Blocks, BlocksExtrinsics, BlocksRawExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { CoretimeChain, CoretimeGeneric } from './coretime';
@@ -66,6 +67,7 @@ import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, Transac
  * Object containing every controller class definition.
  */
 export const controllers = {
+	AhmInfo,
 	Blocks,
 	BlocksExtrinsics,
 	BlocksTrace,
