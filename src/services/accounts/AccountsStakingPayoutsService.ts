@@ -315,10 +315,54 @@ export class AccountsStakingPayoutsService extends AbstractService {
 		const specName = this.getSpecName().toLowerCase();
 
 		// Get migration boundaries for this chain
-		const migrationBoundaries = MIGRATION_BOUNDARIES[specName];
+		let migrationBoundaries = MIGRATION_BOUNDARIES[specName];
+
 		if (!migrationBoundaries) {
-			// Fallback to regular method if no migration boundaries defined
-			return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+			// Check storage first then fallback to fetchStakingAccount;
+			if (api.query.ahMigrator?.migrationStartBlock && api.query.ahMigrator?.migrationEndBlock) {
+				const rcApi = ApiPromiseRegistry.getApiByType('relay')[0].api;
+
+				// Get start and end blocks
+				const [ahStart, ahEnd, rcStart, rcEnd] = await Promise.all([
+					this.api.query.ahMigrator?.migrationStartBlock<Option<u32>>(),
+					this.api.query.ahMigrator?.migrationEndBlock<Option<u32>>(),
+					rcApi.query.rcMigrator?.migrationStartBlock<Option<u32>>(),
+					rcApi.query.rcMigrator?.migrationEndBlock<Option<u32>>(),
+				]);
+
+				if (ahStart.isNone || ahEnd.isNone || rcStart.isNone || rcEnd.isNone) {
+					return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+				}
+
+				const [ahEndBlockHash, rcStartBlockHash] = await Promise.all([
+					this.api.rpc.chain.getBlockHash(ahEnd.unwrap()),
+					rcApi.rpc.chain.getBlockHash(rcStart.unwrap()),
+				]);
+
+				const [ahApiAt, rcApiAt] = await Promise.all([this.api.at(ahEndBlockHash), rcApi.at(rcStartBlockHash)]);
+
+				const [ahCurrentEra, rcCurrentEra] = await Promise.all([
+					ahApiAt.query.staking.currentEra(),
+					rcApiAt.query.staking.currentEra(),
+				]);
+
+				// We should never hit this, but its here for safety and clarity
+				if (ahCurrentEra.isNone || rcCurrentEra.isNone) {
+					throw new Error('No era found in staking payouts');
+				}
+
+				migrationBoundaries = {
+					relayChainLastEra: rcCurrentEra.unwrap().toNumber(),
+					assetHubFirstEra: ahCurrentEra.unwrap().toNumber(),
+					assetHubMigrationStartedAt: ahStart.unwrap().toNumber(),
+					assetHubMigrationEndedAt: ahEnd.unwrap().toNumber(),
+					relayMigrationStartedAt: rcStart.unwrap().toNumber(),
+					relayMigrationEndedAt: rcEnd.unwrap().toNumber(),
+				};
+			} else {
+				// Fallback to regular method if no migration boundaries defined
+				return this.fetchAccountStakingPayout(hash, address, depth, era, unclaimedOnly, currentEra, historicApi);
+			}
 		}
 
 		const sanitizedEra = era < 0 ? 0 : era;
