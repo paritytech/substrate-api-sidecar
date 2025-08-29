@@ -30,6 +30,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'AccountsStakingPayouts',
 		'AccountsValidate',
 		'AccountsVestingInfo',
+		'AhmInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',

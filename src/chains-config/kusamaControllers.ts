@@ -30,6 +30,7 @@ export const kusamaControllers: ControllerConfig = {
 		'AccountsStakingPayouts',
 		'AccountsValidate',
 		'AccountsVestingInfo',
+		'AhmInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',

@@ -27,6 +27,7 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'AccountsCompare',
 		'AccountsProxyInfo',
 		'AccountsValidate',
+		'AhmInfo',
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
