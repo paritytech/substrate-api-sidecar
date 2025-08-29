@@ -50,6 +50,7 @@ import { BadRequest } from 'http-errors';
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
 import { AbstractService } from '../AbstractService';
+import { IMigrationBoundaries, MIGRATION_BOUNDARIES } from '../consts';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
 
 /**
@@ -119,38 +120,6 @@ export interface IEarlyErasBlockInfo {
 		end: number;
 	};
 }
-
-/**
- * Migration boundaries for AssetHub staking migration
- * These define when staking migrated from relay chain to AssetHub
- */
-interface IMigrationBoundaries {
-	relayChainLastEra: number;
-	assetHubFirstEra: number;
-	assetHubMigrationStartedAt: number;
-	assetHubMigrationEndedAt: number;
-	relayMigrationStartedAt: number;
-	relayMigrationEndedAt: number;
-}
-
-const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
-	westmint: {
-		relayChainLastEra: 9297,
-		assetHubFirstEra: 9297,
-		assetHubMigrationStartedAt: 11716733,
-		assetHubMigrationEndedAt: 11736597,
-		relayMigrationStartedAt: 26041702,
-		relayMigrationEndedAt: 26071771,
-	},
-	'asset-hub-paseo': {
-		relayChainLastEra: 2218,
-		assetHubFirstEra: 2218,
-		assetHubMigrationStartedAt: 2593897,
-		assetHubMigrationEndedAt: 2594172,
-		relayMigrationStartedAt: 7926930,
-		relayMigrationEndedAt: 7927225,
-	},
-};
 
 export class AccountsStakingPayoutsService extends AbstractService {
 	/**
