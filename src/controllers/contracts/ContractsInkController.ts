@@ -20,7 +20,7 @@ import { BadRequest } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
-import { IBodyContractMetadata, IContractQueryParam, IPostRequestHandler } from '../../types/requests';
+import { IBodyContractMetadata, IContractDryParams, IContractQueryParam, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
@@ -34,6 +34,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 	protected initRoutes(): void {
 		this.router.use(this.path, validateAddress);
 		this.safeMountAsyncPostHandlers([['/query', this.callContractQuery as RequestHandler]]);
+		this.safeMountAsyncGetHandlers([['/dry-run', this.dryRun as RequestHandler]]);
 	}
 
 	/**
@@ -60,6 +61,30 @@ export default class ContractsInkController extends AbstractController<Contracts
 		ContractsInkController.sanitizedSend(
 			res,
 			await this.service.fetchContractCall(contract, address, method, argsArray, gasLimit, storageDepositLimit),
+		);
+	};
+
+	/**
+	 * Send a message call to a	dry run contract. It defaults to get if nothing is inputted.
+	 *
+	 * @param _req
+	 * @param res
+	 */
+	private dryRun: IPostRequestHandler<IBodyContractMetadata, IContractDryParams> = async (
+		{ params: { address }, query: { caller, payValue = "0", inputData } },
+		res,
+	): Promise<void> => {
+		const dryRunResult: any = await this.api.call.reviveApi.call(
+			caller,
+			address,
+			this.api.registry.createType('Balance', BigInt(payValue)),
+			null,
+			null,
+			inputData ?? '',
+		)
+		ContractsInkController.sanitizedSend(
+			res,
+			dryRunResult.toHuman(),
 		);
 	};
 }

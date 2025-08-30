@@ -126,3 +126,10 @@ export interface IBlockQueryParams extends Query {
 
 export interface IRequestHandlerWithMetrics<T = unknown, P = unknown>
 	extends RequestHandler<T, unknown, unknown, P, IMetrics> {}
+
+
+export interface IContractDryParams extends Query {
+	caller: string;
+	payValue: string;
+	inputData: string;
+}
