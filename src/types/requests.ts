@@ -70,6 +70,12 @@ export interface IContractQueryParam extends Query {
 	storageDepositLimit: string;
 }
 
+export interface IContractDryParams extends Query {
+	caller: string;
+	payValue: string;
+	inputData: string;
+}
+
 export interface IPalletsConstantsParam extends ParamsDictionary {
 	palletId: string;
 	constantItemId: string;
@@ -126,10 +132,3 @@ export interface IBlockQueryParams extends Query {
 
 export interface IRequestHandlerWithMetrics<T = unknown, P = unknown>
 	extends RequestHandler<T, unknown, unknown, P, IMetrics> {}
-
-
-export interface IContractDryParams extends Query {
-	caller: string;
-	payValue: string;
-	inputData: string;
-}
