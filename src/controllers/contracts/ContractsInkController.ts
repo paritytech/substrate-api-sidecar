@@ -22,6 +22,7 @@ import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
 import { IBodyContractMetadata, IContractDryParams, IContractQueryParam, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
+import { hexToU8a } from '@polkadot/util';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
 	static controllerName = 'ContractsInk';
@@ -80,7 +81,7 @@ export default class ContractsInkController extends AbstractController<Contracts
 			this.api.registry.createType('Balance', BigInt(payValue)),
 			null,
 			null,
-			inputData ?? '',
+			hexToU8a(inputData) ?? '',
 		)
 		ContractsInkController.sanitizedSend(
 			res,
