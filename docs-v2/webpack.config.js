@@ -34,6 +34,10 @@ module.exports = {
         test: /\.yaml$/,
         type: 'asset/source',
       },
+      {
+        test: /\.md$/,
+        type: 'asset/source',
+      },
     ],
   },
   plugins: [

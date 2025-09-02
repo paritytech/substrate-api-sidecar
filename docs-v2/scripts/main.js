@@ -9,6 +9,7 @@ import '../styles/responsive.css';
 import { OpenAPIParser } from './parser.js';
 import { UIComponents } from './components.js';
 import { SearchHandler } from './search.js';
+import { GUIDES_CONTENT } from './guides-content.js';
 
 class DocApp {
     constructor() {
@@ -199,6 +200,147 @@ class DocApp {
                 }
             }
         });
+
+        // Handle guide navigation
+        document.addEventListener('click', (e) => {
+            const guideLink = e.target.closest('[data-guide]');
+            if (guideLink) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const guideName = guideLink.dataset.guide;
+                
+                // Update active nav link
+                document.querySelectorAll('[data-guide]').forEach(link => {
+                    link.classList.remove('active');
+                });
+                guideLink.classList.add('active');
+                
+                // Show the guide
+                this.showGuide(guideName);
+                window.history.pushState(null, null, `#guide-${guideName}`);
+                
+                // Close mobile menu if open
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menu-toggle');
+                if (sidebar && sidebar.classList.contains('mobile-open')) {
+                    sidebar.classList.remove('mobile-open');
+                    menuToggle?.classList.remove('active');
+                }
+            }
+        });
+    }
+
+    /**
+     * Show a specific guide
+     */
+    showGuide(guideName) {
+        const dynamicContent = document.getElementById('dynamic-content');
+        const overview = document.getElementById('overview');
+        const gettingStarted = document.getElementById('getting-started');
+        const guideElement = document.getElementById(`guide-${guideName}`);
+        
+        // Hide all static sections
+        if (overview) overview.style.display = 'none';
+        if (gettingStarted) gettingStarted.style.display = 'none';
+        if (dynamicContent) dynamicContent.innerHTML = '';
+        
+        // Hide all other guides
+        document.querySelectorAll('[id^="guide-"]').forEach(guide => {
+            guide.style.display = 'none';
+        });
+        
+        // Show the specific guide
+        if (guideElement) {
+            // Load guide content if not already loaded
+            this.loadGuideContent(guideName, guideElement);
+            
+            guideElement.style.display = 'block';
+            
+            // Update breadcrumb for guides
+            this.updateBreadcrumb([
+                { name: 'Documentation', href: '#overview' },
+                { name: 'Guides', href: '#' },
+                { name: this.getGuideDisplayName(guideName), href: `#guide-${guideName}` }
+            ]);
+            
+            // Scroll to top
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.scrollTop = 0;
+            }
+        }
+    }
+
+    /**
+     * Load guide content from embedded markdown
+     */
+    loadGuideContent(guideName, guideElement) {
+        const guideContent = guideElement.querySelector('.guide-content');
+        
+        // Check if content is already loaded (more than just placeholder)
+        if (guideContent && guideContent.children.length > 1) {
+            return;
+        }
+        
+        try {
+            const htmlContent = GUIDES_CONTENT[guideName];
+            if (!htmlContent) {
+                throw new Error(`Guide content not found for: ${guideName}`);
+            }
+            
+            if (guideContent) {
+                guideContent.innerHTML = htmlContent;
+                
+                // Setup copy buttons for code blocks
+                this.setupCodeCopyButtons(guideContent);
+            }
+        } catch (error) {
+            console.error('Error loading guide content:', error);
+            if (guideContent) {
+                guideContent.innerHTML = `
+                    <div class="notice-box warning">
+                        <div class="notice-content">
+                            <strong>Error Loading Guide:</strong> Could not load the "${this.getGuideDisplayName(guideName)}" guide content.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    /**
+     * Setup copy buttons for code blocks
+     */
+    setupCodeCopyButtons(container) {
+        const copyButtons = container.querySelectorAll('.copy-button[data-copy]');
+        copyButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const textToCopy = button.dataset.copy;
+                
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        // Show feedback
+                        const originalText = button.innerHTML;
+                        button.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.485 2.515C13.7 2.3 14 2.5 14 2.8V13.2C14 13.64 13.64 14 13.2 14H2.8C2.36 14 2 13.64 2 13.2V2.8C2 2.36 2.36 2 2.8 2H12.2C12.5 2 12.7 2.3 12.515 2.515L13.485 2.515Z" fill="currentColor"/><path d="M6 10L9 7L6 4" stroke="white" stroke-width="1.5"/></svg>';
+                        setTimeout(() => {
+                            button.innerHTML = originalText;
+                        }, 1000);
+                    });
+                }
+            });
+        });
+    }
+
+    /**
+     * Get display name for a guide
+     */
+    getGuideDisplayName(guideName) {
+        const guideNames = {
+            'asset-hub-migration': 'Asset Hub Migration'
+        };
+        return guideNames[guideName] || guideName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
 
     /**
@@ -944,6 +1086,20 @@ window.addEventListener('hashchange', () => {
             const gettingStartedLink = document.querySelector('[data-page="getting-started"]');
             if (gettingStartedLink) {
                 gettingStartedLink.classList.add('active');
+            }
+        }
+    } else if (hash.startsWith('guide-')) {
+        const guideName = hash.replace('guide-', '');
+        const app = window.docAppInstance;
+        if (app) {
+            app.showGuide(guideName);
+            // Update nav active state
+            document.querySelectorAll('[data-guide]').forEach(link => {
+                link.classList.remove('active');
+            });
+            const guideLink = document.querySelector(`[data-guide="${guideName}"]`);
+            if (guideLink) {
+                guideLink.classList.add('active');
             }
         }
     } else if (!hash || hash === 'overview') {
