@@ -1,12 +1,175 @@
 /* Component-specific styles for Substrate API Sidecar Documentation */
 
+/* Feature Icons - Clean Modern Design */
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.account-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.block-icon {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.runtime-icon {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.transaction-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* Notice Box Improvements */
+.notice-box {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--accent-primary);
+  background-color: rgba(88, 166, 255, 0.1);
+  margin: var(--spacing-xl) 0;
+}
+
+.notice-box.info {
+  border-left-color: var(--accent-primary);
+  background-color: rgba(88, 166, 255, 0.08);
+}
+
+.notice-box .notice-content {
+  margin: 0;
+}
+
 /* Navigation Components */
 .nav-menu {
   margin-bottom: var(--spacing-2xl);
 }
 
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-radius: var(--radius-sm);
+  margin: 0 var(--spacing-md);
+}
+
+.nav-section-header h3 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin: 0;
+  flex: 1;
+}
+
+/* Clean up nav links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-xl);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  margin: 0 var(--spacing-md) var(--spacing-xs) var(--spacing-md);
+  transition: all var(--transition-fast);
+  font-weight: var(--font-weight-normal);
+}
+
+.nav-link:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background-color: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+.nav-link.active:hover {
+  background-color: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
 .nav-section {
   margin-bottom: var(--spacing-xl);
+}
+
+/* Improve feature cards */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
+
+.feature-card {
+  padding: var(--spacing-2xl);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.feature-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-card h3 {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+/* Improve main content spacing */
+.section-header {
+  margin-bottom: var(--spacing-4xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.section-header h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.overview-content {
+  max-width: 800px;
+}
+
+.lead {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-3xl);
 }
 
 .nav-section-header {
