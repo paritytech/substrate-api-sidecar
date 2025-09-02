@@ -16,14 +16,23 @@
 
 import { polkadotMetadataRpcV9370 } from '../../../../test-helpers/metadata/polkadotV9370Metadata';
 import { createApiWithAugmentations, TypeFactory } from '../../../../test-helpers/typeFactory';
+import validatorData from './validator14815152Data.json';
 import { validatorsAddresses } from './validatorsAddresses';
 
 const typeFactoryApiV9370 = createApiWithAugmentations(polkadotMetadataRpcV9370);
 const factory = new TypeFactory(typeFactoryApiV9370);
 
 export const validatorsEntries = () => {
+	// Real validator preferences data from block 14815152 (imported from JSON)
+	const validatorPrefs = validatorData as { [key: string]: { commission: string; blocked: boolean } };
+
 	return validatorsAddresses.map((addr) => {
 		const storage = factory.storageKey(addr, 'AccountId32', typeFactoryApiV9370.query.staking.validators);
-		return [storage];
+		const data = validatorPrefs[addr] || { commission: '100000000', blocked: false };
+		const prefs = typeFactoryApiV9370.registry.createType('PalletStakingValidatorPrefs', {
+			commission: data.commission,
+			blocked: data.blocked,
+		});
+		return [storage, prefs];
 	});
 };
