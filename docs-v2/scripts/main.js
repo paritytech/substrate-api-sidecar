@@ -711,17 +711,7 @@ class DocApp {
                 endpointsToggle.classList.remove('collapsed');
             }
             
-            // Expand all nav groups by default to match CSS
-            const allNavGroups = document.querySelectorAll('[data-toggle^="nav-group-"]');
-            allNavGroups.forEach(navGroup => {
-                const targetId = navGroup.dataset.toggle;
-                const target = document.getElementById(targetId);
-                if (target) {
-                    target.style.maxHeight = target.scrollHeight + 'px';
-                    target.style.overflow = 'visible';
-                    navGroup.classList.add('expanded');
-                }
-            });
+            // Keep all nav groups closed by default - they will expand when clicked
         }, 100);
     }
 

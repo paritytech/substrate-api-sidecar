@@ -451,8 +451,8 @@
 }
 
 .nav-sublist {
-  max-height: 1000px;
-  overflow: visible;
+  max-height: 0;
+  overflow: hidden;
   transition: max-height 0.3s ease-in-out, overflow 0.3s ease-in-out;
   margin-left: var(--spacing-lg);
   position: relative;
