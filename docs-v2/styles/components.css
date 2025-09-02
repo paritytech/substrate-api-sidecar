@@ -451,11 +451,13 @@
 }
 
 .nav-sublist {
-  max-height: 0;
-  overflow: hidden;
+  max-height: 1000px;
+  overflow: visible;
   transition: max-height 0.3s ease-in-out, overflow 0.3s ease-in-out;
   margin-left: var(--spacing-lg);
   position: relative;
+  list-style: none;
+  padding: 0;
 }
 
 
@@ -551,21 +553,7 @@
   position: relative;
 }
 
-#schemas-nav .nav-item::before {
-  content: '├── ';
-  position: absolute;
-  left: calc(-1 * var(--spacing-md));
-  top: calc(var(--spacing-sm) + 2px);
-  color: var(--text-tertiary);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  line-height: 1;
-  pointer-events: none;
-}
 
-#schemas-nav .nav-item:last-child::before {
-  content: '└── ';
-}
 
 #schemas-nav .nav-link {
   padding: var(--spacing-xs) var(--spacing-md);

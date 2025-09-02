@@ -711,17 +711,17 @@ class DocApp {
                 endpointsToggle.classList.remove('collapsed');
             }
             
-            // Expand first nav group within endpoints
-            const firstNavGroup = document.querySelector('[data-toggle^="nav-group-"]');
-            if (firstNavGroup) {
-                const targetId = firstNavGroup.dataset.toggle;
+            // Expand all nav groups by default to match CSS
+            const allNavGroups = document.querySelectorAll('[data-toggle^="nav-group-"]');
+            allNavGroups.forEach(navGroup => {
+                const targetId = navGroup.dataset.toggle;
                 const target = document.getElementById(targetId);
                 if (target) {
                     target.style.maxHeight = target.scrollHeight + 'px';
                     target.style.overflow = 'visible';
-                    firstNavGroup.classList.add('expanded');
+                    navGroup.classList.add('expanded');
                 }
-            }
+            });
         }, 100);
     }
 
