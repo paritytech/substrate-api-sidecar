@@ -89,43 +89,11 @@ class DocApp {
      * Setup navigation event listeners
      */
     setupNavigation() {
-        // Handle nav group toggles - use more specific targeting
-        document.addEventListener('click', (e) => {
-            const navGroupHeader = e.target.closest('[data-toggle^="nav-group-"]');
-            if (navGroupHeader) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const targetId = navGroupHeader.dataset.toggle;
-                const target = document.getElementById(targetId);
-                
-                if (target && navGroupHeader) {
-                    const isExpanded = navGroupHeader.classList.contains('expanded');
-                    
-                    if (isExpanded) {
-                        target.style.maxHeight = '0px';
-                        target.style.overflow = 'hidden';
-                        navGroupHeader.classList.remove('expanded');
-                    } else {
-                        target.style.maxHeight = target.scrollHeight + 'px';
-                        target.style.overflow = 'visible';
-                        navGroupHeader.classList.add('expanded');
-                        
-                        // Reset overflow after animation
-                        setTimeout(() => {
-                            if (navGroupHeader.classList.contains('expanded')) {
-                                target.style.overflow = 'visible';
-                            }
-                        }, 300);
-                    }
-                }
-            }
-        });
 
         // Handle endpoint navigation - better targeting
         document.addEventListener('click', (e) => {
             const endpointLink = e.target.closest('[data-endpoint]');
-            if (endpointLink && !e.target.closest('[data-toggle^="nav-group-"]')) {
+            if (endpointLink) {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -711,7 +679,7 @@ class DocApp {
                 endpointsToggle.classList.remove('collapsed');
             }
             
-            // Keep all nav groups closed by default - they will expand when clicked
+            // All sections start collapsed and expand when clicked
         }, 100);
     }
 
