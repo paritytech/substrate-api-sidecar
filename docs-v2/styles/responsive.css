@@ -50,6 +50,11 @@
     align-items: flex-start;
     gap: var(--spacing-sm);
   }
+  
+  /* Header responsive for medium screens */
+  .section-header h1 {
+    font-size: var(--font-size-3xl);
+  }
 }
 
 /* Tablet screens (768px to 1023px) */
@@ -645,5 +650,18 @@
     flex-direction: column;
     text-align: center;
     gap: var(--spacing-md);
+  }
+  
+  /* Responsive header */
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    text-align: left;
+  }
+  
+  .section-meta {
+    align-self: stretch;
+    justify-content: flex-end;
   }
 }
