@@ -1,13 +1,11 @@
 {
   "name": "substrate-api-sidecar-docs-v2",
-  "version": "1.0.0",
   "description": "Modern documentation for Substrate API Sidecar",
   "private": true,
   "scripts": {
     "dev": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "serve": "npx serve -s dist -p 8081",
-    "start": "npm run dev"
+    "serve": "npx serve -s dist -p 8081"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
