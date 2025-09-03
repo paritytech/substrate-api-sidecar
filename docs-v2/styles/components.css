@@ -354,12 +354,13 @@
   max-height: 0;
   opacity: 0;
   margin: 0;
+  padding: 0;
 }
 
 .nav-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 var(--spacing-lg);
 }
 
 .nav-list.collapsed {
