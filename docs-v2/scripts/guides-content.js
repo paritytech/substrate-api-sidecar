@@ -2,6 +2,7 @@
 // This file imports markdown files and converts them to HTML
 
 import assetHubMigrationMd from '../guides/ASSET_HUB_MIGRATION.md';
+import useRcBlock from '../guides/USE_RC_BLOCK_SPEC.md'
 
 // Simple markdown to HTML converter
 function convertMarkdownToHtml(markdown) {
@@ -98,12 +99,17 @@ function escapeHtml(text) {
 
 // Export guide content with HTML conversion
 export const GUIDES_CONTENT = {
-    'asset-hub-migration': convertMarkdownToHtml(assetHubMigrationMd)
+    'asset-hub-migration': convertMarkdownToHtml(assetHubMigrationMd),
+    'useRcBlock-spec': convertMarkdownToHtml(useRcBlock)
 };
 
 export const GUIDE_METADATA = {
     'asset-hub-migration': {
         title: 'Asset Hub Migration & Elastic Scaling Guide',
         description: 'Migration guide for Asset Hub endpoints and elastic scaling functionality'
+    },
+    'useRcBlock-spec': {
+        title: 'useRcBlock specification',
+        description: 'The specification for useRcBlock'
     }
 };

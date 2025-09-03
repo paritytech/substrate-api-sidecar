@@ -229,6 +229,35 @@ class DocApp {
                 }
             }
         });
+
+        // Handle specification navigation
+        document.addEventListener('click', (e) => {
+            const specLink = e.target.closest('[data-spec]');
+            if (specLink) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const specName = specLink.dataset.spec;
+                
+                // Update active nav link
+                document.querySelectorAll('[data-spec]').forEach(link => {
+                    link.classList.remove('active');
+                });
+                specLink.classList.add('active');
+                
+                // Show the specification
+                this.showSpecification(specName);
+                window.history.pushState(null, null, `#spec-${specName}`);
+                
+                // Close mobile menu if open
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menu-toggle');
+                if (sidebar && sidebar.classList.contains('mobile-open')) {
+                    sidebar.classList.remove('mobile-open');
+                    menuToggle?.classList.remove('active');
+                }
+            }
+        });
     }
 
     /**
@@ -270,6 +299,106 @@ class DocApp {
                 mainContent.scrollTop = 0;
             }
         }
+    }
+
+    /**
+     * Show a specific specification
+     */
+    showSpecification(specName) {
+        const dynamicContent = document.getElementById('dynamic-content');
+        const overview = document.getElementById('overview');
+        const gettingStarted = document.getElementById('getting-started');
+        const specElement = document.getElementById(`spec-${specName}`);
+        
+        // Hide all static sections
+        if (overview) overview.style.display = 'none';
+        if (gettingStarted) gettingStarted.style.display = 'none';
+        if (dynamicContent) dynamicContent.innerHTML = '';
+        
+        // Hide all other guides and specs
+        document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Show the specific specification
+        if (specElement) {
+            // Load spec content if not already loaded
+            this.loadSpecificationContent(specName, specElement);
+            
+            specElement.style.display = 'block';
+            
+            // Update breadcrumb for specifications
+            this.updateBreadcrumb([
+                { name: 'Documentation', href: '#overview' },
+                { name: 'Specifications', href: '#' },
+                { name: this.getSpecDisplayName(specName), href: `#spec-${specName}` }
+            ]);
+            
+            // Scroll to top
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.scrollTop = 0;
+            }
+        }
+    }
+
+    /**
+     * Load specification content from embedded markdown
+     */
+    loadSpecificationContent(specName, specElement) {
+        const specContent = specElement.querySelector('.spec-content');
+        
+        // Check if content is already loaded (more than just placeholder)
+        if (specContent && specContent.children.length > 1) {
+            return;
+        }
+        
+        try {
+            // Map spec names to guide content keys
+            const specContentKey = this.getSpecContentKey(specName);
+            const htmlContent = GUIDES_CONTENT[specContentKey];
+            if (!htmlContent) {
+                throw new Error(`Specification content not found for: ${specName}`);
+            }
+            
+            if (specContent) {
+                specContent.innerHTML = htmlContent;
+                
+                // Setup copy buttons for code blocks
+                this.setupCodeCopyButtons(specContent);
+            }
+        } catch (error) {
+            console.error('Error loading specification content:', error);
+            if (specContent) {
+                specContent.innerHTML = `
+                    <div class="notice-box warning">
+                        <div class="notice-content">
+                            <strong>Error Loading Specification:</strong> Could not load the "${this.getSpecDisplayName(specName)}" specification content.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    /**
+     * Get specification content key
+     */
+    getSpecContentKey(specName) {
+        const specKeyMap = {
+            'useRcBlock': 'useRcBlock-spec'
+        };
+        return specKeyMap[specName] || specName;
+    }
+
+    /**
+     * Get display name for a specification
+     */
+    getSpecDisplayName(specName) {
+        const specNames = {
+            'useRcBlock': 'useRcBlock Specification'
+        };
+        return specNames[specName] || specName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
 
     /**
@@ -338,7 +467,8 @@ class DocApp {
      */
     getGuideDisplayName(guideName) {
         const guideNames = {
-            'asset-hub-migration': 'Asset Hub Migration'
+            'asset-hub-migration': 'Asset Hub Migration',
+            'useRcBlock-spec': 'useRcBlock Specification'
         };
         return guideNames[guideName] || guideName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
@@ -1090,6 +1220,20 @@ window.addEventListener('hashchange', () => {
             const guideLink = document.querySelector(`[data-guide="${guideName}"]`);
             if (guideLink) {
                 guideLink.classList.add('active');
+            }
+        }
+    } else if (hash.startsWith('spec-')) {
+        const specName = hash.replace('spec-', '');
+        const app = window.docAppInstance;
+        if (app) {
+            app.showSpecification(specName);
+            // Update nav active state
+            document.querySelectorAll('[data-spec]').forEach(link => {
+                link.classList.remove('active');
+            });
+            const specLink = document.querySelector(`[data-spec="${specName}"]`);
+            if (specLink) {
+                specLink.classList.add('active');
             }
         }
     } else if (!hash || hash === 'overview') {

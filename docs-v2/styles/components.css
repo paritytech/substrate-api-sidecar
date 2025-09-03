@@ -285,6 +285,79 @@
   color: var(--text-secondary);
 }
 
+/* Specification content spacing - same as guide content */
+.spec-content {
+  max-width: 800px;
+}
+
+.spec-content h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: var(--spacing-4xl) 0 var(--spacing-xl) 0;
+}
+
+.spec-content h1:first-child {
+  margin-top: 0;
+}
+
+.spec-content h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: var(--spacing-3xl) 0 var(--spacing-lg) 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.spec-content h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: var(--spacing-2xl) 0 var(--spacing-md) 0;
+}
+
+.spec-content h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin: var(--spacing-xl) 0 var(--spacing-sm) 0;
+}
+
+.spec-content p {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-lg);
+}
+
+.spec-content ul,
+.spec-content ol {
+  margin: var(--spacing-lg) 0;
+  padding-left: var(--spacing-2xl);
+}
+
+.spec-content li {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-sm);
+}
+
+.spec-content .code-block {
+  margin: var(--spacing-xl) 0;
+}
+
+.spec-content .notice-box {
+  margin: var(--spacing-xl) 0;
+}
+
+.spec-content blockquote {
+  border-left: 4px solid var(--accent-primary);
+  padding-left: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
 .nav-section-header {
   display: flex;
   align-items: center;
