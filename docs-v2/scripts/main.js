@@ -274,9 +274,9 @@ class DocApp {
         if (gettingStarted) gettingStarted.style.display = 'none';
         if (dynamicContent) dynamicContent.innerHTML = '';
         
-        // Hide all other guides
-        document.querySelectorAll('[id^="guide-"]').forEach(guide => {
-            guide.style.display = 'none';
+        // Hide all guides and specs
+        document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
+            section.style.display = 'none';
         });
         
         // Show the specific guide
@@ -315,7 +315,7 @@ class DocApp {
         if (gettingStarted) gettingStarted.style.display = 'none';
         if (dynamicContent) dynamicContent.innerHTML = '';
         
-        // Hide all other guides and specs
+        // Hide all guides and specs
         document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
             section.style.display = 'none';
         });
@@ -930,6 +930,11 @@ class DocApp {
             overview.style.display = 'none';
             if (gettingStarted) gettingStarted.style.display = 'none';
             dynamicContent.innerHTML = html;
+            
+            // Hide all guides and specs
+            document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
+                section.style.display = 'none';
+            });
         }
     }
 
@@ -945,6 +950,11 @@ class DocApp {
             overview.style.display = 'block';
             if (gettingStarted) gettingStarted.style.display = 'none';
             dynamicContent.innerHTML = '';
+            
+            // Hide all guides and specs
+            document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
+                section.style.display = 'none';
+            });
         }
         
         this.hideBreadcrumb();
@@ -962,6 +972,11 @@ class DocApp {
             overview.style.display = 'none';
             gettingStarted.style.display = 'block';
             dynamicContent.innerHTML = '';
+            
+            // Hide all guides and specs
+            document.querySelectorAll('[id^="guide-"], [id^="spec-"]').forEach(section => {
+                section.style.display = 'none';
+            });
         }
         
         this.hideBreadcrumb();
