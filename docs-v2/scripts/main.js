@@ -295,10 +295,7 @@ class DocApp {
             ]);
             
             // Scroll to top
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.scrollTop = 0;
-            }
+            window.scrollTo(0, 0);
         }
     }
 
@@ -336,10 +333,7 @@ class DocApp {
             ]);
             
             // Scroll to top
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.scrollTop = 0;
-            }
+            window.scrollTo(0, 0);
         }
     }
 
@@ -930,10 +924,7 @@ class DocApp {
             ]);
             
             // Scroll to top
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.scrollTop = 0;
-            }
+            window.scrollTo(0, 0);
             
             console.log('Successfully navigated to endpoint:', endpointId);
         } catch (error) {
@@ -960,7 +951,7 @@ class DocApp {
         ]);
         
         // Scroll to top
-        document.querySelector('.main-content').scrollTop = 0;
+        window.scrollTo(0, 0);
     }
 
     /**
@@ -1002,6 +993,9 @@ class DocApp {
             });
         }
         
+        // Scroll to top
+        window.scrollTo(0, 0);
+        
         this.hideBreadcrumb();
     }
 
@@ -1023,6 +1017,9 @@ class DocApp {
                 section.style.display = 'none';
             });
         }
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
         
         this.hideBreadcrumb();
     }
