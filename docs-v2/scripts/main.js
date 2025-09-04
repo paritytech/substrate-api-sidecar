@@ -80,6 +80,9 @@ class DocApp {
         // Setup collapsible sections
         this.setupCollapsibleSections();
         
+        // Setup cURL generator
+        this.setupCurlGenerator();
+        
         
     }
 
@@ -705,7 +708,163 @@ class DocApp {
         });
     }
 
+    /**
+     * Setup cURL generator functionality
+     */
+    setupCurlGenerator() {
+        // Handle generate cURL button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.generate-curl-btn') || e.target.closest('.generate-curl-btn')) {
+                e.preventDefault();
+                const button = e.target.matches('.generate-curl-btn') ? e.target : e.target.closest('.generate-curl-btn');
+                const endpointId = button.dataset.endpointId;
+                
+                this.generateCurlCommand(endpointId);
+            }
+        });
 
+        // Handle copy generated cURL button clicks
+        document.addEventListener('click', async (e) => {
+            if (e.target.id && e.target.id.startsWith('copy-curl-')) {
+                e.preventDefault();
+                const endpointId = e.target.id.replace('copy-curl-', '');
+                const curlElement = document.getElementById(`curl-command-${endpointId}`);
+                
+                if (curlElement && curlElement.textContent) {
+                    try {
+                        await navigator.clipboard.writeText(curlElement.textContent);
+                        this.showCopyFeedback(e.target);
+                    } catch (err) {
+                        console.error('Failed to copy:', err);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Generate cURL command from user inputs
+     */
+    generateCurlCommand(endpointId) {
+        const endpoint = this.parser.getEndpoint(endpointId);
+        if (!endpoint) return;
+
+        // Get all parameter inputs for this endpoint
+        const paramInputs = document.querySelectorAll(`[data-endpoint-id="${endpointId}"] .param-input`);
+        const values = {};
+        let hasRequiredEmpty = false;
+
+        // Collect input values
+        paramInputs.forEach(input => {
+            const paramName = input.dataset.paramName;
+            const paramLocation = input.dataset.paramLocation;
+            const value = input.value.trim();
+            const isRequired = input.hasAttribute('required');
+
+            if (isRequired && !value) {
+                hasRequiredEmpty = true;
+                input.classList.add('error');
+            } else {
+                input.classList.remove('error');
+            }
+
+            if (value) {
+                if (!values[paramLocation]) values[paramLocation] = {};
+                values[paramLocation][paramName] = value;
+            }
+        });
+
+        // Show error if required fields are empty
+        if (hasRequiredEmpty) {
+            this.showParameterError(endpointId, 'Please fill in all required parameters');
+            return;
+        }
+
+        // Build URL
+        let url = 'http://localhost:8080' + endpoint.path;
+        const method = endpoint.method.toUpperCase();
+
+        // Replace path parameters
+        if (values.path) {
+            Object.entries(values.path).forEach(([paramName, value]) => {
+                url = url.replace(`{${paramName}}`, encodeURIComponent(value));
+            });
+        }
+
+        // Add query parameters
+        if (values.query && Object.keys(values.query).length > 0) {
+            const queryString = Object.entries(values.query)
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+            url += `?${queryString}`;
+        }
+
+        // Build cURL command
+        let curlCommand = `curl -X ${method}`;
+        
+        if (method !== 'GET') {
+            curlCommand += ' -H "Content-Type: application/json"';
+        }
+
+        // Add request body if needed (for POST/PUT/PATCH)
+        if (endpoint.requestBody && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+            curlCommand += ' \\\n  -d \'{"example": "data"}\' \\';
+        }
+
+        curlCommand += ` \\\n  "${url}"`;
+
+        // Display the generated cURL
+        this.displayGeneratedCurl(endpointId, curlCommand);
+    }
+
+    /**
+     * Display generated cURL command
+     */
+    displayGeneratedCurl(endpointId, curlCommand) {
+        const outputSection = document.getElementById(`curl-output-${endpointId}`);
+        const commandElement = document.getElementById(`curl-command-${endpointId}`);
+        const copyButton = document.getElementById(`copy-curl-${endpointId}`);
+
+        if (outputSection && commandElement) {
+            commandElement.textContent = curlCommand;
+            outputSection.style.display = 'block';
+            
+            // Update copy button data
+            if (copyButton) {
+                copyButton.dataset.copy = curlCommand;
+            }
+
+            // Scroll to the generated command
+            outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    /**
+     * Show parameter validation error
+     */
+    showParameterError(endpointId, message) {
+        // Remove existing error message
+        const existingError = document.querySelector(`[data-endpoint-id="${endpointId}"] .param-error`);
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Add error message
+        const generateSection = document.querySelector(`[data-endpoint-id="${endpointId}"] .generate-curl-section`);
+        if (generateSection) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'param-error';
+            errorDiv.textContent = message;
+            generateSection.insertBefore(errorDiv, generateSection.firstChild);
+            
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+    }
 
     /**
      * Render the main content

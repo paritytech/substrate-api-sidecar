@@ -311,7 +311,86 @@ export class UIComponents {
     renderExampleRequest(curlCommand, endpoint) {
         return `
             <div class="example-request-section">
-                <h3>Example Request</h3>
+                <h3>Try this endpoint</h3>
+                ${this.renderParameterInputs(endpoint)}
+                ${this.renderGeneratedCurl(endpoint)}
+            </div>
+        `;
+    }
+
+    /**
+     * Render parameter input form
+     */
+    renderParameterInputs(endpoint) {
+        if (!endpoint.parameters || endpoint.parameters.length === 0) {
+            return this.renderSimpleEndpoint(endpoint);
+        }
+
+        const pathParams = endpoint.parameters.filter(p => p.in === 'path');
+        const queryParams = endpoint.parameters.filter(p => p.in === 'query');
+
+        return `
+            <div class="parameter-inputs" data-endpoint-id="${endpoint.id}">
+                ${pathParams.length > 0 ? `
+                    <div class="parameter-group">
+                        <h4>Required Parameters</h4>
+                        ${pathParams.map(param => this.renderParameterInput(param, endpoint.id, true)).join('')}
+                    </div>
+                ` : ''}
+                
+                ${queryParams.length > 0 ? `
+                    <div class="parameter-group">
+                        <h4>Optional Parameters</h4>
+                        ${queryParams.map(param => this.renderParameterInput(param, endpoint.id, false)).join('')}
+                    </div>
+                ` : ''}
+
+                <div class="generate-curl-section">
+                    <button class="generate-curl-btn" data-endpoint-id="${endpoint.id}" type="button">
+                        Generate cURL Command
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Render individual parameter input
+     */
+    renderParameterInput(param, endpointId, required) {
+        const placeholder = this.getParameterPlaceholder(param);
+        const requiredAttr = required ? 'required' : '';
+        const requiredClass = required ? 'required' : 'optional';
+        
+        return `
+            <div class="param-input-group ${requiredClass}">
+                <label for="${endpointId}-${param.name}" class="param-label">
+                    <span class="param-name">${param.name}</span>
+                    ${required ? '<span class="required-indicator">*</span>' : ''}
+                    ${param.description ? `<span class="param-description">${param.description}</span>` : ''}
+                </label>
+                <input 
+                    type="text" 
+                    id="${endpointId}-${param.name}"
+                    class="param-input"
+                    placeholder="${placeholder}"
+                    data-param-name="${param.name}"
+                    data-param-location="${param.in}"
+                    ${requiredAttr}
+                >
+            </div>
+        `;
+    }
+
+    /**
+     * Render simple endpoint (no parameters)
+     */
+    renderSimpleEndpoint(endpoint) {
+        const curlCommand = `curl -X ${endpoint.method.toUpperCase()} "http://localhost:8080${endpoint.path}"`;
+        
+        return `
+            <div class="simple-endpoint">
+                <p>This endpoint requires no parameters.</p>
                 <div class="code-block">
                     <div class="code-header">
                         <span>cURL</span>
@@ -326,6 +405,169 @@ export class UIComponents {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Render generated cURL section
+     */
+    renderGeneratedCurl(endpoint) {
+        return `
+            <div class="generated-curl-section" id="curl-output-${endpoint.id}" style="display: none;">
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Generated cURL Command</span>
+                        <button class="copy-button" id="copy-curl-${endpoint.id}">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="language-bash" id="curl-command-${endpoint.id}"></code></pre>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Get appropriate placeholder for parameter
+     */
+    getParameterPlaceholder(param) {
+        const name = param.name.toLowerCase();
+        
+        // Handle specific parameter names first
+        if (name === 'usercblock') {
+            return 'true';
+        }
+        if (name.includes('address') || name.includes('account')) {
+            return '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+        }
+        if (name.includes('hash') || name.includes('blockhash')) {
+            return '0x1234...abcdef';
+        }
+        if (name.includes('block') || name.includes('number') || name.includes('height')) {
+            return '1000000';
+        }
+        if (name.includes('limit')) {
+            return '10';
+        }
+        if (name.includes('page')) {
+            return '1';
+        }
+        
+        const type = param.schema?.type || param.type || 'string';
+        switch (type) {
+            case 'integer':
+            case 'number':
+                return '123';
+            case 'boolean':
+                return 'true';
+            default:
+                return `Enter ${param.name}`;
+        }
+    }
+
+    /**
+     * Generate enhanced cURL command with parameter examples
+     */
+    generateEnhancedCurl(endpoint, serverUrl) {
+        if (!endpoint) return '';
+
+        let url = serverUrl + endpoint.path;
+        let method = endpoint.method.toUpperCase();
+        
+        // Replace path parameters with examples
+        if (endpoint.parameters) {
+            const pathParams = endpoint.parameters.filter(p => p.in === 'path');
+            pathParams.forEach(param => {
+                const example = this.getParameterExample(param);
+                url = url.replace(`{${param.name}}`, example);
+            });
+        }
+
+        // Add query parameters as examples
+        if (endpoint.parameters) {
+            const queryParams = endpoint.parameters.filter(p => p.in === 'query');
+            if (queryParams.length > 0) {
+                const queryString = queryParams.map(param => {
+                    const example = this.getParameterExample(param);
+                    return `${param.name}=${example}`;
+                }).join('&');
+                url += `?${queryString}`;
+            }
+        }
+
+        // Build cURL command
+        let curlCommand = `curl -X ${method}`;
+        
+        // Add headers if needed
+        if (method !== 'GET') {
+            curlCommand += ' -H "Content-Type: application/json"';
+        }
+        
+        // Add request body for POST/PUT/PATCH
+        if (endpoint.requestBody && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+            const exampleBody = this.generateExampleRequestBody(endpoint.requestBody);
+            if (exampleBody) {
+                curlCommand += ` \\\\\n  -d '${exampleBody}'`;
+            }
+        }
+        
+        curlCommand += ` \\\\\n  "${url}"`;
+        
+        return curlCommand;
+    }
+
+    /**
+     * Get example value for a parameter
+     */
+    getParameterExample(param) {
+        // Use example from schema if available
+        if (param.example !== undefined) return param.example;
+        if (param.schema?.example !== undefined) return param.schema.example;
+        
+        // Generate example based on parameter name and type
+        const type = param.schema?.type || param.type || 'string';
+        
+        // Common parameter name patterns
+        const name = param.name.toLowerCase();
+        if (name.includes('id')) return '12345';
+        if (name.includes('hash') || name.includes('blockhash')) return '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+        if (name.includes('address') || name.includes('account')) return '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+        if (name.includes('block')) return '1000000';
+        if (name.includes('number') || name.includes('height')) return '1000';
+        if (name.includes('limit')) return '10';
+        if (name.includes('page')) return '1';
+        if (name.includes('at')) return '1000000';
+        if (name.includes('from')) return '0';
+        if (name.includes('to')) return '100';
+        
+        // Default based on type
+        switch (type) {
+            case 'integer':
+            case 'number':
+                return '123';
+            case 'boolean':
+                return 'true';
+            case 'string':
+            default:
+                return 'example';
+        }
+    }
+
+    /**
+     * Generate example request body
+     */
+    generateExampleRequestBody(requestBody) {
+        if (!requestBody || !requestBody.content) return null;
+        
+        const jsonContent = requestBody.content['application/json'];
+        if (!jsonContent || !jsonContent.schema) return null;
+        
+        // Simple example generation
+        return JSON.stringify({
+            "example": "request body - replace with actual data"
+        });
     }
 
     /**
