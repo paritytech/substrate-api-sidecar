@@ -1,12 +1,9 @@
 // UI Components for Substrate API Sidecar Documentation
 // Handles rendering of API documentation components
 
-import { APIExplorer } from './api-explorer.js';
-
 export class UIComponents {
     constructor(parser) {
         this.parser = parser;
-        this.apiExplorer = new APIExplorer(parser);
     }
 
     /**
@@ -96,9 +93,6 @@ export class UIComponents {
                     ${this.renderRequestBody(endpoint.requestBody)}
                     ${this.renderResponses(endpoint.responses)}
                     ${this.renderExampleRequest(exampleRequest, endpoint)}
-                    
-                    <!-- API Explorer -->
-                    ${this.apiExplorer.renderExplorer(endpoint, serverUrl)}
                 </div>
             </section>
         `;

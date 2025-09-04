@@ -80,8 +80,6 @@ class DocApp {
         // Setup collapsible sections
         this.setupCollapsibleSections();
         
-        // Setup API explorer
-        this.setupAPIExplorer();
         
     }
 
@@ -708,118 +706,6 @@ class DocApp {
     }
 
 
-    /**
-     * Setup API explorer functionality
-     */
-    setupAPIExplorer() {
-        // Handle execute request buttons
-        document.addEventListener('click', async (e) => {
-            if (e.target.matches('.try-button') || e.target.closest('.try-button')) {
-                e.preventDefault();
-                const button = e.target.matches('.try-button') ? e.target : e.target.closest('.try-button');
-                const endpointId = button.dataset.endpoint;
-                
-                // Disable button during request
-                button.disabled = true;
-                button.innerHTML = `
-                    <div class="spinner small"></div>
-                    Executing...
-                `;
-                
-                try {
-                    await this.components.apiExplorer.executeRequest(endpointId, this.currentServer);
-                } finally {
-                    // Re-enable button
-                    button.disabled = false;
-                    button.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Execute Request
-                    `;
-                }
-            }
-        });
-
-        // Handle parameter input changes
-        document.addEventListener('input', (e) => {
-            if (e.target.matches('.param-input') || e.target.matches('.json-input')) {
-                const endpointId = e.target.dataset.endpoint;
-                this.updateRequestPreview(endpointId);
-            }
-        });
-
-        // Handle response tabs (in API explorer)
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.response-tabs .tab-button')) {
-                const targetTab = e.target.dataset.tab;
-                const tabContainer = e.target.closest('.response-area');
-                
-                // Update tab buttons
-                tabContainer.querySelectorAll('.tab-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                e.target.classList.add('active');
-                
-                // Update tab content
-                tabContainer.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                const targetContent = document.getElementById(targetTab);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-            }
-        });
-
-        // Handle custom headers
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.add-header-button') || e.target.closest('.add-header-button')) {
-                const button = e.target.matches('.add-header-button') ? e.target : e.target.closest('.add-header-button');
-                const endpointId = button.dataset.endpoint;
-                this.addCustomHeader(endpointId);
-            }
-        });
-
-        // Handle JSON formatting
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.format-json-button')) {
-                const endpointId = e.target.dataset.endpoint;
-                this.formatJsonInput(endpointId);
-            }
-        });
-
-        // Handle copy buttons in explorer
-        document.addEventListener('click', async (e) => {
-            if (e.target.matches('.copy-url-button') || e.target.closest('.copy-url-button')) {
-                const urlInput = e.target.closest('.url-builder').querySelector('.request-url');
-                if (urlInput) {
-                    await this.copyToClipboard(urlInput.value);
-                    this.showCopyFeedback(e.target.closest('.copy-url-button'));
-                }
-            }
-            
-            if (e.target.matches('.copy-request-button') || e.target.closest('.copy-request-button')) {
-                const button = e.target.matches('.copy-request-button') ? e.target : e.target.closest('.copy-request-button');
-                const endpointId = button.dataset.endpoint;
-                const curlElement = document.getElementById(`curl-preview-${endpointId}`);
-                if (curlElement) {
-                    await this.copyToClipboard(curlElement.textContent);
-                    this.showCopyFeedback(button);
-                }
-            }
-            
-            if (e.target.matches('.copy-response-button') || e.target.closest('.copy-response-button')) {
-                const button = e.target.matches('.copy-response-button') ? e.target : e.target.closest('.copy-response-button');
-                const endpointId = button.dataset.endpoint;
-                const responseElement = document.getElementById(`response-json-${endpointId}`);
-                if (responseElement) {
-                    await this.copyToClipboard(responseElement.textContent);
-                    this.showCopyFeedback(button);
-                }
-            }
-        });
-    }
 
     /**
      * Render the main content
@@ -1067,63 +953,6 @@ class DocApp {
         }
     }
 
-    /**
-     * Update request preview
-     */
-    updateRequestPreview(endpointId) {
-        const endpoint = this.parser.getEndpoint(endpointId);
-        if (!endpoint) return;
-
-        try {
-            const requestConfig = this.components.apiExplorer.buildRequestConfig(endpoint, endpointId, this.currentServer);
-            this.components.apiExplorer.updateRequestPreview(endpointId, requestConfig);
-        } catch (error) {
-            console.error('Failed to update request preview:', error);
-        }
-    }
-
-    /**
-     * Add custom header input
-     */
-    addCustomHeader(endpointId) {
-        const headersList = document.getElementById(`custom-headers-${endpointId}`);
-        if (!headersList) return;
-
-        const headerRow = document.createElement('div');
-        headerRow.className = 'custom-header-row';
-        headerRow.innerHTML = `
-            <input type="text" placeholder="Header name" class="header-name">
-            <input type="text" placeholder="Header value" class="header-value">
-            <button class="remove-header-button" type="button">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </button>
-        `;
-
-        // Add remove functionality
-        headerRow.querySelector('.remove-header-button').addEventListener('click', () => {
-            headerRow.remove();
-        });
-
-        headersList.appendChild(headerRow);
-    }
-
-    /**
-     * Format JSON input
-     */
-    formatJsonInput(endpointId) {
-        const textarea = document.getElementById(`request-body-${endpointId}`);
-        if (!textarea) return;
-
-        try {
-            const parsed = JSON.parse(textarea.value);
-            textarea.value = JSON.stringify(parsed, null, 2);
-        } catch (error) {
-            console.error('Invalid JSON:', error);
-            // Could show user feedback here
-        }
-    }
 
     /**
      * Fallback copy method for older browsers
