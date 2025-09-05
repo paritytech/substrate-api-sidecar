@@ -70,7 +70,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			validators.push({
 				address,
 				status,
-				commission: prefs.commission.unwrap().toString(),
+				commission: prefs.commission ? prefs.commission.unwrap().toString() : undefined,
 				blocked: prefs.blocked ? prefs.blocked.isTrue : false,
 			});
 		});
