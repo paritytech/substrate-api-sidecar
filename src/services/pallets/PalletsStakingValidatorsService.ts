@@ -56,8 +56,9 @@ export class PalletsStakingValidatorsService extends AbstractService {
 		const validatorsToBeChilled: IValidator[] = [];
 		const validatorsActiveSet = await this.getActiveValidators(historicApi);
 
-		validatorsEntries.map(([key]) => {
+		validatorsEntries.map(([key, prefs]) => {
 			const address = key.args.map((k) => k.toString())[0];
+
 			let status: 'active' | 'waiting';
 			if (validatorsActiveSet.has(address)) {
 				status = 'active';
@@ -65,9 +66,17 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			} else {
 				status = 'waiting';
 			}
-			validators.push({ address, status });
+
+			validators.push({
+				address,
+				status,
+				commission: prefs.commission ? prefs.commission.unwrap().toString() : undefined,
+				blocked: prefs.blocked ? prefs.blocked.isTrue : false,
+			});
 		});
 
+		// Any validators remaining in validatorsActiveSet are active in the current session
+		// but don't have entries in staking.validators, which means they're being chilled
 		if (validatorsActiveSet.size > 0) {
 			validatorsActiveSet.forEach((address) => {
 				validators.push({ address, status: 'active' });

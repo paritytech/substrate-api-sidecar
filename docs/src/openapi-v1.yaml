@@ -3730,11 +3730,12 @@ paths:
       - staking
       - pallets
       summary: Get all validators (active/waiting) of a specific chain.
-      description: Returns a list of all validators addresses and their
-        corresponding status which can be either active or waiting. It will also return 
-        a list of active validators that will not be part of the next era for staking. They will
-        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
-        the "validators" key, and "validatorsToBeChilled".
+      description: Returns a list of all validators addresses and their corresponding status which can be either
+        active or waiting. For declared validators, it also includes their commission rate (as parts-per-billion)
+        and nomination blocking status. It will also return a list of active validators that will not be part of
+        the next era for staking. They will be under the key "validatorsToBeChilled". It's important to note,
+        that addresses can be present in both the "validators" key, and "validatorsToBeChilled". Commission and
+        blocked properties are not present for active validators that have been chilled.
       operationId: getRcStakingValidators
       parameters:
       - name: at
@@ -3990,11 +3991,12 @@ paths:
       - staking
       - pallets
       summary: Get all validators (active/waiting) of a specific chain.
-      description: Returns a list of all validators addresses and their
-        corresponding status which can be either active or waiting. It will also return 
-        a list of active validators that will not be part of the next era for staking. They will
-        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
-        the "validators" key, and "validatorsToBeChilled".
+      description: Returns a list of all validators addresses and their corresponding status which can be either
+        active or waiting. For declared validators, it also includes their commission rate and nomination blocking
+        status. It will also return a list of active validators that will not be part of the next era for staking.
+        They will be under the key "validatorsToBeChilled". It's important to note, that addresses can be present
+        in both the "validators" key, and "validatorsToBeChilled". Commission and blocked properties are not present
+        for active validators that have been chilled.
       operationId: getStakingValidators
       parameters:
       - name: at
@@ -6968,6 +6970,12 @@ components:
               status:
                 type: string
                 description: Status of individual validator (active/waiting).
+              commission:
+                type: string
+                description: The validator's commission rate as parts-per-billion (e.g., "100000000" = 10%). Not present for chilled validators.
+              blocked:
+                type: boolean
+                description: Whether the validator is blocked from receiving new nominations. Not present for chilled validators.
         validatorsToBeChilled:
           description: Validators that will not be participating in the next era.
           type: array
