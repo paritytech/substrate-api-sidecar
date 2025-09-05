@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.6.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.6.0..v20.6.1) (2025-09-05)
+
+### Fix
+
+- fix: rewrite the PJS balances derive for transferable balances ([#1745](https://github.com/paritytech/substrate-api-sidecar/pull/1745)) ([0123aeb](https://github.com/paritytech/substrate-api-sidecar/commit/0123aeb))
+    - Rewrites the Polkadot JS balances derivation to improve transferable balance calculations
+
+### Chores
+
+- chore(deps): bump actions/setup-node from 4 to 5 ([#1746](https://github.com/paritytech/substrate-api-sidecar/pull/1746)) ([d663cdf](https://github.com/paritytech/substrate-api-sidecar/commit/d663cdf))
+- chore(deps): bump benchmark-action/github-action-benchmark ([#1744](https://github.com/paritytech/substrate-api-sidecar/pull/1744)) ([7753738](https://github.com/paritytech/substrate-api-sidecar/commit/7753738))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006001
+- Westend Asset Hub v1018013
+
 ## [20.6.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.5.0..v20.6.0) (2025-09-01)
 
 ### Features
