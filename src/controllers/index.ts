@@ -51,6 +51,7 @@ import {
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
 	RcAccountsStakingInfo,
+	RcAccountsStakingPayouts,
 	RcAccountsVestingInfo,
 } from './rc/accounts';
 import { RcBlocks, RcBlocksExtrinsics, RcBlocksRawExtrinsics, RcBlocksTrace } from './rc/blocks';
@@ -107,6 +108,7 @@ export const controllers = {
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
 	RcAccountsStakingInfo,
+	RcAccountsStakingPayouts,
 	RcAccountsVestingInfo,
 	RcBlocks,
 	RcBlocksExtrinsics,

@@ -44,6 +44,7 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
 		'RcAccountsStakingInfo',
+		'RcAccountsStakingPayouts',
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',

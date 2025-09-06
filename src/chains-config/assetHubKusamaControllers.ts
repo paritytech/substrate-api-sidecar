@@ -42,6 +42,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
 		'RcAccountsStakingInfo',
+		'RcAccountsStakingPayouts',
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',

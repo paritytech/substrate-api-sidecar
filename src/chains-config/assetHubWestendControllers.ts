@@ -53,6 +53,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
 		'RcAccountsStakingInfo',
+		'RcAccountsStakingPayouts',
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
