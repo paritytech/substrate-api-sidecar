@@ -47,7 +47,12 @@ import {
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
-import { RcAccountsBalanceInfo, RcAccountsProxyInfo, RcAccountsVestingInfo } from './rc/accounts';
+import {
+	RcAccountsBalanceInfo,
+	RcAccountsProxyInfo,
+	RcAccountsStakingInfo,
+	RcAccountsVestingInfo,
+} from './rc/accounts';
 import { RcBlocks, RcBlocksExtrinsics, RcBlocksRawExtrinsics, RcBlocksTrace } from './rc/blocks';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
 import {
@@ -101,6 +106,7 @@ export const controllers = {
 	NodeVersion,
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
+	RcAccountsStakingInfo,
 	RcAccountsVestingInfo,
 	RcBlocks,
 	RcBlocksExtrinsics,

@@ -933,6 +933,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/staking-info:
+    get:
+      tags:
+      - rc
+      summary: Get staking information for a _Stash_ account on the relay chain.
+      description: Returns information about a _Stash_ account's staking activity on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for staking information. The _Stash_ account can be either a validator or nominator account.
+      operationId: getRcAccountStakingInfo
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account. Must be a _Stash_ account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query the staking info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: includeClaimedRewards
+        in: query
+        description: When set to `false`, the `claimedRewards` field is not included
+          in the response.
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /rc/node/network:
     get:
       tags:

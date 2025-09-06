@@ -52,6 +52,7 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'PalletsPoolAssets',
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
+		'RcAccountsStakingInfo',
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
