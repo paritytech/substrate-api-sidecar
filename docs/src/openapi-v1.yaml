@@ -889,6 +889,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/vesting-info:
+    get:
+      tags:
+      - rc
+      summary: Get vesting information for an account on the relay chain.
+      description: Returns the vesting schedule for an account on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for vesting information.
+      operationId: getRcAccountVestingInfo
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query the vesting info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountVestingInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /rc/node/network:
     get:
       tags:

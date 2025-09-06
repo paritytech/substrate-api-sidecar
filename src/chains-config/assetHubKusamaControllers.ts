@@ -41,6 +41,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'PalletsForeignAssets',
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
+		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
 		'RcBlocksRawExtrinsics',

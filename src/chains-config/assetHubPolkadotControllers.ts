@@ -43,6 +43,7 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'PalletsForeignAssets',
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
+		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
 		'RcBlocksRawExtrinsics',
