@@ -2,7 +2,49 @@
 // This file imports markdown files and converts them to HTML
 
 import assetHubMigrationMd from '../guides/ASSET_HUB_MIGRATION.md';
-import useRcBlock from '../guides/USE_RC_BLOCK_SPEC.md'
+import useRcBlock from '../guides/USE_RC_BLOCK_SPEC.md';
+import advancedConfigMd from '../guides/ADVANCED_CONFIG.md';
+
+// Process markdown tables and convert to HTML
+function processMarkdownTables(html) {
+    // More flexible regex to match any table structure
+    // Matches: header row -> separator row -> one or more data rows
+    const tableRegex = /^(\|[^|\n]+(?:\|[^|\n]*)*\|)\s*\n(\|[\s\-:|]+\|)\s*\n((?:^\|[^|\n]+(?:\|[^|\n]*)*\|\s*$\n?)+)/gm;
+    
+    return html.replace(tableRegex, (match, headerRow, separatorRow, bodyRows) => {
+        // Process header row
+        const headerCells = headerRow.split('|')
+            .map(cell => cell.trim())
+            .filter(cell => cell)
+            .map(cell => cell.replace(/`([^`]+)`/g, '<code>$1</code>')); // Handle inline code in headers
+        const headerHtml = headerCells.map(cell => `<th>${cell}</th>`).join('');
+        
+        // Process body rows - handle both single and multiple rows
+        const bodyRowsArray = bodyRows.trim().split('\n').filter(row => row.trim() && row.includes('|'));
+        const bodyHtml = bodyRowsArray.map(row => {
+            const cells = row.split('|')
+                .map(cell => cell.trim())
+                .filter(cell => cell)
+                .map(cell => {
+                    // Handle inline code in cells
+                    return cell.replace(/`([^`]+)`/g, '<code>$1</code>');
+                });
+            const cellsHtml = cells.map(cell => `<td>${cell}</td>`).join('');
+            return `<tr>${cellsHtml}</tr>`;
+        }).join('\n');
+        
+        return `<div class="table-container">
+<table class="config-table">
+<thead>
+<tr>${headerHtml}</tr>
+</thead>
+<tbody>
+${bodyHtml}
+</tbody>
+</table>
+</div>`;
+    });
+}
 
 // Simple markdown to HTML converter
 function convertMarkdownToHtml(markdown) {
@@ -21,24 +63,47 @@ function convertMarkdownToHtml(markdown) {
     // Step 2: Process special warning callouts first
     html = html.replace(/## ⚠️ Important: (.*$)/gm, '<div class="notice-box warning"><div class="notice-content"><strong>⚠️ Important:</strong> $1</div></div>');
     
-    // Step 3: Process blockquotes and special notices
+    // Step 3: Process tables FIRST (before other formatting can interfere)
+    html = processMarkdownTables(html);
+    
+    // Step 3.5: Process blockquotes and special notices
     html = html.replace(/^> \*\*Note\*\*: (.*$)/gm, '<div class="notice-box info"><div class="notice-content"><strong>Note:</strong> $1</div></div>');
     html = html.replace(/^> \*\*Important\*\*: (.*$)/gm, '<div class="notice-box warning"><div class="notice-content"><strong>Important:</strong> $1</div></div>');
     html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
     
     // Step 4: Process headers (now safe from code block interference)
-    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    html = html.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+    // Add IDs to headers for internal navigation
+    html = html.replace(/^# (.*$)/gm, (match, text) => {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return `<h1 id="${id}">${text}</h1>`;
+    });
+    html = html.replace(/^## (.*$)/gm, (match, text) => {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return `<h2 id="${id}">${text}</h2>`;
+    });
+    html = html.replace(/^### (.*$)/gm, (match, text) => {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return `<h3 id="${id}">${text}</h3>`;
+    });
+    html = html.replace(/^#### (.*$)/gm, (match, text) => {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return `<h4 id="${id}">${text}</h4>`;
+    });
     
     // Step 5: Process inline formatting
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
     
-    // Step 6: Process links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    // Step 6: Process links (handle internal anchors differently)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+        // Check if it's an internal anchor link
+        if (url.startsWith('#')) {
+            return `<a href="${url}" class="internal-link">${text}</a>`;
+        }
+        // External links
+        return `<a href="${url}" target="_blank" rel="noopener">${text}</a>`;
+    });
     
     // Step 7: Process lists
     html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
@@ -100,7 +165,8 @@ function escapeHtml(text) {
 // Export guide content with HTML conversion
 export const GUIDES_CONTENT = {
     'asset-hub-migration': convertMarkdownToHtml(assetHubMigrationMd),
-    'useRcBlock-spec': convertMarkdownToHtml(useRcBlock)
+    'useRcBlock-spec': convertMarkdownToHtml(useRcBlock),
+    'advanced-config': convertMarkdownToHtml(advancedConfigMd)
 };
 
 export const GUIDE_METADATA = {
@@ -111,5 +177,9 @@ export const GUIDE_METADATA = {
     'useRcBlock-spec': {
         title: 'useRcBlock specification',
         description: 'The specification for useRcBlock'
+    },
+    'advanced-config': {
+        title: 'Advanced Configuration Guide',
+        description: 'Complete guide to all Substrate API Sidecar configuration options'
     }
 };

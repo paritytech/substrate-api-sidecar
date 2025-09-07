@@ -2507,3 +2507,256 @@
     font-size: var(--font-size-xs);
   }
 }
+
+/* Configuration Cards */
+.config-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.config-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  transition: all 0.2s ease;
+}
+
+.config-card:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.config-card h4 {
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+.config-card p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.config-example {
+  margin: var(--spacing-lg) 0 var(--spacing-xl) 0;
+}
+
+.config-example h4 {
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.config-guide-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.config-guide-link:hover {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .config-cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .config-card {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Internal Link Styling */
+.internal-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.internal-link:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+  border-bottom-color: var(--accent-primary);
+}
+
+/* Smooth scroll behavior for anchored elements */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Add some padding to headers when they're targeted by anchors */
+h1[id], h2[id], h3[id], h4[id] {
+  scroll-margin-top: 80px; /* Account for fixed header */
+  position: relative;
+}
+
+/* Highlight targeted sections briefly */
+h1[id]:target, h2[id]:target, h3[id]:target, h4[id]:target {
+  animation: highlightTarget 2s ease-out;
+}
+
+@keyframes highlightTarget {
+  0% {
+    background-color: rgba(88, 166, 255, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Configuration Tables */
+.table-container {
+  margin: var(--spacing-xl) 0;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+}
+
+.config-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  background: transparent;
+}
+
+.config-table thead {
+  background: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-primary);
+}
+
+.config-table thead th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-right: 1px solid var(--border-primary);
+  white-space: nowrap;
+}
+
+.config-table thead th:last-child {
+  border-right: none;
+}
+
+.config-table tbody tr {
+  border-bottom: 1px solid var(--border-secondary);
+  transition: background-color 0.2s ease;
+}
+
+.config-table tbody tr:hover {
+  background: rgba(88, 166, 255, 0.05);
+}
+
+.config-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.config-table tbody td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border-secondary);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.config-table tbody td:last-child {
+  border-right: none;
+}
+
+/* First column (Variable names) styling */
+.config-table tbody td:first-child {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: rgba(88, 166, 255, 0.08);
+  white-space: nowrap;
+}
+
+/* Second column (Required) styling */
+.config-table tbody td:nth-child(2) {
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Third column (Default) styling */
+.config-table tbody td:nth-child(3) {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Special styling for checkmarks and cross marks */
+.config-table tbody td:nth-child(2):contains('✅') {
+  color: #10b981;
+}
+
+.config-table tbody td:nth-child(2):contains('❌') {
+  color: #ef4444;
+}
+
+/* Code elements in tables */
+.config-table code {
+  background: rgba(88, 166, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--accent-primary);
+}
+
+/* Responsive table behavior */
+@media (max-width: 768px) {
+  .table-container {
+    margin: var(--spacing-lg) -var(--spacing-md);
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+  
+  .config-table {
+    font-size: var(--font-size-xs);
+  }
+  
+  .config-table thead th,
+  .config-table tbody td {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .config-table tbody td:nth-child(3) {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .config-table thead th,
+  .config-table tbody td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .config-table thead th {
+    font-size: var(--font-size-xs);
+  }
+  
+  .config-table tbody td:nth-child(3) {
+    max-width: 80px;
+  }
+}

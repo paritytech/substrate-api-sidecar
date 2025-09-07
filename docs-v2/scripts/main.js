@@ -261,6 +261,43 @@ class DocApp {
                 }
             }
         });
+
+        // Handle internal anchor links within guide content
+        document.addEventListener('click', (e) => {
+            const internalLink = e.target.closest('.internal-link');
+            if (internalLink) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const anchor = internalLink.getAttribute('href');
+                if (anchor && anchor.startsWith('#')) {
+                    // Find the target element by converting the anchor to an ID
+                    const targetId = anchor.substring(1); // Remove the #
+                    const targetElement = document.getElementById(targetId) || 
+                                        document.querySelector(`[data-section="${targetId}"]`) ||
+                                        document.querySelector(`h1, h2, h3, h4, h5, h6`).querySelector(`[id="${targetId}"]`) ||
+                                        // Try to find heading with matching text/id
+                                        Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).find(h => {
+                                            const text = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                                            return text === targetId || h.id === targetId;
+                                        });
+                    
+                    if (targetElement) {
+                        // Smooth scroll to the target
+                        targetElement.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start',
+                            inline: 'nearest'
+                        });
+                        
+                        // Update URL without triggering navigation
+                        const currentHash = window.location.hash;
+                        const baseHash = currentHash.split('#')[1]; // Get the guide/spec part
+                        window.history.replaceState(null, null, `#${baseHash}${anchor}`);
+                    }
+                }
+            }
+        });
     }
 
     /**

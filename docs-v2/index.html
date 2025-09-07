@@ -122,6 +122,11 @@
                             </div>
                             <ul id="guides-nav" class="nav-list collapsed">
                                 <li class="nav-item">
+                                    <a href="#guide-advanced-config" class="nav-link" data-guide="advanced-config">
+                                        <span>Advanced Configuration</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="#guide-asset-hub-migration" class="nav-link" data-guide="asset-hub-migration">
                                         <span>Asset Hub Migration</span>
                                     </a>
@@ -345,24 +350,54 @@
                             </div>
 
                             <div class="configuration-section">
-                                <h3>Configuration</h3>
-                                <p>Environment variables for customizing the service:</p>
-                                <div class="config-table">
-                                    <div class="config-row">
-                                        <div class="config-key">SAS_SUBSTRATE_WS_URL</div>
-                                        <div class="config-desc">WebSocket endpoint for the Substrate node</div>
+                                <h3>Advanced Configuration</h3>
+                                <p>Sidecar offers extensive configuration options through environment variables. Here are the most commonly used settings:</p>
+                                
+                                <div class="config-example">
+                                    <h4>Basic Configuration</h4>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>Environment Variables</span>
+                                            <button class="copy-button" data-copy="export SAS_SUBSTRATE_URL=wss://polkadot-rpc.polkadot.io&#10;export SAS_EXPRESS_PORT=8080&#10;export SAS_LOG_LEVEL=info">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                    <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <pre><code># Connect to different networks
+export SAS_SUBSTRATE_URL=wss://polkadot-rpc.polkadot.io
+
+# Change server port
+export SAS_EXPRESS_PORT=8080
+
+# Set logging level
+export SAS_LOG_LEVEL=info</code></pre>
                                     </div>
-                                    <div class="config-row">
-                                        <div class="config-key">SAS_SUBSTRATE_URL</div>
-                                        <div class="config-desc">HTTP endpoint for the Substrate node</div>
+                                </div>
+
+                                <div class="config-cards">
+                                    <div class="config-card">
+                                        <h4>🔗 Node Connection</h4>
+                                        <p>Configure connections to Substrate nodes, multi-chain setups, and custom type definitions.</p>
                                     </div>
-                                    <div class="config-row">
-                                        <div class="config-key">SAS_EXPRESS_PORT</div>
-                                        <div class="config-desc">Port for the HTTP server (default: 8080)</div>
+                                    <div class="config-card">
+                                        <h4>🖥️ Server Settings</h4>
+                                        <p>Control host binding, port, keep-alive timeouts, and request body limits.</p>
                                     </div>
-                                    <div class="config-row">
-                                        <div class="config-key">SAS_EXPRESS_BIND_HOST</div>
-                                        <div class="config-desc">Host address to bind to (default: 127.0.0.1)</div>
+                                    <div class="config-card">
+                                        <h4>📊 Metrics & Monitoring</h4>
+                                        <p>Enable Prometheus metrics, Loki logging, and performance monitoring.</p>
+                                    </div>
+                                </div>
+
+                                <div class="notice-box info">
+                                    <div class="notice-content">
+                                        <strong>Complete Configuration Guide:</strong> 
+                                        <a href="#guide-advanced-config" class="config-guide-link" data-guide="advanced-config">
+                                            View the comprehensive Advanced Configuration Guide
+                                        </a>
+                                         for all available options, examples, and best practices.
                                     </div>
                                 </div>
                             </div>
@@ -449,6 +484,22 @@
                         <div class="spec-content">
                             <p class="lead">
                                 useRcBlock specification content will go here.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Advanced Configuration Guide -->
+                    <section id="guide-advanced-config" class="content-section" style="display: none;">
+                        <div class="section-header">
+                            <h1>Advanced Configuration Guide</h1>
+                            <div class="section-meta">
+                                <span class="version-badge">Guide</span>
+                            </div>
+                        </div>
+
+                        <div class="guide-content">
+                            <p class="lead">
+                                Comprehensive guide to all Substrate API Sidecar configuration options.
                             </p>
                         </div>
                     </section>
