@@ -15,14 +15,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ContractPromise } from '@polkadot/api-contract';
+import { hexToU8a } from '@polkadot/util';
 import { RequestHandler } from 'express';
 import { BadRequest } from 'http-errors';
 
 import { validateAddress } from '../../middleware';
 import { ContractsInkService } from '../../services';
-import { IBodyContractMetadata, IContractDryParams, IContractQueryParam, IPostRequestHandler } from '../../types/requests';
+import {
+	IBodyContractMetadata,
+	IContractDryParams,
+	IContractQueryParam,
+	IPostRequestHandler,
+} from '../../types/requests';
 import AbstractController from '../AbstractController';
-import { hexToU8a } from '@polkadot/util';
 
 export default class ContractsInkController extends AbstractController<ContractsInkService> {
 	static controllerName = 'ContractsInk';
@@ -72,20 +77,18 @@ export default class ContractsInkController extends AbstractController<Contracts
 	 * @param res
 	 */
 	private dryRun: IPostRequestHandler<IBodyContractMetadata, IContractDryParams> = async (
-		{ params: { address }, query: { caller, payValue = "0", inputData } },
+		{ params: { address }, query: { caller, payValue = '0', inputData } },
 		res,
 	): Promise<void> => {
-		const dryRunResult: any = await this.api.call.reviveApi.call(
+		const dryRunResult = await this.api.call.reviveApi.call(
 			caller,
 			address,
 			this.api.registry.createType('Balance', BigInt(payValue)),
 			null,
 			null,
 			hexToU8a(inputData) ?? '',
-		)
-		ContractsInkController.sanitizedSend(
-			res,
-			dryRunResult.toHuman(),
 		);
+
+		ContractsInkController.sanitizedSend(res, dryRunResult.toHuman());
 	};
 }
