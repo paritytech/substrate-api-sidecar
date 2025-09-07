@@ -179,8 +179,8 @@ class DocApp {
                 
                 const page = pageLink.dataset.page;
                 
-                // Update active nav link
-                document.querySelectorAll('[data-page]').forEach(link => {
+                // Update active nav link - clear all navigation states
+                document.querySelectorAll('[data-page], [data-guide], [data-spec]').forEach(link => {
                     link.classList.remove('active');
                 });
                 pageLink.classList.add('active');
@@ -213,8 +213,8 @@ class DocApp {
                 
                 const guideName = guideLink.dataset.guide;
                 
-                // Update active nav link
-                document.querySelectorAll('[data-guide]').forEach(link => {
+                // Update active nav link - clear all navigation states
+                document.querySelectorAll('[data-page], [data-guide], [data-spec]').forEach(link => {
                     link.classList.remove('active');
                 });
                 guideLink.classList.add('active');
@@ -242,8 +242,8 @@ class DocApp {
                 
                 const specName = specLink.dataset.spec;
                 
-                // Update active nav link
-                document.querySelectorAll('[data-spec]').forEach(link => {
+                // Update active nav link - clear all navigation states
+                document.querySelectorAll('[data-page], [data-guide], [data-spec]').forEach(link => {
                     link.classList.remove('active');
                 });
                 specLink.classList.add('active');
