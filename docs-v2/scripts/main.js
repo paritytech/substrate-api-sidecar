@@ -83,6 +83,8 @@ class DocApp {
         // Setup cURL generator
         this.setupCurlGenerator();
         
+        // Setup API explorer parameter change listeners
+        this.setupApiExplorerListeners();
         
     }
 
@@ -737,6 +739,118 @@ class DocApp {
     }
 
     /**
+     * Setup API Explorer parameter change listeners
+     */
+    setupApiExplorerListeners() {
+        // Listen for changes to parameter inputs to auto-update cURL preview
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('.param-input') || e.target.matches('.json-input')) {
+                const endpointId = e.target.dataset.endpoint;
+                if (endpointId) {
+                    this.updateApiExplorerPreview(endpointId);
+                }
+            }
+        });
+    }
+
+    /**
+     * Update API Explorer cURL preview when parameters change
+     */
+    updateApiExplorerPreview(endpointId) {
+        const endpoint = this.parser.getEndpoint(endpointId);
+        if (!endpoint) return;
+
+        // Build request configuration like the API explorer does
+        const requestConfig = this.buildApiExplorerRequestConfig(endpoint, endpointId);
+        
+        // Update the preview element
+        const previewElement = document.getElementById(`curl-preview-${endpointId}`);
+        if (previewElement) {
+            previewElement.textContent = this.generateCurl(requestConfig);
+        }
+    }
+
+    /**
+     * Build request configuration from API explorer form inputs
+     */
+    buildApiExplorerRequestConfig(endpoint, endpointId) {
+        let url = this.currentServer + endpoint.path;
+        const options = {
+            method: endpoint.method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        const queryParams = new URLSearchParams();
+        const pathParams = {};
+
+        // Collect parameters from API explorer inputs
+        const paramInputs = document.querySelectorAll(`input[data-endpoint="${endpointId}"]`);
+        paramInputs.forEach(input => {
+            const paramName = input.name;
+            const paramValue = input.value.trim();
+            const location = input.dataset.location;
+
+            if (paramValue) {
+                switch (location) {
+                    case 'path':
+                        pathParams[paramName] = paramValue;
+                        break;
+                    case 'query':
+                        queryParams.append(paramName, paramValue);
+                        break;
+                    case 'header':
+                        options.headers[paramName] = paramValue;
+                        break;
+                }
+            }
+        });
+
+        // Replace path parameters
+        Object.entries(pathParams).forEach(([name, value]) => {
+            url = url.replace(`{${name}}`, encodeURIComponent(value));
+        });
+
+        // Add query parameters
+        const queryString = queryParams.toString();
+        if (queryString) {
+            url += (url.includes('?') ? '&' : '?') + queryString;
+        }
+
+        // Add request body
+        const requestBodyInput = document.getElementById(`request-body-${endpointId}`);
+        if (requestBodyInput && requestBodyInput.value.trim()) {
+            try {
+                options.body = JSON.stringify(JSON.parse(requestBodyInput.value));
+            } catch (e) {
+                options.body = requestBodyInput.value;
+            }
+        }
+
+        return { url, options };
+    }
+
+    /**
+     * Generate cURL command from request config (like API explorer does)
+     */
+    generateCurl(requestConfig) {
+        let curl = `curl -X ${requestConfig.options.method} "${requestConfig.url}"`;
+        
+        // Add headers
+        Object.entries(requestConfig.options.headers || {}).forEach(([key, value]) => {
+            curl += ` \\\n  -H "${key}: ${value}"`;
+        });
+        
+        // Add body
+        if (requestConfig.options.body) {
+            curl += ` \\\n  -d '${requestConfig.options.body}'`;
+        }
+        
+        return curl;
+    }
+
+    /**
      * Generate cURL command from user inputs
      */
     generateCurlCommand(endpointId) {
@@ -775,7 +889,7 @@ class DocApp {
         }
 
         // Build URL
-        let url = 'http://localhost:8080' + endpoint.path;
+        let url = this.currentServer + endpoint.path;
         const method = endpoint.method.toUpperCase();
 
         // Replace path parameters
@@ -1078,9 +1192,29 @@ class DocApp {
      * Update example requests when server changes
      */
     updateExampleRequests() {
-        // Re-render current content with new server
-        // This is a placeholder - in a full implementation, you'd track current content
         console.log('Server changed to:', this.currentServer);
+        
+        // Update all request URLs in API explorers
+        const requestUrlInputs = document.querySelectorAll('.request-url');
+        requestUrlInputs.forEach(input => {
+            const endpointId = input.dataset.endpoint;
+            const endpoint = this.parser.getEndpoint(endpointId);
+            if (endpoint) {
+                input.value = this.currentServer + endpoint.path;
+            }
+        });
+
+        // Clear any generated cURL commands so they get regenerated with new server
+        const curlElements = document.querySelectorAll('[id^="curl-preview-"]');
+        curlElements.forEach(element => {
+            element.textContent = '# Enter parameters to generate request';
+        });
+
+        // Also clear any already generated static cURL displays
+        const curlCommandElements = document.querySelectorAll('[id^="curl-command-"]');
+        curlCommandElements.forEach(element => {
+            element.textContent = '';
+        });
     }
 
     /**
