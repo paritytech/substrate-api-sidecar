@@ -1,118 +1,131 @@
 # Substrate API Sidecar Documentation v2
 
-Modern, dark-themed documentation for Substrate API Sidecar with interactive features.
+Modern documentation system for Substrate API Sidecar with enhanced user experience.
 
-## Features
+## Architecture
 
-- 🌙 **Modern Dark Theme** - GitHub Dark-inspired design
-- 🔍 **Real-time Search** - Search across endpoints and schemas
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
-- 🎯 **Interactive Navigation** - Expandable categories and smooth scrolling
-- 📋 **Schema Visualization** - Nested object rendering with type information
-- 🔗 **Copy-to-Clipboard** - One-click copying for code examples
-- 🌐 **Server Selection** - Switch between different API environments
-- 🧪 **Interactive API Explorer** - "Try it out" functionality with live testing
+The documentation system is built with vanilla JavaScript and webpack, creating a self-contained deployment that works without a server.
 
-## Quick Start
+### Core Components
 
-### Option 1: Use Pre-built Files (No Server Required!)
-The easiest way to use the documentation:
+- **main.js** - Application orchestration and navigation
+- **parser.js** - OpenAPI specification processing
+- **components.js** - UI rendering and DOM manipulation  
+- **api-explorer.js** - Interactive "try it out" functionality
+- **search.js** - Real-time search across endpoints
+- **guides-content.js** - Static guide content management
 
-```bash
-# Simply open the built HTML file in your browser
-open docs-v2/dist/index.html
-# or on Windows: start docs-v2/dist/index.html
-# or on Linux: xdg-open docs-v2/dist/index.html
-```
+### Build System
 
-The `dist/` directory contains all files needed to run the documentation:
-- `index.html` - Main documentation page (open this!)
-- `bundle.js` - Compiled JavaScript with all modules and embedded OpenAPI spec
+Uses webpack to bundle all assets into a single deployable `dist/` folder containing:
+- `index.html` - Complete documentation page
+- `bundle.js` - All JavaScript with embedded OpenAPI spec
 - `favicon.ico` - Site icon
 
-### Option 2: Development Server
-For development work:
+## Adding Content
+
+### Adding Guides
+
+1. Create a markdown file in `guides/` directory
+2. Import it in `scripts/guides-content.js`:
+   ```javascript
+   import newGuideMd from '../guides/NEW_GUIDE.md';
+   ```
+3. Add to the exports:
+   ```javascript
+   export const GUIDES_CONTENT = {
+     'new-guide': convertMarkdownToHtml(newGuideMd)
+   };
+   
+   export const GUIDE_METADATA = {
+     'new-guide': {
+       title: 'New Guide Title',
+       description: 'Guide description'
+     }
+   };
+   ```
+4. Add navigation link in `index.html`:
+   ```html
+   <li class="nav-item">
+     <a href="#guide-new-guide" class="nav-link" data-guide="new-guide">
+       <span>New Guide</span>
+     </a>
+   </li>
+   ```
+5. Add content section in `index.html`:
+   ```html
+   <section id="guide-new-guide" class="content-section" style="display: none;">
+     <div class="section-header">
+       <h1>New Guide Title</h1>
+     </div>
+     <div class="guide-content">
+       <p class="lead">Guide description</p>
+     </div>
+   </section>
+   ```
+
+### Adding Specifications
+
+Follow the same pattern as guides, but use:
+- `data-spec` attribute instead of `data-guide`
+- `#spec-` prefix for IDs and URLs
+- Add to specifications navigation section
+
+### Markdown Support
+
+The markdown converter supports:
+- Headers (h1-h4) with automatic ID generation
+- Tables with proper HTML conversion
+- Code blocks with syntax highlighting
+- Internal links with smooth scrolling
+- Bold, italic, and inline code formatting
+- Notice boxes and blockquotes
+
+## Running the Documentation
+
+### Development
 
 ```bash
 cd docs-v2
-npm install
-npm run dev        # Development server with hot reload
-# or
-npm run build      # Build production files
-npm run serve      # Serve built files
+yarn install
+yarn dev    # Development server on localhost:8082
 ```
 
-## Development
+### Production Build
 
-### Building from Source
 ```bash
-cd docs-v2
-npm install        # Install dependencies
-npm run build      # Build production bundle
+yarn build  # Creates deployable dist/ folder
 ```
 
-This creates optimized files in `dist/` that work without a server.
+### Deployment
 
-### Development Mode
-```bash
-npm run dev        # Hot reload development server at http://localhost:8080
+The built `dist/` folder is completely self-contained and can be:
+- Opened directly in a browser
+- Served by any web server
+- Deployed to static hosting services
+
+## Configuration
+
+### Server Selection
+
+Default servers are configured in `index.html`:
+```html
+<select id="server-select">
+  <option value="0">Polkadot Public</option>
+  <option value="1" selected>Localhost</option>
+</select>
 ```
 
-### Project Structure
-```
-docs-v2/
-├── index.html          # HTML template
-├── package.json        # Dependencies & scripts
-├── webpack.config.js   # Webpack configuration
-├── dist/               # Built files (ready to use!)
-│   ├── index.html      # Built HTML with injected assets
-│   ├── bundle.js       # Compiled JavaScript with embedded OpenAPI spec
-│   └── favicon.ico     # Site icon
-├── scripts/
-│   ├── main.js         # Application entry point
-│   ├── parser.js       # OpenAPI YAML parser
-│   ├── components.js   # UI components
-│   ├── api-explorer.js # Interactive API testing
-│   └── search.js       # Search functionality
-└── styles/
-    ├── main.css        # Base styles and theme
-    ├── components.css  # Component-specific styles
-    └── responsive.css  # Mobile responsiveness
-```
+### Theme
 
-## Usage
+The documentation uses CSS custom properties for theming. Modify `styles/main.css` to change colors and spacing.
 
-### For End Users
-1. **Download/Copy the `dist/` folder** to your desired location
-2. **Open `dist/index.html`** in any modern browser
-3. **No server required!** - Everything works from the file system
+## OpenAPI Integration
 
-### For Developers  
-1. **Modify source files** in `scripts/` and `styles/`
-2. **Run `npm run build`** to regenerate `dist/`
-3. **Copy `dist/` folder** to deploy anywhere
+The OpenAPI specification is embedded during build process. To update:
 
-### Features Overview
+1. Replace `openapi-v1.yaml` with new specification
+2. Run `yarn build`
+3. Deploy the new `dist/` folder
 
-- **Navigation**: Expandable sidebar with endpoint categories
-- **Search**: Real-time filtering of endpoints and schemas  
-- **Documentation**: Detailed endpoint info with parameters and responses
-- **API Explorer**: Interactive testing with parameter forms and live responses
-- **Theme**: Modern dark theme with light theme support
-- **Mobile**: Responsive design that works on all devices
-
-## Browser Compatibility
-
-- Chrome/Edge 88+
-- Firefox 85+  
-- Safari 14+
-
-## Updating API Specification
-
-To update with a new OpenAPI specification:
-
-1. **Replace `openapi-v1.yaml`** with your new specification
-2. **Run `npm run build`** to regenerate the bundle
-3. **The `dist/` folder** now contains the updated documentation
-
-No code changes needed - the documentation automatically adapts to your OpenAPI spec!
+No code changes required - the system automatically processes the new specification.
