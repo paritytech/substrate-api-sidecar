@@ -46,10 +46,9 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (historicApi.query.staking === undefined) {
 			throw new Error('Staking pallet not found for queried runtime');
 		}
-		const sessionValidators =
-			this.assetHubInfo.isAssetHub
-				? RCApiPromise![0].api.query.session.validators
-				: historicApi.query.session.validators;
+		const sessionValidators = this.assetHubInfo.isAssetHub
+			? RCApiPromise![0].api.query.session.validators
+			: historicApi.query.session.validators;
 
 		if (!sessionValidators) {
 			throw new Error('Session pallet not found for queried runtime');
