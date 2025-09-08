@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.7.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.6.1..v20.7.0) (2025-09-08)
+
+### Features
+
+- feat: Add `/rc/accounts/*` Endpoints for Relay Chain Queries with Multi Chain AH setup ([#1748](https://github.com/paritytech/substrate-api-sidecar/pull/1748)) ([9bda6f8](https://github.com/paritytech/substrate-api-sidecar/commit/9bda6f8))
+    - Adds relay chain endpoints for account queries in multi-chain Asset Hub setup
+- feat: add commission and blocked fields to staking/validators interface ([#1743](https://github.com/paritytech/substrate-api-sidecar/pull/1743)) ([55e4e79](https://github.com/paritytech/substrate-api-sidecar/commit/55e4e79)) (Thanks to https://github.com/F-OBrien)
+    - Enhances staking validators interface with commission and blocked status fields
+
+### Chores
+
+- docs: v2 ([#1742](https://github.com/paritytech/substrate-api-sidecar/pull/1742)) ([670b567](https://github.com/paritytech/substrate-api-sidecar/commit/670b567))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006001
+- Westend Asset Hub v1018013
+
 ## [20.6.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.6.0..v20.6.1) (2025-09-05)
 
 ### Fix
