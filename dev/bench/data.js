@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1757167638790,
+  "lastUpdate": 1757339196871,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -16517,6 +16517,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 396.09,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "47201679+TarikGul@users.noreply.github.com",
+            "name": "Tarik Gul",
+            "username": "TarikGul"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "670b567e2fc2c28df6cf2f19b15c93a76380e9ea",
+          "message": "docs: v2 (#1742)\n\n* First iteration of docsv2\n\n* Remove emojis and clean up sidecar\n\n* Cleanup headers\n\n* Add AssetHub migration guide\n\n* Remove tree branch connectors\n\n* Fix dropdowns not linking\n\n* Keep dropdowns closed by deafult\n\n* Change structure of Guides\n\n* Fix dropdowns and css on sidebar\n\n* Add useRcBlock spec\n\n* Fix navigation and small nits\n\n* Use yarn instead of npm\n\n* ignore .yarn\n\n* Remove colored blocks\n\n* Remove serve, and set script it root\n\n* Remove search bar\n\n* Change try it out to use a curl\n\n* Fix useRcBlock and try it out styling\n\n* Fix where page starts\n\n* Fix provider try it out\n\n* Create advanced configurtion\n\n* Set config under docs\n\n* Update docs with v2\n\n* Setup docsv2 actions\n\n* Update Readme\n\n* remove tg-docs-v2 from deployment",
+          "timestamp": "2025-09-08T09:11:57-04:00",
+          "tree_id": "80c6c583c4d576671b460900b707f4f833ad9228",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/670b567e2fc2c28df6cf2f19b15c93a76380e9ea"
+        },
+        "date": 1757339193890,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 230.11,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 230.22,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 349.9,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 3001.22,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.41,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.4,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1877.85,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 249.9,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 1379.7,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 259.67,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 167.09,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 436.85,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 185.47,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 214.92,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 184.37,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 197.29,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 178.77,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 197.42,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 532.2,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 262.37,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 252.89,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 238.82,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 284.8,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 220.25,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 237.3,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 329.95,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 204.71,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 161.77,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 357.16,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 380.15,
             "unit": "ms"
           }
         ]
