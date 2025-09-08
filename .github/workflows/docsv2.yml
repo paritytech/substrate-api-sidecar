@@ -1,0 +1,131 @@
+name: Docs v2
+
+on:
+  push:
+    branches:
+      - master
+      - tg-docs-v2  # Include the docs-v2 branch for testing
+    paths:
+      - "docs-v2/**"
+  pull_request:
+    branches:
+      - master
+      - tg-docs-v2
+    paths:
+      - "docs-v2/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-docsv2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v5
+
+      - name: Install Node v18
+        uses: actions/setup-node@v5
+        with:
+          node-version: "18.14"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-docsv2-${{ hashFiles('docs-v2/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-docsv2-
+            ${{ runner.os }}-yarn-
+
+      - name: Install root JS dependencies
+        run: yarn install
+
+      - name: Build Docs v2
+        run: yarn build:docsv2
+
+      - name: Create artifacts
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+        run: |
+          echo "Creating artifacts directory..."
+          mkdir -p artifacts
+          echo "Contents of docs-v2 directory:"
+          ls -la docs-v2/
+          echo "Moving dist to artifacts/docsv2..."
+          mv docs-v2/dist artifacts/docsv2
+          echo "Artifacts created successfully:"
+          ls -la artifacts/docsv2
+
+      - name: Upload docs v2
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docsv2-${{ github.sha }}
+          path: ./artifacts/
+
+  publish-docsv2:
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+    runs-on: ubuntu-latest
+    environment: master_n_tags
+    needs: [build-docsv2]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.GH_APP_SAS_APP_ID }}
+          private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
+
+      - name: Download docs v2
+        uses: actions/download-artifact@v5
+        with:
+          name: docsv2-${{ github.sha }}
+          path: tmp/
+      - name: Check files and deploy
+        run: |
+          echo "Current gh-pages branch contents:"
+          ls -la
+          echo "Downloaded artifacts:"
+          ls -la tmp/
+          echo "Removing old docsv2 directory..."
+          rm -rf docsv2/
+          echo "Moving new docsv2 build..."
+          mv tmp/docsv2/ docsv2/
+          rm -rf tmp/
+          echo "New docsv2 contents:"
+          ls -la docsv2/
+          echo "Git status:"
+          git status
+      - name: Push changes to gh-pages
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_NAME: "paritytech-upd-ghpages-sas"
+          REF_NAME: ${{ github.head_ref || github.ref_name }}
+          Green: "\e[32m"
+          NC: "\e[0m"
+        run: |
+          echo "${Green}Git add${NC}"
+          git add docsv2/
+
+          echo "${Green}git status | wc -l${NC}"
+          git status | wc -l
+
+          echo "${Green}Add new remote with gh app token${NC}"
+          git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${APP_NAME}:${TOKEN}@github.com/g")
+
+          echo "${Green}Remove http section that causes issues with gh app auth token${NC}"
+          sed -i.bak '/\[http/d' ./.git/config
+          sed -i.bak '/extraheader/d' ./.git/config
+
+          echo "${Green}Git push${NC}"
+          git config user.email "ci@parity.io"
+          git config user.name "${APP_NAME}"
+          git commit -m "___Updated docs v2" || echo "___Nothing to commit___"
+          git push origin gh-pages --force
