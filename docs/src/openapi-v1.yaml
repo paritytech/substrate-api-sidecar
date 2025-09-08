@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 20.5.0
+  version: 20.6.1
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -22,6 +22,8 @@ servers:
   description: Localhost
 tags:
 - name: accounts
+- name: ahm
+  description: Asset Hub Migration information
 - name: blocks
 - name: contracts
 - name: coretime
@@ -756,6 +758,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /ahm-info:
+    get:
+      tags:
+      - ahm
+      summary: Get Asset Hub Migration information.
+      description: Returns information about Asset Hub Migration (AHM) including migration start and end blocks for both relay chain and Asset Hub. The endpoint automatically detects whether you're connected to a relay chain or Asset Hub and provides relevant migration data. Returns static migration boundaries for known networks or queries on-chain migration pallets for dynamic information.
+      operationId: getAhmInfo
+      responses:
+        "200":
+          description: Successfully retrieved Asset Hub Migration information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AhmInfo'
+        "400":
+          description: Invalid chain specName or missing migration pallets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /rc/accounts/{address}/balance-info:
     get:
       tags:
@@ -861,6 +889,172 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/vesting-info:
+    get:
+      tags:
+      - rc
+      summary: Get vesting information for an account on the relay chain.
+      description: Returns the vesting schedule for an account on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for vesting information.
+      operationId: getRcAccountVestingInfo
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query the vesting info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountVestingInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/staking-info:
+    get:
+      tags:
+      - rc
+      summary: Get staking information for a _Stash_ account on the relay chain.
+      description: Returns information about a _Stash_ account's staking activity on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for staking information. The _Stash_ account can be either a validator or nominator account.
+      operationId: getRcAccountStakingInfo
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account. Must be a _Stash_ account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query the staking info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: includeClaimedRewards
+        in: query
+        description: When set to `false`, the `claimedRewards` field is not included
+          in the response.
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingInfo'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/accounts/{address}/staking-payouts:
+    get:
+      tags:
+      - rc
+      summary: Get payout information for a _Stash_ account on the relay chain.
+      description: Returns payout information for the last specified eras on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for staking payout information. If specifying both the depth and era query params, this endpoint will return information for (era - depth) through era. (i.e. if depth=5 and era=20 information will be returned for eras 16 through 20). The _Stash_ account can be either a validator or nominator account.
+      operationId: getRcAccountStakingPayouts
+      parameters:
+      - name: address
+        in: path
+        description: SS58 address of the account. Must be a _Stash_ account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query staking payouts.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a non-negative integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: depth
+        in: query
+        description: The number of eras to query for payouts of. Must be less
+          than or equal to `HISTORY_DEPTH`. In cases where `era - (depth -1)` is
+          less than 0, the first era queried will be 0.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+          default: 1
+      - name: era
+        in: query
+        description: The era to query at. Max era payout info is available for
+          is the latest finished era (active_era - 1).
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: unclaimedOnly
+        in: query
+        description: Only return unclaimed rewards.
+        required: false
+        schema:
+          type: string
+          format: boolean
+          default: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStakingPayouts'
+        "400":
+          description: Invalid Address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /rc/node/network:
     get:
       tags:
@@ -944,6 +1138,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -988,6 +1189,13 @@ paths:
       - name: noFees
         in: query
         description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
         schema:
           type: boolean
           default: false
@@ -1069,6 +1277,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -1111,6 +1326,13 @@ paths:
       - name: noFees
         in: query
         description: When set to `true`, no fee information is calculated.
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
         schema:
           type: boolean
           default: false
@@ -1317,6 +1539,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       - name: useRcBlock
         in: query
         description: When set to `true`, the range parameter represents relay chain block numbers and 
@@ -1407,6 +1636,13 @@ paths:
         in: query
         description: When set to `true`, it will use the relay chain block identifier to determine 
           the corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available. When used, returns an array of response objects or empty array if no Asset Hub block found.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
         required: false
         schema:
           type: boolean
@@ -1526,6 +1762,13 @@ paths:
         schema:
           type: boolean
           default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: successful operation
@@ -1607,6 +1850,13 @@ paths:
         description: When set to `true`, it will use the latest relay chain block to determine the 
           corresponding Asset Hub block. Only supported for Asset Hub endpoints with relay chain API available.
           Respects the `finalized` parameter when determining which relay chain block to use. When used, returns an array of response objects or empty array if no Asset Hub block found.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: useEvmFormat
+        in: query
+        description: When set to `true`, every extrinsic's event emitted by pallet-revive will have the address data formatted to EVM.
         required: false
         schema:
           type: boolean
@@ -3596,6 +3846,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/pallets/staking/progress:
+    get:
+      tags:
+      - rc
+      - staking
+      - pallets
+      summary: Get progress on the general Staking pallet system on Relay Chain.
+      description: Returns information on the progress of key components of the
+        staking system and estimates of future points of interest. If you are querying
+        from Asset Hub for staking progress, this endpoint requires multi chain connections
+        between the relay chain, and asset hub itself. Set the asset hub rpc to SAS_SUBSTRATE_URL,
+        and add the relay chain to the SAS_SUBSTRATE_MULTI_CHAIN_URL env var. Refer to the README for the structure
+        of the env vars. The `useRcBlock` parameter allows querying Asset Hub state using relay chain
+        block numbers, enabling post-migration infrastructure to continue using relay chain
+        block identifiers while accessing Asset Hub data.
+      operationId: getRcStakingProgress
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve a staking progress report.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StakingProgress'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/StakingProgress'
+                description: Returns a single object when using standard parameters. Returns an array when using 'useRcBlock' parameter (array contains one object per Asset Hub block found, or empty array if none found).
+        "400":
+          description: invalid blockId supplied for at query param, or invalid parameter combination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/pallets/staking/validators:
+    get:
+      tags:
+      - rc
+      - staking
+      - pallets
+      summary: Get all validators (active/waiting) of a specific chain.
+      description: Returns a list of all validators addresses and their corresponding status which can be either
+        active or waiting. For declared validators, it also includes their commission rate (as parts-per-billion)
+        and nomination blocking status. It will also return a list of active validators that will not be part of
+        the next era for staking. They will be under the key "validatorsToBeChilled". It's important to note,
+        that addresses can be present in both the "validators" key, and "validatorsToBeChilled". Commission and
+        blocked properties are not present for active validators that have been chilled.
+      operationId: getRcStakingValidators
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the list of validators.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/StakingValidators'
+        "400":
+          description: invalid blockId supplied for at query param, or invalid parameter combination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   /pallets/{palletId}/storage:
     get:
       tags:
@@ -3827,11 +4157,12 @@ paths:
       - staking
       - pallets
       summary: Get all validators (active/waiting) of a specific chain.
-      description: Returns a list of all validators addresses and their
-        corresponding status which can be either active or waiting. It will also return 
-        a list of active validators that will not be part of the next era for staking. They will
-        be under the key "validatorsToBeChilled". It's important to note, that addresses can be present in both
-        the "validators" key, and "validatorsToBeChilled".
+      description: Returns a list of all validators addresses and their corresponding status which can be either
+        active or waiting. For declared validators, it also includes their commission rate and nomination blocking
+        status. It will also return a list of active validators that will not be part of the next era for staking.
+        They will be under the key "validatorsToBeChilled". It's important to note, that addresses can be present
+        in both the "validators" key, and "validatorsToBeChilled". Commission and blocked properties are not present
+        for active validators that have been chilled.
       operationId: getStakingValidators
       parameters:
       - name: at
@@ -4256,6 +4587,45 @@ components:
           type: string
           description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
           format: unsignedInteger
+    AhmInfo:
+      type: object
+      description: Asset Hub Migration information including migration boundaries for both relay chain and Asset Hub.
+      properties:
+        relay:
+          type: object
+          description: Relay chain migration information
+          properties:
+            startBlock:
+              type: integer
+              nullable: true
+              description: Block number when relay chain migration started, or null if not available
+              format: unsignedInteger
+            endBlock:
+              type: integer
+              nullable: true
+              description: Block number when relay chain migration ended, or null if not available
+              format: unsignedInteger
+        assetHub:
+          type: object
+          description: Asset Hub migration information
+          properties:
+            startBlock:
+              type: integer
+              nullable: true
+              description: Block number when Asset Hub migration started, or null if not available
+              format: unsignedInteger
+            endBlock:
+              type: integer
+              nullable: true
+              description: Block number when Asset Hub migration ended, or null if not available
+              format: unsignedInteger
+      example:
+        relay:
+          startBlock: 26041702
+          endBlock: 26071771
+        assetHub:
+          startBlock: 11716733
+          endBlock: 11736597
     AccountAssetsBalances:
       type: object
       properties:
@@ -6766,6 +7136,12 @@ components:
               status:
                 type: string
                 description: Status of individual validator (active/waiting).
+              commission:
+                type: string
+                description: The validator's commission rate as parts-per-billion (e.g., "100000000" = 10%). Not present for chilled validators.
+              blocked:
+                type: boolean
+                description: Whether the validator is blocked from receiving new nominations. Not present for chilled validators.
         validatorsToBeChilled:
           description: Validators that will not be participating in the next era.
           type: array

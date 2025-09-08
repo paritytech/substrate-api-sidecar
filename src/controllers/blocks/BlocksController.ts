@@ -180,7 +180,11 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
-		{ query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId, useRcBlock }, method, route },
+		{
+			query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId, useRcBlock, useEvmFormat },
+			method,
+			route,
+		},
 		res,
 	) => {
 		const eventDocsArg = eventDocs === 'true';
@@ -261,6 +265,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			noFees: noFeesArg,
 			checkDecodedXcm: decodedXcmMsgsArg,
 			paraId: paraIdArg,
+			useEvmAddressFormat: useEvmFormat === 'true',
 		};
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
 		const cacheKey =
@@ -270,7 +275,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			Number(options.checkFinalized) +
 			Number(options.noFees) +
 			Number(options.checkDecodedXcm) +
-			Number(options.paraId);
+			Number(options.paraId) +
+			Number(options.useEvmAddressFormat);
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -329,7 +335,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
 		{
 			params: { number },
-			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId, useRcBlock },
+			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId, useRcBlock, useEvmFormat },
 			method,
 			route,
 		},
@@ -379,6 +385,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			noFees: noFeesArg,
 			checkDecodedXcm: decodedXcmMsgsArg,
 			paraId: paraIdArg,
+			useEvmAddressFormat: useEvmFormat === 'true',
 		};
 
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
@@ -390,7 +397,8 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			Number(options.checkFinalized) +
 			Number(options.noFees) +
 			Number(options.checkDecodedXcm) +
-			Number(options.paraId);
+			Number(options.paraId) +
+			Number(options.useEvmAddressFormat);
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -553,7 +561,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam & IBlockQueryParams> = async (
-		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock }, method, route },
+		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock, useEvmFormat }, method, route },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
@@ -576,6 +584,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			noFees: noFeesArg,
 			checkDecodedXcm: false,
 			paraId: undefined,
+			useEvmAddressFormat: useEvmFormat === 'true',
 		};
 
 		const pQueue = new PromiseQueue(4);

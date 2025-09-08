@@ -16,3 +16,6 @@
 
 export { default as RcAccountsBalanceInfo } from './RcAccountsBalanceInfoController';
 export { default as RcAccountsProxyInfo } from './RcAccountsProxyInfoController';
+export { default as RcAccountsStakingInfo } from './RcAccountsStakingInfoController';
+export { default as RcAccountsStakingPayouts } from './RcAccountsStakingPayoutsController';
+export { default as RcAccountsVestingInfo } from './RcAccountsVestingInfoController';

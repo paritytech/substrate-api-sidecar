@@ -18,7 +18,7 @@ jobs:
       image: paritytech/node-wrk:latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: benchmarks
         run: |
@@ -41,7 +41,7 @@ jobs:
     environment: master_n_tags
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/create-github-app-token@v2
         id: app-token
@@ -50,7 +50,7 @@ jobs:
           private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
 
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: benchmarks
           path: artifacts
@@ -59,7 +59,7 @@ jobs:
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@d48d326b4ca9ba73ca0cd0d59f108f9e02a381c7 #1.20.4
+        uses: benchmark-action/github-action-benchmark@4e0b38bc48375986542b13c0d8976b7b80c60c00 #1.20.5
         with:
           tool: "customSmallerIsBetter"
           output-file-path: artifacts/benchmarks.json

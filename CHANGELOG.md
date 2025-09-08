@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.6.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.6.0..v20.6.1) (2025-09-05)
+
+### Fix
+
+- fix: rewrite the PJS balances derive for transferable balances ([#1745](https://github.com/paritytech/substrate-api-sidecar/pull/1745)) ([0123aeb](https://github.com/paritytech/substrate-api-sidecar/commit/0123aeb))
+    - Rewrites the Polkadot JS balances derivation to improve transferable balance calculations
+
+### Chores
+
+- chore(deps): bump actions/setup-node from 4 to 5 ([#1746](https://github.com/paritytech/substrate-api-sidecar/pull/1746)) ([d663cdf](https://github.com/paritytech/substrate-api-sidecar/commit/d663cdf))
+- chore(deps): bump benchmark-action/github-action-benchmark ([#1744](https://github.com/paritytech/substrate-api-sidecar/pull/1744)) ([7753738](https://github.com/paritytech/substrate-api-sidecar/commit/7753738))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006001
+- Westend Asset Hub v1018013
+
+## [20.6.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.5.0..v20.6.0) (2025-09-01)
+
+### Features
+
+- feat: Add /ahm-info endpoint ([#1739](https://github.com/paritytech/substrate-api-sidecar/pull/1739)) ([e7e11e0](https://github.com/paritytech/substrate-api-sidecar/commit/e7e11e0))
+    - Adds endpoint to retrieve Asset Hub Migration information
+- feat: /rc/ endpoints for pallets staking ([#1732](https://github.com/paritytech/substrate-api-sidecar/pull/1732)) ([6ed98de](https://github.com/paritytech/substrate-api-sidecar/commit/6ed98de))
+    - Adds relay chain endpoints for staking pallet access
+- feat: add evmFormat option to blocks queries for revive pallet ([#1729](https://github.com/paritytech/substrate-api-sidecar/pull/1729)) ([fe500b4](https://github.com/paritytech/substrate-api-sidecar/commit/fe500b4))
+    - Adds EVM format support for block queries in revive pallet
+
+### Fix
+
+- fix: Add support for migrationStartBlock and migrationEndBlock storage in staking ([#1738](https://github.com/paritytech/substrate-api-sidecar/pull/1738)) ([1706f75](https://github.com/paritytech/substrate-api-sidecar/commit/1706f75))
+    - Adds support for migration block boundary storage in staking functionality
+- fix: Add paseo migration boundaries ([#1735](https://github.com/paritytech/substrate-api-sidecar/pull/1735)) ([327cfff](https://github.com/paritytech/substrate-api-sidecar/commit/327cfff))
+    - Adds migration boundary support for Paseo network
+
+### Chores
+
+- chore(deps): bump amannn/action-semantic-pull-request from 5 to 6 ([#1727](https://github.com/paritytech/substrate-api-sidecar/pull/1727)) ([d193ed6](https://github.com/paritytech/substrate-api-sidecar/commit/d193ed6))
+- chore(deps): bump brace-expansion from 1.1.11 to 1.1.12 in /docs ([#1674](https://github.com/paritytech/substrate-api-sidecar/pull/1674)) ([ecab9e1](https://github.com/paritytech/substrate-api-sidecar/commit/ecab9e1))
+- chore(deps): bump form-data from 4.0.0 to 4.0.4 in /docs ([#1706](https://github.com/paritytech/substrate-api-sidecar/pull/1706)) ([53df13f](https://github.com/paritytech/substrate-api-sidecar/commit/53df13f))
+- chore(deps): bump sha.js from 2.4.11 to 2.4.12 in /docs ([#1736](https://github.com/paritytech/substrate-api-sidecar/pull/1736)) ([6f47004](https://github.com/paritytech/substrate-api-sidecar/commit/6f47004))
+- chore(deps): bump sha.js from 2.4.11 to 2.4.12 ([#1737](https://github.com/paritytech/substrate-api-sidecar/pull/1737)) ([69c3a02](https://github.com/paritytech/substrate-api-sidecar/commit/69c3a02))
+- chore(deps): bump actions/download-artifact from 4 to 5 ([#1724](https://github.com/paritytech/substrate-api-sidecar/pull/1724)) ([8d5c369](https://github.com/paritytech/substrate-api-sidecar/commit/8d5c369))
+- chore(deps): bump form-data from 4.0.2 to 4.0.4 ([#1707](https://github.com/paritytech/substrate-api-sidecar/pull/1707)) ([fddf780](https://github.com/paritytech/substrate-api-sidecar/commit/fddf780))
+- chore(deps): bump actions/checkout from 4 to 5 ([#1726](https://github.com/paritytech/substrate-api-sidecar/pull/1726)) ([bc4bf82](https://github.com/paritytech/substrate-api-sidecar/commit/bc4bf82))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006000
+- Westend Asset Hub v1018013
+
 ## [20.5.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.4.1..v20.5.0) (2025-08-04)
 
 ### Features

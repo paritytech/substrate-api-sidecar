@@ -16,8 +16,9 @@
 
 import { ApiDecoration } from '@polkadot/api/types';
 import { Vec } from '@polkadot/types';
-import { AccountData, Balance, BalanceLock, BlockHash, Index } from '@polkadot/types/interfaces';
+import { AccountData, Balance, BalanceLock, BalanceLockTo212, BlockHash, Index } from '@polkadot/types/interfaces';
 import { PalletBalancesAccountData } from '@polkadot/types/lookup';
+import { BN, bnMax } from '@polkadot/util';
 import { BadRequest } from 'http-errors';
 
 import { IAccountBalanceInfo, IBalanceLock } from '../../types/responses';
@@ -109,13 +110,11 @@ export class AccountsBalanceInfoService extends AbstractService {
 
 			let free, reserved, feeFrozen, miscFrozen, frozen, transferable;
 			if (accountInfo.data?.frozen) {
-				const deriveData = await this.api.derive.balances.all(address);
+				const maybeTransferable = await this.calculateTransferable(data, hash, address);
 				free = data.free;
 				reserved = data.reserved;
 				frozen = data.frozen;
-				transferable = deriveData.transferable
-					? deriveData.transferable
-					: 'transferable formula not supported for this runtime';
+				transferable = maybeTransferable ? maybeTransferable : 'transferable formula not supported for this runtime';
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 			} else {
@@ -206,14 +205,12 @@ export class AccountsBalanceInfoService extends AbstractService {
 				frozen = 'frozen does not exist for this runtime';
 				transferable = 'transferable formula not supported for this runtime';
 			} else {
-				const deriveData = await this.api.derive.balances.all(address);
 				const tmpData = accountData as PalletBalancesAccountData;
+				const maybeTransferable = await this.calculateTransferable(tmpData, hash, address);
 				free = tmpData.free;
 				reserved = tmpData.reserved;
 				frozen = tmpData.frozen;
-				transferable = deriveData.transferable
-					? deriveData.transferable
-					: 'transferable formula not supported for this runtime';
+				transferable = maybeTransferable ? maybeTransferable : 'transferable formula not supported for this runtime';
 				feeFrozen = 'feeFrozen does not exist for this runtime';
 				miscFrozen = 'miscFrozen does not exist for this runtime';
 			}
@@ -234,6 +231,53 @@ export class AccountsBalanceInfoService extends AbstractService {
 			};
 		} else {
 			throw new BadRequest('Account not found');
+		}
+	}
+
+	private async calculateTransferable(data: PalletBalancesAccountData, hash: BlockHash, addr: string) {
+		const apiAt = await this.api.at(hash);
+		const allLocked = await this.isAllLocked(addr, hash);
+
+		let transferable;
+		if (data?.frozen) {
+			const { frozen, free, reserved } = data;
+			const noFrozenReserved = frozen.isZero() && reserved.isZero();
+			const ED = apiAt.consts.balances.existentialDeposit;
+			const maybeED = noFrozenReserved ? new BN(0) : ED;
+			const frozenReserveDif = frozen.sub(reserved);
+
+			transferable = apiAt.registry.createType(
+				'Balance',
+				allLocked ? 0 : bnMax(new BN(0), free.sub(bnMax(maybeED, frozenReserveDif))),
+			);
+		}
+
+		return transferable;
+	}
+
+	private async isAllLocked(addr: string, hash: BlockHash): Promise<boolean> {
+		const apiAt = await this.api.at(hash);
+		try {
+			// Get current block header (contains block number) and locks in parallel
+			const [header, locks] = await Promise.all([
+				this.api.rpc.chain.getHeader(), // Current best block
+				apiAt.query.balances.locks(addr),
+			]);
+
+			const bestNumber = header.number.unwrap();
+
+			if (!Array.isArray(locks) || locks.length === 0) {
+				return false;
+			}
+
+			// Filter locks that haven't expired yet
+			const validLocks = (locks as unknown as BalanceLockTo212[]).filter(({ until }) => !until || until.gt(bestNumber));
+
+			// Check if any valid lock has maximum amount (all funds locked)
+			return validLocks.some((lock) => lock.amount.isMax());
+		} catch (error) {
+			console.error('Error checking if all funds are locked:', error);
+			return false;
 		}
 	}
 

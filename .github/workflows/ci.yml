@@ -20,10 +20,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Node v18
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "18.14"
 
@@ -50,10 +50,10 @@ jobs:
 
     steps:
       - name: Checkout files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Node v18
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "18.14"
 
@@ -81,10 +81,10 @@ jobs:
 
     steps:
       - name: Checkout files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Node v18
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "18.14"
 
@@ -120,9 +120,9 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn
@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build Docker image
         uses: docker/build-push-action@v6.18.0
@@ -164,7 +164,7 @@ jobs:
             chain-url: wss://apps-rpc.polkadot.io
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: e2e tests
         run: |

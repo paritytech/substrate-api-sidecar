@@ -88,7 +88,7 @@ export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'coretime-kusama': coretimeControllers,
 };
 
-export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint']);
+export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint', 'asset-hub-paseo']);
 
 export const assetHubToBabe: Record<
 	string,

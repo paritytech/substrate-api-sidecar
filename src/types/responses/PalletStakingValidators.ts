@@ -27,6 +27,15 @@ export interface IValidator {
 	 * `waiting` means that the validator did not get into the active set this era.
 	 */
 	status: string;
+	/**
+	 * The validator's commission rate as a percentage string (e.g., "1000000000" for 100%).
+	 * This field represents the commission the validator takes from staking rewards.
+	 */
+	commission?: string;
+	/**
+	 * Whether the validator is blocked from receiving new nominations.
+	 */
+	blocked?: boolean;
 }
 
 export interface IPalletStakingValidator {

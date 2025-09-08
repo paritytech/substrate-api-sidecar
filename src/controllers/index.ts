@@ -26,6 +26,7 @@ import {
 	AccountsValidate,
 	AccountsVestingInfo,
 } from './accounts';
+import { AhmInfo } from './ahm';
 import { Blocks, BlocksExtrinsics, BlocksRawExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { CoretimeChain, CoretimeGeneric } from './coretime';
@@ -46,7 +47,13 @@ import {
 	PalletsStorage,
 } from './pallets';
 import { Paras } from './paras';
-import { RcAccountsBalanceInfo, RcAccountsProxyInfo } from './rc/accounts';
+import {
+	RcAccountsBalanceInfo,
+	RcAccountsProxyInfo,
+	RcAccountsStakingInfo,
+	RcAccountsStakingPayouts,
+	RcAccountsVestingInfo,
+} from './rc/accounts';
 import { RcBlocks, RcBlocksExtrinsics, RcBlocksRawExtrinsics, RcBlocksTrace } from './rc/blocks';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
 import {
@@ -55,6 +62,8 @@ import {
 	RcPalletsErrors,
 	RcPalletsEvents,
 	RcPalletsOnGoingReferenda,
+	RcPalletsStakingProgress,
+	RcPalletsStakingValidators,
 	RcPalletsStorage,
 } from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
@@ -64,6 +73,7 @@ import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, Transac
  * Object containing every controller class definition.
  */
 export const controllers = {
+	AhmInfo,
 	Blocks,
 	BlocksExtrinsics,
 	BlocksTrace,
@@ -97,6 +107,9 @@ export const controllers = {
 	NodeVersion,
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
+	RcAccountsStakingInfo,
+	RcAccountsStakingPayouts,
+	RcAccountsVestingInfo,
 	RcBlocks,
 	RcBlocksExtrinsics,
 	RcBlocksRawExtrinsics,
@@ -106,6 +119,8 @@ export const controllers = {
 	RcPalletsErrors,
 	RcPalletsEvents,
 	RcPalletsOnGoingReferenda,
+	RcPalletsStakingProgress,
+	RcPalletsStakingValidators,
 	RcPalletsStorage,
 	RcRuntimeCode,
 	RcRuntimeMetadata,
