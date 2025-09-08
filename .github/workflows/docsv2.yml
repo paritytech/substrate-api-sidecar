@@ -4,13 +4,11 @@ on:
   push:
     branches:
       - master
-      - tg-docs-v2  # Include the docs-v2 branch for testing
     paths:
       - "docs-v2/**"
   pull_request:
     branches:
       - master
-      - tg-docs-v2
     paths:
       - "docs-v2/**"
 
@@ -50,7 +48,7 @@ jobs:
         run: yarn build:docsv2
 
       - name: Create artifacts
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+        if: github.ref == 'refs/heads/master'
         run: |
           echo "Creating artifacts directory..."
           mkdir -p artifacts
@@ -62,14 +60,14 @@ jobs:
           ls -la artifacts/docsv2
 
       - name: Upload docs v2
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
           name: docsv2-${{ github.sha }}
           path: ./artifacts/
 
   publish-docsv2:
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/tg-docs-v2'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: master_n_tags
     needs: [build-docsv2]
