@@ -31,6 +31,7 @@
     "build:calc": "bash ./calc/build.sh",
     "build:docker": "docker build -t substrate-api-sidecar .",
     "build:docs": "(cd docs && yarn && yarn build)",
+    "build:docsv2": "(cd docs-v2 && yarn && yarn build)",
     "build:scripts": "substrate-exec-rimraf scripts/build/ && substrate-exec-tsc --project scripts/tsconfig.json",
     "build:e2e-tests": "substrate-exec-rimraf e2e-tests/build/ && substrate-exec-tsc --project e2e-tests/tsconfig.json",
     "bench": "yarn build:scripts && node scripts/build/runBenchmarks.js",

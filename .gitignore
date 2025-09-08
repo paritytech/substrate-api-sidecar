@@ -20,6 +20,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/plugins
 /docs/.yarn
+/docs-v2/.yarn
 
 # Tests
 /coverage
