@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.7.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.0..v20.7.1) (2025-09-09)
+
+### Fix
+
+- fix: ensure staking progress uses is rc option for `/rc` endpoints ([#1759](https://github.com/paritytech/substrate-api-sidecar/pull/1759)) ([7e8585a](https://github.com/paritytech/substrate-api-sidecar/commit/7e8585a))
+    - Ensures staking progress endpoints correctly utilize relay chain options for multi-chain setups
+- fix: remove redundant isApiAssetHub specName check ([#1753](https://github.com/paritytech/substrate-api-sidecar/pull/1753)) ([a8c33bf](https://github.com/paritytech/substrate-api-sidecar/commit/a8c33bf))
+    - Removes unnecessary Asset Hub specification name validation to improve code efficiency
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.18.0 (Polkadot stable2503-5)
+- Kusama v1.18.0 (Polkadot stable2503-5)
+- Westend v1.18.0 (Polkadot stable2503-5)
+
+Tested against the following runtime releases:
+- Polkadot v1006001
+- Kusama v1006001
+- Westend v1018013
+- Polkadot Asset Hub v1005001
+- Kusama Asset Hub v1006001
+- Westend Asset Hub v1018013
+
 ## [20.7.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.6.1..v20.7.0) (2025-09-08)
 
 ### Features
