@@ -115,7 +115,7 @@ export default class RcPalletsStakingProgressController extends AbstractControll
 			throw new Error('Relay chain API not found, please use SAS_SUBSTRATE_MULTI_CHAIN_URL env variable');
 		}
 		const hash = await this.getHashFromAt(at);
-		const result = await this.service.derivePalletStakingProgress(hash);
+		const result = await this.service.derivePalletStakingProgress(hash, { isRcCall: true });
 		RcPalletsStakingProgressController.sanitizedSend(res, result);
 	};
 }
