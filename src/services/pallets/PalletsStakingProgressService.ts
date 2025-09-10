@@ -76,9 +76,6 @@ export class PalletsStakingProgressService extends AbstractService {
 				case 'westmint':
 					chainName = 'Westend Asset Hub';
 					break;
-				case 'statemint':
-					chainName = 'Polkadot Asset Hub';
-					break;
 			}
 
 			throw new Error(
