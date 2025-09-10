@@ -25,6 +25,7 @@ import { IPalletStakingProgress } from 'src/types/responses';
 
 import { ApiPromiseRegistry } from '../../../src/apiRegistry';
 import { assetHubToBabe } from '../../chains-config';
+import { isBadStakingBlock } from '../../util/badStakingBlocks';
 import { AbstractService } from '../AbstractService';
 
 interface IStakingProgressOptions {
@@ -53,6 +54,7 @@ export class PalletsStakingProgressService extends AbstractService {
 		if (historicApi.query.staking === undefined) {
 			throw new Error('Staking pallet not found for queried runtime');
 		}
+
 		const sessionValidators =
 			this.assetHubInfo.isAssetHub && !options.isRcCall
 				? RCApiPromise![0].api.query.session.validators
@@ -67,6 +69,19 @@ export class PalletsStakingProgressService extends AbstractService {
 			sessionValidators(),
 			api.rpc.chain.getHeader(hash),
 		]);
+
+		if (isBadStakingBlock(this.specName, number.unwrap().toNumber())) {
+			let chainName = this.specName;
+			switch (this.specName) {
+				case 'westmint':
+					chainName = 'Westend Asset Hub';
+					break;
+			}
+
+			throw new Error(
+				`Post migration, there were some interruptions to staking on ${chainName}, Block ${number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
+			);
+		}
 
 		let eraElectionPromise;
 		/**

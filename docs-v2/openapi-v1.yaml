@@ -787,7 +787,7 @@ paths:
   /rc/accounts/{address}/balance-info:
     get:
       tags:
-      - rc
+      - rc accounts
       summary: Get balance information for an account on the relay chain.
       description: Returns information about an account's balance on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for balance information.
       operationId: getRcAccountBalanceInfo
@@ -848,7 +848,7 @@ paths:
   /rc/accounts/{address}/proxy-info:
     get:
       tags:
-      - rc
+      - rc accounts
       summary: Get proxy information for an account on the relay chain.
       description: Returns information about an account's proxy configuration on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for proxy information.
       operationId: getRcAccountProxyInfo
@@ -892,7 +892,7 @@ paths:
   /rc/accounts/{address}/vesting-info:
     get:
       tags:
-      - rc
+      - rc accounts
       summary: Get vesting information for an account on the relay chain.
       description: Returns the vesting schedule for an account on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for vesting information.
       operationId: getRcAccountVestingInfo
@@ -936,7 +936,8 @@ paths:
   /rc/accounts/{address}/staking-info:
     get:
       tags:
-      - rc
+      - rc accounts
+      - rc staking
       summary: Get staking information for a _Stash_ account on the relay chain.
       description: Returns information about a _Stash_ account's staking activity on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for staking information. The _Stash_ account can be either a validator or nominator account.
       operationId: getRcAccountStakingInfo
@@ -989,7 +990,8 @@ paths:
   /rc/accounts/{address}/staking-payouts:
     get:
       tags:
-      - rc
+      - rc accounts
+      - rc staking
       summary: Get payout information for a _Stash_ account on the relay chain.
       description: Returns payout information for the last specified eras on the relay chain. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for staking payout information. If specifying both the depth and era query params, this endpoint will return information for (era - depth) through era. (i.e. if depth=5 and era=20 information will be returned for eras 16 through 20). The _Stash_ account can be either a validator or nominator account.
       operationId: getRcAccountStakingPayouts
@@ -1058,7 +1060,7 @@ paths:
   /rc/node/network:
     get:
       tags:
-      - rc
+      - rc node
       summary: Get relay chain node network information from Asset Hub.
       description: Returns network related information of the relay chain node. This endpoint is specifically for Asset Hub instances to query relay chain node networking details.
       operationId: getRcNodeNetworking
@@ -1072,7 +1074,7 @@ paths:
   /rc/node/transaction-pool:
     get:
       tags:
-      - rc
+      - rc node
       summary: Get relay chain pending extrinsics from Asset Hub.
       description: Returns pending extrinsics from the relay chain transaction pool. This endpoint is specifically for Asset Hub instances to query relay chain pending transactions.
       operationId: getRcNodeTransactionPool
@@ -1094,7 +1096,7 @@ paths:
   /rc/node/version:
     get:
       tags:
-      - rc
+      - rc node
       summary: Get relay chain node version information from Asset Hub.
       description: Returns versioning information of the relay chain node. This endpoint is specifically for Asset Hub instances to query relay chain node version details.
       operationId: getRcNodeVersion
@@ -1108,7 +1110,7 @@ paths:
   /rc/blocks:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get a range of relay chain blocks by their height.
       description: Given a range query parameter return an array of all the relay chain blocks within that range.
       operationId: getRcBlocks
@@ -1163,7 +1165,7 @@ paths:
   /rc/blocks/{blockId}:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get a relay chain block by its height or hash.
       description: Returns a relay chain block. Can be identified by either its height or hash.
       operationId: getRcBlock
@@ -1215,7 +1217,7 @@ paths:
   /rc/blocks/{blockId}/header:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get a relay chain block's header by its height or hash.
       description: Returns a relay chain block's header. Can be identified by either its height or hash.
       operationId: getRcBlockHeader
@@ -1242,7 +1244,7 @@ paths:
   /rc/blocks/{blockId}/extrinsics/{extrinsicIndex}:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get a relay chain block's extrinsic by its block height or hash and the extrinsic index.
       description: Returns an extrinsic from a relay chain block. Can be identified by either its height or hash and the extrinsic index.
       operationId: getRcBlockExtrinsic
@@ -1300,7 +1302,7 @@ paths:
   /rc/blocks/head:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get the latest relay chain block.
       description: Returns the latest relay chain block.
       operationId: getRcBlockHead
@@ -1352,7 +1354,7 @@ paths:
   /rc/blocks/head/header:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get the latest relay chain block's header.
       description: Returns the latest relay chain block's header.
       operationId: getRcBlockHeadHeader
@@ -1379,7 +1381,7 @@ paths:
   /rc/blocks/{blockId}/extrinsics-raw:
     get:
       tags:
-      - rc
+      - rc blocks
       summary: Get a relay chain block's raw extrinsics by its height or hash.
       description: Returns a relay chain block's raw extrinsics. Can be identified by either its height or hash.
       operationId: getRcBlockRawExtrinsics
@@ -3135,8 +3137,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: Response is dependent on the runtime metadata contents.
+                $ref: '#/components/schemas/RuntimeMetadata'
   /runtime/metadata/{metadataVersion}:
     get:
       tags:
@@ -3169,8 +3170,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: Response is dependent on the runtime metadata contents.
+                $ref: '#/components/schemas/RuntimeMetadata'
   /runtime/metadata/versions:
     get:
       tags:
@@ -3247,7 +3247,7 @@ paths:
   /rc/runtime/spec:
     get:
       tags:
-      - rc
+      - rc runtime
       summary: Get version information of the relay chain Substrate runtime.
       description: Returns version information related to the relay chain runtime. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for runtime specification.
       parameters:
@@ -3269,7 +3269,7 @@ paths:
   /rc/runtime/metadata:
     get:
       tags:
-      - rc
+      - rc runtime
       summary: Get the relay chain's metadata.
       description: Returns the relay chain's runtime metadata in decoded JSON format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for metadata.
       parameters:
@@ -3291,7 +3291,7 @@ paths:
   /rc/runtime/metadata/versions:
     get:
       tags:
-      - rc
+      - rc runtime
       summary: Get the available versions of relay chain's metadata.
       description: Returns the available versions of the relay chain's metadata. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for metadata versions.
       parameters:
@@ -3315,7 +3315,7 @@ paths:
   /rc/runtime/metadata/{metadataVersion}:
     get:
       tags:
-      - rc
+      - rc runtime
       summary: Get the relay chain's metadata at a specific version.
       description: Returns the relay chain's runtime metadata at a specific version in decoded JSON format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for versioned metadata.
       parameters:
@@ -3350,7 +3350,7 @@ paths:
   /rc/runtime/code:
     get:
       tags:
-      - rc
+      - rc runtime
       summary: Get the Wasm code blob of the relay chain Substrate runtime.
       description: Returns the relay chain's runtime code in Wasm format. This endpoint is specifically for Asset Hub and queries the relay chain (Polkadot/Kusama) for runtime code.
       parameters:
@@ -3372,7 +3372,7 @@ paths:
   /rc/pallets/on-going-referenda:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get relay chain ongoing referenda.
       description: Returns information about ongoing referenda in the relay chain.
       operationId: getRcPalletsOnGoingReferenda
@@ -3401,7 +3401,7 @@ paths:
   /rc/pallets/{palletId}/consts:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a list of constants for a relay chain pallet.
       description: Returns a list of constant metadata for the specified relay chain pallet.
       operationId: getRcPalletsConsts
@@ -3432,7 +3432,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsConstants'
+                $ref: '#/components/schemas/PalletConstants'
         "400":
           description: invalid palletId supplied
           content:
@@ -3442,7 +3442,7 @@ paths:
   /rc/pallets/{palletId}/consts/{constantItemId}:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a constant from a relay chain pallet by its ID.
       description: Returns information about a specific constant from the specified relay chain pallet.
       operationId: getRcPalletsConstsItem
@@ -3479,7 +3479,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsConstantsItem'
+                $ref: '#/components/schemas/PalletConstantsItem'
         "400":
           description: invalid palletId or constantItemId supplied
           content:
@@ -3489,7 +3489,7 @@ paths:
   /rc/pallets/{palletId}/dispatchables:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a list of dispatchables for a relay chain pallet.
       description: Returns a list of dispatchable metadata for the specified relay chain pallet.
       operationId: getRcPalletsDispatchables
@@ -3520,7 +3520,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsDispatchables'
+                $ref: '#/components/schemas/PalletDispatchables'
         "400":
           description: invalid palletId supplied
           content:
@@ -3530,7 +3530,7 @@ paths:
   /rc/pallets/{palletId}/dispatchables/{dispatchableItemId}:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a dispatchable from a relay chain pallet by its ID.
       description: Returns information about a specific dispatchable from the specified relay chain pallet.
       operationId: getRcPalletsDispatchablesItem
@@ -3567,7 +3567,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsDispatchablesItem'
+                $ref: '#/components/schemas/PalletDispatchablesItem'
         "400":
           description: invalid palletId or dispatchableItemId supplied
           content:
@@ -3577,7 +3577,7 @@ paths:
   /rc/pallets/{palletId}/errors:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a list of errors for a relay chain pallet.
       description: Returns a list of error metadata for the specified relay chain pallet.
       operationId: getRcPalletsErrors
@@ -3608,7 +3608,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsErrors'
+                $ref: '#/components/schemas/PalletErrors'
         "400":
           description: invalid palletId supplied
           content:
@@ -3618,7 +3618,7 @@ paths:
   /rc/pallets/{palletId}/errors/{errorItemId}:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get an error from a relay chain pallet by its ID.
       description: Returns information about a specific error from the specified relay chain pallet.
       operationId: getRcPalletsErrorsItem
@@ -3655,7 +3655,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsErrorsItem'
+                $ref: '#/components/schemas/PalletErrorsItem'
         "400":
           description: invalid palletId or errorItemId supplied
           content:
@@ -3665,7 +3665,7 @@ paths:
   /rc/pallets/{palletId}/events:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a list of events for a relay chain pallet.
       description: Returns a list of event metadata for the specified relay chain pallet.
       operationId: getRcPalletsEvents
@@ -3696,7 +3696,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsEvents'
+                $ref: '#/components/schemas/PalletEvents'
         "400":
           description: invalid palletId supplied
           content:
@@ -3706,7 +3706,7 @@ paths:
   /rc/pallets/{palletId}/events/{eventItemId}:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get an event from a relay chain pallet by its ID.
       description: Returns information about a specific event from the specified relay chain pallet.
       operationId: getRcPalletsEventsItem
@@ -3743,7 +3743,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsEventsItem'
+                $ref: '#/components/schemas/PalletEventsItem'
         "400":
           description: invalid palletId or eventItemId supplied
           content:
@@ -3753,7 +3753,7 @@ paths:
   /rc/pallets/{palletId}/storage:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a list of storage items for a relay chain pallet.
       description: Returns a list of storage item metadata for the specified relay chain pallet.
       operationId: getRcPalletsStorage
@@ -3784,7 +3784,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsStorage'
+                $ref: '#/components/schemas/PalletStorage'
         "400":
           description: invalid palletId supplied
           content:
@@ -3794,7 +3794,7 @@ paths:
   /rc/pallets/{palletId}/storage/{storageItemId}:
     get:
       tags:
-      - rc
+      - rc pallets
       summary: Get a storage item from a relay chain pallet by its ID.
       description: Returns the value stored under the specified storage item ID from the relay chain pallet. For maps, query parameter keys are required.
       operationId: getRcPalletsStorageItem
@@ -3839,7 +3839,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PalletsStorageItem'
+                $ref: '#/components/schemas/PalletStorageItem'
         "400":
           description: invalid palletId, storageItemId, or keys supplied
           content:
@@ -3849,9 +3849,8 @@ paths:
   /rc/pallets/staking/progress:
     get:
       tags:
-      - rc
-      - staking
-      - pallets
+      - rc pallets
+      - rc staking
       summary: Get progress on the general Staking pallet system on Relay Chain.
       description: Returns information on the progress of key components of the
         staking system and estimates of future points of interest. If you are querying
@@ -3892,9 +3891,8 @@ paths:
   /rc/pallets/staking/validators:
     get:
       tags:
-      - rc
-      - staking
-      - pallets
+      - rc pallets
+      - rc staking
       summary: Get all validators (active/waiting) of a specific chain.
       description: Returns a list of all validators addresses and their corresponding status which can be either
         active or waiting. For declared validators, it also includes their commission rate (as parts-per-billion)
@@ -6952,6 +6950,26 @@ components:
             the information used to calculate the fee was from finalized weights for the extrinsic, and `fromEvent` means that the partialFee was
             abstracted from the `TransactionPayment::TransactionPaidFee` event. 
       description: RuntimeDispatchInfo for the transaction. Includes the `partialFee`.
+    RuntimeMetadata:
+      type: object
+      description: |
+        Substrate runtime metadata containing pallet information, types registry, and API specifications.
+        The structure varies significantly between different runtime versions (V9-V16) and different chains.
+        This is a generic container that preserves the actual metadata structure as returned by the runtime.
+      properties:
+        magicNumber:
+          type: string
+          description: The magic number identifying this as Substrate metadata (typically "1635018093")
+          example: "1635018093"
+        metadata:
+          type: object
+          description: |
+            Version-specific metadata content. The structure depends entirely on the runtime metadata version
+            and can include various combinations of pallets, lookup registries, extrinsics, APIs, and other
+            runtime-specific information.
+      required:
+        - magicNumber
+        - metadata
     RuntimeSpec:
       type: object
       properties:

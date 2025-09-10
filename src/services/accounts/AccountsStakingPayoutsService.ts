@@ -49,6 +49,7 @@ import { BadRequest } from 'http-errors';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import type { IAccountStakingPayouts, IEraPayouts, IPayout } from '../../types/responses';
+import { isBadStakingBlock } from '../../util/badStakingBlocks';
 import { AbstractService } from '../AbstractService';
 import { IMigrationBoundaries, MIGRATION_BOUNDARIES } from '../consts';
 import kusamaEarlyErasBlockInfo from './kusamaEarlyErasBlockInfo.json';
@@ -154,6 +155,19 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			height: number.unwrap().toString(10),
 			hash,
 		};
+
+		if (isBadStakingBlock(this.specName, number.unwrap().toNumber())) {
+			let chainName = this.specName;
+			switch (this.specName) {
+				case 'westmint':
+					chainName = 'Westend Asset Hub';
+					break;
+			}
+
+			throw new Error(
+				`Post migration, there were some interruptions to staking on ${chainName}, Block ${number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
+			);
+		}
 
 		// User friendly - we don't error if the user specified era & depth combo <= 0, instead just start at 0
 		const startEra = Math.max(0, sanitizedEra - (depth - 1));
