@@ -679,7 +679,7 @@
 
 /* Content Sections */
 .content-section {
-  margin-bottom: var(--spacing-5xl);
+  margin-bottom: 0;
 }
 
 .section-header {
@@ -959,11 +959,11 @@
 
 /* Content Sections */
 .content-section {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
 }
 
 .media-type-section {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 0;
 }
 
 .media-type {
@@ -2822,6 +2822,7 @@ h1[id]:target, h2[id]:target, h3[id]:target, h4[id]:target {
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-secondary);
+  margin-bottom: 0;
 }
 
 .generated-example-section .example-header {
@@ -2930,6 +2931,7 @@ h1[id]:target, h2[id]:target, h3[id]:target, h4[id]:target {
 /* Data Schema Section Styling */
 .data-schema-section {
   margin-top: var(--spacing-md);
+  margin-bottom: 0;
   padding: var(--spacing-lg);
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-secondary);
@@ -2993,6 +2995,7 @@ h1[id]:target, h2[id]:target, h3[id]:target, h4[id]:target {
   color: var(--text-secondary);
   font-size: var(--font-size-xs);
   font-style: italic;
+  margin-bottom: 0;
 }
 
 .schema-links-note small {
