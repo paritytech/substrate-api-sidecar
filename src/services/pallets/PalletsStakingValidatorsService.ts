@@ -57,7 +57,7 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			}
 
 			throw new Error(
-				`Block ${number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
+				`Post migration, there were some interruptions to staking on ${chainName}, Block ${number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
 			);
 		}
 		// Populating the returned array with the Validator address and its
