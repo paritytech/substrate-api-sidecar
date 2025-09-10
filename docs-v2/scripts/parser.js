@@ -10,6 +10,7 @@ export class OpenAPIParser {
         this.endpoints = new Map();
         this.schemas = new Map();
         this.tags = new Map();
+        this.exampleCache = new Map(); // Cache for generated examples
     }
 
     /**
@@ -381,5 +382,205 @@ export class OpenAPIParser {
             'OPTIONS': 'method-options'
         };
         return colors[method] || 'method-default';
+    }
+
+    /**
+     * Generate example response data from schema
+     */
+    generateExampleFromSchema(schema, depth = 0, visitedRefs = new Set()) {
+        if (depth > 10) return '...'; // Prevent infinite recursion
+        if (!schema) {
+            console.log('generateExampleFromSchema: schema is null/undefined');
+            return null;
+        }
+
+        // Debug log for troubleshooting
+        if (depth === 0) {
+            console.log('generateExampleFromSchema: Processing root schema', schema);
+        }
+
+        // Create cache key for this schema at root level only
+        if (depth === 0) {
+            const cacheKey = JSON.stringify(schema);
+            if (this.exampleCache.has(cacheKey)) {
+                return this.exampleCache.get(cacheKey);
+            }
+            
+            // Generate example and cache it
+            const example = this._generateExampleFromSchemaInternal(schema, depth, visitedRefs);
+            console.log('generateExampleFromSchema: Generated example', example);
+            this.exampleCache.set(cacheKey, example);
+            return example;
+        }
+        
+        // For nested calls, don't use cache to avoid issues with circular refs
+        return this._generateExampleFromSchemaInternal(schema, depth, visitedRefs);
+    }
+
+    /**
+     * Internal method for generating examples (without caching)
+     */
+    _generateExampleFromSchemaInternal(schema, depth = 0, visitedRefs = new Set()) {
+        if (depth > 10) return '...'; // Prevent infinite recursion
+        if (!schema) return null;
+
+        // Handle schema reference
+        if (schema.$ref) {
+            const refName = this.resolveRef(schema.$ref);
+            
+            if (!refName || visitedRefs.has(refName)) {
+                return `[Reference to ${refName}]`;
+            }
+            
+            visitedRefs.add(refName);
+            const referencedSchema = this.schemas.get(refName);
+            
+            if (referencedSchema) {
+                const result = this._generateExampleFromSchemaInternal(referencedSchema, depth + 1, visitedRefs);
+                visitedRefs.delete(refName);
+                return result;
+            }
+            return `[${refName} schema not found]`;
+        }
+
+        // Handle oneOf, anyOf, allOf
+        if (schema.oneOf && schema.oneOf.length > 0) {
+            return this._generateExampleFromSchemaInternal(schema.oneOf[0], depth + 1, visitedRefs);
+        }
+        if (schema.anyOf && schema.anyOf.length > 0) {
+            return this._generateExampleFromSchemaInternal(schema.anyOf[0], depth + 1, visitedRefs);
+        }
+        if (schema.allOf && schema.allOf.length > 0) {
+            // Merge all schemas in allOf
+            const merged = {};
+            for (const subSchema of schema.allOf) {
+                const example = this._generateExampleFromSchemaInternal(subSchema, depth + 1, visitedRefs);
+                if (example && typeof example === 'object') {
+                    Object.assign(merged, example);
+                }
+            }
+            return Object.keys(merged).length > 0 ? merged : null;
+        }
+
+        // Handle arrays
+        if (schema.type === 'array' && schema.items) {
+            const itemExample = this._generateExampleFromSchemaInternal(schema.items, depth + 1, visitedRefs);
+            return [itemExample];
+        }
+
+        // Handle objects
+        if (schema.type === 'object') {
+            const example = {};
+            
+            if (schema.properties) {
+                Object.entries(schema.properties).forEach(([propName, propSchema]) => {
+                    example[propName] = this._generateExampleFromSchemaInternal(propSchema, depth + 1, visitedRefs);
+                });
+            }
+            
+            return example;
+        }
+
+        // Handle primitive types
+        return this.generateExampleForPrimitive(schema);
+    }
+
+    /**
+     * Generate example for primitive types
+     */
+    generateExampleForPrimitive(schema) {
+        const type = schema.type;
+        const format = schema.format;
+        
+        // Use example if provided
+        if (schema.example !== undefined) {
+            return schema.example;
+        }
+        
+        // Use enum if available
+        if (schema.enum && schema.enum.length > 0) {
+            return schema.enum[0];
+        }
+
+        // Generate based on format
+        if (format) {
+            switch (format) {
+                case 'SS58':
+                    return '15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5';
+                case 'unsignedInteger':
+                    return '1000000000000';
+                case '$hex':
+                    return '0x1234567890abcdef';
+                case 'date-time':
+                    return '2023-01-01T12:00:00.000Z';
+                case 'uuid':
+                    return '123e4567-e89b-12d3-a456-426614174000';
+                case 'email':
+                    return 'example@email.com';
+                case 'uri':
+                    return 'https://example.com';
+                case 'binary':
+                    return 'base64EncodedData';
+            }
+        }
+
+        // Generate based on type
+        switch (type) {
+            case 'string':
+                if (schema.description && schema.description.toLowerCase().includes('hash')) {
+                    return '0x1234567890abcdef1234567890abcdef12345678';
+                }
+                if (schema.description && schema.description.toLowerCase().includes('address')) {
+                    return '15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5';
+                }
+                return 'example_string';
+            case 'number':
+            case 'integer':
+                return 123;
+            case 'boolean':
+                return true;
+            case 'null':
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Generate example response for an endpoint
+     */
+    generateExampleResponse(endpoint, statusCode = '200') {
+        if (!endpoint.responses || !endpoint.responses[statusCode]) {
+            return null;
+        }
+
+        const response = endpoint.responses[statusCode];
+        const content = response.content?.['application/json'];
+        
+        if (!content || !content.schema) {
+            return null;
+        }
+
+        return this.generateExampleFromSchema(content.schema);
+    }
+
+    /**
+     * Get all example responses for an endpoint
+     */
+    getAllExampleResponses(endpoint) {
+        if (!endpoint.responses) return {};
+
+        const examples = {};
+        Object.entries(endpoint.responses).forEach(([statusCode, response]) => {
+            const example = this.generateExampleResponse(endpoint, statusCode);
+            if (example !== null) {
+                examples[statusCode] = {
+                    description: response.description,
+                    example: example
+                };
+            }
+        });
+
+        return examples;
     }
 }

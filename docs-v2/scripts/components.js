@@ -215,6 +215,7 @@ export class UIComponents {
                         <h4 class="media-type">${mediaType}</h4>
                         ${mediaContent.schema ? this.renderSchema(mediaContent.schema) : ''}
                         ${mediaContent.example ? this.renderExample(mediaContent.example, mediaType) : ''}
+                        ${mediaContent.schema ? this.renderSchemaExample(mediaContent.schema, mediaType) : ''}
                     </div>
                 `).join('')}
             </div>
@@ -303,6 +304,66 @@ export class UIComponents {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Render example generated from schema
+     */
+    renderSchemaExample(schema, mediaType = 'application/json') {
+        if (!schema) {
+            return '';
+        }
+
+        try {
+            // Generate example from schema using parser
+            const exampleData = this.parser.generateExampleFromSchema(schema);
+            
+            if (!exampleData) {
+                return `
+                    <div class="generated-example-section">
+                        <div class="example-header">
+                            <span>Generated Example Response</span>
+                        </div>
+                        <div class="no-example">Unable to generate example from this schema</div>
+                    </div>
+                `;
+            }
+
+            const formattedExample = this.formatExample(exampleData, mediaType);
+            
+            return `
+                <div class="generated-example-section">
+                    <div class="example-header">
+                        <span>Generated Example Response</span>
+                        <button class="copy-button" data-copy="${this.escapeHtml(formattedExample)}" title="Copy example">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="code-block">
+                        <pre><code class="language-json">${this.escapeHtml(formattedExample)}</code></pre>
+                    </div>
+                    <div class="example-note">
+                        <small>💡 This example was automatically generated from the API schema</small>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error generating example from schema:', error, schema);
+            return `
+                <div class="generated-example-section">
+                    <div class="example-header">
+                        <span>Generated Example Response</span>
+                    </div>
+                    <div class="example-error">
+                        <span>⚠️ Error generating example</span>
+                        <small>Schema processing failed: ${error.message}</small>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     /**
