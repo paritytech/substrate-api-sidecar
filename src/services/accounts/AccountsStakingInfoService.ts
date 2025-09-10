@@ -27,6 +27,7 @@ import type {
 import { BadRequest, InternalServerError } from 'http-errors';
 import { IAccountStakingInfo, IEraStatus, NominatorStatus, ValidatorStatus } from 'src/types/responses';
 
+import { isBadStakingBlock } from '../../util/badStakingBlocks';
 import { AbstractService } from '../AbstractService';
 
 export class AccountsStakingInfoService extends AbstractService {
@@ -57,7 +58,18 @@ export class AccountsStakingInfoService extends AbstractService {
 			hash: header.hash.toHex(),
 			height: header.number.unwrap().toString(10),
 		};
+		if (isBadStakingBlock(this.specName, header.number.unwrap().toNumber())) {
+			let chainName = this.specName;
+			switch (this.specName) {
+				case 'westmint':
+					chainName = 'Westend Asset Hub';
+					break;
+			}
 
+			throw new Error(
+				`Post migration, there were some interruptions to staking on ${chainName}, Block ${header.number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
+			);
+		}
 		if (controllerOption.isNone) {
 			throw new BadRequest(`The address ${stash} is not a stash address.`);
 		}

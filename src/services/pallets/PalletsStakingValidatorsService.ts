@@ -18,6 +18,7 @@ import { BlockHash } from '@polkadot/types/interfaces';
 import { u32 } from '@polkadot/types-codec';
 
 import { IPalletStakingValidator, IValidator } from '../../types/responses';
+import { isBadStakingBlock } from '../../util/badStakingBlocks';
 import { AbstractService } from '../AbstractService';
 
 export class PalletsStakingValidatorsService extends AbstractService {
@@ -47,6 +48,18 @@ export class PalletsStakingValidatorsService extends AbstractService {
 			height: number.unwrap().toString(10),
 		};
 
+		if (isBadStakingBlock(this.specName, number.unwrap().toNumber())) {
+			let chainName = this.specName;
+			switch (this.specName) {
+				case 'westmint':
+					chainName = 'Westend Asset Hub';
+					break;
+			}
+
+			throw new Error(
+				`Post migration, there were some interruptions to staking on ${chainName}, Block ${number.unwrap().toString(10)} is in the list of known bad staking blocks in ${chainName}`,
+			);
+		}
 		// Populating the returned array with the Validator address and its
 		// status. If the address is found in the `validatorsActiveSet` then
 		// status is `active` otherwise is set to `waiting`
