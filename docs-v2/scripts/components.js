@@ -348,6 +348,7 @@ export class UIComponents {
                     <div class="example-note">
                         <small>💡 This example was automatically generated from the API schema</small>
                     </div>
+                    ${this.renderDataSchemaSection(schema)}
                 </div>
             `;
         } catch (error) {
@@ -364,6 +365,101 @@ export class UIComponents {
                 </div>
             `;
         }
+    }
+
+    /**
+     * Render data schema section with links to schema definitions
+     */
+    renderDataSchemaSection(schema) {
+        if (!schema) return '';
+
+        const schemaReferences = this.extractSchemaReferences(schema);
+        
+        if (schemaReferences.length === 0) {
+            return '';
+        }
+
+        return `
+            <div class="data-schema-section">
+                <div class="data-schema-header">
+                    <span>📋 Data Schema</span>
+                </div>
+                <div class="schema-links">
+                    ${schemaReferences.map(ref => `
+                        <a href="#schema-${ref}" class="schema-link" data-schema="${ref}">
+                            <span class="schema-link-icon">🔗</span>
+                            <span class="schema-link-name">${ref}</span>
+                        </a>
+                    `).join('')}
+                </div>
+                <div class="schema-links-note">
+                    <small>Click on schema names to view their detailed definitions</small>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Extract all schema references from a schema
+     */
+    extractSchemaReferences(schema, visited = new Set()) {
+        const references = new Set();
+        
+        if (!schema || typeof schema !== 'object') {
+            return Array.from(references);
+        }
+
+        // Handle direct $ref
+        if (schema.$ref) {
+            const refName = this.parser.resolveRef(schema.$ref);
+            if (refName && !visited.has(refName)) {
+                references.add(refName);
+                visited.add(refName);
+                
+                // Recursively check referenced schema
+                const referencedSchema = this.parser.getSchema(refName);
+                if (referencedSchema) {
+                    const nestedRefs = this.extractSchemaReferences(referencedSchema, visited);
+                    nestedRefs.forEach(ref => references.add(ref));
+                }
+            }
+        }
+
+        // Handle oneOf, anyOf, allOf
+        if (schema.oneOf) {
+            schema.oneOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+        if (schema.anyOf) {
+            schema.anyOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+        if (schema.allOf) {
+            schema.allOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+
+        // Handle array items
+        if (schema.items) {
+            const nestedRefs = this.extractSchemaReferences(schema.items, visited);
+            nestedRefs.forEach(ref => references.add(ref));
+        }
+
+        // Handle object properties
+        if (schema.properties) {
+            Object.values(schema.properties).forEach(propSchema => {
+                const nestedRefs = this.extractSchemaReferences(propSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+
+        return Array.from(references);
     }
 
     /**

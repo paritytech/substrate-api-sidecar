@@ -389,15 +389,7 @@ export class OpenAPIParser {
      */
     generateExampleFromSchema(schema, depth = 0, visitedRefs = new Set()) {
         if (depth > 10) return '...'; // Prevent infinite recursion
-        if (!schema) {
-            console.log('generateExampleFromSchema: schema is null/undefined');
-            return null;
-        }
-
-        // Debug log for troubleshooting
-        if (depth === 0) {
-            console.log('generateExampleFromSchema: Processing root schema', schema);
-        }
+        if (!schema) return null;
 
         // Create cache key for this schema at root level only
         if (depth === 0) {
@@ -408,7 +400,6 @@ export class OpenAPIParser {
             
             // Generate example and cache it
             const example = this._generateExampleFromSchemaInternal(schema, depth, visitedRefs);
-            console.log('generateExampleFromSchema: Generated example', example);
             this.exampleCache.set(cacheKey, example);
             return example;
         }
