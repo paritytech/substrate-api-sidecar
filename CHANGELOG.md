@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.7.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.1..v20.7.2) (2025-09-11)
+
+### Fix
+
+- fix: ensure no error for event mapping for specVersion 1020000 or above ([#1768](https://github.com/paritytech/substrate-api-sidecar/pull/1768)) ([7e3b409](https://github.com/paritytech/substrate-api-sidecar/commit/7e3b409))
+    - Prevents event mapping errors for Westend Asset Hub blocks with specVersion 1020000 and above
+- fix: added mapping to bad staking blocks in westend AH ([#1764](https://github.com/paritytech/substrate-api-sidecar/pull/1764)) ([9e61c57](https://github.com/paritytech/substrate-api-sidecar/commit/9e61c57))
+    - Adds comprehensive mapping to handle problematic staking blocks in Westend Asset Hub
+- fix: update broken schema refs + more granular rc tags ([#1766](https://github.com/paritytech/substrate-api-sidecar/pull/1766)) ([12e1642](https://github.com/paritytech/substrate-api-sidecar/commit/12e1642)) (Thanks to https://github.com/F-OBrien)
+    - Updates broken OpenAPI schema references and improves relay chain endpoint tagging
+
+### Chores
+
+- docs: add json examples to the endpoints ([#1765](https://github.com/paritytech/substrate-api-sidecar/pull/1765)) ([9e44b81](https://github.com/paritytech/substrate-api-sidecar/commit/9e44b81))
+    - Enhances documentation with JSON response examples and data schemas for better developer experience
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.19.2 (Polkadot stable2506-2)
+- Kusama v1.19.2 (Polkadot stable2506-2)
+- Westend v1.19.2 (Polkadot stable2506-2)
+
+Tested against the following runtime releases:
+- Polkadot v1006002
+- Kusama v1007001
+- Westend v1020000
+- Polkadot Asset Hub v1006000
+- Kusama Asset Hub v1007001
+- Westend Asset Hub v1020000
+
 ## [20.7.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.0..v20.7.1) (2025-09-09)
 
 ### Fix
