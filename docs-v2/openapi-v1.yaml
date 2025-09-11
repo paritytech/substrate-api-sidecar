@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 20.7.1
+  version: 20.7.2
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
