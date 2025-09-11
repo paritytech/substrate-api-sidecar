@@ -658,6 +658,8 @@ export class BlocksService extends AbstractService {
 					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
 					const extrinsic = extrinsics[extrinsicIdx];
 
+					// ref: https://github.com/paritytech/substrate-api-sidecar/issues/1767
+					// TODO: Find source of the issue, this is just a PATCH that ensures no downtime in block processing
 					if (specVersion.toString() < '1020000') {
 						if (!extrinsic && event.section != 'multiBlockMigrations') {
 							throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`);
