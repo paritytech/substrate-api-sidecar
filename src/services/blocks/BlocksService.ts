@@ -170,7 +170,7 @@ export class BlocksService extends AbstractService {
 			nonSanitizedExtrinsics,
 			hash,
 			eventDocs,
-			specVersion
+			specVersion,
 		);
 
 		let finalized = undefined;
