@@ -679,7 +679,7 @@
 
 /* Content Sections */
 .content-section {
-  margin-bottom: var(--spacing-5xl);
+  margin-bottom: 0;
 }
 
 .section-header {
@@ -959,11 +959,11 @@
 
 /* Content Sections */
 .content-section {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
 }
 
 .media-type-section {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 0;
 }
 
 .media-type {
@@ -2758,5 +2758,260 @@ h1[id]:target, h2[id]:target, h3[id]:target, h4[id]:target {
   
   .config-table tbody td:nth-child(3) {
     max-width: 80px;
+  }
+}
+
+/* Schema/Example Tabs Styling */
+.schema-example-tabs {
+  margin-top: var(--spacing-lg);
+}
+
+.tab-headers {
+  display: flex;
+  border-bottom: 1px solid var(--border-primary);
+  margin-bottom: 0;
+}
+
+.tab-header {
+  background: none;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.tab-header:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.tab-header.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.tab-contents {
+  position: relative;
+  min-height: 200px;
+}
+
+.tab-content {
+  display: none;
+  padding: var(--spacing-lg);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Generated Example Styling */
+.generated-example-section {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-secondary);
+  margin-bottom: 0;
+}
+
+.generated-example-section .example-header {
+  background-color: var(--bg-tertiary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.generated-example-section .code-block {
+  margin: 0;
+  background-color: var(--bg-primary);
+}
+
+.generated-example-section .code-block pre {
+  margin: 0;
+  padding: var(--spacing-lg);
+  background: transparent;
+  border: none;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.example-note {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.example-note small {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+/* No Example/Error States */
+.no-example, .example-error {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border: 1px dashed var(--border-primary);
+  border-radius: var(--radius-md);
+}
+
+.example-error {
+  color: var(--accent-warning);
+  border-color: var(--accent-warning);
+  background-color: rgba(210, 153, 34, 0.05);
+}
+
+.example-error span {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Copy Button Enhancement */
+.copy-button {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.copy-button:active {
+  transform: scale(0.95);
+}
+
+/* Copy Success Feedback */
+.copy-button.copied {
+  background-color: var(--accent-success);
+  border-color: var(--accent-success);
+  color: white;
+}
+
+.copy-button.copied::after {
+  content: '✓';
+  position: absolute;
+  font-size: var(--font-size-xs);
+}
+
+.copy-button.copied svg {
+  opacity: 0;
+}
+
+/* Data Schema Section Styling */
+.data-schema-section {
+  margin-top: var(--spacing-md);
+  margin-bottom: 0;
+  padding: var(--spacing-lg);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+}
+
+.data-schema-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.schema-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.schema-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--bg-secondary);
+  color: var(--text-link);
+  text-decoration: none;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  transition: all var(--transition-fast);
+}
+
+.schema-link:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--text-link-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.schema-link:active {
+  transform: translateY(0);
+}
+
+.schema-link-icon {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.schema-link-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.schema-links-note {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.schema-links-note small {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Responsive schema links */
+@media (max-width: 768px) {
+  .schema-links {
+    flex-direction: column;
+  }
+  
+  .schema-link {
+    justify-content: flex-start;
+    padding: var(--spacing-sm);
   }
 }

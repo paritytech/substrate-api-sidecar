@@ -215,6 +215,7 @@ export class UIComponents {
                         <h4 class="media-type">${mediaType}</h4>
                         ${mediaContent.schema ? this.renderSchema(mediaContent.schema) : ''}
                         ${mediaContent.example ? this.renderExample(mediaContent.example, mediaType) : ''}
+                        ${mediaContent.schema ? this.renderSchemaExample(mediaContent.schema, mediaType) : ''}
                     </div>
                 `).join('')}
             </div>
@@ -303,6 +304,162 @@ export class UIComponents {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Render example generated from schema
+     */
+    renderSchemaExample(schema, mediaType = 'application/json') {
+        if (!schema) {
+            return '';
+        }
+
+        try {
+            // Generate example from schema using parser
+            const exampleData = this.parser.generateExampleFromSchema(schema);
+            
+            if (!exampleData) {
+                return `
+                    <div class="generated-example-section">
+                        <div class="example-header">
+                            <span>Generated Example Response</span>
+                        </div>
+                        <div class="no-example">Unable to generate example from this schema</div>
+                    </div>
+                `;
+            }
+
+            const formattedExample = this.formatExample(exampleData, mediaType);
+            
+            return `
+                <div class="generated-example-section">
+                    <div class="example-header">
+                        <span>Generated Example Response</span>
+                        <button class="copy-button" data-copy="${this.escapeHtml(formattedExample)}" title="Copy example">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M13.5 4.5H6.5C5.67157 4.5 5 5.17157 5 6V13C5 13.8284 5.67157 14.5 6.5 14.5H13.5C14.3284 14.5 15 13.8284 15 13V6C15 5.17157 14.3284 4.5 13.5 4.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 10.5C2.17157 10.5 1.5 9.82843 1.5 9V2C1.5 1.17157 2.17157 0.5 3 0.5H10C10.8284 0.5 11.5 1.17157 11.5 2" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="code-block">
+                        <pre><code class="language-json">${this.escapeHtml(formattedExample)}</code></pre>
+                    </div>
+                    <div class="example-note">
+                        <small>💡 This example was automatically generated from the API schema</small>
+                    </div>
+                    ${this.renderDataSchemaSection(schema)}
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error generating example from schema:', error, schema);
+            return `
+                <div class="generated-example-section">
+                    <div class="example-header">
+                        <span>Generated Example Response</span>
+                    </div>
+                    <div class="example-error">
+                        <span>⚠️ Error generating example</span>
+                        <small>Schema processing failed: ${error.message}</small>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Render data schema section with links to schema definitions
+     */
+    renderDataSchemaSection(schema) {
+        if (!schema) return '';
+
+        const schemaReferences = this.extractSchemaReferences(schema);
+        
+        if (schemaReferences.length === 0) {
+            return '';
+        }
+
+        return `
+            <div class="data-schema-section">
+                <div class="data-schema-header">
+                    <span>📋 Data Schema</span>
+                </div>
+                <div class="schema-links">
+                    ${schemaReferences.map(ref => `
+                        <a href="#schema-${ref}" class="schema-link" data-schema="${ref}">
+                            <span class="schema-link-icon">🔗</span>
+                            <span class="schema-link-name">${ref}</span>
+                        </a>
+                    `).join('')}
+                </div>
+                <div class="schema-links-note">
+                    <small>Click on schema names to view their detailed definitions</small>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Extract all schema references from a schema
+     */
+    extractSchemaReferences(schema, visited = new Set()) {
+        const references = new Set();
+        
+        if (!schema || typeof schema !== 'object') {
+            return Array.from(references);
+        }
+
+        // Handle direct $ref
+        if (schema.$ref) {
+            const refName = this.parser.resolveRef(schema.$ref);
+            if (refName && !visited.has(refName)) {
+                references.add(refName);
+                visited.add(refName);
+                
+                // Recursively check referenced schema
+                const referencedSchema = this.parser.getSchema(refName);
+                if (referencedSchema) {
+                    const nestedRefs = this.extractSchemaReferences(referencedSchema, visited);
+                    nestedRefs.forEach(ref => references.add(ref));
+                }
+            }
+        }
+
+        // Handle oneOf, anyOf, allOf
+        if (schema.oneOf) {
+            schema.oneOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+        if (schema.anyOf) {
+            schema.anyOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+        if (schema.allOf) {
+            schema.allOf.forEach(subSchema => {
+                const nestedRefs = this.extractSchemaReferences(subSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+
+        // Handle array items
+        if (schema.items) {
+            const nestedRefs = this.extractSchemaReferences(schema.items, visited);
+            nestedRefs.forEach(ref => references.add(ref));
+        }
+
+        // Handle object properties
+        if (schema.properties) {
+            Object.values(schema.properties).forEach(propSchema => {
+                const nestedRefs = this.extractSchemaReferences(propSchema, visited);
+                nestedRefs.forEach(ref => references.add(ref));
+            });
+        }
+
+        return Array.from(references);
     }
 
     /**
