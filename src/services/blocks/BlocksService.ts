@@ -165,12 +165,7 @@ export class BlocksService extends AbstractService {
 
 		const nonSanitizedExtrinsics = this.extractExtrinsics(block, events, historicApi.registry, extrinsicDocs);
 
-		const { extrinsics, onInitialize, onFinalize } = this.sanitizeEvents(
-			events,
-			nonSanitizedExtrinsics,
-			hash,
-			eventDocs,
-		);
+		const { extrinsics, onInitialize, onFinalize } = this.sanitizeEvents(events, nonSanitizedExtrinsics, eventDocs);
 
 		let finalized = undefined;
 
@@ -630,12 +625,7 @@ export class BlocksService extends AbstractService {
 	 * @param extrinsics extrinsics from
 	 * @param hash hash of the block the events are from
 	 */
-	private sanitizeEvents(
-		events: EventRecord[] | string,
-		extrinsics: IExtrinsic[],
-		hash: BlockHash,
-		eventDocs: boolean,
-	) {
+	private sanitizeEvents(events: EventRecord[] | string, extrinsics: IExtrinsic[], eventDocs: boolean) {
 		const onInitialize = { events: [] as ISanitizedEvent[] };
 		const onFinalize = { events: [] as ISanitizedEvent[] };
 
@@ -655,10 +645,6 @@ export class BlocksService extends AbstractService {
 				if (phase.isApplyExtrinsic) {
 					const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
 					const extrinsic = extrinsics[extrinsicIdx];
-
-					if (!extrinsic && event.section != 'multiBlockMigrations') {
-						throw new Error(`Missing extrinsic ${extrinsicIdx} in block ${hash.toString()}`);
-					}
 
 					if (event.method === Event.success) {
 						extrinsic.success = true;
