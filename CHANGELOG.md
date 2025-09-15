@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.7.3](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.2..v20.7.3) (2025-09-15)
+
+### Fix
+
+- fix: update polkadot-js deps ([#1774](https://github.com/paritytech/substrate-api-sidecar/pull/1774)) ([50add8d](https://github.com/paritytech/substrate-api-sidecar/commit/50add8d))
+    - Updates @polkadot/api packages from 16.2.1 to 16.4.7 and @polkadot/util packages from 13.5.1 to 13.5.6 for improved compatibility and bug fixes
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.19.2 (Polkadot stable2506-2)
+- Kusama v1.19.2 (Polkadot stable2506-2)
+- Westend v1.19.2 (Polkadot stable2506-2)
+
+Tested against the following runtime releases:
+- Polkadot v1006002
+- Kusama v1007001
+- Westend v1020000
+- Polkadot Asset Hub v1006000
+- Kusama Asset Hub v1007001
+- Westend Asset Hub v1020000
+
 ## [20.7.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.1..v20.7.2) (2025-09-11)
 
 ### Fix
