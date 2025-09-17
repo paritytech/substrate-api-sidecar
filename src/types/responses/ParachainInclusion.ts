@@ -14,5 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export * from './ParasInclusionService';
-export * from './ParasService';
+export interface IParachainInclusion {
+	parachainBlock: number;
+	parachainBlockHash: string;
+	parachainId: number;
+	relayParentNumber: number;
+	relayParentHash: string;
+	inclusionNumber: number | null;
+	inclusionHash: string | null;
+	inclusionDelay: number | null;
+	coreIndex: number | null;
+	groupIndex: number | null;
+	found: boolean;
+}
