@@ -73,7 +73,7 @@ export class ParasInclusionService extends AbstractService {
 		const { relayParentNumber } = (callArgs.toJSON() as unknown as IValidationDataArgs).args.data.validationData;
 
 		// Search for inclusion starting from relay_parent_number + 1
-		const inclusionInfo = await this.searchForInclusion(
+		const inclusionNumber = await this.searchForInclusion(
 			rcApi,
 			paraId.toNumber(),
 			number, // parachain block number
@@ -83,17 +83,12 @@ export class ParasInclusionService extends AbstractService {
 
 		// For now, return a placeholder response
 		return {
-			parachainBlock: 0,
+			parachainBlock: parseInt(number, 10),
 			parachainBlockHash: hash.toString(),
 			parachainId: paraId.toNumber(),
 			relayParentNumber,
-			relayParentHash: '0x...', // TODO: Get actual relay parent hash
-			inclusionNumber: inclusionInfo?.inclusionNumber || null,
-			inclusionHash: inclusionInfo?.inclusionHash || null,
-			inclusionDelay: inclusionInfo?.inclusionDelay || null,
-			coreIndex: inclusionInfo?.coreIndex || null,
-			groupIndex: inclusionInfo?.groupIndex || null,
-			found: inclusionInfo !== null,
+			inclusionNumber: inclusionNumber || null,
+			found: inclusionNumber !== null,
 		};
 	}
 
@@ -106,67 +101,33 @@ export class ParasInclusionService extends AbstractService {
 		parachainBlockNumber: string,
 		relayParentNumber: number,
 		maxDepth: number,
-	): Promise<{
-		inclusionNumber: number;
-		inclusionHash: string;
-		inclusionDelay: number;
-		coreIndex: number;
-		groupIndex: number;
-	} | null> {
+	): Promise<number | null> {
 		for (let i = 1; i <= maxDepth; i++) {
 			const searchBlockNumber = relayParentNumber + i;
+			// Get relay chain block hash
+			const relayBlockHash = await rcApi.rpc.chain.getBlockHash(searchBlockNumber);
 
-			try {
-				// Get relay chain block hash
-				const relayBlockHash = await rcApi.rpc.chain.getBlockHash(searchBlockNumber);
+			// Get candidate events for this relay block
+			const rcApiAt = await rcApi.at(relayBlockHash);
+			const events = await rcApiAt.query.system.events();
 
-				// Get candidate events for this relay block
-				const rcApiAt = await rcApi.at(relayBlockHash);
-				const events = await rcApiAt.query.system.events();
-
-				const inclusionEvent = events.filter((record) => {
-					if (record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded') {
-						return (record.event.data[0].toJSON() as unknown as IInclusionData).descriptor.paraId === paraId;
-					}
-					return false;
-				});
-
-				const foundInclusion = inclusionEvent.find((record) => {
-					const header = rcApiAt.registry.createType('Header', record.event.data[1]);
-					return header.number.toString() === parachainBlockNumber;
-				});
-
-				if (foundInclusion) {
-					console.log(searchBlockNumber);
-					break;
+			const inclusionEvent = events.filter((record) => {
+				if (record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded') {
+					return (record.event.data[0].toJSON() as unknown as IInclusionData).descriptor.paraId === paraId;
 				}
+				return false;
+			});
 
-				// const candidateInclusionOpt = await rcApi.query.paraInclusion.v1<Option<Vec<PolkadotRuntimeParachainsInclusionCandidatePendingAvailability>>>(paraId);
-				// if (candidateInclusionOpt.isNone || candidateInclusionOpt.isEmpty) {
-				// 	throw new Error('No candidates were included at this block')
-				// }
+			const foundInclusion = inclusionEvent.find((record) => {
+				const header = rcApiAt.registry.createType('Header', record.event.data[1]);
+				return header.number.toString() === parachainBlockNumber;
+			});
 
-				// const candidateInclusion = candidateInclusionOpt.unwrap();
-				// const foundInlcusion = candidateInclusion.find(candidate => {
-				// 	const header = rcApiAt.registry.createType('Header', candidate.commitments.headData);
-
-				// 	console.log('parachainBlockNumber: ', parachainBlockNumber)
-				// 	console.log(header.number.toString());
-				// 	header.number.toString() === parachainBlockNumber;
-				// })
-
-				// console.log(foundInlcusion?.toJSON());
-			} catch (error) {
-				// Block might not exist yet, continue searching
-				console.log(`Block ${searchBlockNumber} not found:`, error);
-				continue;
+			if (foundInclusion) {
+				return searchBlockNumber;
 			}
 		}
 
-		return null; // Not found within search depth
+		return null;
 	}
 }
-
-// 27764281 -> 12808572
-
-// 27764278 -> parent number

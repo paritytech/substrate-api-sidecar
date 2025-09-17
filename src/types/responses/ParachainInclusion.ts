@@ -19,11 +19,6 @@ export interface IParachainInclusion {
 	parachainBlockHash: string;
 	parachainId: number;
 	relayParentNumber: number;
-	relayParentHash: string;
 	inclusionNumber: number | null;
-	inclusionHash: string | null;
-	inclusionDelay: number | null;
-	coreIndex: number | null;
-	groupIndex: number | null;
 	found: boolean;
 }
