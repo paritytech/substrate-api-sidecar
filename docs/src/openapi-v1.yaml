@@ -4412,6 +4412,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParasHeaders'
+  /paras/{number}/inclusion:
+    get:
+      tags:
+      - paras
+      summary: Get relay chain inclusion information for a specific parachain block.
+      description: |
+        Returns the relay chain block number where a parachain block was included,
+        along with the relay parent number used during production. This endpoint helps
+        track the lifecycle of parachain blocks from production to inclusion.
+      parameters:
+      - name: number
+        in: path
+        description: Parachain block number to find inclusion information for.
+        required: true
+        schema:
+          type: string
+          format: unsignedInteger
+      - name: depth
+        in: query
+        description: Maximum number of relay chain blocks to search for inclusion (must be divisible by 5, max 100).
+        required: false
+        schema:
+          type: integer
+          minimum: 5
+          maximum: 100
+          multipleOf: 5
+          default: 10
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParachainInclusion'
+        "400":
+          description: Invalid depth parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Depth parameter must be divisible by 5 for optimal performance."
   /experimental/blocks/head/traces:
     get:
       tags:
@@ -6794,6 +6838,36 @@ components:
                   items:
                     $ref: '#/components/schemas/DigestItem'
                   description: Array of `DigestItem`s associated with the block.
+    ParachainInclusion:
+      type: object
+      properties:
+        parachainBlock:
+          type: integer
+          description: The parachain block number that was searched for.
+        parachainBlockHash:
+          type: string
+          format: hex
+          description: The hash of the parachain block.
+        parachainId:
+          type: integer
+          description: The parachain ID.
+        relayParentNumber:
+          type: integer
+          description: The relay chain block number used as parent during parachain block production.
+        inclusionNumber:
+          type: integer
+          nullable: true
+          description: The relay chain block number where the parachain block was included (null if not found).
+        found:
+          type: boolean
+          description: Whether the inclusion was found within the search depth.
+      required:
+        - parachainBlock
+        - parachainBlockHash
+        - parachainId
+        - relayParentNumber
+        - inclusionNumber
+        - found
     ParasLeasesCurrent:
       type: object
       properties:
