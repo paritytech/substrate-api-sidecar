@@ -106,7 +106,7 @@ export class ParasInclusionService extends AbstractService {
 	}
 
 	/**
-	 * Fallback search using system events (for historical compatibility)
+	 * Search using system events
 	 */
 	private async searchWithSystemEvents(
 		rcApi: ApiPromise,
