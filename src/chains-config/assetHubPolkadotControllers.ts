@@ -41,6 +41,7 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'PalletsEvents',
 		'PalletsErrors',
 		'PalletsForeignAssets',
+		'ParasInclusion',
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
 		'RcAccountsStakingInfo',

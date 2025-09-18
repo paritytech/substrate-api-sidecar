@@ -4421,6 +4421,8 @@ paths:
         Returns the relay chain block number where a parachain block was included,
         along with the relay parent number used during production. This endpoint helps
         track the lifecycle of parachain blocks from production to inclusion.
+
+        **Note**: This endpoint requires a multi-chain connection (both parachain and relay chain APIs).
       parameters:
       - name: number
         in: path
@@ -6843,24 +6845,31 @@ components:
       properties:
         parachainBlock:
           type: integer
-          description: The parachain block number
+          description: The parachain block number that was searched for.
         parachainBlockHash:
           type: string
           format: hex
-          description: The hash of the parachain block
+          description: The hash of the parachain block.
         parachainId:
           type: integer
-          description: The parachain ID
+          description: The parachain ID.
         relayParentNumber:
           type: integer
-          description: The relay chain block number used as context during parachain block production
+          description: The relay chain block number used as parent during parachain block production.
         inclusionNumber:
           type: integer
           nullable: true
-          description: The relay chain block number where this parachain block was included (null if not found)
+          description: The relay chain block number where the parachain block was included (null if not found).
         found:
           type: boolean
-          description: Whether the inclusion was found within the search depth
+          description: Whether the inclusion was found within the search depth.
+      required:
+        - parachainBlock
+        - parachainBlockHash
+        - parachainId
+        - relayParentNumber
+        - inclusionNumber
+        - found
     ParasLeasesCurrent:
       type: object
       properties:
