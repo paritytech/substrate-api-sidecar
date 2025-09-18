@@ -20,7 +20,6 @@ import { u32 } from '@polkadot/types-codec';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { IParachainInclusion } from '../../types/responses';
-// import { BadRequest } from 'http-errors';
 import { AbstractService } from '../AbstractService';
 
 interface IValidationDataArgs {
