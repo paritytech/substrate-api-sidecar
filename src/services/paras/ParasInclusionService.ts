@@ -71,7 +71,6 @@ export class ParasInclusionService extends AbstractService {
 
 		const callArgs = apiAt.registry.createType('Call', setValidationData.method);
 		const { relayParentNumber } = (callArgs.toJSON() as unknown as IValidationDataArgs).args.data.validationData;
-		console.log('relayParentNumber ', relayParentNumber);
 
 		// Search for inclusion starting from relay_parent_number + 1
 		const inclusionNumber = await this.searchForInclusion(
@@ -124,8 +123,6 @@ export class ParasInclusionService extends AbstractService {
 			const batchSize = Math.min(BATCH_SIZE, maxDepth - offset);
 			const searchBlocks = Array.from({ length: batchSize }, (_, i) => relayParentNumber + offset + i + 1);
 
-			console.log(relayParentNumber);
-			console.log(searchBlocks);
 			const searchPromises = searchBlocks.map(async (blockNum) => {
 				try {
 					const relayBlockHash = await rcApi.rpc.chain.getBlockHash(blockNum);
@@ -138,8 +135,6 @@ export class ParasInclusionService extends AbstractService {
 						}
 						return false;
 					});
-
-					console.log(inclusionEvents.length);
 
 					const foundInclusion = inclusionEvents.find((record) => {
 						const header = rcApiAt.registry.createType('Header', record.event.data[1]);
