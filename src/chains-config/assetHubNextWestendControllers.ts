@@ -50,6 +50,7 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'PalletsStakingValidators',
 		'PalletsStorage',
 		'PalletsPoolAssets',
+		'ParasInclusion',
 		'RcAccountsBalanceInfo',
 		'RcAccountsProxyInfo',
 		'RcAccountsStakingInfo',

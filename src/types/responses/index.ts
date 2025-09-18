@@ -52,6 +52,7 @@ export * from './PalletStakingProgress';
 export * from './PalletStakingValidators';
 export * from './PalletStorage';
 export * from './PalletStorageItem';
+export * from './ParachainInclusion';
 export * from './Paras';
 export * from './Payout';
 export * from './PoolAssets';

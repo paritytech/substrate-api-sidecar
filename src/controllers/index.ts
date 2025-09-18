@@ -46,7 +46,7 @@ import {
 	PalletsStakingValidators,
 	PalletsStorage,
 } from './pallets';
-import { Paras } from './paras';
+import { Paras, ParasInclusion } from './paras';
 import {
 	RcAccountsBalanceInfo,
 	RcAccountsProxyInfo,
@@ -136,6 +136,7 @@ export const controllers = {
 	TransactionMaterial,
 	TransactionSubmit,
 	Paras,
+	ParasInclusion,
 	CoretimeGeneric,
 	CoretimeChain,
 };
