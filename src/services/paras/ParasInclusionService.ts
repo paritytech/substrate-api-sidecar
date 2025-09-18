@@ -53,13 +53,12 @@ export class ParasInclusionService extends AbstractService {
 	async getParachainInclusion(hash: BlockHash, paraId: u32, number: string, depth = 10): Promise<IParachainInclusion> {
 		const { api } = this;
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
-		const apiAt = await api.at(hash);
 
 		if (!rcApi) {
 			throw new Error('Relay chain api must be available');
 		}
 
-		const { block } = await api.rpc.chain.getBlock(hash);
+		const [apiAt, { block }] = await Promise.all([api.at(hash), api.rpc.chain.getBlock(hash)]);
 
 		const setValidationData = block.extrinsics.find((ext) => {
 			return ext.method.method.toString() === 'setValidationData';
@@ -138,7 +137,6 @@ export class ParasInclusionService extends AbstractService {
 
 					const foundInclusion = inclusionEvents.find((record) => {
 						const header = rcApiAt.registry.createType('Header', record.event.data[1]);
-						console.log(header.number.toString(), ' ', parachainBlockNumber);
 						return header.number.toString() === parachainBlockNumber;
 					});
 
