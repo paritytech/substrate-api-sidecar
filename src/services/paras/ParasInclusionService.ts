@@ -115,6 +115,8 @@ export class ParasInclusionService extends AbstractService {
 		relayParentNumber: number,
 		maxDepth: number,
 	): Promise<number | null> {
+		// The number is 5 here since most searches are relative to 2-4 blocks from the `relayParentNumber`.
+		// Therefore we give 1 extra block for extra room, while also minimizing the amount of searches we do.
 		const BATCH_SIZE = 5;
 
 		// Search in batches of 5 for optimal performance
