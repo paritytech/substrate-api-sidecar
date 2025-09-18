@@ -130,16 +130,15 @@ export class ParasInclusionService extends AbstractService {
 					const rcApiAt = await rcApi.at(relayBlockHash);
 					const events = await rcApiAt.query.system.events();
 
-					const inclusionEvents = events.filter((record) => {
+					const foundInclusion = events.find((record) => {
 						if (record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded') {
-							return (record.event.data[0].toJSON() as unknown as IInclusionData).descriptor.paraId === paraId;
+							const eventData = record.event.data[0].toJSON() as unknown as IInclusionData;
+							if (eventData.descriptor.paraId === paraId) {
+								const header = rcApiAt.registry.createType('Header', record.event.data[1]);
+								return header.number.toString() === parachainBlockNumber;
+							}
 						}
 						return false;
-					});
-
-					const foundInclusion = inclusionEvents.find((record) => {
-						const header = rcApiAt.registry.createType('Header', record.event.data[1]);
-						return header.number.toString() === parachainBlockNumber;
 					});
 
 					return foundInclusion ? blockNum : null;
