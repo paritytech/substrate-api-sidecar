@@ -39,13 +39,43 @@ export default class ParasInclusionController extends AbstractController<ParasIn
 	 *
 	 * @param number - The parachain block number
 	 * @param at - Optional relay chain block hash to search from
+	 * @param depth - Optional search depth (must be divisible by 5, defaults to 10)
 	 */
-	private getParachainInclusion: RequestHandler<INumberParam> = async ({ params: { number } }, res): Promise<void> => {
+	private getParachainInclusion: RequestHandler<INumberParam> = async (
+		{ params: { number }, query: { depth } },
+		res,
+	): Promise<void> => {
 		const [hash, paraId] = await Promise.all([
 			this.getHashFromAt(number),
 			this.api.query.parachainInfo.parachainId<u32>(),
 		]);
 
-		ParasInclusionController.sanitizedSend(res, await this.service.getParachainInclusion(hash, paraId, number));
+		// Validate and parse depth parameter
+		let searchDepth = 10; // default
+		if (depth) {
+			const parsedDepth = parseInt(depth as string, 10);
+			if (isNaN(parsedDepth) || parsedDepth <= 0) {
+				ParasInclusionController.sanitizedSend(res, { error: 'Invalid depth parameter. Must be a positive integer.' });
+				return;
+			}
+			if (parsedDepth % 5 !== 0) {
+				ParasInclusionController.sanitizedSend(res, {
+					error: 'Depth parameter must be divisible by 5 for optimal performance.',
+				});
+				return;
+			}
+			if (parsedDepth > 100) {
+				ParasInclusionController.sanitizedSend(res, {
+					error: 'Depth parameter cannot exceed 100 to prevent excessive network requests.',
+				});
+				return;
+			}
+			searchDepth = parsedDepth;
+		}
+
+		ParasInclusionController.sanitizedSend(
+			res,
+			await this.service.getParachainInclusion(hash, paraId, number, searchDepth),
+		);
 	};
 }
