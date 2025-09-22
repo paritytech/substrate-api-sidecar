@@ -31,6 +31,7 @@ const mockSidecarConfig: ISidecarConfig = {
 		TYPES_SPEC: '',
 		TYPES: '',
 		CACHE_CAPACITY: 1000,
+		ASSET_HUB_ID: 1000,
 	},
 	LOG: {
 		LEVEL: 'info',

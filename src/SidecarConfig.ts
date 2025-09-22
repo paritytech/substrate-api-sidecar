@@ -68,6 +68,7 @@ export class SidecarConfig {
 				TYPES_SPEC: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES_SPEC) as string,
 				TYPES: config.Get(MODULES.SUBSTRATE, CONFIG.TYPES) as string,
 				CACHE_CAPACITY: config.Get(MODULES.SUBSTRATE, CONFIG.CACHE_CAPACITY) as number,
+				ASSET_HUB_ID: config.Get(MODULES.SUBSTRATE, CONFIG.ASSET_HUB_ID) as number,
 			},
 			LOG: {
 				LEVEL: config.Get(MODULES.LOG, CONFIG.LEVEL) as string,

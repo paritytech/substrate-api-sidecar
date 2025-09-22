@@ -53,26 +53,31 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 		let rawBlock;
 		if (useRcBlockArg) {
 			// Treat the blockId parameter as a relay chain block identifier
-			const rcBlockNumber = blockId;
-			const hash = await this.getAhAtFromRcAt(blockId);
+			const rcAtResults = await this.getHashFromRcAt(blockId);
 
-			// Return empty array if no Asset Hub block found
-			if (!hash) {
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
 				BlocksRawExtrinsicsController.sanitizedSend(res, []);
 				return;
 			}
 
-			rawBlock = await this.service.fetchBlockRaw(hash);
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				rawBlock = await this.service.fetchBlockRaw(ahHash);
 
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-			const enhancedResult = {
-				...rawBlock,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+				const enhancedResult = {
+					...rawBlock,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
 
-			BlocksRawExtrinsicsController.sanitizedSend(res, [enhancedResult]);
+				results.push(enhancedResult);
+			}
+
+			BlocksRawExtrinsicsController.sanitizedSend(res, results);
 		} else {
 			const hash = await this.getHashForBlock(blockId);
 			rawBlock = await this.service.fetchBlockRaw(hash);
@@ -82,7 +87,7 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 
-		if (res.locals.metrics) {
+		if (res.locals.metrics && rawBlock) {
 			const extrinsics_per_block_metrics = res.locals.metrics.registry['sas_extrinsics_per_block'] as client.Histogram;
 			extrinsics_per_block_metrics
 				.labels({ method: method, route: path, status_code: res.statusCode })
