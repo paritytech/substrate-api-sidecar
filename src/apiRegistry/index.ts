@@ -44,7 +44,7 @@ export class ApiPromiseRegistry {
 		if (!this._instancesByUrl.has(url)) {
 			const { config } = SidecarConfig;
 
-			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;		
+			const { TYPES_BUNDLE, TYPES_SPEC, TYPES_CHAIN, TYPES, CACHE_CAPACITY } = config.SUBSTRATE;
 			// Instantiate new API Promise instance
 			const api = await ApiPromise.create({
 				provider: url.startsWith('http')
