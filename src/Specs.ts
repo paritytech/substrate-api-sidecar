@@ -189,6 +189,7 @@ export class Specs {
 			this._specs.getSpec(CONFIG.CACHE_CAPACITY, 'max cache size for @polkadot/api caching system, 0 bypasses cache', {
 				default: 0,
 				mandatory: false,
+				type: 'number',
 			}),
 		);
 
