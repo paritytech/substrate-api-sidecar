@@ -193,7 +193,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		if (useRcBlockArg) {
 			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
 			let rcHash;
-			
+
 			if (!this.options.finalizes) {
 				const rcHeader = await rcApi.rpc.chain.getHeader();
 				rcHash = rcHeader.hash;
@@ -460,7 +460,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			return;
 		}
 
-		let hash = await this.getHashForBlock(number);
+		const hash = await this.getHashForBlock(number);
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -584,7 +584,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		if (useRcBlockArg) {
 			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
 			let rcHash;
-			
+
 			if (paramFinalized) {
 				rcHash = await rcApi.rpc.chain.getFinalizedHead();
 			} else {
@@ -713,12 +713,12 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		blocksPromise.length = 0;
 
 		// Filter out null values and flatten nested arrays (for useRcBlock case)
-		let blocks: IBlock[] = [];
+		const blocks: IBlock[] = [];
 		for (const block of allBlocks) {
 			if (block !== null) {
 				if (Array.isArray(block)) {
 					// This is from useRcBlock case where we might have multiple blocks per RC block
-					blocks.push(...block);
+					blocks.push(...(block as IBlock[]));
 				} else {
 					// Single block case
 					blocks.push(block as IBlock);

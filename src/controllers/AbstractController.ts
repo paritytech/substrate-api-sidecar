@@ -349,7 +349,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
 		const rcBlockNumber = rcHeader.number.toString();
 
-		return ahHashes.map(ahHash => ({ ahHash, rcBlockNumber }));
+		return ahHashes.map((ahHash) => ({ ahHash, rcBlockNumber }));
 	}
 
 	/**

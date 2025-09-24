@@ -89,7 +89,13 @@ export const specToControllerMap: { [x: string]: ControllerConfig } = {
 	'yet-another-parachain': assetHubWestendControllers,
 };
 
-export const assetHubSpecNames = new Set(['statemine', 'statemint', 'westmint', 'asset-hub-paseo', 'yet-another-parachain']);
+export const assetHubSpecNames = new Set([
+	'statemine',
+	'statemint',
+	'westmint',
+	'asset-hub-paseo',
+	'yet-another-parachain',
+]);
 
 export const assetHubToBabe: Record<
 	string,

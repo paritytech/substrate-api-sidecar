@@ -67,7 +67,6 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			// Process each Asset Hub block found
 			const results = [];
 			for (const { ahHash, rcBlockNumber } of rcAtResults) {
-
 				const eventDocsArg = eventDocs === 'true';
 				const extrinsicDocsArg = extrinsicDocs === 'true';
 				const noFeesArg = noFees === 'true';
