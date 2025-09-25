@@ -35,7 +35,6 @@ interface ISidecarConfigSubstrate {
 	TYPES_SPEC: string;
 	TYPES: string;
 	CACHE_CAPACITY: number;
-	ASSET_HUB_ID: number;
 }
 
 interface ISidecarConfigExpress {

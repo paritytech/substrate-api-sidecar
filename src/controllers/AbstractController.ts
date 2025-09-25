@@ -36,7 +36,6 @@ import {
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import type { AssetHubInfo } from '../apiRegistry';
 import { sanitizeNumbers } from '../sanitize';
-import { SidecarConfig } from '../SidecarConfig';
 import { isBasicLegacyError } from '../types/errors';
 import { ISanitizeOptions } from '../types/sanitize';
 import { verifyNonZeroUInt, verifyUInt } from '../util/integers/verifyInt';
@@ -63,9 +62,7 @@ export type RequiredPallets = string[][];
  */
 export default abstract class AbstractController<T extends AbstractService> {
 	private _router: Router = express.Router();
-	public get ASSET_HUB_ID(): number {
-		return SidecarConfig.config.SUBSTRATE.ASSET_HUB_ID;
-	}
+	public ASSET_HUB_ID = 1000;
 	static controllerName: string;
 	static requiredPallets: RequiredPallets;
 

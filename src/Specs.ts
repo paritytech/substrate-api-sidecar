@@ -201,16 +201,6 @@ export class Specs {
 				type: 'array',
 			}),
 		);
-
-		// ASSET_HUB_ID
-		this._specs.appendSpec(
-			MODULES.SUBSTRATE,
-			this._specs.getSpec(CONFIG.ASSET_HUB_ID, 'Parachain ID for Asset Hub (used for useRcBlock functionality)', {
-				default: 1000,
-				mandatory: false,
-				type: 'number',
-			}),
-		);
 	}
 
 	/**
