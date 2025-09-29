@@ -27,7 +27,7 @@ import {
 	AccountsVestingInfo,
 } from './accounts';
 import { AhmInfo } from './ahm';
-import { Blocks, BlocksExtrinsics, BlocksRawExtrinsics, BlocksTrace } from './blocks';
+import { Blocks, BlocksExtrinsics, BlocksParaInclusions, BlocksRawExtrinsics, BlocksTrace } from './blocks';
 import { ContractsInk } from './contracts';
 import { CoretimeChain, CoretimeGeneric } from './coretime';
 import { NodeNetwork, NodeTransactionPool, NodeVersion } from './node';
@@ -76,8 +76,9 @@ export const controllers = {
 	AhmInfo,
 	Blocks,
 	BlocksExtrinsics,
-	BlocksTrace,
+	BlocksParaInclusions,
 	BlocksRawExtrinsics,
+	BlocksTrace,
 	AccountsAssets,
 	AccountsBalanceInfo,
 	AccountsCompare,

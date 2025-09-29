@@ -34,6 +34,7 @@ export const polkadotControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
+		'BlocksParaInclusions',
 		'BlocksTrace',
 		'NodeNetwork',
 		'NodeTransactionPool',
