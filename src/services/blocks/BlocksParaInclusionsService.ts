@@ -85,9 +85,10 @@ export class BlocksParaInclusionsService extends AbstractService {
 			};
 		});
 
-		const filteredInclusions = paraIdFilter !== undefined
-			? inclusions.filter((inclusion) => parseInt(inclusion.paraId) === paraIdFilter)
-			: inclusions;
+		const filteredInclusions =
+			paraIdFilter !== undefined
+				? inclusions.filter((inclusion) => parseInt(inclusion.paraId) === paraIdFilter)
+				: inclusions;
 
 		return {
 			at: {

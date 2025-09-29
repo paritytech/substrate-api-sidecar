@@ -49,7 +49,9 @@ export default class BlocksParaInclusionsController extends AbstractController<B
 	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
-		const paraIdFilter = paraId ? this.parseNumberOrThrow(paraId as string, 'paraId must be a valid integer') : undefined;
+		const paraIdFilter = paraId
+			? this.parseNumberOrThrow(paraId as string, 'paraId must be a valid integer')
+			: undefined;
 
 		BlocksParaInclusionsController.sanitizedSend(res, await this.service.fetchParaInclusions(hash, paraIdFilter));
 	};
