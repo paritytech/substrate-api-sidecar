@@ -1,0 +1,4 @@
+endpoint,variation,iteration,statusCode,responseTime,responseSize,memoryDelta,heapBefore,heapAfter,gcBefore,gcAfter,timestamp
+/transaction/material,,0,200,493.02,273,118448,8146816,8265264,8146296,8180536,1758664647463
+/transaction/material,,1,200,243.77,273,76608,8156976,8233584,8156456,8181296,1758664648248
+/transaction/material,,2,200,249.95,273,76448,8158936,8235384,8158416,8182656,1758664649042

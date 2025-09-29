@@ -1,0 +1,4 @@
+endpoint,variation,iteration,statusCode,responseTime,responseSize,memoryDelta,heapBefore,heapAfter,gcBefore,gcAfter,timestamp
+/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate,,0,200,7.02,133,119664,7959648,8079312,7959128,7992232,1758664486511
+/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate,,1,200,4.50,133,78848,7969512,8048360,7968992,7994432,1758664487054
+/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate,,2,200,5.20,133,78688,7972024,8050712,7971504,7995832,1758664487599

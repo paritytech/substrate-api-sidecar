@@ -1,0 +1,7 @@
+endpoint,variation,iteration,statusCode,responseTime,responseSize,memoryDelta,heapBefore,heapAfter,gcBefore,gcAfter,timestamp
+/pallets/System/storage/BlockWeight,?metadata=true,0,200,479.59,539,118624,8067968,8186592,8067448,8100728,1758662870832
+/pallets/System/storage/BlockWeight,?metadata=true,1,200,113.46,539,78768,8075424,8154192,8074904,8101552,1758662871373
+/pallets/System/storage/BlockWeight,?metadata=true,2,200,109.08,539,78496,8077224,8155720,8076704,8103080,1758662871910
+/pallets/System/storage/BlockWeight,?metadata=true&at=27898479,0,200,237.29,536,77672,8079344,8157016,8078824,8109712,1758662873577
+/pallets/System/storage/BlockWeight,?metadata=true&at=27898479,1,200,118.46,536,84216,8085144,8169360,8084624,8111432,1758662874124
+/pallets/System/storage/BlockWeight,?metadata=true&at=27898479,2,200,120.15,536,78592,8086904,8165496,8086384,8112832,1758662874672

@@ -117,3 +117,56 @@ These error codes are shared across all scripts.
 `3`: CLI args are used incorrectly internally.
 
 `4`: Benchmarks process has failed.
+
+## Script `memory-profiler/`
+
+### Summary
+
+The memory profiler is a comprehensive tool for analyzing memory usage patterns, detecting potential memory leaks, and understanding performance characteristics across different API endpoints. It consists of two main components:
+
+1. **IsolatedMemoryProfiler** - Tests each endpoint in isolation with system recovery between tests
+2. **CustomEndpointProfiler** - Specialized tests for deep diving into specific endpoint categories
+
+### Features
+
+- **Endpoint Isolation**: Each endpoint is tested separately to avoid interference
+- **Memory Leak Detection**: Sophisticated algorithms to identify potential memory leaks
+- **Query Parameter Testing**: Tests different `at` block heights and `range` parameters
+- **Garbage Collection Integration**: Uses Node.js GC for more accurate measurements
+- **Comprehensive Reporting**: JSON and CSV outputs for detailed analysis
+
+### Scripts
+
+`yarn memory-profile` - Run full isolated memory profiling suite
+`yarn memory-profile:custom` - Run all custom endpoint tests
+`yarn memory-profile:blocks` - Deep dive into block-related endpoints
+`yarn memory-profile:accounts` - Test account endpoints with different addresses
+`yarn memory-profile:pallets` - Test pallet storage endpoints
+`yarn memory-profile:runtime` - Test runtime endpoints across versions
+`yarn memory-profile:stress` - Stress test specific endpoints
+
+### Usage Examples
+
+```bash
+# Profile local development server
+yarn memory-profile
+
+# Profile production server
+yarn memory-profile http://sidecar.example.com
+
+# Test specific endpoint categories
+yarn memory-profile:blocks
+yarn memory-profile:accounts
+
+# Stress test a specific endpoint
+yarn memory-profile:stress /blocks/head "?range=10" 50
+```
+
+### Output
+
+All results are saved to `./memory-profiles/` directory with:
+- Comprehensive JSON reports with analyses
+- Individual CSV files for each endpoint tested
+- Memory leak suspicion scores and performance metrics
+
+For detailed documentation see: `scripts/memory-profiler/README.md`

@@ -48,7 +48,16 @@
     "test:ci": "NODE_ENV=test substrate-exec-jest",
     "test:latest-e2e-tests": "yarn start:latest-e2e-scripts",
     "test:historical-e2e-tests": "yarn start:historical-e2e-scripts",
-    "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
+    "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js",
+    "memory-profile": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/runIsolatedMemoryProfiler.js",
+    "memory-profile:fast": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/runIsolatedMemoryProfiler.js http://localhost:8080 --fast",
+    "memory-profile:slow": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/runIsolatedMemoryProfiler.js http://localhost:8080 --slow",
+    "memory-profile:custom": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js",
+    "memory-profile:blocks": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js blocks",
+    "memory-profile:accounts": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js accounts",
+    "memory-profile:pallets": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js pallets",
+    "memory-profile:runtime": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js runtime",
+    "memory-profile:stress": "yarn build:scripts && node --expose-gc scripts/build/memory-profiler/customEndpointProfiler.js stress"
   },
   "dependencies": {
     "@polkadot/api": "^16.4.7",

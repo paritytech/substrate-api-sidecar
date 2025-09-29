@@ -1,0 +1,4 @@
+endpoint,variation,iteration,statusCode,responseTime,responseSize,memoryDelta,heapBefore,heapAfter,gcBefore,gcAfter,timestamp
+/node/version,,0,200,119.77,92,205376,7093672,7299048,7093152,7199248,1758662573111
+/node/version,,1,200,164.68,92,123672,7170912,7294584,7170392,7219040,1758662573698
+/node/version,,2,200,137.75,92,141056,7189736,7330792,7189216,7252704,1758662574261
