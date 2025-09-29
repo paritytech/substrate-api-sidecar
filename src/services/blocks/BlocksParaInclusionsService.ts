@@ -33,9 +33,10 @@ export class BlocksParaInclusionsService extends AbstractService {
 	 * Fetch all decoded parachain inclusion information for a relay chain block
 	 *
 	 * @param hash - The relay chain block hash to query
+	 * @param paraIdFilter - Optional parachain ID to filter results
 	 * @returns IBlockParaInclusions containing all parachain inclusions in the block
 	 */
-	async fetchParaInclusions(hash: BlockHash): Promise<IBlockParaInclusions> {
+	async fetchParaInclusions(hash: BlockHash, paraIdFilter?: number): Promise<IBlockParaInclusions> {
 		const { api } = this;
 
 		const [apiAt, header] = await Promise.all([api.at(hash), api.rpc.chain.getHeader(hash)]);
@@ -84,12 +85,16 @@ export class BlocksParaInclusionsService extends AbstractService {
 			};
 		});
 
+		const filteredInclusions = paraIdFilter !== undefined
+			? inclusions.filter((inclusion) => parseInt(inclusion.paraId) === paraIdFilter)
+			: inclusions;
+
 		return {
 			at: {
 				hash: hash.toString(),
 				height: header.number.toString(),
 			},
-			inclusions: inclusions.sort((a, b) => parseInt(a.paraId) - parseInt(b.paraId)),
+			inclusions: filteredInclusions.sort((a, b) => parseInt(a.paraId) - parseInt(b.paraId)),
 		};
 	}
 }

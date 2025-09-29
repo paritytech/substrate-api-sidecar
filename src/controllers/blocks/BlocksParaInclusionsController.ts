@@ -41,10 +41,16 @@ export default class BlocksParaInclusionsController extends AbstractController<B
 	 * Get all parachain inclusions for a relay chain block
 	 *
 	 * @param blockId - The relay chain block identifier (hash or number)
+	 * @param paraId - Optional parachain ID to filter results
 	 */
-	private getParaInclusions: RequestHandler<INumberParam> = async ({ params: { blockId } }, res): Promise<void> => {
+	private getParaInclusions: RequestHandler<INumberParam> = async (
+		{ params: { blockId }, query: { paraId } },
+		res,
+	): Promise<void> => {
 		const hash = await this.getHashForBlock(blockId);
 
-		BlocksParaInclusionsController.sanitizedSend(res, await this.service.fetchParaInclusions(hash));
+		const paraIdFilter = paraId ? this.parseNumberOrThrow(paraId as string, 'paraId must be a valid integer') : undefined;
+
+		BlocksParaInclusionsController.sanitizedSend(res, await this.service.fetchParaInclusions(hash, paraIdFilter));
 	};
 }

@@ -1980,6 +1980,14 @@ paths:
         schema:
           pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
           type: string
+      - name: paraId
+        in: query
+        description: Optional parachain ID to filter results. When provided, only the inclusion
+          information for the specified parachain will be returned.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
       responses:
         "200":
           description: successful operation
