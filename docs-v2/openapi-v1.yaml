@@ -5371,7 +5371,6 @@ components:
           type: string
           description: Hash of the validation code
           format: hex
-      description: Block number and hash at which the call was made.
     BlockInitialize:
       type: object
       properties:
