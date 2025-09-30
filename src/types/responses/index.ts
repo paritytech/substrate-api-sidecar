@@ -25,6 +25,7 @@ export * from './AccountVestingInfo';
 export * from './Assets';
 export * from './At';
 export * from './Block';
+export * from './BlockParaInclusions';
 export * from './BlockRaw';
 export * from './BlockXCMMessages';
 export * from './Coretime';

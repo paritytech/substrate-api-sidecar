@@ -34,6 +34,7 @@ export const westendControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
+		'BlocksParaInclusions',
 		'BlocksTrace',
 		'CoretimeGeneric',
 		'NodeNetwork',

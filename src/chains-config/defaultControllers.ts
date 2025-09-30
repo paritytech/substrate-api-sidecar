@@ -33,6 +33,7 @@ export const defaultControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
+		'BlocksParaInclusions',
 		'ContractsInk',
 		'NodeNetwork',
 		'NodeTransactionPool',

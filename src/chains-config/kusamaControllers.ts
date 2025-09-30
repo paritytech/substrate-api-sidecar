@@ -34,6 +34,7 @@ export const kusamaControllers: ControllerConfig = {
 		'Blocks',
 		'BlocksExtrinsics',
 		'BlocksRawExtrinsics',
+		'BlocksParaInclusions',
 		'BlocksTrace',
 		'CoretimeGeneric',
 		'NodeNetwork',
