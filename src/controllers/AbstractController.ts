@@ -290,7 +290,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			: await chosenApi.rpc.chain.getFinalizedHead();
 	}
 
-	protected async getAhAtFromRcAt(at: unknown): Promise<BlockHash | null> {
+	protected async getAhAtFromRcAt(at: unknown): Promise<BlockHash[]> {
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
 
 		if (!rcApi) {
@@ -302,7 +302,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return this.findAhBlockInRcBlock(rcHash, rcApi);
 	}
 
-	private async findAhBlockInRcBlock(rcHash: BlockHash, rcApi: ApiPromise): Promise<BlockHash | null> {
+	private async findAhBlockInRcBlock(rcHash: BlockHash, rcApi: ApiPromise): Promise<BlockHash[]> {
 		const rcApiAt = await rcApi.at(rcHash);
 		const events = await rcApiAt.query.system.events();
 
@@ -310,7 +310,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 			return record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded';
 		});
 
-		const ahInfo = paraInclusion.find(({ event }) => {
+		const ahInfos = paraInclusion.filter(({ event }) => {
 			const { data } = event;
 			const paraData = data[0] as PolkadotPrimitivesVstagingCommittedCandidateReceiptV2;
 			const { paraId } = paraData.descriptor;
@@ -318,20 +318,21 @@ export default abstract class AbstractController<T extends AbstractService> {
 			return paraId.toNumber() === this.ASSET_HUB_ID;
 		});
 
-		if (ahInfo) {
+		const ahBlockHashes: BlockHash[] = [];
+		for (const ahInfo of ahInfos) {
 			const headerData = ahInfo.event.data[1] as Bytes;
 			const header = rcApiAt.registry.createType('Header', headerData);
 			const ahBlockHash = header.hash;
-			return rcApi.createType('BlockHash', ahBlockHash);
+			ahBlockHashes.push(rcApi.createType('BlockHash', ahBlockHash));
 		}
 
-		return null;
+		return ahBlockHashes;
 	}
 
 	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }[]> {
-		const ahHash = await this.getAhAtFromRcAt(rcAt);
+		const ahHashes = await this.getAhAtFromRcAt(rcAt);
 
-		if (!ahHash) {
+		if (ahHashes.length === 0) {
 			return [];
 		}
 
@@ -345,7 +346,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
 		const rcBlockNumber = rcHeader.number.toString();
 
-		return [{ ahHash, rcBlockNumber }];
+		return ahHashes.map((ahHash) => ({ ahHash, rcBlockNumber }));
 	}
 
 	/**

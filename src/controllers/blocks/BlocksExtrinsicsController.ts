@@ -56,71 +56,76 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 		if (useRcBlockArg) {
 			// Treat the blockId parameter as a relay chain block identifier
-			const rcBlockNumber = blockId;
-			const hash = await this.getAhAtFromRcAt(blockId);
+			const rcAtResults = await this.getHashFromRcAt(blockId);
 
-			// Return empty array if no Asset Hub block found
-			if (!hash) {
+			// Return empty array if no Asset Hub blocks found
+			if (rcAtResults.length === 0) {
 				BlocksExtrinsicsController.sanitizedSend(res, []);
 				return;
 			}
 
-			const eventDocsArg = eventDocs === 'true';
-			const extrinsicDocsArg = extrinsicDocs === 'true';
-			const noFeesArg = noFees === 'true';
+			// Process each Asset Hub block found
+			const results = [];
+			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+				const eventDocsArg = eventDocs === 'true';
+				const extrinsicDocsArg = extrinsicDocs === 'true';
+				const noFeesArg = noFees === 'true';
 
-			const options = {
-				eventDocs: eventDocsArg,
-				extrinsicDocs: extrinsicDocsArg,
-				checkFinalized: true,
-				queryFinalizedHead: false,
-				omitFinalizedTag: true,
-				noFees: noFeesArg,
-				checkDecodedXcm: false,
-				paraId: undefined,
-				useEvmAddressFormat: useEvmFormat === 'true',
-			};
+				const options = {
+					eventDocs: eventDocsArg,
+					extrinsicDocs: extrinsicDocsArg,
+					checkFinalized: true,
+					queryFinalizedHead: false,
+					omitFinalizedTag: true,
+					noFees: noFeesArg,
+					checkDecodedXcm: false,
+					paraId: undefined,
+					useEvmAddressFormat: useEvmFormat === 'true',
+				};
 
-			const cacheKey =
-				hash.toString() +
-				Number(options.eventDocs) +
-				Number(options.extrinsicDocs) +
-				Number(options.checkFinalized) +
-				Number(options.noFees) +
-				Number(options.checkDecodedXcm) +
-				Number(options.useEvmAddressFormat);
+				const cacheKey =
+					ahHash.toString() +
+					Number(options.eventDocs) +
+					Number(options.extrinsicDocs) +
+					Number(options.checkFinalized) +
+					Number(options.noFees) +
+					Number(options.checkDecodedXcm) +
+					Number(options.useEvmAddressFormat);
 
-			const isBlockCached = this.blockStore.get(cacheKey);
-			const historicApi = await this.api.at(hash);
+				const isBlockCached = this.blockStore.get(cacheKey);
+				const historicApi = await this.api.at(ahHash);
 
-			const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(hash, historicApi, options);
+				const block = isBlockCached ? isBlockCached : await this.service.fetchBlock(ahHash, historicApi, options);
 
-			if (!isBlockCached) {
-				this.blockStore.set(cacheKey, block);
+				if (!isBlockCached) {
+					this.blockStore.set(cacheKey, block);
+				}
+
+				/**
+				 * Verify our param `extrinsicIndex` is an integer represented as a string
+				 */
+				this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
+
+				/**
+				 * Change extrinsicIndex from a type string to a number before passing it
+				 * into any service.
+				 */
+				const index = parseInt(extrinsicIndex, 10);
+
+				const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
+
+				const apiAt = await this.api.at(ahHash);
+				const ahTimestamp = await apiAt.query.timestamp.now();
+				const enhancedResult = {
+					...extrinsic,
+					rcBlockNumber,
+					ahTimestamp: ahTimestamp.toString(),
+				};
+
+				results.push(enhancedResult);
 			}
 
-			/**
-			 * Verify our param `extrinsicIndex` is an integer represented as a string
-			 */
-			this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
-
-			/**
-			 * Change extrinsicIndex from a type string to a number before passing it
-			 * into any service.
-			 */
-			const index = parseInt(extrinsicIndex, 10);
-
-			const extrinsic = this.service.fetchExtrinsicByIndex(block, index);
-
-			const apiAt = await this.api.at(hash);
-			const ahTimestamp = await apiAt.query.timestamp.now();
-			const enhancedResult = {
-				...extrinsic,
-				rcBlockNumber,
-				ahTimestamp: ahTimestamp.toString(),
-			};
-
-			BlocksExtrinsicsController.sanitizedSend(res, [enhancedResult]);
+			BlocksExtrinsicsController.sanitizedSend(res, results);
 		} else {
 			const hash = await this.getHashForBlock(blockId);
 
