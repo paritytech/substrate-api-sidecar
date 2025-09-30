@@ -1962,7 +1962,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'         
+                $ref: '#/components/schemas/Error'
+  /blocks/{blockId}/para-inclusions:
+    get:
+      tags:
+      - blocks
+      summary: Get all parachain inclusion information for a relay chain block.
+      description: Returns all decoded parachain inclusion events (CandidateIncluded) for a relay chain block.
+        BlockId can either be a block hash or a block height. This endpoint extracts and decodes the candidate
+        descriptor, commitments hash, and parachain header information for each included parachain block.
+      operationId: getBlockParaInclusions
+      parameters:
+      - name: blockId
+        in: path
+        description: Relay chain block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      - name: paraId
+        in: query
+        description: Optional parachain ID to filter results. When provided, only the inclusion
+          information for the specified parachain will be returned.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockParaInclusions'
+        "400":
+          description: invalid Block identifier supplied or block does not contain paraInclusion events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /contracts/ink/{address}/query:
     post:
       tags:
@@ -5264,7 +5302,75 @@ components:
           type: string
           description: The block's height.
           format: unsignedInteger
-      description: Block number and hash at which the call was made.
+    BlockParaInclusions:
+      type: object
+      description: Contains all decoded parachain inclusion information for a relay chain block
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        inclusions:
+          type: array
+          description: Array of parachain inclusions in this relay chain block, sorted by paraId
+          items:
+            $ref: '#/components/schemas/ParaInclusion'
+    ParaInclusion:
+      type: object
+      description: Information about a single parachain inclusion event
+      properties:
+        paraId:
+          type: string
+          description: The parachain ID
+          format: unsignedInteger
+        paraBlockNumber:
+          type: number
+          description: The parachain block number that was included (decoded from HeadData)
+          format: unsignedInteger
+        paraBlockHash:
+          type: string
+          description: The parachain block hash that was included (decoded from HeadData)
+          format: hex
+        descriptor:
+          $ref: '#/components/schemas/ParaInclusionDescriptor'
+        commitmentsHash:
+          type: string
+          description: Hash of the candidate commitments
+          format: hex
+        coreIndex:
+          type: string
+          description: Core index assigned to this parachain block
+          format: unsignedInteger
+        groupIndex:
+          type: string
+          description: Validator group index that backed this parachain block
+          format: unsignedInteger
+    ParaInclusionDescriptor:
+      type: object
+      description: Candidate descriptor containing parachain inclusion metadata
+      properties:
+        relayParent:
+          type: string
+          description: The relay chain parent block hash
+          format: hex
+        persistedValidationDataHash:
+          type: string
+          description: Hash of the persisted validation data
+          format: hex
+        povHash:
+          type: string
+          description: Hash of the Proof of Validity (PoV)
+          format: hex
+        erasureRoot:
+          type: string
+          description: Root hash of the erasure encoding
+          format: hex
+        paraHead:
+          type: string
+          description: Hash of the parachain head data
+          format: hex
+        validationCodeHash:
+          type: string
+          description: Hash of the validation code
+          format: hex
     BlockInitialize:
       type: object
       properties:
