@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1759243126583,
+  "lastUpdate": 1759415196010,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -19127,6 +19127,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 385.43,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "47201679+TarikGul@users.noreply.github.com",
+            "name": "Tarik Gul",
+            "username": "TarikGul"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0a94c553581ca404f477db0da0079a72309f56b1",
+          "message": "feat: add /rc/blocks/{blockId}/para-inclusions (#1788)",
+          "timestamp": "2025-10-02T09:52:17-04:00",
+          "tree_id": "cba363aca693ec12b188fd1099631586e839357f",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/0a94c553581ca404f477db0da0079a72309f56b1"
+        },
+        "date": 1759415193632,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 416.35,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 201.39,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 297.77,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 2948.23,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.43,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.41,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1711.05,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 210.24,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 1850.34,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 248.76,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 143.51,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 342.78,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 155.05,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 179.36,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 181.79,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 170.11,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 161.14,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 175.24,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 504.95,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 226.75,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 272.09,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 202.05,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 238.12,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 193.05,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 201.18,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 295.65,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 171.89,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 146.19,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 331.8,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 469.05,
             "unit": "ms"
           }
         ]
