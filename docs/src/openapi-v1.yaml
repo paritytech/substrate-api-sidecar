@@ -1405,6 +1405,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rc/blocks/{blockId}/para-inclusions:
+    get:
+      tags:
+      - rc blocks
+      summary: Get all parachain inclusion information for a relay chain block.
+      description: Returns all decoded parachain inclusion events (CandidateIncluded) for a relay chain block
+        from the relay chain API. BlockId can either be a block hash or a block height. This endpoint extracts
+        and decodes the candidate descriptor, commitments hash, and parachain header information for each
+        included parachain block.
+      operationId: getRcBlockParaInclusions
+      parameters:
+      - name: blockId
+        in: path
+        description: Relay chain block identifier, as the block height or block hash.
+        required: true
+        schema:
+          pattern: '^0[xX][0-9a-fA-F]{1,64}$|[0-9]{1,12}'
+          type: string
+      - name: paraId
+        in: query
+        description: Optional parachain ID to filter results. When provided, only the inclusion
+          information for the specified parachain will be returned.
+        required: false
+        schema:
+          type: string
+          format: unsignedInteger
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockParaInclusions'
+        "400":
+          description: invalid Block identifier supplied or block does not contain paraInclusion events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /experimental/rc/blocks/head/traces:
     get:
       tags:

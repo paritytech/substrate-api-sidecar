@@ -16,5 +16,6 @@
 
 export { default as RcBlocks } from './RcBlocksController';
 export { default as RcBlocksExtrinsics } from './RcBlocksExtrinsicsController';
+export { default as RcBlocksParaInclusions } from './RcBlocksParaInclusionsController';
 export { default as RcBlocksRawExtrinsics } from './RcBlocksRawExtrinsicsController';
 export { default as RcBlocksTrace } from './RcBlocksTraceController';

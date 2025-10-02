@@ -54,7 +54,13 @@ import {
 	RcAccountsStakingPayouts,
 	RcAccountsVestingInfo,
 } from './rc/accounts';
-import { RcBlocks, RcBlocksExtrinsics, RcBlocksRawExtrinsics, RcBlocksTrace } from './rc/blocks';
+import {
+	RcBlocks,
+	RcBlocksExtrinsics,
+	RcBlocksParaInclusions,
+	RcBlocksRawExtrinsics,
+	RcBlocksTrace,
+} from './rc/blocks';
 import { RcNodeNetwork, RcNodeTransactionPool, RcNodeVersion } from './rc/node';
 import {
 	RcPalletsConsts,
@@ -113,6 +119,7 @@ export const controllers = {
 	RcAccountsVestingInfo,
 	RcBlocks,
 	RcBlocksExtrinsics,
+	RcBlocksParaInclusions,
 	RcBlocksRawExtrinsics,
 	RcBlocksTrace,
 	RcPalletsConsts,
