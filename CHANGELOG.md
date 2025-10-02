@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.9.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.8.0..v20.9.0) (2025-10-02)
+
+### Features
+
+- feat: add `/rc/blocks/{blockId}/para-inclusions` endpoint ([#1788](https://github.com/paritytech/substrate-api-sidecar/pull/1788)) ([0a94c55](https://github.com/paritytech/substrate-api-sidecar/commit/0a94c55))
+    - Adds relay chain counterpart endpoint for parachain inclusion queries, allowing retrieval of parachain inclusion information directly from relay chain blocks
+- feat: add `/blocks/{blockId}/para-inclusions` ([#1785](https://github.com/paritytech/substrate-api-sidecar/pull/1785)) ([3729cbc](https://github.com/paritytech/substrate-api-sidecar/commit/3729cbc))
+    - Adds new endpoint to retrieve parachain inclusion information for relay chain blocks
+- feat: ElasticScaling MultiBlock support Post AHM ([#1779](https://github.com/paritytech/substrate-api-sidecar/pull/1779)) ([2aa6360](https://github.com/paritytech/substrate-api-sidecar/commit/2aa6360))
+    - Adds support for Elastic Scaling multi-block responses post Asset Hub Migration
+
+### Fix
+
+- fix: enforce correct config CACHE_CAPACITY type ([#1782](https://github.com/paritytech/substrate-api-sidecar/pull/1782)) ([1dad5e2](https://github.com/paritytech/substrate-api-sidecar/commit/1dad5e2))
+    - Ensures CACHE_CAPACITY configuration is properly typed as number
+
+### Docs
+
+- docs: fix rouge description ([#1787](https://github.com/paritytech/substrate-api-sidecar/pull/1787)) ([9bb03e4](https://github.com/paritytech/substrate-api-sidecar/commit/9bb03e4))
+    - Fixes typo in route description
+
+### Chores
+
+- chore(deps): bump tar-fs from 2.1.3 to 2.1.4 ([#1784](https://github.com/paritytech/substrate-api-sidecar/pull/1784)) ([f42a793](https://github.com/paritytech/substrate-api-sidecar/commit/f42a793))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.19.2 (Polkadot stable2506-2)
+- Kusama v1.19.2 (Polkadot stable2506-2)
+- Westend v1.19.2 (Polkadot stable2506-2)
+
+Tested against the following runtime releases:
+- Polkadot v1006002
+- Kusama v1007001
+- Westend v1020000
+- Polkadot Asset Hub v1006000
+- Kusama Asset Hub v1007001
+- Westend Asset Hub v1020000
+
 ## [20.8.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.7.3..v20.8.0) (2025-09-23)
 
 ### Features
