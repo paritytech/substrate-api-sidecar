@@ -47,6 +47,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
+		'RcBlocksParaInclusions',
 		'RcBlocksRawExtrinsics',
 		'RcBlocksTrace',
 		'RcPalletsConsts',

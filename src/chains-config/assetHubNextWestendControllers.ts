@@ -58,6 +58,7 @@ export const assetHubNextWestendControllers: ControllerConfig = {
 		'RcAccountsVestingInfo',
 		'RcBlocks',
 		'RcBlocksExtrinsics',
+		'RcBlocksParaInclusions',
 		'RcBlocksRawExtrinsics',
 		'RcBlocksTrace',
 		'RcPalletsConsts',
