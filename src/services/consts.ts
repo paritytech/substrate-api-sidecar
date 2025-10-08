@@ -44,6 +44,14 @@ export const MIGRATION_BOUNDARIES: Record<string, IMigrationBoundaries> = {
 		relayMigrationStartedAt: 7926930,
 		relayMigrationEndedAt: 7927225,
 	},
+	statemine: {
+		relayChainLastEra: 8662,
+		assetHubFirstEra: 8662,
+		assetHubMigrationStartedAt: 11150168,
+		assetHubMigrationEndedAt: 11151931,
+		relayMigrationStartedAt: 30423691,
+		relayMigrationEndedAt: 30425590,
+	},
 };
 
 export const relayToSpecMapping = new Map([
