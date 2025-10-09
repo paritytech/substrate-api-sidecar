@@ -59,7 +59,7 @@ jobs:
         run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
 
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@4e0b38bc48375986542b13c0d8976b7b80c60c00 #1.20.5
+        uses: benchmark-action/github-action-benchmark@4bdcce38c94cec68da58d012ac24b7b1155efe8b #1.20.7
         with:
           tool: "customSmallerIsBetter"
           output-file-path: artifacts/benchmarks.json
