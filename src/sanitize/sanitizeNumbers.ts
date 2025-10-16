@@ -282,23 +282,5 @@ function sanitizeMetadataExceptionsV14(
 				isLe: true,
 			}).toString(10);
 		}
-		const typeName = typeDef.lookupName || typeDef.type;
-
-		// Skip decoding this value as it will be decoded later.
-		// TODO: Understand why this behavior is happening in PJS.
-		if (typeName && typeName === 'Vec<(AccountId32,FrameElectionProviderSupportBoundedSupport)>') {
-			return;
-		}
-
-		/**
-		 * The value is not an integer, and needs to be converted to its
-		 * correct type, then transformed to JSON.
-		 */
-		if (isHex(struct[key]) && (typeDef.lookupName || typeDef.type)) {
-			const typeName = typeDef.lookupName || typeDef.type;
-			console.log('typename: ', typeName);
-
-			struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
-		}
 	}
 }
