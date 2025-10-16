@@ -17,10 +17,6 @@
 import { IConfig } from '../types/endpoints';
 
 export const westend: IConfig = {
-	'/pallets/staking/validators': {
-		path: '/pallets/staking/validators',
-		queryParams: ['at={blockId}', 'metadata=true'],
-	},
 	'/blocks': {
 		path: '/blocks?range=1-5',
 		queryParams: [],
@@ -61,12 +57,6 @@ export const westend: IConfig = {
 		path: '/node/version',
 		queryParams: [],
 	},
-	// Test temporarily commented out since it returns an error ("ActiveEra is None when Some was expected.")
-	// caused by the Westend migration process.
-	// '/pallets/staking/progress': {
-	// 	path: '/pallets/staking/progress',
-	// 	queryParams: ['at={blockId}'],
-	// },
 	'/pallets/{palletId}/storage': {
 		path: '/pallets/System/storage',
 		queryParams: ['onlyIds=true', 'at={blockId}'],
