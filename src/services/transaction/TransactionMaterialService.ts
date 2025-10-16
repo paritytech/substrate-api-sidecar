@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import { Metadata } from '@polkadot/types';
 import type { Option } from '@polkadot/types/codec';
@@ -28,11 +29,14 @@ export class TransactionMaterialService extends AbstractService {
 	/**
 	 * Fetch all the network information needed to construct a transaction offline.
 	 *
+	 * @param api ApiPromise to use for the call
 	 * @param hash `BlockHash` to make call at
 	 */
-	async fetchTransactionMaterial(hash: BlockHash, metadataArg: MetadataOpts | false): Promise<ITransactionMaterial> {
-		const { api } = this;
-
+	async fetchTransactionMaterial(
+		api: ApiPromise,
+		hash: BlockHash,
+		metadataArg: MetadataOpts | false,
+	): Promise<ITransactionMaterial> {
 		if (!metadataArg) {
 			const [header, genesisHash, name, version] = await Promise.all([
 				api.rpc.chain.getHeader(hash),
@@ -85,16 +89,17 @@ export class TransactionMaterialService extends AbstractService {
 	/**
 	 * Fetch all the network information needed to construct a transaction offline.
 	 *
+	 * @param api ApiPromise to use for the call
+	 * @param apiAt ApiDecoration instance
 	 * @param hash `BlockHash` to make call at
 	 */
 	async fetchTransactionMaterialwithVersionedMetadata(
+		api: ApiPromise,
 		apiAt: ApiDecoration<'promise'>,
 		hash: BlockHash,
 		metadataArg: MetadataOpts | false,
 		metadataVersion: number,
 	): Promise<ITransactionMaterial> {
-		const { api } = this;
-
 		const [header, genesisHash, name, version] = await Promise.all([
 			api.rpc.chain.getHeader(hash),
 			api.rpc.chain.getBlockHash(0),

@@ -102,7 +102,11 @@ describe('TransactionFeeEstimateService', () => {
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
-					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
+					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
+						mockApi,
+						blockHash789629,
+						balancesTransferValid,
+					),
 				),
 			).toStrictEqual(validRuntimeResponse);
 		});
@@ -112,6 +116,7 @@ describe('TransactionFeeEstimateService', () => {
 			expect(
 				sanitizeNumbers(
 					await transactionFeeEstimateService22887036.fetchTransactionFeeEstimate(
+						mockApi22887036,
 						blockHash22887036,
 						balancesTransferKeepAliveValid,
 					),
@@ -124,7 +129,11 @@ describe('TransactionFeeEstimateService', () => {
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			expect(
 				sanitizeNumbers(
-					await transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferValid),
+					await transactionFeeEstimateService.fetchTransactionFeeEstimate(
+						mockApi,
+						blockHash789629,
+						balancesTransferValid,
+					),
 				),
 			).toStrictEqual(validRpcResponse);
 
@@ -143,7 +152,7 @@ describe('TransactionFeeEstimateService', () => {
 				});
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApi);
 			await expect(
-				transactionFeeEstimateService.fetchTransactionFeeEstimate(blockHash789629, balancesTransferInvalid),
+				transactionFeeEstimateService.fetchTransactionFeeEstimate(mockApi, blockHash789629, balancesTransferInvalid),
 			).rejects.toStrictEqual(invalidResponse);
 
 			(mockApi.rpc.payment as any).queryInfo = queryInfoAt;

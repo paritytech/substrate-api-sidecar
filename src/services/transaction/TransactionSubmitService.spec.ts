@@ -46,7 +46,7 @@ describe('TransactionSubmitService', () => {
 	});
 	describe('submitTransaction', () => {
 		it('works with a valid a transaction', async () => {
-			return expect(transactionSubmitService.submitTransaction(balancesTransferValid)).resolves.toStrictEqual({
+			return expect(transactionSubmitService.submitTransaction(mockApi, balancesTransferValid)).resolves.toStrictEqual({
 				hash: polkadotRegistry.createType('Hash'),
 			});
 		});
@@ -62,7 +62,7 @@ describe('TransactionSubmitService', () => {
 				throw err;
 			};
 
-			await expect(transactionSubmitService.submitTransaction(balancesTransferInvalid)).rejects.toStrictEqual(
+			await expect(transactionSubmitService.submitTransaction(mockApi, balancesTransferInvalid)).rejects.toStrictEqual(
 				failParseResponse,
 			);
 
@@ -78,7 +78,7 @@ describe('TransactionSubmitService', () => {
 					throw err;
 				});
 
-			await expect(transactionSubmitService.submitTransaction(balancesTransferValid)).rejects.toStrictEqual(
+			await expect(transactionSubmitService.submitTransaction(mockApi, balancesTransferValid)).rejects.toStrictEqual(
 				nodeRejectResponse,
 			);
 

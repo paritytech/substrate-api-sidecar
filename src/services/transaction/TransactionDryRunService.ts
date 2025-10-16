@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import type { BlockHash, CallDryRunEffects, XcmDryRunApiError } from '@polkadot/types/interfaces';
 import type { Option, Result, u32 } from '@polkadot/types-codec';
 import { BadRequest } from 'http-errors';
@@ -30,13 +31,12 @@ export type SignedOriginCaller = {
 
 export class TransactionDryRunService extends AbstractService {
 	async dryRuntExtrinsic(
+		api: ApiPromise,
 		senderAddress: string,
 		transaction: `0x${string}`,
 		hash?: BlockHash,
 		xcmVersion?: number | undefined,
 	): Promise<ITransactionDryRun> {
-		const { api } = this;
-
 		if (!api.call.dryRunApi) {
 			throw new BadRequest('DryRunApi not found in metadata.');
 		} else if (!api.call.dryRunApi.dryRunCall) {
