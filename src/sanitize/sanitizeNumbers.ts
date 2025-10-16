@@ -262,6 +262,7 @@ function sanitizeMetadataExceptionsV14(
 	const { registry } = metadataOpts;
 	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
 	const value = struct[key];
+
 	/**
 	 * With V14 metadata the only key that is named 'value' lives inside of the
 	 * pallets key. The expected structure containing `{ type, value }`.
@@ -281,12 +282,21 @@ function sanitizeMetadataExceptionsV14(
 				isLe: true,
 			}).toString(10);
 		}
+		const typeName = typeDef.lookupName || typeDef.type;
+
+		// Skip decoding this value as it will be decoded later.
+		// TODO: Understand why this behavior is happening in PJS.
+		if (typeName && typeName === 'Vec<(AccountId32,FrameElectionProviderSupportBoundedSupport)>') {
+			return;
+		}
+
 		/**
 		 * The value is not an integer, and needs to be converted to its
 		 * correct type, then transformed to JSON.
 		 */
 		if (isHex(struct[key]) && (typeDef.lookupName || typeDef.type)) {
 			const typeName = typeDef.lookupName || typeDef.type;
+			console.log('typename: ', typeName);
 
 			struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
 		}
