@@ -262,6 +262,7 @@ function sanitizeMetadataExceptionsV14(
 	const { registry } = metadataOpts;
 	const integerTypes = ['u128', 'u64', 'u32', 'u16', 'u8'];
 	const value = struct[key];
+
 	/**
 	 * With V14 metadata the only key that is named 'value' lives inside of the
 	 * pallets key. The expected structure containing `{ type, value }`.
@@ -280,15 +281,15 @@ function sanitizeMetadataExceptionsV14(
 			struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
 				isLe: true,
 			}).toString(10);
-		}
-		/**
-		 * The value is not an integer, and needs to be converted to its
-		 * correct type, then transformed to JSON.
-		 */
-		if (isHex(struct[key]) && (typeDef.lookupName || typeDef.type)) {
-			const typeName = typeDef.lookupName || typeDef.type;
+		} else if (typeDef.type.startsWith('Option')) {
+			const strippedTypeName = typeDef.type.slice(6);
+			// Checking to see if the inner type is a integer. ex 'Option<u128>'.
+			// This is a special historical case
+			if (strippedTypeName.slice(0, 2) === '<u') {
+				const typeName = typeDef.lookupName || typeDef.type;
 
-			struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
+				struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
+			}
 		}
 	}
 }

@@ -29,18 +29,6 @@ export const polkadot: IConfig = {
 		path: '/accounts/15aKvwRqGVAwuBMaogtQXhuz9EQqUWsZJSAzomyb5xYwgBXA/vesting-info',
 		queryParams: ['at={blockId}'],
 	},
-	'/accounts/{accountId}/staking-info': {
-		path: '/accounts/12BnVhXxGBZXoq9QAkSv9UtVcdBs1k38yNx6sHUJWasTgYrm/staking-info',
-		queryParams: ['at={blockId}'],
-	},
-	'/accounts/{accountId}/staking-payouts': {
-		path: '/accounts/12BnVhXxGBZXoq9QAkSv9UtVcdBs1k38yNx6sHUJWasTgYrm/staking-payouts',
-		queryParams: ['at={blockId}', 'unclaimedOnly=false'],
-	},
-	'/pallets/staking/validators': {
-		path: '/pallets/staking/validators',
-		queryParams: ['at={blockId}', 'metadata=true'],
-	},
 	'/accounts/{accountId}/validate': {
 		path: '/accounts/DXgXPAT5zWtPHo6FhVvrDdiaDPgCNGxhJAeVBYLtiwW9hAc/validate',
 		queryParams: [],
@@ -84,10 +72,6 @@ export const polkadot: IConfig = {
 	'/node/version': {
 		path: '/node/version',
 		queryParams: [],
-	},
-	'/pallets/staking/progress': {
-		path: '/pallets/staking/progress',
-		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/storage': {
 		path: '/pallets/System/storage',
