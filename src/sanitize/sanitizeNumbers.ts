@@ -281,6 +281,15 @@ function sanitizeMetadataExceptionsV14(
 			struct[key] = u8aToBn(u8aValue.subarray(0, u8aValue.byteLength), {
 				isLe: true,
 			}).toString(10);
+		} else if (typeDef.type.startsWith('Option')) {
+			const strippedTypeName = typeDef.type.slice(6);
+			// Checking to see if the inner type is a integer. ex 'Option<u128>'.
+			// This is a special historical case
+			if (strippedTypeName.slice(0, 2) === '<u') {
+				const typeName = typeDef.lookupName || typeDef.type;
+
+				struct[key] = sanitizeNumbers(registry.createType(typeName, u8aValue).toJSON(), { metadataOpts });
+			}
 		}
 	}
 }
