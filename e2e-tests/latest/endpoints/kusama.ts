@@ -17,10 +17,6 @@
 import { IConfig } from '../types/endpoints';
 
 export const kusama: IConfig = {
-	'/pallets/staking/validators': {
-		path: '/pallets/staking/validators',
-		queryParams: ['at={blockId}', 'metadata=true'],
-	},
 	'/blocks': {
 		path: '/blocks?range=1-5',
 		queryParams: [],
@@ -60,10 +56,6 @@ export const kusama: IConfig = {
 	'/node/version': {
 		path: '/node/version',
 		queryParams: [],
-	},
-	'/pallets/staking/progress': {
-		path: '/pallets/staking/progress',
-		queryParams: ['at={blockId}'],
 	},
 	'/pallets/{palletId}/storage': {
 		path: '/pallets/System/storage',
