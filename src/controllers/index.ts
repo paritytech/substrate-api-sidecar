@@ -73,6 +73,12 @@ import {
 	RcPalletsStorage,
 } from './rc/pallets';
 import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
+import {
+	RcTransactionDryRun,
+	RcTransactionFeeEstimate,
+	RcTransactionMaterial,
+	RcTransactionSubmit,
+} from './rc/transaction';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
 /**
@@ -136,6 +142,10 @@ export const controllers = {
 	RcNodeNetwork,
 	RcNodeTransactionPool,
 	RcNodeVersion,
+	RcTransactionDryRun,
+	RcTransactionFeeEstimate,
+	RcTransactionMaterial,
+	RcTransactionSubmit,
 	RuntimeCode,
 	RuntimeMetadata,
 	RuntimeSpec,

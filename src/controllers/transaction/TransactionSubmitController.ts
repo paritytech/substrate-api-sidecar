@@ -60,6 +60,6 @@ export default class TransactionSubmitController extends AbstractController<Tran
 			};
 		}
 
-		res.send(await this.service.submitTransaction(tx));
+		res.send(await this.service.submitTransaction(this.api, tx));
 	};
 }

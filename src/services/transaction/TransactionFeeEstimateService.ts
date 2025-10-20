@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import { BlockHash, RuntimeDispatchInfo, RuntimeDispatchInfoV1 } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
@@ -24,14 +25,15 @@ export class TransactionFeeEstimateService extends AbstractService {
 	 * Fetch estimated fee information for a SCALE-encoded extrinsic at a given
 	 * block.
 	 *
+	 * @param api ApiPromise to use for the call
 	 * @param hash `BlockHash` to make call at
 	 * @param extrinsic scale encoded extrinsic to get a fee estimate for
 	 */
 	async fetchTransactionFeeEstimate(
+		api: ApiPromise,
 		hash: BlockHash,
 		transaction: string,
 	): Promise<RuntimeDispatchInfo | RuntimeDispatchInfoV1> {
-		const { api } = this;
 		const apiAt = await api.at(hash);
 
 		try {

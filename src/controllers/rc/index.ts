@@ -18,3 +18,4 @@ export * from './accounts';
 export * from './blocks';
 export * from './pallets';
 export * from './runtime';
+export * from './transaction';

@@ -31,12 +31,14 @@ describe('TransactionMaterialService', () => {
 	describe('getTransactionMaterial', () => {
 		it('Should return the scale encoded metadata when the `metadata` query param is `scale`', async () => {
 			expect(
-				sanitizeNumbers(await transactionMaterialService.fetchTransactionMaterial(blockHash789629, 'scale')),
+				sanitizeNumbers(
+					await transactionMaterialService.fetchTransactionMaterial(defaultMockApi, blockHash789629, 'scale'),
+				),
 			).toStrictEqual(response);
 		});
 
 		it('Should return the decoded metadata when the `metadata` query param is `json`', async () => {
-			const res = await transactionMaterialService.fetchTransactionMaterial(blockHash789629, 'json');
+			const res = await transactionMaterialService.fetchTransactionMaterial(defaultMockApi, blockHash789629, 'json');
 			// Confirms the returned metadata is not a hex string.
 			expect(typeof res.metadata).toBe('object');
 		});
@@ -54,7 +56,7 @@ describe('TransactionMaterialService', () => {
 				txVersion: '2',
 			};
 
-			const res = await transactionMaterialService.fetchTransactionMaterial(blockHash789629, false);
+			const res = await transactionMaterialService.fetchTransactionMaterial(defaultMockApi, blockHash789629, false);
 
 			expect(sanitizeNumbers(res)).toStrictEqual(expectedRes);
 		});

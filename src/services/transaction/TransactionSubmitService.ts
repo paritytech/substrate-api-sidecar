@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import { Hash } from '@polkadot/types/interfaces';
 
 import { AbstractService } from '../AbstractService';
@@ -23,11 +24,10 @@ export class TransactionSubmitService extends AbstractService {
 	/**
 	 * Submit a fully formed SCALE-encoded extrinsic for block inclusion.
 	 *
+	 * @param api ApiPromise to use for the call
 	 * @param extrinsic scale encoded extrinsic to submit
 	 */
-	async submitTransaction(transaction: string): Promise<{ hash: Hash }> {
-		const { api } = this;
-
+	async submitTransaction(api: ApiPromise, transaction: string): Promise<{ hash: Hash }> {
 		let tx;
 
 		try {

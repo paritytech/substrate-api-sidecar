@@ -71,6 +71,9 @@ export default class TransactionFeeEstimateController extends AbstractController
 		}
 		const hash = await this.api.rpc.chain.getFinalizedHead();
 
-		TransactionFeeEstimateController.sanitizedSend(res, await this.service.fetchTransactionFeeEstimate(hash, tx));
+		TransactionFeeEstimateController.sanitizedSend(
+			res,
+			await this.service.fetchTransactionFeeEstimate(this.api, hash, tx),
+		);
 	};
 }

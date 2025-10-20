@@ -4000,7 +4000,176 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  
+
+  /rc/transaction:
+    post:
+      tags:
+      - rc transaction
+      summary: Submit a transaction to the relay chain node's transaction pool.
+      description: Accepts a valid signed extrinsic for the relay chain. Replaces `/tx` from versions
+        < v1.0.0.
+      operationId: submitRcTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionSuccess'
+        "400":
+            description: failed to parse or submit transaction
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TransactionFailure'
+  /rc/transaction/dry-run:
+    post:
+      tags:
+      - rc transaction
+      summary: Dry run an extrinsic on the relay chain.
+      description: Use the `dryRun` call to simulate the submission of a transaction
+        to the relay chain without executing it so that you can check for potential errors and
+        validate the expected outcome.
+      operationId: dryrunRcTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/TransactionDryRun'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDryRun'
+        "400":
+          description: failed to dry-run transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFailure'
+  /rc/transaction/fee-estimate:
+    post:
+      tags:
+      - rc transaction
+      summary: Receive a fee estimate for a relay chain transaction.
+      description: >-
+        Send a serialized transaction and receive back a naive fee estimate for the relay chain.
+        Note: `partialFee` does not include any tips that you may add to increase
+        a transaction's priority. See the reference on `compute_fee`.
+        Replaces `/tx/fee-estimate` from versions < v1.0.0.
+        Substrate Reference:
+        - `RuntimeDispatchInfo`: https://crates.parity.io/pallet_transaction_payment_rpc_runtime_api/struct.RuntimeDispatchInfo.html
+        - `query_info`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.query_info
+        - `compute_fee`: https://crates.parity.io/pallet_transaction_payment/struct.Module.html#method.compute_fee
+      operationId: feeEstimateRcTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/Transaction'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFeeEstimate'
+        "400":
+          description: fee estimation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionFeeEstimateFailure'
+  /rc/transaction/material:
+    get:
+      tags:
+      - rc transaction
+      summary: Get all the relay chain network information needed to construct a transaction offline.
+      description: Returns the material that is universal to constructing any
+        signed transaction offline for the relay chain. Replaces `/tx/artifacts` from versions < v1.0.0.
+      operationId: getRcTransactionMaterial
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction
+          material from the relay chain.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: noMeta
+        in: query
+        description: DEPRECATED! This is no longer supported
+        schema:
+          type: boolean
+          default: false
+      - name: metadata
+        in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+          When `metadata` is not inputted, the `metadata` field will be absent.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rc/transaction/material/{metadataVersion}:
+    get:
+      tags:
+      - rc transaction
+      summary: Get all the relay chain network information needed to construct a transaction offline and
+        the version of metadata specified in `metadataVersion`.
+      description: Returns all the materials necessary for constructing any signed transactions
+        offline for the relay chain.
+      operationId: getRcTransactionMaterialwithVersionedMetadata
+      parameters:
+      - name: metadataVersion
+        in: path
+        description: The version of metadata. The input is expected in a `vX` format, where `X`
+          represents the version number (e.g. `v14`, `v15`). By default, metadata is outputted
+          in 'json' format, unless the `metadata` query parameter is provided, in which case it
+          can be either in 'json' or 'scale' format.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve the transaction construction
+          material from the relay chain.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      - name: metadata
+        in: query
+        description: Specifies the format of the metadata to be returned. Accepted values are
+          'json', and 'scale'. 'json' being the decoded metadata, and 'scale' being the SCALE encoded metadata.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMaterial'
+        "400":
+          description: invalid blockId supplied for at query param
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /pallets/{palletId}/storage:
     get:
       tags:

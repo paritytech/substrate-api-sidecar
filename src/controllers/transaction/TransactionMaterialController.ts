@@ -82,7 +82,10 @@ export default class TransactionMaterialController extends AbstractController<Tr
 
 		const metadataArg = this.parseMetadataArgs(metadata);
 
-		TransactionMaterialController.sanitizedSend(res, await this.service.fetchTransactionMaterial(hash, metadataArg));
+		TransactionMaterialController.sanitizedSend(
+			res,
+			await this.service.fetchTransactionMaterial(this.api, hash, metadataArg),
+		);
 	};
 
 	/**
@@ -151,7 +154,7 @@ export default class TransactionMaterialController extends AbstractController<Tr
 
 		TransactionMaterialController.sanitizedSend(
 			res,
-			await this.service.fetchTransactionMaterialwithVersionedMetadata(api, hash, metadataArg, version),
+			await this.service.fetchTransactionMaterialwithVersionedMetadata(this.api, api, hash, metadataArg, version),
 		);
 	};
 }

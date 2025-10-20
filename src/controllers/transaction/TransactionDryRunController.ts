@@ -75,7 +75,7 @@ export default class TransactionDryRunController extends AbstractController<Tran
 
 		TransactionDryRunController.sanitizedSend(
 			res,
-			await this.service.dryRuntExtrinsic(senderAddress, tx, hash, xcmVersion),
+			await this.service.dryRuntExtrinsic(this.api, senderAddress, tx, hash, xcmVersion),
 		);
 	};
 }
