@@ -4,7 +4,7 @@ This document outlines the implementation details for the `claimed` field return
 Before proceeding, please check out the introductory helper guide in this [HackMd](https://hackmd.io/@LwMsxe3-SFmNXxugAXOKgg/ryPwFoezyl).
 
 ## Description
-In Sidecar, the `/accounts/{accountId}/staking-info` endpoint ([docs](https://paritytech.github.io/substrate-api-sidecar/dist/)) takes two parameters: 
+In Sidecar, the `/accounts/{accountId}/staking-info` endpoint ([docs](https://paritytech.github.io/substrate-api-sidecar/docsv2/)) takes two parameters: 
 - a stash account (required field): this can be a validator's account or a nominator's account. 
 - a block height (optional - default latest block): based on the height, the corresponding eras are returned.
 
