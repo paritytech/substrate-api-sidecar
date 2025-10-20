@@ -102,7 +102,7 @@ export default class App {
 		// Set up a root route
 		this.app.get('/', (_req: Request, res: Response) => {
 			res.send({
-				docs: 'https://paritytech.github.io/substrate-api-sidecar/dist',
+				docs: 'https://paritytech.github.io/substrate-api-sidecar/docsv2',
 				github: 'https://github.com/paritytech/substrate-api-sidecar',
 				version: packageJson.version,
 				listen: `${this.host}:${this.port}`,

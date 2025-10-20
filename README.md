@@ -66,7 +66,7 @@ NOTE: Node LTS (`long term support`) versions start with an even number, and odd
 - [Source code installation and usage](#source-code-installation-and-usage)
 - [Configuration](#configuration)
 - [Debugging fee and staking payout calculations](#debugging-staking-payout-calculations)
-- [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/dist/)
+- [Available endpoints](https://paritytech.github.io/substrate-api-sidecar/docsv2/)
 - [Chain integration guide](./guides/CHAIN_INTEGRATION.md)
 - [Docker](#docker)
 - [Notes for maintainers](#notes-for-maintainers)
@@ -112,7 +112,7 @@ node_modules/.bin/substrate-api-sidecar
 
 [Jump to the configuration section](#configuration) for more details on connecting to a node.
 
-[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/docsv2/)
 
 In the full endpoints doc, you will also find the following `trace` related endpoints :
 - `/experimental/blocks/{blockId}/traces/operations?actions=false`
@@ -318,7 +318,7 @@ CALC_DEBUG=1 sh calc/build.sh
 
 ## Available endpoints
 
-[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/dist/)
+[Click here for full endpoint docs.](https://paritytech.github.io/substrate-api-sidecar/docsv2/)
 
 ## Chain integration guide
 
