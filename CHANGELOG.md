@@ -2,26 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.10.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.9.1..v20.10.0) (2025-10-22)
+
+### Feat
+
+- feat: Add rc endpoints for transaction suite ([#1798](https://github.com/paritytech/substrate-api-sidecar/pull/1798)) ([5995ae6](https://github.com/paritytech/substrate-api-sidecar/commit/5995ae6ba0ac47aa94bac1be0247a89be808d465))
+
+### Fix
+
+- fix: add migration boundaries for kusama ([#1793](https://github.com/paritytech/substrate-api-sidecar/pull/1793)) ([075a119](https://github.com/paritytech/substrate-api-sidecar/commit/075a11958d1732def134e0a9996cdd391baacce7))
+- fix: /runtime/metadata endpoint ([#1799](https://github.com/paritytech/substrate-api-sidecar/pull/1799)) ([f643b4a](https://github.com/paritytech/substrate-api-sidecar/commit/f643b4a15d1be705506504e44fd6251d3a075822))
+
+### Docs
+
+- docs: Update doc references to docsv2 changes ([#1800](https://github.com/paritytech/substrate-api-sidecar/pull/1800)) ([994558a](https://github.com/paritytech/substrate-api-sidecar/commit/994558ad61a6cef0e863f1022e30df579b6e6aed))
+
+### Chore
+
+- chore: Update config for polkadot asset hub and polkadot ([#1802](https://github.com/paritytech/substrate-api-sidecar/pull/1802)) ([b489ba7](https://github.com/paritytech/substrate-api-sidecar/commit/b489ba7c05f7d592d1348b48474130150f80cfe3))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.20.0 (Polkadot stable2509)
+- Kusama v1.20.0 (Polkadot stable2509)
+- Westend v1.20.0 (Polkadot stable2509)
+
+Tested against the following runtime releases:
+- Polkadot v1007001
+- Kusama v1009002
+- Westend v1020004
+- Polkadot Asset Hub v1007001
+- Kusama Asset Hub v1009002
+
 ## [20.9.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.9.0..v20.9.1) (2025-10-07)
 
 ### Fix
 
 - fix: add required endpoints to kusama for staking ([#1791](https://github.com/paritytech/substrate-api-sidecar/pull/1791)) ([c96fbe0](https://github.com/paritytech/substrate-api-sidecar/commit/c96fbe01dd2a26932f659de2d0d896a25e3dcaa8))
-
-## Compatibility
-
-Tested against the following node releases:
-- Polkadot v1.19.2 (Polkadot stable2506-2)
-- Kusama v1.19.2 (Polkadot stable2506-2)
-- Westend v1.19.2 (Polkadot stable2506-2)
-
-Tested against the following runtime releases:
-- Polkadot v1007001
-- Kusama v1009001
-- Westend v1020000
-- Polkadot Asset Hub v1007001
-- Kusama Asset Hub v1009001
-- Westend Asset Hub v1020000
 
 ## [20.9.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.8.0..v20.9.0) (2025-10-02)
 
