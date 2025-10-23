@@ -144,14 +144,7 @@ export default class RcBlocksController extends AbstractController<BlocksService
 			paraId: paraIdArg,
 		};
 
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm) +
-			Number(options.paraId);
+		const cacheKey = hash.toString() + Object.values(options).join();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -219,14 +212,7 @@ export default class RcBlocksController extends AbstractController<BlocksService
 			paraId: paraIdArg,
 		};
 
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm) +
-			Number(options.paraId);
+		const cacheKey = hash.toString() + Object.values(options).join();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 

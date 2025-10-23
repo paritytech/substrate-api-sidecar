@@ -234,15 +234,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				};
 
 				// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-				const cacheKey =
-					ahHash.toString() +
-					Number(options.eventDocs) +
-					Number(options.extrinsicDocs) +
-					Number(options.checkFinalized) +
-					Number(options.noFees) +
-					Number(options.checkDecodedXcm) +
-					Number(options.paraId) +
-					Number(options.useEvmAddressFormat);
+				const cacheKey = ahHash.toString() + Object.values(options).join();
 
 				const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -318,15 +310,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 			useEvmAddressFormat: useEvmFormat === 'true',
 		};
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm) +
-			Number(options.paraId) +
-			Number(options.useEvmAddressFormat);
+		const cacheKey = hash.toString() + Object.values(options).join();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -409,15 +393,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				};
 
 				// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-				const cacheKey =
-					ahHash.toString() +
-					Number(options.eventDocs) +
-					Number(options.extrinsicDocs) +
-					Number(options.checkFinalized) +
-					Number(options.noFees) +
-					Number(options.checkDecodedXcm) +
-					Number(options.paraId) +
-					Number(options.useEvmAddressFormat);
+				const cacheKey = ahHash.toString() + Object.values(options).join();
 
 				const isBlockCached = this.blockStore.get(cacheKey);
 
@@ -490,15 +466,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		};
 
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm) +
-			Number(options.paraId) +
-			Number(options.useEvmAddressFormat);
+		const cacheKey = hash.toString() + Object.values(options).join();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
