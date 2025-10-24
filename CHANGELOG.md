@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.10.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.10.0..v20.10.1) (2025-10-24)
+
+### Fix
+
+- fix: use all params for cache key ([#1805](https://github.com/paritytech/substrate-api-sidecar/pull/1805)) ([2c0a2f9](https://github.com/paritytech/substrate-api-sidecar/commit/2c0a2f9))
+
+### Chore
+
+- chore(deps): bump actions/setup-node from 5 to 6 ([#1797](https://github.com/paritytech/substrate-api-sidecar/pull/1797)) ([d8bf37b](https://github.com/paritytech/substrate-api-sidecar/commit/d8bf37b))
+- chore(deps): bump Swatinem/rust-cache from 2.7.8 to 2.8.1 ([#1778](https://github.com/paritytech/substrate-api-sidecar/pull/1778)) ([437168c](https://github.com/paritytech/substrate-api-sidecar/commit/437168c))
+- chore(deps): bump axios from 1.8.3 to 1.12.2 in /docs ([#1786](https://github.com/paritytech/substrate-api-sidecar/pull/1786)) ([f13b848](https://github.com/paritytech/substrate-api-sidecar/commit/f13b848))
+- chore(deps): bump benchmark-action/github-action-benchmark ([#1752](https://github.com/paritytech/substrate-api-sidecar/pull/1752)) ([568e16f](https://github.com/paritytech/substrate-api-sidecar/commit/568e16f))
+- chore(deps): bump axios from 1.10.0 to 1.11.0 ([#1711](https://github.com/paritytech/substrate-api-sidecar/pull/1711)) ([5cd918e](https://github.com/paritytech/substrate-api-sidecar/commit/5cd918e))
+- chore(deps-dev): bump webpack-dev-server in /docs-v2 ([#1749](https://github.com/paritytech/substrate-api-sidecar/pull/1749)) ([b69be56](https://github.com/paritytech/substrate-api-sidecar/commit/b69be56))
+- chore(deps-dev): bump @types/express from 5.0.2 to 5.0.3 ([#1667](https://github.com/paritytech/substrate-api-sidecar/pull/1667)) ([cd9690e](https://github.com/paritytech/substrate-api-sidecar/commit/cd9690e))
+- chore(deps-dev): bump @types/http-errors from 2.0.4 to 2.0.5 ([#1666](https://github.com/paritytech/substrate-api-sidecar/pull/1666)) ([e4078e9](https://github.com/paritytech/substrate-api-sidecar/commit/e4078e9))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.20.0 (Polkadot stable2509)
+- Kusama v1.20.0 (Polkadot stable2509)
+- Westend v1.20.0 (Polkadot stable2509)
+
+Tested against the following runtime releases:
+- Polkadot v1007001
+- Kusama v1009002
+- Westend v1020004
+- Polkadot Asset Hub v1007001
+- Kusama Asset Hub v1009002
+
 ## [20.10.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.9.1..v20.10.0) (2025-10-22)
 
 ### Feat
