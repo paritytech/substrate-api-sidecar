@@ -82,7 +82,7 @@ jobs:
           private-key: ${{ secrets.GH_APP_SAS_APP_KEY }}
 
       - name: Download docs v2
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: docsv2-${{ github.sha }}
           path: tmp/
