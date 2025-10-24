@@ -74,13 +74,7 @@ export default class RcBlocksExtrinsicsController extends AbstractController<Blo
 			paraId: undefined,
 		};
 
-		const cacheKey =
-			hash.toString() +
-			Number(options.eventDocs) +
-			Number(options.extrinsicDocs) +
-			Number(options.checkFinalized) +
-			Number(options.noFees) +
-			Number(options.checkDecodedXcm);
+		const cacheKey = hash.toString() + Object.values(options).join();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 		const historicApi = await rcApi.at(hash);
