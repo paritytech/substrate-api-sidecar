@@ -121,6 +121,7 @@ export class PalletsStakingProgressService extends AbstractService {
 			unappliedSlashes: unappliedSlashesAtActiveEra.toString()
 				? unappliedSlashesAtActiveEra[0][1].map((slash) => slash.toJSON())
 				: ([] as AnyJson[]),
+			validatorSet: validators && validators.length ? validators.map((accountId) => accountId.toString()) : [],
 		};
 
 		if (forceEra.isForceNone) {
