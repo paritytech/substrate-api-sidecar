@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.10.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.10.1..v20.10.2) (2025-10-30)
+
+### Fix
+
+- fix: add validatorSet when forceNone for /staking/progress if it exists ([#1814](https://github.com/paritytech/substrate-api-sidecar/pull/1814)) ([dad2043](https://github.com/paritytech/substrate-api-sidecar/commit/dad204382701b784e6a1ab9e1b3df621b461dae7))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.20.0 (Polkadot stable2509)
+- Kusama v1.20.0 (Polkadot stable2509)
+- Westend v1.20.0 (Polkadot stable2509)
+
+Tested against the following runtime releases:
+- Polkadot v1007001
+- Kusama v1009002
+- Westend v1020004
+- Polkadot Asset Hub v1007001
+- Kusama Asset Hub v1009002
+
 ## [20.10.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.10.0..v20.10.1) (2025-10-24)
 
 ### Fix
