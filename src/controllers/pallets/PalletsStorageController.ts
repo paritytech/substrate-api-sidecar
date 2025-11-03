@@ -70,7 +70,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
 
 				const result = await this.service.fetchStorageItem(historicApi, {
@@ -87,6 +87,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -129,7 +130,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
 
 				const result = await this.service.fetchStorage(historicApi, {
@@ -143,6 +144,7 @@ export default class PalletsStorageController extends AbstractController<Pallets
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

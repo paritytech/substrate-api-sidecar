@@ -23,6 +23,7 @@ export interface AccountsProxyInfo {
 	at: IAt;
 	delegatedAccounts: Vec<PalletProxyProxyDefinition>;
 	depositHeld: u128;
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }

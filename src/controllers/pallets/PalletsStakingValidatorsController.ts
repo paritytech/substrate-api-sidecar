@@ -51,7 +51,7 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.derivePalletStakingValidators(ahHash);
 
 				const apiAt = await this.api.at(ahHash);
@@ -59,6 +59,7 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

@@ -214,7 +214,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const queryFinalizedHead = !this.options.finalizes ? false : finalized === 'false';
 				const omitFinalizedTag = !this.options.finalizes ? true : false;
 				const noFeesArg = noFees === 'true';
@@ -252,6 +252,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 				const enhancedResult = {
 					...block,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -364,7 +365,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const eventDocsArg = eventDocs === 'true';
 				const extrinsicDocsArg = extrinsicDocs === 'true';
 				const finalizeOverride = finalizedKey === 'false';
@@ -412,6 +413,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 				const enhancedResult = {
 					...block,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -513,7 +515,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const headerResult = await this.service.fetchBlockHeader(ahHash);
 
 				const apiAt = await this.api.at(ahHash);
@@ -524,6 +526,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 					stateRoot: headerResult.stateRoot,
 					extrinsicsRoot: headerResult.extrinsicsRoot,
 					digest: headerResult.digest,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -570,7 +573,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const headerResult = await this.service.fetchBlockHeader(ahHash);
 
 				const apiAt = await this.api.at(ahHash);
@@ -581,6 +584,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 					stateRoot: headerResult.stateRoot,
 					extrinsicsRoot: headerResult.extrinsicsRoot,
 					digest: headerResult.digest,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

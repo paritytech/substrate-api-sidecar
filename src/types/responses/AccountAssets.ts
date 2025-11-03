@@ -49,6 +49,7 @@ export interface IAssetBalance {
 export interface IAccountAssetsBalances {
 	at: IAt;
 	assets: IAssetBalance[];
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }
@@ -62,6 +63,7 @@ export interface IAccountAssetApproval {
 	at: IAt;
 	amount: u128 | null;
 	deposit: TAssetDepositBalance | null;
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }

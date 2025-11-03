@@ -19,6 +19,7 @@ import { IAt, IEraPayouts } from '.';
 export interface IAccountStakingPayouts {
 	at: IAt;
 	erasPayouts: (IEraPayouts | { message: string })[];
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }

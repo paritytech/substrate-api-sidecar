@@ -38,6 +38,7 @@ export interface IAccountBalanceInfo {
 	 */
 	transferable: Balance | string;
 	locks: Vec<BalanceLock> | IBalanceLock[];
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }
