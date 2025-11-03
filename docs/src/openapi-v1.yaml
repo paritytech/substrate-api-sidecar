@@ -1544,9 +1544,9 @@ paths:
       tags:
       - blocks
       summary: Get a range of blocks by their height.
-      description: Given a range query parameter return an array of all the blocks within that range. 
+      description: Given a range query parameter return an array of all the blocks within that range.
         When `useRcBlock` parameter is used, the range represents relay chain block numbers and the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp` for each block. Relay chain blocks
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp` for each block. Relay chain blocks
         without corresponding Asset Hub blocks are skipped.
       operationId: getBlock
       parameters:
@@ -1616,7 +1616,7 @@ paths:
       summary: Get a block by its height or hash.
       description: Returns a single block. BlockId can either be a block hash or a
         block height. Replaces `/block/{number}` from versions < v1.0.0. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getBlockById
       parameters:
       - name: blockId
@@ -1713,7 +1713,7 @@ paths:
       summary: Get a block's header by its height or hash.
       description: Returns a single block's header. BlockId can either be a block hash or a
         block height. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getBlockHeaderById
       parameters:
       - name: blockId
@@ -1756,7 +1756,7 @@ paths:
       summary: Get an extrinsic by its extrinsicIndex and block height or hash.
         The pair blockId, extrinsicIndex is sometimes referred to as a Timepoint.
       description: Returns a single extrinsic. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getExtrinsicByTimepoint
       parameters:
       - name: blockId
@@ -1835,7 +1835,7 @@ paths:
       summary: Get the most recently finalized block.
       description: Returns the most recently finalized block. Replaces `/block`
         from versions < v1.0.0. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getHeadBlock
       parameters:
       - name: finalized
@@ -1920,7 +1920,7 @@ paths:
       - blocks
       summary: Get information about the header of the most recent finalized block.
       description: Returns the most recently finalized block's header. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getLatestBlockHeader
       parameters:
       - name: finalized
@@ -1966,7 +1966,7 @@ paths:
       summary: Get a blocks header & its extrinsics as hex values.
       description: Returns a block & its extrinsics as hex values. BlockId can either be a block hash or a
         block height. When `useRcBlock` parameter is used, the response
-        includes additional fields `rcBlockNumber` and `ahTimestamp`.
+        includes additional fields `rcBlockHash`, `rcBlockNumber`, and `ahTimestamp`.
       operationId: getBlockRawExtrinsics
       parameters:
       - name: blockId
@@ -4869,6 +4869,9 @@ components:
           type: string
           description: The amount reserved on the owner's account to hold this item in storage.
           format: unsignedInteger
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -4926,6 +4929,9 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -4991,6 +4997,9 @@ components:
             locks
           items:
             $ref: '#/components/schemas/BalanceLock'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5045,6 +5054,9 @@ components:
           description: An array of queried assets.
           items:
             $ref: '#/components/schemas/AssetsBalance'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5078,6 +5090,9 @@ components:
           type: string
           format: unsignedInteger
           description: The held deposit.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5114,6 +5129,9 @@ components:
           $ref: '#/components/schemas/Nominations'
         staking:
           $ref: '#/components/schemas/StakingLedger'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5155,6 +5173,9 @@ components:
                   based on the portion of `totalEraRewardPoints` they have.
               payouts:
                 $ref: '#/components/schemas/Payouts'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5193,6 +5214,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VestingSchedule'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5398,6 +5422,9 @@ components:
           description: >-
             A boolean identifying whether the block is finalized or not.
             Note: on chains that do not have deterministic finality this field is omitted.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5443,6 +5470,9 @@ components:
             block.
           items:
             type: string
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -5491,6 +5521,9 @@ components:
               items:
                 $ref: '#/components/schemas/DigestItem'
               description: Array of `DigestItem`s associated with the block.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6227,6 +6260,9 @@ components:
           $ref: '#/components/schemas/BlockIdentifiers'
         extrinsic:
           $ref: '#/components/schemas/Extrinsic'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6302,6 +6338,9 @@ components:
             null}},{\"parents\":\"0\",\"interior\":{\"x2\":[{\"palletInstance\":
             \"50\"},{\"generalIndex\":\"2\"}]}}],\"lpToken\":{\"lpToken\":\"1\"}
             },{\"lpToken\":{\"lpToken\":\"0\"}}]"
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6336,6 +6375,9 @@ components:
           type: string
           description: Next availabe liquidity pool's id.
           example: "4"
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6499,6 +6541,9 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         assetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6525,6 +6570,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletConstantsItemMetadata'
           description: Array containing metadata for each constant entry of the pallet.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6548,6 +6596,9 @@ components:
           example: "EnactmentPeriod"
         metadata:
           $ref: '#/components/schemas/PalletConstantsItemMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6590,6 +6641,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
           description: Array containing metadata for each dispatchable entry of the pallet.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6615,6 +6669,9 @@ components:
           example: "vote"
         metadata:
           $ref: '#/components/schemas/PalletDispatchablesItemMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6664,6 +6721,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletErrorsItemMetadata'
           description: Array containing metadata for each error entry of the pallet.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6687,6 +6747,9 @@ components:
           example: "ValueLow"
         metadata:
           $ref: '#/components/schemas/PalletErrorsItemMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6734,6 +6797,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletEventsItemMetadata'
           description: Array containing metadata for each event entry of the pallet.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6757,6 +6823,9 @@ components:
           example: "Proposed"
         metadata:
           $ref: '#/components/schemas/PalletEventsItemMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6796,6 +6865,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletsForeignAssetsInfo'
           description: Array containing the `AssetDetails` and `AssetMetadata` of every foreign asset.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6820,6 +6892,9 @@ components:
           $ref: '#/components/schemas/BondedPool'
         rewardPool:
           $ref: '#/components/schemas/RewardPool'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6856,6 +6931,9 @@ components:
             type: number
         minJoinBond:
             type: number
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6911,6 +6989,9 @@ components:
                         description: The block number at which the referendum's confirmation stage will end at as long as
                           it doesn't lose its approval in the meantime.
               description: A list of ongoing referenda and their details.
+            rcBlockHash:
+              type: string
+              description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
             rcBlockNumber:
               type: string
               description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6926,6 +7007,9 @@ components:
           $ref: '#/components/schemas/AssetInfo'
         poolAssetMetadata:
           $ref: '#/components/schemas/AssetMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6948,6 +7032,9 @@ components:
           items:
             $ref: '#/components/schemas/PalletStorageItemMetadata'
           description: Array containing metadata for each storage entry of the pallet.
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -6992,6 +7079,9 @@ components:
                 turnout: "34485320658000000"
         metadata:
           $ref: '#/components/schemas/PalletStorageItemMetadata'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -7520,6 +7610,9 @@ components:
           items:
             type: string
             format: ss58
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
@@ -7562,6 +7655,9 @@ components:
               status:
                 type: string
                 description: Status of individual validator (active/waiting).
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
         rcBlockNumber:
           type: string
           description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
