@@ -16,10 +16,10 @@ Tested against the following node releases:
 - Westend v1.20.0 (Polkadot stable2509)
 
 Tested against the following runtime releases:
-- Polkadot v1007001
+- Polkadot v2000000
 - Kusama v1009002
 - Westend v1020004
-- Polkadot Asset Hub v1007001
+- Polkadot Asset Hub v2000000
 - Kusama Asset Hub v1009002
 
 ## [20.10.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.10.1..v20.10.2) (2025-10-30)
