@@ -56,7 +56,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
 
 				const result = await this.service.fetchEventItem(historicApi, {
@@ -72,6 +72,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -112,7 +113,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
 
 				const result = await this.service.fetchEvents(historicApi, {
@@ -126,6 +127,7 @@ export default class PalletsEventsController extends AbstractController<PalletsE
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

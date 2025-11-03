@@ -81,6 +81,7 @@ When using `useRcBlock` parameter, endpoints now return an array of response obj
       "height": "1234567"
     },
     "data": "...",
+    "rcBlockHash": "0x1234567890abcdef...",
     "rcBlockNumber": "5678901",
     "ahTimestamp": "1234567890"
   }
@@ -99,7 +100,7 @@ If no Asset Hub blocks are found for the specified relay chain block, an empty a
 
 #### Response Format Summary
 
-- **With `useRcBlock=true`**: Returns `[{...result, rcBlockNumber, ahTimestamp}]` or `[]`
+- **With `useRcBlock=true`**: Returns `[{...result, rcBlockHash, rcBlockNumber, ahTimestamp}]` or `[]`
 - **Without `useRcBlock`**: Returns single response object (unchanged)
 
 ### Affected Endpoints
@@ -181,6 +182,7 @@ if (data.length === 0) {
   // Process each Asset Hub block (currently will be 0 or 1, but prepared for multiple)
   data.forEach(item => {
     console.log(item.free);
+    console.log(item.rcBlockHash);
     console.log(item.rcBlockNumber);
   });
 }
@@ -216,7 +218,8 @@ const data = await response.json();
 data.forEach((block, index) => {
   console.log(`Asset Hub block ${index + 1}:`);
   console.log(`Block number: ${block.at.height}`);
-  console.log(`RC block: ${block.rcBlockNumber}`);
+  console.log(`RC block hash: ${block.rcBlockHash}`);
+  console.log(`RC block number: ${block.rcBlockNumber}`);
   console.log(`Timestamp: ${block.ahTimestamp}`);
 });
 ```
@@ -253,6 +256,7 @@ Response:
     "reserved": "0",
     "miscFrozen": "0",
     "feeFrozen": "0",
+    "rcBlockHash": "0xabcdef1234567890...",
     "rcBlockNumber": "20000000",
     "ahTimestamp": "1705123456789"
   }

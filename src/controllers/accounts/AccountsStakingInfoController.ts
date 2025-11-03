@@ -125,7 +125,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				let result;
 				if (isAssetHubMigrated) {
 					result = await this.service.fetchAccountStakingInfoAssetHub(ahHash, includeClaimedRewardsArg, address);
@@ -138,6 +138,7 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

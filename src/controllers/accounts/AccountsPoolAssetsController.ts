@@ -113,7 +113,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchPoolAssetBalances(ahHash, address, assetsArray);
 
 				const apiAt = await this.api.at(ahHash);
@@ -121,6 +121,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -158,7 +159,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchPoolAssetApprovals(ahHash, address, id, delegate);
 
 				const apiAt = await this.api.at(ahHash);
@@ -166,6 +167,7 @@ export default class AccountsPoolAssetsController extends AbstractController<Acc
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

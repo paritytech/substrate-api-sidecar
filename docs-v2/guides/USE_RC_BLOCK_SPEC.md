@@ -57,6 +57,7 @@ Returns array format with additional metadata:
 ```json
 [{
  // ... existing endpoint response data
+ "rcBlockHash": "0x1234567890abcdef...",
  "rcBlockNumber": "1000000",
  "ahTimestamp": "1642694400"
 }]
@@ -86,6 +87,7 @@ Most existing sidecar endpoints support the `useRcBlock` parameter, including:
 
 ### Enhanced Response Format
 When `useRcBlock=true` is used, responses include additional context fields:
+- `rcBlockHash`: The relay chain block hash
 - `rcBlockNumber`: The relay chain block number
 - `ahTimestamp`: The Asset Hub block timestamp
 - Array format prepares for future elastic scaling scenarios

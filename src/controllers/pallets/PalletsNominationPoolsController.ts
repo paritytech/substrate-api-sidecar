@@ -59,7 +59,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchNominationPoolById(index, ahHash, metadataArg);
 
 				const apiAt = await this.api.at(ahHash);
@@ -67,6 +67,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
@@ -94,7 +95,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchNominationPoolInfo(ahHash);
 
 				const apiAt = await this.api.at(ahHash);
@@ -102,6 +103,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

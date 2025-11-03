@@ -329,7 +329,9 @@ export default abstract class AbstractController<T extends AbstractService> {
 		return ahBlockHashes;
 	}
 
-	protected async getHashFromRcAt(rcAt: unknown): Promise<{ ahHash: BlockHash; rcBlockNumber: string }[]> {
+	protected async getHashFromRcAt(
+		rcAt: unknown,
+	): Promise<{ ahHash: BlockHash; rcBlockHash: BlockHash; rcBlockNumber: string }[]> {
 		const ahHashes = await this.getAhAtFromRcAt(rcAt);
 
 		if (ahHashes.length === 0) {
@@ -346,7 +348,7 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
 		const rcBlockNumber = rcHeader.number.toString();
 
-		return ahHashes.map((ahHash) => ({ ahHash, rcBlockNumber }));
+		return ahHashes.map((ahHash) => ({ ahHash, rcBlockHash: rcHash, rcBlockNumber }));
 	}
 
 	/**

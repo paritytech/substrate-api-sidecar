@@ -49,6 +49,7 @@ export interface IPoolAssetBalance {
 export interface IAccountPoolAssetsBalances {
 	at: IAt;
 	poolAssets: IPoolAssetBalance[];
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }
@@ -62,6 +63,7 @@ export interface IAccountPoolAssetApproval {
 	at: IAt;
 	amount: u128 | null;
 	deposit: TAssetDepositBalance | null;
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }

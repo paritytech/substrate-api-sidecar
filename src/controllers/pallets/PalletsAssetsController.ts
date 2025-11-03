@@ -103,7 +103,7 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const result = await this.service.fetchAssetById(ahHash, index);
 
 				const apiAt = await this.api.at(ahHash);
@@ -111,6 +111,7 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

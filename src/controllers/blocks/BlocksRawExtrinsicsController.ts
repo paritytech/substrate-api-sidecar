@@ -63,13 +63,14 @@ export default class BlocksRawExtrinsicsController extends AbstractController<Bl
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				rawBlock = await this.service.fetchBlockRaw(ahHash);
 
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
 				const enhancedResult = {
 					...rawBlock,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

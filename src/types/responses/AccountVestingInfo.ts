@@ -23,6 +23,7 @@ export interface IAccountVestingInfo {
 	at: IAt;
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	vesting: Option<VestingInfo> | {};
+	rcBlockHash?: string;
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }

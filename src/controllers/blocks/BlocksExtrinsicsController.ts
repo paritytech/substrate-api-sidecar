@@ -66,7 +66,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const eventDocsArg = eventDocs === 'true';
 				const extrinsicDocsArg = extrinsicDocs === 'true';
 				const noFeesArg = noFees === 'true';
@@ -111,6 +111,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				const ahTimestamp = await apiAt.query.timestamp.now();
 				const enhancedResult = {
 					...extrinsic,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};

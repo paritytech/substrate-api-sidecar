@@ -53,6 +53,7 @@ import AbstractController from '../AbstractController';
  *   - `id`: An identifier for this lock. Only one lock may be in existence for each identifier.
  *   - `amount`: The amount below which the free balance may not drop with this lock in effect.
  *   - `reasons`: If true, then the lock remains in effect even for payment of transaction fees.
+ * - `rcBlockHash`: The relay chain block hash used for the query. Only present when `useRcBlock=true`.
  * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock=true`.
  * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock=true`.
  *
@@ -105,7 +106,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 
 			// Process each Asset Hub block found
 			const results = [];
-			for (const { ahHash, rcBlockNumber } of rcAtResults) {
+			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
 				const historicApi = await this.api.at(ahHash);
 				const result = await this.service.fetchAccountBalanceInfo(
 					ahHash,
@@ -120,6 +121,7 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 
 				const enhancedResult = {
 					...result,
+					rcBlockHash: rcBlockHash.toString(),
 					rcBlockNumber,
 					ahTimestamp: ahTimestamp.toString(),
 				};
