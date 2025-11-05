@@ -114,6 +114,7 @@ import AbstractController from '../AbstractController';
  */
 export default class BlocksController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
+	private requestCount = 0;
 	static controllerName = 'Blocks';
 	static requiredPallets = [['System', 'Session']];
 	constructor(
@@ -123,6 +124,32 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		super(api, '/blocks', new BlocksService(api, options.minCalcFeeRuntime, options.hasQueryFeeApi));
 		this.initRoutes();
 		this.blockStore = options.blockStore;
+	}
+
+	/**
+	 * Perform periodic cache cleanup to prevent memory leaks
+	 */
+	private performCacheCleanup(): void {
+		this.requestCount++;
+
+		// Clean up every 1000 requests
+		if (this.requestCount % 1000 === 0) {
+			const currentSize = this.blockStore.size;
+			const maxSize = this.blockStore.max;
+
+			// If cache is more than 80% full, remove 20% of entries
+			if (currentSize > maxSize * 0.8) {
+				const toRemove = Math.floor(currentSize * 0.2);
+				let removed = 0;
+
+				// Remove oldest entries (LRU order)
+				for (const [key] of this.blockStore.rkeys()) {
+					if (removed >= toRemove) break;
+					this.blockStore.delete(key);
+					removed++;
+				}
+			}
+		}
 	}
 
 	protected initRoutes(): void {
@@ -313,6 +340,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
 		const cacheKey = hash.toString() + Object.values(options).join();
 
+		// Perform periodic cache cleanup
+		this.performCacheCleanup();
+
 		const isBlockCached = this.blockStore.get(cacheKey);
 
 		if (isBlockCached) {
@@ -322,7 +352,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const historicApi = await this.api.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		const block = await this.service.fetchBlock(hash as BlockHash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
 		BlocksController.sanitizedSend(res, block);
@@ -469,6 +499,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		// Create a key for the cache that is a concatenation of the block hash and all the query params included in the request
 		const cacheKey = hash.toString() + Object.values(options).join();
+
+		// Perform periodic cache cleanup
+		this.performCacheCleanup();
 
 		const isBlockCached = this.blockStore.get(cacheKey);
 
