@@ -25,7 +25,10 @@ jobs:
           yarn --immutable
           echo "Benchmarks for polkadot"
           mkdir -p artifacts
-          yarn bench --log-level info --ws-url wss://rpc.polkadot.io
+          export WRK_THREADS=4
+          export WRK_CONNECTIONS=50
+          export WRK_TIMEOUT=120s
+          yarn bench --log-level info --ws-url wss://rpc.polkadot.io --time 60s
           mv benchmarks.txt artifacts/
 
       - name: upload artifacts
