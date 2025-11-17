@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
@@ -322,7 +323,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const historicApi = await this.api.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		// ref: https://github.com/paritytech/substrate-api-sidecar/pull/1830
+		// BlockHash and IU8a are the same underlying types
+		const block = await this.service.fetchBlock(hash as unknown as BlockHash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
 		BlocksController.sanitizedSend(res, block);
