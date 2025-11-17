@@ -48,8 +48,8 @@ export class ApiPromiseRegistry {
 			// Instantiate new API Promise instance
 			const api = await ApiPromise.create({
 				provider: url.startsWith('http')
-					? new HttpProvider(url, undefined, CACHE_CAPACITY || 0)
-					: new WsProvider(url, undefined, undefined, undefined, CACHE_CAPACITY || 0),
+					? new HttpProvider(url, undefined, CACHE_CAPACITY || 1000)
+					: new WsProvider(url, undefined, undefined, undefined, CACHE_CAPACITY || 1000),
 				// only use extra types if the url is the same as the one in the config
 				...(config.SUBSTRATE.URL === url
 					? {
