@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { BlockHash } from '@polkadot/types/interfaces';
 import { isHex } from '@polkadot/util';
 import { RequestHandler, Response } from 'express';
 import { BadRequest } from 'http-errors';
@@ -34,7 +35,6 @@ import {
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
-import type { BlockHash } from '@polkadot/types/interfaces';
 
 /**
  * GET a block.
