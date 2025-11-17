@@ -53,19 +53,19 @@ const mockSidecarConfig: ISidecarConfig = {
 };
 
 const chainsToNode: Record<string, string> = {
-	// 'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.dwellir.com',
-	kusama: 'wss://kusama-rpc.dwellir.com',
-	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.dwellir.com',
-	// astar: 'wss://astar-rpc.dwellir.com',
+	// 'asset-hub-kusama': 'wss://asset-hub-kusama-rpc.polkadot.io',
+	kusama: 'wss://kusama-rpc.polkadot.io',
+	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.polkadot.io',
+	// astar: 'wss://astar-rpc.polkadot.io',
 	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
-	polkadot: 'wss://polkadot-rpc.dwellir.com',
-	'coretime-westend': 'wss://coretime-westend-rpc.dwellir.com',
-	'coretime-polkadot': 'wss://sys.ibp.network/coretime-polkadot',
+	polkadot: 'wss://rpc.polkadot.io',
+	'coretime-westend': 'wss://westend-coretime-rpc.polkadot.io',
+	'coretime-polkadot': 'wss://polkadot-coretime-rpc.polkadot.io',
 	crust: 'wss://crust-parachain.crustapps.net',
-	// karura: 'wss://karura-rpc.dwellir.com',
+	// karura: 'wss://karura-rpc.polkadot.io',
 	// manta: 'wss://ws.manta.systems',
 	kilt: 'wss://kilt.ibp.network',
-	// 'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.dwellir.com',
+	// 'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.polkadot.io',
 };
 
 describe('controllerInjection', () => {
@@ -99,7 +99,7 @@ describe('controllerInjection', () => {
 	}
 
 	it('should inject default controllers when pallets are not checked (injected-controllers: false) and a custom config is not available', async () => {
-		const wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
+		const wsProvider = new WsProvider('wss://kusama-rpc.polkadot.io');
 		const api = await ApiPromise.create({ provider: wsProvider });
 
 		jest.spyOn(ApiPromiseRegistry, 'getSpecNameByType').mockImplementation(() => {
