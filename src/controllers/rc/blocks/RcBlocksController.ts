@@ -34,6 +34,7 @@ import {
 import { IBlock } from '../../../types/responses';
 import { PromiseQueue } from '../../../util/PromiseQueue';
 import AbstractController from '../../AbstractController';
+import type { BlockHash } from '@polkadot/types/interfaces';
 
 export default class RcBlocksController extends AbstractController<BlocksService> {
 	private blockStore: LRUCache<string, IBlock>;
@@ -155,7 +156,9 @@ export default class RcBlocksController extends AbstractController<BlocksService
 
 		const historicApi = await rcApi.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		// ref: https://github.com/paritytech/substrate-api-sidecar/pull/1830
+		// BlockHash and IU8a are the same underlying types
+		const block = await this.service.fetchBlock(hash as unknown as BlockHash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
 		RcBlocksController.sanitizedSend(res, block);

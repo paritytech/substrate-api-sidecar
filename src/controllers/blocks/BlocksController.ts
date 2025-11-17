@@ -34,6 +34,7 @@ import {
 import { IBlock } from '../../types/responses';
 import { PromiseQueue } from '../../util/PromiseQueue';
 import AbstractController from '../AbstractController';
+import type { BlockHash } from '@polkadot/types/interfaces';
 
 /**
  * GET a block.
@@ -322,7 +323,9 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 		const historicApi = await this.api.at(hash);
 
-		const block = await this.service.fetchBlock(hash, historicApi, options);
+		// ref: https://github.com/paritytech/substrate-api-sidecar/pull/1830
+		// BlockHash and IU8a are the same underlying types
+		const block = await this.service.fetchBlock(hash as unknown as BlockHash, historicApi, options);
 		this.blockStore.set(cacheKey, block);
 
 		BlocksController.sanitizedSend(res, block);
