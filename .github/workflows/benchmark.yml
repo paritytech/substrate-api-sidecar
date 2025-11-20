@@ -18,7 +18,7 @@ jobs:
       image: paritytech/node-wrk:latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: benchmarks
         run: |
@@ -41,7 +41,7 @@ jobs:
     environment: master_n_tags
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: actions/create-github-app-token@v2
         id: app-token

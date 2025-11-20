@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install Rust stable toolchain
         uses: actions-rs/toolchain@v1.0.7
