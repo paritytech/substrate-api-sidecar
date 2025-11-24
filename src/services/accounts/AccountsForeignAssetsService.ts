@@ -112,6 +112,8 @@ export class AccountsForeignAssetsService extends AbstractService {
 	 * Takes in an array of multilocations and an `AccountId` and returns
 	 * all balances tied to those foreign assets.
 	 *
+	 * Uses batch queries (.multi()) for better performance instead of individual queries.
+	 *
 	 * @param historicApi ApiPromise at a specific block
 	 * @param multiLocations An Array of multilocation objects
 	 * @param address An `AccountId` associated with the queried path
@@ -121,91 +123,97 @@ export class AccountsForeignAssetsService extends AbstractService {
 		multiLocations: AnyJson[],
 		address: string,
 	): Promise<IForeignAssetBalance[]> {
-		const results = await Promise.all(
-			multiLocations.map(async (multiLocation: AnyJson) => {
-				// Remove commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
-				const multiLocationStr = JSON.stringify(multiLocation).replace(/(\d),/g, '$1');
-				const parsedMultiLocation = JSON.parse(multiLocationStr) as AnyJson;
+		// Prepare all queries for batch call
+		const queries = multiLocations.map((multiLocation) => {
+			// Remove commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
+			const multiLocationStr = JSON.stringify(multiLocation).replace(/(\d),/g, '$1');
+			const parsedMultiLocation = JSON.parse(multiLocationStr) as AnyJson;
+			return [parsedMultiLocation, address];
+		});
 
-				const assetBalance = await historicApi.query.foreignAssets.account(parsedMultiLocation, address);
+		// Single batched RPC call instead of N individual calls
+		const assetBalances = await historicApi.query.foreignAssets.account.multi(queries).catch((err: Error) => {
+			throw this.createHttpErrorForAddr(address, err);
+		});
 
-				/**
-				 * The following checks for three different cases:
-				 * We need to use 'any' here because polkadot-js returns different types
-				 * depending on the runtime version, and we need to check dynamically
-				 */
+		// Process all results
+		const results = multiLocations.map((multiLocation, index) => {
+			const assetBalance = assetBalances[index];
 
-				// 1. Via runtime v9160 the updated storage introduces a `reason` field,
-				// and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-				if ((assetBalance as any).isSome) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-					const balanceProps = (assetBalance as any).unwrap();
+			/**
+			 * The following checks for three different cases:
+			 * We need to use 'any' here because polkadot-js returns different types
+			 * depending on the runtime version, and we need to check dynamically
+			 */
 
-					let isFrozen: bool | string;
+			// 1. Via runtime v9160 the updated storage introduces a `reason` field,
+			// and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+			if ((assetBalance as any).isSome) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+				const balanceProps = (assetBalance as any).unwrap();
+
+				let isFrozen: bool | string;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if ('isFrozen' in balanceProps) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					if ('isFrozen' in balanceProps) {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-						isFrozen = balanceProps.isFrozen as bool;
-					} else {
-						isFrozen = 'isFrozen does not exist for this runtime';
-					}
-
-					return {
-						multiLocation,
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-						balance: balanceProps.balance,
-						isFrozen: isFrozen,
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-						isSufficient: balanceProps.reason.isSufficient,
-					};
+					isFrozen = balanceProps.isFrozen as bool;
+				} else {
+					isFrozen = 'isFrozen does not exist for this runtime';
 				}
 
-				// 2. `query.foreignAssets.account()` return `PalletAssetsAssetBalance` which excludes `reasons` but has
-				// `sufficient` as a key.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-				const balanceAny = assetBalance as any;
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (balanceAny.sufficient !== undefined) {
-					const balanceProps = assetBalance as unknown as PalletAssetsAssetBalance;
-
-					return {
-						multiLocation,
-						balance: balanceProps.balance,
-						isFrozen: balanceProps.isFrozen,
-						isSufficient: balanceProps.sufficient,
-					};
-				}
-
-				// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
-				// of `sufficient`.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (balanceAny.isSufficient !== undefined) {
-					const balanceProps = assetBalance as unknown as LegacyPalletAssetsAssetBalance;
-
-					return {
-						multiLocation,
-						balance: balanceProps.balance,
-						isFrozen: balanceProps.isFrozen,
-						isSufficient: balanceProps.isSufficient,
-					};
-				}
-
-				/**
-				 * This return value wont ever be reached as polkadot-js defaults the
-				 * `balance` value to `0`, `isFrozen` to false, and `isSufficient` to false.
-				 * This ensures that the typescript compiler is happy, but we also follow along
-				 * with polkadot-js/substrate convention.
-				 */
 				return {
 					multiLocation,
-					balance: historicApi.registry.createType('u128', 0),
-					isFrozen: historicApi.registry.createType('bool', false),
-					isSufficient: historicApi.registry.createType('bool', false),
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					balance: balanceProps.balance,
+					isFrozen: isFrozen,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					isSufficient: balanceProps.reason.isSufficient,
 				};
-			}),
-		).catch((err: Error) => {
-			throw this.createHttpErrorForAddr(address, err);
+			}
+
+			// 2. `query.foreignAssets.account()` return `PalletAssetsAssetBalance` which excludes `reasons` but has
+			// `sufficient` as a key.
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+			const balanceAny = assetBalance as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (balanceAny.sufficient !== undefined) {
+				const balanceProps = assetBalance as unknown as PalletAssetsAssetBalance;
+
+				return {
+					multiLocation,
+					balance: balanceProps.balance,
+					isFrozen: balanceProps.isFrozen,
+					isSufficient: balanceProps.sufficient,
+				};
+			}
+
+			// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
+			// of `sufficient`.
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (balanceAny.isSufficient !== undefined) {
+				const balanceProps = assetBalance as unknown as LegacyPalletAssetsAssetBalance;
+
+				return {
+					multiLocation,
+					balance: balanceProps.balance,
+					isFrozen: balanceProps.isFrozen,
+					isSufficient: balanceProps.isSufficient,
+				};
+			}
+
+			/**
+			 * This return value wont ever be reached as polkadot-js defaults the
+			 * `balance` value to `0`, `isFrozen` to false, and `isSufficient` to false.
+			 * This ensures that the typescript compiler is happy, but we also follow along
+			 * with polkadot-js/substrate convention.
+			 */
+			return {
+				multiLocation,
+				balance: historicApi.registry.createType('u128', 0),
+				isFrozen: historicApi.registry.createType('bool', false),
+				isSufficient: historicApi.registry.createType('bool', false),
+			};
 		});
 
 		// Filter out assets with zero balance
