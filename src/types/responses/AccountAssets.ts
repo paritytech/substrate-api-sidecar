@@ -67,3 +67,37 @@ export interface IAccountAssetApproval {
 	rcBlockNumber?: string;
 	ahTimestamp?: string;
 }
+
+export interface IForeignAssetBalance {
+	/**
+	 * The multilocation identifier for the foreign asset.
+	 */
+	multiLocation: unknown;
+	/**
+	 * The units in which substrate records balances.
+	 */
+	balance: u128;
+	/**
+	 * Whether this asset class is frozen except for permissioned/admin instructions.
+	 */
+	isFrozen: bool | string;
+	/**
+	 * Whether a non-zero balance of this asset is deposit of sufficient
+	 * value to account for the state bloat associated with its balance storage. If set to
+	 * `true`, then non-zero balances may be stored without a `consumer` reference (and thus
+	 * an ED in the Balances pallet or whatever else is used to control user-account state
+	 * growth).
+	 */
+	isSufficient: bool | boolean;
+}
+
+/**
+ * Response from `/accounts/{accountId}/foreign-asset-balances?foreignAssets=<multilocations>`
+ */
+export interface IAccountForeignAssetsBalances {
+	at: IAt;
+	foreignAssets: IForeignAssetBalance[];
+	rcBlockHash?: string;
+	rcBlockNumber?: string;
+	ahTimestamp?: string;
+}
