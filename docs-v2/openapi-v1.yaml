@@ -434,6 +434,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /accounts/{accountId}/foreign-asset-balances:
+    get:
+      tags:
+      - accounts
+      summary: Get an array of foreign-asset-balances for an account.
+      description: Returns information about an account's foreign-asset-balances. This is
+        specific to the foreignAssets pallet for parachains. If no `foreignAssets` query parameter
+        is provided, all foreign-asset-balances for the given account will be returned.
+      operationId: getForeignAssetBalances
+      parameters:
+      - name: accountId
+        in: path
+        description: SS58 address of the account.
+        required: true
+        schema:
+          type: string
+          format: SS58
+      - name: at
+        in: query
+        description: Block at which to query foreign-asset-balance info for the
+          specified account.
+        required: false
+        schema:
+          type: string
+          description: Block height (as a positive integer) or hash
+            (as a hex string).
+          format: unsignedInteger or $hex
+      - name: useRcBlock
+        in: query
+        description: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s) for retrieving foreign-asset-balance info. Only supported for Asset Hub endpoints. Requires 'at' parameter to specify the relay chain block. When used, returns an array of response objects (one for each Asset Hub block found) or empty array if none found.
+        required: false
+        schema:
+          type: boolean
+          description: When set to 'true', uses relay chain block mode with the 'at' parameter.
+      - name: foreignAssets
+        in: query
+        description: An array of multilocation JSON strings to be queried. If not supplied, all
+          foreign asset balances associated with the `accountId` will be returned. The array query param
+          format follows Express 4.x API. ex:`?foreignAssets[]={"parents":"1","interior":{"X1":{"Parachain":"2125"}}}&foreignAssets[]={"parents":"2","interior":{"X1":{"GlobalConsensus":"Polkadot"}}}`.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: An array of multilocation objects represented as JSON strings.
+          format: Array of JSON strings
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AccountForeignAssetsBalances'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/AccountForeignAssetsBalances'
+                description: Returns a single object when using standard parameters. Returns an array when using 'useRcBlock' parameter (array contains one object per Asset Hub block found, or empty array if none found).
+        "400":
+          description: Invalid Address, invalid blockId supplied for at query param, or invalid parameter combination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /accounts/{accountId}/proxy-info:
     get:
       tags:
@@ -5065,6 +5129,49 @@ components:
           type: string
           description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
           format: unsignedInteger
+    AccountForeignAssetsBalances:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        foreignAssets:
+          type: array
+          description: An array of queried foreign assets.
+          items:
+            $ref: '#/components/schemas/ForeignAssetBalance'
+        rcBlockHash:
+          type: string
+          description: The relay chain block hash used for the query. Only present when `useRcBlock` parameter is used.
+        rcBlockNumber:
+          type: string
+          description: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+        ahTimestamp:
+          type: string
+          description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+          format: unsignedInteger
+    ForeignAssetBalance:
+      type: object
+      properties:
+        multiLocation:
+          type: object
+          description: The multilocation identifier of the foreign asset. This is an XCM multilocation
+            object that uniquely identifies an asset across different parachains.
+        balance:
+          type: string
+          description: The balance of the foreign asset.
+          format: unsignedInteger
+        isFrozen:
+          type: boolean
+          description: Whether the asset is frozen for non-admin transfers. Returns false if the
+            runtime does not support isFrozen.
+        isSufficient:
+          type: boolean
+          description: Whether a non-zero balance of this asset is a deposit of sufficient
+            value to account for the state bloat associated with its balance storage. If set to
+            `true`, then non-zero balances may be stored without a `consumer` reference (and thus
+            an ED in the Balances pallet or whatever else is used to control user-account state
+            growth).
     AccountProxyInfo:
       type: object
       properties:
