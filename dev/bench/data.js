@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1763719590542,
+  "lastUpdate": 1764079804602,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -23129,6 +23129,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 355.82,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "andrew.ahlers@parity.io",
+            "name": "andrew-ifrita",
+            "username": "andrew-ifrita"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1772e859563f33d9452cf4df92da3e54a98f73ee",
+          "message": "feat: Add accounts/{}/foreign-asset-balances (#1834)\n\n* feat: Add accounts/{}/foreign-asset-balances\n\n* feat: Query optimization for accounts/{}/foreign-asset-balances\n\nInspired from Filippo's suggestion\n\n* fix: Have isFrozen return false if pallet is not available\n\n* docs: Add docs for foreign-asset-balances\n\n* feat: Address Tarik's comments on typing\n\nUsing XcmVersionedLocation now.\n\n* style: Remove annoying inline linting rules from AccountsFerignAssetsService.ts",
+          "timestamp": "2025-11-25T14:35:13+01:00",
+          "tree_id": "b26f569206b9231ed03444d4f85245049424f129",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/1772e859563f33d9452cf4df92da3e54a98f73ee"
+        },
+        "date": 1764079802024,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 168.35,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 142.51,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 231.34,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 129.89,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.41,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.4,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1402.95,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 146.55,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 814.86,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 177.02,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 107.66,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 269.26,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 122.18,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 139.9,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 135.07,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 129.51,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 124.79,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 132.98,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 368.88,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 165.51,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 183.27,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 159.42,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 206.35,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 148.15,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 151.56,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 227.49,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 111.11,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 127.89,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 250.67,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 239.57,
             "unit": "ms"
           }
         ]
