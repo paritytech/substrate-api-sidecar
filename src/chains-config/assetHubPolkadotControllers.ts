@@ -25,6 +25,7 @@ export const assetHubPolkadotControllers: ControllerConfig = {
 		'AccountsAssets',
 		'AccountsBalanceInfo',
 		'AccountsCompare',
+		'AccountsForeignAssets',
 		'AccountsPoolAssets',
 		'AccountsProxyInfo',
 		'AccountsStakingInfo',
