@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { PalletAssetsAssetAccount, PalletAssetsAssetDetails, XcmVersionedLocation } from '@polkadot/types/lookup';
 import { ApiDecoration } from '@polkadot/api/types';
-import { bool, Null, Struct, u128 } from '@polkadot/types';
+import { bool, Null, Option, Struct, u128 } from '@polkadot/types';
 import { StorageKey } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
-import { AnyJson, AnyTuple } from '@polkadot/types-codec/types';
+import { AnyJson } from '@polkadot/types-codec/types';
 import { BadRequest } from 'http-errors';
 
 import { IAccountForeignAssetsBalances, IForeignAssetBalance } from '../../types/responses';
@@ -79,7 +80,10 @@ export class AccountsForeignAssetsService extends AbstractService {
 			 * This will query all foreign assets and then filter for the account's holdings
 			 * We need to get all foreign assets first, then check which ones the account holds
 			 */
-			const foreignAssetEntries = await historicApi.query.foreignAssets.asset.entries();
+			const foreignAssetEntries = await historicApi.query.foreignAssets.asset.entries<
+				Option<PalletAssetsAssetDetails>,
+				[XcmVersionedLocation]
+			>();
 			const multiLocations = this.extractMultiLocationsFromAssetEntries(foreignAssetEntries);
 
 			response = await this.queryForeignAssets(historicApi, multiLocations, address);
@@ -89,7 +93,9 @@ export class AccountsForeignAssetsService extends AbstractService {
 			 */
 			const parsedMultiLocations = foreignAssets.map((ml) => {
 				try {
-					return JSON.parse(ml) as AnyJson;
+					const parsed = JSON.parse(ml) as AnyJson;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					return historicApi.registry.createType('XcmVersionedLocation', parsed) as XcmVersionedLocation;
 				} catch (err) {
 					throw new BadRequest(`Invalid JSON format for multilocation: ${ml}`);
 				}
@@ -120,21 +126,18 @@ export class AccountsForeignAssetsService extends AbstractService {
 	 */
 	async queryForeignAssets(
 		historicApi: ApiDecoration<'promise'>,
-		multiLocations: AnyJson[],
+		multiLocations: XcmVersionedLocation[],
 		address: string,
 	): Promise<IForeignAssetBalance[]> {
 		// Prepare all queries for batch call
-		const queries = multiLocations.map((multiLocation) => {
-			// Remove commas from multilocation key values e.g. Parachain: 2,125 -> Parachain: 2125
-			const multiLocationStr = JSON.stringify(multiLocation).replace(/(\d),/g, '$1');
-			const parsedMultiLocation = JSON.parse(multiLocationStr) as AnyJson;
-			return [parsedMultiLocation, address];
-		});
+		const queries = multiLocations.map((multiLocation) => [multiLocation, address]);
 
 		// Single batched RPC call instead of N individual calls
-		const assetBalances = await historicApi.query.foreignAssets.account.multi(queries).catch((err: Error) => {
-			throw this.createHttpErrorForAddr(address, err);
-		});
+		const assetBalances = await historicApi.query.foreignAssets.account
+			.multi<Option<PalletAssetsAssetAccount>>(queries)
+			.catch((err: Error) => {
+				throw this.createHttpErrorForAddr(address, err);
+			});
 
 		// Process all results
 		const results = multiLocations.map((multiLocation, index) => {
@@ -232,16 +235,13 @@ export class AccountsForeignAssetsService extends AbstractService {
 	 *
 	 * @param entries Foreign asset storage entries
 	 */
-	extractMultiLocationsFromAssetEntries(entries: [StorageKey<AnyTuple>, unknown][]): AnyJson[] {
-		const multiLocations: AnyJson[] = [];
+	extractMultiLocationsFromAssetEntries(
+		entries: [StorageKey<[XcmVersionedLocation]>, Option<PalletAssetsAssetDetails>][],
+	): XcmVersionedLocation[] {
+		const multiLocations: XcmVersionedLocation[] = [];
 
 		for (const [storageKey] of entries) {
-			const keyHuman = storageKey.toHuman();
-
-			// For foreignAssets.asset, the key is an array with the multilocation as first element
-			if (Array.isArray(keyHuman) && keyHuman.length >= 1) {
-				multiLocations.push(keyHuman[0] as unknown as AnyJson);
-			}
+			multiLocations.push(storageKey.args[0]);
 		}
 
 		return multiLocations;
