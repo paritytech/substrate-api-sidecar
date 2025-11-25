@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { PalletAssetsAssetAccount, PalletAssetsAssetDetails, XcmVersionedLocation } from '@polkadot/types/lookup';
 import { ApiDecoration } from '@polkadot/api/types';
 import { bool, Null, Option, Struct, u128 } from '@polkadot/types';
 import { StorageKey } from '@polkadot/types';
 import { BlockHash } from '@polkadot/types/interfaces';
+import type { PalletAssetsAssetAccount, PalletAssetsAssetDetails, XcmVersionedLocation } from '@polkadot/types/lookup';
 import { AnyJson } from '@polkadot/types-codec/types';
 import { BadRequest } from 'http-errors';
 
@@ -91,11 +91,10 @@ export class AccountsForeignAssetsService extends AbstractService {
 			/**
 			 * This will query all foreign assets by the requested multilocations
 			 */
-			const parsedMultiLocations = foreignAssets.map((ml) => {
+			const parsedMultiLocations = foreignAssets.map((ml): XcmVersionedLocation => {
 				try {
 					const parsed = JSON.parse(ml) as AnyJson;
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return historicApi.registry.createType('XcmVersionedLocation', parsed) as XcmVersionedLocation;
+					return historicApi.registry.createType<XcmVersionedLocation>('XcmVersionedLocation', parsed);
 				} catch (err) {
 					throw new BadRequest(`Invalid JSON format for multilocation: ${ml}`);
 				}
@@ -145,21 +144,15 @@ export class AccountsForeignAssetsService extends AbstractService {
 
 			/**
 			 * The following checks for three different cases:
-			 * We need to use 'any' here because polkadot-js returns different types
-			 * depending on the runtime version, and we need to check dynamically
 			 */
 
 			// 1. Via runtime v9160 the updated storage introduces a `reason` field,
 			// and polkadot-js wraps the newly returned `PalletAssetsAssetAccount` in an `Option`.
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-			if ((assetBalance as any).isSome) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-				const balanceProps = (assetBalance as any).unwrap();
+			if (assetBalance.isSome) {
+				const balanceProps = assetBalance.unwrap();
 
 				let isFrozen: bool;
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if ('isFrozen' in balanceProps) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					isFrozen = balanceProps.isFrozen as bool;
 				} else {
 					isFrozen = historicApi.registry.createType('bool', false);
@@ -167,20 +160,16 @@ export class AccountsForeignAssetsService extends AbstractService {
 
 				return {
 					multiLocation,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					balance: balanceProps.balance,
 					isFrozen: isFrozen,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					isSufficient: balanceProps.reason.isSufficient,
 				};
 			}
 
 			// 2. `query.foreignAssets.account()` return `PalletAssetsAssetBalance` which excludes `reasons` but has
 			// `sufficient` as a key.
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-			const balanceAny = assetBalance as any;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (balanceAny.sufficient !== undefined) {
+			const balanceStruct = assetBalance as unknown as Struct;
+			if ('sufficient' in balanceStruct) {
 				const balanceProps = assetBalance as unknown as PalletAssetsAssetBalance;
 
 				return {
@@ -193,8 +182,7 @@ export class AccountsForeignAssetsService extends AbstractService {
 
 			// 3. The older legacy type of `PalletAssetsAssetBalance` has a key of `isSufficient` instead
 			// of `sufficient`.
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (balanceAny.isSufficient !== undefined) {
+			if ('isSufficient' in balanceStruct) {
 				const balanceProps = assetBalance as unknown as LegacyPalletAssetsAssetBalance;
 
 				return {
@@ -222,11 +210,7 @@ export class AccountsForeignAssetsService extends AbstractService {
 		// Filter out assets with zero balance
 		// We filter here because querying all foreign assets will return many zeros
 		// for assets the account doesn't hold
-		return results.filter((asset) => {
-			// Check if balance is greater than zero
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-			return !asset.balance.isZero();
-		});
+		return results.filter((asset) => asset.balance.isZero() === false);
 	}
 
 	/**
