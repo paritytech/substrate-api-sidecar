@@ -79,8 +79,9 @@ export interface IForeignAssetBalance {
 	balance: u128;
 	/**
 	 * Whether this asset class is frozen except for permissioned/admin instructions.
+	 * Returns false if the pallet doesn't support isFrozen.
 	 */
-	isFrozen: bool | string;
+	isFrozen: bool;
 	/**
 	 * Whether a non-zero balance of this asset is deposit of sufficient
 	 * value to account for the state bloat associated with its balance storage. If set to

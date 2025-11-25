@@ -153,13 +153,13 @@ export class AccountsForeignAssetsService extends AbstractService {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
 				const balanceProps = (assetBalance as any).unwrap();
 
-				let isFrozen: bool | string;
+				let isFrozen: bool;
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				if ('isFrozen' in balanceProps) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					isFrozen = balanceProps.isFrozen as bool;
 				} else {
-					isFrozen = 'isFrozen does not exist for this runtime';
+					isFrozen = historicApi.registry.createType('bool', false);
 				}
 
 				return {
