@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@polkadot/api": "^16.5.2",
-    "@polkadot/api-augment": "^16.5.2",
+    "@polkadot/api-augment": "^16.5.3",
     "@polkadot/api-contract": "^16.5.2",
     "@polkadot/types": "^16.5.2",
     "@polkadot/types-codec": "^16.5.2",
