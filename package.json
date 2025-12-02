@@ -51,7 +51,7 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot/api": "^16.5.2",
+    "@polkadot/api": "^16.5.3",
     "@polkadot/api-augment": "^16.5.2",
     "@polkadot/api-contract": "^16.5.2",
     "@polkadot/types": "^16.5.2",
