@@ -21,3 +21,5 @@ updates:
     labels:
       - "D0 - Dependencies"
     versioning-strategy: increase
+    ignore:
+      - dependency-name: "@polkadot/*"
