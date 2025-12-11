@@ -40,3 +40,6 @@ yarn-error.log
 
 # Benchmarks
 /benchmarks.txt
+
+# Metrics
+metrics/grafana/data/

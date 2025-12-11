@@ -1,19 +1,80 @@
-version: "3.8"
 services:
   polkadot:
     container_name: polkadot
     image: docker.io/parity/polkadot:latest
     volumes:
-      - ~/polkadot-data:/data
-    # ports:
-    #   - "9944:9944"
-    command: '--chain polkadot --unsafe-rpc-external --rpc-cors=all'
+      - polkadot-data:/data
+    ports:
+      - "9944:9944"
+    command: --base-path /data --chain polkadot --sync warp --state-pruning 256 --blocks-pruning 256 --database paritydb --unsafe-rpc-external --rpc-cors=all
 
   sidecar:
-    # build: .
+    container_name: sidecar
     image: docker.io/parity/substrate-api-sidecar:latest
+    build: .
     read_only: true
+    restart: on-failure
     ports:
       - "8080:8080"
+      - "9100:9100"
     environment:
       SAS_SUBSTRATE_URL: ws://polkadot:9944
+      # SAS_SUBSTRATE_URL: wss://rpc.polkadot.io
+      SAS_EXPRESS_BIND_HOST: "0.0.0.0"
+      SAS_METRICS_ENABLED: "true"
+      SAS_METRICS_PROM_HOST: "0.0.0.0"
+      SAS_METRICS_LOKI_HOST: loki
+    depends_on:
+      - polkadot
+      - loki
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    privileged: true
+    ports:
+      - "8081:8080"
+    volumes:
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    depends_on:
+      - sidecar
+      - cadvisor
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./metrics/grafana/data:/var/lib/grafana
+      - ./metrics/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    depends_on:
+      - prometheus
+
+volumes:
+  polkadot-data:
