@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "substrate-api-sidecar"
+    static_configs:
+      - targets: ["sidecar:9100"]
+    metrics_path: /metrics
+
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
