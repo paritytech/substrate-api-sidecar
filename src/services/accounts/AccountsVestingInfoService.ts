@@ -23,7 +23,13 @@ import { BlockNumberSource, IAccountVestingInfo, IVestingSchedule } from 'src/ty
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { assetHubSpecNames } from '../../chains-config';
 import { getInclusionBlockNumber } from '../../util/relay/getRelayParentNumber';
-import { calculateTotalUnlockable, calculateUnlockable, IVestingSchedule as IVestingCalcSchedule } from '../../util/vesting/vestingCalculations';
+import {
+	calculateTotalVested,
+	calculateVested,
+	calculateVestedClaimable,
+	calculateVestingTotal,
+	IVestingSchedule as IVestingCalcSchedule,
+} from '../../util/vesting/vestingCalculations';
 import { AbstractService } from '../AbstractService';
 import { MIGRATION_BOUNDARIES, relayToSpecMapping } from '../consts';
 
@@ -37,14 +43,25 @@ type MigrationState = 'pre-migration' | 'during-migration' | 'post-migration';
  */
 const ASSET_HUB_PARA_ID = 1000;
 
+/**
+ * Vesting lock ID used in balances.locks
+ * This is "vesting " padded to 8 bytes (0x76657374696e6720)
+ */
+const VESTING_ID = '0x76657374696e6720';
+
 export class AccountsVestingInfoService extends AbstractService {
 	/**
 	 * Fetch vesting information for an account at a given block.
 	 *
 	 * @param hash `BlockHash` to make call at
 	 * @param address address of the account to get the vesting info of
+	 * @param includeVested whether to calculate and include vested amounts (default: false)
 	 */
-	async fetchAccountVestingInfo(hash: BlockHash, address: string): Promise<IAccountVestingInfo> {
+	async fetchAccountVestingInfo(
+		hash: BlockHash,
+		address: string,
+		includeVested = false,
+	): Promise<IAccountVestingInfo> {
 		const { api } = this;
 
 		const historicApi = await api.at(hash);
@@ -77,12 +94,23 @@ export class AccountsVestingInfoService extends AbstractService {
 		const unwrapVesting = vesting.unwrap();
 		const vestingArray: VestingInfo[] = Array.isArray(unwrapVesting) ? unwrapVesting : [unwrapVesting];
 
-		// Calculate unlockable amounts based on chain type and migration state
-		const unlockableResult = await this.calculateVestingUnlockable(hash, blockNumber, vestingArray);
+		// If includeVested is not requested, return raw vesting data
+		if (!includeVested) {
+			return {
+				at,
+				vesting: vestingArray,
+			};
+		}
 
-		if (unlockableResult === null) {
-			// Unable to calculate unlockable (e.g., during migration or missing relay connection)
-			// Return raw vesting data without unlockable calculations
+		// Get the on-chain vesting lock amount from balances.locks
+		const vestingLocked = await this.getVestingLocked(historicApi, address);
+
+		// Calculate vested amounts based on chain type and migration state
+		const vestingResult = await this.calculateVestingAmounts(hash, blockNumber, vestingArray, vestingLocked);
+
+		if (vestingResult === null) {
+			// Unable to calculate (e.g., during migration or missing relay connection)
+			// Return raw vesting data without calculations
 			return {
 				at,
 				vesting: vestingArray,
@@ -91,24 +119,52 @@ export class AccountsVestingInfoService extends AbstractService {
 
 		return {
 			at,
-			vesting: unlockableResult.schedules,
-			totalUnlockable: unlockableResult.totalUnlockable,
-			blockNumberForCalculation: unlockableResult.blockNumberForCalculation,
-			blockNumberSource: unlockableResult.blockNumberSource,
+			vesting: vestingResult.schedules,
+			vestedBalance: vestingResult.vestedBalance,
+			vestingTotal: vestingResult.vestingTotal,
+			vestedClaimable: vestingResult.vestedClaimable,
+			blockNumberForCalculation: vestingResult.blockNumberForCalculation,
+			blockNumberSource: vestingResult.blockNumberSource,
 		};
 	}
 
 	/**
-	 * Calculate unlockable amounts for vesting schedules.
+	 * Get the vesting lock amount from balances.locks.
+	 * Returns 0 if no vesting lock exists.
+	 */
+	private async getVestingLocked(
+		historicApi: Awaited<ReturnType<typeof this.api.at>>,
+		address: string,
+	): Promise<BN> {
+		if (!historicApi.query.balances?.locks) {
+			return new BN(0);
+		}
+
+		const locks = await historicApi.query.balances.locks(address);
+
+		for (const lock of locks) {
+			if (lock.id.toHex() === VESTING_ID) {
+				return new BN(lock.amount.toString());
+			}
+		}
+
+		return new BN(0);
+	}
+
+	/**
+	 * Calculate vested amounts for vesting schedules.
 	 * Returns null if calculation cannot be performed (e.g., during migration window).
 	 */
-	private async calculateVestingUnlockable(
+	private async calculateVestingAmounts(
 		hash: BlockHash,
 		blockNumber: number,
 		vestingArray: VestingInfo[],
+		vestingLocked: BN,
 	): Promise<{
 		schedules: IVestingSchedule[];
-		totalUnlockable: string;
+		vestedBalance: string;
+		vestingTotal: string;
+		vestedClaimable: string;
 		blockNumberForCalculation: string;
 		blockNumberSource: BlockNumberSource;
 	} | null> {
@@ -116,23 +172,26 @@ export class AccountsVestingInfoService extends AbstractService {
 		const isAssetHub = assetHubSpecNames.has(specName);
 
 		if (isAssetHub) {
-			return this.calculateForAssetHub(hash, blockNumber, vestingArray);
+			return this.calculateForAssetHub(hash, blockNumber, vestingArray, vestingLocked);
 		} else {
-			return this.calculateForRelayChain(blockNumber, vestingArray);
+			return this.calculateForRelayChain(blockNumber, vestingArray, vestingLocked);
 		}
 	}
 
 	/**
-	 * Calculate unlockable for Asset Hub chains.
+	 * Calculate vested amounts for Asset Hub chains.
 	 * Post-migration: uses relay chain inclusion block number for calculations.
 	 */
 	private async calculateForAssetHub(
 		hash: BlockHash,
 		blockNumber: number,
 		vestingArray: VestingInfo[],
+		vestingLocked: BN,
 	): Promise<{
 		schedules: IVestingSchedule[];
-		totalUnlockable: string;
+		vestedBalance: string;
+		vestingTotal: string;
+		vestedClaimable: string;
 		blockNumberForCalculation: string;
 		blockNumberSource: BlockNumberSource;
 	} | null> {
@@ -147,8 +206,8 @@ export class AccountsVestingInfoService extends AbstractService {
 		const migrationState = this.getAssetHubMigrationState(blockNumber, boundaries);
 
 		if (migrationState === 'during-migration') {
-			// During migration window, return 0 for unlockable
-			return this.createZeroUnlockableResult(vestingArray, blockNumber.toString(), 'self');
+			// During migration window, return 0 for claimable
+			return this.createZeroClaimableResult(vestingArray, vestingLocked, blockNumber.toString(), 'self');
 		}
 
 		if (migrationState === 'pre-migration') {
@@ -161,39 +220,37 @@ export class AccountsVestingInfoService extends AbstractService {
 		if (relayApis.length === 0) {
 			throw new InternalServerError(
 				'Relay chain connection required for vesting calculations on Asset Hub post-migration. ' +
-				'Please configure MULTI_CHAIN_URL with a relay chain endpoint.',
+					'Please configure MULTI_CHAIN_URL with a relay chain endpoint.',
 			);
 		}
 
 		const rcApi = relayApis[0].api;
 
 		// Get the relay chain inclusion block number for this Asset Hub block
-		const inclusionResult = await getInclusionBlockNumber(
-			this.api,
-			rcApi,
-			hash,
-			ASSET_HUB_PARA_ID,
-		);
+		const inclusionResult = await getInclusionBlockNumber(this.api, rcApi, hash, ASSET_HUB_PARA_ID);
 
 		if (!inclusionResult.found || inclusionResult.inclusionBlockNumber === null) {
 			// Inclusion not found within search depth
 			// Fall back to relay parent number for calculation
-			return this.performCalculation(vestingArray, new BN(inclusionResult.relayParentNumber), 'relay');
+			return this.performCalculation(vestingArray, vestingLocked, new BN(inclusionResult.relayParentNumber), 'relay');
 		}
 
-		return this.performCalculation(vestingArray, new BN(inclusionResult.inclusionBlockNumber), 'relay');
+		return this.performCalculation(vestingArray, vestingLocked, new BN(inclusionResult.inclusionBlockNumber), 'relay');
 	}
 
 	/**
-	 * Calculate unlockable for relay chains.
+	 * Calculate vested amounts for relay chains.
 	 * Pre-migration: uses the chain's own block number for calculations.
 	 */
 	private calculateForRelayChain(
 		blockNumber: number,
 		vestingArray: VestingInfo[],
+		vestingLocked: BN,
 	): {
 		schedules: IVestingSchedule[];
-		totalUnlockable: string;
+		vestedBalance: string;
+		vestingTotal: string;
+		vestedClaimable: string;
 		blockNumberForCalculation: string;
 		blockNumberSource: BlockNumberSource;
 	} | null {
@@ -203,43 +260,46 @@ export class AccountsVestingInfoService extends AbstractService {
 		if (!assetHubSpec) {
 			// Not a known relay chain with migration boundaries
 			// Use single-chain calculation
-			return this.performCalculation(vestingArray, new BN(blockNumber), 'self');
+			return this.performCalculation(vestingArray, vestingLocked, new BN(blockNumber), 'self');
 		}
 
 		const boundaries = MIGRATION_BOUNDARIES[assetHubSpec];
 
 		if (!boundaries) {
 			// No boundaries defined, use single-chain calculation
-			return this.performCalculation(vestingArray, new BN(blockNumber), 'self');
+			return this.performCalculation(vestingArray, vestingLocked, new BN(blockNumber), 'self');
 		}
 
 		const migrationState = this.getRelayChainMigrationState(blockNumber, boundaries);
 
 		if (migrationState === 'during-migration') {
-			// During migration window, return 0 for unlockable
-			return this.createZeroUnlockableResult(vestingArray, blockNumber.toString(), 'self');
+			// During migration window, return 0 for claimable
+			return this.createZeroClaimableResult(vestingArray, vestingLocked, blockNumber.toString(), 'self');
 		}
 
 		if (migrationState === 'post-migration') {
 			// Post-migration: vesting no longer exists on relay chain
-			// Return 0 for unlockable since vesting has migrated
-			return this.createZeroUnlockableResult(vestingArray, blockNumber.toString(), 'self');
+			// Return 0 for claimable since vesting has migrated
+			return this.createZeroClaimableResult(vestingArray, vestingLocked, blockNumber.toString(), 'self');
 		}
 
 		// Pre-migration: use relay chain's own block number
-		return this.performCalculation(vestingArray, new BN(blockNumber), 'self');
+		return this.performCalculation(vestingArray, vestingLocked, new BN(blockNumber), 'self');
 	}
 
 	/**
-	 * Perform the actual unlockable calculation for vesting schedules.
+	 * Perform the actual vesting calculation for vesting schedules.
 	 */
 	private performCalculation(
 		vestingArray: VestingInfo[],
+		vestingLocked: BN,
 		currentBlock: BN,
 		source: BlockNumberSource,
 	): {
 		schedules: IVestingSchedule[];
-		totalUnlockable: string;
+		vestedBalance: string;
+		vestingTotal: string;
+		vestedClaimable: string;
 		blockNumberForCalculation: string;
 		blockNumberSource: BlockNumberSource;
 	} {
@@ -250,48 +310,67 @@ export class AccountsVestingInfoService extends AbstractService {
 			startingBlock: new BN(v.startingBlock.toString()),
 		}));
 
-		// Calculate unlockable for each schedule
+		// Calculate vested for each schedule
 		const schedules: IVestingSchedule[] = vestingArray.map((v, idx) => ({
 			locked: v.locked.toString(),
 			perBlock: v.perBlock.toString(),
 			startingBlock: v.startingBlock.toString(),
-			unlockable: calculateUnlockable(currentBlock, calcSchedules[idx]).toString(),
+			vested: calculateVested(currentBlock, calcSchedules[idx]).toString(),
 		}));
 
-		const totalUnlockable = calculateTotalUnlockable(currentBlock, calcSchedules);
+		// Calculate aggregate values
+		const vestedBalance = calculateTotalVested(currentBlock, calcSchedules);
+		const vestingTotal = calculateVestingTotal(calcSchedules);
+		const vestedClaimable = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
 
 		return {
 			schedules,
-			totalUnlockable: totalUnlockable.toString(),
+			vestedBalance: vestedBalance.toString(),
+			vestingTotal: vestingTotal.toString(),
+			vestedClaimable: vestedClaimable.toString(),
 			blockNumberForCalculation: currentBlock.toString(),
 			blockNumberSource: source,
 		};
 	}
 
 	/**
-	 * Create a result with zero unlockable for all schedules.
+	 * Create a result with zero claimable for all schedules.
 	 * Used during migration windows or post-migration on relay chain.
 	 */
-	private createZeroUnlockableResult(
+	private createZeroClaimableResult(
 		vestingArray: VestingInfo[],
+		_vestingLocked: BN,
 		blockNumber: string,
 		source: BlockNumberSource,
 	): {
 		schedules: IVestingSchedule[];
-		totalUnlockable: string;
+		vestedBalance: string;
+		vestingTotal: string;
+		vestedClaimable: string;
 		blockNumberForCalculation: string;
 		blockNumberSource: BlockNumberSource;
 	} {
+		// Convert VestingInfo to calculation interface
+		const calcSchedules: IVestingCalcSchedule[] = vestingArray.map((v) => ({
+			locked: new BN(v.locked.toString()),
+			perBlock: new BN(v.perBlock.toString()),
+			startingBlock: new BN(v.startingBlock.toString()),
+		}));
+
+		const vestingTotal = calculateVestingTotal(calcSchedules);
+
 		const schedules: IVestingSchedule[] = vestingArray.map((v) => ({
 			locked: v.locked.toString(),
 			perBlock: v.perBlock.toString(),
 			startingBlock: v.startingBlock.toString(),
-			unlockable: '0',
+			vested: '0',
 		}));
 
 		return {
 			schedules,
-			totalUnlockable: '0',
+			vestedBalance: '0',
+			vestingTotal: vestingTotal.toString(),
+			vestedClaimable: '0',
 			blockNumberForCalculation: blockNumber,
 			blockNumberSource: source,
 		};
