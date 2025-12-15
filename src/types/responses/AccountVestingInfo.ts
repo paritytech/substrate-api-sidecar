@@ -19,11 +19,56 @@ import { VestingInfo } from '@polkadot/types/interfaces';
 
 import { IAt } from '.';
 
+/**
+ * Vesting schedule with calculated unlockable amount.
+ * Extends the base VestingInfo with additional computed fields.
+ */
+export interface IVestingSchedule {
+	/** Total amount of tokens locked at the start of vesting */
+	locked: string;
+	/** Number of tokens that unlock per block */
+	perBlock: string;
+	/** Block number when vesting/unlocking begins */
+	startingBlock: string;
+	/** Amount that has vested and can be unlocked at the queried block */
+	unlockable: string;
+}
+
+/**
+ * Indicates which chain's block number was used for unlockable calculations.
+ * - 'relay': Relay chain block number (used for Asset Hub post-migration)
+ * - 'self': The queried chain's own block number (used for relay chain pre-migration)
+ */
+export type BlockNumberSource = 'relay' | 'self';
+
 export interface IAccountVestingInfo {
 	at: IAt;
+	/**
+	 * Array of vesting schedules for the account.
+	 * Can be raw VestingInfo from the pallet or enhanced IVestingSchedule with unlockable amounts.
+	 */
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	vesting: Option<VestingInfo> | {};
+	vesting: Option<VestingInfo> | IVestingSchedule[] | {};
+	/**
+	 * Total amount that can be unlocked across all vesting schedules.
+	 * Only present when unlockable calculations are performed.
+	 */
+	totalUnlockable?: string;
+	/**
+	 * The block number used for calculating unlockable amounts.
+	 * For Asset Hub post-migration, this is the relay chain block number.
+	 * For relay chain pre-migration, this is the queried block number.
+	 */
+	blockNumberForCalculation?: string;
+	/**
+	 * Indicates which chain's block number was used for the calculation.
+	 * 'relay' for Asset Hub post-migration, 'self' for relay chain pre-migration.
+	 */
+	blockNumberSource?: BlockNumberSource;
+	/** Relay chain block hash (when using useRcBlock parameter) */
 	rcBlockHash?: string;
+	/** Relay chain block number (when using useRcBlock parameter) */
 	rcBlockNumber?: string;
+	/** Asset Hub timestamp (when using useRcBlock parameter) */
 	ahTimestamp?: string;
 }
