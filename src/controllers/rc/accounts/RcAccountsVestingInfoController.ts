@@ -34,10 +34,17 @@ import AbstractController from '../../AbstractController';
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
- * - `vesting`: Vesting schedule for an account.
+ * - `vesting`: Array of vesting schedules for an account.
  *   - `locked`: Number of tokens locked at start.
  *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
  *   - `startingBlock`: Starting block for unlocking(vesting).
+ *   - `unlockable`: Amount that has vested and can be unlocked at the queried block.
+ * - `totalUnlockable`: Total amount that can be unlocked across all vesting schedules.
+ * - `blockNumberForCalculation`: The block number used for calculating unlockable amounts.
+ * - `blockNumberSource`: Indicates which chain's block number was used ('relay' or 'self').
+ *
+ * Note: For relay chain pre-migration queries, unlockable is calculated using the relay
+ * chain's own block number. Post-migration, vesting has moved to Asset Hub.
  *
  * Substrate Reference:
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html

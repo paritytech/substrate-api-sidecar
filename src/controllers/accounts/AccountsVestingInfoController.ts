@@ -39,12 +39,21 @@ import AbstractController from '../AbstractController';
  *
  * Response object structure:
  * - `at`: Block number and hash at which the call was made.
- * - `vesting`: Vesting schedule for an account.
+ * - `vesting`: Array of vesting schedules for an account.
  *   - `locked`: Number of tokens locked at start.
  *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
  *   - `startingBlock`: Starting block for unlocking(vesting).
- * - `rcBlockNumber`: The relay chain block number used for the query. Only present when `useRcBlock` parameter is used.
+ *   - `unlockable`: Amount that has vested and can be unlocked at the queried block.
+ * - `totalUnlockable`: Total amount that can be unlocked across all vesting schedules.
+ * - `blockNumberForCalculation`: The block number used for calculating unlockable amounts.
+ *   For Asset Hub post-migration, this is the relay chain block number.
+ * - `blockNumberSource`: Indicates which chain's block number was used ('relay' or 'self').
+ * - `rcBlockHash`: The relay chain block hash. Only present when `useRcBlock` parameter is used.
+ * - `rcBlockNumber`: The relay chain block number. Only present when `useRcBlock` parameter is used.
  * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
+ *
+ * Note: For Asset Hub post-migration, a relay chain connection is required to calculate
+ * unlockable amounts, since vesting schedules use relay chain block numbers.
  *
  * Substrate Reference:
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
