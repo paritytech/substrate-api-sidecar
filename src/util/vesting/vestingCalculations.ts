@@ -32,24 +32,27 @@ export interface IVestingSchedule {
  * Result of vesting calculation for a single schedule.
  */
 export interface IVestingCalculationResult {
-	/** Amount that has vested and can be unlocked */
-	unlockable: BN;
+	/** Amount that has vested based on time elapsed */
+	vested: BN;
 	/** Block number when vesting will be complete */
 	endBlock: BN;
 }
 
 /**
- * Calculate the amount that can be unlocked (vested) for a single vesting schedule.
+ * Calculate the amount that has vested for a single vesting schedule.
  *
  * The calculation follows the formula used in the vesting pallet:
  * - If currentBlock <= startingBlock: nothing is vested yet
  * - Otherwise: vested = min(blocksPassed * perBlock, locked)
  *
- * @param currentBlock - The block number to calculate unlockable amount at
+ * Note: This is the theoretical vested amount based on time. The actual
+ * claimable amount depends on the on-chain lock state (see calculateVestedClaimable).
+ *
+ * @param currentBlock - The block number to calculate vested amount at
  * @param schedule - The vesting schedule containing locked, perBlock, and startingBlock
- * @returns The amount that can be unlocked at the given block
+ * @returns The amount that has vested at the given block
  */
-export const calculateUnlockable = (currentBlock: BN, schedule: IVestingSchedule): BN => {
+export const calculateVested = (currentBlock: BN, schedule: IVestingSchedule): BN => {
 	const { locked, perBlock, startingBlock } = schedule;
 
 	// Vesting hasn't started yet
@@ -63,7 +66,7 @@ export const calculateUnlockable = (currentBlock: BN, schedule: IVestingSchedule
 	// Calculate vested amount: blocksPassed * perBlock
 	const vested = blocksPassed.mul(perBlock);
 
-	// Return the minimum of vested and locked (can't unlock more than was locked)
+	// Return the minimum of vested and locked (can't vest more than was locked)
 	return BN.min(vested, locked);
 };
 
@@ -94,31 +97,73 @@ export const calculateEndBlock = (schedule: IVestingSchedule): BN => {
 };
 
 /**
- * Calculate the total unlockable amount across multiple vesting schedules.
+ * Calculate the total vested amount across multiple vesting schedules.
  *
- * @param currentBlock - The block number to calculate unlockable amounts at
+ * @param currentBlock - The block number to calculate vested amounts at
  * @param schedules - Array of vesting schedules
- * @returns The total amount that can be unlocked across all schedules
+ * @returns The total amount that has vested across all schedules (vestedBalance)
  */
-export const calculateTotalUnlockable = (currentBlock: BN, schedules: IVestingSchedule[]): BN => {
+export const calculateTotalVested = (currentBlock: BN, schedules: IVestingSchedule[]): BN => {
 	return schedules.reduce((total, schedule) => {
-		return total.add(calculateUnlockable(currentBlock, schedule));
+		return total.add(calculateVested(currentBlock, schedule));
 	}, new BN(0));
 };
 
 /**
- * Calculate unlockable amounts for multiple schedules, returning per-schedule results.
+ * Calculate the total locked amount across multiple vesting schedules.
  *
- * @param currentBlock - The block number to calculate unlockable amounts at
  * @param schedules - Array of vesting schedules
- * @returns Array of calculation results with unlockable amount and end block for each schedule
+ * @returns The total locked amount across all schedules (vestingTotal)
+ */
+export const calculateVestingTotal = (schedules: IVestingSchedule[]): BN => {
+	return schedules.reduce((total, schedule) => {
+		return total.add(schedule.locked);
+	}, new BN(0));
+};
+
+/**
+ * Calculate the actual claimable amount that can be unlocked.
+ *
+ * This follows the polkadot-js formula:
+ * vestedClaimable = vestingLocked - (vestingTotal - vestedBalance)
+ *
+ * Where:
+ * - vestingLocked: actual on-chain lock amount from balances.locks
+ * - vestingTotal: sum of all locked amounts from vesting schedules
+ * - vestedBalance: sum of all vested amounts from vesting schedules
+ *
+ * The difference accounts for previous claims that reduced the on-chain lock.
+ *
+ * @param vestingLocked - The actual on-chain vesting lock amount
+ * @param vestingTotal - Total locked across all vesting schedules
+ * @param vestedBalance - Total vested across all vesting schedules
+ * @returns The amount that can actually be claimed right now
+ */
+export const calculateVestedClaimable = (vestingLocked: BN, vestingTotal: BN, vestedBalance: BN): BN => {
+	// stillLocked = vestingTotal - vestedBalance (what should remain locked according to schedules)
+	const stillLocked = vestingTotal.sub(vestedBalance);
+
+	// vestedClaimable = vestingLocked - stillLocked
+	// This is the difference between what's actually locked on-chain and what should be locked
+	const claimable = vestingLocked.sub(stillLocked);
+
+	// Ensure we don't return negative values
+	return BN.max(claimable, new BN(0));
+};
+
+/**
+ * Calculate vested amounts for multiple schedules, returning per-schedule results.
+ *
+ * @param currentBlock - The block number to calculate vested amounts at
+ * @param schedules - Array of vesting schedules
+ * @returns Array of calculation results with vested amount and end block for each schedule
  */
 export const calculateVestingDetails = (
 	currentBlock: BN,
 	schedules: IVestingSchedule[],
 ): IVestingCalculationResult[] => {
 	return schedules.map((schedule) => ({
-		unlockable: calculateUnlockable(currentBlock, schedule),
+		vested: calculateVested(currentBlock, schedule),
 		endBlock: calculateEndBlock(schedule),
 	}));
 };

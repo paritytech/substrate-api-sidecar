@@ -18,9 +18,11 @@ import BN from 'bn.js';
 
 import {
 	calculateEndBlock,
-	calculateTotalUnlockable,
-	calculateUnlockable,
+	calculateTotalVested,
+	calculateVested,
+	calculateVestedClaimable,
 	calculateVestingDetails,
+	calculateVestingTotal,
 	IVestingSchedule,
 } from './vestingCalculations';
 
@@ -32,17 +34,17 @@ describe('Vesting Calculations', () => {
 		startingBlock: new BN('4961000'),
 	};
 
-	describe('calculateUnlockable', () => {
+	describe('calculateVested', () => {
 		it('should return 0 when current block is before starting block', () => {
 			const currentBlock = new BN('4960000'); // Before startingBlock
-			const result = calculateUnlockable(currentBlock, sampleSchedule);
+			const result = calculateVested(currentBlock, sampleSchedule);
 
 			expect(result.toString()).toBe('0');
 		});
 
 		it('should return 0 when current block equals starting block', () => {
 			const currentBlock = new BN('4961000'); // Equal to startingBlock
-			const result = calculateUnlockable(currentBlock, sampleSchedule);
+			const result = calculateVested(currentBlock, sampleSchedule);
 
 			expect(result.toString()).toBe('0');
 		});
@@ -50,7 +52,7 @@ describe('Vesting Calculations', () => {
 		it('should return partial amount when vesting is in progress', () => {
 			// 1000 blocks after start
 			const currentBlock = new BN('4962000');
-			const result = calculateUnlockable(currentBlock, sampleSchedule);
+			const result = calculateVested(currentBlock, sampleSchedule);
 
 			// Expected: 1000 * 166475460 = 166475460000
 			const expected = new BN('166475460000');
@@ -60,7 +62,7 @@ describe('Vesting Calculations', () => {
 		it('should return locked amount when fully vested', () => {
 			// Far in the future, well past end block
 			const currentBlock = new BN('100000000');
-			const result = calculateUnlockable(currentBlock, sampleSchedule);
+			const result = calculateVested(currentBlock, sampleSchedule);
 
 			// Should be capped at locked amount
 			expect(result.toString()).toBe(sampleSchedule.locked.toString());
@@ -68,7 +70,7 @@ describe('Vesting Calculations', () => {
 
 		it('should not exceed locked amount even with large block numbers', () => {
 			const currentBlock = new BN('999999999999');
-			const result = calculateUnlockable(currentBlock, sampleSchedule);
+			const result = calculateVested(currentBlock, sampleSchedule);
 
 			expect(result.lte(sampleSchedule.locked)).toBe(true);
 			expect(result.toString()).toBe(sampleSchedule.locked.toString());
@@ -83,7 +85,7 @@ describe('Vesting Calculations', () => {
 
 			// 50 blocks after start: 50 * 10 = 500
 			const currentBlock = new BN('150');
-			const result = calculateUnlockable(currentBlock, smallSchedule);
+			const result = calculateVested(currentBlock, smallSchedule);
 
 			expect(result.toString()).toBe('500');
 		});
@@ -97,7 +99,7 @@ describe('Vesting Calculations', () => {
 
 			// 1 block after start should fully vest
 			const currentBlock = new BN('101');
-			const result = calculateUnlockable(currentBlock, quickVestSchedule);
+			const result = calculateVested(currentBlock, quickVestSchedule);
 
 			expect(result.toString()).toBe('1000');
 		});
@@ -152,23 +154,23 @@ describe('Vesting Calculations', () => {
 		});
 	});
 
-	describe('calculateTotalUnlockable', () => {
+	describe('calculateTotalVested', () => {
 		it('should return 0 for empty schedules array', () => {
 			const currentBlock = new BN('5000000');
-			const result = calculateTotalUnlockable(currentBlock, []);
+			const result = calculateTotalVested(currentBlock, []);
 
 			expect(result.toString()).toBe('0');
 		});
 
 		it('should return correct total for single schedule', () => {
 			const currentBlock = new BN('4962000'); // 1000 blocks after start
-			const result = calculateTotalUnlockable(currentBlock, [sampleSchedule]);
+			const result = calculateTotalVested(currentBlock, [sampleSchedule]);
 
 			// Expected: 1000 * 166475460 = 166475460000
 			expect(result.toString()).toBe('166475460000');
 		});
 
-		it('should sum unlockable amounts from multiple schedules', () => {
+		it('should sum vested amounts from multiple schedules', () => {
 			const schedules: IVestingSchedule[] = [
 				{
 					locked: new BN('1000'),
@@ -187,7 +189,7 @@ describe('Vesting Calculations', () => {
 			// Schedule 2: 50 * 20 = 1000
 			// Total: 1500
 			const currentBlock = new BN('150');
-			const result = calculateTotalUnlockable(currentBlock, schedules);
+			const result = calculateTotalVested(currentBlock, schedules);
 
 			expect(result.toString()).toBe('1500');
 		});
@@ -211,7 +213,7 @@ describe('Vesting Calculations', () => {
 			// Schedule 2: 0 (hasn't started, starts at 200)
 			// Total: 500
 			const currentBlock = new BN('150');
-			const result = calculateTotalUnlockable(currentBlock, schedules);
+			const result = calculateTotalVested(currentBlock, schedules);
 
 			expect(result.toString()).toBe('500');
 		});
@@ -235,9 +237,117 @@ describe('Vesting Calculations', () => {
 			// Schedule 2: 50 * 10 = 500
 			// Total: 600
 			const currentBlock = new BN('150');
-			const result = calculateTotalUnlockable(currentBlock, schedules);
+			const result = calculateTotalVested(currentBlock, schedules);
 
 			expect(result.toString()).toBe('600');
+		});
+	});
+
+	describe('calculateVestingTotal', () => {
+		it('should return 0 for empty schedules array', () => {
+			const result = calculateVestingTotal([]);
+			expect(result.toString()).toBe('0');
+		});
+
+		it('should return locked amount for single schedule', () => {
+			const result = calculateVestingTotal([sampleSchedule]);
+			expect(result.toString()).toBe(sampleSchedule.locked.toString());
+		});
+
+		it('should sum locked amounts from multiple schedules', () => {
+			const schedules: IVestingSchedule[] = [
+				{
+					locked: new BN('1000'),
+					perBlock: new BN('10'),
+					startingBlock: new BN('100'),
+				},
+				{
+					locked: new BN('2000'),
+					perBlock: new BN('20'),
+					startingBlock: new BN('200'),
+				},
+			];
+
+			const result = calculateVestingTotal(schedules);
+			expect(result.toString()).toBe('3000');
+		});
+	});
+
+	describe('calculateVestedClaimable', () => {
+		it('should return 0 when nothing has vested', () => {
+			const vestingLocked = new BN('1000');
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('0');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 1000 - (1000 - 0) = 0
+			expect(result.toString()).toBe('0');
+		});
+
+		it('should return correct claimable when partially vested', () => {
+			const vestingLocked = new BN('1000');
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('400');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 1000 - (1000 - 400) = 1000 - 600 = 400
+			expect(result.toString()).toBe('400');
+		});
+
+		it('should return correct claimable when some has already been claimed', () => {
+			// Example: 1000 locked, 400 vested, user already claimed 100
+			const vestingLocked = new BN('900'); // 1000 - 100 already claimed
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('400');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 900 - (1000 - 400) = 900 - 600 = 300
+			expect(result.toString()).toBe('300');
+		});
+
+		it('should return 0 when fully claimed', () => {
+			// All vested amount already claimed
+			const vestingLocked = new BN('600'); // Original 1000, vested 400, all 400 claimed
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('400');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 600 - (1000 - 400) = 600 - 600 = 0
+			expect(result.toString()).toBe('0');
+		});
+
+		it('should return full amount when fully vested and nothing claimed', () => {
+			const vestingLocked = new BN('1000');
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('1000'); // Fully vested
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 1000 - (1000 - 1000) = 1000 - 0 = 1000
+			expect(result.toString()).toBe('1000');
+		});
+
+		it('should handle multiple schedules (aggregate values)', () => {
+			// Two schedules: 1000 + 2000 = 3000 total locked
+			// 400 + 800 = 1200 total vested
+			// User claimed 200
+			const vestingLocked = new BN('2800'); // 3000 - 200 claimed
+			const vestingTotal = new BN('3000');
+			const vestedBalance = new BN('1200');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 2800 - (3000 - 1200) = 2800 - 1800 = 1000
+			expect(result.toString()).toBe('1000');
+		});
+
+		it('should return 0 for negative result (edge case)', () => {
+			// Edge case: vestingLocked is less than stillLocked (shouldn't happen normally)
+			const vestingLocked = new BN('500');
+			const vestingTotal = new BN('1000');
+			const vestedBalance = new BN('400');
+
+			const result = calculateVestedClaimable(vestingLocked, vestingTotal, vestedBalance);
+			// claimable = 500 - (1000 - 400) = 500 - 600 = -100, capped at 0
+			expect(result.toString()).toBe('0');
 		});
 	});
 
@@ -260,7 +370,7 @@ describe('Vesting Calculations', () => {
 			const result = calculateVestingDetails(currentBlock, [schedule]);
 
 			expect(result.length).toBe(1);
-			expect(result[0].unlockable.toString()).toBe('500'); // 5 * 100
+			expect(result[0].vested.toString()).toBe('500'); // 5 * 100
 			expect(result[0].endBlock.toString()).toBe('510'); // 500 + (1000/100)
 		});
 
@@ -284,11 +394,11 @@ describe('Vesting Calculations', () => {
 			expect(result.length).toBe(2);
 
 			// Schedule 1: fully vested (105 * 100 = 10500 > 1000)
-			expect(result[0].unlockable.toString()).toBe('1000');
+			expect(result[0].vested.toString()).toBe('1000');
 			expect(result[0].endBlock.toString()).toBe('510');
 
 			// Schedule 2: 5 * 200 = 1000
-			expect(result[1].unlockable.toString()).toBe('1000');
+			expect(result[1].vested.toString()).toBe('1000');
 			expect(result[1].endBlock.toString()).toBe('610'); // 600 + (2000/200)
 		});
 	});
