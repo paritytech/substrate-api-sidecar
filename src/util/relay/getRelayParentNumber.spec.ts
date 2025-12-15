@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash } from '@polkadot/types/interfaces';
 import BN from 'bn.js';
 
 import { polkadotRegistry } from '../../test-helpers/registries';
@@ -24,7 +23,7 @@ import { getRelayParentNumber, hasRelayParentData } from './getRelayParentNumber
 const mockBlockHash = polkadotRegistry.createType(
 	'BlockHash',
 	'0x7b713de604a99857f6c25eacc115a4f28d2611a23d9ddff99ab0e4f1c17a8578',
-) as BlockHash;
+);
 
 const mockRelayParentNumber = 28500000;
 
@@ -76,19 +75,22 @@ describe('getRelayParentNumber', () => {
 				},
 			};
 
+			const mockAt = jest.fn().mockResolvedValue(mockApiAt);
+			const mockGetBlock = jest.fn().mockResolvedValue({
+				block: {
+					extrinsics: [
+						createMockOtherExtrinsic('timestamp'),
+						createMockSetValidationDataExtrinsic(),
+						createMockOtherExtrinsic('transfer'),
+					],
+				},
+			});
+
 			const mockApi = {
-				at: jest.fn().mockResolvedValue(mockApiAt),
+				at: mockAt,
 				rpc: {
 					chain: {
-						getBlock: jest.fn().mockResolvedValue({
-							block: {
-								extrinsics: [
-									createMockOtherExtrinsic('timestamp'),
-									createMockSetValidationDataExtrinsic(),
-									createMockOtherExtrinsic('transfer'),
-								],
-							},
-						}),
+						getBlock: mockGetBlock,
 					},
 				},
 			} as unknown as ApiPromise;
@@ -97,8 +99,8 @@ describe('getRelayParentNumber', () => {
 
 			expect(result).toBeInstanceOf(BN);
 			expect(result.toNumber()).toBe(mockRelayParentNumber);
-			expect(mockApi.at).toHaveBeenCalledWith(mockBlockHash);
-			expect(mockApi.rpc.chain.getBlock).toHaveBeenCalledWith(mockBlockHash);
+			expect(mockAt).toHaveBeenCalledWith(mockBlockHash);
+			expect(mockGetBlock).toHaveBeenCalledWith(mockBlockHash);
 		});
 
 		it('should throw error when setValidationData extrinsic is not found', async () => {
@@ -108,10 +110,7 @@ describe('getRelayParentNumber', () => {
 					chain: {
 						getBlock: jest.fn().mockResolvedValue({
 							block: {
-								extrinsics: [
-									createMockOtherExtrinsic('timestamp'),
-									createMockOtherExtrinsic('transfer'),
-								],
+								extrinsics: [createMockOtherExtrinsic('timestamp'), createMockOtherExtrinsic('transfer')],
 							},
 						}),
 					},
@@ -182,10 +181,7 @@ describe('getRelayParentNumber', () => {
 					chain: {
 						getBlock: jest.fn().mockResolvedValue({
 							block: {
-								extrinsics: [
-									createMockOtherExtrinsic('timestamp'),
-									createMockSetValidationDataExtrinsic(),
-								],
+								extrinsics: [createMockOtherExtrinsic('timestamp'), createMockSetValidationDataExtrinsic()],
 							},
 						}),
 					},
@@ -203,10 +199,7 @@ describe('getRelayParentNumber', () => {
 					chain: {
 						getBlock: jest.fn().mockResolvedValue({
 							block: {
-								extrinsics: [
-									createMockOtherExtrinsic('timestamp'),
-									createMockOtherExtrinsic('transfer'),
-								],
+								extrinsics: [createMockOtherExtrinsic('timestamp'), createMockOtherExtrinsic('transfer')],
 							},
 						}),
 					},

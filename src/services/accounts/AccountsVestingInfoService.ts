@@ -57,11 +57,7 @@ export class AccountsVestingInfoService extends AbstractService {
 	 * @param address address of the account to get the vesting info of
 	 * @param includeVested whether to calculate and include vested amounts (default: false)
 	 */
-	async fetchAccountVestingInfo(
-		hash: BlockHash,
-		address: string,
-		includeVested = false,
-	): Promise<IAccountVestingInfo> {
+	async fetchAccountVestingInfo(hash: BlockHash, address: string, includeVested = false): Promise<IAccountVestingInfo> {
 		const { api } = this;
 
 		const historicApi = await api.at(hash);
@@ -132,10 +128,7 @@ export class AccountsVestingInfoService extends AbstractService {
 	 * Get the vesting lock amount from balances.locks.
 	 * Returns 0 if no vesting lock exists.
 	 */
-	private async getVestingLocked(
-		historicApi: Awaited<ReturnType<typeof this.api.at>>,
-		address: string,
-	): Promise<BN> {
+	private async getVestingLocked(historicApi: Awaited<ReturnType<typeof this.api.at>>, address: string): Promise<BN> {
 		if (!historicApi.query.balances?.locks) {
 			return new BN(0);
 		}
@@ -225,8 +218,6 @@ export class AccountsVestingInfoService extends AbstractService {
 		}
 
 		const rcApi = relayApis[0].api;
-
-		// Get the relay chain inclusion block number for this Asset Hub block
 		const inclusionResult = await getInclusionBlockNumber(this.api, rcApi, hash, ASSET_HUB_PARA_ID);
 
 		if (!inclusionResult.found || inclusionResult.inclusionBlockNumber === null) {
