@@ -31,6 +31,8 @@ import AbstractController from '../../AbstractController';
  * Query params:
  * - (Optional)`at`: Block at which to retrieve vesting information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
+ * - (Optional)`includeClaimable`: When set to 'true', calculates and includes vested
+ *      amounts for each vesting schedule plus the claimable amount. Defaults to 'false'.
  *
  * Returns:
  * - `at`: Block number and hash at which the call was made.
@@ -38,12 +40,14 @@ import AbstractController from '../../AbstractController';
  *   - `locked`: Number of tokens locked at start.
  *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
  *   - `startingBlock`: Starting block for unlocking(vesting).
- *   - `unlockable`: Amount that has vested and can be unlocked at the queried block.
- * - `totalUnlockable`: Total amount that can be unlocked across all vesting schedules.
- * - `blockNumberForCalculation`: The block number used for calculating unlockable amounts.
- * - `blockNumberSource`: Indicates which chain's block number was used ('relay' or 'self').
+ *   - `vested`: (Only when `includeClaimable=true`) Amount that has vested based on time elapsed.
+ * - `vestedBalance`: (Only when `includeClaimable=true`) Total vested across all schedules.
+ * - `vestingTotal`: (Only when `includeClaimable=true`) Total locked across all schedules.
+ * - `vestedClaimable`: (Only when `includeClaimable=true`) Actual amount that can be claimed now.
+ * - `blockNumberForCalculation`: (Only when `includeClaimable=true`) The block number used for calculations.
+ * - `blockNumberSource`: (Only when `includeClaimable=true`) Which chain's block number was used ('relay' or 'self').
  *
- * Note: For relay chain pre-migration queries, unlockable is calculated using the relay
+ * Note: For relay chain pre-migration queries, vested amounts are calculated using the relay
  * chain's own block number. Post-migration, vesting has moved to Asset Hub.
  *
  * Substrate Reference:
@@ -77,7 +81,7 @@ export default class RcAccountsVestingInfoController extends AbstractController<
 	 * @param res Express Response
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at } },
+		{ params: { address }, query: { at, includeClaimable } },
 		res,
 	): Promise<void> => {
 		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
@@ -86,8 +90,9 @@ export default class RcAccountsVestingInfoController extends AbstractController<
 			throw new Error('Relay chain API not found, please use SAS_SUBSTRATE_MULTI_CHAIN_URL env variable');
 		}
 
+		const shouldIncludeClaimable = includeClaimable === 'true';
 		const hash = await this.getHashFromAt(at, { api: rcApi });
-		const result = await this.service.fetchAccountVestingInfo(hash, address);
+		const result = await this.service.fetchAccountVestingInfo(hash, address, shouldIncludeClaimable);
 
 		RcAccountsVestingInfoController.sanitizedSend(res, result);
 	};

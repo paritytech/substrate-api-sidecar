@@ -30,7 +30,12 @@ import AbstractController from '../AbstractController';
  * Query params:
  * - (Optional)`at`: Block at which to retrieve runtime version information at. Block
  * 		identifier, as the block height or block hash. Defaults to most recent block.
- * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the 'at' parameter to determine corresponding Asset Hub block(s). Only supported for Asset Hub endpoints.
+ * - (Optional)`includeClaimable`: When set to 'true', calculates and includes vested
+ *      amounts for each vesting schedule plus the claimable amount. This may require a
+ *      relay chain connection for Asset Hub post-migration queries. Defaults to 'false'.
+ * - (Optional)`useRcBlock`: When set to 'true', uses the relay chain block specified in the
+ *      'at' parameter to determine corresponding Asset Hub block(s). Only supported for
+ *      Asset Hub endpoints.
  *
  * Returns:
  * - When using `useRcBlock` parameter: An array of response objects, one for each Asset Hub block found
@@ -43,17 +48,18 @@ import AbstractController from '../AbstractController';
  *   - `locked`: Number of tokens locked at start.
  *   - `perBlock`: Number of tokens that gets unlocked every block after `startingBlock`.
  *   - `startingBlock`: Starting block for unlocking(vesting).
- *   - `unlockable`: Amount that has vested and can be unlocked at the queried block.
- * - `totalUnlockable`: Total amount that can be unlocked across all vesting schedules.
- * - `blockNumberForCalculation`: The block number used for calculating unlockable amounts.
- *   For Asset Hub post-migration, this is the relay chain block number.
- * - `blockNumberSource`: Indicates which chain's block number was used ('relay' or 'self').
+ *   - `vested`: (Only when `includeClaimable=true`) Amount that has vested based on time elapsed.
+ * - `vestedBalance`: (Only when `includeClaimable=true`) Total vested across all schedules.
+ * - `vestingTotal`: (Only when `includeClaimable=true`) Total locked across all schedules.
+ * - `vestedClaimable`: (Only when `includeClaimable=true`) Actual amount that can be claimed now.
+ * - `blockNumberForCalculation`: (Only when `includeClaimable=true`) The block number used for calculations.
+ * - `blockNumberSource`: (Only when `includeClaimable=true`) Which chain's block number was used ('relay' or 'self').
  * - `rcBlockHash`: The relay chain block hash. Only present when `useRcBlock` parameter is used.
  * - `rcBlockNumber`: The relay chain block number. Only present when `useRcBlock` parameter is used.
  * - `ahTimestamp`: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
  *
- * Note: For Asset Hub post-migration, a relay chain connection is required to calculate
- * unlockable amounts, since vesting schedules use relay chain block numbers.
+ * Note: When `includeClaimable=true` for Asset Hub post-migration queries, a relay chain
+ * connection is required since vesting schedules use relay chain block numbers.
  *
  * Substrate Reference:
  * - Vesting Pallet: https://crates.parity.io/pallet_vesting/index.html
@@ -81,9 +87,11 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, useRcBlock } },
+		{ params: { address }, query: { at, useRcBlock, includeClaimable } },
 		res,
 	): Promise<void> => {
+		const shouldIncludeClaimable = includeClaimable === 'true';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
@@ -96,7 +104,7 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 			// Process each Asset Hub block found
 			const results = [];
 			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
-				const result = await this.service.fetchAccountVestingInfo(ahHash, address);
+				const result = await this.service.fetchAccountVestingInfo(ahHash, address, shouldIncludeClaimable);
 
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();
@@ -114,7 +122,7 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 			AccountsVestingInfoController.sanitizedSend(res, results);
 		} else {
 			const hash = await this.getHashFromAt(at);
-			const result = await this.service.fetchAccountVestingInfo(hash, address);
+			const result = await this.service.fetchAccountVestingInfo(hash, address, shouldIncludeClaimable);
 			AccountsVestingInfoController.sanitizedSend(res, result);
 		}
 	};
