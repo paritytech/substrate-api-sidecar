@@ -6,6 +6,10 @@
   "vesting": [{
     "locked": "1749990000000000",
     "perBlock": "166475460",
-    "startingBlock": "4961000"
-  }]
+    "startingBlock": "4961000",
+    "unlockable": "0"
+  }],
+  "totalUnlockable": "0",
+  "blockNumberForCalculation": "789629",
+  "blockNumberSource": "self"
 }
