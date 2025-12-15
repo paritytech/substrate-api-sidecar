@@ -748,7 +748,6 @@ paths:
         required: false
         schema:
           type: boolean
-          description: When set to 'true', includes vested and claimable calculations in the response.
       responses:
         "200":
           description: successful operation
@@ -991,7 +990,6 @@ paths:
         required: false
         schema:
           type: boolean
-          description: When set to 'true', includes vested and claimable calculations in the response.
       responses:
         "200":
           description: successful operation
