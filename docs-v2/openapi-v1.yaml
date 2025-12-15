@@ -8,7 +8,7 @@ info:
   license:
     name: GPL-3.0-or-later
     url: https://github.com/paritytech/substrate-api-sidecar/blob/master/LICENSE
-  version: 20.11.0
+  version: 20.12.0
 servers:
 - url: https://polkadot-public-sidecar.parity-chains.parity.io/
   description: Polkadot Parity public sidecar
@@ -742,6 +742,13 @@ paths:
         schema:
           type: boolean
           description: When set to 'true', uses relay chain block mode with the 'at' parameter.
+      - name: includeClaimable
+        in: query
+        description: When set to 'true', calculates and includes vested amounts for each vesting schedule plus the claimable amount. For Asset Hub post-migration queries, this requires a relay chain connection since vesting schedules use relay chain block numbers.
+        required: false
+        schema:
+          type: boolean
+          description: When set to 'true', includes vested and claimable calculations in the response.
       responses:
         "200":
           description: successful operation
@@ -978,6 +985,13 @@ paths:
           description: Block height (as a non-negative integer) or hash
             (as a hex string).
           format: unsignedInteger or $hex
+      - name: includeClaimable
+        in: query
+        description: When set to 'true', calculates and includes vested amounts for each vesting schedule plus the claimable amount. For relay chain pre-migration queries, vested amounts are calculated using the relay chain's own block number.
+        required: false
+        schema:
+          type: boolean
+          description: When set to 'true', includes vested and claimable calculations in the response.
       responses:
         "200":
           description: successful operation
@@ -5332,6 +5346,28 @@ components:
           type: string
           description: The Asset Hub block timestamp. Only present when `useRcBlock` parameter is used.
           format: unsignedInteger
+        vestedBalance:
+          type: string
+          description: Total vested amount across all schedules based on time elapsed. Only present when `includeClaimable` parameter is used.
+          format: unsignedInteger
+        vestingTotal:
+          type: string
+          description: Total locked amount across all vesting schedules. Only present when `includeClaimable` parameter is used.
+          format: unsignedInteger
+        vestedClaimable:
+          type: string
+          description: Actual amount that can be claimed now (vestedBalance minus already claimed). Only present when `includeClaimable` parameter is used.
+          format: unsignedInteger
+        blockNumberForCalculation:
+          type: string
+          description: The block number used for vesting calculations. Only present when `includeClaimable` parameter is used.
+          format: unsignedInteger
+        blockNumberSource:
+          type: string
+          description: Which chain's block number was used for calculations ('relay' or 'self'). Only present when `includeClaimable` parameter is used.
+          enum:
+            - relay
+            - self
     AddressDetails:
       type: object
       properties:
@@ -8124,6 +8160,10 @@ components:
         startingBlock:
           type: string
           description: Starting block for unlocking (vesting).
+          format: unsignedInteger
+        vested:
+          type: string
+          description: Amount that has vested based on time elapsed for this schedule. Only present when `includeClaimable` parameter is used.
           format: unsignedInteger
       description: Vesting schedule for an account.
     WeightsV2:
