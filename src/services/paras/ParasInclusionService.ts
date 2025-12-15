@@ -14,29 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces';
 import { u32 } from '@polkadot/types-codec';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { IParachainInclusion } from '../../types/responses';
+import { getRelayParentNumberRaw, searchForInclusionBlock } from '../../util/relay/getRelayParentNumber';
 import { AbstractService } from '../AbstractService';
-
-interface IValidationDataArgs {
-	args: {
-		data: {
-			validationData: {
-				relayParentNumber: number;
-			};
-		};
-	};
-}
-
-interface IInclusionData {
-	descriptor: {
-		paraId: number;
-	};
-}
 
 export class ParasInclusionService extends AbstractService {
 	constructor(api: string) {
@@ -46,8 +30,9 @@ export class ParasInclusionService extends AbstractService {
 	/**
 	 * Find the relay chain inclusion information for a specific parachain block.
 	 *
-	 * @param hash - The relay chain block hash to start searching from
-	 * @param blockNumber - The parachain block number
+	 * @param hash - The parachain block hash
+	 * @param paraId - The parachain ID
+	 * @param number - The parachain block number
 	 * @param depth - Search depth (defaults to 10)
 	 */
 	async getParachainInclusion(hash: BlockHash, paraId: u32, number: string, depth = 10): Promise<IParachainInclusion> {
@@ -58,21 +43,11 @@ export class ParasInclusionService extends AbstractService {
 			throw new Error('Relay chain api must be available');
 		}
 
-		const [apiAt, { block }] = await Promise.all([api.at(hash), api.rpc.chain.getBlock(hash)]);
-
-		const setValidationData = block.extrinsics.find((ext) => {
-			return ext.method.method.toString() === 'setValidationData';
-		});
-
-		if (!setValidationData) {
-			throw new Error("Block contains no set validation data. Can't find relayParentNumber");
-		}
-
-		const callArgs = apiAt.registry.createType('Call', setValidationData.method);
-		const { relayParentNumber } = (callArgs.toJSON() as unknown as IValidationDataArgs).args.data.validationData;
+		// Extract relay parent number from the parachain block
+		const relayParentNumber = await getRelayParentNumberRaw(api, hash);
 
 		// Search for inclusion starting from relay_parent_number + 1
-		const inclusionNumber = await this.searchForInclusion(
+		const inclusionNumber = await searchForInclusionBlock(
 			rcApi,
 			paraId.toNumber(),
 			number, // parachain block number
@@ -80,7 +55,6 @@ export class ParasInclusionService extends AbstractService {
 			depth,
 		);
 
-		// For now, return a placeholder response
 		return {
 			parachainBlock: parseInt(number, 10),
 			parachainBlockHash: hash.toString(),
@@ -89,72 +63,5 @@ export class ParasInclusionService extends AbstractService {
 			inclusionNumber: inclusionNumber || null,
 			found: inclusionNumber !== null,
 		};
-	}
-
-	/**
-	 * Search relay chain blocks for inclusion of a specific parachain block
-	 * Uses optimized candidate_events runtime API when available, falls back to system events for historical support
-	 */
-	private async searchForInclusion(
-		rcApi: ApiPromise,
-		paraId: number,
-		parachainBlockNumber: string,
-		relayParentNumber: number,
-		maxDepth: number,
-	): Promise<number | null> {
-		return this.searchWithSystemEvents(rcApi, paraId, parachainBlockNumber, relayParentNumber, maxDepth);
-	}
-
-	/**
-	 * Search using system events
-	 */
-	private async searchWithSystemEvents(
-		rcApi: ApiPromise,
-		paraId: number,
-		parachainBlockNumber: string,
-		relayParentNumber: number,
-		maxDepth: number,
-	): Promise<number | null> {
-		// The number is 5 here since most searches are relative to 2-4 blocks from the `relayParentNumber`.
-		// Therefore we give 1 extra block for extra room, while also minimizing the amount of searches we do.
-		const BATCH_SIZE = 5;
-
-		// Search in batches of 5 for optimal performance
-		for (let offset = 0; offset < maxDepth; offset += BATCH_SIZE) {
-			const batchSize = Math.min(BATCH_SIZE, maxDepth - offset);
-			const searchBlocks = Array.from({ length: batchSize }, (_, i) => relayParentNumber + offset + i + 1);
-
-			const searchPromises = searchBlocks.map(async (blockNum) => {
-				try {
-					const relayBlockHash = await rcApi.rpc.chain.getBlockHash(blockNum);
-					const rcApiAt = await rcApi.at(relayBlockHash);
-					const events = await rcApiAt.query.system.events();
-
-					const foundInclusion = events.find((record) => {
-						if (record.event.section === 'paraInclusion' && record.event.method === 'CandidateIncluded') {
-							const eventData = record.event.data[0].toJSON() as unknown as IInclusionData;
-							if (eventData.descriptor.paraId === paraId) {
-								const header = rcApiAt.registry.createType('Header', record.event.data[1]);
-								return header.number.toString() === parachainBlockNumber;
-							}
-						}
-						return false;
-					});
-
-					return foundInclusion ? blockNum : null;
-				} catch {
-					return null;
-				}
-			});
-
-			const results = await Promise.all(searchPromises);
-			const found = results.find((result) => result !== null);
-
-			if (found) {
-				return found; // Early termination when found in this batch
-			}
-		}
-
-		return null; // Not found within search depth
 	}
 }
