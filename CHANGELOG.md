@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.13.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.12.0..v20.13.0) (2025-12-16)
+
+### Feat
+
+- feat: add `includeClaimable` query param to vesting-info endpoints ([#1860](https://github.com/paritytech/substrate-api-sidecar/pull/1860)) ([afb3ba6](https://github.com/paritytech/substrate-api-sidecar/commit/afb3ba6))
+- feat: Add simple grafana dashboard that can be used when running sidecar ([#1856](https://github.com/paritytech/substrate-api-sidecar/pull/1856)) ([3bad62f](https://github.com/paritytech/substrate-api-sidecar/commit/3bad62f))
+
+### Chore
+
+- chore: ignore polkadot-js deps in dependabot ([#1853](https://github.com/paritytech/substrate-api-sidecar/pull/1853)) ([3683c4d](https://github.com/paritytech/substrate-api-sidecar/commit/3683c4d))
+- chore(deps): bump winston from 3.18.3 to 3.19.0 ([#1854](https://github.com/paritytech/substrate-api-sidecar/pull/1854)) ([7afbb72](https://github.com/paritytech/substrate-api-sidecar/commit/7afbb72))
+- chore(deps): bump express from 4.21.2 to 4.22.1 in /docs ([#1843](https://github.com/paritytech/substrate-api-sidecar/pull/1843)) ([750431f](https://github.com/paritytech/substrate-api-sidecar/commit/750431f))
+- chore(deps): bump lru-cache from 11.2.2 to 11.2.4 ([#1842](https://github.com/paritytech/substrate-api-sidecar/pull/1842)) ([7981d91](https://github.com/paritytech/substrate-api-sidecar/commit/7981d91))
+- chore(deps-dev): bump @acala-network/chopsticks-testing ([#1841](https://github.com/paritytech/substrate-api-sidecar/pull/1841)) ([c81709e](https://github.com/paritytech/substrate-api-sidecar/commit/c81709e))
+- chore(deps): bump express from 5.1.0 to 5.2.0 ([#1840](https://github.com/paritytech/substrate-api-sidecar/pull/1840)) ([e876817](https://github.com/paritytech/substrate-api-sidecar/commit/e876817))
+
+### CI
+
+- ci: remove polkadot-js from auto updates ([#1844](https://github.com/paritytech/substrate-api-sidecar/pull/1844)) ([a489c96](https://github.com/paritytech/substrate-api-sidecar/commit/a489c96))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.20.0 (Polkadot stable2509)
+- Kusama v1.20.0 (Polkadot stable2509)
+- Westend v1.20.0 (Polkadot stable2509)
+
+Tested against the following runtime releases:
+- Polkadot v2000000
+- Kusama v1009002
+- Westend v1020004
+- Polkadot Asset Hub v2000000
+- Kusama Asset Hub v1009002
+
 ## [20.12.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.11.0..v20.12.0) (2025-12-01)
 
 ### Feat
