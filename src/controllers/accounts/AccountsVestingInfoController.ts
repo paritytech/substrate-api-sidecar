@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import BN from 'bn.js';
 import { RequestHandler } from 'express';
 import { IAddressParam } from 'src/types/requests';
 
@@ -104,7 +105,13 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 			// Process each Asset Hub block found
 			const results = [];
 			for (const { ahHash, rcBlockHash, rcBlockNumber } of rcAtResults) {
-				const result = await this.service.fetchAccountVestingInfo(ahHash, address, shouldIncludeClaimable);
+				// Pass rcBlockNumber to skip relay block search when includeClaimable is used
+				const result = await this.service.fetchAccountVestingInfo(
+					ahHash,
+					address,
+					shouldIncludeClaimable,
+					new BN(rcBlockNumber),
+				);
 
 				const apiAt = await this.api.at(ahHash);
 				const ahTimestamp = await apiAt.query.timestamp.now();

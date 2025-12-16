@@ -56,8 +56,14 @@ export class AccountsVestingInfoService extends AbstractService {
 	 * @param hash `BlockHash` to make call at
 	 * @param address address of the account to get the vesting info of
 	 * @param includeVested whether to calculate and include vested amounts (default: false)
+	 * @param knownRelayBlockNumber optional relay block number to use for calculations (skips search when provided)
 	 */
-	async fetchAccountVestingInfo(hash: BlockHash, address: string, includeVested = false): Promise<IAccountVestingInfo> {
+	async fetchAccountVestingInfo(
+		hash: BlockHash,
+		address: string,
+		includeVested = false,
+		knownRelayBlockNumber?: BN,
+	): Promise<IAccountVestingInfo> {
 		const { api } = this;
 
 		const historicApi = await api.at(hash);
@@ -102,7 +108,13 @@ export class AccountsVestingInfoService extends AbstractService {
 		const vestingLocked = await this.getVestingLocked(historicApi, address);
 
 		// Calculate vested amounts based on chain type and migration state
-		const vestingResult = await this.calculateVestingAmounts(hash, blockNumber, vestingArray, vestingLocked);
+		const vestingResult = await this.calculateVestingAmounts(
+			hash,
+			blockNumber,
+			vestingArray,
+			vestingLocked,
+			knownRelayBlockNumber,
+		);
 
 		if (vestingResult === null) {
 			// Unable to calculate (e.g., during migration or missing relay connection)
@@ -153,6 +165,7 @@ export class AccountsVestingInfoService extends AbstractService {
 		blockNumber: number,
 		vestingArray: VestingInfo[],
 		vestingLocked: BN,
+		knownRelayBlockNumber?: BN,
 	): Promise<{
 		schedules: IVestingSchedule[];
 		vestedBalance: string;
@@ -165,7 +178,7 @@ export class AccountsVestingInfoService extends AbstractService {
 		const isAssetHub = assetHubSpecNames.has(specName);
 
 		if (isAssetHub) {
-			return this.calculateForAssetHub(hash, blockNumber, vestingArray, vestingLocked);
+			return this.calculateForAssetHub(hash, blockNumber, vestingArray, vestingLocked, knownRelayBlockNumber);
 		} else {
 			return this.calculateForRelayChain(blockNumber, vestingArray, vestingLocked);
 		}
@@ -174,12 +187,14 @@ export class AccountsVestingInfoService extends AbstractService {
 	/**
 	 * Calculate vested amounts for Asset Hub chains.
 	 * Post-migration: uses relay chain inclusion block number for calculations.
+	 * If knownRelayBlockNumber is provided, uses it directly instead of searching.
 	 */
 	private async calculateForAssetHub(
 		hash: BlockHash,
 		blockNumber: number,
 		vestingArray: VestingInfo[],
 		vestingLocked: BN,
+		knownRelayBlockNumber?: BN,
 	): Promise<{
 		schedules: IVestingSchedule[];
 		vestedBalance: string;
@@ -208,7 +223,13 @@ export class AccountsVestingInfoService extends AbstractService {
 			return null;
 		}
 
-		// Post-migration: need relay chain inclusion block number
+		// Post-migration: need relay chain block number for calculations
+		// If knownRelayBlockNumber is provided (e.g., from useRcBlock), use it directly
+		if (knownRelayBlockNumber !== undefined) {
+			return this.performCalculation(vestingArray, vestingLocked, knownRelayBlockNumber, 'relay');
+		}
+
+		// Otherwise, search for the relay chain inclusion block number
 		const relayApis = ApiPromiseRegistry.getApiByType('relay');
 		if (relayApis.length === 0) {
 			throw new InternalServerError(
