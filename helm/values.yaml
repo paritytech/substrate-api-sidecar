@@ -43,6 +43,12 @@ service:
   type: ClusterIP
   port: 80
 
+deployment:
+  livenessProbe:
+    enabled: true
+  readinessProbe:
+    enabled: true
+
 ingress:
   enabled: false
   className: ""

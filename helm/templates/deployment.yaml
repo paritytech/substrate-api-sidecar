@@ -44,16 +44,32 @@ spec:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
+          {{- if .Values.deployment.livenessProbe.enabled }}
           livenessProbe:
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds | default 10 }}
+            {{- with .Values.deployment.livenessProbe.httpGet }}
             httpGet:
-              path: {{ .Values.livenessProbe.httpGet.path | default "/" }}
-              port: {{ .Values.livenessProbe.httpGet.port | default "http" }}
+              path: {{ .path | default "/" }}
+              port: {{ .port | default "http" }}
+            {{- else }}
+            httpGet:
+              path: /
+              port: http
+            {{- end }}
+          {{- end }}
+          {{- if .Values.deployment.readinessProbe.enabled }}
           readinessProbe:
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds | default 10 }}
+            {{- with .Values.deployment.readinessProbe.httpGet }}
             httpGet:
-              path: {{ .Values.readinessProbe.httpGet.path | default "/" }}
-              port: {{ .Values.readinessProbe.httpGet.port | default "http" }}
+              path: {{ .path | default "/" }}
+              port: {{ .port | default "http" }}
+            {{- else }}
+            httpGet:
+              path: /
+              port: http
+            {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
