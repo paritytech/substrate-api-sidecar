@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.13.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.1..v20.13.2) (2025-12-30)
+
+- feat: helm add templates for health and readiness probes ([#1864](https://github.com/paritytech/substrate-api-sidecar/pull/1864)) ([84eef38](https://github.com/paritytech/substrate-api-sidecar/commit/84eef38bdf5879b07f345498f0d8ec5241cbf5a2))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.20.0 (Polkadot stable2509)
+- Kusama v1.20.0 (Polkadot stable2509)
+- Westend v1.20.0 (Polkadot stable2509)
+
+Tested against the following runtime releases:
+- Polkadot v2000000
+- Kusama v1009002
+- Westend v1020004
+- Polkadot Asset Hub v2000000
+- Kusama Asset Hub v1009002
+
 ## [20.13.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.0..v20.13.1) (2025-12-16)
 
 ### Fix
