@@ -60,7 +60,7 @@ const validatorsAt = () =>
 const forceEraAt = () => Promise.resolve().then(() => polkadotRegistry.createType('Forcing', 'NotForcing'));
 
 const unappliedSlashesEntries = () => {
-	return Promise.resolve([['5640', []]]);
+	return Promise.resolve([['5640', {}]]);
 };
 
 const validatorCountAt = () => Promise.resolve().then(() => polkadotRegistry.createType('u32', 197));
@@ -122,24 +122,22 @@ const mockApi = {
 	at: (_hash: Hash) => mockHistoricApi,
 } as unknown as ApiPromise;
 
-const unappliedSlashes = [
-	{
-		validator: '5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6',
-		own: '0',
-		others: [['5GxDBrTuFgCAN49xrpRFWJiA969R2Ny5NnTa8cSPBh8hWHY9', '6902377436592']],
-		reporters: [],
-		payout: '345118871829',
-		toJSON: function () {
-			return {
-				validator: this.validator,
-				own: this.own,
-				others: this.others.map(([account, amount]) => ({ account, amount })),
-				reporters: this.reporters,
-				payout: this.payout,
-			};
-		},
+const unappliedSlashes = {
+	validator: '5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6',
+	own: '0',
+	others: [['5GxDBrTuFgCAN49xrpRFWJiA969R2Ny5NnTa8cSPBh8hWHY9', '6902377436592']],
+	reporters: [],
+	payout: '345118871829',
+	toJSON: function () {
+		return {
+			validator: this.validator,
+			own: this.own,
+			others: this.others.map(([account, amount]) => ({ account, amount })),
+			reporters: this.reporters,
+			payout: this.payout,
+		};
 	},
-];
+};
 const unappliedSlashesEntriesUnappliedSlashes = () => {
 	return Promise.resolve([['5640', unappliedSlashes]]);
 };
@@ -477,6 +475,7 @@ describe('PalletStakingProgressService', () => {
 			const palletStakingProgressServiceUnappliedSlashes = new PalletsStakingProgressService('polkadot');
 
 			jest.spyOn(ApiPromiseRegistry, 'getApi').mockImplementation(() => mockApiUnappliedSlashes);
+
 			expect(
 				sanitizeNumbers(
 					await palletStakingProgressServiceUnappliedSlashes.derivePalletStakingProgress(blockHash789629),

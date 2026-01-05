@@ -120,7 +120,9 @@ export class PalletsStakingProgressService extends AbstractService {
 			nextSessionEstimate: nextSession.toString(10),
 			unappliedSlashes:
 				Array.isArray(unappliedSlashesAtActiveEra) && unappliedSlashesAtActiveEra.length > 0
-					? unappliedSlashesAtActiveEra.map(([_key, slash]) => slash.toJSON())
+					? unappliedSlashesAtActiveEra.map(([_key, slash]) =>
+							slash && Object.keys(slash).length > 0 ? slash.toJSON() : {},
+						)
 					: ([] as AnyJson[]),
 			validatorSet: validators && validators.length ? validators.map((accountId) => accountId.toString()) : [],
 		};
