@@ -118,9 +118,12 @@ export class PalletsStakingProgressService extends AbstractService {
 			activeEra: activeEra.toString(10),
 			forceEra: forceEra.toJSON(),
 			nextSessionEstimate: nextSession.toString(10),
-			unappliedSlashes: unappliedSlashesAtActiveEra.toString()
-				? unappliedSlashesAtActiveEra[0][1].map((slash) => slash.toJSON())
-				: ([] as AnyJson[]),
+			unappliedSlashes:
+				Array.isArray(unappliedSlashesAtActiveEra) && unappliedSlashesAtActiveEra.length > 0
+					? unappliedSlashesAtActiveEra.map(([_key, slash]) =>
+							slash && Object.keys(slash).length > 0 ? slash.toJSON() : {},
+						)
+					: ([] as AnyJson[]),
 			validatorSet: validators && validators.length ? validators.map((accountId) => accountId.toString()) : [],
 		};
 
