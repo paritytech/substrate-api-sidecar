@@ -26,7 +26,7 @@ import { InternalServerError } from 'http-errors';
 
 import { ApiPromiseRegistry } from '../../apiRegistry';
 import { sanitizeNumbers } from '../../sanitize/sanitizeNumbers';
-import { polkadotRegistry } from '../../test-helpers/registries';
+import { polkadotRegistry, polkadotRegistryV1003000 } from '../../test-helpers/registries';
 import {
 	activeEraAt,
 	blockHash100000,
@@ -123,23 +123,25 @@ const mockApi = {
 } as unknown as ApiPromise;
 
 const unappliedSlashes = {
-	validator: '5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6',
+	validator: '19KYMVrBMbQB4161YiN6jMsqoT6uzKHpsuXNVYR3FBFHrvW',
 	own: '0',
-	others: [['5GxDBrTuFgCAN49xrpRFWJiA969R2Ny5NnTa8cSPBh8hWHY9', '6902377436592']],
+	others: [['15tWLBiy7TTdobAUpTUFeTYJzi94igXDTHC4HuRjjnADgZuw', '6902377436592']],
 	reporters: [],
 	payout: '345118871829',
 	toJSON: function () {
 		return {
 			validator: this.validator,
 			own: this.own,
-			others: this.others.map(([account, amount]) => ({ account, amount })),
+			others: this.others.map(([account, amount]) => [account, amount]),
 			reporters: this.reporters,
 			payout: this.payout,
 		};
 	},
 };
 const unappliedSlashesEntriesUnappliedSlashes = () => {
-	return Promise.resolve([['5640', unappliedSlashes]]);
+	return Promise.resolve([
+		[{ args: [5640] }, polkadotRegistryV1003000.createType('Option<PalletStakingUnappliedSlash>', unappliedSlashes)],
+	]);
 };
 
 const mockHistoricApiUnappliedSlashes = {

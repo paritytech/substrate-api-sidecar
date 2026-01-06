@@ -6,7 +6,7 @@
   "activeEra": "49",
   "forceEra": "NotForcing",
   "nextSessionEstimate": "791868",
-  "unappliedSlashes": [{}],
+  "unappliedSlashes": [],
   "nextActiveEraEstimate": "803868",
   "electionStatus": {
     "status": {

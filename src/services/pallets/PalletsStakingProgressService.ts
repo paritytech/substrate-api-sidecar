@@ -16,7 +16,9 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
+import { Option, StorageKey } from '@polkadot/types';
 import { BlockHash, EraIndex } from '@polkadot/types/interfaces';
+import { PalletStakingAsyncUnappliedSlash } from '@polkadot/types/lookup';
 import { AnyJson, ITuple } from '@polkadot/types/types';
 import { u32, u64, Vec } from '@polkadot/types-codec';
 import BN from 'bn.js';
@@ -104,7 +106,8 @@ export class PalletsStakingProgressService extends AbstractService {
 		const [eraElectionStatus, { eraLength, eraProgress, sessionLength, sessionProgress, activeEra }] =
 			await Promise.all([eraElectionPromise, deriveSessionAndEra]);
 
-		const unappliedSlashesAtActiveEra = await historicApi.query.staking.unappliedSlashes.entries();
+		const unappliedSlashesAtActiveEra: [StorageKey<[u32]>, Option<PalletStakingAsyncUnappliedSlash>][] =
+			await historicApi.query.staking.unappliedSlashes.entries();
 
 		const currentBlockNumber = number.toBn();
 
@@ -120,10 +123,24 @@ export class PalletsStakingProgressService extends AbstractService {
 			nextSessionEstimate: nextSession.toString(10),
 			unappliedSlashes:
 				Array.isArray(unappliedSlashesAtActiveEra) && unappliedSlashesAtActiveEra.length > 0
-					? unappliedSlashesAtActiveEra.map(([_key, slash]) =>
-							slash && Object.keys(slash).length > 0 ? slash.toJSON() : {},
-						)
+					? unappliedSlashesAtActiveEra.flatMap(([key, slashOption]) => {
+							if (!slashOption || !slashOption.isSome) return [];
+							const slashes: PalletStakingAsyncUnappliedSlash = slashOption.unwrap();
+							const era = key.args[0]?.toString();
+							return Array.isArray(slashes)
+								? slashes.map((slash: PalletStakingAsyncUnappliedSlash) => ({
+										era,
+										...slash.toJSON(),
+									}))
+								: [
+										{
+											era,
+											...slashes.toJSON(),
+										},
+									];
+						})
 					: ([] as AnyJson[]),
+
 			validatorSet: validators && validators.length ? validators.map((accountId) => accountId.toString()) : [],
 		};
 
