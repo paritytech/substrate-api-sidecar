@@ -8,14 +8,15 @@
     "nextSessionEstimate": "789999",
     "unappliedSlashes": [
       {
-        "validator": "5CD2Q2EnKaKvjWza3ufMxaXizBTTDgm9kPB3DCZ4VA9j7Ud6",
+        "era": "5640",
+        "validator": "19KYMVrBMbQB4161YiN6jMsqoT6uzKHpsuXNVYR3FBFHrvW",
         "own": "0",
         "others": [
-            {
+            [
               
-              "account": "5GxDBrTuFgCAN49xrpRFWJiA969R2Ny5NnTa8cSPBh8hWHY9",
-              "amount": "6902377436592"
-            }
+              "15tWLBiy7TTdobAUpTUFeTYJzi94igXDTHC4HuRjjnADgZuw",
+              "6902377436592"
+            ]
         ],
         "reporters": [],
         "payout": "345118871829"
