@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.13.3](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.2..v20.13.3) (2026-01-06)
+
+### Fix
+
+- fix: unappliedSlashes per era ([#1869](https://github.com/paritytech/substrate-api-sidecar/pull/1869)) ([51d7293](https://github.com/paritytech/substrate-api-sidecar/commit/51d72936f951a5dc5c50c0cbfefbce20cc25851d))
+- fix: unappliedSlashesAtActiveEra in `staking/progress` ([#1868](https://github.com/paritytech/substrate-api-sidecar/pull/1868)) ([ee1d98f](https://github.com/paritytech/substrate-api-sidecar/commit/ee1d98feb24a7566ac586bab8e21c4eed4c47077))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.21.0 (Polkadot stable2512)
+- Kusama v1.21.0 (Polkadot stable2512)
+- Westend v1.21.0 (Polkadot stable2512)
+
+Tested against the following runtime releases:
+- Polkadot v2000001
+- Kusama v2000004
+- Westend v1021000
+- Polkadot Asset Hub v2000003
+- Kusama Asset Hub v2000004
+
 ## [20.13.2](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.1..v20.13.2) (2025-12-30)
 
 - feat: helm add templates for health and readiness probes ([#1864](https://github.com/paritytech/substrate-api-sidecar/pull/1864)) ([84eef38](https://github.com/paritytech/substrate-api-sidecar/commit/84eef38bdf5879b07f345498f0d8ec5241cbf5a2))
