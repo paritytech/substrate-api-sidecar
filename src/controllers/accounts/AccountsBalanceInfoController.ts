@@ -85,15 +85,22 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 	 * @param res Express Response
 	 */
 	private getAccountBalanceInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, useRcBlock, token, denominated } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, token, denominated } },
 		res,
 	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsBalanceController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsBalanceController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsBalanceController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -129,7 +136,13 @@ export default class AccountsBalanceController extends AbstractController<Accoun
 				results.push(enhancedResult);
 			}
 
-			AccountsBalanceController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsBalanceController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsBalanceController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const tokenArg =
