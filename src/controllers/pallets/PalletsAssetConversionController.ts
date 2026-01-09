@@ -36,13 +36,23 @@ export default class PalletsAssetConversionController extends AbstractController
 		]);
 	}
 
-	private getNextAvailableId: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getNextAvailableId: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsAssetConversionController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsAssetConversionController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsAssetConversionController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -64,7 +74,13 @@ export default class PalletsAssetConversionController extends AbstractController
 				results.push(enhancedResult);
 			}
 
-			PalletsAssetConversionController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsAssetConversionController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsAssetConversionController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchNextAvailableId(hash);
@@ -72,13 +88,23 @@ export default class PalletsAssetConversionController extends AbstractController
 		}
 	};
 
-	private getLiquidityPools: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getLiquidityPools: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsAssetConversionController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsAssetConversionController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsAssetConversionController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -100,7 +126,13 @@ export default class PalletsAssetConversionController extends AbstractController
 				results.push(enhancedResult);
 			}
 
-			PalletsAssetConversionController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsAssetConversionController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsAssetConversionController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchLiquidityPools(hash);

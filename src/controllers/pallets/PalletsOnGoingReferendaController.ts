@@ -39,13 +39,23 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletOnGoingReferenda: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getPalletOnGoingReferenda: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsOnGoingReferendaController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsOnGoingReferendaController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsOnGoingReferendaController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -67,7 +77,13 @@ export default class PalletsOnGoingReferendaController extends AbstractControlle
 				results.push(enhancedResult);
 			}
 
-			PalletsOnGoingReferendaController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsOnGoingReferendaController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsOnGoingReferendaController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.derivePalletOnGoingReferenda(hash);
