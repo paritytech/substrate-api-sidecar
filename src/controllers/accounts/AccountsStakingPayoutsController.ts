@@ -114,19 +114,25 @@ export default class AccountsStakingPayoutsController extends AbstractController
 	 * @param res Express Response
 	 */
 	private getStakingPayoutsByAccountId: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { depth, era, unclaimedOnly, at, useRcBlock } },
+		{ params: { address }, query: { depth, era, unclaimedOnly, at, useRcBlock, useRcBlockFormat } },
 		res,
 	): Promise<void> => {
 		const { specName } = this;
 		const isKusama = specName.toString().toLowerCase() === 'kusama';
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsStakingPayoutsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsStakingPayoutsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsStakingPayoutsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -192,7 +198,13 @@ export default class AccountsStakingPayoutsController extends AbstractController
 				results.push(enhancedResult);
 			}
 
-			AccountsStakingPayoutsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsStakingPayoutsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsStakingPayoutsController.sanitizedSend(res, results);
+			}
 		} else {
 			let hash = await this.getHashFromAt(at);
 			let apiAt = await this.api.at(hash);

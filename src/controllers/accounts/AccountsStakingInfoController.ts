@@ -108,18 +108,24 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountStakingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, useRcBlock, includeClaimedRewards } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, includeClaimedRewards } },
 		res,
 	): Promise<void> => {
 		const { isAssetHubMigrated } = ApiPromiseRegistry.assetHubInfo;
 		const includeClaimedRewardsArg = includeClaimedRewards !== 'false';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsStakingInfoController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsStakingInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsStakingInfoController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -146,7 +152,13 @@ export default class AccountsStakingInfoController extends AbstractController<Ac
 				results.push(enhancedResult);
 			}
 
-			AccountsStakingInfoController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsStakingInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsStakingInfoController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 

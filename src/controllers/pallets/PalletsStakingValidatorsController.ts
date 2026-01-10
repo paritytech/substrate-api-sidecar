@@ -39,13 +39,23 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 	 * @param _req Express Request
 	 * @param res Express Response
 	 */
-	private getPalletStakingValidators: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getPalletStakingValidators: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsStakingValidatorsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsStakingValidatorsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsStakingValidatorsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -67,7 +77,13 @@ export default class PalletsStakingValidatorsController extends AbstractControll
 				results.push(enhancedResult);
 			}
 
-			PalletsStakingValidatorsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsStakingValidatorsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsStakingValidatorsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.derivePalletStakingValidators(hash);

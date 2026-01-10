@@ -88,17 +88,23 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 	 * @param res Express Response
 	 */
 	private getAccountVestingInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, useRcBlock, includeClaimable } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, includeClaimable } },
 		res,
 	): Promise<void> => {
 		const shouldIncludeClaimable = includeClaimable === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsVestingInfoController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsVestingInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsVestingInfoController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -126,7 +132,13 @@ export default class AccountsVestingInfoController extends AbstractController<Ac
 				results.push(enhancedResult);
 			}
 
-			AccountsVestingInfoController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsVestingInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsVestingInfoController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchAccountVestingInfo(hash, address, shouldIncludeClaimable);

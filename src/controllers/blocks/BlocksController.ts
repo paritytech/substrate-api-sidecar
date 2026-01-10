@@ -181,7 +181,17 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 */
 	private getLatestBlock: IRequestHandlerWithMetrics<unknown, IBlockQueryParams> = async (
 		{
-			query: { eventDocs, extrinsicDocs, finalized, noFees, decodedXcmMsgs, paraId, useRcBlock, useEvmFormat },
+			query: {
+				eventDocs,
+				extrinsicDocs,
+				finalized,
+				noFees,
+				decodedXcmMsgs,
+				paraId,
+				useRcBlock,
+				useRcBlockFormat,
+				useEvmFormat,
+			},
 			method,
 			route,
 		},
@@ -190,6 +200,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlockArg) {
 			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
@@ -207,9 +218,14 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			const rcAtResults = await this.getHashFromRcAt(rcHash);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				BlocksController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(rcHash);
+					BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					BlocksController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -261,7 +277,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				results.push(enhancedResult);
 			}
 
-			BlocksController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(rcHash);
+				BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				BlocksController.sanitizedSend(res, results);
+			}
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			const path = route.path as string;
@@ -347,22 +369,38 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	private getBlockById: IRequestHandlerWithMetrics<INumberParam, IBlockQueryParams> = async (
 		{
 			params: { number },
-			query: { eventDocs, extrinsicDocs, noFees, finalizedKey, decodedXcmMsgs, paraId, useRcBlock, useEvmFormat },
+			query: {
+				eventDocs,
+				extrinsicDocs,
+				noFees,
+				finalizedKey,
+				decodedXcmMsgs,
+				paraId,
+				useRcBlock,
+				useRcBlockFormat,
+				useEvmFormat,
+			},
 			method,
 			route,
 		},
 		res,
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 		const checkFinalized = isHex(number);
 
 		if (useRcBlockArg) {
 			// Treat the 'number' parameter as a relay chain block identifier
 			const rcAtResults = await this.getHashFromRcAt(number);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				BlocksController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(number);
+					BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					BlocksController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -424,7 +462,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				results.push(enhancedResult);
 			}
 
-			BlocksController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(number);
+				BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				BlocksController.sanitizedSend(res, results);
+			}
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			const path = route.path as string;
@@ -501,18 +545,24 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlockHeaderById: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
-		{ params: { number }, query: { useRcBlock } },
+		{ params: { number }, query: { useRcBlock, useRcBlockFormat } },
 		res,
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlockArg) {
 			// Treat the 'number' parameter as a relay chain block identifier
 			const rcAtResults = await this.getHashFromRcAt(number);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				BlocksController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(number);
+					BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					BlocksController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -537,7 +587,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				results.push(enhancedResult);
 			}
 
-			BlocksController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(number);
+				BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				BlocksController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashForBlock(number);
 			const headerResult = await this.service.fetchBlockHeader(hash);
@@ -551,9 +607,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param req Express Request
 	 * @param res Express Response
 	 */
-	private getLatestBlockHeader: RequestHandler = async ({ query: { finalized, useRcBlock } }, res): Promise<void> => {
+	private getLatestBlockHeader: RequestHandler = async (
+		{ query: { finalized, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
 		const paramFinalized = finalized !== 'false';
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlockArg) {
 			const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
@@ -568,9 +628,14 @@ export default class BlocksController extends AbstractController<BlocksService> 
 
 			const rcAtResults = await this.getHashFromRcAt(rcHash);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				BlocksController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(rcHash);
+					BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					BlocksController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -595,7 +660,13 @@ export default class BlocksController extends AbstractController<BlocksService> 
 				results.push(enhancedResult);
 			}
 
-			BlocksController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(rcHash);
+				BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				BlocksController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = paramFinalized ? await this.api.rpc.chain.getFinalizedHead() : undefined;
 			const headerResult = await this.service.fetchBlockHeader(hash);
@@ -610,7 +681,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 	 * @param res Express Response
 	 */
 	private getBlocks: IRequestHandlerWithMetrics<unknown, IRangeQueryParam & IBlockQueryParams> = async (
-		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock, useEvmFormat }, method, route },
+		{ query: { range, eventDocs, extrinsicDocs, noFees, useRcBlock, useRcBlockFormat, useEvmFormat }, method, route },
 		res,
 	): Promise<void> => {
 		if (!range) throw new BadRequest('range query parameter must be inputted.');
@@ -618,6 +689,7 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		// We set a max range to 500 blocks.
 		const rangeOfNums = this.parseRangeOfNumbersOrThrow(range, 500);
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		const eventDocsArg = eventDocs === 'true';
 		const extrinsicDocsArg = extrinsicDocs === 'true';
@@ -706,7 +778,19 @@ export default class BlocksController extends AbstractController<BlocksService> 
 		 */
 		blocks.sort((a, b) => a.number.toNumber() - b.number.toNumber());
 
-		BlocksController.sanitizedSend(res, blocks);
+		// Note: For range queries with useRcBlockFormat=object, the response format
+		// doesn't apply the same way since we're querying multiple RC blocks.
+		// The array format is maintained for consistency with range queries.
+		if (useRcBlockArg && useObjectFormat) {
+			// For range queries with object format, we wrap all blocks in a single response
+			// Note: This uses a synthetic rcBlock since we're querying a range
+			const firstRcBlockNumber = rangeOfNums[0].toString();
+			const rcBlockInfo = await this.getRcBlockInfo(firstRcBlockNumber);
+			BlocksController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, blocks));
+		} else {
+			BlocksController.sanitizedSend(res, blocks);
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const path = route.path as string;
 		if (res.locals.metrics) {
