@@ -20,17 +20,34 @@ import { BadRequest } from 'http-errors';
 import { ApiPromiseRegistry } from '../../apiRegistry';
 
 /**
- * Express Middleware to validate the `useRcBlock` query parameter.
+ * Express Middleware to validate the `useRcBlock` and `useRcBlockFormat` query parameters.
  *
  * This middleware performs the following validations:
- * 1. Asset Hub requirement - validates that the current API is connected to Asset Hub
- * 2. Relay chain availability - ensures relay chain API is available
- * 3. Boolean validation - ensures useRcBlock is a valid boolean string
+ * 1. Boolean validation - ensures useRcBlock is a valid boolean string
+ * 2. Asset Hub requirement - validates that the current API is connected to Asset Hub
+ * 3. Relay chain availability - ensures relay chain API is available
+ * 4. useRcBlockFormat validation - ensures it's only used with useRcBlock=true and has valid values
  */
 export const validateUseRcBlockMiddleware: RequestHandler = (req, _res, next) => {
-	const { useRcBlock } = req.query;
+	const { useRcBlock, useRcBlockFormat } = req.query;
 
-	// If useRcBlock is not provided, continue without validation
+	// Validate useRcBlockFormat requires useRcBlock=true
+	if (useRcBlockFormat && useRcBlock !== 'true') {
+		return next(new BadRequest('useRcBlockFormat parameter requires useRcBlock=true'));
+	}
+
+	// Validate useRcBlockFormat values
+	if (useRcBlockFormat) {
+		if (typeof useRcBlockFormat !== 'string') {
+			return next(new BadRequest('useRcBlockFormat must be a string'));
+		}
+
+		if (useRcBlockFormat !== 'array' && useRcBlockFormat !== 'object') {
+			return next(new BadRequest('useRcBlockFormat must be either "array" or "object"'));
+		}
+	}
+
+	// If useRcBlock is not provided, continue without further validation
 	if (!useRcBlock) {
 		return next();
 	}

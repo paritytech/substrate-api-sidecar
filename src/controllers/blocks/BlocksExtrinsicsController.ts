@@ -49,18 +49,27 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 	 * @param res Express Response
 	 */
 	private getExtrinsicByTimepoint: RequestHandler<INumberParam, unknown, unknown, IBlockQueryParams> = async (
-		{ params: { blockId, extrinsicIndex }, query: { eventDocs, extrinsicDocs, noFees, useRcBlock, useEvmFormat } },
+		{
+			params: { blockId, extrinsicIndex },
+			query: { eventDocs, extrinsicDocs, noFees, useRcBlock, useRcBlockFormat, useEvmFormat },
+		},
 		res,
 	): Promise<void> => {
 		const useRcBlockArg = useRcBlock === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlockArg) {
 			// Treat the blockId parameter as a relay chain block identifier
 			const rcAtResults = await this.getHashFromRcAt(blockId);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				BlocksExtrinsicsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(blockId);
+					BlocksExtrinsicsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					BlocksExtrinsicsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -119,7 +128,13 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				results.push(enhancedResult);
 			}
 
-			BlocksExtrinsicsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(blockId);
+				BlocksExtrinsicsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				BlocksExtrinsicsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashForBlock(blockId);
 

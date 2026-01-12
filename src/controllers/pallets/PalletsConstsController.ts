@@ -51,17 +51,23 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	}
 
 	private getConstById: RequestHandler<IPalletsConstantsParam, unknown, unknown> = async (
-		{ query: { at, metadata, useRcBlock }, params: { palletId, constantItemId } },
+		{ query: { at, metadata, useRcBlock, useRcBlockFormat }, params: { palletId, constantItemId } },
 		res,
 	): Promise<void> => {
 		const metadataArg = metadata === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsConstantsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsConstantsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsConstantsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -91,7 +97,13 @@ export default class PalletsConstantsController extends AbstractController<Palle
 				results.push(enhancedResult);
 			}
 
-			PalletsConstantsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsConstantsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsConstantsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const historicApi = await this.api.at(hash);
@@ -108,17 +120,23 @@ export default class PalletsConstantsController extends AbstractController<Palle
 	};
 
 	private getConsts: RequestHandler = async (
-		{ params: { palletId }, query: { at, onlyIds, useRcBlock } },
+		{ params: { palletId }, query: { at, onlyIds, useRcBlock, useRcBlockFormat } },
 		res,
 	): Promise<void> => {
 		const onlyIdsArg = onlyIds === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsConstantsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsConstantsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsConstantsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -146,7 +164,13 @@ export default class PalletsConstantsController extends AbstractController<Palle
 				results.push(enhancedResult);
 			}
 
-			PalletsConstantsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsConstantsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsConstantsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const historicApi = await this.api.at(hash);

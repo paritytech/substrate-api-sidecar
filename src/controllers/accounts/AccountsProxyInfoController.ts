@@ -42,15 +42,22 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 	 * @param res Express Response
 	 */
 	private getAccountProxyInfo: RequestHandler<IAddressParam> = async (
-		{ params: { address }, query: { at, useRcBlock } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat } },
 		res,
 	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsProxyInfoController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsProxyInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsProxyInfoController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -72,7 +79,13 @@ export default class AccountsProxyInfoController extends AbstractController<Acco
 				results.push(enhancedResult);
 			}
 
-			AccountsProxyInfoController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsProxyInfoController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsProxyInfoController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchAccountProxyInfo(hash, address);

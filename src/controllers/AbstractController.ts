@@ -32,6 +32,7 @@ import {
 	IParaIdParam,
 	IRangeQueryParam,
 } from 'src/types/requests';
+import { IRcBlockInfo, IRcBlockObjectResponse } from 'src/types/responses';
 
 import { ApiPromiseRegistry } from '../../src/apiRegistry';
 import type { AssetHubInfo } from '../apiRegistry';
@@ -349,6 +350,42 @@ export default abstract class AbstractController<T extends AbstractService> {
 		const rcBlockNumber = rcHeader.number.toString();
 
 		return ahHashes.map((ahHash) => ({ ahHash, rcBlockHash: rcHash, rcBlockNumber }));
+	}
+
+	/**
+	 * Get minimal relay chain block info for the object format response.
+	 *
+	 * @param rcAt - Block identifier (hash or number) for the relay chain
+	 * @returns IRcBlockInfo containing hash, parentHash, and number
+	 */
+	protected async getRcBlockInfo(rcAt: unknown): Promise<IRcBlockInfo> {
+		const rcApi = ApiPromiseRegistry.getApiByType('relay')[0]?.api;
+		if (!rcApi) {
+			throw new InternalServerError('Relay chain api must be available');
+		}
+
+		const rcHash = await this.getHashFromAt(rcAt, { api: rcApi });
+		const rcHeader = await rcApi.rpc.chain.getHeader(rcHash);
+
+		return {
+			hash: rcHash.toHex(),
+			parentHash: rcHeader.parentHash.toHex(),
+			number: rcHeader.number.toString(),
+		};
+	}
+
+	/**
+	 * Format a response in the RC block object format.
+	 *
+	 * @param rcBlockInfo - The relay chain block info
+	 * @param parachainData - Array of parachain data (endpoint-specific responses)
+	 * @returns IRcBlockObjectResponse with rcBlock and parachainDataPerBlock
+	 */
+	protected formatRcBlockObjectResponse<T>(rcBlockInfo: IRcBlockInfo, parachainData: T[]): IRcBlockObjectResponse<T> {
+		return {
+			rcBlock: rcBlockInfo,
+			parachainDataPerBlock: parachainData,
+		};
 	}
 
 	/**

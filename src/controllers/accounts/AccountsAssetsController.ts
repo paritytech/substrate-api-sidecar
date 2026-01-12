@@ -98,15 +98,22 @@ export default class AccountsAssetsController extends AbstractController<Account
 	}
 
 	private getAssetBalances: RequestHandler = async (
-		{ params: { address }, query: { at, useRcBlock, assets } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, assets } },
 		res,
 	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsAssetsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsAssetsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -130,7 +137,13 @@ export default class AccountsAssetsController extends AbstractController<Account
 				results.push(enhancedResult);
 			}
 
-			AccountsAssetsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsAssetsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const assetsArray = Array.isArray(assets) ? this.parseQueryParamArrayOrThrow(assets as string[]) : [];
@@ -140,7 +153,7 @@ export default class AccountsAssetsController extends AbstractController<Account
 	};
 
 	private getAssetApprovals: RequestHandler = async (
-		{ params: { address }, query: { at, useRcBlock, delegate, assetId } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, delegate, assetId } },
 		res,
 	): Promise<void> => {
 		if (typeof delegate !== 'string' || typeof assetId !== 'string') {
@@ -148,13 +161,19 @@ export default class AccountsAssetsController extends AbstractController<Account
 		}
 
 		const id = this.parseNumberOrThrow(assetId, '`assetId` provided is not a number.');
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsAssetsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsAssetsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -176,7 +195,13 @@ export default class AccountsAssetsController extends AbstractController<Account
 				results.push(enhancedResult);
 			}
 
-			AccountsAssetsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsAssetsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchAssetApproval(hash, address, id, delegate);
