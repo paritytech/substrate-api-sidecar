@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768907772516,
+  "lastUpdate": 1769008961979,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -26435,6 +26435,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 207.35,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "47201679+TarikGul@users.noreply.github.com",
+            "name": "Tarik Gul",
+            "username": "TarikGul"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "59b88c94b45667e81bc1ae90c8c620c4835ba159",
+          "message": "feat: add useRcBlockFormat parameter for RC block response formatting (#1872)\n\n* add IRcBlockInfo and IRcBlockObjectResponse types\n\n* add useRcBlockFormat to IBlockQueryParams\n\n* validate useRcBlockFormat in middleware\n\n* add RC block format helpers to AbstractController\n\n* add useRcBlockFormat support to BlocksController\n\n* add useRcBlockFormat support to BlocksExtrinsicsController\n\n* add useRcBlockFormat support to BlocksRawExtrinsicsController\n\n* add useRcBlockFormat support to all account controllers\n\n* add useRcBlockFormat support to pallets controllers\n\n* Update the docs",
+          "timestamp": "2026-01-21T09:48:36-05:00",
+          "tree_id": "bad09ce7a17dcf66ea58370c6f921a124800d984",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/59b88c94b45667e81bc1ae90c8c620c4835ba159"
+        },
+        "date": 1769008958963,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 143.26,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 139.9,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 196.09,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 114.51,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.42,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.4,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1317.63,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 144.09,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 779.73,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 172.93,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 106.51,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 263.2,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 115.17,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 139.24,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 124.58,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 117.76,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 114,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 122.87,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 324.44,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 158.69,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 147.27,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 150.45,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 156.68,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 140.22,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 132.96,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 211.3,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 107.31,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 108.21,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 232.7,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 225.98,
             "unit": "ms"
           }
         ]
