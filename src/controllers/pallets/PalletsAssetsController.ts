@@ -83,7 +83,7 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 	}
 
 	private getAssetById: RequestHandler = async (
-		{ params: { assetId }, query: { at, useRcBlock } },
+		{ params: { assetId }, query: { at, useRcBlock, useRcBlockFormat } },
 		res,
 	): Promise<void> => {
 		/**
@@ -91,13 +91,19 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 		 * it as an integer
 		 */
 		const index = this.parseNumberOrThrow(assetId, '`assetId` path param is not a number');
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsAssetsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsAssetsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -119,7 +125,13 @@ export default class PalletsAssetsController extends AbstractController<PalletsA
 				results.push(enhancedResult);
 			}
 
-			PalletsAssetsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsAssetsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchAssetById(hash, index);

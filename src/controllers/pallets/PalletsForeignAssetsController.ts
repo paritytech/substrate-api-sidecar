@@ -56,13 +56,23 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 		this.safeMountAsyncGetHandlers([['', this.getForeignAssets]]);
 	}
 
-	private getForeignAssets: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getForeignAssets: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsForeignAssetsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsForeignAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsForeignAssetsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -84,7 +94,13 @@ export default class PalletsForeignAssetsController extends AbstractController<P
 				results.push(enhancedResult);
 			}
 
-			PalletsForeignAssetsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsForeignAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsForeignAssetsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchForeignAssets(hash);

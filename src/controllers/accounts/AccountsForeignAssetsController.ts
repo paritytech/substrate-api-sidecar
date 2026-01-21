@@ -77,15 +77,22 @@ export default class AccountsForeignAssetsController extends AbstractController<
 	}
 
 	private getForeignAssetBalances: RequestHandler = async (
-		{ params: { address }, query: { at, useRcBlock, foreignAssets } },
+		{ params: { address }, query: { at, useRcBlock, useRcBlockFormat, foreignAssets } },
 		res,
 	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				AccountsForeignAssetsController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					AccountsForeignAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					AccountsForeignAssetsController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -109,7 +116,13 @@ export default class AccountsForeignAssetsController extends AbstractController<
 				results.push(enhancedResult);
 			}
 
-			AccountsForeignAssetsController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				AccountsForeignAssetsController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				AccountsForeignAssetsController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const foreignAssetsArray = Array.isArray(foreignAssets) ? (foreignAssets as string[]) : [];

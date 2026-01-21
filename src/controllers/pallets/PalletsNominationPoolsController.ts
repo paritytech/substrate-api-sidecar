@@ -37,7 +37,7 @@ export default class PalletsNominationPoolController extends AbstractController<
 	}
 
 	private getNominationPoolById: RequestHandler = async (
-		{ params: { poolId }, query: { at, useRcBlock, metadata } },
+		{ params: { poolId }, query: { at, useRcBlock, useRcBlockFormat, metadata } },
 		res,
 	): Promise<void> => {
 		/**
@@ -47,13 +47,19 @@ export default class PalletsNominationPoolController extends AbstractController<
 		const index = this.parseNumberOrThrow(poolId, '`poolId` path param is not a number');
 
 		const metadataArg = metadata === 'true';
+		const useObjectFormat = useRcBlockFormat === 'object';
 
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsNominationPoolController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsNominationPoolController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsNominationPoolController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -75,7 +81,13 @@ export default class PalletsNominationPoolController extends AbstractController<
 				results.push(enhancedResult);
 			}
 
-			PalletsNominationPoolController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsNominationPoolController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsNominationPoolController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchNominationPoolById(index, hash, metadataArg);
@@ -83,13 +95,23 @@ export default class PalletsNominationPoolController extends AbstractController<
 		}
 	};
 
-	private getNominationPoolInfo: RequestHandler = async ({ query: { at, useRcBlock } }, res): Promise<void> => {
+	private getNominationPoolInfo: RequestHandler = async (
+		{ query: { at, useRcBlock, useRcBlockFormat } },
+		res,
+	): Promise<void> => {
+		const useObjectFormat = useRcBlockFormat === 'object';
+
 		if (useRcBlock === 'true') {
 			const rcAtResults = await this.getHashFromRcAt(at);
 
-			// Return empty array if no Asset Hub blocks found
+			// Handle empty results based on format
 			if (rcAtResults.length === 0) {
-				PalletsNominationPoolController.sanitizedSend(res, []);
+				if (useObjectFormat) {
+					const rcBlockInfo = await this.getRcBlockInfo(at);
+					PalletsNominationPoolController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, []));
+				} else {
+					PalletsNominationPoolController.sanitizedSend(res, []);
+				}
 				return;
 			}
 
@@ -111,7 +133,13 @@ export default class PalletsNominationPoolController extends AbstractController<
 				results.push(enhancedResult);
 			}
 
-			PalletsNominationPoolController.sanitizedSend(res, results);
+			// Send response based on format
+			if (useObjectFormat) {
+				const rcBlockInfo = await this.getRcBlockInfo(at);
+				PalletsNominationPoolController.sanitizedSend(res, this.formatRcBlockObjectResponse(rcBlockInfo, results));
+			} else {
+				PalletsNominationPoolController.sanitizedSend(res, results);
+			}
 		} else {
 			const hash = await this.getHashFromAt(at);
 			const result = await this.service.fetchNominationPoolInfo(hash);
