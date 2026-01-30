@@ -32,7 +32,7 @@ const dynamicImport = new Function('specifier', 'return import(specifier)') as <
 // Cached module after first load
 let merkleizeMetadataModule: typeof import('@polkadot-api/merkleize-metadata') | null = null;
 
-async function getMerkleizeMetadata(): Promise<
+async function loadMerkleizeMetadata(): Promise<
 	(typeof import('@polkadot-api/merkleize-metadata'))['merkleizeMetadata']
 > {
 	if (!merkleizeMetadataModule) {
@@ -44,6 +44,12 @@ async function getMerkleizeMetadata(): Promise<
 }
 
 export class TransactionMetadataBlobService extends AbstractService {
+	protected async getMerkleizeMetadata(): Promise<
+		(typeof import('@polkadot-api/merkleize-metadata'))['merkleizeMetadata']
+	> {
+		return loadMerkleizeMetadata();
+	}
+
 	/**
 	 * Fetch metadata blob (proof) for a given transaction.
 	 * This returns the minimal metadata needed by offline signers to decode
@@ -106,7 +112,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 		const base58Prefix = ss58Format?.toNumber() ?? 42;
 
 		// Use dynamic import for ESM module compatibility
-		const merkleizeMetadata = await getMerkleizeMetadata();
+		const merkleizeMetadata = await this.getMerkleizeMetadata();
 		const merkleized = merkleizeMetadata(metadataV15Raw, {
 			decimals,
 			tokenSymbol,
