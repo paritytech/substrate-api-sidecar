@@ -23,25 +23,7 @@ import { ITransactionMetadataBlob } from 'src/types/responses';
 
 import { MetadataBlobParams } from '../../controllers/transaction/TransactionMetadataBlobController';
 import { AbstractService } from '../AbstractService';
-
-// Dynamic import helper that TypeScript won't transform to require()
-// This is necessary because @polkadot-api/merkleize-metadata is an ESM-only package
-// eslint-disable-next-line @typescript-eslint/no-implied-eval
-const dynamicImport = new Function('specifier', 'return import(specifier)') as <T>(specifier: string) => Promise<T>;
-
-// Cached module after first load
-let merkleizeMetadataModule: typeof import('@polkadot-api/merkleize-metadata') | null = null;
-
-async function getMerkleizeMetadata(): Promise<
-	(typeof import('@polkadot-api/merkleize-metadata'))['merkleizeMetadata']
-> {
-	if (!merkleizeMetadataModule) {
-		merkleizeMetadataModule = await dynamicImport<typeof import('@polkadot-api/merkleize-metadata')>(
-			'@polkadot-api/merkleize-metadata',
-		);
-	}
-	return merkleizeMetadataModule.merkleizeMetadata;
-}
+import { merkleizeMetadata } from '@polkadot-api/merkleize-metadata';
 
 export class TransactionMetadataBlobService extends AbstractService {
 	/**
@@ -105,8 +87,6 @@ export class TransactionMetadataBlobService extends AbstractService {
 
 		const base58Prefix = ss58Format?.toNumber() ?? 42;
 
-		// Use dynamic import for ESM module compatibility
-		const merkleizeMetadata = await getMerkleizeMetadata();
 		const merkleized = merkleizeMetadata(metadataV15Raw, {
 			decimals,
 			tokenSymbol,
