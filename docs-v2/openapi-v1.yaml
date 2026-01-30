@@ -2667,6 +2667,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /transaction/metadata-blob:
+    post:
+      tags:
+      - transaction
+      summary: Get the metadata blob for offline signers.
+      description: Returns the minimal metadata ("metadata blob" or "proof") needed by offline
+        signers to decode a transaction's signing payload, along with the metadata
+        hash for the CheckMetadataHash signed extension per RFC-0078.
+      operationId: getTransactionMetadataBlob
+      requestBody:
+        $ref: '#/components/requestBodies/TransactionMetadataBlob'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMetadataBlob'
+        "400":
+          description: invalid request body or metadata V15 not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pallets/assets/{assetId}/asset-info:
     get:
       tags:
@@ -8406,6 +8430,74 @@ components:
         - `RuntimeVersion`: https://crates.parity.io/sp_version/struct.RuntimeVersion.html
         - `SignedExtension`: https://crates.parity.io/sp_runtime/traits/trait.SignedExtension.html
         -  FRAME Support: https://crates.parity.io/frame_support/metadata/index.html
+    MetadataBlobBody:
+      type: object
+      properties:
+        tx:
+          type: string
+          format: hex
+          description: Full encoded extrinsic as a hex string.
+        txAdditionalSigned:
+          type: string
+          format: hex
+          description: Optional additional signed data for the extrinsic. Used together with `tx`.
+        callData:
+          type: string
+          format: hex
+          description: Call data as hex string. Use this alongside includedInExtrinsic
+            and includedInSignedData instead of `tx`.
+        includedInExtrinsic:
+          type: string
+          format: hex
+          description: Signed extension data included in the extrinsic. Required when using callData.
+        includedInSignedData:
+          type: string
+          format: hex
+          description: Signed extension data included in the signature. Required when using callData.
+        at:
+          type: string
+          description: Block hash or number to query at. Defaults to finalized head.
+          format: unsignedInteger or $hex
+      description: >-
+        Request body for generating the metadata blob. You must provide either:
+        (1) `tx` (full extrinsic) with optional `txAdditionalSigned`, or
+        (2) `callData` with `includedInExtrinsic` and `includedInSignedData`.
+    TransactionMetadataBlob:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        metadataHash:
+          type: string
+          format: hex
+          description: The 32-byte metadata hash (hex-encoded) that should be used with
+            the CheckMetadataHash signed extension.
+        metadataBlob:
+          type: string
+          format: hex
+          description: The metadata blob (hex-encoded) containing the minimal metadata
+            required for offline signers to decode the transaction. This is a SCALE-encoded
+            Proof structure per RFC-0078.
+        specVersion:
+          type: number
+          description: The chain's spec version.
+        specName:
+          type: string
+          description: The chain's spec name.
+        base58Prefix:
+          type: number
+          description: The chain's SS58 address prefix.
+        decimals:
+          type: number
+          description: Number of decimals for the chain's native token.
+        tokenSymbol:
+          type: string
+          description: Symbol for the chain's native token.
+      description: >-
+        Response containing the metadata blob for offline signers. The metadataBlob
+        contains type definitions needed to decode the specific transaction, Merkle
+        proofs verifying these types are part of the full metadata, and extra chain
+        info.
     TransactionPool:
       type: object
       properties:
@@ -8532,6 +8624,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/DryRunBody'
+      required: true
+    TransactionMetadataBlob:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MetadataBlobBody'
       required: true
     ContractMetadata:
       content:

@@ -1464,6 +1464,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot-api/merkleize-metadata@npm:^1.1.29":
+  version: 1.1.29
+  resolution: "@polkadot-api/merkleize-metadata@npm:1.1.29"
+  dependencies:
+    "@polkadot-api/metadata-builders": "npm:0.13.9"
+    "@polkadot-api/substrate-bindings": "npm:0.17.0"
+    "@polkadot-api/utils": "npm:0.2.0"
+  checksum: 10/1ad9356b6345c6ed234c9c4f766dca43647a2b9d4bbd9bd3a04c9ef26e9fcce12343753c7ff400b3d53930cae7a48a859f7e774070ad2cdc9332fe52baa284a3
+  languageName: node
+  linkType: hard
+
 "@polkadot-api/metadata-builders@npm:0.13.7":
   version: 0.13.7
   resolution: "@polkadot-api/metadata-builders@npm:0.13.7"
@@ -1471,6 +1482,16 @@ __metadata:
     "@polkadot-api/substrate-bindings": "npm:0.16.5"
     "@polkadot-api/utils": "npm:0.2.0"
   checksum: 10/93e37c4622cdd710c03a9c07fd39a76fc1b360a14bec6f2c10e43e016e17e8b509657b8f22b900f51f5b080d7a1abd1742137ce3f6a4ecb11cf1742e9662514d
+  languageName: node
+  linkType: hard
+
+"@polkadot-api/metadata-builders@npm:0.13.9":
+  version: 0.13.9
+  resolution: "@polkadot-api/metadata-builders@npm:0.13.9"
+  dependencies:
+    "@polkadot-api/substrate-bindings": "npm:0.17.0"
+    "@polkadot-api/utils": "npm:0.2.0"
+  checksum: 10/4935e492aa91c82d06cd19a5b3ad9059d61d4b75416bd582398645fe0334b7d9e1ec26c7e8c1a3674752f86e70b9872a221047849007b7dfdfc0df6ebc5af7a5
   languageName: node
   linkType: hard
 
@@ -1617,6 +1638,18 @@ __metadata:
     "@scure/base": "npm:^2.0.0"
     scale-ts: "npm:^1.6.1"
   checksum: 10/1a5a607930193c0bf3d502f7e84123127ea90767671bf50a945b52f31275aaebcf92d6431d79ccacab07a93db1ed42b7ec074b877b51930ee247eb5e414f020d
+  languageName: node
+  linkType: hard
+
+"@polkadot-api/substrate-bindings@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@polkadot-api/substrate-bindings@npm:0.17.0"
+  dependencies:
+    "@noble/hashes": "npm:^2.0.1"
+    "@polkadot-api/utils": "npm:0.2.0"
+    "@scure/base": "npm:^2.0.0"
+    scale-ts: "npm:^1.6.1"
+  checksum: 10/dcf75f2db092b6247530a26791446da3a8512a62887d30b6f3173a9f74f890287e7df8f692c23e2fd620f508d7321f89d7580083a3065b1a783eeb9f6ba5dc34
   languageName: node
   linkType: hard
 
@@ -2465,6 +2498,7 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@acala-network/chopsticks-testing": "npm:^1.2.5"
+    "@polkadot-api/merkleize-metadata": "npm:^1.1.29"
     "@polkadot/api": "npm:16.5.2"
     "@polkadot/api-augment": "npm:16.5.2"
     "@polkadot/api-contract": "npm:16.5.2"

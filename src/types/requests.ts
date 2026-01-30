@@ -1,4 +1,4 @@
-// Copyright 2017-2025 Parity Technologies (UK) Ltd.
+// Copyright 2017-2026 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -26,6 +26,64 @@ export interface ITx {
 	senderAddress: string;
 	xcmVersion?: number;
 	at: string;
+}
+
+/**
+ * Body for the metadata blob request. Contains transaction data for generating
+ * the minimal metadata proof needed by offline signers.
+ */
+export interface IMetadataBlobBody {
+	/**
+	 * Full encoded extrinsic as a hex string. Use this OR the individual components below.
+	 */
+	tx?: string;
+	/**
+	 * Optional additional signed data for the extrinsic.
+	 * Used together with `tx`.
+	 */
+	txAdditionalSigned?: string;
+	/**
+	 * Call data as hex string. Use this alongside includedInExtrinsic and includedInSignedData.
+	 */
+	callData?: string;
+	/**
+	 * Signed Extension data included in the extrinsic.
+	 */
+	includedInExtrinsic?: string;
+	/**
+	 * Signed Extension data included in the signature.
+	 */
+	includedInSignedData?: string;
+	/**
+	 * Block hash or number to query at. Defaults to finalized head.
+	 */
+	at?: string;
+}
+
+/**
+ * Parameters for generating metadata blob proof.
+ */
+export interface MetadataBlobParams {
+	/**
+	 * Full encoded extrinsic. Use this OR the individual parts.
+	 */
+	tx?: string;
+	/**
+	 * Optional tx additional signed data.
+	 */
+	txAdditionalSigned?: string;
+	/**
+	 * Call data. Use with includedInExtrinsic and includedInSignedData.
+	 */
+	callData?: string;
+	/**
+	 * Signed Extension data included in the extrinsic.
+	 */
+	includedInExtrinsic?: string;
+	/**
+	 * Signed Extension data included in the signature.
+	 */
+	includedInSignedData?: string;
 }
 
 /**

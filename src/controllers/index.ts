@@ -1,4 +1,4 @@
-// Copyright 2017-2025 Parity Technologies (UK) Ltd.
+// Copyright 2017-2026 Parity Technologies (UK) Ltd.
 // This file is part of Substrate API Sidecar.
 //
 // Substrate API Sidecar is free software: you can redistribute it and/or modify
@@ -81,7 +81,13 @@ import {
 	RcTransactionSubmit,
 } from './rc/transaction';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
-import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
+import {
+	TransactionDryRun,
+	TransactionFeeEstimate,
+	TransactionMaterial,
+	TransactionMetadataBlob,
+	TransactionSubmit,
+} from './transaction';
 /**
  * Object containing every controller class definition.
  */
@@ -154,6 +160,7 @@ export const controllers = {
 	TransactionDryRun,
 	TransactionFeeEstimate,
 	TransactionMaterial,
+	TransactionMetadataBlob,
 	TransactionSubmit,
 	Paras,
 	ParasInclusion,
