@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { merkleizeMetadata } from '@polkadot-api/merkleize-metadata';
 import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
-import { u8aToHex } from '@polkadot/util';
 import type { BlockHash } from '@polkadot/types/interfaces';
+import { u8aToHex } from '@polkadot/util';
+import { merkleizeMetadata } from '@polkadot-api/merkleize-metadata';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { ITransactionMetadataBlob } from 'src/types/responses';
 
-import { AbstractService } from '../AbstractService';
 import { MetadataBlobParams } from '../../controllers/transaction/TransactionMetadataBlobController';
+import { AbstractService } from '../AbstractService';
 
 export class TransactionMetadataBlobService extends AbstractService {
 	/**
@@ -66,7 +66,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 		const ss58Format = properties.ss58Format.isSome ? properties.ss58Format.value : null;
 
 		let decimals = 10;
-		if (!!tokenDecimalsRaw) {
+		if (tokenDecimalsRaw) {
 			const decimalsJson = tokenDecimalsRaw.toJSON();
 			if (Array.isArray(decimalsJson)) {
 				decimals = (decimalsJson[0] as number) ?? 10;
@@ -76,7 +76,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 		}
 
 		let tokenSymbol = 'DOT';
-		if (!!tokenSymbolRaw) {
+		if (tokenSymbolRaw) {
 			const symbolJson = tokenSymbolRaw.toJSON();
 			if (Array.isArray(symbolJson)) {
 				tokenSymbol = (symbolJson[0] as string) ?? 'DOT';
@@ -97,10 +97,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 		let metadataBlobBytes: Uint8Array;
 
 		if (params.tx) {
-			metadataBlobBytes = merkleized.getProofForExtrinsic(
-				params.tx,
-				params.txAdditionalSigned,
-			);
+			metadataBlobBytes = merkleized.getProofForExtrinsic(params.tx, params.txAdditionalSigned);
 		} else {
 			metadataBlobBytes = merkleized.getProofForExtrinsicParts(
 				params.callData!,
@@ -136,9 +133,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 			const versions = availableVersions.toJSON() as number[];
 
 			if (!versions.includes(15)) {
-				throw new BadRequest(
-					'Metadata V15 is not available on this chain. CheckMetadataHash requires V15 metadata.',
-				);
+				throw new BadRequest('Metadata V15 is not available on this chain. CheckMetadataHash requires V15 metadata.');
 			}
 
 			const metadataOpt = await apiAt.call.metadata.metadataAtVersion(15);

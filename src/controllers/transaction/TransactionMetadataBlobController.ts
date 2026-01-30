@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionMetadataBlobService } from '../../services';
-import { IPostRequestHandler, IMetadataBlobBody } from '../../types/requests';
+import { IMetadataBlobBody, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
@@ -97,10 +97,7 @@ export default class TransactionMetadataBlobController extends AbstractControlle
 	}
 
 	protected initRoutes(): void {
-		this.router.post(
-			this.path,
-			TransactionMetadataBlobController.catchWrap(this.getMetadataBlob),
-		);
+		this.router.post(this.path, TransactionMetadataBlobController.catchWrap(this.getMetadataBlob));
 	}
 
 	/**
