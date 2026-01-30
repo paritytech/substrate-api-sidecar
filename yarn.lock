@@ -1464,7 +1464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot-api/merkleize-metadata@npm:^1.1.21":
+"@polkadot-api/merkleize-metadata@npm:^1.1.29":
   version: 1.1.29
   resolution: "@polkadot-api/merkleize-metadata@npm:1.1.29"
   dependencies:
@@ -2498,7 +2498,7 @@ __metadata:
   resolution: "@substrate/api-sidecar@workspace:."
   dependencies:
     "@acala-network/chopsticks-testing": "npm:^1.2.5"
-    "@polkadot-api/merkleize-metadata": "npm:^1.1.21"
+    "@polkadot-api/merkleize-metadata": "npm:^1.1.29"
     "@polkadot/api": "npm:16.5.2"
     "@polkadot/api-augment": "npm:16.5.2"
     "@polkadot/api-contract": "npm:16.5.2"
