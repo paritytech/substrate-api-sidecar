@@ -18,12 +18,12 @@ import { ApiPromise } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { u8aToHex } from '@polkadot/util';
+import { merkleizeMetadata } from '@polkadot-api/merkleize-metadata';
 import { BadRequest, InternalServerError } from 'http-errors';
 import { ITransactionMetadataBlob } from 'src/types/responses';
 
 import { MetadataBlobParams } from '../../controllers/transaction/TransactionMetadataBlobController';
 import { AbstractService } from '../AbstractService';
-import { merkleizeMetadata } from '@polkadot-api/merkleize-metadata';
 
 export class TransactionMetadataBlobService extends AbstractService {
 	/**
