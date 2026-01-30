@@ -55,6 +55,7 @@ export const polkadotControllers: ControllerConfig = {
 		'TransactionDryRun',
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
+		'TransactionMetadataBlob',
 		'TransactionSubmit',
 	],
 	options: {

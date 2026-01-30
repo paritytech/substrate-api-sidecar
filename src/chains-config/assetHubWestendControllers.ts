@@ -87,6 +87,7 @@ export const assetHubWestendControllers: ControllerConfig = {
 		'TransactionDryRun',
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
+		'TransactionMetadataBlob',
 		'TransactionSubmit',
 	],
 	options: {

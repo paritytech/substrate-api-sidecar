@@ -17,4 +17,5 @@
 export * from './TransactionDryRunService';
 export * from './TransactionFeeEstimateService';
 export * from './TransactionMaterialService';
+export * from './TransactionMetadataBlobService';
 export * from './TransactionSubmitService';

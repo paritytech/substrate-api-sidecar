@@ -14,8 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as TransactionDryRun } from './TransactionDryRunController';
-export { default as TransactionFeeEstimate } from './TransactionFeeEstimateController';
-export { default as TransactionMaterial } from './TransactionMaterialController';
-export { default as TransactionMetadataBlob } from './TransactionMetadataBlobController';
-export { default as TransactionSubmit } from './TransactionSubmitController';
+import { IAt } from '.';
+
+export interface ITransactionMetadataBlob {
+	at: IAt;
+	metadataHash: string;
+	metadataBlob: string;
+	specVersion: number;
+	specName: string;
+	base58Prefix: number;
+	decimals: number;
+	tokenSymbol: string;
+}

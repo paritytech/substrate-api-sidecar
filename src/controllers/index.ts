@@ -81,7 +81,13 @@ import {
 	RcTransactionSubmit,
 } from './rc/transaction';
 import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
-import { TransactionDryRun, TransactionFeeEstimate, TransactionMaterial, TransactionSubmit } from './transaction';
+import {
+	TransactionDryRun,
+	TransactionFeeEstimate,
+	TransactionMaterial,
+	TransactionMetadataBlob,
+	TransactionSubmit,
+} from './transaction';
 /**
  * Object containing every controller class definition.
  */
@@ -154,6 +160,7 @@ export const controllers = {
 	TransactionDryRun,
 	TransactionFeeEstimate,
 	TransactionMaterial,
+	TransactionMetadataBlob,
 	TransactionSubmit,
 	Paras,
 	ParasInclusion,

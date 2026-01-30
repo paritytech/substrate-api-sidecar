@@ -88,6 +88,7 @@ export const assetHubKusamaControllers: ControllerConfig = {
 		'TransactionDryRun',
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
+		'TransactionMetadataBlob',
 		'TransactionSubmit',
 	],
 	options: {

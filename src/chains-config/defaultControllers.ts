@@ -54,6 +54,7 @@ export const defaultControllers: ControllerConfig = {
 		'TransactionDryRun',
 		'TransactionFeeEstimate',
 		'TransactionMaterial',
+		'TransactionMetadataBlob',
 		'TransactionSubmit',
 	],
 	options: {

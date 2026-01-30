@@ -67,4 +67,5 @@ export * from './SanitizedEventItemMetadata';
 export * from './SanitizedStorageItemMetadata';
 export * from './TransactionDryRun';
 export * from './TransactionMaterial';
+export * from './TransactionMetadataBlob';
 export * from './ValidateAddress';

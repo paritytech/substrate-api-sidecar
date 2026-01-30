@@ -29,6 +29,38 @@ export interface ITx {
 }
 
 /**
+ * Body for the metadata blob request. Contains transaction data for generating
+ * the minimal metadata proof needed by offline signers.
+ */
+export interface IMetadataBlobBody {
+	/**
+	 * Full encoded extrinsic as a hex string. Use this OR the individual components below.
+	 */
+	tx?: string;
+	/**
+	 * Optional additional signed data for the extrinsic.
+	 * Used together with `tx`.
+	 */
+	txAdditionalSigned?: string;
+	/**
+	 * Call data as hex string. Use this alogside includedInExtrinsic and includedInSignedData.
+	 */
+	callData?: string;
+	/**
+	 * Signed Extension data included in the extrinsic.
+	 */
+	includedInExtrinsic?: string;
+	/**
+	 * Signed Extension data included in the signature.
+	 */
+	includedInSignedData?: string;
+	/**
+	 * Block hash or number to query at. Defaults to finalized head.
+	 */
+	at?: string;
+}
+
+/**
  * Body for the RequestHandlerContract. In other words, the body of the POST route that a message to a contract.
  */
 export type IBodyContractMetadata = Record<string, unknown>;
