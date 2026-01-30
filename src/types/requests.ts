@@ -61,6 +61,32 @@ export interface IMetadataBlobBody {
 }
 
 /**
+ * Parameters for generating metadata blob proof.
+ */
+export interface MetadataBlobParams {
+	/**
+	 * Full encoded extrinsic. Use this OR the individual parts.
+	 */
+	tx?: string;
+	/**
+	 * Optional tx additional signed data.
+	 */
+	txAdditionalSigned?: string;
+	/**
+	 * Call data. Use with includedInExtrinsic and includedInSignedData.
+	 */
+	callData?: string;
+	/**
+	 * Signed Extension data included in the extrinsic.
+	 */
+	includedInExtrinsic?: string;
+	/**
+	 * Signed Extension data included in the signature.
+	 */
+	includedInSignedData?: string;
+}
+
+/**
  * Body for the RequestHandlerContract. In other words, the body of the POST route that a message to a contract.
  */
 export type IBodyContractMetadata = Record<string, unknown>;

@@ -19,10 +19,14 @@ import { ApiDecoration } from '@polkadot/api/types';
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { u8aToHex } from '@polkadot/util';
 import { BadRequest, InternalServerError } from 'http-errors';
+import { MetadataBlobParams } from 'src/types/requests';
 import { ITransactionMetadataBlob } from 'src/types/responses';
 
-import { MetadataBlobParams } from '../../controllers/transaction/TransactionMetadataBlobController';
 import { AbstractService } from '../AbstractService';
+
+const DEFAULT_DECIMALS = 10;
+const DEFAULT_SS58_PREFIX = 42;
+const DEFAULT_TOKEN_SYMBOL = 'DOT';
 
 // Dynamic import helper that TypeScript won't transform to require()
 // This is necessary because @polkadot-api/merkleize-metadata is an ESM-only package
@@ -89,27 +93,27 @@ export class TransactionMetadataBlobService extends AbstractService {
 		const tokenSymbolRaw = properties.tokenSymbol.isSome ? properties.tokenSymbol.value : null;
 		const ss58Format = properties.ss58Format.isSome ? properties.ss58Format.value : null;
 
-		let decimals = 10;
+		let decimals = DEFAULT_DECIMALS;
 		if (tokenDecimalsRaw) {
 			const decimalsJson = tokenDecimalsRaw.toJSON();
 			if (Array.isArray(decimalsJson)) {
-				decimals = (decimalsJson[0] as number) ?? 10;
+				decimals = (decimalsJson[0] as number) ?? DEFAULT_DECIMALS;
 			} else if (typeof decimalsJson === 'number') {
 				decimals = decimalsJson;
 			}
 		}
 
-		let tokenSymbol = 'DOT';
+		let tokenSymbol = DEFAULT_TOKEN_SYMBOL;
 		if (tokenSymbolRaw) {
 			const symbolJson = tokenSymbolRaw.toJSON();
 			if (Array.isArray(symbolJson)) {
-				tokenSymbol = (symbolJson[0] as string) ?? 'DOT';
+				tokenSymbol = (symbolJson[0] as string) ?? DEFAULT_TOKEN_SYMBOL;
 			} else if (typeof symbolJson === 'string') {
 				tokenSymbol = symbolJson;
 			}
 		}
 
-		const base58Prefix = ss58Format?.toNumber() ?? 42;
+		const base58Prefix = ss58Format?.toNumber() ?? DEFAULT_SS58_PREFIX;
 
 		// Use dynamic import for ESM module compatibility
 		const merkleizeMetadata = await this.getMerkleizeMetadata();

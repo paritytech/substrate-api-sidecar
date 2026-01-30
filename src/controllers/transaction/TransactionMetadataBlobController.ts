@@ -19,32 +19,6 @@ import { IMetadataBlobBody, IPostRequestHandler } from '../../types/requests';
 import AbstractController from '../AbstractController';
 
 /**
- * Parameters for generating metadata blob proof.
- */
-export interface MetadataBlobParams {
-	/**
-	 * Full encoded extrinsic. Use this OR the individual parts.
-	 */
-	tx?: string;
-	/**
-	 * Optional tx additional signed data.
-	 */
-	txAdditionalSigned?: string;
-	/**
-	 * Call data. Use with includedInExtrinsic and includedInSignedData.
-	 */
-	callData?: string;
-	/**
-	 * Signed Extension data included in the extrinsic.
-	 */
-	includedInExtrinsic?: string;
-	/**
-	 * Signed Extension data included in the signature.
-	 */
-	includedInSignedData?: string;
-}
-
-/**
  * POST metadata blob for a transaction.
  *
  * This endpoint generates the minimal metadata ("metadata blob" or "proof")
