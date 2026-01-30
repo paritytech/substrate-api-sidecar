@@ -51,10 +51,10 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
+    "@polkadot-api/merkleize-metadata": "^1.1.29",
     "@polkadot/api": "16.5.2",
     "@polkadot/api-augment": "16.5.2",
     "@polkadot/api-contract": "16.5.2",
-    "@polkadot-api/merkleize-metadata": "^1.1.29",
     "@polkadot/types": "16.5.2",
     "@polkadot/types-codec": "16.5.2",
     "@polkadot/util": "13.5.8",
