@@ -29,7 +29,7 @@ export class TransactionMetadataBlobService extends AbstractService {
 	/**
 	 * Fetch metadata blob (proof) for a given transaction.
 	 * This returns the minimal metadata needed by offline signers to decode
-	 * the transaction, alog with the metadata hash for CheckMetadataHas.
+	 * the transaction, along with the metadata hash for CheckMetadataHash.
 	 *
 	 * @param api ApiPromise to use for the call
 	 * @param hash `BlockHash` hash to query at

@@ -43,7 +43,7 @@ export interface IMetadataBlobBody {
 	 */
 	txAdditionalSigned?: string;
 	/**
-	 * Call data as hex string. Use this alogside includedInExtrinsic and includedInSignedData.
+	 * Call data as hex string. Use this alongside includedInExtrinsic and includedInSignedData.
 	 */
 	callData?: string;
 	/**
