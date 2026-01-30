@@ -91,8 +91,5 @@
     "polkadot",
     "kusama"
   ],
-  "packageManager": "yarn@4.6.0",
-  "resolutions": {
-    "@scure/base": "^1.2.6"
-  }
+  "packageManager": "yarn@4.6.0"
 }

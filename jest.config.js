@@ -16,5 +16,7 @@ module.exports = {
 	maxWorkers: '50%',
 	testPathIgnorePatterns: ['/build/', '/node_modules/', '/docs/', '/e2e-tests/'],
 	// The below resolves `jest-haste-map: Haste module naming collision: @substrate/api-sidecar`
-	modulePathIgnorePatterns: ['/build']
+	modulePathIgnorePatterns: ['/build'],
+	// Transform ESM modules from @polkadot-api, @noble, and @scure packages
+	transformIgnorePatterns: ['/node_modules/(?!(@polkadot-api|@noble|@scure)/)'],
 };
