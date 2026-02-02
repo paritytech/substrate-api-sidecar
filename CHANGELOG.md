@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.14.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.3..v20.14.0) (2026-02-01)
+
+### Feat
+
+- feat: add `POST /transaction/metadata-blob` endpoint for RFC-0078 merkleized metadata support ([#1886](https://github.com/paritytech/substrate-api-sidecar/pull/1886)) ([64c1bdd](https://github.com/paritytech/substrate-api-sidecar/commit/64c1bdd))
+  - Returns minimal metadata ("metadata blob") needed by offline signers to decode transaction payloads
+  - Returns metadata hash for the `CheckMetadataHash` signed extension
+  - Supports both full extrinsic (`tx`) and extrinsic parts (`callData`, `includedInExtrinsic`, `includedInSignedData`)
+  - Requires V15 metadata on the connected chain
+- feat: add `useRcBlockFormat` query parameter for RC block response formatting ([#1872](https://github.com/paritytech/substrate-api-sidecar/pull/1872)) ([59b88c9](https://github.com/paritytech/substrate-api-sidecar/commit/59b88c9))
+  - When `useRcBlock=true` and `useRcBlockFormat=object`, wraps response in an object containing `rcBlock` info and `parachainDataPerBlock` array
+  - Adds `IRcBlockInfo` and `IRcBlockObjectResponse` types
+  - Supports blocks, accounts, and pallets controllers
+
+### Chore
+
+- chore(deps): bump lru-cache from 11.2.4 to 11.2.5 ([#1882](https://github.com/paritytech/substrate-api-sidecar/pull/1882)) ([de0c540](https://github.com/paritytech/substrate-api-sidecar/commit/de0c540))
+- chore(deps): bump lodash from 4.17.21 to 4.17.23 ([#1878](https://github.com/paritytech/substrate-api-sidecar/pull/1878), [#1879](https://github.com/paritytech/substrate-api-sidecar/pull/1879), [#1880](https://github.com/paritytech/substrate-api-sidecar/pull/1880))
+- chore(deps): bump tar from 7.4.3 to 7.5.6 in /docs-v2 ([#1874](https://github.com/paritytech/substrate-api-sidecar/pull/1874), [#1877](https://github.com/paritytech/substrate-api-sidecar/pull/1877))
+- chore(deps): bump node-forge from 1.3.1 to 1.3.3 in /docs-v2 ([#1871](https://github.com/paritytech/substrate-api-sidecar/pull/1871)) ([a80cbee](https://github.com/paritytech/substrate-api-sidecar/commit/a80cbee))
+- chore(deps): bump qs from 6.14.0 to 6.14.1 ([#1866](https://github.com/paritytech/substrate-api-sidecar/pull/1866), [#1867](https://github.com/paritytech/substrate-api-sidecar/pull/1867))
+- chore(deps): bump actions/download-artifact from 6 to 7 ([#1859](https://github.com/paritytech/substrate-api-sidecar/pull/1859)) ([43cf9fe](https://github.com/paritytech/substrate-api-sidecar/commit/43cf9fe))
+- chore(deps): bump actions/upload-artifact from 5 to 6 ([#1858](https://github.com/paritytech/substrate-api-sidecar/pull/1858)) ([d0ceac5](https://github.com/paritytech/substrate-api-sidecar/commit/d0ceac5))
+- chore(deps): bump actions/cache from 4 to 5 ([#1857](https://github.com/paritytech/substrate-api-sidecar/pull/1857)) ([ba363e5](https://github.com/paritytech/substrate-api-sidecar/commit/ba363e5))
+
+## Compatibility
+
+Tested against the following node releases:
+- Polkadot v1.21.0 (Polkadot stable2512)
+- Kusama v1.21.0 (Polkadot stable2512)
+- Westend v1.21.0 (Polkadot stable2512)
+
+Tested against the following runtime releases:
+- Polkadot v2000001
+- Kusama v2000004
+- Westend v1021000
+- Polkadot Asset Hub v2000003
+- Kusama Asset Hub v2000004
+
 ## [20.13.3](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.2..v20.13.3) (2026-01-06)
 
 ### Fix
