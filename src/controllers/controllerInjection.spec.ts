@@ -64,7 +64,7 @@ const chainsToNode: Record<string, string> = {
 	crust: 'wss://crust-parachain.crustapps.net',
 	// karura: 'wss://karura-rpc.polkadot.io',
 	// manta: 'wss://ws.manta.systems',
-	kilt: 'wss://kilt.ibp.network',
+	// kilt: 'wss://kilt.ibp.network',
 	// 'asset-hub-polkadot': 'wss://asset-hub-polkadot-rpc.polkadot.io',
 };
 
