@@ -2719,7 +2719,7 @@ __metadata:
     rxjs: "npm:^7.8.2"
     ts-node-dev: "npm:^2.0.0"
     winston: "npm:^3.19.0"
-    winston-loki: "npm:^6.1.3"
+    winston-loki: "npm:^6.1.4"
   bin:
     substrate-api-sidecar: ./build/src/main.js
   languageName: unknown
@@ -9950,9 +9950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-loki@npm:^6.1.3":
-  version: 6.1.3
-  resolution: "winston-loki@npm:6.1.3"
+"winston-loki@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "winston-loki@npm:6.1.4"
   dependencies:
     async-exit-hook: "npm:2.0.1"
     btoa: "npm:^1.2.1"
@@ -9963,7 +9963,7 @@ __metadata:
   dependenciesMeta:
     snappy:
       optional: true
-  checksum: 10/db8cccecefb1c4476d66281967092d018f02b32b574753949a50622295cde976d36a7350aed2a074289fb030df3d944156c8441fd78b39f204b3659b252986c1
+  checksum: 10/335abff29f2542651c469ff4f08075a74d6f202853eb0d2ee4c7ba6f153447edfd7598f69c8148dbbc8868f42864d3135c45e4ad91ace444e868546e85978726
   languageName: node
   linkType: hard
 
