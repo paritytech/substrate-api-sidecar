@@ -2737,7 +2737,7 @@ __metadata:
     "@substrate/calc": "npm:0.3.1"
     "@substrate/dev": "npm:^0.9.0"
     "@types/argparse": "npm:2.0.17"
-    "@types/express": "npm:^5.0.5"
+    "@types/express": "npm:^5.0.6"
     "@types/express-serve-static-core": "npm:^5.0.6"
     "@types/http-errors": "npm:2.0.5"
     "@types/lru-cache": "npm:^7.10.10"
@@ -2745,7 +2745,7 @@ __metadata:
     "@types/triple-beam": "npm:^1.3.5"
     argparse: "npm:^2.0.1"
     confmgr: "npm:^1.1.0"
-    express: "npm:^5.2.0"
+    express: "npm:^5.2.1"
     express-winston: "npm:^4.2.0"
     http-errors: "npm:^2.0.1"
     lru-cache: "npm:^11.2.6"
@@ -2982,14 +2982,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^5.0.5":
-  version: 5.0.5
-  resolution: "@types/express@npm:5.0.5"
+"@types/express@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@types/express@npm:5.0.6"
   dependencies:
     "@types/body-parser": "npm:*"
     "@types/express-serve-static-core": "npm:^5.0.0"
-    "@types/serve-static": "npm:^1"
-  checksum: 10/9e72410286fbc80bea8a57d1b374c25235f6019dabf8af67e5b72c2f9be548f36ccc09d048fc88172731450e80f06018f90c17e05beb5afc4dbdaf5f7200dbb3
+    "@types/serve-static": "npm:^2"
+  checksum: 10/da2cc3de1b1a4d7f20ed3fb6f0a8ee08e99feb3c2eb5a8d643db77017d8d0e70fee9e95da38a73f51bcdf5eda3bb6435073c0271dc04fb16fda92e55daf911fa
   languageName: node
   linkType: hard
 
@@ -3099,7 +3099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/send@npm:*, @types/send@npm:<1":
+"@types/send@npm:*":
   version: 0.17.6
   resolution: "@types/send@npm:0.17.6"
   dependencies:
@@ -3109,14 +3109,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serve-static@npm:^1":
-  version: 1.15.10
-  resolution: "@types/serve-static@npm:1.15.10"
+"@types/serve-static@npm:^2":
+  version: 2.2.0
+  resolution: "@types/serve-static@npm:2.2.0"
   dependencies:
     "@types/http-errors": "npm:*"
     "@types/node": "npm:*"
-    "@types/send": "npm:<1"
-  checksum: 10/d9be72487540b9598e7d77260d533f241eb2e5db5181bb885ef2d6bc4592dad1c9e8c0e27f465d59478b2faf90edd2d535e834f20fbd9dd3c0928d43dc486404
+  checksum: 10/f2bad1304c7d0d3b7221faff3e490c40129d3803f4fb1b2fb84f31f561071c5e6a4b876c41bbbe82d5645034eea936e946bcaaf993dac1093ce68b56effad6e0
   languageName: node
   linkType: hard
 
@@ -5087,9 +5086,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "express@npm:5.2.0"
+"express@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "express@npm:5.2.1"
   dependencies:
     accepts: "npm:^2.0.0"
     body-parser: "npm:^2.2.1"
@@ -5119,7 +5118,7 @@ __metadata:
     statuses: "npm:^2.0.1"
     type-is: "npm:^2.0.1"
     vary: "npm:^1.1.2"
-  checksum: 10/2a793e260fd343c67b038c85dd6b4561483cc277a2c826287ddb9e5baa23500802a0b53237e0113d503e0a181ed5f2334d93facc877d44181608280ae4eebf28
+  checksum: 10/4aa545d89702ac83f645c77abda1b57bcabe288f0b380fb5580fac4e323ea0eb533005c8e666b4e19152fb16d4abf11ba87b22aa9a10857a0485cd86b94639bd
   languageName: node
   linkType: hard
 
