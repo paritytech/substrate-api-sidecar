@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772562227886,
+  "lastUpdate": 1772627046357,
   "repoUrl": "https://github.com/paritytech/substrate-api-sidecar",
   "entries": {
     "Benchmark": [
@@ -28871,6 +28871,180 @@ window.BENCHMARK_DATA = {
           {
             "name": "transaction-material",
             "value": 218.18,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "fdacf23cf46924c2800a4cf5aa2a94dbc5a8a372",
+          "message": "chore(deps): bump express and @types/express (#1845)\n\nBumps [express](https://github.com/expressjs/express) and [@types/express](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/express). These dependencies needed to be updated together.\n\nUpdates `express` from 5.2.0 to 5.2.1\n- [Release notes](https://github.com/expressjs/express/releases)\n- [Changelog](https://github.com/expressjs/express/blob/master/History.md)\n- [Commits](https://github.com/expressjs/express/compare/v5.2.0...v5.2.1)\n\nUpdates `@types/express` from 5.0.5 to 5.0.6\n- [Release notes](https://github.com/DefinitelyTyped/DefinitelyTyped/releases)\n- [Commits](https://github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/express)\n\n---\nupdated-dependencies:\n- dependency-name: express\n  dependency-version: 5.2.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n- dependency-name: \"@types/express\"\n  dependency-version: 5.0.6\n  dependency-type: direct:development\n  update-type: version-update:semver-patch\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-03-04T12:49:29+01:00",
+          "tree_id": "00817b1428c3e7f337e2b8e7e76bf0422b90d5bc",
+          "url": "https://github.com/paritytech/substrate-api-sidecar/commit/fdacf23cf46924c2800a4cf5aa2a94dbc5a8a372"
+        },
+        "date": 1772627043532,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "accounts-{accountId}-balance-info",
+            "value": 228.69,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-vesting-info",
+            "value": 226.34,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-info",
+            "value": 327.69,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-staking-payouts",
+            "value": 178.69,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-validate",
+            "value": 0.45,
+            "unit": "ms"
+          },
+          {
+            "name": "accounts-{accountId}-convert",
+            "value": 0.43,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}",
+            "value": 1910.52,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-header",
+            "value": 250.04,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-{blockId}-extrinsics-{extrinsicIndex}",
+            "value": 1337.67,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head",
+            "value": 254.32,
+            "unit": "ms"
+          },
+          {
+            "name": "blocks-head-header",
+            "value": 165.61,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-progress",
+            "value": 426.43,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage",
+            "value": 179.41,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-storage-{storageItemId}",
+            "value": 211.34,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors",
+            "value": 181.9,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-{palletId}-errors-{errorItemId}",
+            "value": 190.62,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-info",
+            "value": 184.93,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-nomination-pools-{poolId}",
+            "value": 199.6,
+            "unit": "ms"
+          },
+          {
+            "name": "pallets-staking-validators",
+            "value": 519.79,
+            "unit": "ms"
+          },
+          {
+            "name": "paras",
+            "value": 259.98,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-leases-current",
+            "value": 261.45,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-auctions-current",
+            "value": 244.25,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-crowdloans",
+            "value": 272.07,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-crowdloan-info",
+            "value": 234.81,
+            "unit": "ms"
+          },
+          {
+            "name": "paras-{paraId}-lease-info",
+            "value": 229.2,
+            "unit": "ms"
+          },
+          {
+            "name": "node-network",
+            "value": 328.83,
+            "unit": "ms"
+          },
+          {
+            "name": "node-transaction-pool",
+            "value": 159.58,
+            "unit": "ms"
+          },
+          {
+            "name": "node-version",
+            "value": 163.76,
+            "unit": "ms"
+          },
+          {
+            "name": "runtime-spec",
+            "value": 368.26,
+            "unit": "ms"
+          },
+          {
+            "name": "transaction-material",
+            "value": 377.54,
             "unit": "ms"
           }
         ]
