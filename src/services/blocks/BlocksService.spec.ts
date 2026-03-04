@@ -405,8 +405,8 @@ describe('BlocksService', () => {
 
 		it('Throw an error when param `extrinsicIndex` is less than 0', () => {
 			expect(() => {
-				parseNumberOrThrow('-5', '`exstrinsicIndex` path param is not a number');
-			}).toThrow(new BadRequest('`exstrinsicIndex` path param is not a number'));
+				parseNumberOrThrow('-5', '`extrinsicIndex` path param is not a number');
+			}).toThrow(new BadRequest('`extrinsicIndex` path param is not a number'));
 		});
 	});
 

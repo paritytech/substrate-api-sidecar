@@ -97,7 +97,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 				/**
 				 * Verify our param `extrinsicIndex` is an integer represented as a string
 				 */
-				this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
+				this.parseNumberOrThrow(extrinsicIndex, '`extrinsicIndex` path param is not a number');
 
 				/**
 				 * Change extrinsicIndex from a type string to a number before passing it
@@ -153,7 +153,7 @@ export default class BlocksExtrinsicsController extends AbstractController<Block
 			/**
 			 * Verify our param `extrinsicIndex` is an integer represented as a string
 			 */
-			this.parseNumberOrThrow(extrinsicIndex, '`exstrinsicIndex` path param is not a number');
+			this.parseNumberOrThrow(extrinsicIndex, '`extrinsicIndex` path param is not a number');
 
 			/**
 			 * Change extrinsicIndex from a type string to a number before passing it
