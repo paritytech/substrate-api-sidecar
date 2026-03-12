@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package.path = package.path .. ";../util/util.lua"
+package.path = package.path .. ";../?.lua"
 local util = require('util')
 local accountsVestingInfo = require('accountsVestingInfo')
 
