@@ -48,21 +48,21 @@ detect_chain() {
     base_url="http://$host:$port"
 
     local prefix="$API_PREFIX"
-    detect_url="$base_url${prefix}/capabilities"
+    detect_url="$base_url${prefix}/runtime/spec"
     response=$(curl -sL --connect-timeout 5 "$detect_url" 2>/dev/null) || {
         echo "  (Could not connect to $detect_url)" >&2
         echo ""
         return
     }
 
-    chain_spec=$(echo "$response" | jq -r '.chain // empty' 2>/dev/null) || {
+    chain_spec=$(echo "$response" | jq -r '.specName // empty' 2>/dev/null) || {
         echo "  (Got response but could not parse chain field)" >&2
         echo ""
         return
     }
 
     if [ -z "$chain_spec" ]; then
-        echo "  (Response missing chain field from $detect_url)" >&2
+        echo "  (Response missing specName field from $detect_url)" >&2
     fi
 
     echo "$chain_spec"
@@ -257,7 +257,7 @@ rm -f /tmp/_wrk_bench_endpoints_printed
 
 # Export env vars for report.lua (used to label metrics)
 export BENCH_ENDPOINT="$BENCHMARK_NAME"
-export BENCH_SERVICE="polkadot-rest-api"
+export BENCH_SERVICE="sidecar"
 export BENCH_SCENARIO="$SCENARIO"
 export BENCH_HARDWARE="$HARDWARE_PROFILE"
 export BENCH_THREADS="$THREADS"
