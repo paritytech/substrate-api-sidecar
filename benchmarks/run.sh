@@ -8,7 +8,7 @@
 # Usage: ./run.sh <benchmark_name> [scenario] [hardware_profile]
 #        ./run.sh --all [scenario] [hardware_profile] [results_dir]
 #
-# Chain detection is automatic by querying $API_PREFIX/runtime/spec
+# Chain detection is automatic by querying $API_PREFIX/capabilities
 #
 # Examples:
 #   ./run.sh health
@@ -21,7 +21,7 @@ set -e
 BENCHMARKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$BENCHMARKS_DIR/.." && pwd)"
 CONFIG_FILE="$PROJECT_ROOT/benchmark_config.json"
-API_PREFIX="${BENCH_API_PREFIX:-}"
+API_PREFIX="${BENCH_API_PREFIX:-/v1}"
 
 # --- Chain detection functions ---
 
@@ -48,21 +48,21 @@ detect_chain() {
     base_url="http://$host:$port"
 
     local prefix="$API_PREFIX"
-    detect_url="$base_url${prefix}/runtime/spec"
+    detect_url="$base_url${prefix}/capabilities"
     response=$(curl -sL --connect-timeout 5 "$detect_url" 2>/dev/null) || {
         echo "  (Could not connect to $detect_url)" >&2
         echo ""
         return
     }
 
-    chain_spec=$(echo "$response" | jq -r '.specName // empty' 2>/dev/null) || {
+    chain_spec=$(echo "$response" | jq -r '.chain // empty' 2>/dev/null) || {
         echo "  (Got response but could not parse chain field)" >&2
         echo ""
         return
     }
 
     if [ -z "$chain_spec" ]; then
-        echo "  (Response missing specName field from $detect_url)" >&2
+        echo "  (Response missing chain field from $detect_url)" >&2
     fi
 
     echo "$chain_spec"
@@ -281,8 +281,7 @@ wrk -d"$DURATION" -t"$THREADS" -c"$CONNECTIONS" --timeout "${TIMEOUT:-120s}" --l
 
 # Save JSON results to file
 if [ -s "$WRK_STDERR" ]; then
-    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-    RESULT_FILE="$RESULTS_DIR/${BENCHMARK_NAME}_${TIMESTAMP}.json"
+    RESULT_FILE="$RESULTS_DIR/${RUN_ID:-${BENCHMARK_NAME}_$(date +%Y%m%d_%H%M%S)}.json"
     cp "$WRK_STDERR" "$RESULT_FILE"
     echo ""
     echo "Results saved: $RESULT_FILE"

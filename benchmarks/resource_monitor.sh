@@ -4,38 +4,40 @@
 
 # Monitor CPU and memory usage of the API process during benchmarks
 #
-# Usage: ./resource_monitor.sh [port] [endpoint] [duration_minutes] [output_dir]
+# Usage: ./resource_monitor.sh [port] [duration_minutes] [output_dir] [endpoint]
 #
-# Auto-detects the process listening on the given port,
-# logs RSS/VSZ/CPU every 1 second to a timestamped CSV file, and prints
-# a summary when stopped (Ctrl+C or duration reached).
+# All arguments are optional. Auto-detects the process listening on the
+# given port, logs RSS/VSZ/CPU every 1 second to a timestamped CSV file,
+# and prints a summary when stopped (Ctrl+C or duration reached).
+#
+# Arguments:
+#   port             Port the API listens on (default: 8080, or MONITOR_PORT env)
+#   duration_minutes Monitoring duration in minutes (default: 15)
+#   output_dir       Output directory (default: ../results)
+#   endpoint         Label for filenames/display (default: general).
+#                    Used by bench_monitored.sh to tag resource data per benchmark.
 #
 # Examples:
-#   ./resource_monitor.sh 8080 blocks_head 15              # blocks_head, 15 min
-#   ./resource_monitor.sh 8080 pallets_consts 15 ~/out     # pallets_consts, 15 min, custom dir
+#   ./resource_monitor.sh                                # monitor port 8080, 15 min
+#   ./resource_monitor.sh 8080                           # same, explicit port
+#   ./resource_monitor.sh 8080 5                         # port 8080, 5 min
+#   ./resource_monitor.sh 8080 15 ~/out                  # custom output dir
+#   ./resource_monitor.sh 8080 15 ~/out blocks_head      # label as blocks_head (used by bench_monitored.sh)
 #
 # Output file: resources_<service>_<endpoint>_<timestamp>.csv
 #
 # Environment:
+#   MONITOR_PORT  — port to find the process on (default: 8080)
 #   MONITOR_PID   — skip auto-detection, monitor this PID directly
 #
 # Works on both Linux and macOS.
 
 set -euo pipefail
 
-if [ $# -lt 3 ]; then
-    echo "Usage: $0 <port> <endpoint> <duration_minutes> [output_dir]"
-    echo ""
-    echo "Examples:"
-    echo "  $0 8080 blocks_head 15"
-    echo "  $0 8080 blocks_head 30 ~/results"
-    exit 1
-fi
-
-PORT="$1"
-ENDPOINT="$2"
-DURATION_MINUTES="$3"
-OUTPUT_DIR="${4:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/results}"
+PORT="${1:-${MONITOR_PORT:-8080}}"
+DURATION_MINUTES="${2:-15}"
+OUTPUT_DIR="${3:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/results}"
+ENDPOINT="${4:-general}"
 
 SERVICE="sidecar"
 
@@ -99,7 +101,7 @@ fi
 
 # --- Setup output file ---
 
-# RUN_ID can be passed via env (from bench_with_monitor.sh) or generated here
+# RUN_ID can be passed via env (from bench_monitored.sh) or generated here
 RUN_ID="${RUN_ID:-${SERVICE}_${ENDPOINT}_$(date +%Y%m%d_%H%M%S)}"
 CSV_FILE="$OUTPUT_DIR/resources_${RUN_ID}.csv"
 
