@@ -266,7 +266,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 
 		return {
 			at,
-			erasPayouts: allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama)),
+			erasPayouts: await Promise.all(
+				allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama, historicApi)),
+			),
 		};
 	}
 
@@ -546,12 +548,13 @@ export class AccountsStakingPayoutsService extends AbstractService {
 	 * @param era the era to query
 	 * @param eraData data about the address and era we are calculating payouts for
 	 */
-	deriveEraPayouts(
+	async deriveEraPayouts(
 		address: string,
 		unclaimedOnly: boolean,
 		{ deriveEraExposure, eraRewardPoints, erasValidatorRewardOption, exposuresWithCommission, eraIndex }: IEraData,
 		isKusama: boolean,
-	): IEraPayouts | { message: string } {
+		historicApi: ApiDecoration<'promise'>,
+	): Promise<IEraPayouts | { message: string }> {
 		if (!exposuresWithCommission) {
 			return {
 				message: `${address} has no nominations for the era ${eraIndex.toString()}`,
@@ -603,28 +606,41 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			/**
 			 * Check if the reward has already been claimed.
 			 *
-			 * It is important to note that the following examines types that are both current and historic.
-			 * When going back far enough in certain chains types such as `StakingLedgerTo240` are necessary for grabbing
-			 * any reward data.
 			 */
-			let indexOfEra: number;
-			if (validatorLedger.legacyClaimedRewards) {
-				indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
-			} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
-				indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
-			} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
-				const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
-				if (lastReward.isSome) {
-					indexOfEra = lastReward.unwrap().toNumber();
+			let claimed = false;
+			const claimedRewardsQuery =
+				historicApi.query.staking?.claimedRewards ?? historicApi.query.staking?.erasClaimedRewards;
+
+			if (claimedRewardsQuery) {
+				const claimedPages = await claimedRewardsQuery<Vec<u32>>(eraIndex, validatorId);
+				if (claimedPages && claimedPages.length > 0) {
+					const overview = deriveEraExposure.validatorsOverview?.[validatorId];
+					if (overview && overview.isSome) {
+						claimed = claimedPages.length >= overview.unwrap().pageCount.toNumber();
+					} else {
+						claimed = true;
+					}
+				}
+			} else {
+				let indexOfEra: number;
+				if (validatorLedger.legacyClaimedRewards) {
+					indexOfEra = validatorLedger.legacyClaimedRewards.indexOf(eraIndex);
+				} else if ((validatorLedger as unknown as StakingLedger).claimedRewards) {
+					indexOfEra = (validatorLedger as unknown as StakingLedger).claimedRewards.indexOf(eraIndex);
+				} else if ((validatorLedger as unknown as StakingLedgerTo240).lastReward) {
+					const lastReward = (validatorLedger as unknown as StakingLedgerTo240).lastReward;
+					if (lastReward.isSome) {
+						indexOfEra = lastReward.unwrap().toNumber();
+					} else {
+						indexOfEra = -1;
+					}
+				} else if (eraIndex.toNumber() < 518 && isKusama) {
+					indexOfEra = eraIndex.toNumber();
 				} else {
 					indexOfEra = -1;
 				}
-			} else if (eraIndex.toNumber() < 518 && isKusama) {
-				indexOfEra = eraIndex.toNumber();
-			} else {
-				indexOfEra = -1;
+				claimed = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			}
-			const claimed: boolean = Number.isInteger(indexOfEra) && indexOfEra !== -1;
 			if (unclaimedOnly && claimed) {
 				continue;
 			}
@@ -1024,9 +1040,10 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			},
 		);
 
-		return allEraData
-			.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama))
-			.filter((payout): payout is IEraPayouts => !('message' in payout));
+		const eraPayouts = await Promise.all(
+			allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama, historicRelayApi)),
+		);
+		return eraPayouts.filter((payout): payout is IEraPayouts => !('message' in payout));
 	}
 
 	/**
@@ -1097,8 +1114,9 @@ export class AccountsStakingPayoutsService extends AbstractService {
 			},
 		);
 
-		return allEraData
-			.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama))
-			.filter((payout): payout is IEraPayouts => !('message' in payout));
+		const eraPayouts = await Promise.all(
+			allEraData.map((eraData) => this.deriveEraPayouts(address, unclaimedOnly, eraData, isKusama, historicApi)),
+		);
+		return eraPayouts.filter((payout): payout is IEraPayouts => !('message' in payout));
 	}
 }
