@@ -581,4 +581,75 @@ describe('AccountsStakingPayoutsService', () => {
 			expect(Object.keys(res.validators).length).toEqual(3);
 		});
 	});
+	describe('ClaimedRewards storage path (post-AHM)', () => {
+		// Mock historicApi with claimedRewards that returns claimed pages
+		const mockHistoricApiWithClaimedRewards = (pages: number[]) =>
+			({
+				...mockHistoricApi,
+				query: {
+					...mockHistoricApi.query,
+					staking: {
+						...mockHistoricApi.query.staking,
+						claimedRewards: (_era: unknown, _validator: unknown) =>
+							Promise.resolve(polkadotRegistryV1000001.createType('Vec<u32>', pages)),
+					},
+				},
+			}) as unknown as ApiDecoration<'promise'>;
+
+		it('should filter out claimed payouts when unclaimedOnly=true and ClaimedRewards is non-empty', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				validator,
+				1,
+				ERA,
+				true, // unclaimedOnly
+				ERA + 1,
+				mockHistoricApiWithClaimedRewards([0]),
+			);
+
+			const erasPayouts = res.erasPayouts[0];
+			expect('payouts' in erasPayouts).toBe(true);
+			if ('payouts' in erasPayouts) {
+				expect(erasPayouts.payouts).toStrictEqual([]);
+			}
+		});
+
+		it('should show payouts as unclaimed when ClaimedRewards is empty', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				validator,
+				1,
+				ERA,
+				true, // unclaimedOnly
+				ERA + 1,
+				mockHistoricApiWithClaimedRewards([]),
+			);
+
+			const erasPayouts = res.erasPayouts[0];
+			expect('payouts' in erasPayouts).toBe(true);
+			if ('payouts' in erasPayouts) {
+				expect(erasPayouts.payouts.length).toBeGreaterThan(0);
+				expect(erasPayouts.payouts[0].claimed).toBe(false);
+			}
+		});
+
+		it('should return claimed=true when ClaimedRewards is non-empty and unclaimedOnly=false', async () => {
+			const res = await stakingPayoutsService.fetchAccountStakingPayout(
+				blockHash,
+				validator,
+				1,
+				ERA,
+				false, // unclaimedOnly
+				ERA + 1,
+				mockHistoricApiWithClaimedRewards([0]),
+			);
+
+			const erasPayouts = res.erasPayouts[0];
+			expect('payouts' in erasPayouts).toBe(true);
+			if ('payouts' in erasPayouts) {
+				expect(erasPayouts.payouts.length).toBeGreaterThan(0);
+				expect(erasPayouts.payouts[0].claimed).toBe(true);
+			}
+		});
+	});
 });
