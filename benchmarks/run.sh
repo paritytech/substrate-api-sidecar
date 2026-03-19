@@ -8,7 +8,7 @@
 # Usage: ./run.sh <benchmark_name> [scenario] [hardware_profile]
 #        ./run.sh --all [scenario] [hardware_profile] [results_dir]
 #
-# Chain detection is automatic by querying $API_PREFIX/capabilities
+# Chain detection is automatic by querying /runtime/spec
 #
 # Examples:
 #   ./run.sh health
@@ -21,7 +21,7 @@ set -e
 BENCHMARKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$BENCHMARKS_DIR/.." && pwd)"
 CONFIG_FILE="$PROJECT_ROOT/benchmark_config.json"
-API_PREFIX="${BENCH_API_PREFIX:-/v1}"
+API_PREFIX="${BENCH_API_PREFIX:-}"
 
 # --- Chain detection functions ---
 

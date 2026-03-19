@@ -29,10 +29,35 @@
 # Environment:
 #   MONITOR_PORT  — port to find the process on (default: 8080)
 #   MONITOR_PID   — skip auto-detection, monitor this PID directly
+#   MONITOR_HOST  — SSH host for remote monitoring (e.g., ubuntu@10.0.0.5).
+#                   When set, all process detection and sampling runs on the
+#                   remote machine via a persistent SSH connection (ControlMaster).
+#                   The CSV output is still written locally on the bench machine.
 #
-# Works on both Linux and macOS.
+# Works on both Linux and macOS (local and remote).
 
 set -euo pipefail
+
+# --- Remote monitoring via SSH (persistent connection) ---
+
+REMOTE="${MONITOR_HOST:-}"
+SSH_CTRL=""
+
+if [ -n "$REMOTE" ]; then
+    SSH_CTRL_DIR=$(mktemp -d)
+    SSH_CTRL="$SSH_CTRL_DIR/ctrl-socket"
+    # Open persistent SSH connection (ControlMaster)
+    ssh -fN -o ControlMaster=yes -o ControlPath="$SSH_CTRL" \
+        -o ConnectTimeout=10 -o ServerAliveInterval=15 "$REMOTE" 2>/dev/null
+    rcmd() { ssh -o ControlPath="$SSH_CTRL" "$REMOTE" "$@"; }
+    cleanup_ssh() {
+        ssh -o ControlPath="$SSH_CTRL" -O exit "$REMOTE" 2>/dev/null || true
+        rm -rf "$SSH_CTRL_DIR"
+    }
+else
+    rcmd() { eval "$@"; }
+    cleanup_ssh() { :; }
+fi
 
 PORT="${1:-${MONITOR_PORT:-8080}}"
 DURATION_MINUTES="${2:-15}"
@@ -49,11 +74,10 @@ find_pid_on_port() {
     local port="$1"
     local pid=""
 
-    if command -v lsof &>/dev/null; then
-        pid=$(lsof -ti "tcp:$port" -sTCP:LISTEN 2>/dev/null | head -1)
-    elif command -v ss &>/dev/null; then
-        pid=$(ss -tlnp "sport = :$port" 2>/dev/null \
-            | sed -n 's/.*pid=\([0-9]*\).*/\1/p' | head -1)
+    # Try lsof first, then ss (works both locally and via rcmd for remote)
+    pid=$(rcmd "lsof -ti tcp:$port -sTCP:LISTEN 2>/dev/null | head -1" 2>/dev/null) || true
+    if [ -z "$pid" ]; then
+        pid=$(rcmd "ss -tlnp 'sport = :$port' 2>/dev/null | sed -n 's/.*pid=\([0-9]*\).*/\1/p' | head -1" 2>/dev/null) || true
     fi
 
     echo "$pid"
@@ -61,28 +85,33 @@ find_pid_on_port() {
 
 if [ -n "${MONITOR_PID:-}" ]; then
     PID="$MONITOR_PID"
-    if ! kill -0 "$PID" 2>/dev/null; then
+    if ! rcmd "kill -0 $PID" 2>/dev/null; then
         echo "Error: PID $PID is not running"
+        cleanup_ssh
         exit 1
     fi
 else
     PID=$(find_pid_on_port "$PORT")
     if [ -z "$PID" ]; then
         echo "Error: No process found listening on port $PORT"
+        if [ -n "$REMOTE" ]; then
+            echo "Checked on remote host: $REMOTE"
+        fi
         echo "Start the API server first, or set MONITOR_PID manually."
+        cleanup_ssh
         exit 1
     fi
 fi
 
 # Get process name for display and filename
 # Try multiple methods: comm (short), then args (full command line)
-PROC_NAME=$(ps -p "$PID" -o comm= 2>/dev/null | xargs)
+PROC_NAME=$(rcmd "ps -p $PID -o comm=" 2>/dev/null | xargs) || true
 if [ -z "$PROC_NAME" ]; then
-    PROC_NAME=$(ps -p "$PID" -o args= 2>/dev/null | awk '{print $1}' | xargs)
+    PROC_NAME=$(rcmd "ps -p $PID -o args=" 2>/dev/null | awk '{print $1}' | xargs) || true
 fi
 if [ -z "$PROC_NAME" ]; then
     # Linux: read from /proc if ps fails
-    PROC_NAME=$(cat "/proc/$PID/comm" 2>/dev/null || echo "")
+    PROC_NAME=$(rcmd "cat /proc/$PID/comm" 2>/dev/null) || true
 fi
 if [ -z "$PROC_NAME" ]; then
     PROC_NAME="unknown"
@@ -91,11 +120,11 @@ fi
 PROC_SHORT=$(basename "$PROC_NAME")
 
 # Get number of CPU cores for calculating CPU percentage
-if command -v nproc &>/dev/null; then
-    NUM_CPUS=$(nproc)
-elif command -v sysctl &>/dev/null; then
-    NUM_CPUS=$(sysctl -n hw.ncpu 2>/dev/null || echo 1)
-else
+NUM_CPUS=$(rcmd "nproc" 2>/dev/null) || true
+if [ -z "$NUM_CPUS" ]; then
+    NUM_CPUS=$(rcmd "sysctl -n hw.ncpu" 2>/dev/null) || true
+fi
+if [ -z "$NUM_CPUS" ]; then
     NUM_CPUS=1
 fi
 
@@ -106,6 +135,9 @@ RUN_ID="${RUN_ID:-${SERVICE}_${ENDPOINT}_$(date +%Y%m%d_%H%M%S)}"
 CSV_FILE="$OUTPUT_DIR/resources_${RUN_ID}.csv"
 
 echo "Resource Monitor"
+if [ -n "$REMOTE" ]; then
+    echo "  Remote:   $REMOTE"
+fi
 echo "  Service:  $SERVICE (port $PORT)"
 echo "  Endpoint: $ENDPOINT"
 echo "  Process:  $PROC_SHORT (PID $PID)"
@@ -132,15 +164,19 @@ END_RSS=0
 PEAK_CPU="0.0"
 CPU_SUM="0.0"
 
+# Detect if remote/local target is Linux (has /proc)
+HAS_PROC=$(rcmd "test -f /proc/$PID/stat && echo yes || echo no" 2>/dev/null) || true
+[ "$HAS_PROC" != "yes" ] && HAS_PROC="no"
+
 # Get CPU time in centiseconds (portable)
 get_cpu_time() {
-    if [ -f "/proc/$PID/stat" ]; then
+    if [ "$HAS_PROC" = "yes" ]; then
         # Linux: fields 14 (utime) + 15 (stime) in clock ticks
-        awk '{print $14 + $15}' "/proc/$PID/stat" 2>/dev/null
+        rcmd "awk '{print \$14 + \$15}' /proc/$PID/stat" 2>/dev/null
     else
         # macOS: use ps cputime (format MM:SS.xx) and convert to centiseconds
         local cputime
-        cputime=$(ps -p "$PID" -o cputime= 2>/dev/null | tr -d ' ')
+        cputime=$(rcmd "ps -p $PID -o cputime=" 2>/dev/null | tr -d ' ')
         if [ -n "$cputime" ]; then
             echo "$cputime" | awk -F'[:.]' '{
                 if (NF == 3) print ($1 * 6000) + ($2 * 100) + $3
@@ -154,8 +190,8 @@ get_cpu_time() {
 }
 
 # Determine clock ticks per second (Linux)
-if [ -f "/proc/$PID/stat" ]; then
-    CLK_TCK=$(getconf CLK_TCK 2>/dev/null || echo 100)
+if [ "$HAS_PROC" = "yes" ]; then
+    CLK_TCK=$(rcmd "getconf CLK_TCK" 2>/dev/null || echo 100)
 else
     CLK_TCK=100
 fi
@@ -201,20 +237,21 @@ print_summary() {
 
 cleanup() {
     print_summary
+    cleanup_ssh
     exit 0
 }
 trap cleanup INT TERM
 
 while [ "$SAMPLE" -lt "$TOTAL_SECONDS" ]; do
     # Check process is still alive
-    if ! kill -0 "$PID" 2>/dev/null; then
+    if ! rcmd "kill -0 $PID" 2>/dev/null; then
         echo ""
         echo "Process $PID exited after ${SAMPLE}s"
         break
     fi
 
     # Single ps call for RSS and VSZ (KB)
-    MEM=$(ps -p "$PID" -o rss=,vsz= 2>/dev/null)
+    MEM=$(rcmd "ps -p $PID -o rss=,vsz=" 2>/dev/null)
     if [ -z "$MEM" ]; then
         echo ""
         echo "Process $PID exited after ${SAMPLE}s"
@@ -229,7 +266,7 @@ while [ "$SAMPLE" -lt "$TOTAL_SECONDS" ]; do
     CURR_CPU_TIME=$(get_cpu_time)
     CURR_WALL_TIME=$(date +%s%N 2>/dev/null || echo "$(date +%s)000000000")
 
-    if [ -f "/proc/$PID/stat" ]; then
+    if [ "$HAS_PROC" = "yes" ]; then
         # Linux: CPU ticks delta / (wall time delta * CLK_TCK)
         CPU_PCT=$(awk -v curr="$CURR_CPU_TIME" -v prev="$PREV_CPU_TIME" \
                       -v wc="$CURR_WALL_TIME" -v wp="$PREV_WALL_TIME" \
@@ -277,3 +314,4 @@ while [ "$SAMPLE" -lt "$TOTAL_SECONDS" ]; do
 done
 
 print_summary
+cleanup_ssh
