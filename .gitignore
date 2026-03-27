@@ -43,3 +43,6 @@ yarn-error.log
 
 # Metrics
 metrics/grafana/data/
+
+# Benchmark results
+results/
