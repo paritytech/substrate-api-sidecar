@@ -1,6 +1,21 @@
+-- Copyright 2017-2025 Parity Technologies (UK) Ltd.
+-- This file is part of Substrate API Sidecar.
+--
+-- Substrate API Sidecar is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 -- Blocks extrinsics endpoint benchmark script
--- Tests the /v1/blocks/{blockId}/extrinsics/{extrinsicIndex} endpoint for latency and throughput
--- Aligned with Sidecar benchmark parameters
+-- Tests the /blocks/{blockId}/extrinsics/{extrinsicIndex} endpoint for latency and throughput
 --
 -- Chain-aware: uses chain-specific blocks with interesting extrinsics.
 
@@ -34,7 +49,7 @@ if chain == "asset-hub-polkadot" or chain == "statemint" then
         '6451357/extrinsics/0',       -- spec_version 1002004
     }
 else
-    -- Polkadot relay: historical blocks with extrinsics (matching Sidecar)
+    -- Polkadot relay: historical blocks with extrinsics
     endpoints = {
         '28831/extrinsics/0',      -- Sudo setKey(0, -> 1)
         '29258/extrinsics/0',      -- sudo.sudo(forceTransfer)

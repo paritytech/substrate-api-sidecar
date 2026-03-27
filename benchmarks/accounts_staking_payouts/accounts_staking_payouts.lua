@@ -30,8 +30,7 @@ local accountsStakingPayouts = {
 }
 
 -- Accounts staking-payouts endpoint benchmark script
--- Tests the /v1/accounts/{accountId}/staking-payouts endpoint for latency and throughput
--- Aligned with Sidecar benchmark parameters
+-- Tests the /accounts/{accountId}/staking-payouts endpoint for latency and throughput
 --
 -- Chain-aware: uses appropriate historical blocks per chain.
 -- Staking was migrated off Polkadot relay chain after AHM, so queries at head fail.
