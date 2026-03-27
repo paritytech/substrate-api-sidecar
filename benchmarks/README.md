@@ -6,7 +6,7 @@ Load testing suite for substrate-api-sidecar using [wrk](https://github.com/wg/w
 
 - [wrk](https://github.com/wg/wrk) installed
 - [jq](https://jqlang.github.io/jq/) installed
-- Sidecar running (default: `http://localhost:8045`)
+- Sidecar running (default: `http://localhost:8080`)
 - Fully synced Polkadot archive node
 
 ### Mac
@@ -114,7 +114,7 @@ All arguments are optional.
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `port` | `8045` (or `MONITOR_PORT` env) | Port sidecar listens on |
+| `port` | `8080` (or `MONITOR_PORT` env) | Port sidecar listens on |
 | `duration_minutes` | `15` | Monitoring duration in minutes |
 | `output_dir` | `../results` | Output directory |
 | `endpoint` | `general` | Label for filenames and display. Set automatically by `bench_monitored.sh` to tag resource data per benchmark. |
@@ -122,24 +122,24 @@ All arguments are optional.
 ### Examples
 
 ```bash
-# Monitor port 8045 for 15 minutes (all defaults)
+# Monitor port 8080 for 15 minutes (all defaults)
 ./benchmarks/resource_monitor.sh
 
-# Monitor port 8045 for 5 minutes
-./benchmarks/resource_monitor.sh 8045 5
+# Monitor port 8080 for 5 minutes
+./benchmarks/resource_monitor.sh 8080 5
 
 # Custom output directory
-./benchmarks/resource_monitor.sh 8045 15 ~/out
+./benchmarks/resource_monitor.sh 8080 15 ~/out
 
 # With endpoint label (used by bench_monitored.sh)
-./benchmarks/resource_monitor.sh 8045 15 ~/out blocks
+./benchmarks/resource_monitor.sh 8080 15 ~/out blocks
 ```
 
 ### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MONITOR_PORT` | `8045` | Port to find the sidecar process on (used when port arg is omitted) |
+| `MONITOR_PORT` | `8080` | Port to find the sidecar process on (used when port arg is omitted) |
 | `MONITOR_PID` | _(auto-detect)_ | Skip port detection, monitor this PID directly |
 
 ### Output
@@ -197,10 +197,10 @@ Baseline and cooldown durations scale with the scenario:
 
 ```bash
 # Single run
-./benchmarks/bench_monitored.sh 8045 blocks medium_load dedicated_server
+./benchmarks/bench_monitored.sh 8080 blocks medium_load dedicated_server
 
 # 5 load runs with shared baseline/cooldown
-./benchmarks/bench_monitored.sh --runs 5 8045 blocks medium_load dedicated_server
+./benchmarks/bench_monitored.sh --runs 5 8080 blocks medium_load dedicated_server
 ```
 
 ### Output

@@ -18,16 +18,16 @@ import { IBenchmarkConfig } from './types';
 
 export const benchmarkConfig: IBenchmarkConfig = {
 	'/accounts/{accountId}/balance-info': {
-		path: '/benchmarks/accountsBalance',
+		path: '/benchmarks/accounts_balance_info',
 	},
 	'/accounts/{accountId}/vesting-info': {
-		path: '/benchmarks/accountsVestingInfo',
+		path: '/benchmarks/accounts_vesting_info',
 	},
 	'/accounts/{accountId}/staking-info': {
-		path: '/benchmarks/accountsStakingInfo',
+		path: '/benchmarks/accounts_staking_info',
 	},
 	'/accounts/{accountId}/staking-payouts': {
-		path: '/benchmarks/accountsStakingPayouts',
+		path: '/benchmarks/accounts_staking_payouts',
 	},
 	'/accounts/{accountId}/validate': {
 		path: '/benchmarks/accountsValidate',
@@ -39,10 +39,10 @@ export const benchmarkConfig: IBenchmarkConfig = {
 		path: '/benchmarks/blocksBlockId',
 	},
 	'/blocks/{blockId}/header': {
-		path: '/benchmarks/blocksBlockIdHeader',
+		path: '/benchmarks/blocks_header',
 	},
 	'/blocks/{blockId}/extrinsics/{extrinsicIndex}': {
-		path: '/benchmarks/blocksBlockIdExtrinsics',
+		path: '/benchmarks/blocks_extrinsics',
 	},
 	'/blocks/head': {
 		path: '/benchmarks/blocksHead',
@@ -51,10 +51,10 @@ export const benchmarkConfig: IBenchmarkConfig = {
 		path: '/benchmarks/blocksHeadHeader',
 	},
 	'/pallets/staking/progress': {
-		path: '/benchmarks/palletsStakingProgress',
+		path: '/benchmarks/pallets_staking_progress',
 	},
 	'/pallets/{palletId}/storage': {
-		path: '/benchmarks/palletsPalletIdStorage',
+		path: '/benchmarks/pallets_storage',
 	},
 	'/pallets/{palletId}/storage/{storageItemId}': {
 		path: '/benchmarks/palletsPalletIdStorageStorageId',
@@ -72,7 +72,7 @@ export const benchmarkConfig: IBenchmarkConfig = {
 		path: '/benchmarks/palletsNominationPoolsPoolId',
 	},
 	'/pallets/staking/validators': {
-		path: '/benchmarks/palletsStakingValidators',
+		path: '/benchmarks/pallets_staking_validators',
 	},
 	'/paras': {
 		path: '/benchmarks/paras',
@@ -102,9 +102,9 @@ export const benchmarkConfig: IBenchmarkConfig = {
 		path: '/benchmarks/nodeVersion',
 	},
 	'/runtime/spec': {
-		path: '/benchmarks/runtimeSpec',
+		path: '/benchmarks/runtime',
 	},
 	'/transaction/material': {
-		path: '/benchmarks/transactionMaterial',
+		path: '/benchmarks/transaction_material',
 	},
 };
