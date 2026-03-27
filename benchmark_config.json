@@ -1,7 +1,7 @@
 {
   "server": {
     "host": "localhost",
-    "port": 8045
+    "port": 8080
   },
   "hardware_profiles": {
     "ci_runner": {
