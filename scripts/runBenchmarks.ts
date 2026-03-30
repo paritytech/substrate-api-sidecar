@@ -86,7 +86,7 @@ const writeResultsToFile = (results: IBenchResult[]) => {
 };
 
 /**
- * Launch a single benchmark. It returns the stdout from `<root>/benchmarks/util/util.lua`.
+ * Launch a single benchmark. It returns the stdout from wrk's Lua done() callback.
  *
  * @param endpoint Endpoint that reflects one of the keys from `benchmarkConfig`.
  * @param wsUrl `wsUrl` to benchmark off of.
@@ -136,6 +136,10 @@ const main = async (args: IBenchParseArgs) => {
 
 	if (log_level) setLogLevel(log_level);
 	setBenchTime(args.time);
+
+	// Set LUA_PATH so wrk Lua scripts can require("util") and require("report")
+	// from any benchmark subdirectory without needing per-script package.path hacks.
+	process.env.LUA_PATH = `${process.cwd()}/benchmarks/?.lua;;`;
 
 	console.log('Building Sidecar...');
 	const sidecarBuild = await launchProcess('yarn', procs, defaultSasBuildOpts);
