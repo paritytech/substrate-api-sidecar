@@ -91,5 +91,8 @@
     "polkadot",
     "kusama"
   ],
+  "resolutions": {
+    "axios": "1.13.2"
+  },
   "packageManager": "yarn@4.6.0"
 }
