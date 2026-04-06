@@ -2748,7 +2748,7 @@ __metadata:
     express: "npm:^5.2.1"
     express-winston: "npm:^4.2.0"
     http-errors: "npm:^2.0.1"
-    lru-cache: "npm:^11.2.7"
+    lru-cache: "npm:^11.3.0"
     prom-client: "npm:^15.1.3"
     reflect-metadata: "npm:^0.2.2"
     rxjs: "npm:^7.8.2"
@@ -6904,10 +6904,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^11.2.7":
-  version: 11.2.7
-  resolution: "lru-cache@npm:11.2.7"
-  checksum: 10/fbff4b8dee8189dde9b52cdfb3ea89b4c9cec094c1538cd30d1f47299477ff312efdb35f7994477ec72328f8e754e232b26a143feda1bd1f79ff22da6664d2c5
+"lru-cache@npm:^11.3.0":
+  version: 11.3.0
+  resolution: "lru-cache@npm:11.3.0"
+  checksum: 10/e94d4d1159299f745e9f9e75927e460aede732daa339141a887695e6d75c8d1a393bd0e79b02769bd9344e76eec0c02685e6c0f5c741cfa559488d86fec645dd
   languageName: node
   linkType: hard
 
