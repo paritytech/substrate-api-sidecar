@@ -3691,6 +3691,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeSpec'
+  /runtime/apis:
+    get:
+      tags:
+      - runtime
+      summary: List runtime APIs available in metadata.
+      description: Returns runtime API summaries (name, id, method count) for the selected block. Requires metadata v15 or higher.
+      parameters:
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime API metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApis'
+  /runtime/apis/{apiId}:
+    get:
+      tags:
+      - runtime
+      summary: Get a specific runtime API with method signatures.
+      description: Returns full method metadata (inputs, output, docs) for one runtime API.
+      parameters:
+      - name: apiId
+        in: path
+        description: Runtime API id or name.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Block at which to retrieve runtime API metadata.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApi'
+  /runtime/apis/{apiId}/{methodId}:
+    post:
+      tags:
+      - runtime
+      summary: Call a runtime API method with named JSON parameters.
+      description: Invokes a runtime API method exposed by metadata for the selected block.
+      parameters:
+      - name: apiId
+        in: path
+        description: Runtime API id or name.
+        required: true
+        schema:
+          type: string
+      - name: methodId
+        in: path
+        description: Runtime API method id or name.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuntimeApiCallRequest'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApiCall'
   /rc/runtime/spec:
     get:
       tags:
@@ -3713,6 +3795,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuntimeSpec'
+  /rc/runtime/apis:
+    get:
+      tags:
+      - rc runtime
+      summary: List relay chain runtime APIs available in metadata.
+      description: Returns runtime API summaries (name, id, method count) for the selected relay chain block. Requires metadata v15 or higher.
+      parameters:
+      - name: at
+        in: query
+        description: Relay chain block hash or height at which to query.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApis'
+  /rc/runtime/apis/{apiId}:
+    get:
+      tags:
+      - rc runtime
+      summary: Get a specific relay chain runtime API with method signatures.
+      description: Returns full method metadata (inputs, output, docs) for one relay chain runtime API.
+      parameters:
+      - name: apiId
+        in: path
+        description: Runtime API id or name.
+        required: true
+        schema:
+          type: string
+      - name: at
+        in: query
+        description: Relay chain block hash or height at which to query.
+        required: false
+        schema:
+          type: string
+          description: Block identifier, as the block height or block hash.
+          format: unsignedInteger or $hex
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApi'
+  /rc/runtime/apis/{apiId}/{methodId}:
+    post:
+      tags:
+      - rc runtime
+      summary: Call a relay chain runtime API method with named JSON parameters.
+      description: Invokes a relay chain runtime API method exposed by metadata for the selected block.
+      parameters:
+      - name: apiId
+        in: path
+        description: Runtime API id or name.
+        required: true
+        schema:
+          type: string
+      - name: methodId
+        in: path
+        description: Runtime API method id or name.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuntimeApiCallRequest'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApiCall'
   /rc/runtime/metadata:
     get:
       tags:
@@ -7909,6 +8073,173 @@ components:
         code:
           type: string
           format: hex
+    RuntimeApiMethodInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Input argument name as presented by metadata.
+        id:
+          type: string
+          description: Camel-cased identifier used for argument matching.
+        typeId:
+          type: string
+          description: Runtime lookup type id.
+        type:
+          type: string
+          description: Resolved type name when lookup resolution is available.
+    RuntimeApiMethodOutput:
+      type: object
+      properties:
+        typeId:
+          type: string
+          description: Runtime lookup type id.
+        type:
+          type: string
+          description: Resolved type name when lookup resolution is available.
+    DeprecationInfo:
+      type: object
+      nullable: true
+      description: Deprecation status of a runtime API or method. Null when not available (metadata v15). Present in metadata v16+.
+      properties:
+        type:
+          type: string
+          enum:
+            - NotDeprecated
+            - DeprecatedWithoutNote
+            - Deprecated
+          description: Deprecation variant.
+        note:
+          type: string
+          nullable: true
+          description: Deprecation note. Only set when type is Deprecated.
+        since:
+          type: string
+          nullable: true
+          description: Version since which the item is deprecated. Only set when type is Deprecated and a since value was provided.
+    RuntimeApiMethodDescription:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Runtime method name as presented by metadata.
+        id:
+          type: string
+          description: Camel-cased runtime method identifier.
+        docs:
+          type: string
+          description: Runtime method documentation joined into a single string.
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuntimeApiMethodInput'
+        output:
+          $ref: '#/components/schemas/RuntimeApiMethodOutput'
+        deprecationInfo:
+          $ref: '#/components/schemas/DeprecationInfo'
+    RuntimeApiSummary:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Runtime API name as presented by metadata.
+        id:
+          type: string
+          description: Camel-cased runtime API identifier.
+        docs:
+          type: string
+          description: Runtime API documentation joined into a single string.
+        methodCount:
+          type: integer
+          description: Number of methods exposed by this runtime API.
+        methods:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              id:
+                type: string
+    RuntimeApiDescription:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Runtime API name as presented by metadata.
+        id:
+          type: string
+          description: Camel-cased runtime API identifier.
+        docs:
+          type: string
+          description: Runtime API documentation joined into a single string.
+        version:
+          type: integer
+          nullable: true
+          description: Runtime API version number. Null when not available (metadata v15). Present in metadata v16+.
+        deprecationInfo:
+          $ref: '#/components/schemas/DeprecationInfo'
+        methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuntimeApiMethodDescription'
+    RuntimeApis:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        apis:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuntimeApiSummary'
+    RuntimeApi:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        api:
+          $ref: '#/components/schemas/RuntimeApiDescription'
+    RuntimeApiCallRequest:
+      type: object
+      properties:
+        at:
+          type: string
+          description: Optional block hash or height to execute the call at. Defaults to finalized head.
+          format: unsignedInteger or $hex
+        params:
+          type: object
+          additionalProperties: true
+          description: Named JSON parameters keyed by method argument names or arg{index}. Omit this field entirely for runtime API methods that do not take parameters. For Option<T> arguments, either omit the argument key (defaults to null) or pass it explicitly as null.
+    RuntimeApiCall:
+      type: object
+      properties:
+        at:
+          $ref: '#/components/schemas/BlockIdentifiers'
+        api:
+          type: object
+          properties:
+            name:
+              type: string
+            id:
+              type: string
+        method:
+          type: object
+          properties:
+            name:
+              type: string
+            id:
+              type: string
+        result:
+          description: Runtime API call result serialized via codec.toJSON(). Can be any JSON value.
+          nullable: true
+          oneOf:
+            - type: object
+              additionalProperties: true
+            - type: array
+              items: {}
+            - type: string
+            - type: number
+            - type: boolean
     RuntimeDispatchInfo:
       type: object
       properties:
@@ -8638,6 +8969,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/DryRunBody'
+      required: true
+    RuntimeApiCall:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RuntimeApiCallRequest'
       required: true
     TransactionMetadataBlob:
       content:

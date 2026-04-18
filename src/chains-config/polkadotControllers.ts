@@ -49,6 +49,7 @@ export const polkadotControllers: ControllerConfig = {
 		'PalletsStakingValidators',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

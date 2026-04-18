@@ -27,6 +27,7 @@ export const coretimeControllers: ControllerConfig = {
 		'BlocksRawExtrinsics',
 		'NodeNetwork',
 		'NodeVersion',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

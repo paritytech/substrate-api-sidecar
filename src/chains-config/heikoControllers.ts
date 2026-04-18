@@ -35,6 +35,7 @@ export const heikoControllers: ControllerConfig = {
 		'PalletsAssets',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

@@ -48,6 +48,7 @@ export const defaultControllers: ControllerConfig = {
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

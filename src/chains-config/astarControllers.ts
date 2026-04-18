@@ -35,6 +35,7 @@ export const astarControllers: ControllerConfig = {
 		'PalletsAssets',
 		'PalletsErrors',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
