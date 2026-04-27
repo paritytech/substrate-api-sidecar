@@ -20,6 +20,16 @@
     <!-- Styles will be injected by webpack -->
 </head>
 <body>
+    <!-- Deprecation banner (site-wide, always visible) -->
+    <div class="deprecation-banner" role="alert" style="background: #b45309; color: #fff; padding: 12px 24px; font-size: 14px; line-height: 1.5; border-bottom: 2px solid #92400e; text-align: center; font-family: 'Inter', system-ui, sans-serif; position: relative; z-index: 10000;">
+        <strong>⚠️ Deprecation Notice:</strong>
+        <code style="background: rgba(0,0,0,0.25); padding: 1px 6px; border-radius: 3px;">substrate-api-sidecar</code>
+        is deprecated in favor of
+        <a href="https://github.com/paritytech/polkadot-rest-api" target="_blank" rel="noopener" style="color: #fff; text-decoration: underline; font-weight: 600;">polkadot-rest-api</a>
+        — a Rust rewrite with 1:1 API compatibility.
+        <a href="https://github.com/paritytech/polkadot-rest-api/blob/main/docs/guides/MIGRATION.md" target="_blank" rel="noopener" style="color: #fff; text-decoration: underline; font-weight: 600;">Migration guide →</a>
+    </div>
+
     <!-- Loading screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-spinner">
