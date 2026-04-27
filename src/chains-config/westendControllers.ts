@@ -49,6 +49,7 @@ export const westendControllers: ControllerConfig = {
 		'PalletsStakingValidators',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

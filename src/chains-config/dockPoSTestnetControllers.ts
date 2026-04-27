@@ -34,6 +34,7 @@ export const dockTestnetControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsStakingProgress',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

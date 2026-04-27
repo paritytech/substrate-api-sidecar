@@ -36,6 +36,7 @@ export const soraControllers: ControllerConfig = {
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
