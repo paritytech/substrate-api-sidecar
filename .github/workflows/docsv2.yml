@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install root JS dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Build Docs v2
         run: yarn build:docsv2

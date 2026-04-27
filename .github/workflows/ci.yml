@@ -40,7 +40,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install JS dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Linter.
         run: yarn lint
@@ -70,7 +70,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install JS dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Unit tests.
         run: yarn test:ci
@@ -101,7 +101,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install JS dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Build
         run: yarn build
