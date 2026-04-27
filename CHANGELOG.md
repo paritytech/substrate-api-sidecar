@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+### ⚠️ Deprecation Notice
+
+**`substrate-api-sidecar` is deprecated in favor of [`polkadot-rest-api`](https://github.com/paritytech/polkadot-rest-api).**
+
+`polkadot-rest-api` is a ground-up Rust rewrite built on [`subxt`](https://github.com/paritytech/subxt) with 1:1 API compatibility (endpoints served under `/v1/`, e.g. `/v1/blocks/head`), stable memory under sustained load, significantly lower latency and higher throughput, and native SCALE decoding via `parity-scale-codec`. Stable v0.1.0 follows seven beta releases with partner feedback.
+
+- Docker: `docker pull paritytech/polkadot-rest-api:v0.1.0`
+- Crate: [`polkadot-rest-api@0.1.0`](https://crates.io/crates/polkadot-rest-api)
+- GitHub: https://github.com/paritytech/polkadot-rest-api
+- Documentation: https://paritytech.github.io/polkadot-rest-api/
+- Migration guide: [MIGRATION.md](https://github.com/paritytech/polkadot-rest-api/blob/main/docs/guides/MIGRATION.md)
+- Issues/feedback: https://github.com/paritytech/polkadot-rest-api/issues
+
 ## [20.14.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.3..v20.14.0) (2026-02-01)
 
 ### Feat
