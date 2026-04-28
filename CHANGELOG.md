@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## Unreleased
+## [20.14.1](https://github.com/paritytech/substrate-api-sidecar/compare/v20.14.0..v20.14.1) (2026-04-28)
 
 ### ⚠️ Deprecation Notice
 
@@ -16,6 +16,37 @@ All notable changes to this project will be documented in this file. See [standa
 - Documentation: https://paritytech.github.io/polkadot-rest-api/
 - Migration guide: [MIGRATION.md](https://github.com/paritytech/polkadot-rest-api/blob/main/docs/guides/MIGRATION.md)
 - Issues/feedback: https://github.com/paritytech/polkadot-rest-api/issues
+
+This is the final feature release. Only critical-security fixes will be backported, if any. Use `polkadot-rest-api` for all new development.
+
+### Fix
+
+- fix: use `ClaimedRewards` storage for claimed status in staking-payouts ([#1922](https://github.com/paritytech/substrate-api-sidecar/pull/1922))
+- fix: remove IBP kilt endpoint ([#1896](https://github.com/paritytech/substrate-api-sidecar/pull/1896))
+- feat/fix: benchmarks refactoring, CI script fixes, lua path, migration finalization, and `grep -A` window bump ([#1917](https://github.com/paritytech/substrate-api-sidecar/pull/1917), [#1928](https://github.com/paritytech/substrate-api-sidecar/pull/1928), [#1933](https://github.com/paritytech/substrate-api-sidecar/pull/1933), [#1954](https://github.com/paritytech/substrate-api-sidecar/pull/1954), [#1960](https://github.com/paritytech/substrate-api-sidecar/pull/1960))
+- chore: bump Node.js from 18 to 22 — required because `lru-cache@11` relies on `node:diagnostics_channel.tracingChannel` (Node 20.2+) ([#1958](https://github.com/paritytech/substrate-api-sidecar/pull/1958))
+
+### Chore
+
+- chore(deps): bump `axios` from 1.12.2 to 1.15.2 (incl. security pin) ([#1893](https://github.com/paritytech/substrate-api-sidecar/pull/1893), [#1935](https://github.com/paritytech/substrate-api-sidecar/pull/1935), [#1950](https://github.com/paritytech/substrate-api-sidecar/pull/1950), [#1952](https://github.com/paritytech/substrate-api-sidecar/pull/1952))
+- chore(deps): bump `lru-cache` from 11.2.5 to 11.3.5 ([#1899](https://github.com/paritytech/substrate-api-sidecar/pull/1899), [#1920](https://github.com/paritytech/substrate-api-sidecar/pull/1920), [#1943](https://github.com/paritytech/substrate-api-sidecar/pull/1943))
+- chore(deps): bump `@polkadot-api/merkleize-metadata` from 1.1.29 to 1.2.1 ([#1942](https://github.com/paritytech/substrate-api-sidecar/pull/1942), [#1956](https://github.com/paritytech/substrate-api-sidecar/pull/1956))
+- chore(deps): bump `express` and `@types/express` ([#1845](https://github.com/paritytech/substrate-api-sidecar/pull/1845))
+- chore(deps): bump `qs` from 6.14.1 to 6.14.2 ([#1898](https://github.com/paritytech/substrate-api-sidecar/pull/1898))
+- chore(deps): bump `bn.js` from 5.2.1 to 5.2.3 ([#1903](https://github.com/paritytech/substrate-api-sidecar/pull/1903))
+- chore(deps): bump `winston-loki` from 6.1.3 to 6.1.4 ([#1900](https://github.com/paritytech/substrate-api-sidecar/pull/1900))
+- chore(deps): bump `flatted` from 3.2.7 to 3.4.2 ([#1923](https://github.com/paritytech/substrate-api-sidecar/pull/1923))
+- chore(deps): bump `picomatch` from 2.3.1 to 2.3.2 ([#1924](https://github.com/paritytech/substrate-api-sidecar/pull/1924))
+- chore(deps): bump `path-to-regexp` from 8.2.0 to 8.4.0 ([#1931](https://github.com/paritytech/substrate-api-sidecar/pull/1931))
+- chore(deps): bump `lodash` from 4.17.23 to 4.18.1 ([#1939](https://github.com/paritytech/substrate-api-sidecar/pull/1939))
+- chore(deps): bump `protobufjs` from 7.3.2 to 7.5.5 ([#1948](https://github.com/paritytech/substrate-api-sidecar/pull/1948))
+- chore(deps): bump `minimatch` from 3.1.2 to 3.1.5 ([#1910](https://github.com/paritytech/substrate-api-sidecar/pull/1910))
+- chore(deps): bump `rollup` from 4.42.0 to 4.59.0 ([#1906](https://github.com/paritytech/substrate-api-sidecar/pull/1906))
+- chore(deps-dev): bump `@acala-network/chopsticks-testing` ([#1892](https://github.com/paritytech/substrate-api-sidecar/pull/1892), [#1955](https://github.com/paritytech/substrate-api-sidecar/pull/1955))
+- chore(deps): bump `/docs` packages — `axios`, `qs`, `minimatch`, `immutable`, `picomatch`, `yaml`, `brace-expansion`, `lodash`, `follow-redirects`, `postcss`, `webpack` ([#1890](https://github.com/paritytech/substrate-api-sidecar/pull/1890), [#1893](https://github.com/paritytech/substrate-api-sidecar/pull/1893), [#1897](https://github.com/paritytech/substrate-api-sidecar/pull/1897), [#1904](https://github.com/paritytech/substrate-api-sidecar/pull/1904), [#1909](https://github.com/paritytech/substrate-api-sidecar/pull/1909), [#1915](https://github.com/paritytech/substrate-api-sidecar/pull/1915), [#1925](https://github.com/paritytech/substrate-api-sidecar/pull/1925), [#1927](https://github.com/paritytech/substrate-api-sidecar/pull/1927), [#1930](https://github.com/paritytech/substrate-api-sidecar/pull/1930), [#1938](https://github.com/paritytech/substrate-api-sidecar/pull/1938), [#1944](https://github.com/paritytech/substrate-api-sidecar/pull/1944), [#1950](https://github.com/paritytech/substrate-api-sidecar/pull/1950), [#1953](https://github.com/paritytech/substrate-api-sidecar/pull/1953))
+- chore(deps): bump `/docs-v2` packages — `tar`, `webpack`, `minimatch`, `brace-expansion`, `node-forge`, `lodash`, `postcss`, `picomatch`, `follow-redirects` ([#1884](https://github.com/paritytech/substrate-api-sidecar/pull/1884), [#1891](https://github.com/paritytech/substrate-api-sidecar/pull/1891), [#1902](https://github.com/paritytech/substrate-api-sidecar/pull/1902), [#1905](https://github.com/paritytech/substrate-api-sidecar/pull/1905), [#1913](https://github.com/paritytech/substrate-api-sidecar/pull/1913), [#1916](https://github.com/paritytech/substrate-api-sidecar/pull/1916), [#1926](https://github.com/paritytech/substrate-api-sidecar/pull/1926), [#1929](https://github.com/paritytech/substrate-api-sidecar/pull/1929), [#1932](https://github.com/paritytech/substrate-api-sidecar/pull/1932), [#1946](https://github.com/paritytech/substrate-api-sidecar/pull/1946), [#1957](https://github.com/paritytech/substrate-api-sidecar/pull/1957), [#1959](https://github.com/paritytech/substrate-api-sidecar/pull/1959))
+- chore(ci): bump GitHub Actions — `docker/build-push-action`, `docker/login-action`, `actions/upload-artifact`, `actions/download-artifact`, `actions/create-github-app-token`, `Swatinem/rust-cache`, `benchmark-action/github-action-benchmark` ([#1895](https://github.com/paritytech/substrate-api-sidecar/pull/1895), [#1907](https://github.com/paritytech/substrate-api-sidecar/pull/1907), [#1908](https://github.com/paritytech/substrate-api-sidecar/pull/1908), [#1911](https://github.com/paritytech/substrate-api-sidecar/pull/1911), [#1912](https://github.com/paritytech/substrate-api-sidecar/pull/1912), [#1914](https://github.com/paritytech/substrate-api-sidecar/pull/1914), [#1918](https://github.com/paritytech/substrate-api-sidecar/pull/1918), [#1921](https://github.com/paritytech/substrate-api-sidecar/pull/1921), [#1936](https://github.com/paritytech/substrate-api-sidecar/pull/1936), [#1940](https://github.com/paritytech/substrate-api-sidecar/pull/1940))
+- chore: deprecate substrate-api-sidecar in favor of polkadot-rest-api ([#1951](https://github.com/paritytech/substrate-api-sidecar/pull/1951))
 
 ## [20.14.0](https://github.com/paritytech/substrate-api-sidecar/compare/v20.13.3..v20.14.0) (2026-02-01)
 
