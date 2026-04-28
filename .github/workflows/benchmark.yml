@@ -26,6 +26,16 @@ jobs:
           echo "Benchmarks for polkadot"
           mkdir -p artifacts
           yarn bench --log-level info --ws-url wss://rpc.polkadot.io
+          if [ ! -s benchmarks.txt ]; then
+            echo "::error::yarn bench produced empty benchmarks.txt"
+            exit 1
+          fi
+          if ! grep -q "Avg RequestTime(Latency)" benchmarks.txt; then
+            echo "::error::benchmarks.txt contains no latency results — wrk done() callback may not have fired"
+            echo "Contents of benchmarks.txt:"
+            cat benchmarks.txt
+            exit 1
+          fi
           mv benchmarks.txt artifacts/
 
       - name: upload artifacts
@@ -56,7 +66,19 @@ jobs:
           path: artifacts
 
       - name: Modify benches result for benchmark action
-        run: ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks.json
+        run: |
+          # Write to temp file first — only promote to benchmarks.json if it has entries
+          ./scripts/ci/benchmarks/generate_benchmark_result.sh artifacts/benchmarks.txt > artifacts/benchmarks_tmp.json
+          ENTRIES=$(python3 -c "import json; print(len(json.load(open('artifacts/benchmarks_tmp.json'))))")
+          if [ "$ENTRIES" -eq 0 ]; then
+            echo "::error::benchmarks.json has 0 entries after parsing"
+            echo "Contents of benchmarks.txt:"
+            cat artifacts/benchmarks.txt
+            rm -f artifacts/benchmarks_tmp.json
+            exit 1
+          fi
+          mv artifacts/benchmarks_tmp.json artifacts/benchmarks.json
+          echo "benchmarks.json contains $ENTRIES benchmark results"
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@a7bc2366eda11037936ea57d811a43b3418d3073 #1.21.0

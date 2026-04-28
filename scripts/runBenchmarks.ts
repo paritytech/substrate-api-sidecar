@@ -107,13 +107,30 @@ const launchBenchmark = async (endpoint: string, wsUrl: string): Promise<string>
 	// 2 second delay to allow sidecar to boot before we load it with queries.
 	await delay(2000);
 
-	// cd into benchmark
-	cdToDir(benchmarkConfig[endpoint].path);
-	// Run benchmark against the endpoint passed in
-	const bench = await launchProcess('sh', procs, {
+	// cd into benchmark. Each benchmark dir is named after its endpoint and contains
+	// a single self-contained Lua script with the same basename (e.g.
+	// `benchmarks/accounts_balance_info/accounts_balance_info.lua`).
+	const benchPath = benchmarkConfig[endpoint].path;
+	const dirName = benchPath.split('/').pop() as string;
+	cdToDir(benchPath);
+	// Run wrk directly — replaces per-dir init.sh wrappers.
+	const bench = await launchProcess('wrk', procs, {
 		proc: 'benchmark',
 		resolver: 'Benchmark finished',
-		args: ['init.sh'],
+		args: [
+			'-d',
+			process.env.WRK_TIME_LENGTH ?? '1m',
+			'-t',
+			'4',
+			'-c',
+			'6',
+			'--timeout',
+			'120s',
+			'--latency',
+			'-s',
+			`./${dirName}.lua`,
+			'http://127.0.0.1:8080',
+		],
 	});
 	// cd back to root
 	cdToDir('/../../');

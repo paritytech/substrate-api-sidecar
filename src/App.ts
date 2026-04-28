@@ -92,6 +92,11 @@ export default class App {
 			console.log(
 				`Check the root endpoint (http://${this.host}:${this.port}/) to see the available endpoints for the current node`,
 			);
+			console.warn(
+				'⚠️  substrate-api-sidecar is deprecated. Migrate to polkadot-rest-api: ' +
+					'https://github.com/paritytech/polkadot-rest-api ' +
+					'(guide: https://github.com/paritytech/polkadot-rest-api/blob/main/docs/guides/MIGRATION.md)',
+			);
 		});
 	}
 

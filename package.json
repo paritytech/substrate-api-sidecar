@@ -25,7 +25,7 @@
   "scripts": {
     "main": "node ./build/src/main.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/main.ts",
-    "deploy": "yarn build && npm publish",
+    "deploy": "yarn install --immutable && yarn build && npm publish",
     "inspect": "yarn build && node --inspect=127.0.0.1:8081 ./build/src/main.js",
     "build": "substrate-exec-rimraf build/ && substrate-exec-tsc && echo Build Finished",
     "build:calc": "bash ./calc/build.sh",
@@ -51,7 +51,7 @@
     "test:test-release": "yarn build:scripts && node scripts/build/runYarnPack.js"
   },
   "dependencies": {
-    "@polkadot-api/merkleize-metadata": "^1.1.29",
+    "@polkadot-api/merkleize-metadata": "^1.2.1",
     "@polkadot/api": "16.5.2",
     "@polkadot/api-augment": "16.5.2",
     "@polkadot/api-contract": "16.5.2",
@@ -92,7 +92,7 @@
     "kusama"
   ],
   "resolutions": {
-    "axios": "1.13.2"
+    "axios": "1.15.2"
   },
   "packageManager": "yarn@4.6.0"
 }
