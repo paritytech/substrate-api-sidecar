@@ -23,10 +23,10 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v6
 
-      - name: Install Node v18
+      - name: Install Node v22
         uses: actions/setup-node@v6
         with:
-          node-version: "18.14"
+          node-version: "22"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

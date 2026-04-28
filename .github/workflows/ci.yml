@@ -22,10 +22,10 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v6
 
-      - name: Install Node v18
+      - name: Install Node v22
         uses: actions/setup-node@v6
         with:
-          node-version: "18.14"
+          node-version: "22"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -52,10 +52,10 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v6
 
-      - name: Install Node v18
+      - name: Install Node v22
         uses: actions/setup-node@v6
         with:
-          node-version: "18.14"
+          node-version: "22"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -83,10 +83,10 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v6
 
-      - name: Install Node v18
+      - name: Install Node v22
         uses: actions/setup-node@v6
         with:
-          node-version: "18.14"
+          node-version: "22"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -117,7 +117,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [22.x]
 
     steps:
       - uses: actions/checkout@v6
@@ -151,7 +151,7 @@ jobs:
     name: e2e
     runs-on: ubuntu-latest
     container:
-      image: node:18
+      image: node:22
     strategy:
       matrix:
         include:

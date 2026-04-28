@@ -19,6 +19,6 @@
     "webpack-dev-server": "^5.2.1"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=22"
   }
 }
