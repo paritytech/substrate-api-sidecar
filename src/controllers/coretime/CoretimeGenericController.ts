@@ -21,7 +21,7 @@ import AbstractController from '../AbstractController';
 
 export default class CoretimeGenericController extends AbstractController<CoretimeService> {
 	static controllerName = 'CoretimeGeneric';
-	static requiredPallets = [['Broker'], ['OnDemandAssignmentProvider', 'CoretimeAssignmentProvider', 'Paras']];
+	static requiredPallets = [['Broker'], ['OnDemandAssignmentProvider', 'Paras']];
 	constructor(api: string) {
 		super(api, '/coretime', new CoretimeService(api));
 		this.initRoutes();

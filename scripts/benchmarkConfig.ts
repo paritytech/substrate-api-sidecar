@@ -18,93 +18,93 @@ import { IBenchmarkConfig } from './types';
 
 export const benchmarkConfig: IBenchmarkConfig = {
 	'/accounts/{accountId}/balance-info': {
-		path: '/benchmarks/accountsBalance',
+		path: '/benchmarks/accounts_balance_info',
 	},
 	'/accounts/{accountId}/vesting-info': {
-		path: '/benchmarks/accountsVestingInfo',
+		path: '/benchmarks/accounts_vesting_info',
 	},
 	'/accounts/{accountId}/staking-info': {
-		path: '/benchmarks/accountsStakingInfo',
+		path: '/benchmarks/accounts_staking_info',
 	},
 	'/accounts/{accountId}/staking-payouts': {
-		path: '/benchmarks/accountsStakingPayouts',
+		path: '/benchmarks/accounts_staking_payouts',
 	},
 	'/accounts/{accountId}/validate': {
-		path: '/benchmarks/accountsValidate',
+		path: '/benchmarks/accounts_validate',
 	},
 	'/accounts/{accountId}/convert': {
-		path: '/benchmarks/accountsConvert',
+		path: '/benchmarks/accounts_convert',
 	},
 	'/blocks/{blockId}': {
-		path: '/benchmarks/blocksBlockId',
+		path: '/benchmarks/blocks_blockid',
 	},
 	'/blocks/{blockId}/header': {
-		path: '/benchmarks/blocksBlockIdHeader',
+		path: '/benchmarks/blocks_header',
 	},
 	'/blocks/{blockId}/extrinsics/{extrinsicIndex}': {
-		path: '/benchmarks/blocksBlockIdExtrinsics',
+		path: '/benchmarks/blocks_extrinsics',
 	},
 	'/blocks/head': {
-		path: '/benchmarks/blocksHead',
+		path: '/benchmarks/blocks_head',
 	},
 	'/blocks/head/header': {
-		path: '/benchmarks/blocksHeadHeader',
+		path: '/benchmarks/blocks_head_header',
 	},
 	'/pallets/staking/progress': {
-		path: '/benchmarks/palletsStakingProgress',
+		path: '/benchmarks/pallets_staking_progress',
 	},
 	'/pallets/{palletId}/storage': {
-		path: '/benchmarks/palletsPalletIdStorage',
+		path: '/benchmarks/pallets_storage',
 	},
 	'/pallets/{palletId}/storage/{storageItemId}': {
-		path: '/benchmarks/palletsPalletIdStorageStorageId',
+		path: '/benchmarks/pallets_storage_item',
 	},
 	'/pallets/{palletId}/errors': {
-		path: '/benchmarks/palletsPalletIdErrors',
+		path: '/benchmarks/pallets_errors',
 	},
 	'/pallets/{palletId}/errors/{errorItemId}': {
-		path: '/benchmarks/palletsPalletIdErrorsErrorItemId',
+		path: '/benchmarks/pallets_errors_item',
 	},
 	'/pallets/nomination-pools/info': {
-		path: '/benchmarks/palletsNominationPoolsInfo',
+		path: '/benchmarks/pallets_nomination_pools_info',
 	},
 	'/pallets/nomination-pools/{poolId}': {
-		path: '/benchmarks/palletsNominationPoolsPoolId',
+		path: '/benchmarks/pallets_nomination_pools_poolid',
 	},
 	'/pallets/staking/validators': {
-		path: '/benchmarks/palletsStakingValidators',
+		path: '/benchmarks/pallets_staking_validators',
 	},
 	'/paras': {
-		path: '/benchmarks/paras',
+		path: '/benchmarks/paras_list',
 	},
 	'/paras/leases/current': {
-		path: '/benchmarks/parasLeasesCurrent',
+		path: '/benchmarks/paras_leases_current',
 	},
 	'/paras/auctions/current': {
-		path: '/benchmarks/parasAuctionsCurrent',
+		path: '/benchmarks/paras_auctions_current',
 	},
 	'/paras/crowdloans': {
-		path: '/benchmarks/parasCrowdloans',
+		path: '/benchmarks/paras_crowdloans',
 	},
 	'/paras/{paraId}/crowdloan-info': {
-		path: '/benchmarks/parasParaIdCrowdloanInfo',
+		path: '/benchmarks/paras_crowdloan_info',
 	},
 	'/paras/{paraId}/lease-info': {
-		path: '/benchmarks/parasParaIdLeasesInfo',
+		path: '/benchmarks/paras_lease_info',
 	},
 	'/node/network': {
-		path: '/benchmarks/nodeNetwork',
+		path: '/benchmarks/node_network',
 	},
 	'/node/transaction-pool': {
-		path: '/benchmarks/nodeTransactionPool',
+		path: '/benchmarks/node_transaction_pool',
 	},
 	'/node/version': {
-		path: '/benchmarks/nodeVersion',
+		path: '/benchmarks/node_version',
 	},
 	'/runtime/spec': {
-		path: '/benchmarks/runtimeSpec',
+		path: '/benchmarks/runtime',
 	},
 	'/transaction/material': {
-		path: '/benchmarks/transactionMaterial',
+		path: '/benchmarks/transaction_material',
 	},
 };

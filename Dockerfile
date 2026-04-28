@@ -4,7 +4,7 @@ WORKDIR /opt/builder
 
 COPY . .
 
-RUN yarn install && \
+RUN yarn install --immutable && \
     yarn build
 
 # ---------------------------------
