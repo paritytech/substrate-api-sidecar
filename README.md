@@ -61,7 +61,7 @@ Compatibility:
 |     v18.x.x   |   Stable    |
 |     v19.x.x   |   stable    |
 
-### >= v16.0.0
+### v16.0.0 — v20.14.0
 This service requires Node versions 18.14 or higher.
 
 Compatibility:
@@ -70,6 +70,15 @@ Compatibility:
 |     v18.14.x  |   Stable    |
 |     v20.x.x   |   Stable    |
 |     v21.x.x   |   Pending   |
+
+### >= v20.15.0
+This service requires Node versions 22 or higher. Earlier Node releases are no longer supported because dependencies (e.g. `lru-cache@11`) rely on `node:diagnostics_channel.tracingChannel`, which is only available in Node 20.2+ and is fully supported on Node 22 LTS.
+
+Compatibility:
+| Node Version  | Stability   |
+|---------------|:-----------:|
+|     v22.x.x   |   Stable    |
+|     v24.x.x   |   Stable    |
 
 NOTE: Node LTS (`long term support`) versions start with an even number, and odd number versions are subject to a 6 month testing period with active support before they are unsupported. It is recommended to use sidecar with a stable actively maintained version of node.js.
 
