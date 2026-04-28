@@ -20,7 +20,7 @@ do
     COUNTER=$((COUNTER+1))
     # "/accounts/{accountId}/balance-info:" -> "accounts-{accountId}-balance-info"
     benchmark_name=$(echo ${benchmark} | cut -d ":" -f1 | sed 's/\///' | sed 's/\//-/g' )
-    result=$(cat ${RESULT_FILE} | grep -A 20 ${benchmark} | grep "Avg RequestTime(Latency)" | awk '{print $3}')
+    result=$(cat ${RESULT_FILE} | grep -A 50 ${benchmark} | grep "Avg RequestTime(Latency)" | awk '{print $3}')
     unit=${result: -2}
     result_value=${result::-2}
     echo "  {"
