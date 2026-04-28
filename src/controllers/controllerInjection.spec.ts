@@ -57,7 +57,7 @@ const chainsToNode: Record<string, string> = {
 	kusama: 'wss://kusama-rpc.polkadot.io',
 	// 'asset-hub-westend': 'wss://asset-hub-westend-rpc.polkadot.io',
 	// astar: 'wss://astar-rpc.polkadot.io',
-	bifrost_polkadot: 'wss://bifrost-polkadot.ibp.network',
+	bifrost_polkadot: 'wss://bifrost-rpc.liebi.com/ws',
 	polkadot: 'wss://rpc.polkadot.io',
 	'coretime-westend': 'wss://westend-coretime-rpc.polkadot.io',
 	'coretime-polkadot': 'wss://polkadot-coretime-rpc.polkadot.io',

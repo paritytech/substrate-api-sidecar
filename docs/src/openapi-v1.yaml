@@ -1,8 +1,21 @@
 openapi: 3.0.0
 info:
   title: Substrate API Sidecar
-  description: Substrate API Sidecar is a REST service that makes it easy to
-    interact with blockchain nodes built using Substrate's FRAME framework.
+  description: |
+    > ⚠️ **Deprecation Notice** — `substrate-api-sidecar` is deprecated in favor of
+    > [`polkadot-rest-api`](https://github.com/paritytech/polkadot-rest-api), a ground-up Rust rewrite
+    > built on [`subxt`](https://github.com/paritytech/subxt) with 1:1 API compatibility (endpoints
+    > served under `/v1/`, e.g. `/v1/blocks/head`), stable memory under sustained load, significantly
+    > lower latency and higher throughput, and native SCALE decoding via `parity-scale-codec`.
+    >
+    > **Migrate today:** Docker `paritytech/polkadot-rest-api:v0.1.0` ·
+    > [crate](https://crates.io/crates/polkadot-rest-api) ·
+    > [migration guide](https://github.com/paritytech/polkadot-rest-api/blob/main/docs/guides/MIGRATION.md) ·
+    > [docs](https://paritytech.github.io/polkadot-rest-api/) ·
+    > [issues](https://github.com/paritytech/polkadot-rest-api/issues)
+
+    Substrate API Sidecar is a REST service that makes it easy to interact with blockchain nodes
+    built using Substrate's FRAME framework.
   contact:
     url: https://github.com/paritytech/substrate-api-sidecar
   license:
