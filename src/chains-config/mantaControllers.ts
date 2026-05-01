@@ -34,6 +34,7 @@ export const mantaControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsStakingProgress',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

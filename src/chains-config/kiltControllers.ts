@@ -32,6 +32,7 @@ export const kiltControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeSpec',
 		'RuntimeMetadata',

@@ -35,6 +35,7 @@ export const calamariControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsStakingProgress',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

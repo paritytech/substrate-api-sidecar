@@ -35,6 +35,7 @@ export const parallelControllers: ControllerConfig = {
 		'PalletsAssets',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

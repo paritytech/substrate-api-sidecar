@@ -36,6 +36,7 @@ export const mandalaControllers: ControllerConfig = {
 		'PalletsStakingProgress',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

@@ -73,14 +73,14 @@ import {
 	RcPalletsStakingValidators,
 	RcPalletsStorage,
 } from './rc/pallets';
-import { RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
+import { RcRuntimeApis, RcRuntimeCode, RcRuntimeMetadata, RcRuntimeSpec } from './rc/runtime';
 import {
 	RcTransactionDryRun,
 	RcTransactionFeeEstimate,
 	RcTransactionMaterial,
 	RcTransactionSubmit,
 } from './rc/transaction';
-import { RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
+import { RuntimeApis, RuntimeCode, RuntimeMetadata, RuntimeSpec } from './runtime';
 import {
 	TransactionDryRun,
 	TransactionFeeEstimate,
@@ -144,6 +144,7 @@ export const controllers = {
 	RcPalletsStakingProgress,
 	RcPalletsStakingValidators,
 	RcPalletsStorage,
+	RcRuntimeApis,
 	RcRuntimeCode,
 	RcRuntimeMetadata,
 	RcRuntimeSpec,
@@ -154,6 +155,7 @@ export const controllers = {
 	RcTransactionFeeEstimate,
 	RcTransactionMaterial,
 	RcTransactionSubmit,
+	RuntimeApis,
 	RuntimeCode,
 	RuntimeMetadata,
 	RuntimeSpec,

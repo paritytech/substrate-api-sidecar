@@ -42,6 +42,7 @@ export const polymeshControllers: ControllerConfig = {
 		'PalletsStakingProgress',
 		'PalletsStakingValidators',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

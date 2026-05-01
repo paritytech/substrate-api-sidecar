@@ -128,6 +128,19 @@ export interface IContractQueryParam extends Query {
 	storageDepositLimit: string;
 }
 
+export interface IRuntimeApiCallBody {
+	params?: Record<string, unknown>;
+	at?: string;
+}
+
+export interface IRuntimeApiParam extends ParamsDictionary {
+	apiId: string;
+}
+
+export interface IRuntimeApiMethodParam extends IRuntimeApiParam {
+	methodId: string;
+}
+
 export interface IPalletsConstantsParam extends ParamsDictionary {
 	palletId: string;
 	constantItemId: string;

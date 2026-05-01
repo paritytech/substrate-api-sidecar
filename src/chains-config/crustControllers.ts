@@ -31,6 +31,7 @@ export const crustControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsStorage',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

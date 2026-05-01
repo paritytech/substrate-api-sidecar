@@ -50,6 +50,7 @@ export const kusamaControllers: ControllerConfig = {
 		'PalletsStakingValidators',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

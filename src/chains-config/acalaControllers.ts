@@ -32,6 +32,7 @@ export const acalaControllers: ControllerConfig = {
 		'NodeVersion',
 		'PalletsStorage',
 		'Paras',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',

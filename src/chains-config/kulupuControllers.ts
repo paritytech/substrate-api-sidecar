@@ -28,6 +28,7 @@ export const kulupuControllers: ControllerConfig = {
 		'NodeTransactionPool',
 		'NodeVersion',
 		'PalletsAssets',
+		'RuntimeApis',
 		'RuntimeCode',
 		'RuntimeMetadata',
 		'RuntimeSpec',
