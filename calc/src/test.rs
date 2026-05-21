@@ -272,4 +272,31 @@ mod tests {
         let total_actual_payout: &str = "2391688616";
         assert_eq!(estimated_payout, total_actual_payout)
     }
+
+    #[test]
+    fn polkadot_era_1839_nominator() {
+        let total_reward_points = 38_814_300u32;
+        let era_payout = String::from("2794583990038747");
+
+        let params = CalcPayout::from_params(total_reward_points, &era_payout);
+
+        let validator_reward_points = 65_260u32;
+        let validator_commission = 50_000_000u32;
+        let nominator_exposure = String::from("45023778034323");
+        let total_exposure = String::from("14257240244850569");
+        let is_validator = false;
+
+        let estimated_payout = CalcPayout::calc_payout(
+            &params,
+            validator_reward_points,
+            validator_commission,
+            &nominator_exposure,
+            &total_exposure,
+            is_validator,
+        );
+
+        // https://polkadot.subscan.io/extrinsic/16584521-2?event=16584521-1840
+        let total_actual_payout: &str = "14096211542";
+        assert_eq!(estimated_payout, total_actual_payout)
+    }
 }
